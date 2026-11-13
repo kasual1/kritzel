@@ -1,0 +1,138 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+.avatars {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-wrapper {
+  position: relative;
+  transition: margin-left 200ms ease;
+}
+
+.avatar-wrapper updraw-avatar {
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--updraw-active-users-avatar-border-color, #ffffff);
+}
+
+.avatars:hover .avatar-wrapper {
+  margin-left: -6px !important;
+}
+
+.avatar-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 12px;
+  padding: 4px 8px;
+  background-color: var(--updraw-active-users-tooltip-background, #333333);
+  color: var(--updraw-active-users-tooltip-color, #ffffff);
+  font-family: var(--updraw-active-users-font-family, var(--updraw-global-font-family, sans-serif));
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  white-space: nowrap;
+  width: max-content;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.avatar-wrapper:hover .avatar-tooltip,
+.overflow-count:hover .avatar-tooltip {
+  opacity: 1;
+}
+
+.overflow-count {
+  position: relative;
+  margin-left: 8px;
+  font-family: var(--updraw-active-users-font-family, var(--updraw-global-font-family, sans-serif));
+  font-size: var(--updraw-active-users-overflow-font-size, 14px);
+  font-weight: 500;
+  color: var(--updraw-active-users-overflow-color, #666666);
+  white-space: nowrap;
+  cursor: default;
+}
+
+.overflow-count .avatar-tooltip {
+  white-space: nowrap;
+  text-align: left;
+  margin-top: 20px;
+}
+
+/* Agents: a bot badge, a ring in the agent color while it works, and its status in the tooltip. */
+.agent-badge {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40%;
+  height: 40%;
+  border-radius: 50%;
+  background-color: var(--updraw-active-users-agent-badge-background, var(--agent-color, #6b7280));
+  color: var(--updraw-active-users-agent-badge-color, #ffffff);
+  box-shadow: 0 0 0 2px var(--updraw-active-users-avatar-border-color, #ffffff);
+  pointer-events: none;
+}
+
+.agent-badge svg {
+  width: 70%;
+  height: 70%;
+}
+
+.avatar-wrapper.is-busy::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--updraw-active-users-agent-ring-width, 2px) - 2px);
+  border-radius: 50%;
+  border: var(--updraw-active-users-agent-ring-width, 2px) solid var(--agent-color, #6b7280);
+  pointer-events: none;
+  animation: agent-ring-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes agent-ring-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar-wrapper.is-busy::after {
+    animation: none;
+  }
+}
+
+/* Agent tooltips are wider than names: align them to the avatar's right edge so they stay inside the editor. */
+.agent-tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  left: auto;
+  right: 0;
+  transform: none;
+  white-space: normal;
+  max-width: 260px;
+  width: max-content;
+}
+
+.agent-tooltip-name {
+  font-weight: 600;
+}
+
+.agent-tooltip-status,
+.agent-tooltip-host {
+  font-weight: 400;
+  opacity: 0.85;
+}

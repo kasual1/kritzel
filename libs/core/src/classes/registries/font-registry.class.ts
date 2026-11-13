@@ -1,33 +1,33 @@
 import {
-  KritzelFontMap,
-  KritzelFontRegistration,
-  KritzelRegisteredFont,
+  UpdrawFontMap,
+  UpdrawFontRegistration,
+  UpdrawRegisteredFont,
 } from '../../interfaces/font.interface';
 
-type KritzelFontRegistryStore = {
-  fonts: Map<string, KritzelRegisteredFont>;
+type UpdrawFontRegistryStore = {
+  fonts: Map<string, UpdrawRegisteredFont>;
 };
 
-const KRITZEL_FONT_REGISTRY_KEY = '__kritzelFontRegistry__';
-const KRITZEL_FONT_REGISTRY_EVENT = 'kritzel-font-registry-change';
+const UPDRAW_FONT_REGISTRY_KEY = '__updrawFontRegistry__';
+const UPDRAW_FONT_REGISTRY_EVENT = 'updraw-font-registry-change';
 
-const getGlobalRegistryStore = (): KritzelFontRegistryStore => {
+const getGlobalRegistryStore = (): UpdrawFontRegistryStore => {
   const globalScope = globalThis as unknown as Record<string, unknown>;
-  const existing = globalScope[KRITZEL_FONT_REGISTRY_KEY] as KritzelFontRegistryStore | undefined;
+  const existing = globalScope[UPDRAW_FONT_REGISTRY_KEY] as UpdrawFontRegistryStore | undefined;
 
   if (existing) {
     return existing;
   }
 
-  const created: KritzelFontRegistryStore = {
-    fonts: new Map<string, KritzelRegisteredFont>(),
+  const created: UpdrawFontRegistryStore = {
+    fonts: new Map<string, UpdrawRegisteredFont>(),
   };
 
-  globalScope[KRITZEL_FONT_REGISTRY_KEY] = created;
+  globalScope[UPDRAW_FONT_REGISTRY_KEY] = created;
   return created;
 };
 
-const normalizeFontRegistration = (key: string, registration: KritzelFontRegistration): KritzelRegisteredFont => {
+const normalizeFontRegistration = (key: string, registration: UpdrawFontRegistration): UpdrawRegisteredFont => {
   if (typeof registration === 'string') {
     return {
       key,
@@ -50,8 +50,8 @@ const normalizeKey = (value: string): string => value.trim().toLocaleLowerCase()
 
 const normalizeFamily = (value: string): string => value.trim().toLocaleLowerCase();
 
-export class KritzelFontRegistry {
-  private static get _fonts(): Map<string, KritzelRegisteredFont> {
+export class UpdrawFontRegistry {
+  private static get _fonts(): Map<string, UpdrawRegisteredFont> {
     return getGlobalRegistryStore().fonts;
   }
 
@@ -69,7 +69,7 @@ export class KritzelFontRegistry {
       : fontFamily;
   }
 
-  private static getRegisteredFontFamilies(fonts: KritzelFontMap): string[] {
+  private static getRegisteredFontFamilies(fonts: UpdrawFontMap): string[] {
     return [...new Set(
       Object.values(fonts)
         .map(registration => (typeof registration === 'string' ? registration : registration.family))
@@ -78,7 +78,7 @@ export class KritzelFontRegistry {
     )];
   }
 
-  static register(key: string, registration: KritzelFontRegistration): void {
+  static register(key: string, registration: UpdrawFontRegistration): void {
     const normalized = normalizeFontRegistration(key, registration);
 
     if (this._fonts.has(key)) {
@@ -89,13 +89,13 @@ export class KritzelFontRegistry {
     this.emitChange();
   }
 
-  static registerFonts(fonts: KritzelFontMap): void {
+  static registerFonts(fonts: UpdrawFontMap): void {
     for (const [key, registration] of Object.entries(fonts)) {
       this.register(key, registration);
     }
   }
 
-  private static injectFontStylesheets(fonts: KritzelFontMap): Promise<void[]> {
+  private static injectFontStylesheets(fonts: UpdrawFontMap): Promise<void[]> {
     if (typeof document === 'undefined') {
       return Promise.resolve([]);
     }
@@ -108,7 +108,7 @@ export class KritzelFontRegistry {
       }
 
       const sourceUrl = registration.source;
-      const linkId = `kritzel-font-stylesheet-${key}`;
+      const linkId = `updraw-font-stylesheet-${key}`;
 
       if (document.getElementById(linkId)) {
         continue;
@@ -134,7 +134,7 @@ export class KritzelFontRegistry {
     return Promise.all(loadPromises);
   }
 
-  static async waitForFonts(fonts: KritzelFontMap): Promise<void> {
+  static async waitForFonts(fonts: UpdrawFontMap): Promise<void> {
     await this.injectFontStylesheets(fonts);
 
     const fontFaceSet = this.getFontFaceSet();
@@ -151,7 +151,7 @@ export class KritzelFontRegistry {
     await fontFaceSet.ready;
   }
 
-  static get(key: string): KritzelRegisteredFont | undefined {
+  static get(key: string): UpdrawRegisteredFont | undefined {
     return this._fonts.get(key);
   }
 
@@ -169,7 +169,7 @@ export class KritzelFontRegistry {
     return deleted;
   }
 
-  static list(): KritzelRegisteredFont[] {
+  static list(): UpdrawRegisteredFont[] {
     return [...this._fonts.values()];
   }
 
@@ -186,7 +186,7 @@ export class KritzelFontRegistry {
     return match?.cssFontFamily ?? fontFamily;
   }
 
-  static toRegisteredFont(registration: KritzelFontRegistration): KritzelRegisteredFont {
+  static toRegisteredFont(registration: UpdrawFontRegistration): UpdrawRegisteredFont {
     if (typeof registration === 'string') {
       return {
         key: registration,
@@ -212,10 +212,10 @@ export class KritzelFontRegistry {
       return;
     }
 
-    eventTarget.dispatchEvent(new CustomEvent(KRITZEL_FONT_REGISTRY_EVENT));
+    eventTarget.dispatchEvent(new CustomEvent(UPDRAW_FONT_REGISTRY_EVENT));
   }
 
   static get changeEventName(): string {
-    return KRITZEL_FONT_REGISTRY_EVENT;
+    return UPDRAW_FONT_REGISTRY_EVENT;
   }
 }

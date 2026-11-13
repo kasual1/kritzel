@@ -2,10 +2,10 @@ import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import {
   ActiveWorkspaceChangeEvent,
   InMemorySyncProvider,
-  KritzelEditor,
-  KritzelSyncConfig,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawEditor,
+  UpdrawSyncConfig,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -13,7 +13,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-persistence-memory',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -27,7 +27,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       }
     </app-toolbar>
     <div class="editor-wrap">
-      <kritzel-editor
+      <updraw-editor
         editorId="persistence-memory"
         [syncConfig]="syncConfig"
         [workspaces]="workspaces()"
@@ -40,7 +40,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-      ></kritzel-editor>
+      ></updraw-editor>
     </div>
   `,
   styles: [
@@ -77,14 +77,14 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 export class PersistenceMemoryComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
+  syncConfig: UpdrawSyncConfig = {
     providers: [InMemorySyncProvider],
   };
 
-  workspaces = signal<KritzelWorkspace[]>([
-    new KritzelWorkspace({ id: 'board-1', name: 'Board 1', objects: createSeedObjects() }),
-    new KritzelWorkspace({ id: 'board-2', name: 'Board 2', objects: createSeedObjects() }),
-    new KritzelWorkspace({ id: 'board-3', name: 'Board 3', objects: createSeedObjects() }),
+  workspaces = signal<UpdrawWorkspace[]>([
+    new UpdrawWorkspace({ id: 'board-1', name: 'Board 1', objects: createSeedObjects() }),
+    new UpdrawWorkspace({ id: 'board-2', name: 'Board 2', objects: createSeedObjects() }),
+    new UpdrawWorkspace({ id: 'board-3', name: 'Board 3', objects: createSeedObjects() }),
   ]);
   activeWorkspaceId = signal<string | undefined>('board-1');
 
@@ -92,7 +92,7 @@ export class PersistenceMemoryComponent {
     this.activeWorkspaceId.set(event.detail.id);
   }
 
-  switchTo(workspace: KritzelWorkspace) {
+  switchTo(workspace: UpdrawWorkspace) {
     this.activeWorkspaceId.set(workspace.id);
   }
 }

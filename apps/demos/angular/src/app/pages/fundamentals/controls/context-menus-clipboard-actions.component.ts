@@ -1,19 +1,19 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
-  KritzelEditor,
+  UpdrawEditor,
   ContextMenuItem,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-context-menus-clipboard-actions',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       #editor
       editorId="custom-context-menu-clipboard-actions"
       [theme]="'light'"
@@ -26,7 +26,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady()"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: `
     :host {
@@ -36,11 +36,11 @@ import { createSeedObjects } from '../../../const/seed-objects';
   `,
 })
 export class ContextMenusClipboardActionsComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
   globalItems: ContextMenuItem[] = [
     {

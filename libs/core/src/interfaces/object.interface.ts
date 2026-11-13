@@ -1,9 +1,9 @@
-import { KritzelBaseObject } from '../classes/objects/base-object.class';
-import { KritzelBoundingBox } from './bounding-box.interface';
-import { KritzelPolygon } from './polygon.interface';
+import { UpdrawBaseObject } from '../classes/objects/base-object.class';
+import { UpdrawBoundingBox } from './bounding-box.interface';
+import { UpdrawPolygon } from './polygon.interface';
 import { ThemeAwareColor } from '../constants/color-palette.constants';
 
-export interface KritzelObject<T = Element> {
+export interface UpdrawObject<T = Element> {
   _elementRef: T;
 
   id: string;
@@ -35,7 +35,7 @@ export interface KritzelObject<T = Element> {
 
   set elementRef(element: T);
   get elementRef(): T;
-  get boundingBox(): KritzelBoundingBox;
+  get boundingBox(): UpdrawBoundingBox;
   get totalWidth(): number;
   get totalHeight(): number;
   get rotationDegrees(): number;
@@ -44,16 +44,16 @@ export interface KritzelObject<T = Element> {
 
   mount(element: T): void;
   generateId(): string;
-  isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
+  isInViewport(viewport: UpdrawBoundingBox, scale: number): boolean;
   centerInViewport(): void;
   update(): void;
   move(startX: number, startY: number, endX: number, endY: number): void;
   resize(x: number, y: number, width: number, height: number): void;
   rotate(value: number): void;
-  copy(): KritzelBaseObject<Element>;
-  isClass<T extends KritzelBaseObject>(this: T, type: string): this is T;
+  copy(): UpdrawBaseObject<Element>;
+  isClass<T extends UpdrawBaseObject>(this: T, type: string): this is T;
   edit(event?: PointerEvent): void;
   hitTest(x: number, y: number): boolean;
-  hitTestPolygon(polygon: KritzelPolygon): boolean;
+  hitTestPolygon(polygon: UpdrawPolygon): boolean;
   updatePosition(x: number, y: number): void;
 }

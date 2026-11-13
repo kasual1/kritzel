@@ -1,9 +1,9 @@
-import { KritzelShape, ShapeType, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
+import { UpdrawShape, ShapeType, type HTMLUpdrawEditorElement } from '@updraw/react-editor';
 import { frame, removeAgents, typePrompt, wait, type Box } from '../agentic-canvas/hero-scene';
 
 /**
  * The agentic canvas at its simplest: the editor starts with an empty chat box, the prompt "Please add a rectangle" is
- * typed, and a rectangle is added in the middle of the view with `editor.addObjects()`, so it plays Kritzel's appear
+ * typed, and a rectangle is added in the middle of the view with `editor.addObjects()`, so it plays Updraw's appear
  * animation. 1.5 seconds later it is removed again. Scripted, so every recording is the same.
  */
 
@@ -27,8 +27,8 @@ const RECTANGLE_BOX: Box = {
   height: RECTANGLE_HEIGHT,
 };
 
-function createRectangle(): KritzelShape {
-  return new KritzelShape({
+function createRectangle(): UpdrawShape {
+  return new UpdrawShape({
     shapeType: ShapeType.Rectangle,
     translateX: RECTANGLE_BOX.x,
     translateY: RECTANGLE_BOX.y,
@@ -42,7 +42,7 @@ function createRectangle(): KritzelShape {
 
 /** Plays the scene once. `setWorking` drives the chat box's loading ring from the sent prompt until the rectangle is added. */
 export async function playRectangleScene(
-  editor: HTMLKritzelEditorElement,
+  editor: HTMLUpdrawEditorElement,
   setWorking: (isWorking: boolean) => void,
   signal: AbortSignal,
 ): Promise<void> {

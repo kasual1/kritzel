@@ -1,8 +1,8 @@
 ---
 sidebar_label: Controls
 displayed_sidebar: tutorialSidebar
-title: "Controls Concept | Kritzel for Vue"
-description: "Configure Kritzel Editor's built-in controls and context menus."
+title: "Controls Concept | Updraw for Vue"
+description: "Configure Updraw Editor's built-in controls and context menus."
 heading_badges:
   object-titlebar: Preview
 ---
@@ -13,7 +13,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-The `<KritzelEditor>` includes a complete set of whiteboard controls, including toolbars, utility panels, context menus, and settings dialogs. You can selectively hide them or adjust them to fit your application's behavior.
+The `<UpdrawEditor>` includes a complete set of whiteboard controls, including toolbars, utility panels, context menus, and settings dialogs. You can selectively hide them or adjust them to fit your application's behavior.
 
 ## Toolbar and Utility Panel
 
@@ -27,7 +27,7 @@ The toolbar provides the configured drawing and selection tools, while the utili
 
 ## Object Titlebar
 
-A titlebar is an optional bar rendered above an object, similar to the frame labels in design tools. Pass a `KritzelObjectTitlebarConfig` such as the ready-made `KRITZEL_DEFAULT_OBJECT_TITLEBAR` to `:objectTitlebar`, and choose which objects get a titlebar with the `hasTitlebar` option of `:objectConfig`, either `true` or a function that receives an object. Both are required. The titlebar shows the object's `name`, or a localized type label such as `Shape` if it has none. Pressing a titlebar selects its object, and dragging it moves the object.
+A titlebar is an optional bar rendered above an object, similar to the frame labels in design tools. Pass an `UpdrawObjectTitlebarConfig` such as the ready-made `UPDRAW_DEFAULT_OBJECT_TITLEBAR` to `:objectTitlebar`, and choose which objects get a titlebar with the `hasTitlebar` option of `:objectConfig`, either `true` or a function that receives an object. Both are required. The titlebar shows the object's `name`, or a localized type label such as `Shape` if it has none. Pressing a titlebar selects its object, and dragging it moves the object.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
@@ -37,7 +37,7 @@ A titlebar is an optional bar rendered above an object, similar to the frame lab
 
 The configuration has `left`, `center`, and `right` sections, each holding an array of `title`, `text`, `icon`, `button`, `menu`, `spacer`, or `separator` elements. Most element options accept a function of the titlebar context, for example to show the size of an object. Button clicks and menu item selections emit `objectTitlebarAction`, which you can handle with `@objectTitlebarAction`. Set `isEditable` on a `title` element to let users rename objects from their titlebar.
 
-Titlebars are styled through the `titlebar` and `titlebarMenu` sections of `KritzelTheme`, and expose parts such as `titlebar`, `titlebar-title`, and `titlebar-button` on `<kritzel-engine>` for `::part()` rules.
+Titlebars are styled through the `titlebar` and `titlebarMenu` sections of `UpdrawTheme`, and expose parts such as `titlebar`, `titlebar-title`, and `titlebar-button` on `<updraw-engine>` for `::part()` rules.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"

@@ -1,6 +1,6 @@
-import { KritzelDynamicObject } from '@kritzel/react-editor';
+import { UpdrawDynamicObject } from '@updraw/react-editor';
 
-export function createWelcomeObject(): KritzelDynamicObject {
+export function createWelcomeObject(): UpdrawDynamicObject {
   const element = document.createElement('div');
   element.style.width = '100%';
   element.style.height = '100%';
@@ -23,7 +23,7 @@ export function createWelcomeObject(): KritzelDynamicObject {
     path.parentNode!.appendChild(nextPath);
   }
 
-  return new KritzelDynamicObject({
+  return new UpdrawDynamicObject({
     element,
     width: 480,
     height: 480 * 72 / 253,

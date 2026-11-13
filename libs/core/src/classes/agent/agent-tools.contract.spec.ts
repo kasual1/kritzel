@@ -1,6 +1,6 @@
 import { AGENT_TOOL_REASON_HINTS, createActorTools } from './agent-tools';
-import { KritzelAgentActionError } from './agent-action-error.class';
-import type { KritzelAgentToolsOptions } from '../../interfaces/agent.interface';
+import { UpdrawAgentActionError } from './agent-action-error.class';
+import type { UpdrawAgentToolsOptions } from '../../interfaces/agent.interface';
 
 /**
  * Pins what models see of the canvas tools and how the tools answer, so refactors of the tool definitions keep
@@ -19,16 +19,16 @@ const createFakeActor = (kind: 'agent' | 'user' = 'agent') => ({
 
 type FakeActor = ReturnType<typeof createFakeActor>;
 
-const toolOf = (actor: FakeActor, name: string, options: KritzelAgentToolsOptions = {}) => {
+const toolOf = (actor: FakeActor, name: string, options: UpdrawAgentToolsOptions = {}) => {
   const found = createActorTools(actor as any, options).find(candidate => candidate.name === name);
   if (!found) throw new Error(`no tool ${name}`);
   return found;
 };
 
-const run = async (actor: FakeActor, name: string, input: unknown, options: KritzelAgentToolsOptions = {}) =>
+const run = async (actor: FakeActor, name: string, input: unknown, options: UpdrawAgentToolsOptions = {}) =>
   JSON.parse(await toolOf(actor, name, options).run(input));
 
-const OPTION_SETS: [string, KritzelAgentToolsOptions][] = [
+const OPTION_SETS: [string, UpdrawAgentToolsOptions][] = [
   ['default', {}],
   ['no images', { images: false }],
   ['image urls', { images: { urls: true } }],
@@ -48,7 +48,7 @@ describe('agent tools contract', () => {
   });
 
   it('treats images: null like the default', () => {
-    const surface = (options: KritzelAgentToolsOptions) =>
+    const surface = (options: UpdrawAgentToolsOptions) =>
       createActorTools(createFakeActor() as any, options).map(({ name, description, inputSchema }) => ({ name, description, inputSchema }));
     expect(surface({ images: null as any })).toEqual(surface({}));
   });
@@ -328,7 +328,7 @@ describe('agent tools contract', () => {
 
     it('reports refusals thrown inside agent.task() by object tools', async () => {
       const actor = createFakeActor();
-      actor.perform.mockRejectedValue(new KritzelAgentActionError({ type: 'addObject' } as any, { completed: false, reason: 'conflict' }));
+      actor.perform.mockRejectedValue(new UpdrawAgentActionError({ type: 'addObject' } as any, { completed: false, reason: 'conflict' }));
       expect(await run(actor, 'create_iframe', { name: 'w', html: '<p></p>', x: 0, y: 0, width: 10, height: 10 }, { iframes: true })).toMatchObject({
         completed: false,
         reason: 'conflict',

@@ -1,4 +1,4 @@
-export class KritzelDevicesHelper {
+export class UpdrawDevicesHelper {
   static isTouchDevice(): boolean {
     return window.matchMedia('(any-pointer: coarse)').matches;
   }

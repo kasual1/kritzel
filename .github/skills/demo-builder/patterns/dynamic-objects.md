@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Use this pattern when a demo page creates or mounts `KritzelDynamicObject` objects.
+Use this pattern when a demo page creates or mounts `UpdrawDynamicObject` objects.
 
 Applies to Angular, React, and Vue demos equally.
 
@@ -19,7 +19,7 @@ Split responsibilities into three layers:
 - Keep renderer-specific DOM/UI logic out of the page file.
 
 3. Object factory
-- Create configured `KritzelDynamicObject` instances in dedicated functions.
+- Create configured `UpdrawDynamicObject` instances in dedicated functions.
 - Return object instances that are ready to add via editor APIs.
 
 ## Renderer Key Rules

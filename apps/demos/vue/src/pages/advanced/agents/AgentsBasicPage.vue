@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  KritzelAgent,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelAgentOptions,
-} from '@kritzel/vue-editor'
+  UpdrawAgent,
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawAgentOptions,
+} from '@updraw/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -20,18 +20,18 @@ const editor = getEditorRef('editor')
 const isRunning = ref(false)
 const message = ref('')
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 // Recreated by Reset, so the Planner starts at the rectangle again.
-let planner: KritzelAgent | null = null
-let writer: KritzelAgent | null = null
+let planner: UpdrawAgent | null = null
+let writer: UpdrawAgent | null = null
 
 async function getShapeIds() {
-  const shapes = (await editor.value?.findObjects(obj => obj.__class__ === 'KritzelShape')) ?? []
+  const shapes = (await editor.value?.findObjects(obj => obj.__class__ === 'UpdrawShape')) ?? []
   return shapes.map(shape => shape.id)
 }
 
-function createAgent(options: KritzelAgentOptions) {
-  const agent = new KritzelAgent(options)
+function createAgent(options: UpdrawAgentOptions) {
+  const agent = new UpdrawAgent(options)
   agent.on('detached', ({ reason }) => {
     message.value = `"${agent.id}" detached (${reason}).`
   })
@@ -123,7 +123,7 @@ async function attachToSelection() {
       <button @click="addAgents">Reset</button>
       <span v-if="message" class="label">{{ message }}</span>
     </Toolbar>
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="agents-basic"
       theme="light"

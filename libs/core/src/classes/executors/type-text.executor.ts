@@ -1,21 +1,21 @@
-import type { KritzelAgenticTypeTextAction } from '../../interfaces/agentic-action.interface';
+import type { UpdrawAgenticTypeTextAction } from '../../interfaces/agentic-action.interface';
 import type { EditorView } from 'prosemirror-view';
-import { KritzelText } from '../objects/text.class';
-import { KritzelShape } from '../objects/shape.class';
-import { KritzelRichTextHelper } from '../../helpers/rich-text.helper';
+import { UpdrawText } from '../objects/text.class';
+import { UpdrawShape } from '../objects/shape.class';
+import { UpdrawRichTextHelper } from '../../helpers/rich-text.helper';
 import { AGENTIC_ACTION_TYPING_CPS } from '../../constants/agentic-action.constants';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
-import type { KritzelAgenticActionRun } from '../managers/agentic-action-run.class';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpdrawAgenticActionRun } from '../managers/agentic-action-run.class';
 import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { assertObjectId } from '../../helpers/agentic-validation.helper';
 
-type TypeableObject = KritzelText | KritzelShape;
+type TypeableObject = UpdrawText | UpdrawShape;
 
 function isTypeable(object: unknown): object is TypeableObject {
-  return object instanceof KritzelText || object instanceof KritzelShape;
+  return object instanceof UpdrawText || object instanceof UpdrawShape;
 }
 
-function editorOf(run: KritzelAgenticActionRun, objectId: string): { object: TypeableObject; editor: EditorView } {
+function editorOf(run: UpdrawAgenticActionRun, objectId: string): { object: TypeableObject; editor: EditorView } {
   const object = run.map!.findById(objectId);
   if (!isTypeable(object) || !object.editor) {
     run.stop('object-removed', [objectId]);
@@ -27,7 +27,7 @@ function editorOf(run: KritzelAgenticActionRun, objectId: string): { object: Typ
  * Types `text` into a text or shape character by character. The object's own editor
  * handling updates its content and size; writes go to the agent's history.
  */
-export async function typeInto(run: KritzelAgenticActionRun, objectId: string, text: string): Promise<void> {
+export async function typeInto(run: UpdrawAgenticActionRun, objectId: string, text: string): Promise<void> {
   const characters = Array.from(text);
   const cursors = run.cursorManager;
   let typed = 0;
@@ -47,7 +47,7 @@ export async function typeInto(run: KritzelAgenticActionRun, objectId: string, t
         const next = isLast ? characters.length : Math.floor(raw * characters.length);
         if (next > typed) {
           const chunk = characters.slice(typed, next).join('');
-          run.mutate(() => KritzelRichTextHelper.appendText(editorOf(run, objectId).editor, chunk), isLast ? 'final' : 'throttled');
+          run.mutate(() => UpdrawRichTextHelper.appendText(editorOf(run, objectId).editor, chunk), isLast ? 'final' : 'throttled');
           typed = next;
         }
         follow();
@@ -59,7 +59,7 @@ export async function typeInto(run: KritzelAgenticActionRun, objectId: string, t
   // Measure once more (the DOM has the final text) and persist the final size.
   run.mutate(() => {
     const { object } = editorOf(run, objectId);
-    if (object instanceof KritzelText) {
+    if (object instanceof UpdrawText) {
       object.adjustSizeOnInput();
     }
     run.map!.update(object);
@@ -68,7 +68,7 @@ export async function typeInto(run: KritzelAgenticActionRun, objectId: string, t
 }
 
 /** `typeText`: clicks into a text or shape and types. */
-export const typeTextExecutor: KritzelAgenticActionExecutor<KritzelAgenticTypeTextAction> = {
+export const typeTextExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticTypeTextAction> = {
   mutates: true,
 
   validate(action) {
@@ -102,12 +102,12 @@ export const typeTextExecutor: KritzelAgenticActionExecutor<KritzelAgenticTypeTe
     await run.click();
 
     if (action.mode === 'replace') {
-      run.mutate(() => KritzelRichTextHelper.clear(editorOf(run, id).editor));
+      run.mutate(() => UpdrawRichTextHelper.clear(editorOf(run, id).editor));
     }
     await typeInto(run, id, action.text);
 
     const { object } = editorOf(run, id);
-    run.changedProperties.set(id, object instanceof KritzelText ? ['content', 'width', 'height'] : ['content']);
+    run.changedProperties.set(id, object instanceof UpdrawText ? ['content', 'width', 'height'] : ['content']);
     run.finalAttachment = { objectId: id, anchor: 'right' };
     return [id];
   },

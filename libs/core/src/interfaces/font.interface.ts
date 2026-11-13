@@ -1,13 +1,13 @@
-export interface KritzelFontDefinition {
+export interface UpdrawFontDefinition {
   family: string;
   label?: string;
   cssFontFamily?: string;
   source?: string;
 }
 
-export type KritzelFontRegistration = string | KritzelFontDefinition;
+export type UpdrawFontRegistration = string | UpdrawFontDefinition;
 
-export interface KritzelRegisteredFont {
+export interface UpdrawRegisteredFont {
   key: string;
   family: string;
   label: string;
@@ -15,4 +15,4 @@ export interface KritzelRegisteredFont {
   source?: string;
 }
 
-export type KritzelFontMap = Record<string, KritzelFontRegistration>;
+export type UpdrawFontMap = Record<string, UpdrawFontRegistration>;

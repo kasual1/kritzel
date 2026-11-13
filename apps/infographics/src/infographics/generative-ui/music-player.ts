@@ -1,4 +1,4 @@
-import type { KritzelIframeObject } from '@kritzel/react-editor';
+import type { UpdrawIframeObject } from '@updraw/react-editor';
 import { createPageObject, type PageInput } from './generative-ui-agent';
 
 /** The page the canvas starts with, so there is something to pick and change before the first prompt. */
@@ -6,8 +6,8 @@ export const MUSIC_PLAYER: PageInput = {
   title: 'Music player',
   width: 320,
   height: 520,
-  html: `<main class="player" data-kritzel-id="player">
-  <svg class="cover" data-kritzel-id="album-cover" viewBox="0 0 100 100" role="img" aria-label="Album cover of Full Control">
+  html: `<main class="player" data-updraw-id="player">
+  <svg class="cover" data-updraw-id="album-cover" viewBox="0 0 100 100" role="img" aria-label="Album cover of Full Control">
     <rect width="100" height="100" fill="#d9572b" />
     <circle cx="62" cy="40" r="30" fill="#e8a33d" />
     <g transform="translate(58 39) rotate(-20) scale(1.4) translate(-52 -36)">
@@ -29,24 +29,24 @@ export const MUSIC_PLAYER: PageInput = {
       font-family="system-ui, sans-serif" font-size="4.5" font-weight="600">LUCA MOULIN BEAU</text>
   </svg>
 
-  <header class="track-info" data-kritzel-id="track-info">
-    <h1 data-kritzel-id="track-title">Full Control</h1>
-    <p data-kritzel-id="artist">Luca Moulin Beau</p>
+  <header class="track-info" data-updraw-id="track-info">
+    <h1 data-updraw-id="track-title">Full Control</h1>
+    <p data-updraw-id="artist">Luca Moulin Beau</p>
   </header>
 
-  <div class="progress" data-kritzel-id="progress">
+  <div class="progress" data-updraw-id="progress">
     <div class="track"><div class="fill"></div></div>
-    <div class="times"><span data-kritzel-id="elapsed">1:24</span><span data-kritzel-id="duration">3:41</span></div>
+    <div class="times"><span data-updraw-id="elapsed">1:24</span><span data-updraw-id="duration">3:41</span></div>
   </div>
 
-  <div class="controls" data-kritzel-id="controls">
-    <button type="button" data-kritzel-id="previous-button" aria-label="Previous track">
+  <div class="controls" data-updraw-id="controls">
+    <button type="button" data-updraw-id="previous-button" aria-label="Previous track">
       <svg viewBox="0 0 24 24"><rect x="5" y="6" width="2.5" height="12" rx="1" /><path d="M19 6.5v11L9.5 12z" /></svg>
     </button>
-    <button type="button" class="play" data-kritzel-id="play-button" aria-label="Play">
+    <button type="button" class="play" data-updraw-id="play-button" aria-label="Play">
       <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
     </button>
-    <button type="button" data-kritzel-id="next-button" aria-label="Next track">
+    <button type="button" data-updraw-id="next-button" aria-label="Next track">
       <svg viewBox="0 0 24 24"><rect x="16.5" y="6" width="2.5" height="12" rx="1" /><path d="M5 6.5v11l9.5-5.5z" /></svg>
     </button>
   </div>
@@ -99,6 +99,6 @@ body {
 };
 
 /** The music player, centered on the origin of the canvas. */
-export function createMusicPlayer(): KritzelIframeObject {
+export function createMusicPlayer(): UpdrawIframeObject {
   return createPageObject(MUSIC_PLAYER, -MUSIC_PLAYER.width / 2, -MUSIC_PLAYER.height / 2);
 }

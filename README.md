@@ -1,25 +1,25 @@
 <br>
 <br>
 <p align="center">
- <img src="logo.svg" alt="Kritzel logo" width="160" />
+ <img src="logo.svg" alt="Updraw logo" width="160" />
 </p>
 
-<h3 align="center">Kritzel</h3>
+<h3 align="center">Updraw</h3>
 
 <p align="center">
 The Infinite Canvas Development Kit
 </p>
 
-<p align="center"><a href="https://www.npmjs.com/package/@kritzel/engine"><img src="https://img.shields.io/npm/v/@kritzel/engine?color=2c7dd1&amp;label=" alt="NPM version"></a></p>
+<p align="center"><a href="https://www.npmjs.com/package/@updraw/engine"><img src="https://img.shields.io/npm/v/@updraw/engine?color=2c7dd1&amp;label=" alt="NPM version"></a></p>
 
-<p align="center"><a href="https://kritzel.io">Website</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://app.kritzel.io">Live Demo</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://www.npmjs.com/package/@kritzel/engine">NPM</a></p>
+<p align="center"><a href="https://updraw.io">Website</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://app.updraw.io">Live Demo</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://www.npmjs.com/package/@updraw/engine">NPM</a></p>
 
 <br>
 <br>
 
 # Overview
 
-Kritzel is an open-source toolkit for building infinite-canvas experiences such as whiteboards, visual planning tools, knowledge maps, and collaborative spatial workspaces.
+Updraw is an open-source toolkit for building infinite-canvas experiences such as whiteboards, visual planning tools, knowledge maps, and collaborative spatial workspaces.
 
 It gives you a framework-neutral whiteboard foundation for creating interactive, browser-based canvases with objects, tools, navigation, and editing workflows without locking you into a specific UI stack.
 
@@ -33,10 +33,10 @@ It gives you a framework-neutral whiteboard foundation for creating interactive,
 
 ## Quick Start
 
-- [Angular](https://kritzel.io/docs/angular/getting-started/quick-start)
-- [React](https://kritzel.io/docs/react/getting-started/quick-start)
-- [Vue](https://kritzel.io/docs/vue/getting-started/quick-start)
+- [Angular](https://updraw.io/docs/angular/getting-started/quick-start)
+- [React](https://updraw.io/docs/react/getting-started/quick-start)
+- [Vue](https://updraw.io/docs/vue/getting-started/quick-start)
 
 ## Support us
 
-Kritzel is an MIT-licensed open source project. If you like the idea of a framework-agnostic infinite canvas library and want to support our work, please consider becoming a [sponsor](https://github.com/sponsors/kasual1).
+Updraw is an MIT-licensed open source project. If you like the idea of a framework-agnostic infinite canvas library and want to support our work, please consider becoming a [sponsor](https://github.com/sponsors/kasual1).

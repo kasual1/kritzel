@@ -1,8 +1,8 @@
 ---
 sidebar_label: Themes
 displayed_sidebar: tutorialSidebar
-title: "Themes | Kritzel for React"
-description: "Understand how to customize Kritzel with themes."
+title: "Themes | Updraw for React"
+description: "Understand how to customize Updraw with themes."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,9 +11,9 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel allows you to fully customize the editor by providing a dedicated theming interface. A theme is a JSON-like structure containing the editor's configurable properties. You can choose a built-in theme or create your own.
+Updraw allows you to fully customize the editor by providing a dedicated theming interface. A theme is a JSON-like structure containing the editor's configurable properties. You can choose a built-in theme or create your own.
 
-Kritzel includes `lightTheme` and `darkTheme`, and exports the `KritzelTheme` interface for custom themes. Pass themes through the `themes` prop and activate one by name through the `theme` prop.
+Updraw includes `lightTheme` and `darkTheme`, and exports the `UpdrawTheme` interface for custom themes. Pass themes through the `themes` prop and activate one by name through the `theme` prop.
 
 The full list of customizable properties is available in the [Theming API Reference](../api-reference/theming.md).
 
@@ -29,7 +29,7 @@ To switch between light and dark themes, keep the active name in React state and
 
 ## Listening for Theme Changes
 
-Use `onThemeChange` to react whenever the active theme changes. The callback receives a `CustomEvent<string>` and the new theme name is available as `event.detail`. This is useful for synchronizing React state when a theme changes from inside Kritzel settings.
+Use `onThemeChange` to react whenever the active theme changes. The callback receives a `CustomEvent<string>` and the new theme name is available as `event.detail`. This is useful for synchronizing React state when a theme changes from inside Updraw settings.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
@@ -39,7 +39,7 @@ Use `onThemeChange` to react whenever the active theme changes. The callback rec
 
 ## Creating a Custom Theme
 
-Create a custom theme by extending a built-in theme and overriding the relevant `KritzelTheme` groups. Add the result to the `themes` prop and activate it by passing its `name` to `theme`.
+Create a custom theme by extending a built-in theme and overriding the relevant `UpdrawTheme` groups. Add the result to the `themes` prop and activate it by passing its `name` to `theme`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"

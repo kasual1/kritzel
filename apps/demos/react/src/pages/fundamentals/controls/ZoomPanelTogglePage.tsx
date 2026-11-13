@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { KritzelEditor, KritzelWorkspace } from "@kritzel/react-editor";
+import { UpdrawEditor, UpdrawWorkspace } from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -10,7 +10,7 @@ const themes = [reactThemeLight, reactThemeDark];
 export function ZoomPanelTogglePage() {
   const [isZoomPanelVisible, setIsZoomPanelVisible] = useState(true);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ objects: createSeedObjects() }),
+    new UpdrawWorkspace({ objects: createSeedObjects() }),
   ]);
 
   return (
@@ -25,7 +25,7 @@ export function ZoomPanelTogglePage() {
           <span>Zoom panel</span>
         </label>
       </div>
-      <KritzelEditor
+      <UpdrawEditor
         editorId="zoom-panel-toggle"
         theme="light"
         themes={themes}

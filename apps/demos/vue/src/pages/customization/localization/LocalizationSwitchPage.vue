@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { KritzelEditor, KritzelWorkspace, type LocaleCode } from '@kritzel/vue-editor'
+import { UpdrawEditor, UpdrawWorkspace, type LocaleCode } from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -8,7 +8,7 @@ import { editorStyle, hostStyle } from '../../shared/demo-shared'
 import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 const activeLocale = ref<LocaleCode>('en')
 
 function onLocaleChange(event: CustomEvent<LocaleCode>) {
@@ -23,7 +23,7 @@ function onLocaleChange(event: CustomEvent<LocaleCode>) {
       <button :class="{ active: activeLocale === 'de' }" @click="activeLocale = 'de'">German</button>
       <button :class="{ active: activeLocale === 'fr' }" @click="activeLocale = 'fr'">French</button>
     </Toolbar>
-    <KritzelEditor
+    <UpdrawEditor
       editorId="localization-switch"
       :locale="activeLocale"
       :workspaces="workspaces"

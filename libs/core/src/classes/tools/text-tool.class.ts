@@ -1,10 +1,10 @@
-import { KritzelText } from '../objects/text.class';
-import { KritzelBaseTool } from './base-tool.class';
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawText } from '../objects/text.class';
+import { UpdrawBaseTool } from './base-tool.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpdrawCore } from '../core/core.class';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 import { DEFAULT_FONT_SIZES } from '../../constants/stroke-size.constants';
-import { KritzelFontRegistration } from '../../interfaces/font.interface';
+import { UpdrawFontRegistration } from '../../interfaces/font.interface';
 
 /**
  * Text tool for creating and editing text objects on the canvas.
@@ -12,7 +12,7 @@ import { KritzelFontRegistration } from '../../interfaces/font.interface';
  * Clicking on an existing text object enters edit mode for that object.
  * Supports configurable font family, size, color, and opacity.
  */
-export class KritzelTextTool extends KritzelBaseTool {
+export class UpdrawTextTool extends UpdrawBaseTool {
   override toolType = 'text' as const;
 
   /** Backing field for {@link fontFamily}. */
@@ -90,13 +90,13 @@ export class KritzelTextTool extends KritzelBaseTool {
   sizes: number[] = [...DEFAULT_FONT_SIZES];
 
   /** Optional custom font options supplied through tool config. */
-  availableFonts?: KritzelFontRegistration[];
+  availableFonts?: UpdrawFontRegistration[];
 
   /**
-   * Creates a new instance of KritzelTextTool.
-   * @param core - The KritzelCore instance that provides access to application state and functionality
+   * Creates a new instance of UpdrawTextTool.
+   * @param core - The UpdrawCore instance that provides access to application state and functionality
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     super(core);
   }
 
@@ -105,7 +105,7 @@ export class KritzelTextTool extends KritzelBaseTool {
    * Mirrors the selection tool pattern of pushing tool-config changes down to live objects,
    * but scoped to the single text in edit mode rather than the current selection.
    */
-  private applyToActiveText(updatedProperties: Partial<KritzelText>): void {
+  private applyToActiveText(updatedProperties: Partial<UpdrawText>): void {
     const activeText = this._core?.store?.activeText;
     if (!activeText) return;
 
@@ -133,25 +133,25 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       const activeText = this._core.store.activeText;
 
-      if (activeText === null && object instanceof KritzelText) {
+      if (activeText === null && object instanceof UpdrawText) {
         object.edit(event);
         return;
       }
 
-      if (activeText !== null && object instanceof KritzelText) {
+      if (activeText !== null && object instanceof UpdrawText) {
         activeText.save();
         object.edit(event);
         return;
       }
 
-      if (activeText !== null && object instanceof KritzelText === false) {
+      if (activeText !== null && object instanceof UpdrawText === false) {
         this._core.resetActiveText();
         this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
         this.continueTitlebarPress(event);
         return;
       }
 
-      if (KritzelEventHelper.isLeftClick(event) === false) {
+      if (UpdrawEventHelper.isLeftClick(event) === false) {
         return;
       }
 
@@ -159,7 +159,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       const clientY = event.clientY - this._core.store.offsetY;
       const viewportScale = this._core.store.state.scale;
       const lockScale = this._core.store.state.lockDrawingScale;
-      const text = KritzelText.create(this._core, this.fontSize, this.fontFamily, lockScale ? 1 : viewportScale);
+      const text = UpdrawText.create(this._core, this.fontSize, this.fontFamily, lockScale ? 1 : viewportScale);
 
       text.fontColor = this.fontColor;
       text.opacity = this.opacity;
@@ -184,18 +184,18 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       const activeText = this._core.store.activeText;
 
-      if (activeText === null && object instanceof KritzelText) {
+      if (activeText === null && object instanceof UpdrawText) {
         object.edit(event);
         return;
       }
 
-      if (activeText !== null && object instanceof KritzelText) {
+      if (activeText !== null && object instanceof UpdrawText) {
         activeText.save();
         object.edit(event);
         return;
       }
 
-      if (activeText !== null && object instanceof KritzelText === false) {
+      if (activeText !== null && object instanceof UpdrawText === false) {
         this._core.resetActiveText();
         this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
         this.continueTitlebarPress(event);
@@ -210,7 +210,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       const clientY = Math.round(activePointers[0].clientY - this._core.store.offsetY);
       const viewportScale = this._core.store.state.scale;
       const lockScale = this._core.store.state.lockDrawingScale;
-      const text = KritzelText.create(this._core, this.fontSize, this.fontFamily, lockScale ? 1 : viewportScale);
+      const text = UpdrawText.create(this._core, this.fontSize, this.fontFamily, lockScale ? 1 : viewportScale);
 
       text.fontColor = this.fontColor;
       text.opacity = this.opacity;

@@ -1,7 +1,7 @@
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelPath } from '../objects/path.class';
-import { KritzelBaseTool } from './base-tool.class';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpdrawPath } from '../objects/path.class';
+import { UpdrawBaseTool } from './base-tool.class';
+import { UpdrawCore } from '../core/core.class';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
 
@@ -10,7 +10,7 @@ import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
  * Creates smooth paths by tracking pointer movement and rendering stroke paths.
  * Supports mouse, touch, and pen input with configurable color, size, and opacity.
  */
-export class KritzelBrushTool extends KritzelBaseTool {
+export class UpdrawBrushTool extends UpdrawBaseTool {
   override toolType = 'brush' as const;
 
   /** The color of the brush stroke (supports theme-aware light/dark colors) */
@@ -50,7 +50,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
    *
    * Uses squared distance to avoid a per-move `Math.sqrt`.
    */
-  private shouldAppendPoint(currentPath: KritzelPath, x: number, y: number, divider: number): boolean {
+  private shouldAppendPoint(currentPath: UpdrawPath, x: number, y: number, divider: number): boolean {
     const points = currentPath.points;
     if (!points || points.length === 0) {
       return true;
@@ -58,21 +58,21 @@ export class KritzelBrushTool extends KritzelBaseTool {
     const last = points[points.length - 1];
     const dx = x - last[0];
     const dy = y - last[1];
-    const threshold = KritzelBrushTool.MIN_POINT_DISTANCE_PX / divider;
+    const threshold = UpdrawBrushTool.MIN_POINT_DISTANCE_PX / divider;
     return dx * dx + dy * dy >= threshold * threshold;
   }
 
   /**
-   * Creates a new instance of KritzelBrushTool.
-   * @param core - The KritzelCore instance that provides access to application state and functionality
+   * Creates a new instance of UpdrawBrushTool.
+   * @param core - The UpdrawCore instance that provides access to application state and functionality
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     super(core);
   }
 
   /**
    * Handles pointer down events to start drawing a new path.
-   * Creates a new KritzelPath object at the pointer position and adds it to the canvas.
+   * Creates a new UpdrawPath object at the pointer position and adds it to the canvas.
    * Supports both mouse (left-click) and touch/pen input.
    * @param event - The PointerEvent containing pointer position and input type information
    */
@@ -82,7 +82,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
     }
 
     if (event.pointerType === 'mouse') {
-      if (KritzelEventHelper.isLeftClick(event)) {
+      if (UpdrawEventHelper.isLeftClick(event)) {
         this._core.store.state.isDrawing = true;
         const viewportScale = this._core.store.state.scale;
         const lockScale = this._core.store.state.lockDrawingScale;
@@ -90,7 +90,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
         const x = (event.clientX - this._core.store.offsetX) / divider;
         const y = (event.clientY - this._core.store.offsetY) / divider;
 
-        const path = KritzelPath.create(this._core, {
+        const path = UpdrawPath.create(this._core, {
           points: [[x, y]],
           translateX: -this._core.store.state.translateX / divider,
           translateY: -this._core.store.state.translateY / divider,
@@ -119,7 +119,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
         this._core.store.state.isDrawing = true;
 
-        const path = KritzelPath.create(this._core, {
+        const path = UpdrawPath.create(this._core, {
           points: [[x, y]],
           translateX: -this._core.store.state.translateX / divider,
           translateY: -this._core.store.state.translateY / divider,
@@ -150,7 +150,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isDrawing && this._currentPathId) {
-        const currentPath = this._core.store.objects.findById(this._currentPathId) as KritzelPath | undefined;
+        const currentPath = this._core.store.objects.findById(this._currentPathId) as UpdrawPath | undefined;
 
         if (currentPath) {
           const viewportScale = this._core.store.state.scale;
@@ -163,7 +163,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
             return;
           }
 
-          const updatedPath = KritzelPath.create(this._core, {
+          const updatedPath = UpdrawPath.create(this._core, {
             points: [...currentPath.points, [x, y]],
             translateX: -this._core.store.state.translateX / divider,
             translateY: -this._core.store.state.translateY / divider,
@@ -187,7 +187,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
       if (activePointers.length === 1) {
         if (this._currentPathId) {
-          const currentPath = this._core.store.objects.findById(this._currentPathId) as KritzelPath | undefined;
+          const currentPath = this._core.store.objects.findById(this._currentPathId) as UpdrawPath | undefined;
 
           if (currentPath) {
             const viewportScale = this._core.store.state.scale;
@@ -200,7 +200,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
               return;
             }
 
-            const updatedPath = KritzelPath.create(this._core, {
+            const updatedPath = UpdrawPath.create(this._core, {
               points: [...currentPath.points, [x, y]],
               translateX: -this._core.store.state.translateX / divider,
               translateY: -this._core.store.state.translateY / divider,
@@ -237,7 +237,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
         this._core.store.state.isDrawing = false;
 
         if (this._currentPathId) {
-          const currentPath = this._core.store.objects.findById(this._currentPathId) as KritzelPath | undefined;
+          const currentPath = this._core.store.objects.findById(this._currentPathId) as UpdrawPath | undefined;
 
           if (currentPath) {
             currentPath.isCompleted = true;
@@ -257,7 +257,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
         this._core.store.state.isDrawing = false;
 
         if (this._currentPathId) {
-          const currentPath = this._core.store.objects.findById(this._currentPathId) as KritzelPath | undefined;
+          const currentPath = this._core.store.objects.findById(this._currentPathId) as UpdrawPath | undefined;
 
           if (currentPath) {
             currentPath.isCompleted = true;

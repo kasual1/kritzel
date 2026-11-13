@@ -1,4 +1,4 @@
-# Kritzel App
+# Updraw App
 
 From the repository root, start the local services and client:
 

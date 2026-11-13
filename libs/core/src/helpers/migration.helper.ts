@@ -1,13 +1,13 @@
 import * as Y from 'yjs';
-import { KritzelMigration } from '../interfaces/migration.interface';
+import { UpdrawMigration } from '../interfaces/migration.interface';
 
-export interface KritzelMigrationResult {
+export interface UpdrawMigrationResult {
   migrated: boolean;
   fromVersion: number;
   toVersion: number;
 }
 
-export interface KritzelMigrationOptions {
+export interface UpdrawMigrationOptions {
   quiet?: boolean;
 }
 
@@ -34,10 +34,10 @@ export function runMigrations(
   ydoc: Y.Doc,
   metadataMap: Y.Map<any>,
   maps: Record<string, Y.Map<any>>,
-  migrations: KritzelMigration[],
+  migrations: UpdrawMigration[],
   currentVersion: number,
-  options?: KritzelMigrationOptions,
-): KritzelMigrationResult {
+  options?: UpdrawMigrationOptions,
+): UpdrawMigrationResult {
   const quiet = options?.quiet ?? true;
   const docVersion: number = metadataMap.get('schemaVersion') ?? 0;
 
@@ -50,13 +50,13 @@ export function runMigrations(
     .sort((a, b) => a.fromVersion - b.fromVersion);
 
   if (!quiet) {
-    console.log(`[Kritzel] Running ${pending.length} migration(s) from v${docVersion} to v${currentVersion}`);
+    console.log(`[Updraw] Running ${pending.length} migration(s) from v${docVersion} to v${currentVersion}`);
   }
 
   ydoc.transact(() => {
     for (const migration of pending) {
       if (!quiet) {
-        console.log(`[Kritzel] Migrating v${migration.fromVersion} → v${migration.toVersion}`);
+        console.log(`[Updraw] Migrating v${migration.fromVersion} → v${migration.toVersion}`);
       }
       migration.migrate(ydoc, maps);
     }
@@ -64,7 +64,7 @@ export function runMigrations(
   }, 'migration');
 
   if (!quiet) {
-    console.log(`[Kritzel] Migrations complete. Schema now at v${currentVersion}`);
+    console.log(`[Updraw] Migrations complete. Schema now at v${currentVersion}`);
   }
 
   return { migrated: true, fromVersion: docVersion, toVersion: currentVersion };

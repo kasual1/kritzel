@@ -1,8 +1,8 @@
 ---
 sidebar_label: Import/Export
 displayed_sidebar: tutorialSidebar
-title: "Import/Export Concept | Kritzel for Vue"
-description: "Understand how to programmatically export the viewport as PNG or SVG, export the workspace as JSON, and import a workspace from JSON in Kritzel."
+title: "Import/Export Concept | Updraw for Vue"
+description: "Understand how to programmatically export the viewport as PNG or SVG, export the workspace as JSON, and import a workspace from JSON in Updraw."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,7 +11,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel lets you export the current viewport as PNG or SVG and lets you export and import workspaces as JSON. This is useful when you want to save a visual snapshot, preserve an editable canvas state, or move a workspace between environments.
+Updraw lets you export the current viewport as PNG or SVG and lets you export and import workspaces as JSON. This is useful when you want to save a visual snapshot, preserve an editable canvas state, or move a workspace between environments.
 
 You can either use the dedicated [export dialog](../fundamentals/controls.md#export-dialog) and [import dialog](../fundamentals/controls.md#import-dialog), or handle these operations programmatically from code.
 

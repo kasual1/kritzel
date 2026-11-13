@@ -7,18 +7,18 @@ async function setupTwoEditors(page: import('@playwright/test').Page) {
   await page.goto('/#/e2e/multi-editor');
 
   await page.waitForFunction(
-    () => customElements.get('kritzel-editor') !== undefined,
+    () => customElements.get('updraw-editor') !== undefined,
     { timeout: 15_000 }
   );
 
   const hasTwoEditors = await page.evaluate(
-    () => document.querySelectorAll('kritzel-editor').length === 2
+    () => document.querySelectorAll('updraw-editor').length === 2
   );
 
   if (!hasTwoEditors) {
     await page.evaluate(() => {
-      const firstEditor = document.querySelector('kritzel-editor') as any;
-      if (!firstEditor) throw new Error('initial kritzel-editor not found');
+      const firstEditor = document.querySelector('updraw-editor') as any;
+      if (!firstEditor) throw new Error('initial updraw-editor not found');
 
       const host = document.createElement('div');
       host.id = 'multi-editor-host';
@@ -63,7 +63,7 @@ async function setupTwoEditors(page: import('@playwright/test').Page) {
 
       firstEditor.parentElement?.removeChild(firstEditor);
 
-      const secondEditor = document.createElement('kritzel-editor') as any;
+      const secondEditor = document.createElement('updraw-editor') as any;
       secondEditor.id = 'editor-2';
 
       firstEditor.id = 'editor-1';
@@ -86,7 +86,7 @@ async function setupTwoEditors(page: import('@playwright/test').Page) {
 
   await page.waitForFunction(
     () => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       if (editors.length !== 2) return false;
 
       return editors.every((editor) => {
@@ -103,14 +103,14 @@ async function setupTwoEditors(page: import('@playwright/test').Page) {
 async function addRectangle(page: import('@playwright/test').Page, editorIndex: number, x: number, y: number) {
   return page.evaluate(
     ({ editorIndex, x, y }) => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       const editor = editors[editorIndex];
-      if (!editor) throw new Error(`kritzel-editor at index ${editorIndex} not found`);
+      if (!editor) throw new Error(`updraw-editor at index ${editorIndex} not found`);
 
-      const k = (window as any).__kritzel__;
-      if (!k?.KritzelShape) throw new Error('Kritzel classes are not available on window.__kritzel__');
+      const k = (window as any).__updraw__;
+      if (!k?.UpdrawShape) throw new Error('Updraw classes are not available on window.__updraw__');
 
-      const shape = new k.KritzelShape({
+      const shape = new k.UpdrawShape({
         shapeType: 'rectangle',
         translateX: x,
         translateY: y,
@@ -133,12 +133,12 @@ async function getEditorWorldToPage(
 ) {
   return page.evaluate(
     async ({ editorIndex, x, y }) => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       const editor = editors[editorIndex];
-      if (!editor) throw new Error(`kritzel-editor at index ${editorIndex} not found`);
+      if (!editor) throw new Error(`updraw-editor at index ${editorIndex} not found`);
 
       const engine = editor.engineRef as HTMLElement | undefined;
-      if (!engine) throw new Error(`kritzel-engine for editor index ${editorIndex} not found`);
+      if (!engine) throw new Error(`updraw-engine for editor index ${editorIndex} not found`);
 
       const screen = await editor.worldToScreen(x, y);
       const rect = engine.getBoundingClientRect();
@@ -159,9 +159,9 @@ async function setActiveTool(
 ) {
   await page.evaluate(
     async ({ editorIndex, toolName }) => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       const editor = editors[editorIndex];
-      if (!editor) throw new Error(`kritzel-editor at index ${editorIndex} not found`);
+      if (!editor) throw new Error(`updraw-editor at index ${editorIndex} not found`);
       await editor.setActiveTool(toolName);
     },
     { editorIndex, toolName }
@@ -207,16 +207,16 @@ async function dragInEditor(
 async function addImage(page: import('@playwright/test').Page, editorIndex: number) {
   return page.evaluate(
     async ({ editorIndex, src }) => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       const editor = editors[editorIndex];
-      if (!editor) throw new Error(`kritzel-editor at index ${editorIndex} not found`);
+      if (!editor) throw new Error(`updraw-editor at index ${editorIndex} not found`);
 
-      const k = (window as any).__kritzel__;
-      if (!k?.KritzelImage?.fromUrl) {
-        throw new Error('KritzelImage class is not available on window.__kritzel__');
+      const k = (window as any).__updraw__;
+      if (!k?.UpdrawImage?.fromUrl) {
+        throw new Error('UpdrawImage class is not available on window.__updraw__');
       }
 
-      const image = await k.KritzelImage.fromUrl(src, {
+      const image = await k.UpdrawImage.fromUrl(src, {
         translateX: 100,
         translateY: 100,
         width: 48,
@@ -232,9 +232,9 @@ async function addImage(page: import('@playwright/test').Page, editorIndex: numb
 async function removeObjectById(page: import('@playwright/test').Page, editorIndex: number, objectId: string) {
   await page.evaluate(
     async ({ editorIndex, objectId }) => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       const editor = editors[editorIndex];
-      if (!editor) throw new Error(`kritzel-editor at index ${editorIndex} not found`);
+      if (!editor) throw new Error(`updraw-editor at index ${editorIndex} not found`);
 
       const object = await editor.getObjectById(objectId);
       if (!object) throw new Error(`object ${objectId} not found in editor index ${editorIndex}`);
@@ -247,9 +247,9 @@ async function removeObjectById(page: import('@playwright/test').Page, editorInd
 
 async function getCounts(page: import('@playwright/test').Page, editorIndex: number) {
   return page.evaluate(async (index) => {
-    const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+    const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
     const editor = editors[index];
-    if (!editor) throw new Error(`kritzel-editor at index ${index} not found`);
+    if (!editor) throw new Error(`updraw-editor at index ${index} not found`);
 
     return {
       objects: (await editor.findObjects(() => true)).length,
@@ -267,7 +267,7 @@ test.describe('Multiple Editors', () => {
     await addRectangle(page, 0, 120, 120);
 
     await page.waitForFunction(async () => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       return (await editors[0]?.getObjectsTotalCount?.()) === 1;
     });
 
@@ -280,7 +280,7 @@ test.describe('Multiple Editors', () => {
     await addRectangle(page, 1, 280, 200);
 
     await page.waitForFunction(async () => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       return (await editors[0]?.getObjectsTotalCount?.()) === 1 && (await editors[1]?.getObjectsTotalCount?.()) === 1;
     });
 
@@ -296,7 +296,7 @@ test.describe('Multiple Editors', () => {
     const secondObject = await addRectangle(page, 1, 240, 220);
 
     await page.evaluate(async (id) => {
-      const editor = document.querySelectorAll('kritzel-editor')[0] as any;
+      const editor = document.querySelectorAll('updraw-editor')[0] as any;
       const obj = await editor.getObjectById(id);
       await editor.selectObjects([obj]);
     }, firstObject.id);
@@ -308,7 +308,7 @@ test.describe('Multiple Editors', () => {
     expect(secondAfterFirstSelect.selected).toBe(0);
 
     await page.evaluate(async (id) => {
-      const editor = document.querySelectorAll('kritzel-editor')[1] as any;
+      const editor = document.querySelectorAll('updraw-editor')[1] as any;
       const obj = await editor.getObjectById(id);
       await editor.selectObjects([obj]);
     }, secondObject.id);
@@ -325,17 +325,17 @@ test.describe('Multiple Editors', () => {
     await addRectangle(page, 1, 300, 260);
 
     await page.waitForFunction(async () => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       return (await editors[0]?.getObjectsTotalCount?.()) === 1 && (await editors[1]?.getObjectsTotalCount?.()) === 1;
     });
 
     await page.evaluate(async () => {
-      const editor = document.querySelectorAll('kritzel-editor')[0] as any;
+      const editor = document.querySelectorAll('updraw-editor')[0] as any;
       await editor.undo();
     });
 
     await page.waitForFunction(async () => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       return (await editors[0]?.getObjectsTotalCount?.()) === 0;
     });
 
@@ -357,12 +357,12 @@ test.describe('Multiple Editors', () => {
     ]);
 
     await page.waitForFunction(async () => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       return (await editors[0]?.getObjectsTotalCount?.()) === 1;
     });
 
     const firstObjects = await page.evaluate(() => {
-      const editor = document.querySelectorAll('kritzel-editor')[0] as any;
+      const editor = document.querySelectorAll('updraw-editor')[0] as any;
       return editor.getAllObjects();
     });
 
@@ -381,12 +381,12 @@ test.describe('Multiple Editors', () => {
     await dragInEditor(page, 1, { x: 110, y: 110 }, { x: 330, y: 250 });
 
     await page.waitForFunction(async () => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       return (await editors[1]?.findObjects?.(() => true)).length === 1;
     });
 
     const secondObjects = await page.evaluate(() => {
-      const editor = document.querySelectorAll('kritzel-editor')[1] as any;
+      const editor = document.querySelectorAll('updraw-editor')[1] as any;
       return editor.getAllObjects();
     });
 
@@ -404,12 +404,12 @@ test.describe('Multiple Editors', () => {
     await dragInEditor(page, 0, { x: 120, y: 180 }, { x: 360, y: 260 });
 
     await page.waitForFunction(async () => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       return (await editors[0]?.findObjects?.(() => true)).length === 1;
     });
 
     const firstObjects = await page.evaluate(() => {
-      const editor = document.querySelectorAll('kritzel-editor')[0] as any;
+      const editor = document.querySelectorAll('updraw-editor')[0] as any;
       return editor.getAllObjects();
     });
 
@@ -427,23 +427,23 @@ test.describe('Multiple Editors', () => {
     const imageB = await addImage(page, 1);
 
     await page.waitForFunction(async () => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       return (await editors[0]?.getObjectsTotalCount?.()) === 1 && (await editors[1]?.getObjectsTotalCount?.()) === 1;
     });
 
     await removeObjectById(page, 0, imageA.id);
 
     await page.waitForFunction(async () => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       return (await editors[0]?.getObjectsTotalCount?.()) === 0 && (await editors[1]?.getObjectsTotalCount?.()) === 1;
     });
 
     const firstObjects = await page.evaluate(() => {
-      const editor = document.querySelectorAll('kritzel-editor')[0] as any;
+      const editor = document.querySelectorAll('updraw-editor')[0] as any;
       return editor.getAllObjects();
     });
     const secondObjects = await page.evaluate(() => {
-      const editor = document.querySelectorAll('kritzel-editor')[1] as any;
+      const editor = document.querySelectorAll('updraw-editor')[1] as any;
       return editor.getAllObjects();
     });
 
@@ -457,7 +457,7 @@ test.describe('Multiple Editors', () => {
     await addRectangle(page, 1, 180, 180);
 
     await page.waitForFunction(async () => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       return (await editors[0]?.getObjectsTotalCount?.()) === 1 && (await editors[1]?.getObjectsTotalCount?.()) === 1;
     });
 
@@ -469,7 +469,7 @@ test.describe('Multiple Editors', () => {
     ]);
 
     await page.waitForFunction(async () => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       return (await editors[0]?.getObjectsTotalCount?.()) === 0;
     });
 
@@ -482,17 +482,17 @@ test.describe('Multiple Editors', () => {
 
   test('restricting toolbar items on one editor should not affect the other editor', async ({ page }) => {
     await page.evaluate(() => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       editors[0].toolbarItems = editors[0].toolbarItems.filter((item: any) => item.name === 'selection' || item.name === 'brush');
     });
 
     await page.waitForFunction(() => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       return editors[0]?.toolbarItems?.length === 2;
     });
 
     const controlNames = await page.evaluate(() => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       return {
         editor0: (editors[0]?.toolbarItems ?? []).map((item: any) => item.name) as string[],
         editor1: (editors[1]?.toolbarItems ?? []).map((item: any) => item.name) as string[],
@@ -508,20 +508,20 @@ test.describe('Multiple Editors', () => {
 
   test('hiding the utility panel on one editor should not affect the other editor', async ({ page }) => {
     await page.evaluate(() => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
       editors[1].isUtilityPanelVisible = false;
     });
 
     await page.waitForFunction(() => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
-      const toolbarElement = editors[1]?.querySelector('kritzel-toolbar') as any;
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
+      const toolbarElement = editors[1]?.querySelector('updraw-toolbar') as any;
       return toolbarElement?.isUtilityPanelVisible === false;
     });
 
     const panelState = await page.evaluate(() => {
-      const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
-      const toolbar0 = editors[0]?.querySelector('kritzel-toolbar') as any;
-      const toolbar1 = editors[1]?.querySelector('kritzel-toolbar') as any;
+      const editors = Array.from(document.querySelectorAll('updraw-editor')) as any[];
+      const toolbar0 = editors[0]?.querySelector('updraw-toolbar') as any;
+      const toolbar1 = editors[1]?.querySelector('updraw-toolbar') as any;
       return {
         editor0UtilityPanelVisible: toolbar0?.isUtilityPanelVisible as boolean,
         editor1UtilityPanelVisible: toolbar1?.isUtilityPanelVisible as boolean,

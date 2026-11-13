@@ -1,18 +1,18 @@
-import { KritzelCore } from '../core/core.class';
+import { UpdrawCore } from '../core/core.class';
 import { PasteIntent } from '../managers/clipboard.types';
-import { KritzelPasteIntentProvider, KritzelPasteIntentProviderContext } from '../../interfaces/paste-intent-provider.interface';
+import { UpdrawPasteIntentProvider, UpdrawPasteIntentProviderContext } from '../../interfaces/paste-intent-provider.interface';
 
-export class KritzelPasteIntentProviderRegistry {
-  private readonly _providers: KritzelPasteIntentProvider[] = [];
+export class UpdrawPasteIntentProviderRegistry {
+  private readonly _providers: UpdrawPasteIntentProvider[] = [];
 
-  constructor(private readonly _core: KritzelCore) {}
+  constructor(private readonly _core: UpdrawCore) {}
 
-  register(provider: KritzelPasteIntentProvider): void {
+  register(provider: UpdrawPasteIntentProvider): void {
     this._providers.push(provider);
   }
 
   async resolve(event?: ClipboardEvent): Promise<PasteIntent> {
-    const context: KritzelPasteIntentProviderContext = {
+    const context: UpdrawPasteIntentProviderContext = {
       core: this._core,
       event,
     };

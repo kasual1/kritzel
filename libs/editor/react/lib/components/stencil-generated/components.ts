@@ -7,175 +7,186 @@
 
 /* eslint-disable */
 
-import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
-import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
+import { createComponent } from '@stencil/react-output-target/runtime';
+import type { Components } from '@updraw/editor/dist/components';
+import { UpdrawChatBox as UpdrawChatBoxElement, defineCustomElement as defineUpdrawChatBox } from '@updraw/editor/dist/components/updraw-chat-box.js';
+import { UpdrawEditor as UpdrawEditorElement, defineCustomElement as defineUpdrawEditor } from '@updraw/editor/dist/components/updraw-editor.js';
+import { UpdrawSettings as UpdrawSettingsElement, defineCustomElement as defineUpdrawSettings } from '@updraw/editor/dist/components/updraw-settings.js';
+import { UpdrawShapeFill as UpdrawShapeFillElement, defineCustomElement as defineUpdrawShapeFill } from '@updraw/editor/dist/components/updraw-shape-fill.js';
+import { UpdrawShareDialog as UpdrawShareDialogElement, defineCustomElement as defineUpdrawShareDialog } from '@updraw/editor/dist/components/updraw-share-dialog.js';
+import { UpdrawSplitButton as UpdrawSplitButtonElement, defineCustomElement as defineUpdrawSplitButton } from '@updraw/editor/dist/components/updraw-split-button.js';
+import { UpdrawStrokeSize as UpdrawStrokeSizeElement, defineCustomElement as defineUpdrawStrokeSize } from '@updraw/editor/dist/components/updraw-stroke-size.js';
+import type { UpdrawChatBoxMode, UpdrawChatBoxChip, UpdrawChatBoxCustomEvent, EditorIsReadyEvent, ActiveWorkspaceChangeEvent, UpdrawBaseObject, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, UpdrawUndoState, ThemeName, LocaleCode, UpdrawViewportState, LoginEvent, IUpdrawIsPublicChangeEvent, UpdrawAgentsChangeEvent, UpdrawObjectTitlebarActionEvent, UpdrawObjectElementHoverEvent, UpdrawObjectElementClickEvent, UpdrawObjectElementPickEvent, UpdrawEditorCustomEvent, UpdrawSettingsConfig, UpdrawSettingsCustomEvent, ShapeFillType, UpdrawShapeFillCustomEvent, UpdrawShareDialogCustomEvent, IUpdrawMenuItemSelectEvent, IUpdrawMenuItem, IUpdrawMenuItemToggleChildMenuEvent, UpdrawSplitButtonCustomEvent, UpdrawStrokeSizeCustomEvent } from '@updraw/editor';
+import type { StencilReactComponent, EventName } from '@stencil/react-output-target/runtime';
 
-import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelIsPublicChangeEvent, type IKritzelMenuItem, type IKritzelMenuItemSelectEvent, type IKritzelMenuItemToggleChildMenuEvent, type KritzelAgentsChangeEvent, type KritzelBaseObject, type KritzelChatBoxChip, type KritzelChatBoxCustomEvent, type KritzelChatBoxMode, type KritzelEditorCustomEvent, type KritzelObjectElementClickEvent, type KritzelObjectElementHoverEvent, type KritzelObjectElementPickEvent, type KritzelObjectTitlebarActionEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelShareDialogCustomEvent, type KritzelSplitButtonCustomEvent, type KritzelStrokeSizeCustomEvent, type KritzelUndoState, type KritzelViewportState, type LocaleCode, type LoginEvent, type ObjectsAddedEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ShapeFillType, type ThemeName } from "@kritzel/editor";
-import type { Components } from "@kritzel/editor/dist/components";
-import { KritzelChatBox as KritzelChatBoxElement, defineCustomElement as defineKritzelChatBox } from "@kritzel/editor/dist/components/kritzel-chat-box.js";
-import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "@kritzel/editor/dist/components/kritzel-editor.js";
-import { KritzelSettings as KritzelSettingsElement, defineCustomElement as defineKritzelSettings } from "@kritzel/editor/dist/components/kritzel-settings.js";
-import { KritzelShapeFill as KritzelShapeFillElement, defineCustomElement as defineKritzelShapeFill } from "@kritzel/editor/dist/components/kritzel-shape-fill.js";
-import { KritzelShareDialog as KritzelShareDialogElement, defineCustomElement as defineKritzelShareDialog } from "@kritzel/editor/dist/components/kritzel-share-dialog.js";
-import { KritzelSplitButton as KritzelSplitButtonElement, defineCustomElement as defineKritzelSplitButton } from "@kritzel/editor/dist/components/kritzel-split-button.js";
-import { KritzelStrokeSize as KritzelStrokeSizeElement, defineCustomElement as defineKritzelStrokeSize } from "@kritzel/editor/dist/components/kritzel-stroke-size.js";
-
-export type KritzelChatBoxEvents = {
-    onChatSubmit: EventName<KritzelChatBoxCustomEvent<string>>,
-    onChatStop: EventName<KritzelChatBoxCustomEvent<void>>,
-    onModeChange: EventName<KritzelChatBoxCustomEvent<KritzelChatBoxMode>>,
-    onChatChipRemove: EventName<KritzelChatBoxCustomEvent<KritzelChatBoxChip>>
+export type UpdrawChatBoxEvents = {
+  onChatSubmit: EventName<UpdrawChatBoxCustomEvent<string>>,
+  onChatStop: EventName<UpdrawChatBoxCustomEvent<void>>,
+  onModeChange: EventName<UpdrawChatBoxCustomEvent<UpdrawChatBoxMode>>,
+  onChatChipRemove: EventName<UpdrawChatBoxCustomEvent<UpdrawChatBoxChip>>
 };
 
-export const KritzelChatBox: StencilReactComponent<KritzelChatBoxElement, KritzelChatBoxEvents, Components.KritzelChatBox> = /*@__PURE__*/ createComponent<KritzelChatBoxElement, KritzelChatBoxEvents, Components.KritzelChatBox>({
-    tagName: 'kritzel-chat-box',
-    elementClass: KritzelChatBoxElement,
+export const UpdrawChatBox: StencilReactComponent<UpdrawChatBoxElement, UpdrawChatBoxEvents, Components.UpdrawChatBox> = /*@__PURE__*/ createComponent<UpdrawChatBoxElement, UpdrawChatBoxEvents, Components.UpdrawChatBox>({
+    tagName: 'updraw-chat-box',
+    elementClass: UpdrawChatBoxElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
-        onChatSubmit: 'chatSubmit',
-        onChatStop: 'chatStop',
-        onModeChange: 'modeChange',
-        onChatChipRemove: 'chatChipRemove'
-    } as KritzelChatBoxEvents,
-    defineCustomElement: defineKritzelChatBox
+      onChatSubmit: 'chatSubmit',
+      onChatStop: 'chatStop',
+      onModeChange: 'modeChange',
+      onChatChipRemove: 'chatChipRemove'
+    } as UpdrawChatBoxEvents,
+    defineCustomElement: defineUpdrawChatBox,
 });
 
-export type KritzelEditorEvents = {
-    onIsReady: EventName<KritzelEditorCustomEvent<EditorIsReadyEvent>>,
-    onActiveWorkspaceChange: EventName<KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>>,
-    onObjectsChange: EventName<KritzelEditorCustomEvent<KritzelBaseObject[]>>,
-    onObjectsAdded: EventName<KritzelEditorCustomEvent<ObjectsAddedEvent>>,
-    onObjectsRemoved: EventName<KritzelEditorCustomEvent<ObjectsRemovedEvent>>,
-    onObjectsUpdated: EventName<KritzelEditorCustomEvent<ObjectsUpdatedEvent>>,
-    onObjectsSelectionChange: EventName<KritzelEditorCustomEvent<KritzelBaseObject[]>>,
-    onUndoStateChange: EventName<KritzelEditorCustomEvent<KritzelUndoState>>,
-    onThemeChange: EventName<KritzelEditorCustomEvent<ThemeName>>,
-    onLocaleChange: EventName<KritzelEditorCustomEvent<LocaleCode>>,
-    onViewportChange: EventName<KritzelEditorCustomEvent<KritzelViewportState>>,
-    onLogout: EventName<KritzelEditorCustomEvent<void>>,
-    onLogin: EventName<KritzelEditorCustomEvent<LoginEvent>>,
-    onIsPublicChange: EventName<KritzelEditorCustomEvent<IKritzelIsPublicChangeEvent>>,
-    onAwarenessChange: EventName<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>,
-    onChatSubmit: EventName<KritzelEditorCustomEvent<string>>,
-    onChatStop: EventName<KritzelEditorCustomEvent<void>>,
-    onChatChipRemove: EventName<KritzelEditorCustomEvent<KritzelChatBoxChip>>,
-    onAgentsChange: EventName<KritzelEditorCustomEvent<KritzelAgentsChangeEvent>>,
-    onObjectTitlebarAction: EventName<KritzelEditorCustomEvent<KritzelObjectTitlebarActionEvent>>,
-    onObjectElementHover: EventName<KritzelEditorCustomEvent<KritzelObjectElementHoverEvent>>,
-    onObjectElementClick: EventName<KritzelEditorCustomEvent<KritzelObjectElementClickEvent>>,
-    onObjectElementPick: EventName<KritzelEditorCustomEvent<KritzelObjectElementPickEvent>>
+export type UpdrawEditorEvents = {
+  onIsReady: EventName<UpdrawEditorCustomEvent<EditorIsReadyEvent>>,
+  onActiveWorkspaceChange: EventName<UpdrawEditorCustomEvent<ActiveWorkspaceChangeEvent>>,
+  onObjectsChange: EventName<UpdrawEditorCustomEvent<UpdrawBaseObject[]>>,
+  onObjectsAdded: EventName<UpdrawEditorCustomEvent<ObjectsAddedEvent>>,
+  onObjectsRemoved: EventName<UpdrawEditorCustomEvent<ObjectsRemovedEvent>>,
+  onObjectsUpdated: EventName<UpdrawEditorCustomEvent<ObjectsUpdatedEvent>>,
+  onObjectsSelectionChange: EventName<UpdrawEditorCustomEvent<UpdrawBaseObject[]>>,
+  onUndoStateChange: EventName<UpdrawEditorCustomEvent<UpdrawUndoState>>,
+  onThemeChange: EventName<UpdrawEditorCustomEvent<ThemeName>>,
+  onLocaleChange: EventName<UpdrawEditorCustomEvent<LocaleCode>>,
+  onViewportChange: EventName<UpdrawEditorCustomEvent<UpdrawViewportState>>,
+  onLogout: EventName<UpdrawEditorCustomEvent<void>>,
+  onLogin: EventName<UpdrawEditorCustomEvent<LoginEvent>>,
+  onIsPublicChange: EventName<UpdrawEditorCustomEvent<IUpdrawIsPublicChangeEvent>>,
+  onAwarenessChange: EventName<UpdrawEditorCustomEvent<Map<number, Record<string, any>>>>,
+  onChatSubmit: EventName<UpdrawEditorCustomEvent<string>>,
+  onChatStop: EventName<UpdrawEditorCustomEvent<void>>,
+  onChatChipRemove: EventName<UpdrawEditorCustomEvent<UpdrawChatBoxChip>>,
+  onAgentsChange: EventName<UpdrawEditorCustomEvent<UpdrawAgentsChangeEvent>>,
+  onObjectTitlebarAction: EventName<UpdrawEditorCustomEvent<UpdrawObjectTitlebarActionEvent>>,
+  onObjectElementHover: EventName<UpdrawEditorCustomEvent<UpdrawObjectElementHoverEvent>>,
+  onObjectElementClick: EventName<UpdrawEditorCustomEvent<UpdrawObjectElementClickEvent>>,
+  onObjectElementPick: EventName<UpdrawEditorCustomEvent<UpdrawObjectElementPickEvent>>
 };
 
-export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor>({
-    tagName: 'kritzel-editor',
-    elementClass: KritzelEditorElement,
+export const UpdrawEditor: StencilReactComponent<UpdrawEditorElement, UpdrawEditorEvents, Components.UpdrawEditor> = /*@__PURE__*/ createComponent<UpdrawEditorElement, UpdrawEditorEvents, Components.UpdrawEditor>({
+    tagName: 'updraw-editor',
+    elementClass: UpdrawEditorElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
-        onIsReady: 'isReady',
-        onActiveWorkspaceChange: 'activeWorkspaceChange',
-        onObjectsChange: 'objectsChange',
-        onObjectsAdded: 'objectsAdded',
-        onObjectsRemoved: 'objectsRemoved',
-        onObjectsUpdated: 'objectsUpdated',
-        onObjectsSelectionChange: 'objectsSelectionChange',
-        onUndoStateChange: 'undoStateChange',
-        onThemeChange: 'themeChange',
-        onLocaleChange: 'localeChange',
-        onViewportChange: 'viewportChange',
-        onLogout: 'logout',
-        onLogin: 'login',
-        onIsPublicChange: 'isPublicChange',
-        onAwarenessChange: 'awarenessChange',
-        onChatSubmit: 'chatSubmit',
-        onChatStop: 'chatStop',
-        onChatChipRemove: 'chatChipRemove',
-        onAgentsChange: 'agentsChange',
-        onObjectTitlebarAction: 'objectTitlebarAction',
-        onObjectElementHover: 'objectElementHover',
-        onObjectElementClick: 'objectElementClick',
-        onObjectElementPick: 'objectElementPick'
-    } as KritzelEditorEvents,
-    defineCustomElement: defineKritzelEditor
+      onIsReady: 'isReady',
+      onActiveWorkspaceChange: 'activeWorkspaceChange',
+      onObjectsChange: 'objectsChange',
+      onObjectsAdded: 'objectsAdded',
+      onObjectsRemoved: 'objectsRemoved',
+      onObjectsUpdated: 'objectsUpdated',
+      onObjectsSelectionChange: 'objectsSelectionChange',
+      onUndoStateChange: 'undoStateChange',
+      onThemeChange: 'themeChange',
+      onLocaleChange: 'localeChange',
+      onViewportChange: 'viewportChange',
+      onLogout: 'logout',
+      onLogin: 'login',
+      onIsPublicChange: 'isPublicChange',
+      onAwarenessChange: 'awarenessChange',
+      onChatSubmit: 'chatSubmit',
+      onChatStop: 'chatStop',
+      onChatChipRemove: 'chatChipRemove',
+      onAgentsChange: 'agentsChange',
+      onObjectTitlebarAction: 'objectTitlebarAction',
+      onObjectElementHover: 'objectElementHover',
+      onObjectElementClick: 'objectElementClick',
+      onObjectElementPick: 'objectElementPick'
+    } as UpdrawEditorEvents,
+    defineCustomElement: defineUpdrawEditor,
 });
 
-export type KritzelSettingsEvents = { onSettingsChange: EventName<KritzelSettingsCustomEvent<KritzelSettingsConfig>> };
-
-export const KritzelSettings: StencilReactComponent<KritzelSettingsElement, KritzelSettingsEvents, Components.KritzelSettings> = /*@__PURE__*/ createComponent<KritzelSettingsElement, KritzelSettingsEvents, Components.KritzelSettings>({
-    tagName: 'kritzel-settings',
-    elementClass: KritzelSettingsElement,
-    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
-    react: React,
-    events: { onSettingsChange: 'settingsChange' } as KritzelSettingsEvents,
-    defineCustomElement: defineKritzelSettings
-});
-
-export type KritzelShapeFillEvents = { onValueChange: EventName<KritzelShapeFillCustomEvent<ShapeFillType>> };
-
-export const KritzelShapeFill: StencilReactComponent<KritzelShapeFillElement, KritzelShapeFillEvents, Components.KritzelShapeFill> = /*@__PURE__*/ createComponent<KritzelShapeFillElement, KritzelShapeFillEvents, Components.KritzelShapeFill>({
-    tagName: 'kritzel-shape-fill',
-    elementClass: KritzelShapeFillElement,
-    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
-    react: React,
-    events: { onValueChange: 'valueChange' } as KritzelShapeFillEvents,
-    defineCustomElement: defineKritzelShapeFill
-});
-
-export type KritzelShareDialogEvents = {
-    onToggleIsPublic: EventName<KritzelShareDialogCustomEvent<boolean>>,
-    onDialogClosed: EventName<KritzelShareDialogCustomEvent<void>>
+export type UpdrawSettingsEvents = {
+  onSettingsChange: EventName<UpdrawSettingsCustomEvent<UpdrawSettingsConfig>>
 };
 
-export const KritzelShareDialog: StencilReactComponent<KritzelShareDialogElement, KritzelShareDialogEvents, Components.KritzelShareDialog> = /*@__PURE__*/ createComponent<KritzelShareDialogElement, KritzelShareDialogEvents, Components.KritzelShareDialog>({
-    tagName: 'kritzel-share-dialog',
-    elementClass: KritzelShareDialogElement,
+export const UpdrawSettings: StencilReactComponent<UpdrawSettingsElement, UpdrawSettingsEvents, Components.UpdrawSettings> = /*@__PURE__*/ createComponent<UpdrawSettingsElement, UpdrawSettingsEvents, Components.UpdrawSettings>({
+    tagName: 'updraw-settings',
+    elementClass: UpdrawSettingsElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
-        onToggleIsPublic: 'toggleIsPublic',
-        onDialogClosed: 'dialogClosed'
-    } as KritzelShareDialogEvents,
-    defineCustomElement: defineKritzelShareDialog
+      onSettingsChange: 'settingsChange'
+    } as UpdrawSettingsEvents,
+    defineCustomElement: defineUpdrawSettings,
 });
 
-export type KritzelSplitButtonEvents = {
-    onMainButtonClick: EventName<KritzelSplitButtonCustomEvent<void>>,
-    onItemSelect: EventName<KritzelSplitButtonCustomEvent<IKritzelMenuItemSelectEvent>>,
-    onItemSave: EventName<KritzelSplitButtonCustomEvent<IKritzelMenuItem>>,
-    onItemCancel: EventName<KritzelSplitButtonCustomEvent<IKritzelMenuItem>>,
-    onItemToggleChildMenu: EventName<KritzelSplitButtonCustomEvent<IKritzelMenuItemToggleChildMenuEvent>>,
-    onItemCloseChildMenu: EventName<KritzelSplitButtonCustomEvent<IKritzelMenuItem>>,
-    onMenuOpen: EventName<KritzelSplitButtonCustomEvent<void>>,
-    onMenuClose: EventName<KritzelSplitButtonCustomEvent<void>>
+export type UpdrawShapeFillEvents = {
+  onValueChange: EventName<UpdrawShapeFillCustomEvent<ShapeFillType>>
 };
 
-export const KritzelSplitButton: StencilReactComponent<KritzelSplitButtonElement, KritzelSplitButtonEvents, Components.KritzelSplitButton> = /*@__PURE__*/ createComponent<KritzelSplitButtonElement, KritzelSplitButtonEvents, Components.KritzelSplitButton>({
-    tagName: 'kritzel-split-button',
-    elementClass: KritzelSplitButtonElement,
+export const UpdrawShapeFill: StencilReactComponent<UpdrawShapeFillElement, UpdrawShapeFillEvents, Components.UpdrawShapeFill> = /*@__PURE__*/ createComponent<UpdrawShapeFillElement, UpdrawShapeFillEvents, Components.UpdrawShapeFill>({
+    tagName: 'updraw-shape-fill',
+    elementClass: UpdrawShapeFillElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
-        onMainButtonClick: 'mainButtonClick',
-        onItemSelect: 'itemSelect',
-        onItemSave: 'itemSave',
-        onItemCancel: 'itemCancel',
-        onItemToggleChildMenu: 'itemToggleChildMenu',
-        onItemCloseChildMenu: 'itemCloseChildMenu',
-        onMenuOpen: 'menuOpen',
-        onMenuClose: 'menuClose'
-    } as KritzelSplitButtonEvents,
-    defineCustomElement: defineKritzelSplitButton
+      onValueChange: 'valueChange'
+    } as UpdrawShapeFillEvents,
+    defineCustomElement: defineUpdrawShapeFill,
 });
 
-export type KritzelStrokeSizeEvents = { onSizeChange: EventName<KritzelStrokeSizeCustomEvent<number>> };
+export type UpdrawShareDialogEvents = {
+  onToggleIsPublic: EventName<UpdrawShareDialogCustomEvent<boolean>>,
+  onDialogClosed: EventName<UpdrawShareDialogCustomEvent<void>>
+};
 
-export const KritzelStrokeSize: StencilReactComponent<KritzelStrokeSizeElement, KritzelStrokeSizeEvents, Components.KritzelStrokeSize> = /*@__PURE__*/ createComponent<KritzelStrokeSizeElement, KritzelStrokeSizeEvents, Components.KritzelStrokeSize>({
-    tagName: 'kritzel-stroke-size',
-    elementClass: KritzelStrokeSizeElement,
+export const UpdrawShareDialog: StencilReactComponent<UpdrawShareDialogElement, UpdrawShareDialogEvents, Components.UpdrawShareDialog> = /*@__PURE__*/ createComponent<UpdrawShareDialogElement, UpdrawShareDialogEvents, Components.UpdrawShareDialog>({
+    tagName: 'updraw-share-dialog',
+    elementClass: UpdrawShareDialogElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: { onSizeChange: 'sizeChange' } as KritzelStrokeSizeEvents,
-    defineCustomElement: defineKritzelStrokeSize
+    events: {
+      onToggleIsPublic: 'toggleIsPublic',
+      onDialogClosed: 'dialogClosed'
+    } as UpdrawShareDialogEvents,
+    defineCustomElement: defineUpdrawShareDialog,
+});
+
+export type UpdrawSplitButtonEvents = {
+  onMainButtonClick: EventName<UpdrawSplitButtonCustomEvent<void>>,
+  onItemSelect: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItemSelectEvent>>,
+  onItemSave: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>>,
+  onItemCancel: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>>,
+  onItemToggleChildMenu: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItemToggleChildMenuEvent>>,
+  onItemCloseChildMenu: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>>,
+  onMenuOpen: EventName<UpdrawSplitButtonCustomEvent<void>>,
+  onMenuClose: EventName<UpdrawSplitButtonCustomEvent<void>>
+};
+
+export const UpdrawSplitButton: StencilReactComponent<UpdrawSplitButtonElement, UpdrawSplitButtonEvents, Components.UpdrawSplitButton> = /*@__PURE__*/ createComponent<UpdrawSplitButtonElement, UpdrawSplitButtonEvents, Components.UpdrawSplitButton>({
+    tagName: 'updraw-split-button',
+    elementClass: UpdrawSplitButtonElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+      onMainButtonClick: 'mainButtonClick',
+      onItemSelect: 'itemSelect',
+      onItemSave: 'itemSave',
+      onItemCancel: 'itemCancel',
+      onItemToggleChildMenu: 'itemToggleChildMenu',
+      onItemCloseChildMenu: 'itemCloseChildMenu',
+      onMenuOpen: 'menuOpen',
+      onMenuClose: 'menuClose'
+    } as UpdrawSplitButtonEvents,
+    defineCustomElement: defineUpdrawSplitButton,
+});
+
+export type UpdrawStrokeSizeEvents = {
+  onSizeChange: EventName<UpdrawStrokeSizeCustomEvent<number>>
+};
+
+export const UpdrawStrokeSize: StencilReactComponent<UpdrawStrokeSizeElement, UpdrawStrokeSizeEvents, Components.UpdrawStrokeSize> = /*@__PURE__*/ createComponent<UpdrawStrokeSizeElement, UpdrawStrokeSizeEvents, Components.UpdrawStrokeSize>({
+    tagName: 'updraw-stroke-size',
+    elementClass: UpdrawStrokeSizeElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+      onSizeChange: 'sizeChange'
+    } as UpdrawStrokeSizeEvents,
+    defineCustomElement: defineUpdrawStrokeSize,
 });

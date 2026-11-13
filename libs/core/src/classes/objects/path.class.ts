@@ -1,20 +1,20 @@
 import { getStroke } from 'perfect-freehand';
-import { KritzelMathHelper } from '../../helpers/math.helper';
-import { KritzelBaseObject } from './base-object.class';
-import { KritzelPolygon } from '../../interfaces/polygon.interface';
-import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
-import { KritzelPoint } from '../../interfaces/point.interface';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawMathHelper } from '../../helpers/math.helper';
+import { UpdrawBaseObject } from './base-object.class';
+import { UpdrawPolygon } from '../../interfaces/polygon.interface';
+import { UpdrawGeometryHelper } from '../../helpers/geometry.helper';
+import { UpdrawPoint } from '../../interfaces/point.interface';
+import { UpdrawCore } from '../core/core.class';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
-import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../interfaces/object-export.interface';
+import { UpdrawObjectExportContext, UpdrawObjectExportFormat } from '../../interfaces/object-export.interface';
 
 /**
- * Configuration options for creating a KritzelPath instance.
+ * Configuration options for creating an UpdrawPath instance.
  */
-export interface KritzelPathConfig {
+export interface UpdrawPathConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
-  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
+  /** Whether the engine's loading placeholder is drawn over the object, see `UpdrawBaseObject.setLoading()`. */
   isLoading?: boolean;
   points?: number[][];
   translateX?: number;
@@ -29,8 +29,8 @@ export interface KritzelPathConfig {
   lineSlack?: number;
 }
 
-export class KritzelPath extends KritzelBaseObject<SVGElement> {
-  override __class__: string = 'KritzelPath';
+export class UpdrawPath extends UpdrawBaseObject<SVGElement> {
+  override __class__: string = 'UpdrawPath';
 
   points: number[][];
   d: string;
@@ -43,7 +43,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   height: number = 0;
   width: number = 0;
   scale: number = 1;
-  options: KritzelPathConfig | undefined;
+  options: UpdrawPathConfig | undefined;
 
   isVisible: boolean = true;
   isDebugInfoVisible: boolean = true;
@@ -67,7 +67,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   }
 
   /**
-   * Creates a new KritzelPath instance.
+   * Creates a new UpdrawPath instance.
    * @param config - Optional configuration object for the path
    * @param config.points - Array of [x, y] coordinate pairs defining the path
    * @param config.translateX - Horizontal translation offset (default: 0)
@@ -77,7 +77,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
    * @param config.fill - Theme-aware fill color with light and dark variants
    * @param config.lineSlack - Additional padding for bounding box calculations (default: 0.5)
    */
-  constructor(config?: KritzelPathConfig) {
+  constructor(config?: UpdrawPathConfig) {
     super();
     this.name = config?.name;
     this.isLoading = config?.isLoading ?? false;
@@ -85,7 +85,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.points = config?.points ?? [];
     this.translateX = config?.translateX ?? 0;
     this.translateY = config?.translateY ?? 0;
-    this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
+    this.rotation = UpdrawMathHelper.degreesToRadians(config?.rotation ?? 0);
     this.scale = config?.scale ?? 1;
     this.strokeWidth = config?.strokeWidth ?? 8;
     this.fill = config?.fill ?? { light: '#000000', dark: '#ffffff' };
@@ -94,14 +94,14 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   }
 
   /**
-   * Factory method to create a new KritzelPath instance with a core reference.
+   * Factory method to create a new UpdrawPath instance with a core reference.
    * This is the preferred way to create paths that will be managed by the canvas.
-   * @param core - The KritzelCore instance that will manage this path
+   * @param core - The UpdrawCore instance that will manage this path
    * @param options - Optional configuration options for the path
-   * @returns A new KritzelPath instance configured with the provided options
+   * @returns A new UpdrawPath instance configured with the provided options
    */
-  static override create(core: KritzelCore, options?: KritzelPathConfig): KritzelPath {
-    const object = new KritzelPath();
+  static override create(core: UpdrawCore, options?: UpdrawPathConfig): UpdrawPath {
+    const object = new UpdrawPath();
 
     object._core = core;
     object.id = object.generateId();
@@ -111,7 +111,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     object.points = options?.points ?? [];
     object.translateX = options?.translateX ?? 0;
     object.translateY = options?.translateY ?? 0;
-    object.rotation = KritzelMathHelper.degreesToRadians(options?.rotation ?? 0);
+    object.rotation = UpdrawMathHelper.degreesToRadians(options?.rotation ?? 0);
     object.scale = options?.scale ?? 1;
     object.strokeWidth = options?.strokeWidth ?? 8;
     object.fill = options?.fill ?? { light: '#000000', dark: '#ffffff' };
@@ -126,10 +126,10 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   /**
    * Creates a deep copy of this path object.
    * The points array is cloned to ensure the copy is independent.
-   * @returns A new KritzelPath instance with copied properties
+   * @returns A new UpdrawPath instance with copied properties
    */
-  override copy(): KritzelPath {
-    const copiedObject = super.copy() as KritzelPath;
+  override copy(): UpdrawPath {
+    const copiedObject = super.copy() as UpdrawPath;
     if (this.points) {
       copiedObject.points = this.points.map(p => [...p]);
     }
@@ -275,14 +275,14 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
    * @param polygon - The polygon to test against, defined by its corner points
    * @returns True if any part of the polygon overlaps with the path's stroke
    */
-  override hitTestPolygon(polygon: KritzelPolygon): boolean {
+  override hitTestPolygon(polygon: UpdrawPolygon): boolean {
     const halfStroke = this.strokeWidth / this.scale / 2;
 
     if (this._adjustedPoints === null) {
       this._adjustedPoints = this.computeAdjustedPoints();
     }
 
-    const polyPoints: KritzelPoint[] = [
+    const polyPoints: UpdrawPoint[] = [
       { x: polygon.bottomLeft.x, y: polygon.bottomLeft.y },
       { x: polygon.bottomRight.x, y: polygon.bottomRight.y },
       { x: polygon.topRight.x, y: polygon.topRight.y },
@@ -290,7 +290,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     ];
 
     for (const [px, py] of this._adjustedPoints) {
-      if (KritzelGeometryHelper.isPointInPolygon({ x: px, y: py }, polyPoints)) {
+      if (UpdrawGeometryHelper.isPointInPolygon({ x: px, y: py }, polyPoints)) {
         return true;
       }
     }
@@ -309,7 +309,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
         const q1 = polyPoints[j];
         const q2 = polyPoints[(j + 1) % polyPoints.length];
 
-        if (KritzelGeometryHelper.intersectLines(p1, p2, q1, q2)) {
+        if (UpdrawGeometryHelper.intersectLines(p1, p2, q1, q2)) {
           return true;
         }
       }
@@ -553,9 +553,9 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     const cx = c[0] - offsetX;
     const cy = c[1] - offsetY;
 
-    let result = `M${ax.toFixed(2)},${ay.toFixed(2)} Q${bx.toFixed(2)},${by.toFixed(2)} ${KritzelMathHelper.average(bx, cx).toFixed(
+    let result = `M${ax.toFixed(2)},${ay.toFixed(2)} Q${bx.toFixed(2)},${by.toFixed(2)} ${UpdrawMathHelper.average(bx, cx).toFixed(
       2,
-    )},${KritzelMathHelper.average(by, cy).toFixed(2)} T`;
+    )},${UpdrawMathHelper.average(by, cy).toFixed(2)} T`;
 
     for (let i = 2, max = len - 1; i < max; i++) {
       const p = points[i];
@@ -564,7 +564,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
       const py = p[1] - offsetY;
       const qx = q[0] - offsetX;
       const qy = q[1] - offsetY;
-      result += `${KritzelMathHelper.average(px, qx).toFixed(2)},${KritzelMathHelper.average(py, qy).toFixed(2)} `;
+      result += `${UpdrawMathHelper.average(px, qx).toFixed(2)},${UpdrawMathHelper.average(py, qy).toFixed(2)} `;
     }
 
     if (closed) {
@@ -598,7 +598,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
    * @param outsidePoint - A point outside the path to trace from
    * @returns The intersection point on the stroke edge, or null if no intersection found
    */
-  getClipPoint(outsidePoint: KritzelPoint): KritzelPoint | null {
+  getClipPoint(outsidePoint: UpdrawPoint): UpdrawPoint | null {
     const centerX = this.centerX;
     const centerY = this.centerY;
     const halfStroke = this.strokeWidth / this.scale / 2;
@@ -690,11 +690,11 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return null;
   }
 
-  getSupportedExportFormats(): KritzelObjectExportFormat[] {
+  getSupportedExportFormats(): UpdrawObjectExportFormat[] {
     return ['svg'];
   }
 
-  async exportAs(format: KritzelObjectExportFormat, context: KritzelObjectExportContext): Promise<string | null> {
+  async exportAs(format: UpdrawObjectExportFormat, context: UpdrawObjectExportContext): Promise<string | null> {
     if (format !== 'svg') {
       return null;
     }

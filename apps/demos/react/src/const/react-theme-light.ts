@@ -1,6 +1,6 @@
-import { KritzelTheme } from "@kritzel/react-editor";
+import { UpdrawTheme } from "@updraw/react-editor";
 
-export const reactThemeLight: KritzelTheme = {
+export const reactThemeLight: UpdrawTheme = {
   name: 'light',
   global: {
     primaryColor: '#4A7DFF',

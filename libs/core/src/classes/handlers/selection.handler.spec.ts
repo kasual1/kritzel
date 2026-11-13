@@ -1,17 +1,17 @@
-import { KritzelSelectionHandler } from './selection.handler';
-import { KritzelCore } from '../core/core.class';
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelSelectionBox } from '../objects/selection-box.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelBaseObject } from '../objects/base-object.class';
+import { UpdrawSelectionHandler } from './selection.handler';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpdrawSelectionBox } from '../objects/selection-box.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawBaseObject } from '../objects/base-object.class';
 
 jest.mock('../../helpers/event.helper');
 jest.mock('../objects/selection-box.class');
 jest.mock('../objects/selection-group.class');
 
-describe('KritzelSelectionHandler', () => {
-  let selectionHandler: KritzelSelectionHandler;
-  let mockCore: jest.Mocked<KritzelCore>;
+describe('UpdrawSelectionHandler', () => {
+  let selectionHandler: UpdrawSelectionHandler;
+  let mockCore: jest.Mocked<UpdrawCore>;
   let mockSelectionBox: {
     width: number;
     height: number;
@@ -26,7 +26,7 @@ describe('KritzelSelectionHandler', () => {
     };
   } | null;
   let mockSelectionGroup: {
-    objects: KritzelBaseObject[];
+    objects: UpdrawBaseObject[];
     objectIds: string[];
     isSelected: boolean;
     rotation: number;
@@ -57,7 +57,7 @@ describe('KritzelSelectionHandler', () => {
     };
     activeWorkspace: { id: string };
   };
-  let mockSelectedObjects: KritzelBaseObject[];
+  let mockSelectedObjects: UpdrawBaseObject[];
 
   const createPointerEvent = (
     type: string,
@@ -107,7 +107,7 @@ describe('KritzelSelectionHandler', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockSelectionBox = null;
     mockSelectionGroup = null;
@@ -169,21 +169,21 @@ describe('KritzelSelectionHandler', () => {
       removeSelectionBox: jest.fn(),
       rerender: jest.fn(),
       getObjectsFromPointerEvent: jest.fn().mockReturnValue([]),
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
     // Mock static create methods
-    (KritzelSelectionBox.create as jest.Mock).mockImplementation(() => {
+    (UpdrawSelectionBox.create as jest.Mock).mockImplementation(() => {
       const box = createMockSelectionBox();
       mockSelectionBox = box;
       return box;
     });
-    (KritzelSelectionGroup.create as jest.Mock).mockImplementation(() => {
+    (UpdrawSelectionGroup.create as jest.Mock).mockImplementation(() => {
       const group = createMockSelectionGroup();
       mockSelectionGroup = group;
       return group;
     });
 
-    selectionHandler = new KritzelSelectionHandler(mockCore);
+    selectionHandler = new UpdrawSelectionHandler(mockCore);
   });
 
   afterEach(() => {
@@ -267,13 +267,13 @@ describe('KritzelSelectionHandler', () => {
         selectionHandler.handlePointerDown(event);
 
         expect(mockState.isSelecting).toBe(true);
-        expect(KritzelSelectionBox.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawSelectionBox.create).toHaveBeenCalledWith(mockCore);
         expect(mockState.objects.insert).toHaveBeenCalled();
         expect(mockCore.store.setSelectionBox).toHaveBeenCalled();
       });
 
       it('should not start selection on non-left click', () => {
-        (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+        (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
         mockSelectionGroup = null;
         const event = createPointerEvent('pointerdown', {
           pointerType: 'mouse',
@@ -283,7 +283,7 @@ describe('KritzelSelectionHandler', () => {
         selectionHandler.handlePointerDown(event);
 
         expect(mockState.isSelecting).toBe(false);
-        expect(KritzelSelectionBox.create).not.toHaveBeenCalled();
+        expect(UpdrawSelectionBox.create).not.toHaveBeenCalled();
       });
 
       it('should not start selection when selection group already exists', () => {
@@ -294,7 +294,7 @@ describe('KritzelSelectionHandler', () => {
 
         selectionHandler.handlePointerDown(event);
 
-        expect(KritzelSelectionBox.create).not.toHaveBeenCalled();
+        expect(UpdrawSelectionBox.create).not.toHaveBeenCalled();
       });
 
       it('should apply viewport transformation when calculating start position', () => {
@@ -366,7 +366,7 @@ describe('KritzelSelectionHandler', () => {
         jest.advanceTimersByTime(80);
 
         expect(mockState.isSelecting).toBe(true);
-        expect(KritzelSelectionBox.create).toHaveBeenCalled();
+        expect(UpdrawSelectionBox.create).toHaveBeenCalled();
       });
 
       it('should not start selection when scaling', () => {
@@ -380,7 +380,7 @@ describe('KritzelSelectionHandler', () => {
         selectionHandler.handlePointerDown(event);
         jest.advanceTimersByTime(80);
 
-        expect(KritzelSelectionBox.create).not.toHaveBeenCalled();
+        expect(UpdrawSelectionBox.create).not.toHaveBeenCalled();
       });
 
       it('should not start selection when selection group exists', () => {
@@ -394,7 +394,7 @@ describe('KritzelSelectionHandler', () => {
         selectionHandler.handlePointerDown(event);
         jest.advanceTimersByTime(80);
 
-        expect(KritzelSelectionBox.create).not.toHaveBeenCalled();
+        expect(UpdrawSelectionBox.create).not.toHaveBeenCalled();
       });
 
       it('should not start selection with multiple pointers', () => {
@@ -409,7 +409,7 @@ describe('KritzelSelectionHandler', () => {
         selectionHandler.handlePointerDown(event);
         jest.advanceTimersByTime(80);
 
-        expect(KritzelSelectionBox.create).not.toHaveBeenCalled();
+        expect(UpdrawSelectionBox.create).not.toHaveBeenCalled();
       });
 
       it('should store touch start position', () => {
@@ -441,7 +441,7 @@ describe('KritzelSelectionHandler', () => {
         jest.advanceTimersByTime(80);
 
         expect(mockState.isSelecting).toBe(true);
-        expect(KritzelSelectionBox.create).toHaveBeenCalled();
+        expect(UpdrawSelectionBox.create).toHaveBeenCalled();
       });
     });
   });
@@ -598,7 +598,7 @@ describe('KritzelSelectionHandler', () => {
           isSelected: false,
           rotation: 0.5,
           hitTest: jest.fn().mockReturnValue(true),
-        } as unknown as KritzelBaseObject;
+        } as unknown as UpdrawBaseObject;
 
         (mockCore.getObjectsFromPointerEvent as jest.Mock).mockReturnValue([mockObject]);
 
@@ -608,13 +608,13 @@ describe('KritzelSelectionHandler', () => {
 
         selectionHandler.handlePointerUp(upEvent);
 
-        expect(KritzelSelectionGroup.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawSelectionGroup.create).toHaveBeenCalledWith(mockCore);
         expect(mockCore.addSelectionGroup).toHaveBeenCalled();
         expect(mockCore.rerender).toHaveBeenCalled();
       });
 
       it('should not start selection when non-left click', () => {
-        (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+        (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
         mockState.isSelecting = true;
 
         const upEvent = createPointerEvent('pointerup', {
@@ -662,10 +662,10 @@ describe('KritzelSelectionHandler', () => {
       it('should add selected objects to selection group after drag', () => {
         const mockObject = {
           id: 'obj-1',
-          __class__: 'KritzelPath',
+          __class__: 'UpdrawPath',
           isSelected: true,
           rotation: 0,
-        } as unknown as KritzelBaseObject;
+        } as unknown as UpdrawBaseObject;
         mockSelectedObjects = [mockObject];
 
         const upEvent = createPointerEvent('pointerup', {
@@ -674,7 +674,7 @@ describe('KritzelSelectionHandler', () => {
 
         selectionHandler.handlePointerUp(upEvent);
 
-        expect(KritzelSelectionGroup.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawSelectionGroup.create).toHaveBeenCalledWith(mockCore);
         expect(mockCore.addSelectionGroup).toHaveBeenCalled();
       });
 
@@ -697,7 +697,7 @@ describe('KritzelSelectionHandler', () => {
           id: 'obj-1',
           isSelected: true,
           edit: jest.fn(),
-        } as unknown as KritzelBaseObject;
+        } as unknown as UpdrawBaseObject;
 
         mockSelectionGroup = {
           ...createMockSelectionGroup(),
@@ -719,7 +719,7 @@ describe('KritzelSelectionHandler', () => {
           id: 'obj-1',
           isSelected: true,
           edit: jest.fn(),
-        } as unknown as KritzelBaseObject;
+        } as unknown as UpdrawBaseObject;
 
         mockSelectionGroup = {
           ...createMockSelectionGroup(),
@@ -737,8 +737,8 @@ describe('KritzelSelectionHandler', () => {
       });
 
       it('should not call edit when multiple objects selected', () => {
-        const mockObject1 = { id: 'obj-1', edit: jest.fn() } as unknown as KritzelBaseObject;
-        const mockObject2 = { id: 'obj-2', edit: jest.fn() } as unknown as KritzelBaseObject;
+        const mockObject1 = { id: 'obj-1', edit: jest.fn() } as unknown as UpdrawBaseObject;
+        const mockObject2 = { id: 'obj-2', edit: jest.fn() } as unknown as UpdrawBaseObject;
 
         mockSelectionGroup = {
           ...createMockSelectionGroup(),
@@ -816,7 +816,7 @@ describe('KritzelSelectionHandler', () => {
           id: 'obj-1',
           isSelected: true,
           edit: jest.fn(),
-        } as unknown as KritzelBaseObject;
+        } as unknown as UpdrawBaseObject;
 
         mockSelectionGroup = {
           ...createMockSelectionGroup(),
@@ -862,17 +862,17 @@ describe('KritzelSelectionHandler', () => {
     it('should clear child isSelected when drag selection resolves child to parent group', () => {
       const childObject = {
         id: 'child-1',
-        __class__: 'KritzelPath',
+        __class__: 'UpdrawPath',
         isSelected: true,
         rotation: 0,
-      } as unknown as KritzelBaseObject;
+      } as unknown as UpdrawBaseObject;
 
       const parentGroup = {
         id: 'group-1',
-        __class__: 'KritzelGroup',
+        __class__: 'UpdrawGroup',
         childIds: ['child-1'],
         isSelected: false,
-      } as unknown as KritzelBaseObject;
+      } as unknown as UpdrawBaseObject;
 
       mockState.objects.filter.mockReturnValue([parentGroup]);
       mockSelectedObjects = [childObject];
@@ -903,18 +903,18 @@ describe('KritzelSelectionHandler', () => {
     it('should clear child isSelected when click selection resolves child to parent group', () => {
       const childObject = {
         id: 'child-1',
-        __class__: 'KritzelPath',
+        __class__: 'UpdrawPath',
         isSelected: true,
         rotation: 0,
         hitTest: jest.fn().mockReturnValue(true),
-      } as unknown as KritzelBaseObject;
+      } as unknown as UpdrawBaseObject;
 
       const parentGroup = {
         id: 'group-1',
-        __class__: 'KritzelGroup',
+        __class__: 'UpdrawGroup',
         childIds: ['child-1'],
         isSelected: false,
-      } as unknown as KritzelBaseObject;
+      } as unknown as UpdrawBaseObject;
 
       mockState.objects.filter.mockReturnValue([parentGroup]);
       (mockCore.getObjectsFromPointerEvent as jest.Mock).mockReturnValue([childObject]);
@@ -938,10 +938,10 @@ describe('KritzelSelectionHandler', () => {
     it('should set rotation from single selected object', () => {
       const mockObject = {
         id: 'obj-1',
-        __class__: 'KritzelPath',
+        __class__: 'UpdrawPath',
         isSelected: true,
         rotation: Math.PI / 4,
-      } as unknown as KritzelBaseObject;
+      } as unknown as UpdrawBaseObject;
       mockSelectedObjects = [mockObject];
 
       mockSelectionGroup = null;
@@ -966,22 +966,22 @@ describe('KritzelSelectionHandler', () => {
       selectionHandler.handlePointerUp(upEvent);
 
       // The mock selection group should have been created and have properties set
-      expect(KritzelSelectionGroup.create).toHaveBeenCalled();
+      expect(UpdrawSelectionGroup.create).toHaveBeenCalled();
     });
 
     it('should capture snapshots and refresh dimensions for multiple objects', () => {
       const mockObject1 = {
         id: 'obj-1',
-        __class__: 'KritzelPath',
+        __class__: 'UpdrawPath',
         isSelected: true,
         rotation: 0,
-      } as unknown as KritzelBaseObject;
+      } as unknown as UpdrawBaseObject;
       const mockObject2 = {
         id: 'obj-2',
-        __class__: 'KritzelPath',
+        __class__: 'UpdrawPath',
         isSelected: true,
         rotation: 0,
-      } as unknown as KritzelBaseObject;
+      } as unknown as UpdrawBaseObject;
       mockSelectedObjects = [mockObject1, mockObject2];
 
       mockSelectionGroup = null;
@@ -1004,7 +1004,7 @@ describe('KritzelSelectionHandler', () => {
       });
       selectionHandler.handlePointerUp(upEvent);
 
-      expect(KritzelSelectionGroup.create).toHaveBeenCalled();
+      expect(UpdrawSelectionGroup.create).toHaveBeenCalled();
     });
   });
 
@@ -1022,7 +1022,7 @@ describe('KritzelSelectionHandler', () => {
     });
   });
   describe('titlebar support', () => {
-    const createEditableObject = (id = 'obj-1') => ({ id, edit: jest.fn() }) as unknown as KritzelBaseObject & { edit: jest.Mock };
+    const createEditableObject = (id = 'obj-1') => ({ id, edit: jest.fn() }) as unknown as UpdrawBaseObject & { edit: jest.Mock };
 
     it('does not enter edit mode when releasing the suppressed pointer', () => {
       const object = createEditableObject();
@@ -1079,7 +1079,7 @@ describe('KritzelSelectionHandler', () => {
 
     describe('toggleObjectInSelection', () => {
       it('selects the object when nothing is selected', () => {
-        const object = { id: 'obj-1' } as unknown as KritzelBaseObject;
+        const object = { id: 'obj-1' } as unknown as UpdrawBaseObject;
         (mockCore as any).selectObjects = jest.fn();
 
         selectionHandler.toggleObjectInSelection(object);
@@ -1088,8 +1088,8 @@ describe('KritzelSelectionHandler', () => {
       });
 
       it('toggles the object in the existing selection and emits a selection change', () => {
-        const first = { id: 'obj-1' } as unknown as KritzelBaseObject;
-        const second = { id: 'obj-2' } as unknown as KritzelBaseObject;
+        const first = { id: 'obj-1' } as unknown as UpdrawBaseObject;
+        const second = { id: 'obj-2' } as unknown as UpdrawBaseObject;
         mockSelectionGroup = { ...createMockSelectionGroup(), objects: [first, second] };
         (mockCore.engine as any).triggerSelectionChange = jest.fn().mockResolvedValue(undefined);
 
@@ -1111,7 +1111,7 @@ describe('KritzelSelectionHandler', () => {
           setIsInteractive: jest.fn(),
           hasFocusedInputElement: jest.fn(),
           getEmbeddedContentRoots: jest.fn(() => []),
-        } as unknown as KritzelBaseObject & { setIsInteractive: jest.Mock };
+        } as unknown as UpdrawBaseObject & { setIsInteractive: jest.Mock };
         mockSelectionGroup = { ...createMockSelectionGroup(), objectIds: ['embed-1'], objects: [] };
         (mockCore.engine as any).triggerSelectionChange = jest.fn();
 
@@ -1122,7 +1122,7 @@ describe('KritzelSelectionHandler', () => {
       });
 
       it('removes the selection when its last object is toggled off', () => {
-        const object = { id: 'obj-1' } as unknown as KritzelBaseObject;
+        const object = { id: 'obj-1' } as unknown as UpdrawBaseObject;
         mockSelectionGroup = { ...createMockSelectionGroup(), objects: [] };
         (mockCore.engine as any).triggerSelectionChange = jest.fn();
 

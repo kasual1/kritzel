@@ -1,11 +1,11 @@
 /**
- * Entry point for the Kritzel editor component package.
+ * Entry point for the Updraw editor component package.
  *
  * Components are consumed through the generated custom elements or framework
- * wrappers. Engine classes and types remain available from @kritzel/engine, which
- * re-exports @kritzel/core.
+ * wrappers. Engine classes and types remain available from @updraw/engine, which
+ * re-exports @updraw/core.
  */
 
 export type * from './components';
 
-export type HTMLKritzelEditorElement = HTMLElementTagNameMap['kritzel-editor'];
+export type HTMLUpdrawEditorElement = HTMLElementTagNameMap['updraw-editor'];

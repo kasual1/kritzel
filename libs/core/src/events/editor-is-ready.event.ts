@@ -1,6 +1,6 @@
-import { KritzelAssetStorageConfig } from '../interfaces/asset-storage-config.interface';
-import { KritzelLoginConfig } from '../interfaces/login-config.interface';
-import { KritzelSyncConfig } from '../interfaces/sync-config.interface';
+import { UpdrawAssetStorageConfig } from '../interfaces/asset-storage-config.interface';
+import { UpdrawLoginConfig } from '../interfaces/login-config.interface';
+import { UpdrawSyncConfig } from '../interfaces/sync-config.interface';
 import { ThemeName } from '../interfaces/theme.interface';
 
 export interface EditorIsReadyEvent {
@@ -12,8 +12,8 @@ export interface EditorIsReadyEvent {
         createdAt: Date;
         updatedAt: Date;
     };
-    syncConfig: KritzelSyncConfig;
-    assetStorageConfig?: KritzelAssetStorageConfig;
-    loginConfig: KritzelLoginConfig;
+    syncConfig: UpdrawSyncConfig;
+    assetStorageConfig?: UpdrawAssetStorageConfig;
+    loginConfig: UpdrawLoginConfig;
     theme: ThemeName;
 }

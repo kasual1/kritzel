@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
 import {
-  HTMLKritzelEditorElement,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelBaseObject,
-} from "@kritzel/react-editor";
+  HTMLUpdrawEditorElement,
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawBaseObject,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -15,12 +15,12 @@ import { InfoPanel, InfoPanelToggle, useInfoPanel } from "../../../components/In
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ObjectsUpdatePage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const infoPanel = useInfoPanel({ hasToolbarToggle: true });
-  const [selected, setSelected] = useState<KritzelBaseObject | null>(null);
+  const [selected, setSelected] = useState<UpdrawBaseObject | null>(null);
   const [selectionCount, setSelectionCount] = useState(0);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ objects: createSeedObjects() }),
+    new UpdrawWorkspace({ objects: createSeedObjects() }),
   ]);
 
   async function refreshSelection() {
@@ -38,7 +38,7 @@ export function ObjectsUpdatePage() {
     if (all[0]) await editor.selectObjects([all[0]]);
   }
 
-  async function updateSelected(properties: Partial<KritzelBaseObject>) {
+  async function updateSelected(properties: Partial<UpdrawBaseObject>) {
     const editor = editorRef.current;
     if (!editor || !selected) return;
     const updated = await editor.updateObject(selected, properties);
@@ -71,7 +71,7 @@ export function ObjectsUpdatePage() {
         <InfoPanelToggle panel={infoPanel} />
       </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        <KritzelEditor
+        <UpdrawEditor
           ref={editorRef}
           editorId="objects-update"
           theme="light"

@@ -1,20 +1,20 @@
-import { KritzelLineHandleHandler } from './line-handle.handler';
-import { KritzelCore } from '../core/core.class';
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelColorHelper } from '../../helpers/color.helper';
+import { UpdrawLineHandleHandler } from './line-handle.handler';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawColorHelper } from '../../helpers/color.helper';
 
 jest.mock('../../helpers/event.helper');
 jest.mock('../../helpers/color.helper', () => ({
-  KritzelColorHelper: {
+  UpdrawColorHelper: {
     resolveThemeColor: jest.fn().mockImplementation(color => color),
   },
 }));
 
-describe('KritzelLineHandleHandler', () => {
-  let lineHandleHandler: KritzelLineHandleHandler;
-  let mockCore: jest.Mocked<KritzelCore>;
-  let mockLine: jest.Mocked<KritzelLine>;
+describe('UpdrawLineHandleHandler', () => {
+  let lineHandleHandler: UpdrawLineHandleHandler;
+  let mockCore: jest.Mocked<UpdrawCore>;
+  let mockLine: jest.Mocked<UpdrawLine>;
   let mockSelectionGroup: {
     objects: unknown[];
     refreshObjectDimensions: jest.Mock;
@@ -53,9 +53,9 @@ describe('KritzelLineHandleHandler', () => {
     } as PointerEvent;
   };
 
-  const createMockLine = (): jest.Mocked<KritzelLine> => {
+  const createMockLine = (): jest.Mocked<UpdrawLine> => {
     const line = {
-      __class__: 'KritzelLine',
+      __class__: 'UpdrawLine',
       id: 'line-1',
       startX: 0,
       startY: 0,
@@ -85,15 +85,15 @@ describe('KritzelLineHandleHandler', () => {
       updateControlPoint: jest.fn(),
       _adjustedPoints: null,
       _clipInfo: null,
-    } as unknown as jest.Mocked<KritzelLine>;
+    } as unknown as jest.Mocked<UpdrawLine>;
 
-    Object.setPrototypeOf(line, KritzelLine.prototype);
+    Object.setPrototypeOf(line, UpdrawLine.prototype);
     return line;
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockLine = createMockLine();
     mockSelectionGroup = null;
@@ -149,9 +149,9 @@ describe('KritzelLineHandleHandler', () => {
         computeAnchorClipInfo: jest.fn().mockReturnValue(null),
       },
       rerender: jest.fn(),
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    lineHandleHandler = new KritzelLineHandleHandler(mockCore);
+    lineHandleHandler = new UpdrawLineHandleHandler(mockCore);
   });
 
   describe('handlePointerDown', () => {
@@ -183,7 +183,7 @@ describe('KritzelLineHandleHandler', () => {
       });
 
       it('should not start handle drag on non-left click', () => {
-        (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+        (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
         mockSelectionGroup = {
           objects: [mockLine],
           refreshObjectDimensions: jest.fn(),
@@ -575,7 +575,7 @@ describe('KritzelLineHandleHandler', () => {
 
         expect(mockCore.anchorManager.setSnapCandidate).toHaveBeenCalled();
         expect(mockCore.anchorManager.setSnapPreviewCandidate).toHaveBeenCalledWith(null);
-        expect(KritzelColorHelper.resolveThemeColor).toHaveBeenCalledWith(mockLine.stroke, 'dark');
+        expect(UpdrawColorHelper.resolveThemeColor).toHaveBeenCalledWith(mockLine.stroke, 'dark');
       });
 
       it('should set a preview candidate before actual snapping engages', () => {

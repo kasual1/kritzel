@@ -9,7 +9,7 @@ import ts from 'typescript';
 import { compileScript, compileTemplate, parse as parseVue } from '@vue/compiler-sfc';
 import { runBrowserSmoke } from './browser-smoke.mjs';
 
-// Packs the publishable Kritzel packages, adds each starter in fixtures/ to its own temporary app and checks
+// Packs the publishable Updraw packages, adds each starter in fixtures/ to its own temporary app and checks
 // that every starter compiles against the packed packages and runs in a browser.
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = path.resolve(scriptDirectory, '../..');
@@ -48,9 +48,9 @@ function normalizePackResult(result) {
 }
 
 function verifyPackResultFormats() {
-  const metadata = { filename: 'kritzel.tgz' };
+  const metadata = { filename: 'updraw.tgz' };
   assert.equal(normalizePackResult([metadata]), metadata, 'npm array pack output should be supported');
-  assert.equal(normalizePackResult({ '@kritzel/core': metadata }), metadata, 'npm keyed pack output should be supported');
+  assert.equal(normalizePackResult({ '@updraw/core': metadata }), metadata, 'npm keyed pack output should be supported');
   assert.equal(normalizePackResult(metadata), metadata, 'direct pack metadata should be supported');
 }
 
@@ -66,7 +66,7 @@ async function packDependency(name, relativeDirectory) {
 
   const targetDirectory = name.startsWith('@')
     ? path.join(temporaryDirectory, 'node_modules', ...name.split('/'))
-    : path.join(temporaryDirectory, 'node_modules', '@kritzel', name);
+    : path.join(temporaryDirectory, 'node_modules', '@updraw', name);
   await mkdir(path.dirname(targetDirectory), { recursive: true });
   await rename(path.join(stagingDirectory, 'package'), targetDirectory);
   const manifest = JSON.parse(await readFile(path.join(targetDirectory, 'package.json'), 'utf8'));
@@ -176,7 +176,7 @@ async function main() {
   }
 
   typecheckGeneratedFiles(generatedSources);
-  console.log(`Validated ${contexts.length} starters against packed Kritzel ${release} packages: Angular, React and Vue editor/engine templates compile.`);
+  console.log(`Validated ${contexts.length} starters against packed Updraw ${release} packages: Angular, React and Vue editor/engine templates compile.`);
   await runBrowserSmoke(contexts, temporaryDirectory);
 }
 

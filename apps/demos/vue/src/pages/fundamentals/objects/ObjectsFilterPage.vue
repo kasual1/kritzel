@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelBaseObject,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawBaseObject,
+} from '@updraw/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -18,11 +18,11 @@ import { useInfoPanel } from '../../../components/info-panel'
 const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
 const editor = getEditorRef('editor')
-const results = ref<KritzelBaseObject[]>([])
+const results = ref<UpdrawBaseObject[]>([])
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 
-async function highlightResults(nextResults: KritzelBaseObject[]) {
+async function highlightResults(nextResults: UpdrawBaseObject[]) {
   if (!editor.value) {
     return
   }
@@ -32,7 +32,7 @@ async function highlightResults(nextResults: KritzelBaseObject[]) {
   await Promise.all(nextResults.map((object) => editor.value?.updateObject(object, { opacity: 1 })))
 }
 
-async function showResults(nextResults: KritzelBaseObject[]) {
+async function showResults(nextResults: UpdrawBaseObject[]) {
   results.value = nextResults
   await highlightResults(nextResults)
 }
@@ -62,16 +62,16 @@ async function onReady() {
 <template>
   <div :style="hostStyle">
     <Toolbar>
-      <button @click="queryByType('KritzelShape')">Shapes</button>
-      <button @click="queryByType('KritzelPath')">Paths</button>
-      <button @click="queryByType('KritzelLine')">Lines</button>
+      <button @click="queryByType('UpdrawShape')">Shapes</button>
+      <button @click="queryByType('UpdrawPath')">Paths</button>
+      <button @click="queryByType('UpdrawLine')">Lines</button>
       <button @click="queryAll">All</button>
       <button @click="queryNone">None</button>
       <button @click="queryInViewport">In Viewport</button>
       <InfoPanelToggle :panel="infoPanel" />
     </Toolbar>
     <div class="content">
-      <KritzelEditor
+      <UpdrawEditor
         ref="editor"
         editorId="objects-filter"
         theme="light"

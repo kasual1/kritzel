@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { KritzelEditor, KritzelWorkspace, LocaleCode } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawWorkspace, LocaleCode } from '@updraw/angular-editor';
 import { createSeedObjects } from '../../../const/seed-objects';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -7,7 +7,7 @@ import { angularThemeDark } from '../../../const/angular-theme-dark';
 
 @Component({
   selector: 'app-localization-switch',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -16,7 +16,7 @@ import { angularThemeDark } from '../../../const/angular-theme-dark';
       <button [class.active]="activeLocale() === 'fr'" (click)="setLocale('fr')">French</button>
     </app-toolbar>
     <div class="editor-wrap">
-      <kritzel-editor
+      <updraw-editor
         editorId="localization-switch"
         [locale]="activeLocale()"
         [workspaces]="workspaces()"
@@ -27,7 +27,7 @@ import { angularThemeDark } from '../../../const/angular-theme-dark';
         [isMoreMenuVisible]="true"
         [isWorkspaceManagerVisible]="true"
         (localeChange)="onLocaleChange($event)"
-      ></kritzel-editor>
+      ></updraw-editor>
     </div>
   `,
   styles: [`
@@ -39,7 +39,7 @@ import { angularThemeDark } from '../../../const/angular-theme-dark';
 export class LocalizationSwitchComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
   
   activeLocale = signal<LocaleCode>('en');
 

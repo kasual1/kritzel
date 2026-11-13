@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { getEditorRef, KritzelEditor, KritzelWorkspace } from '@kritzel/vue-editor'
+import { getEditorRef, UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -23,7 +23,7 @@ const tools: Array<{ name: ToolName; label: string }> = [
 ]
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 const editor = getEditorRef('editor')
 const activeTool = ref<ToolName>('select')
 
@@ -45,7 +45,7 @@ async function setTool(name: ToolName) {
         {{ tool.label }}
       </button>
     </Toolbar>
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="tools-change"
       theme="light"

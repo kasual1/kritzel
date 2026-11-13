@@ -1,4 +1,4 @@
-import { KritzelMigration } from '../interfaces/migration.interface';
+import { UpdrawMigration } from '../interfaces/migration.interface';
 
 const LEGACY_CUSTOM_ELEMENT_CLASS = 'KritzelCustomElement';
 const DYNAMIC_OBJECT_CLASS = 'KritzelDynamicObject';
@@ -41,7 +41,7 @@ function renameCustomElementClass(value: unknown): boolean {
  * 2. Append a new entry with fromVersion = old version, toVersion = new version
  * 3. Implement the migrate() function — it must be idempotent
  */
-export const WORKSPACE_MIGRATIONS: KritzelMigration[] = [
+export const WORKSPACE_MIGRATIONS: UpdrawMigration[] = [
   {
     fromVersion: 1,
     toVersion: 2,

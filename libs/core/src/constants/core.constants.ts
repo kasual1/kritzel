@@ -1,1 +1,1 @@
-// YJS_DOCUMENT_NAME removed - now each workspace has its own Y.Doc with naming: 'kritzel-workspace-${workspaceId}'
+// YJS_DOCUMENT_NAME removed - now each workspace has its own Y.Doc with naming: 'updraw-workspace-${workspaceId}'

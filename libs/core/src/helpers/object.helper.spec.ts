@@ -65,7 +65,7 @@ describe('ObjectHelper', () => {
     });
   });
 
-  describe('isKritzelEmbeddedObject', () => {
+  describe('isUpdrawEmbeddedObject', () => {
     const embeddedObject = {
       isInteractive: false,
       isSelected: false,
@@ -77,19 +77,19 @@ describe('ObjectHelper', () => {
     };
 
     it('recognizes the structural embedded-object contract regardless of class name', () => {
-      expect(ObjectHelper.isKritzelEmbeddedObject({ ...embeddedObject, __class__: 'KritzelIframeObject' })).toBe(true);
+      expect(ObjectHelper.isUpdrawEmbeddedObject({ ...embeddedObject, __class__: 'UpdrawIframeObject' })).toBe(true);
     });
 
     it('rejects partial and unrelated objects', () => {
-      expect(ObjectHelper.isKritzelEmbeddedObject({ ...embeddedObject, unmount: undefined })).toBe(false);
-      expect(ObjectHelper.isKritzelEmbeddedObject({ __class__: 'KritzelDynamicObject' })).toBe(false);
-      expect(ObjectHelper.isKritzelEmbeddedObject(null)).toBe(false);
+      expect(ObjectHelper.isUpdrawEmbeddedObject({ ...embeddedObject, unmount: undefined })).toBe(false);
+      expect(ObjectHelper.isUpdrawEmbeddedObject({ __class__: 'UpdrawDynamicObject' })).toBe(false);
+      expect(ObjectHelper.isUpdrawEmbeddedObject(null)).toBe(false);
     });
   });
 
-  describe('isKritzelExportable', () => {
+  describe('isUpdrawExportable', () => {
     it('should return false for null', () => {
-      expect(ObjectHelper.isKritzelExportable(null)).toBe(false);
+      expect(ObjectHelper.isUpdrawExportable(null)).toBe(false);
     });
 
     it('should return false when getSupportedExportFormats is missing', () => {
@@ -97,7 +97,7 @@ describe('ObjectHelper', () => {
         exportAs: async () => 'data:image/png;base64,abc',
       };
 
-      expect(ObjectHelper.isKritzelExportable(candidate)).toBe(false);
+      expect(ObjectHelper.isUpdrawExportable(candidate)).toBe(false);
     });
 
     it('should return false when exportAs is missing', () => {
@@ -105,7 +105,7 @@ describe('ObjectHelper', () => {
         getSupportedExportFormats: () => ['png'],
       };
 
-      expect(ObjectHelper.isKritzelExportable(candidate)).toBe(false);
+      expect(ObjectHelper.isUpdrawExportable(candidate)).toBe(false);
     });
 
     it('should return false when supported formats are empty', () => {
@@ -114,7 +114,7 @@ describe('ObjectHelper', () => {
         exportAs: async () => 'data:image/png;base64,abc',
       };
 
-      expect(ObjectHelper.isKritzelExportable(candidate)).toBe(false);
+      expect(ObjectHelper.isUpdrawExportable(candidate)).toBe(false);
     });
 
     it('should return false when supported formats are not an array', () => {
@@ -123,7 +123,7 @@ describe('ObjectHelper', () => {
         exportAs: async () => 'data:image/png;base64,abc',
       };
 
-      expect(ObjectHelper.isKritzelExportable(candidate)).toBe(false);
+      expect(ObjectHelper.isUpdrawExportable(candidate)).toBe(false);
     });
 
     it('should return true for valid exportable objects', () => {
@@ -132,7 +132,7 @@ describe('ObjectHelper', () => {
         exportAs: async () => 'data:image/png;base64,abc',
       };
 
-      expect(ObjectHelper.isKritzelExportable(candidate)).toBe(true);
+      expect(ObjectHelper.isUpdrawExportable(candidate)).toBe(true);
     });
   });
 });

@@ -1,9 +1,9 @@
 import { createActorTools, createAgentTools, formatAgentToolResult, MODEL_IFRAME_CONTENT_SECURITY_POLICY } from './agent-tools';
-import { KritzelImage } from '../objects/image.class';
-import { KritzelIframeObject } from '../objects/iframe.class';
-import { KritzelAgentActionError } from './agent-action-error.class';
+import { UpdrawImage } from '../objects/image.class';
+import { UpdrawIframeObject } from '../objects/iframe.class';
+import { UpdrawAgentActionError } from './agent-action-error.class';
 
-/** The parts of a KritzelAgent the tools use. */
+/** The parts of an UpdrawAgent the tools use. */
 const createFakeAgent = () => ({
   isAdded: true,
   perform: jest.fn().mockResolvedValue({ completed: true, objectIds: ['new-1'] }),
@@ -34,8 +34,8 @@ describe('agent tools', () => {
     );
     expect(names).not.toContain('add_object');
 
-    const limited = createAgentTools(agent as any, { only: ['observe_canvas', 'move_object'], prefix: 'kritzel_' });
-    expect(limited.map(candidate => candidate.name)).toEqual(['kritzel_observe_canvas', 'kritzel_move_object']);
+    const limited = createAgentTools(agent as any, { only: ['observe_canvas', 'move_object'], prefix: 'updraw_' });
+    expect(limited.map(candidate => candidate.name)).toEqual(['updraw_observe_canvas', 'updraw_move_object']);
   });
 
   it('turns the input into the action and passes the signal', async () => {
@@ -102,7 +102,7 @@ describe('agent tools', () => {
   });
 
   it('reports refusals inside agent.task() instead of throwing', async () => {
-    agent.perform.mockRejectedValue(new KritzelAgentActionError({ type: 'undo' }, { completed: false, reason: 'nothing-to-undo' }));
+    agent.perform.mockRejectedValue(new UpdrawAgentActionError({ type: 'undo' }, { completed: false, reason: 'nothing-to-undo' }));
 
     await expect(run(agent, 'undo', {})).resolves.toMatchObject({ completed: false, reason: 'nothing-to-undo' });
   });
@@ -181,7 +181,7 @@ describe('agent tools', () => {
       const signal = new AbortController().signal;
       const result = JSON.parse(await tool(agent, 'create_image').run({ name: 'Dot', svg: SVG, x: 10, y: 20, width: 40, height: 40 }, { signal }));
 
-      expect(agent.perform).toHaveBeenCalledWith({ type: 'addObject', object: expect.any(KritzelImage) }, { signal });
+      expect(agent.perform).toHaveBeenCalledWith({ type: 'addObject', object: expect.any(UpdrawImage) }, { signal });
       expect(placed()).toMatchObject({ name: 'Dot', translateX: 10, translateY: 20, width: 40, height: 40 });
       expect(placed().src).toBe(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(SVG)}`);
       expect(result).toMatchObject({ completed: true, objectIds: ['new-1'] });
@@ -225,8 +225,8 @@ describe('agent tools', () => {
         await iframeTool.run({ name: 'Counter', html: '<button>+</button>', css: 'button{}', script: 'let n = 0;', x: 5, y: 6, width: 200, height: 100 }),
       );
 
-      expect(agent.perform).toHaveBeenCalledWith({ type: 'addObject', object: expect.any(KritzelIframeObject) }, {});
-      const iframe = placed() as KritzelIframeObject;
+      expect(agent.perform).toHaveBeenCalledWith({ type: 'addObject', object: expect.any(UpdrawIframeObject) }, {});
+      const iframe = placed() as UpdrawIframeObject;
       expect(iframe).toMatchObject({ name: 'Counter', title: 'Counter', translateX: 5, translateY: 6, width: 200, height: 100 });
       expect(iframe.content).toEqual({ html: '<button>+</button>', css: 'button{}', script: 'let n = 0;' });
       expect(iframe.sandbox).toEqual(['allow-scripts']);

@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal, viewChild } from '@angular/core';
-import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawWorkspace } from '@updraw/angular-editor';
 import { InfoPanelComponent } from '../../../components/info-panel.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -8,7 +8,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-import-export-workspace-export',
-  imports: [InfoPanelComponent, KritzelEditor, ToolbarComponent],
+  imports: [InfoPanelComponent, UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -17,7 +17,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
     </app-toolbar>
     <div class="content">
       <div class="editor-wrap">
-        <kritzel-editor
+        <updraw-editor
           editorId="import-export-workspace-export"
           [theme]="'light'"
           [themes]="themes"
@@ -26,7 +26,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
           [isZoomingEnabled]="false"
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"
-        ></kritzel-editor>
+        ></updraw-editor>
       </div>
       <app-info-panel>
         <h3>Exported Workspace</h3>
@@ -51,7 +51,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         flex: 1 1 60%;
         position: relative;
       }
-      kritzel-editor {
+      updraw-editor {
         display: block;
         height: 100%;
       }
@@ -70,12 +70,12 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   ],
 })
 export class ImportExportWorkspaceExportComponent {
-  editor = viewChild(KritzelEditor);
+  editor = viewChild(UpdrawEditor);
 
   jsonPreview = signal('Click "Preview as JSON" to see the exported workspace.');
   themes = [angularThemeLight, angularThemeDark];
   workspaces = signal([
-    new KritzelWorkspace({
+    new UpdrawWorkspace({
       id: 'workspace-export',
       name: 'Workspace Export',
       objects: createSeedObjects(),

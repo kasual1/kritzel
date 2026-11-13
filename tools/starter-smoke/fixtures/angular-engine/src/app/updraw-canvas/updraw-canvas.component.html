@@ -1,0 +1,8 @@
+<updraw-engine
+  [editorId]="editorId"
+  (isEngineReady)="onEngineReady()"
+  aria-label="Updraw canvas"
+></updraw-engine>
+@if (initializationError) {
+  <p role="alert">{{ initializationError }}</p>
+}

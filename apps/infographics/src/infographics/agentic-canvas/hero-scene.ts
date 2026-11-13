@@ -1,12 +1,12 @@
 import {
-  KritzelAgent,
-  KritzelIframeObject,
-  type HTMLKritzelEditorElement,
-  type KritzelAgenticActionOptions,
-  type KritzelAgenticActionResult,
-  type KritzelIframeContent,
-  type KritzelPoint,
-} from '@kritzel/react-editor';
+  UpdrawAgent,
+  UpdrawIframeObject,
+  type HTMLUpdrawEditorElement,
+  type UpdrawAgenticActionOptions,
+  type UpdrawAgenticActionResult,
+  type UpdrawIframeContent,
+  type UpdrawPoint,
+} from '@updraw/react-editor';
 import { ALBUM_COVERS } from './album-covers';
 
 /**
@@ -19,7 +19,7 @@ import { ALBUM_COVERS } from './album-covers';
  */
 
 /**
- * Who an agent is. Its `KritzelAgent` is only created when its cursor enters the scene (see `addAgentAt`), because the
+ * Who an agent is. Its `UpdrawAgent` is only created when its cursor enters the scene (see `addAgentAt`), because the
  * cursor appears where the agent's `position` says when the agent is added.
  */
 export interface AgentProfile {
@@ -78,7 +78,7 @@ const COVERS_SHIFT_X = (STUDIO_BOX.x + STUDIO_BOX.width + SOCIAL_BOX.x) / 2;
 
 export const SHADOW = '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)';
 
-export function coverContent(image: string): KritzelIframeContent {
+export function coverContent(image: string): UpdrawIframeContent {
   return {
     html: `<img src="${image}" alt="Album cover of Full Control">`,
     css: 'html, body { height: 100%; margin: 0; overflow: hidden; } img { display: block; width: 100%; height: 100%; object-fit: cover; }',
@@ -86,7 +86,7 @@ export function coverContent(image: string): KritzelIframeContent {
   };
 }
 
-const SOCIAL_POST: KritzelIframeContent = {
+const SOCIAL_POST: UpdrawIframeContent = {
   html: `<article>
   <header>
     <div class="avatar">LM</div>
@@ -123,7 +123,7 @@ const WAVE_LEVELS = Array.from({ length: 64 }, (_, i) => {
   return Math.max(0.08, Math.min(1, (0.25 + 0.75 * phrases * (0.55 + 0.45 * grain)) * fade));
 });
 
-export const RECORDER: KritzelIframeContent = {
+export const RECORDER: UpdrawIframeContent = {
   html: `<main>
   <header>
     <strong>Full Control</strong>
@@ -227,14 +227,14 @@ const setRecording = next => {
   recording = next;
 };
 
-addEventListener('kritzelstatechange', event => {
+addEventListener('updrawstatechange', event => {
   button.classList.remove('pressed');
   void button.offsetWidth;
   button.classList.add('pressed');
   setRecording(event.detail.recording === true);
 });
 // A reloaded page picks up where the host is, e.g. when the widget comes back into view.
-if (globalThis.kritzel && globalThis.kritzel.state && globalThis.kritzel.state.recording) setRecording(true);`,
+if (globalThis.updraw && globalThis.updraw.state && globalThis.updraw.state.recording) setRecording(true);`,
 };
 
 /** Room between the widget and the saved takes below it, and between the takes. */
@@ -267,7 +267,7 @@ function takeBox(index: number): Box {
 const STUDIO_WORK = [STUDIO_BOX, ...TAKES.map((_, index) => takeBox(index))];
 
 /** A saved take. Its star turns on through the page's state (`{ favorite: true }`), so it animates in place. */
-export function takeContent(take: { name: string; duration: string }): KritzelIframeContent {
+export function takeContent(take: { name: string; duration: string }): UpdrawIframeContent {
   return {
     html: `<main>
   <span class="play" aria-hidden="true"></span>
@@ -322,8 +322,8 @@ const render = (state, animate) => {
   star.classList.toggle('favorite', favorite);
   star.setAttribute('aria-label', favorite ? 'Favorite' : 'Not a favorite');
 };
-render(globalThis.kritzel && globalThis.kritzel.state, false);
-globalThis.addEventListener('kritzelstatechange', event => render(event.detail, true));`,
+render(globalThis.updraw && globalThis.updraw.state, false);
+globalThis.addEventListener('updrawstatechange', event => render(event.detail, true));`,
   };
 }
 
@@ -363,7 +363,7 @@ const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 
  * in past 100%. The box is centered in the area above the chat box, or in the whole view when `isCentered` is set,
  * which suits the final overview: it fits above the chat box either way.
  */
-export async function frame(editor: HTMLKritzelEditorElement, box: Box, duration: number, signal: AbortSignal, isCentered = false) {
+export async function frame(editor: HTMLUpdrawEditorElement, box: Box, duration: number, signal: AbortSignal, isCentered = false) {
   const view = await editor.getViewport();
   const visibleHeight = view.height - CHAT_BOX_SPACE;
   const scale = Math.min(view.width / (box.width * 1.2), visibleHeight / (box.height * 1.2), 1);
@@ -382,8 +382,8 @@ export async function frame(editor: HTMLKritzelEditorElement, box: Box, duration
 }
 
 /** Types a prompt into the chat box as a person would, then sends it. */
-export async function typePrompt(editor: HTMLKritzelEditorElement, prompt: string, signal: AbortSignal) {
-  const chatBox = editor.querySelector('kritzel-chat-box');
+export async function typePrompt(editor: HTMLUpdrawEditorElement, prompt: string, signal: AbortSignal) {
+  const chatBox = editor.querySelector('updraw-chat-box');
   const textarea = chatBox?.shadowRoot?.querySelector('textarea');
   if (!chatBox || !textarea) {
     return;
@@ -399,7 +399,7 @@ export async function typePrompt(editor: HTMLKritzelEditorElement, prompt: strin
 }
 
 /** Runs an agent action and stops the scene when it does not complete. Resolves with the action's object IDs. */
-export async function act(action: Promise<KritzelAgenticActionResult>): Promise<string[]> {
+export async function act(action: Promise<UpdrawAgenticActionResult>): Promise<string[]> {
   const result = await action;
   if (!result.completed) {
     throw new Error(`Agent action stopped: ${result.reason}`);
@@ -410,7 +410,7 @@ export async function act(action: Promise<KritzelAgenticActionResult>): Promise<
 /** A page an agent writes, see `generatePage`. */
 export interface GeneratedPage {
   box: Box;
-  content: KritzelIframeContent;
+  content: UpdrawIframeContent;
   /** How long the page shows the engine's loading placeholder before its content. */
   writingTime: number;
   /** Defaults to the agent's name. */
@@ -421,16 +421,16 @@ export interface GeneratedPage {
 /**
  * The agent writes a page: it places the page with `agent.addObject()`, so the page is the agent's change, and the page
  * is loading (`isLoading`), so the engine shows its loading placeholder over it, until the agent is "done writing" it.
- * Kritzel's appear animation fades the page in while it rises into place, because it is placed with
+ * Updraw's appear animation fades the page in while it rises into place, because it is placed with
  * `agent.addObject()`. The agent's cursor rests at the page's corner while it writes.
  */
 export async function generatePage(
-  agent: KritzelAgent,
+  agent: UpdrawAgent,
   { box, content, writingTime, title = agent.name, borderRadius = 14 }: GeneratedPage,
   signal: AbortSignal,
-  actionOptions: KritzelAgenticActionOptions = {},
-): Promise<KritzelIframeObject> {
-  const page = new KritzelIframeObject({
+  actionOptions: UpdrawAgenticActionOptions = {},
+): Promise<UpdrawIframeObject> {
+  const page = new UpdrawIframeObject({
     title,
     content,
     isLoading: true,
@@ -481,9 +481,9 @@ export const BUTTON_REST_OFFSET = { x: 30, y: 24 };
  * Between clicks it rests just beside the button, so it never hides it. Returns the saved takes.
  */
 async function recordTakes(
-  editor: HTMLKritzelEditorElement,
-  studio: KritzelAgent,
-  widget: KritzelIframeObject,
+  editor: HTMLUpdrawEditorElement,
+  studio: UpdrawAgent,
+  widget: UpdrawIframeObject,
   signal: AbortSignal,
 ) {
   // An object anchor, not an element selector: Studio also clicks while the widget is off-screen, and only mounted
@@ -500,7 +500,7 @@ async function recordTakes(
     await studio.moveTo(button(BUTTON_REST_OFFSET), { duration: 380, easing: 'ease-in-out' });
   };
 
-  const pages: (KritzelIframeObject | null)[] = [];
+  const pages: (UpdrawIframeObject | null)[] = [];
   for (const [index, take] of TAKES.entries()) {
     await press({ recording: true, take: index + 1 });
     await wait(TAKE_RECORDING_TIME, signal);
@@ -508,9 +508,9 @@ async function recordTakes(
     const box = takeBox(index);
     // Only the most recent take is marked as new.
     pages.at(-1)?.setState({ isNew: false });
-    // The take appears below the widget (Kritzel's appear animation, as the app adds it) while Studio carries on.
+    // The take appears below the widget (Updraw's appear animation, as the app adds it) while Studio carries on.
     const [page] = await editor.addObjects([
-      new KritzelIframeObject({
+      new UpdrawIframeObject({
         title: take.name,
         content: takeContent(take),
         state: { isNew: true },
@@ -544,9 +544,9 @@ export function starTarget(takeId: string, offset = BUTTON_PRESS_OFFSET) {
  * turns on through the take's state, as the take's star button would, so the page animates it in place.
  */
 async function starFavorite(
-  editor: HTMLKritzelEditorElement,
-  studio: KritzelAgent,
-  take: KritzelIframeObject | null,
+  editor: HTMLUpdrawEditorElement,
+  studio: UpdrawAgent,
+  take: UpdrawIframeObject | null,
   signal: AbortSignal,
 ) {
   if (take) {
@@ -556,7 +556,7 @@ async function starFavorite(
   await exit(editor, studio, { x: STUDIO_BOX.x - 700, y: STUDIO_BOX.y + 900 }, 0, signal);
 }
 
-async function createCovers(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
+async function createCovers(editor: HTMLUpdrawEditorElement, signal: AbortSignal) {
   const covers = await addAgentAt(editor, COVER_AGENT, { x: -520, y: 420 });
   for (const [index, cover] of ALBUM_COVERS.entries()) {
     await generatePage(covers, { box: coverBox(index), content: coverContent(cover.image), writingTime: 700, borderRadius: 12 }, signal);
@@ -570,10 +570,10 @@ async function createCovers(editor: HTMLKritzelEditorElement, signal: AbortSigna
  * left or right edge and build its page. Returns the agent, whose cursor stays at its page.
  */
 async function runFollowedAgent(
-  editor: HTMLKritzelEditorElement,
+  editor: HTMLUpdrawEditorElement,
   profile: AgentProfile,
   box: Box,
-  content: KritzelIframeContent,
+  content: UpdrawIframeContent,
   signal: AbortSignal,
   view: Box = box,
   side: 'left' | 'right' = 'left',
@@ -588,19 +588,19 @@ async function runFollowedAgent(
 }
 
 /** Moves a cursor out of view, after `delay` ms, and removes its agent once it is gone. Agents leave as soon as they finish. */
-async function exit(editor: HTMLKritzelEditorElement, agent: KritzelAgent, to: KritzelPoint, delay: number, signal: AbortSignal) {
+async function exit(editor: HTMLUpdrawEditorElement, agent: UpdrawAgent, to: UpdrawPoint, delay: number, signal: AbortSignal) {
   await wait(delay, signal);
   await agent.moveTo(to, { duration: EXIT_DURATION, easing: 'ease-in' });
   await editor.removeAgent(agent);
 }
 
 /** Adds an agent for the profile, with its cursor at `position`, where it enters the scene. */
-export async function addAgentAt(editor: HTMLKritzelEditorElement, profile: AgentProfile, position: KritzelPoint): Promise<KritzelAgent> {
-  return editor.addAgent(new KritzelAgent({ ...profile, position }));
+export async function addAgentAt(editor: HTMLUpdrawEditorElement, profile: AgentProfile, position: UpdrawPoint): Promise<UpdrawAgent> {
+  return editor.addAgent(new UpdrawAgent({ ...profile, position }));
 }
 
 /** Removes every agent of the editor, so a scene starts without cursors. */
-export async function removeAgents(editor: HTMLKritzelEditorElement) {
+export async function removeAgents(editor: HTMLUpdrawEditorElement) {
   for (const agent of await editor.getAgents()) {
     await editor.removeAgent(agent);
   }
@@ -611,7 +611,7 @@ export async function removeAgents(editor: HTMLKritzelEditorElement) {
  * social media post, the last of the three results, has been added.
  */
 export async function playHeroScene(
-  editor: HTMLKritzelEditorElement,
+  editor: HTMLUpdrawEditorElement,
   setWorking: (isWorking: boolean) => void,
   signal: AbortSignal,
 ): Promise<void> {

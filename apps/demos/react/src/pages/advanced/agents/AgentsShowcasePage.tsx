@@ -1,14 +1,14 @@
 import { useMemo, useRef, useState } from "react";
 import {
-  KritzelAgent,
-  KritzelEditor,
-  KritzelShape,
-  KritzelWorkspace,
+  UpdrawAgent,
+  UpdrawEditor,
+  UpdrawShape,
+  UpdrawWorkspace,
   ShapeType,
-  type HTMLKritzelEditorElement,
-  type KritzelAgenticAction,
-  type KritzelObjectChangeSource,
-} from "@kritzel/react-editor";
+  type HTMLUpdrawEditorElement,
+  type UpdrawAgenticAction,
+  type UpdrawObjectChangeSource,
+} from "@updraw/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { Toolbar } from "../../../components/Toolbar";
@@ -41,7 +41,7 @@ interface NoteOptions {
 }
 
 function note({ x, y, width, height, text, fill, stroke, rotation = 0, shapeType = ShapeType.Rectangle, fontColor }: NoteOptions) {
-  const shape = new KritzelShape({
+  const shape = new UpdrawShape({
     translateX: x,
     translateY: y,
     width,
@@ -75,16 +75,16 @@ const SCENARIOS: { id: ScenarioId; label: string; hint: string }[] = [
 /** One agent per persona; a scenario adds the ones it needs, Reset removes them again. */
 function createAgents() {
   return {
-    organizer: new KritzelAgent({ id: "organizer", name: "Organizer", color: "#7C3AED", speed: SPEED, position: { x: 0, y: 0 } }),
-    architect: new KritzelAgent({ id: "architect", name: "Architect", color: "#0EA5E9", speed: SPEED, position: { x: -520, y: -200 } }),
-    reviewer: new KritzelAgent({ id: "reviewer", name: "Reviewer", color: "#DB2777", speed: SPEED, position: { x: -400, y: 150 } }),
-    agentA: new KritzelAgent({ id: "agent-a", name: "Agent A", color: "#7C3AED", speed: SPEED, position: { x: -560, y: -300 } }),
-    agentB: new KritzelAgent({ id: "agent-b", name: "Agent B", color: "#F59E0B", speed: SPEED, position: { x: -300, y: -300 } }),
+    organizer: new UpdrawAgent({ id: "organizer", name: "Organizer", color: "#7C3AED", speed: SPEED, position: { x: 0, y: 0 } }),
+    architect: new UpdrawAgent({ id: "architect", name: "Architect", color: "#0EA5E9", speed: SPEED, position: { x: -520, y: -200 } }),
+    reviewer: new UpdrawAgent({ id: "reviewer", name: "Reviewer", color: "#DB2777", speed: SPEED, position: { x: -400, y: 150 } }),
+    agentA: new UpdrawAgent({ id: "agent-a", name: "Agent A", color: "#7C3AED", speed: SPEED, position: { x: -560, y: -300 } }),
+    agentB: new UpdrawAgent({ id: "agent-b", name: "Agent B", color: "#F59E0B", speed: SPEED, position: { x: -300, y: -300 } }),
   };
 }
 
 export function AgentsShowcasePage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [state, setState] = useState<ScenarioState>("idle");
   const [scenario, setScenario] = useState<ScenarioId | null>(null);
   const [message, setMessage] = useState("Pick a use case.");
@@ -92,13 +92,13 @@ export function AgentsShowcasePage() {
   // Published for tests and recordings that play the human in "Agents + human".
   const [greenId, setGreenId] = useState("");
   const [phase, setPhase] = useState("");
-  const workspaces = useMemo(() => [new KritzelWorkspace({ id: "agentic-showcase", name: "Agentic Showcase" })], []);
+  const workspaces = useMemo(() => [new UpdrawWorkspace({ id: "agentic-showcase", name: "Agentic Showcase" })], []);
   const [agents] = useState(createAgents);
 
   const editor = () => editorRef.current!;
 
   /** Runs an action and throws when it does not complete, so a script stops at the first problem. */
-  async function act(agent: KritzelAgent, action: KritzelAgenticAction, status?: string): Promise<string[]> {
+  async function act(agent: UpdrawAgent, action: UpdrawAgenticAction, status?: string): Promise<string[]> {
     if (status) {
       agent.setStatus(status);
     }
@@ -118,7 +118,7 @@ export function AgentsShowcasePage() {
     // A removed agent keeps its status; start the next scenario without one.
     Object.values(agents).forEach(agent => agent.setStatus(null));
     const objects = (await current.getAllObjects()).filter(
-      object => object.__class__ !== "KritzelSelectionGroup" && object.__class__ !== "KritzelSelectionBox",
+      object => object.__class__ !== "UpdrawSelectionGroup" && object.__class__ !== "UpdrawSelectionBox",
     );
     if (objects.length > 0) {
       await current.removeObjects(objects);
@@ -289,7 +289,7 @@ export function AgentsShowcasePage() {
     setMessage("Pick a use case.");
   }
 
-  function onChange(source: KritzelObjectChangeSource | undefined, kind: string) {
+  function onChange(source: UpdrawObjectChangeSource | undefined, kind: string) {
     if (source) {
       setLastChange(`${kind} by ${source.agentId} (${source.actionType})`);
     }
@@ -310,7 +310,7 @@ export function AgentsShowcasePage() {
         </span>
         {lastChange && <span className="status">{lastChange}</span>}
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="agents-showcase"
         theme="light"

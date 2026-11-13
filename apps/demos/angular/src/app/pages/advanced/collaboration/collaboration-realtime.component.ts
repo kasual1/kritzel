@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
-import { KritzelEditor, IndexedDBSyncProvider, HocuspocusSyncProvider, KritzelSyncConfig, KritzelWorkspace } from '@kritzel/angular-editor';
+import { UpdrawEditor, IndexedDBSyncProvider, HocuspocusSyncProvider, UpdrawSyncConfig, UpdrawWorkspace } from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -7,7 +7,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-collaboration-realtime',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -15,7 +15,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       <span class="status">Connected to Hocuspocus server</span>
     </app-toolbar>
     <div class="editor-wrap">
-      <kritzel-editor
+      <updraw-editor
         editorId="collaboration-realtime"
         [syncConfig]="syncConfig"
         [theme]="'light'"
@@ -26,7 +26,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-      ></kritzel-editor>
+      ></updraw-editor>
     </div>
   `,
   styles: [`
@@ -49,9 +49,9 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 export class CollaborationRealtimeComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
-  syncConfig: KritzelSyncConfig = {
+  syncConfig: UpdrawSyncConfig = {
     providers: [
       IndexedDBSyncProvider,
       HocuspocusSyncProvider.with({ url: 'wss://your-hocuspocus-server.com' }),

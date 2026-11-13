@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 
 const watch = process.argv.includes('--watch');
 
-// One bundle per format, so every consumer of @kritzel/core shares one module instance.
+// One bundle per format, so every consumer of @updraw/core shares one module instance.
 // yjs and its companions stay external, exactly as in the Stencil builds, otherwise Yjs
 // warns "Yjs was already imported" and its constructor checks break.
 const shared = {

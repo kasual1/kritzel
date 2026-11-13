@@ -2,13 +2,13 @@
 import { computed, ref, shallowRef, watch } from 'vue'
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelBaseObject,
-  type KritzelChatBoxChip,
-  type KritzelChatSession,
-  type KritzelObjectTitlebarActionEvent,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawBaseObject,
+  type UpdrawChatBoxChip,
+  type UpdrawChatSession,
+  type UpdrawObjectTitlebarActionEvent,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createBrowserTransport, type Credentials } from './browser-transport'
@@ -36,12 +36,12 @@ const accentStyle = {
   '--gen-ui-accent-hover': vueThemeLight.global?.primaryHoverColor,
 }
 
-const workspaces = [new KritzelWorkspace({ name: 'Generative UI', objects: [] })]
+const workspaces = [new UpdrawWorkspace({ name: 'Generative UI', objects: [] })]
 
 // One session per mode, created once per page instance: choosing a mode binds its session to the editor.
 // Kept as plain consts so Vue never wraps them in reactive proxies.
 const browser = createBrowserTransport()
-const sessions: Record<RequestMode, KritzelChatSession> = {
+const sessions: Record<RequestMode, UpdrawChatSession> = {
   live: createGenerativeUiSession(browser.transport),
   mock: createGenerativeUiSession(createMockTransport()),
 }
@@ -53,7 +53,7 @@ const credentials = shallowRef<Credentials | null>(null)
 const keyError = ref('')
 const isWorking = ref(false)
 const hasUis = ref(false)
-const chips = ref<KritzelChatBoxChip[]>([])
+const chips = ref<UpdrawChatBoxChip[]>([])
 const preview = shallowRef<{ title: string; document: string } | null>(null)
 const session = computed(() => (mode.value ? sessions[mode.value] : null))
 
@@ -104,19 +104,19 @@ function changeMode(next: RequestMode | null) {
   keyError.value = ''
 }
 
-function onObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
+function onObjectsChange(event: CustomEvent<UpdrawBaseObject[]>) {
   hasUis.value = event.detail.some(isUi)
 }
 
-function onSelectionChange(event: CustomEvent<KritzelBaseObject[]>) {
+function onSelectionChange(event: CustomEvent<UpdrawBaseObject[]>) {
   chips.value = getUiChips(event.detail)
 }
 
-function onChipRemove(event: CustomEvent<KritzelChatBoxChip>) {
+function onChipRemove(event: CustomEvent<UpdrawChatBoxChip>) {
   chips.value = chips.value.filter(chip => chip.id !== event.detail.id)
 }
 
-async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEvent>) {
+async function onTitlebarAction(event: CustomEvent<UpdrawObjectTitlebarActionEvent>) {
   const { elementId, objectId } = event.detail
   const ui = await editor.value?.getObjectById(objectId)
   if (elementId === 'play' && ui && isUi(ui) && !ui.isLoading) {
@@ -127,7 +127,7 @@ async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEv
 
 <template>
   <div class="generative-ui" :style="accentStyle">
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       class="generative-ui__editor"
       editorId="generative-ui"
@@ -171,7 +171,7 @@ async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEv
     'Segoe UI',
     sans-serif;
   /* UIs resize from their corners like frames in a design tool, without the corner squares. */
-  --kritzel-selection-resize-handle-visibility: hidden;
+  --updraw-selection-resize-handle-visibility: hidden;
 }
 
 .generative-ui__editor {

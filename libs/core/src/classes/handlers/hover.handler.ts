@@ -1,18 +1,18 @@
-import { KritzelCore } from '../core/core.class';
-import { KritzelBaseHandler } from './base.handler';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawBaseHandler } from './base.handler';
 
 /**
- * Handles hover interactions on the Kritzel canvas.
+ * Handles hover interactions on the Updraw canvas.
  * Detects when the pointer moves over canvas objects and updates their hover state accordingly.
  * Currently only processes mouse input, with placeholder support for touch and pen devices.
  */
-export class KritzelHoverHandler extends KritzelBaseHandler {
+export class UpdrawHoverHandler extends UpdrawBaseHandler {
 
   /**
    * Creates a new instance of the hover handler.
-   * @param core - The KritzelCore instance that provides access to canvas state and object detection.
+   * @param core - The UpdrawCore instance that provides access to canvas state and object detection.
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     super(core);
   }
 

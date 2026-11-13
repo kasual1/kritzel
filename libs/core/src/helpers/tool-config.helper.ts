@@ -1,6 +1,6 @@
 import { ConfigurableTool, ToolConfigDefinition } from '../interfaces/tool-config.interface';
 
-export class KritzelToolConfigHelper {
+export class UpdrawToolConfigHelper {
   static getToolConfig(tool: ConfigurableTool): ToolConfigDefinition | null {
     switch (tool?.toolType) {
       case 'selection':

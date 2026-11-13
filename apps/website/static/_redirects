@@ -1,6 +1,6 @@
 # Cloudflare Pages redirects for routes that no longer exist.
 # Each source is listed with and without a trailing slash so both forms match.
-# Targets end with a slash because the site is built with trailingSlash: true.
+# Page targets end with a slash because the site is built with trailingSlash: true.
 # Renamed doc paths that still have a client-side redirect live in LEGACY_DOC_PATHS
 # in docusaurus.config.ts; tests/redirects.spec.ts checks that every target exists.
 
@@ -35,6 +35,20 @@
 /blog/tags/performance/                      /blog/ 301
 /blog/tags/spatial-ui                        /blog/ 301
 /blog/tags/spatial-ui/                       /blog/ 301
+
+# Blog posts and media renamed in the Updraw rebrand
+/blog/2026/08/02/introducing-kritzel                  /blog/2026/08/02/introducing-updraw/ 301
+/blog/2026/08/02/introducing-kritzel/                 /blog/2026/08/02/introducing-updraw/ 301
+/blog/2026/10/22/kritzel-is-now-open-source           /blog/2026/10/22/updraw-is-now-open-source/ 301
+/blog/2026/10/22/kritzel-is-now-open-source/          /blog/2026/10/22/updraw-is-now-open-source/ 301
+/img/blog/introducing-kritzel-flowers.png             /img/blog/introducing-updraw-flowers.png 301
+/img/blog/kritzel-is-now-open-source.png              /img/blog/updraw-is-now-open-source.png 301
+/videos/2026_10_10_Kritzel_Welcome.jpg                /videos/2026_10_10_Updraw_Welcome.jpg 301
+/videos/2026_10_10_Kritzel_Welcome.mp4                /videos/2026_10_10_Updraw_Welcome.mp4 301
+/videos/2026_10_10_Kritzel_Welcome.thumbnail.jpg      /videos/2026_10_10_Updraw_Welcome.thumbnail.jpg 301
+/videos/2026_10_22_Kritzel_Open_Source.jpg            /videos/2026_10_22_Updraw_Open_Source.jpg 301
+/videos/2026_10_22_Kritzel_Open_Source.mp4            /videos/2026_10_22_Updraw_Open_Source.mp4 301
+/videos/2026_10_22_Kritzel_Open_Source.thumbnail.jpg  /videos/2026_10_22_Updraw_Open_Source.thumbnail.jpg 301
 
 # Removed or restructured documentation pages
 /docs/angular/advanced-concepts/concept-collaboration                /docs/angular/advanced/collaboration/ 301

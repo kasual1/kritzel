@@ -1,39 +1,39 @@
-import type { KritzelBaseObject } from '../classes/objects/base-object.class';
-import type { KritzelViewport } from '../classes/core/viewport.class';
-import type { KritzelObjectConfig } from './object-config.interface';
-import type { KritzelObjectElementClickEvent, KritzelObjectElementHoverEvent, KritzelObjectElementPickEvent } from './object-element.interface';
-import type { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState } from './object-titlebar.interface';
-import type { KritzelObjectChangeSource } from './object-change-event.interface';
+import type { UpdrawBaseObject } from '../classes/objects/base-object.class';
+import type { UpdrawViewport } from '../classes/core/viewport.class';
+import type { UpdrawObjectConfig } from './object-config.interface';
+import type { UpdrawObjectElementClickEvent, UpdrawObjectElementHoverEvent, UpdrawObjectElementPickEvent } from './object-element.interface';
+import type { UpdrawObjectTitlebarActionEvent, UpdrawObjectTitlebarConfig, UpdrawObjectTitlebarMenuState } from './object-titlebar.interface';
+import type { UpdrawObjectChangeSource } from './object-change-event.interface';
 
 /**
- * The part of the `<kritzel-engine>` component that {@link KritzelCore} and its managers use.
+ * The part of the `<updraw-engine>` component that {@link UpdrawCore} and its managers use.
  * The engine component implements it, so the core classes don't depend on the component itself.
  * @internal
  */
-export interface KritzelEngineHost {
-  /** The `<kritzel-engine>` host element. */
+export interface UpdrawEngineHost {
+  /** The `<updraw-engine>` host element. */
   host: HTMLElement;
   /** Titlebar configuration of the engine, see the `objectTitlebar` prop. */
-  objectTitlebar?: KritzelObjectTitlebarConfig;
+  objectTitlebar?: UpdrawObjectTitlebarConfig;
   /** Object behavior configuration of the engine, see the `objectConfig` prop. */
-  objectConfig?: KritzelObjectConfig;
+  objectConfig?: UpdrawObjectConfig;
   /** Counter that the core increments to rerender the engine. */
   forceUpdate: number;
   /** The engine's viewport. */
-  viewport: KritzelViewport;
+  viewport: UpdrawViewport;
 
   triggerSelectionChange(): Promise<void>;
-  addObject<T extends KritzelBaseObject>(object: T): Promise<T | null>;
+  addObject<T extends UpdrawBaseObject>(object: T): Promise<T | null>;
 
   emitObjectsChange(): void;
-  emitObjectsAdded(objects: KritzelBaseObject<any>[], source?: KritzelObjectChangeSource): void;
-  emitObjectsRemoved(objects: KritzelBaseObject<any>[], source?: KritzelObjectChangeSource): void;
-  emitObjectsUpdated(objects: { object: KritzelBaseObject<any>; changedProperties: string[] }[], source?: KritzelObjectChangeSource): void;
+  emitObjectsAdded(objects: UpdrawBaseObject<any>[], source?: UpdrawObjectChangeSource): void;
+  emitObjectsRemoved(objects: UpdrawBaseObject<any>[], source?: UpdrawObjectChangeSource): void;
+  emitObjectsUpdated(objects: { object: UpdrawBaseObject<any>; changedProperties: string[] }[], source?: UpdrawObjectChangeSource): void;
   emitAwarenessChange(states: Map<number, Record<string, any>>): void;
-  emitObjectTitlebarAction(detail: KritzelObjectTitlebarActionEvent): void;
-  emitObjectTitlebarMenuStateChange(detail: KritzelObjectTitlebarMenuState): void;
-  emitObjectElementHover(detail: KritzelObjectElementHoverEvent): void;
-  emitObjectElementClick(detail: KritzelObjectElementClickEvent): void;
-  emitObjectElementPick(detail: KritzelObjectElementPickEvent): void;
+  emitObjectTitlebarAction(detail: UpdrawObjectTitlebarActionEvent): void;
+  emitObjectTitlebarMenuStateChange(detail: UpdrawObjectTitlebarMenuState): void;
+  emitObjectElementHover(detail: UpdrawObjectElementHoverEvent): void;
+  emitObjectElementClick(detail: UpdrawObjectElementClickEvent): void;
+  emitObjectElementPick(detail: UpdrawObjectElementPickEvent): void;
   emitObjectsInViewportChange(): void;
 }

@@ -1,21 +1,21 @@
 import {
-  KritzelObjectElementHighlight,
-  KritzelObjectElementInfo,
-  KritzelObjectElementInteraction,
-  KritzelObjectElementInteractionFailureReason,
-  KritzelObjectElementInteractionOptions,
-  KritzelObjectElementInteractionResult,
-  KritzelObjectElementModifiers,
-  KritzelObjectElementPickingOptions,
-  KritzelObjectElementQueryOptions,
-  KritzelObjectElementRect,
-  KritzelObjectElementState,
+  UpdrawObjectElementHighlight,
+  UpdrawObjectElementInfo,
+  UpdrawObjectElementInteraction,
+  UpdrawObjectElementInteractionFailureReason,
+  UpdrawObjectElementInteractionOptions,
+  UpdrawObjectElementInteractionResult,
+  UpdrawObjectElementModifiers,
+  UpdrawObjectElementPickingOptions,
+  UpdrawObjectElementQueryOptions,
+  UpdrawObjectElementRect,
+  UpdrawObjectElementState,
 } from '../../interfaces/object-element.interface';
 import { IFRAME_ELEMENT_MESSAGES } from './iframe-element-bridge.script';
-import { KritzelMathHelper } from '../../helpers/math.helper';
+import { UpdrawMathHelper } from '../../helpers/math.helper';
 
-/** The object side of the bridge: what the bridge needs from its `KritzelIframeObject`. */
-export interface KritzelIframeElementBridgeOwner {
+/** The object side of the bridge: what the bridge needs from its `UpdrawIframeObject`. */
+export interface UpdrawIframeElementBridgeOwner {
   readonly id: string;
   readonly isInteractive: boolean;
   readonly isMounted: boolean;
@@ -23,9 +23,9 @@ export interface KritzelIframeElementBridgeOwner {
   getIframe(): HTMLIFrameElement | null;
   /** Size of the content (the iframe's viewport) in CSS pixels, used to keep reported positions inside the object. */
   getContentSize(): { width: number; height: number };
-  emitHover(element: KritzelObjectElementInfo | null, isPicking: boolean): void;
-  emitClick(element: KritzelObjectElementInfo, modifiers: KritzelObjectElementModifiers): void;
-  emitPick(element: KritzelObjectElementInfo, modifiers: KritzelObjectElementModifiers): void;
+  emitHover(element: UpdrawObjectElementInfo | null, isPicking: boolean): void;
+  emitClick(element: UpdrawObjectElementInfo, modifiers: UpdrawObjectElementModifiers): void;
+  emitPick(element: UpdrawObjectElementInfo, modifiers: UpdrawObjectElementModifiers): void;
 }
 
 interface PendingQuery {
@@ -33,7 +33,7 @@ interface PendingQuery {
   limit: number;
   interactiveOnly: boolean;
   includeValues: boolean;
-  resolve: (elements: KritzelObjectElementInfo[]) => void;
+  resolve: (elements: UpdrawObjectElementInfo[]) => void;
   reject: (error: Error) => void;
   timer: ReturnType<typeof setTimeout> | null;
   /** Whether the timer waits for an answer (started when the query was first sent) rather than for the page to load. */
@@ -44,9 +44,9 @@ interface PendingQuery {
 
 interface PendingInteraction {
   selector: string;
-  interaction: KritzelObjectElementInteraction;
+  interaction: UpdrawObjectElementInteraction;
   trial: boolean;
-  resolve: (result: KritzelObjectElementInteractionResult) => void;
+  resolve: (result: UpdrawObjectElementInteractionResult) => void;
   timer: ReturnType<typeof setTimeout> | null;
   /** Whether it was sent. A sent interaction is never sent again: the page may have performed it. */
   isSent: boolean;
@@ -83,9 +83,9 @@ const VERSION_GRACE_PERIOD = 1000;
 const BRIDGE_MESSAGE_TYPES = new Set<unknown>(Object.values(IFRAME_ELEMENT_MESSAGES));
 
 const THEME_VARIABLES = {
-  color: ['--kritzel-element-highlight-color', '#007AFF'],
-  backgroundColor: ['--kritzel-element-highlight-background-color', 'rgba(0, 122, 255, 0.12)'],
-  labelTextColor: ['--kritzel-element-highlight-label-text-color', '#ffffff'],
+  color: ['--updraw-element-highlight-color', '#007AFF'],
+  backgroundColor: ['--updraw-element-highlight-background-color', 'rgba(0, 122, 255, 0.12)'],
+  labelTextColor: ['--updraw-element-highlight-label-text-color', '#ffffff'],
 } as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -96,19 +96,19 @@ function readString(value: unknown, maxLength: number = MAX_STRING_LENGTH): stri
   return typeof value === 'string' && value.length > 0 ? value.slice(0, maxLength) : undefined;
 }
 
-function readRect(value: unknown): KritzelObjectElementRect | null {
+function readRect(value: unknown): UpdrawObjectElementRect | null {
   if (!isRecord(value)) {
     return null;
   }
   const { x, y, width, height } = value;
-  if (!KritzelMathHelper.isFiniteNumber(x) || !KritzelMathHelper.isFiniteNumber(y) || !KritzelMathHelper.isFiniteNumber(width) || !KritzelMathHelper.isFiniteNumber(height) || width < 0 || height < 0) {
+  if (!UpdrawMathHelper.isFiniteNumber(x) || !UpdrawMathHelper.isFiniteNumber(y) || !UpdrawMathHelper.isFiniteNumber(width) || !UpdrawMathHelper.isFiniteNumber(height) || width < 0 || height < 0) {
     return null;
   }
   return { x, y, width, height };
 }
 
 /** Validates an element description sent by a page, which is untrusted content. */
-export function readElementInfo(value: unknown): KritzelObjectElementInfo | null {
+export function readElementInfo(value: unknown): UpdrawObjectElementInfo | null {
   if (!isRecord(value)) {
     return null;
   }
@@ -132,13 +132,13 @@ export function readElementInfo(value: unknown): KritzelObjectElementInfo | null
       });
   }
 
-  const info: KritzelObjectElementInfo = { selector, tagName: tagName.toLowerCase(), classList, attributes, rect };
+  const info: UpdrawObjectElementInfo = { selector, tagName: tagName.toLowerCase(), classList, attributes, rect };
   const visibleRect = readRect(value.visibleRect);
   if (visibleRect) info.visibleRect = visibleRect;
-  const kritzelId = readString(value.kritzelId);
+  const updrawId = readString(value.updrawId);
   const id = readString(value.id);
   const text = readString(value.text);
-  if (kritzelId) info.kritzelId = kritzelId;
+  if (updrawId) info.updrawId = updrawId;
   if (id) info.id = id;
   if (text) info.text = text;
   const state = readState(value.state);
@@ -149,11 +149,11 @@ export function readElementInfo(value: unknown): KritzelObjectElementInfo | null
 }
 
 /** Validates the state of an element: only known fields, with the right types. */
-function readState(value: unknown): KritzelObjectElementState | null {
+function readState(value: unknown): UpdrawObjectElementState | null {
   if (!isRecord(value)) {
     return null;
   }
-  const state: KritzelObjectElementState = {};
+  const state: UpdrawObjectElementState = {};
   for (const key of ['disabled', 'selected', 'open', 'focused', 'editable', 'playing'] as const) {
     if (typeof value[key] === 'boolean') state[key] = value[key];
   }
@@ -165,7 +165,7 @@ function readState(value: unknown): KritzelObjectElementState | null {
  * Validates an interaction and returns a copy with only its known fields, so nothing else reaches the page.
  * Throws for invalid ones.
  */
-export function readElementInteraction(value: unknown): KritzelObjectElementInteraction {
+export function readElementInteraction(value: unknown): UpdrawObjectElementInteraction {
   if (!isRecord(value)) {
     throw new Error('An interaction must be an object with a "type".');
   }
@@ -199,7 +199,7 @@ export function readElementInteraction(value: unknown): KritzelObjectElementInte
       const delta = (field: 'deltaX' | 'deltaY'): number => {
         const amount = value[field];
         if (amount === undefined) return 0;
-        if (!KritzelMathHelper.isFiniteNumber(amount) || Math.abs(amount) > MAX_SCROLL_DELTA) {
+        if (!UpdrawMathHelper.isFiniteNumber(amount) || Math.abs(amount) > MAX_SCROLL_DELTA) {
           throw new Error(`"${field}" must be a number between -${MAX_SCROLL_DELTA} and ${MAX_SCROLL_DELTA}.`);
         }
         return amount;
@@ -216,11 +216,11 @@ export function readElementInteraction(value: unknown): KritzelObjectElementInte
   }
 }
 
-function unavailable(message: string): KritzelObjectElementInteractionResult {
+function unavailable(message: string): UpdrawObjectElementInteractionResult {
   return { completed: false, reason: 'unavailable', message };
 }
 
-function readModifiers(value: Record<string, unknown>): KritzelObjectElementModifiers {
+function readModifiers(value: Record<string, unknown>): UpdrawObjectElementModifiers {
   return {
     shiftKey: value.shiftKey === true,
     ctrlKey: value.ctrlKey === true,
@@ -249,22 +249,22 @@ export function isValidElementSelector(selector: unknown): selector is string {
 }
 
 /**
- * Host side of the element bridge of a `KritzelIframeObject`: keeps the transient element state (picking,
+ * Host side of the element bridge of an `UpdrawIframeObject`: keeps the transient element state (picking,
  * highlights, tracked elements, pending queries), sends it to the page whenever the page (re)loads or the state
  * changes, and validates what the page reports. The page runs untrusted content, so every message is checked
  * and hovers, clicks and picks are only accepted in the states in which a user could have caused them. A page can
  * still report them without a real user gesture in those states, so their contents stay untrusted.
  */
-export class KritzelIframeElementBridge {
-  private _owner: KritzelIframeElementBridgeOwner;
+export class UpdrawIframeElementBridge {
+  private _owner: UpdrawIframeElementBridgeOwner;
   private _isReady = false;
   private _picking: { enabled: boolean; selector?: string; color?: string } = { enabled: false };
-  private _highlights: KritzelObjectElementHighlight[] = [];
+  private _highlights: UpdrawObjectElementHighlight[] = [];
   private readonly _tracked = new Map<string, number>();
-  private readonly _rects = new Map<string, KritzelObjectElementRect>();
+  private readonly _rects = new Map<string, UpdrawObjectElementRect>();
   private readonly _queries = new Map<number, PendingQuery>();
   private readonly _interactions = new Map<number, PendingInteraction>();
-  private _hovered: KritzelObjectElementInfo | null = null;
+  private _hovered: UpdrawObjectElementInfo | null = null;
   private _requestCounter = 0;
   /** Token of the current document. The page sends it with every message, so messages of replaced documents are ignored. */
   private _document = 0;
@@ -275,12 +275,12 @@ export class KritzelIframeElementBridge {
   private _syncVersion = 0;
   private readonly _versions = new Map<number, SyncVersion>([[0, { picking: false, supersededAt: null }]]);
 
-  constructor(owner: KritzelIframeElementBridgeOwner) {
+  constructor(owner: UpdrawIframeElementBridgeOwner) {
     this._owner = owner;
   }
 
   /** Hands the bridge to the object instance that replaced its owner, e.g. after a synced update. */
-  attach(owner: KritzelIframeElementBridgeOwner): void {
+  attach(owner: UpdrawIframeElementBridgeOwner): void {
     this._owner = owner;
   }
 
@@ -302,15 +302,15 @@ export class KritzelIframeElementBridge {
     return this._syncVersion;
   }
 
-  get hoveredElement(): KritzelObjectElementInfo | null {
+  get hoveredElement(): UpdrawObjectElementInfo | null {
     return this._hovered;
   }
 
-  get pickingOptions(): KritzelObjectElementPickingOptions {
+  get pickingOptions(): UpdrawObjectElementPickingOptions {
     return { selector: this._picking.selector, color: this._picking.color };
   }
 
-  setPicking(enabled: boolean, options: KritzelObjectElementPickingOptions = {}): void {
+  setPicking(enabled: boolean, options: UpdrawObjectElementPickingOptions = {}): void {
     if (options.selector !== undefined && options.selector !== '' && !isValidElementSelector(options.selector)) {
       throw new Error(`Invalid picking selector "${options.selector}".`);
     }
@@ -321,7 +321,7 @@ export class KritzelIframeElementBridge {
     this.sync();
   }
 
-  setHighlights(highlights: KritzelObjectElementHighlight[]): void {
+  setHighlights(highlights: UpdrawObjectElementHighlight[]): void {
     if (!Array.isArray(highlights)) {
       throw new Error('Highlights must be an array.');
     }
@@ -332,7 +332,7 @@ export class KritzelIframeElementBridge {
       if (!highlight || !isValidElementSelector(highlight.selector)) {
         throw new Error(`Invalid highlight selector "${highlight?.selector}".`);
       }
-      const next: KritzelObjectElementHighlight = { selector: highlight.selector };
+      const next: UpdrawObjectElementHighlight = { selector: highlight.selector };
       if (typeof highlight.color === 'string' && highlight.color) next.color = highlight.color;
       if (typeof highlight.label === 'string' && highlight.label) next.label = highlight.label;
       return next;
@@ -340,7 +340,7 @@ export class KritzelIframeElementBridge {
     this.sync();
   }
 
-  getHighlights(): KritzelObjectElementHighlight[] {
+  getHighlights(): UpdrawObjectElementHighlight[] {
     return this._highlights.map(highlight => ({ ...highlight }));
   }
 
@@ -372,24 +372,24 @@ export class KritzelIframeElementBridge {
     this.sync();
   }
 
-  getRect(selector: string): KritzelObjectElementRect | null {
+  getRect(selector: string): UpdrawObjectElementRect | null {
     const rect = this._rects.get(selector);
     return rect ? { ...rect } : null;
   }
 
-  query(selector: string, limitOrOptions: number | KritzelObjectElementQueryOptions = IFRAME_ELEMENT_DEFAULT_QUERY_LIMIT): Promise<KritzelObjectElementInfo[]> {
+  query(selector: string, limitOrOptions: number | UpdrawObjectElementQueryOptions = IFRAME_ELEMENT_DEFAULT_QUERY_LIMIT): Promise<UpdrawObjectElementInfo[]> {
     if (!isValidElementSelector(selector)) {
       return Promise.reject(new Error(`Invalid element selector "${selector}".`));
     }
     if (!this._owner.isMounted || !this._owner.getIframe()) {
       return Promise.reject(new Error(`Object "${this._owner.id}" is not mounted. Its content can only be queried while it is in or near the viewport.`));
     }
-    const options: KritzelObjectElementQueryOptions = isRecord(limitOrOptions) ? limitOrOptions : { limit: limitOrOptions as number };
+    const options: UpdrawObjectElementQueryOptions = isRecord(limitOrOptions) ? limitOrOptions : { limit: limitOrOptions as number };
     const normalizedLimit = Math.max(1, Math.min(IFRAME_ELEMENT_MAX_QUERY_LIMIT, Math.floor(Number(options.limit)) || IFRAME_ELEMENT_DEFAULT_QUERY_LIMIT));
     const interactiveOnly = options.interactiveOnly === true;
     const includeValues = options.includeValues === true;
 
-    return new Promise<KritzelObjectElementInfo[]>((resolve, reject) => {
+    return new Promise<UpdrawObjectElementInfo[]>((resolve, reject) => {
       const requestId = ++this._requestCounter;
       const deadline = Date.now() + IFRAME_ELEMENT_LOAD_TIMEOUT;
       this._queries.set(requestId, { selector, limit: normalizedLimit, interactiveOnly, includeValues, resolve, reject, timer: null, isAwaitingAnswer: false, deadline });
@@ -409,13 +409,13 @@ export class KritzelIframeElementBridge {
    */
   interact(
     selector: string,
-    interaction: KritzelObjectElementInteraction,
-    options: KritzelObjectElementInteractionOptions = {},
-  ): Promise<KritzelObjectElementInteractionResult> {
+    interaction: UpdrawObjectElementInteraction,
+    options: UpdrawObjectElementInteractionOptions = {},
+  ): Promise<UpdrawObjectElementInteractionResult> {
     if (!isValidElementSelector(selector)) {
       return Promise.reject(new Error(`Invalid element selector "${selector}".`));
     }
-    let checked: KritzelObjectElementInteraction;
+    let checked: UpdrawObjectElementInteraction;
     try {
       checked = readElementInteraction(interaction);
     } catch (error) {
@@ -425,7 +425,7 @@ export class KritzelIframeElementBridge {
       return Promise.resolve(unavailable(`Object "${this._owner.id}" is not mounted. Its content can only be reached while it is in or near the viewport.`));
     }
 
-    return new Promise<KritzelObjectElementInteractionResult>(resolve => {
+    return new Promise<UpdrawObjectElementInteractionResult>(resolve => {
       const requestId = ++this._requestCounter;
       this._interactions.set(requestId, { selector, interaction: checked, trial: options.trial === true, resolve, timer: null, isSent: false });
       if (this._isReady) {
@@ -577,7 +577,7 @@ export class KritzelIframeElementBridge {
   }
 
   /** An element description from the page, with its visible part kept inside the content like tracked positions. */
-  private readContentElement(value: unknown): KritzelObjectElementInfo | null {
+  private readContentElement(value: unknown): UpdrawObjectElementInfo | null {
     const element = readElementInfo(value);
     if (element?.visibleRect) {
       const visibleRect = this.clampToContent(element.visibleRect);
@@ -622,7 +622,7 @@ export class KritzelIframeElementBridge {
     const elements = message.elements
       .slice(0, query.limit)
       .map(element => this.readContentElement(element))
-      .filter((element): element is KritzelObjectElementInfo => element !== null);
+      .filter((element): element is UpdrawObjectElementInfo => element !== null);
     const visibleRect = elements[0]?.visibleRect;
     if (visibleRect && this._tracked.has(query.selector)) {
       this._rects.set(query.selector, { ...visibleRect });
@@ -640,9 +640,9 @@ export class KritzelIframeElementBridge {
     if (pending.timer) clearTimeout(pending.timer);
 
     const element = message.element === undefined ? null : this.readContentElement(message.element);
-    const result: KritzelObjectElementInteractionResult = { completed: message.failure === undefined };
+    const result: UpdrawObjectElementInteractionResult = { completed: message.failure === undefined };
     if (!result.completed) {
-      result.reason = INTERACTION_FAILURE_REASONS.has(message.failure) ? (message.failure as KritzelObjectElementInteractionFailureReason) : 'unavailable';
+      result.reason = INTERACTION_FAILURE_REASONS.has(message.failure) ? (message.failure as UpdrawObjectElementInteractionFailureReason) : 'unavailable';
       const text = readString(message.message);
       if (text) result.message = text;
       const coveredBy = message.coveredBy === undefined ? null : this.readContentElement(message.coveredBy);
@@ -653,7 +653,7 @@ export class KritzelIframeElementBridge {
   }
 
   /** The page reports positions, so a page could claim any position: they are kept inside the content. */
-  private clampToContent(rect: KritzelObjectElementRect | null): KritzelObjectElementRect | null {
+  private clampToContent(rect: UpdrawObjectElementRect | null): UpdrawObjectElementRect | null {
     if (!rect) {
       return null;
     }

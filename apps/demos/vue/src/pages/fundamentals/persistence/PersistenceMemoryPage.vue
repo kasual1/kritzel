@@ -2,11 +2,11 @@
 import { ref, shallowRef } from 'vue'
 import {
   InMemorySyncProvider,
-  KritzelEditor,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawWorkspace,
   type ActiveWorkspaceChangeEvent,
-  type KritzelSyncConfig,
-} from '@kritzel/vue-editor'
+  type UpdrawSyncConfig,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -17,21 +17,21 @@ import {
 import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [InMemorySyncProvider],
 }
-const workspaces = shallowRef<KritzelWorkspace[]>([
-  new KritzelWorkspace({
+const workspaces = shallowRef<UpdrawWorkspace[]>([
+  new UpdrawWorkspace({
     id: 'board-1',
     name: 'Board 1',
     objects: createSeedObjects(),
   }),
-  new KritzelWorkspace({
+  new UpdrawWorkspace({
     id: 'board-2',
     name: 'Board 2',
     objects: createSeedObjects(),
   }),
-  new KritzelWorkspace({
+  new UpdrawWorkspace({
     id: 'board-3',
     name: 'Board 3',
     objects: createSeedObjects(),
@@ -43,7 +43,7 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
   activeWorkspaceId.value = event.detail.id
 }
 
-function switchTo(workspace: KritzelWorkspace) {
+function switchTo(workspace: UpdrawWorkspace) {
   activeWorkspaceId.value = workspace.id
 }
 </script>
@@ -66,7 +66,7 @@ function switchTo(workspace: KritzelWorkspace) {
         {{ workspace.name }}
       </button>
     </Toolbar>
-    <KritzelEditor
+    <UpdrawEditor
       editorId="persistence-memory"
       theme="light"
       :themes="themes"

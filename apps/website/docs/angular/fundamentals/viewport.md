@@ -1,8 +1,8 @@
 ---
 sidebar_label: Viewport
 displayed_sidebar: tutorialSidebar
-title: "Viewport Concept | Kritzel for Angular"
-description: "Understand the core concept of Viewport in Kritzel."
+title: "Viewport Concept | Updraw for Angular"
+description: "Understand the core concept of Viewport in Updraw."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,7 +11,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-In Kritzel, the viewport defines the portion of the canvas world currently displayed to the user. It tracks the current pan offset, zoom scale, and visible dimensions, while objects retain their own world coordinates.
+In Updraw, the viewport defines the portion of the canvas world currently displayed to the user. It tracks the current pan offset, zoom scale, and visible dimensions, while objects retain their own world coordinates.
 
 The Viewport API lets you programmatically navigate the canvas, fit content into view, inspect and react to viewport changes, and constrain navigation.
 
@@ -41,7 +41,7 @@ The demo includes step controls, an exact zoom level, and a zoom that stays anch
 
 ## Centering Content
 
-Kritzel provides several ways to bring content into view. Use `panToObject` to move the viewport to an object without changing the current zoom. Use `centerObjects` to fit a specific set of objects, or `centerAllObjects` to fit all non-selection objects on the canvas.
+Updraw provides several ways to bring content into view. Use `panToObject` to move the viewport to an object without changing the current zoom. Use `centerObjects` to fit a specific set of objects, or `centerAllObjects` to fit all non-selection objects on the canvas.
 
 The `backToContent` method is optimized for recovery when the user has panned away from the drawing. It fits the nearest content objects, not necessarily every object in the workspace. If you specifically need an overview of everything, use `centerAllObjects`.
 
@@ -55,7 +55,7 @@ The `backToContent` method is optimized for recovery when the user has panned aw
 
 ## Zoom Limits
 
-Use `scaleMin` and `scaleMax` to keep the viewport's zoom within a supported range. Kritzel applies these limits to both user input and programmatic zoom operations.
+Use `scaleMin` and `scaleMax` to keep the viewport's zoom within a supported range. Updraw applies these limits to both user input and programmatic zoom operations.
 
 The demo provides 10% zoom-in and zoom-out steps. Continue selecting one direction to reach the configured limit; further selections keep the viewport at the clamped scale.
 
@@ -67,7 +67,7 @@ The demo provides 10% zoom-in and zoom-out steps. Continue selecting one directi
 
 ## Boundaries
 
-Set `viewportBoundaryLeft`, `viewportBoundaryRight`, `viewportBoundaryTop`, and `viewportBoundaryBottom` to keep panning inside a bounded world area. When finite boundaries are configured, Kritzel may raise the effective minimum scale so the viewport cannot zoom out far enough to reveal space beyond those boundaries.
+Set `viewportBoundaryLeft`, `viewportBoundaryRight`, `viewportBoundaryTop`, and `viewportBoundaryBottom` to keep panning inside a bounded world area. When finite boundaries are configured, Updraw may raise the effective minimum scale so the viewport cannot zoom out far enough to reveal space beyond those boundaries.
 
 The demo provides four controls that move the viewport 100 world units up, down, left, or right. Continue selecting one direction to reach that boundary; further selections keep the viewport at the constrained position.
 
@@ -79,7 +79,7 @@ The demo provides four controls that move the viewport 100 world units up, down,
 
 ## Events
 
-Kritzel emits `viewportChange` with the latest position, scale, and dimensions whenever the view changes. The demo uses pan and zoom controls and displays the resulting viewport state in its toolbar.
+Updraw emits `viewportChange` with the latest position, scale, and dimensions whenever the view changes. The demo uses pan and zoom controls and displays the resulting viewport state in its toolbar.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"

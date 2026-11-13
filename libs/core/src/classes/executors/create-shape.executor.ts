@@ -1,6 +1,6 @@
-import type { KritzelAgenticCreateShapeAction } from '../../interfaces/agentic-action.interface';
-import { KritzelShape } from '../objects/shape.class';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpdrawAgenticCreateShapeAction } from '../../interfaces/agentic-action.interface';
+import { UpdrawShape } from '../objects/shape.class';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
 import { resolveShapeStyle } from '../../helpers/agentic-style.helper';
 import { typeInto } from './type-text.executor';
 import { AGENTIC_SHAPE_STYLE_KEYS, AGENTIC_SHAPE_TYPES, assertStyle } from '../../helpers/agentic-validation.helper';
@@ -12,7 +12,7 @@ function assertFinite(value: unknown, field: string, min = -Infinity): void {
 }
 
 /** `createShape`: presses at the top-left corner and drags the shape out to its size. */
-export const createShapeExecutor: KritzelAgenticActionExecutor<KritzelAgenticCreateShapeAction> = {
+export const createShapeExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticCreateShapeAction> = {
   mutates: true,
 
   validate(action) {
@@ -47,7 +47,7 @@ export const createShapeExecutor: KritzelAgenticActionExecutor<KritzelAgenticCre
     await run.press();
 
     const shape = run.mutate(() => {
-      const created = KritzelShape.create(core, {
+      const created = UpdrawShape.create(core, {
         x: x * scale,
         y: y * scale,
         translateX: 0,
@@ -75,7 +75,7 @@ export const createShapeExecutor: KritzelAgenticActionExecutor<KritzelAgenticCre
       run.dragDuration(distance),
       (eased, _raw, isLast) => {
         run.mutate(() => {
-          const current = map.findById(shape.id) as KritzelShape | undefined;
+          const current = map.findById(shape.id) as UpdrawShape | undefined;
           if (!current) {
             return;
           }

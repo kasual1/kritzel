@@ -1,12 +1,12 @@
-# Kritzel Engine
+# Updraw Engine
 
-This package contains the core engine that powers Kritzel's framework-specific variants.
+This package contains the core engine that powers Updraw's framework-specific variants.
 
 It is not intended as the primary entry point for application integration. Instead, use the framework wrapper that matches your stack:
 
-- [@kritzel/angular-engine](https://www.npmjs.com/package/@kritzel/angular-engine)
-- [@kritzel/react-engine](https://www.npmjs.com/package/@kritzel/react-engine)
-- [@kritzel/vue-engine](https://www.npmjs.com/package/@kritzel/vue-engine)
+- [@updraw/angular-engine](https://www.npmjs.com/package/@updraw/angular-engine)
+- [@updraw/react-engine](https://www.npmjs.com/package/@updraw/react-engine)
+- [@updraw/vue-engine](https://www.npmjs.com/package/@updraw/vue-engine)
 
 
-Visit [kritzel.io](https://kritzel.io) for documentation and examples.
+Visit [updraw.io](https://updraw.io) for documentation and examples.

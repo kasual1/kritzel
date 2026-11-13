@@ -18,9 +18,9 @@ import {
   subscribeToPreferredFramework,
 } from "@site/src/utils/frameworkPreference";
 
-const TITLE = "Kritzel - Infinite Canvas Library for React, Vue & Angular";
+const TITLE = "Updraw - Infinite Canvas Library for React, Vue & Angular";
 const DESCRIPTION =
-  "Kritzel helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools. Fully open-source and easy to integrate into React, Vue & Angular.";
+  "Updraw helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools. Fully open-source and easy to integrate into React, Vue & Angular.";
 
 function usePreferredDocsPath() {
   const [docsPath, setDocsPath] = useState(frameworkPaths.react);

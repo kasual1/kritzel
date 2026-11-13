@@ -1,7 +1,7 @@
-import { KritzelPoint } from '../interfaces/point.interface';
+import { UpdrawPoint } from '../interfaces/point.interface';
 
 /** Minimal viewport state needed to project world coordinates into overlay (screen) coordinates. */
-export interface KritzelOverlayViewportState {
+export interface UpdrawOverlayViewportState {
   scale: number;
   translateX: number;
   translateY: number;
@@ -9,34 +9,34 @@ export interface KritzelOverlayViewportState {
   viewportHeight: number;
 }
 
-export type KritzelOverlayEdge = 'top' | 'right' | 'bottom' | 'left';
+export type UpdrawOverlayEdge = 'top' | 'right' | 'bottom' | 'left';
 
-export interface KritzelEdgeClampResult {
+export interface UpdrawEdgeClampResult {
   x: number;
   y: number;
   /** Angle (radians) pointing from the clamped position towards the off-screen point. */
   angle: number;
-  edge: KritzelOverlayEdge;
+  edge: UpdrawOverlayEdge;
 }
 
 /**
  * Shared geometry for screen-space overlays (remote cursors, agentic cursors) rendered
  * on top of the engine.
  */
-export class KritzelViewportOverlayHelper {
-  static worldToScreen(state: KritzelOverlayViewportState, worldX: number, worldY: number): KritzelPoint {
+export class UpdrawViewportOverlayHelper {
+  static worldToScreen(state: UpdrawOverlayViewportState, worldX: number, worldY: number): UpdrawPoint {
     return {
       x: worldX * state.scale + state.translateX,
       y: worldY * state.scale + state.translateY,
     };
   }
 
-  static isInViewport(state: KritzelOverlayViewportState, screenX: number, screenY: number): boolean {
+  static isInViewport(state: UpdrawOverlayViewportState, screenX: number, screenY: number): boolean {
     return screenX >= 0 && screenX <= state.viewportWidth && screenY >= 0 && screenY <= state.viewportHeight;
   }
 
   /** Clamps an off-screen point to the viewport edge, returning the nearest edge and the direction to the point. */
-  static clampToEdge(state: KritzelOverlayViewportState, screenX: number, screenY: number, padding: number): KritzelEdgeClampResult {
+  static clampToEdge(state: UpdrawOverlayViewportState, screenX: number, screenY: number, padding: number): UpdrawEdgeClampResult {
     const { viewportWidth, viewportHeight } = state;
 
     const clampedX = Math.max(padding, Math.min(viewportWidth - padding, screenX));
@@ -47,7 +47,7 @@ export class KritzelViewportOverlayHelper {
     const distTop = clampedY - padding;
     const distBottom = viewportHeight - padding - clampedY;
 
-    let edge: KritzelOverlayEdge = 'top';
+    let edge: UpdrawOverlayEdge = 'top';
     const minDist = Math.min(distLeft, distRight, distTop, distBottom);
     if (minDist === distLeft) edge = 'left';
     else if (minDist === distRight) edge = 'right';

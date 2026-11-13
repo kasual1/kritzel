@@ -1,4 +1,4 @@
-import { KritzelEditor } from "@kritzel/react-editor";
+import { UpdrawEditor } from "@updraw/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 
 const styles = {
@@ -30,10 +30,10 @@ export function MultiEditorPage() {
   return (
     <div style={styles.multiEditorHost}>
       <div style={{ ...styles.editorContainer, ...styles.editorContainerFirst }}>
-        <KritzelEditor id="editor-1" editorId="e2e-editor-1" theme="light" themes={[reactThemeLight]} />
+        <UpdrawEditor id="editor-1" editorId="e2e-editor-1" theme="light" themes={[reactThemeLight]} />
       </div>
       <div style={{ ...styles.editorContainer, ...styles.editorContainerSecond }}>
-        <KritzelEditor id="editor-2" editorId="e2e-editor-2" theme="light" themes={[reactThemeLight]} />
+        <UpdrawEditor id="editor-2" editorId="e2e-editor-2" theme="light" themes={[reactThemeLight]} />
       </div>
     </div>
   );

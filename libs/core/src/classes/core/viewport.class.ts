@@ -1,21 +1,21 @@
-import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelMouseButton } from '../../enums/event-button.enum';
-import { KritzelCore } from './core.class';
-import { KritzelSelectionBox } from '../objects/selection-box.class';
-import { KritzelViewportState } from '../../interfaces/viewport-state.interface';
+import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpdrawMouseButton } from '../../enums/event-button.enum';
+import { UpdrawCore } from './core.class';
+import { UpdrawSelectionBox } from '../objects/selection-box.class';
+import { UpdrawViewportState } from '../../interfaces/viewport-state.interface';
 import debounce from 'lodash/debounce';
 import type { DebouncedFunc } from 'lodash';
-import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import { KritzelDevicesHelper } from '../../helpers/devices.helper';
+import { UpdrawKeyboardHelper } from '../../helpers/keyboard.helper';
+import { UpdrawDevicesHelper } from '../../helpers/devices.helper';
 
 /**
  * Manages viewport transformations including panning, zooming, and centering.
  * Handles mouse, touch, and wheel events for viewport manipulation.
  * Supports viewport boundaries and animated transitions.
  */
-export class KritzelViewport {
-  /** Reference to the KritzelCore instance */
-  private readonly _core: KritzelCore;
+export class UpdrawViewport {
+  /** Reference to the UpdrawCore instance */
+  private readonly _core: UpdrawCore;
   /** Debounced function to persist viewport state to workspace */
   private readonly _debounceUpdate: DebouncedFunc<() => void>;
   /** Debounced function to end scaling state after pinch gestures */
@@ -54,12 +54,12 @@ export class KritzelViewport {
   private _touchCursorBroadcastActive: boolean = false;
 
   /**
-   * Creates a new KritzelViewport instance and initializes viewport state.
+   * Creates a new UpdrawViewport instance and initializes viewport state.
    * Sets up debounced handlers for viewport updates and scaling end events.
-   * @param core - The KritzelCore instance to manage viewport for
+   * @param core - The UpdrawCore instance to manage viewport for
    * @param host - The HTML element hosting the canvas
    */
-  constructor(core: KritzelCore, host: HTMLElement) {
+  constructor(core: UpdrawCore, host: HTMLElement) {
     this._core = core;
     this._core.store.state.host = host;
     this._core.store.state.viewportWidth = host.clientWidth;
@@ -85,8 +85,8 @@ export class KritzelViewport {
     this._debounceSyncWithVirtualKeyboard = debounce(() => this.syncWithVirtualKeyboard(), 100);
 
     // Capture the keyboard-free viewport height while no keyboard can be open yet
-    if (KritzelDevicesHelper.isMobile()) {
-      KritzelKeyboardHelper.recordViewportBaseline();
+    if (UpdrawDevicesHelper.isMobile()) {
+      UpdrawKeyboardHelper.recordViewportBaseline();
     }
   }
 
@@ -201,11 +201,11 @@ export class KritzelViewport {
    * Only runs on mobile devices (iOS, iPadOS, Android), so resizing a desktop window never pans.
    */
   syncWithVirtualKeyboard(): void {
-    if (!KritzelDevicesHelper.isMobile()) {
+    if (!UpdrawDevicesHelper.isMobile()) {
       return;
     }
 
-    if (this._keyboardPanOffset && !KritzelKeyboardHelper.isKeyboardOpen()) {
+    if (this._keyboardPanOffset && !UpdrawKeyboardHelper.isKeyboardOpen()) {
       this.restoreKeyboardPanOffset();
       return;
     }
@@ -254,7 +254,7 @@ export class KritzelViewport {
     const visualViewport = window.visualViewport;
     const visibleTop = Math.max(hostRect.top, visualViewport ? visualViewport.offsetTop : 0);
     const visibleBottom = Math.min(hostRect.bottom, visualViewport ? visualViewport.offsetTop + visualViewport.height : window.innerHeight);
-    const padding = KritzelViewport.EDITING_CARET_VISIBLE_PADDING;
+    const padding = UpdrawViewport.EDITING_CARET_VISIBLE_PADDING;
 
     if (visibleBottom - visibleTop < caretRect.bottom - caretRect.top + padding * 2) {
       return;
@@ -274,7 +274,7 @@ export class KritzelViewport {
     const { translateX, translateY, scale } = this._core.store.state;
     const targetTranslateY = this.clampTranslate(translateX, translateY + deltaY).translateY;
 
-    if (KritzelKeyboardHelper.isKeyboardOpen()) {
+    if (UpdrawKeyboardHelper.isKeyboardOpen()) {
       const previousDeltaY = this._keyboardPanOffset?.scale === scale ? this._keyboardPanOffset.deltaY : 0;
       this._keyboardPanOffset = { deltaY: previousDeltaY + (targetTranslateY - translateY), scale };
     }
@@ -297,7 +297,7 @@ export class KritzelViewport {
       const adjustedClientX = event.clientX - this._core.store.offsetX;
       const adjustedClientY = event.clientY - this._core.store.offsetY;
 
-      if (event.button === KritzelMouseButton.Right) {
+      if (event.button === UpdrawMouseButton.Right) {
         this._core.store.state.isPanning = true;
         this._core.store.state.startX = adjustedClientX;
         this._core.store.state.startY = adjustedClientY;
@@ -324,7 +324,7 @@ export class KritzelViewport {
         // Clear selection box when scaling starts to prevent it from remaining on screen
         if (this._core.store.state.isSelecting) {
           this._core.store.state.isSelecting = false;
-          this._core.store.objects.remove(obj => obj instanceof KritzelSelectionBox);
+          this._core.store.objects.remove(obj => obj instanceof UpdrawSelectionBox);
           this._core.store.setSelectionBox(null);
           // Clear selection preview state from objects - use selectedObjects for efficiency
           this._core.store.selectedObjects.forEach(object => {
@@ -400,7 +400,7 @@ export class KritzelViewport {
         if (!this._touchCursorBroadcastActive) {
           const dx = event.clientX - this._touchStartScreenX;
           const dy = event.clientY - this._touchStartScreenY;
-          if (Math.sqrt(dx * dx + dy * dy) >= KritzelViewport.TOUCH_CURSOR_BROADCAST_THRESHOLD) {
+          if (Math.sqrt(dx * dx + dy * dy) >= UpdrawViewport.TOUCH_CURSOR_BROADCAST_THRESHOLD) {
             this._touchCursorBroadcastActive = true;
           }
         }
@@ -501,7 +501,7 @@ export class KritzelViewport {
    * Returns the current viewport state.
    * @returns The current viewport position, scale, and dimensions.
    */
-  getViewport(): KritzelViewportState {
+  getViewport(): UpdrawViewportState {
     const state = this._core.store.state;
     return {
       translateX: state.translateX,
@@ -719,7 +719,7 @@ export class KritzelViewport {
    * Respects viewport boundary constraints.
    * @param object - The object to center in the viewport
    */
-  centerInViewport(object: KritzelBaseObject): void {
+  centerInViewport(object: UpdrawBaseObject): void {
     const { scale, viewportWidth, viewportHeight } = this._core.store.state;
     const { x, y, width, height } = object.rotatedBoundingBox;
 
@@ -743,7 +743,7 @@ export class KritzelViewport {
    * scale limits and viewport boundaries.
    * @param object - The object to fit in the viewport
    */
-  centerFitInViewport(object: KritzelBaseObject): void {
+  centerFitInViewport(object: UpdrawBaseObject): void {
     const scaleX = this._core.store.state.viewportWidth / (object.rotatedBoundingBox.width * 1.1);
     const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
     const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
@@ -759,7 +759,7 @@ export class KritzelViewport {
    * fits, the scale is left unchanged.
    * @param object - The object to fit in the viewport
    */
-  centerFitInViewportIfNeeded(object: KritzelBaseObject): void {
+  centerFitInViewportIfNeeded(object: UpdrawBaseObject): void {
     const scaleX = this._core.store.state.viewportWidth / (object.rotatedBoundingBox.width * 1.1);
     const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
     const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
@@ -777,7 +777,7 @@ export class KritzelViewport {
    * viewport is left completely unchanged.
    * @param object - The object to check and fit in the viewport
    */
-  fitInViewportIfNeeded(object: KritzelBaseObject): void {
+  fitInViewportIfNeeded(object: UpdrawBaseObject): void {
     const scaleX = this._core.store.state.viewportWidth / (object.rotatedBoundingBox.width * 1.1);
     const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
     const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
@@ -796,7 +796,7 @@ export class KritzelViewport {
    * the viewport is left unchanged.
    * @param object - The object to bring into view
    */
-  bringIntoViewIfNeeded(object: KritzelBaseObject): void {
+  bringIntoViewIfNeeded(object: UpdrawBaseObject): void {
     const { scale, translateX, translateY, viewportWidth, viewportHeight } = this._core.store.state;
     const bounds = object.rotatedBoundingBox;
 
@@ -1055,7 +1055,7 @@ export class KritzelViewport {
    * @param animate - Whether to animate the viewport transition (default: true)
    * @returns true if at least one object was provided and viewport was adjusted, false otherwise
    */
-  centerFitObjects<T extends Element>(objects: KritzelBaseObject<T>[], animate = true): boolean {
+  centerFitObjects<T extends Element>(objects: UpdrawBaseObject<T>[], animate = true): boolean {
     if (objects.length === 0) {
       return false;
     }

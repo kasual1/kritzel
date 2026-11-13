@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { KritzelEditor, type HTMLKritzelEditorElement } from "@kritzel/react-editor";
+import { UpdrawEditor, type HTMLUpdrawEditorElement } from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
@@ -9,7 +9,7 @@ const themes = [reactThemeLight, reactThemeDark];
 const panStep = 100;
 
 export function ViewportBoundariesPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
 
   async function panBy(offsetX: number, offsetY: number) {
     const editor = editorRef.current;
@@ -35,7 +35,7 @@ export function ViewportBoundariesPage() {
         <button onClick={() => void panBy(-panStep, 0)}>Pan Left</button>
         <button onClick={() => void panBy(panStep, 0)}>Pan Right</button>
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="viewport-boundaries"
         theme="light"

@@ -16,13 +16,13 @@
 In a `.css` file:
 ```css
 .my-element {
-  color: var(--kritzel-my-component-text-color, #333333);
+  color: var(--updraw-my-component-text-color, #333333);
 }
 ```
 
 Or in a `.tsx` file (inline style):
 ```tsx
-style={{ color: 'var(--kritzel-my-component-text-color, #333333)' }}
+style={{ color: 'var(--updraw-my-component-text-color, #333333)' }}
 ```
 
 ### Step 2: Run the generator
@@ -31,7 +31,7 @@ style={{ color: 'var(--kritzel-my-component-text-color, #333333)' }}
 node scripts/generate-theme-interface.js
 ```
 
-This scans all `.css` and `.tsx` files for `--kritzel-*` patterns and regenerates `theme.interface.ts`.
+This scans all `.css` and `.tsx` files for `--updraw-*` patterns and regenerates `theme.interface.ts`.
 
 ### Step 3: Add values to theme presets
 
@@ -62,15 +62,15 @@ npm run test
 ## Naming Convention
 
 ```
---kritzel-<category>-<property-name>
+--updraw-<category>-<property-name>
 ```
 
 - Category = component or domain (e.g., `toolbar`, `menu`, `selection-box`)
 - Property = camelCase when in TypeScript, kebab-case in CSS
 
 Examples:
-- `--kritzel-toolbar-background-color` â†’ `toolbar.backgroundColor`
-- `--kritzel-selection-box-border-color` â†’ `selection.boxBorderColor`
+- `--updraw-toolbar-background-color` â†’ `toolbar.backgroundColor`
+- `--updraw-selection-box-border-color` â†’ `selection.boxBorderColor`
 
 ## Category Detection
 
@@ -78,10 +78,10 @@ The generator groups variables by matching known category prefixes (longest matc
 
 ## How Themes Are Applied
 
-1. `KritzelThemeManager` holds a registry of `KritzelTheme` objects
+1. `UpdrawThemeManager` holds a registry of `UpdrawTheme` objects
 2. `ThemeHelper.flattenThemeToVariables(theme)` converts the nested theme object to a flat `Record<string, string>` of CSS variable names â†’ values
 3. `ThemeHelper.applyVariablesToElement(vars, element)` writes them as inline styles on the host element
-4. Components read variables via `var(--kritzel-*, fallback)` in their CSS
+4. Components read variables via `var(--updraw-*, fallback)` in their CSS
 
 ## ThemeAwareColor
 
@@ -91,17 +91,17 @@ For object properties that change with theme (e.g., object fill/border):
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 
 const color: ThemeAwareColor = {
-  light: 'var(--kritzel-my-var)',
-  dark: 'var(--kritzel-my-var)',
+  light: 'var(--updraw-my-var)',
+  dark: 'var(--updraw-my-var)',
 };
 ```
 
-Resolved at render time via `KritzelColorHelper.resolveThemeColor(color, currentTheme)`.
+Resolved at render time via `UpdrawColorHelper.resolveThemeColor(color, currentTheme)`.
 
 ## Rules
 
 - Always provide a fallback in `var()` declarations
-- Prefix ALL custom properties with `--kritzel-`
+- Prefix ALL custom properties with `--updraw-`
 - Never hardcode colors in components â€” always use CSS variables
 - Keep light and dark theme presets in sync (same keys)
 - When switching themes, remove variables applied by the previous theme that are absent from the next theme; partial custom themes must not inherit stale values

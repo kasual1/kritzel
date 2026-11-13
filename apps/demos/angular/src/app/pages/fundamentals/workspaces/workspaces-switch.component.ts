@@ -5,17 +5,17 @@ import {
   signal,
 } from '@angular/core';
 import {
-  KritzelEditor,
+  UpdrawEditor,
   ActiveWorkspaceChangeEvent,
-  KritzelBaseObject,
-  KritzelLine,
-  KritzelPath,
-  KritzelShape,
-  KritzelWorkspace,
-  KritzelSyncConfig,
+  UpdrawBaseObject,
+  UpdrawLine,
+  UpdrawPath,
+  UpdrawShape,
+  UpdrawWorkspace,
+  UpdrawSyncConfig,
   InMemorySyncProvider,
   ShapeType,
-} from '@kritzel/angular-editor';
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { InfoPanelComponent } from '../../../components/info-panel.component';
@@ -27,9 +27,9 @@ interface WorkspacePalette {
   accent: string;
 }
 
-function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] {
+function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
   return [
-    new KritzelShape({
+    new UpdrawShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -39,7 +39,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] 
       strokeColor: { light: palette.stroke, dark: palette.stroke },
       strokeWidth: 3,
     }),
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -49,7 +49,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] 
       strokeColor: { light: palette.accent, dark: palette.accent },
       strokeWidth: 3,
     }),
-    new KritzelLine({
+    new UpdrawLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -57,7 +57,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] 
       stroke: { light: palette.accent, dark: palette.accent },
       strokeWidth: 3,
     }),
-    new KritzelPath({
+    new UpdrawPath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -79,7 +79,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] 
 
 @Component({
   selector: 'app-workspaces-switch',
-  imports: [KritzelEditor, InfoPanelComponent, ToolbarComponent],
+  imports: [UpdrawEditor, InfoPanelComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -93,7 +93,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] 
       }
     </app-toolbar>
     <div class="content">
-      <kritzel-editor
+      <updraw-editor
         editorId="workspaces-switch"
         [theme]="'light'"
         [themes]="themes"
@@ -105,7 +105,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] 
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-      ></kritzel-editor>
+      ></updraw-editor>
       <app-info-panel>
         <h3>Active Workspace</h3>
         <pre>{{ activeWorkspaceJson() }}</pre>
@@ -126,7 +126,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] 
         min-height: 0;
         position: relative;
       }
-      kritzel-editor {
+      updraw-editor {
         flex: 1;
       }
       app-info-panel {
@@ -146,17 +146,17 @@ function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] 
 export class WorkspacesSwitchComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
+  syncConfig: UpdrawSyncConfig = {
     providers: [InMemorySyncProvider],
   };
 
-  workspaces = signal<KritzelWorkspace[]>([
-    new KritzelWorkspace({ id: 'coral', name: 'Coral', objects: createWorkspaceObjects({ fill: '#fce4ec', stroke: '#c62828', accent: '#ff9800' }) }),
-    new KritzelWorkspace({ id: 'ocean', name: 'Ocean', objects: createWorkspaceObjects({ fill: '#e3f2fd', stroke: '#1565c0', accent: '#00bcd4' }) }),
-    new KritzelWorkspace({ id: 'violet', name: 'Violet', objects: createWorkspaceObjects({ fill: '#f3e5f5', stroke: '#6a1b9a', accent: '#e91e63' }) }),
-    new KritzelWorkspace({ id: 'meadow', name: 'Meadow', objects: createWorkspaceObjects({ fill: '#e8f5e9', stroke: '#2e7d32', accent: '#8bc34a' }) }),
-    new KritzelWorkspace({ id: 'amber', name: 'Amber', objects: createWorkspaceObjects({ fill: '#fff3e0', stroke: '#ef6c00', accent: '#795548' }) }),
-    new KritzelWorkspace({ id: 'lagoon', name: 'Lagoon', objects: createWorkspaceObjects({ fill: '#e0f7fa', stroke: '#00838f', accent: '#3f51b5' }) }),
+  workspaces = signal<UpdrawWorkspace[]>([
+    new UpdrawWorkspace({ id: 'coral', name: 'Coral', objects: createWorkspaceObjects({ fill: '#fce4ec', stroke: '#c62828', accent: '#ff9800' }) }),
+    new UpdrawWorkspace({ id: 'ocean', name: 'Ocean', objects: createWorkspaceObjects({ fill: '#e3f2fd', stroke: '#1565c0', accent: '#00bcd4' }) }),
+    new UpdrawWorkspace({ id: 'violet', name: 'Violet', objects: createWorkspaceObjects({ fill: '#f3e5f5', stroke: '#6a1b9a', accent: '#e91e63' }) }),
+    new UpdrawWorkspace({ id: 'meadow', name: 'Meadow', objects: createWorkspaceObjects({ fill: '#e8f5e9', stroke: '#2e7d32', accent: '#8bc34a' }) }),
+    new UpdrawWorkspace({ id: 'amber', name: 'Amber', objects: createWorkspaceObjects({ fill: '#fff3e0', stroke: '#ef6c00', accent: '#795548' }) }),
+    new UpdrawWorkspace({ id: 'lagoon', name: 'Lagoon', objects: createWorkspaceObjects({ fill: '#e0f7fa', stroke: '#00838f', accent: '#3f51b5' }) }),
   ]);
   activeWorkspaceId = signal<string | undefined>('coral');
   activeWorkspace = computed(
@@ -182,7 +182,7 @@ export class WorkspacesSwitchComponent {
     this.activeWorkspaceId.set(event.detail.id);
   }
 
-  switchTo(workspace: KritzelWorkspace) {
+  switchTo(workspace: UpdrawWorkspace) {
     this.activeWorkspaceId.set(workspace.id);
   }
 }

@@ -1,0 +1,11 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+updraw-avatar {
+  cursor: var(--updraw-global-pointer-cursor, pointer);
+  border-radius: 50%;
+}

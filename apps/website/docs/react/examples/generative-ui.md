@@ -1,7 +1,7 @@
 ---
 sidebar_label: Generative UI
 displayed_sidebar: tutorialSidebar
-title: "Generative UI Example | Kritzel for React"
+title: "Generative UI Example | Updraw for React"
 description: "Bind a chat session with the iframe canvas tools to the chat box and let a language model build working, sandboxed user interfaces on the infinite canvas."
 ---
 
@@ -13,7 +13,7 @@ This example lets a language model build user interfaces on the canvas. Describe
 
 ## Prerequisites
 
-Complete the [Quick Start](../getting-started/quick-start.md) guide to have a working `<KritzelEditor>` rendered in your React app. This example builds on that setup. To generate UIs with a model, you need an API key from Anthropic, OpenAI, or Google Gemini. Without one, the demo answers the example prompts with canned UIs.
+Complete the [Quick Start](../getting-started/quick-start.md) guide to have a working `<UpdrawEditor>` rendered in your React app. This example builds on that setup. To generate UIs with a model, you need an API key from Anthropic, OpenAI, or Google Gemini. Without one, the demo answers the example prompts with canned UIs.
 
 ---
 
@@ -21,7 +21,7 @@ Complete the [Quick Start](../getting-started/quick-start.md) guide to have a wo
 
 This example makes use of the following core concepts. Click on the links below to go into the details:
 
-- [Agents](/docs/react/advanced/agents) - connecting the chat box to a model with `KritzelChatSession`, its canvas tools, and transports
+- [Agents](/docs/react/advanced/agents) - connecting the chat box to a model with `UpdrawChatSession`, its canvas tools, and transports
 - [Rendering iFrames](/docs/react/advanced/dynamic-objects#rendering-iframes) - how iframe objects run generated HTML, CSS, and JavaScript in a sandbox
 - [Object Titlebar](/docs/react/fundamentals/controls#object-titlebar) - giving each UI an editable title, its size, and a fullscreen button
 
@@ -51,8 +51,8 @@ Choose whether to use your own API key or mocked requests, then type into the ch
 The session runs the tool loop: it sends the conversation through its transport, runs the tool calls of the answer on the canvas, and sends the results back until the model is done. `canvasTools: { iframes: true }` adds `create_iframe`, `read_iframe`, and `update_iframe` to the canvas tools. The system prompt tells the model where to place new UIs, how to build them, and to change an existing UI instead of adding a new one.
 
 ```ts
-export function createGenerativeUiSession(transport: KritzelChatTransport): KritzelChatSession {
-  return new KritzelChatSession({ transport, system: SYSTEM_PROMPT, canvasTools: { iframes: true } });
+export function createGenerativeUiSession(transport: UpdrawChatTransport): UpdrawChatSession {
+  return new UpdrawChatSession({ transport, system: SYSTEM_PROMPT, canvasTools: { iframes: true } });
 }
 ```
 
@@ -74,7 +74,7 @@ const session = mode ? sessions[mode] : null;
 `chatSession` binds the session to the chat box: the chat box sends its prompts to the session, shows its progress, and its stop button stops it. `chatBoxChips` shows the selected UIs as chips, and the session tells the model which objects they refer to.
 
 ```tsx
-<KritzelEditor
+<UpdrawEditor
   ref={editorRef}
   editorId="generative-ui"
   themes={themes}
@@ -106,7 +106,7 @@ useEffect(
 
 ### Calling the model from the browser
 
-A transport is a function that takes the request of one model step and returns the answer. With your own key, `createBrowserTransport()` returns one that calls Anthropic, OpenAI, or Gemini straight from the browser. For each step, it translates Kritzel's chat protocol into the provider's API, and translates the provider's stream back into [stream events](../api-reference/chat-session.md#kritzelchatstreamevent), so that the session runs each tool call as soon as the model has written it.
+A transport is a function that takes the request of one model step and returns the answer. With your own key, `createBrowserTransport()` returns one that calls Anthropic, OpenAI, or Gemini straight from the browser. For each step, it translates Updraw's chat protocol into the provider's API, and translates the provider's stream back into [stream events](../api-reference/chat-session.md#updrawchatstreamevent), so that the session runs each tool call as soon as the model has written it.
 
 ```ts
 transport: (request, { signal }) => {
@@ -133,7 +133,7 @@ Without a key, the demo uses `createScriptedTransport()`, which answers from a s
 
 ```ts
 return createScriptedTransport(
-  (request): string | KritzelScriptedAnswer => {
+  (request): string | UpdrawScriptedAnswer => {
     // ...
     return {
       text: `Building the ${name}.`,
@@ -152,12 +152,12 @@ return createScriptedTransport(
 `objectConfig` gives only the UIs a titlebar and keeps them from rotating. `objectTitlebar` describes its contents: an editable title and the current size on the left, and a play button on the right. The themes give the UIs rounded corners and a soft shadow through their [`iframe`](../api-reference/theming.md#iframe) variables.
 
 ```ts
-export const objectConfig: KritzelObjectConfig = {
+export const objectConfig: UpdrawObjectConfig = {
   hasTitlebar: (object) => isUi(object),
   isRotatable: false,
 };
 
-export const objectTitlebar: KritzelObjectTitlebarConfig = {
+export const objectTitlebar: UpdrawObjectTitlebarConfig = {
   left: [
     { id: "title", type: "title", isEditable: true },
     {
@@ -175,7 +175,7 @@ export const objectTitlebar: KritzelObjectTitlebarConfig = {
 Pressing the button fires `onObjectTitlebarAction` with the button's `elementId` and the `objectId`. The page builds a standalone document from the UI's content with `createUiDocument()`, which keeps the content security policy of model-written code, and shows it in the fullscreen preview.
 
 ```tsx
-async function onTitlebarAction({ elementId, objectId }: KritzelObjectTitlebarActionEvent) {
+async function onTitlebarAction({ elementId, objectId }: UpdrawObjectTitlebarActionEvent) {
   const ui = await editorRef.current?.getObjectById(objectId);
   if (elementId === "play" && ui && isUi(ui) && !ui.isLoading) {
     setPreview({ title: getUiTitle(ui), document: createUiDocument(ui.content, getUiTitle(ui)) });

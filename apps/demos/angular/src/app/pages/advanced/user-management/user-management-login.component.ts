@@ -5,22 +5,22 @@ import {
   signal,
 } from '@angular/core';
 import {
-  IKritzelUser,
-  KritzelEditor,
-  KritzelLoginConfig,
-  KritzelWorkspace,
+  IUpdrawUser,
+  UpdrawEditor,
+  UpdrawLoginConfig,
+  UpdrawWorkspace,
   LoginEvent,
-} from '@kritzel/angular-editor';
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-user-management-login',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="user-management-login"
       [loginConfig]="loginConfig"
       [user]="user()"
@@ -34,7 +34,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       (isReady)="onReady()"
       (login)="onLogin($event)"
       (logout)="onLogout()"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [
     `
@@ -43,7 +43,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         flex-direction: column;
         height: 100%;
       }
-      kritzel-editor {
+      updraw-editor {
         flex: 1;
         min-height: 0;
       }
@@ -51,15 +51,15 @@ import { createSeedObjects } from '../../../const/seed-objects';
   ],
 })
 export class UserManagementLoginComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
-  user = signal<IKritzelUser | undefined>(undefined);
+  user = signal<IUpdrawUser | undefined>(undefined);
 
-  loginConfig: KritzelLoginConfig = {
+  loginConfig: UpdrawLoginConfig = {
     title: 'Sign in',
     providers: [
       { name: 'google', icon: 'google', label: 'Continue with Google' },

@@ -1,8 +1,8 @@
-import { KritzelIframeObject, KritzelIframeObjectLifecycleContext } from './iframe.class';
+import { UpdrawIframeObject, UpdrawIframeObjectLifecycleContext } from './iframe.class';
 import { createIframeElementBridgeScript, IFRAME_ELEMENT_MESSAGES } from './iframe-element-bridge.script';
 import { ObjectHelper } from '../../helpers/object.helper';
 
-describe('KritzelIframeObject', () => {
+describe('UpdrawIframeObject', () => {
   const createCore = () => ({
     store: {
       state: { activeWorkspace: { id: 'workspace-1' }, scale: 2 },
@@ -13,10 +13,10 @@ describe('KritzelIframeObject', () => {
   }) as any;
 
   it('initializes serializable iframe content and validates sandbox tokens', () => {
-    const object = new KritzelIframeObject({
+    const object = new UpdrawIframeObject({
       html: '<main>Test</main>',
       css: 'main { color: red; }',
-      script: 'kritzel.setState({ ready: true });',
+      script: 'updraw.setState({ ready: true });',
       state: { ready: false },
       title: 'Test frame',
       sandbox: ['allow-scripts', 'allow-forms', 'invalid-token', 'allow-scripts'],
@@ -38,7 +38,7 @@ describe('KritzelIframeObject', () => {
 
   it('creates an object bound to the current core context', () => {
     const core = createCore();
-    const object = KritzelIframeObject.create(core, { width: 100, height: 80 });
+    const object = UpdrawIframeObject.create(core, { width: 100, height: 80 });
 
     expect(object._core).toBe(core);
     expect(object.workspaceId).toBe('workspace-1');
@@ -49,7 +49,7 @@ describe('KritzelIframeObject', () => {
 
   it('mounts srcdoc once and state updates do not reload the document', () => {
     const core = createCore();
-    const object = KritzelIframeObject.create(core, {
+    const object = UpdrawIframeObject.create(core, {
       html: '<button>Run</button>',
       state: { count: 0 },
     });
@@ -62,7 +62,7 @@ describe('KritzelIframeObject', () => {
     expect(iframe.getAttribute('sandbox')).toBe('allow-scripts');
     expect(initialSource).toContain('<button>Run</button>');
     expect(initialSource).toContain('"count":0');
-    expect(initialSource).toContain('--kritzel-iframe-default-cursor: auto');
+    expect(initialSource).toContain('--updraw-iframe-default-cursor: auto');
 
     object.setState({ count: 1 });
 
@@ -71,24 +71,40 @@ describe('KritzelIframeObject', () => {
     expect(core.store.objects.update).toHaveBeenCalledWith(object);
   });
 
-  it('uses separate Kritzel cursors for iframe content and clickable controls', () => {
-    const object = new KritzelIframeObject({ html: '<button>Run</button>' });
+  it('uses separate Updraw cursors for iframe content and clickable controls', () => {
+    const object = new UpdrawIframeObject({ html: '<button>Run</button>' });
     const iframe = document.createElement('iframe');
     const getComputedStyle = jest.spyOn(globalThis, 'getComputedStyle').mockReturnValue({
-      getPropertyValue: (property: string) => property === '--kritzel-global-default-cursor'
+      getPropertyValue: (property: string) => property === '--updraw-global-default-cursor'
         ? 'url(default-cursor) 4 4, auto'
         : 'url(pointer-cursor) 12 12, auto',
     } as CSSStyleDeclaration);
 
     object.mount(iframe);
 
-    expect(iframe.srcdoc).toContain('--kritzel-iframe-default-cursor: url(default-cursor) 4 4, auto');
-    expect(iframe.srcdoc).toContain('--kritzel-iframe-pointer-cursor: url(pointer-cursor) 12 12, auto');
+    expect(iframe.srcdoc).toContain('--updraw-iframe-default-cursor: url(default-cursor) 4 4, auto');
+    expect(iframe.srcdoc).toContain('--updraw-iframe-pointer-cursor: url(pointer-cursor) 12 12, auto');
     getComputedStyle.mockRestore();
   });
 
+  it('keeps the runtime API of content saved before the rename working', () => {
+    const object = new UpdrawIframeObject({ html: '<button data-kritzel-id="run">Run</button>' });
+    const iframe = document.createElement('iframe');
+
+    object.mount(iframe);
+
+    // Deprecated aliases: the global, the state event and the cursor variables.
+    expect(iframe.srcdoc).toContain('globalThis.kritzel = updraw;');
+    expect(iframe.srcdoc).toContain("new CustomEvent('updrawstatechange'");
+    expect(iframe.srcdoc).toContain("new CustomEvent('kritzelstatechange'");
+    expect(iframe.srcdoc).toContain('--kritzel-iframe-default-cursor: var(--updraw-iframe-default-cursor);');
+    expect(iframe.srcdoc).toContain('--kritzel-iframe-pointer-cursor: var(--updraw-iframe-pointer-cursor);');
+    // Stable element ids: the current attribute first, then the legacy one.
+    expect(iframe.srcdoc).toContain('const ID_ATTRIBUTES = ["data-updraw-id","data-kritzel-id"];');
+  });
+
   it('reloads srcdoc when content changes', () => {
-    const object = KritzelIframeObject.create(createCore(), { html: '<p>Before</p>' });
+    const object = UpdrawIframeObject.create(createCore(), { html: '<p>Before</p>' });
     const iframe = document.createElement('iframe');
     object.mount(iframe);
     const initialSource = iframe.srcdoc;
@@ -101,7 +117,7 @@ describe('KritzelIframeObject', () => {
   });
 
   it('keeps its document when loading is toggled, the engine draws the loading placeholder over it', () => {
-    const object = new KritzelIframeObject({
+    const object = new UpdrawIframeObject({
       content: { html: '<main>Ready</main>', css: 'main { color: red; }', script: '' },
       isLoading: true,
     });
@@ -117,7 +133,7 @@ describe('KritzelIframeObject', () => {
   });
 
   it('drops the legacy loadingContent of documents saved before it was removed', () => {
-    const object = new KritzelIframeObject();
+    const object = new UpdrawIframeObject();
     object.deserialize({
       content: { html: '<main>Ready</main>', css: '', script: '' },
       loadingContent: { html: '<main>Loading</main>', css: '', script: '' },
@@ -130,7 +146,7 @@ describe('KritzelIframeObject', () => {
   });
 
   it('escapes serialized state and closing script tags', () => {
-    const object = new KritzelIframeObject({
+    const object = new UpdrawIframeObject({
       state: { value: '</script><script>bad()</script>' },
       script: 'const value = "</script>";',
     });
@@ -145,40 +161,40 @@ describe('KritzelIframeObject', () => {
 
   it('writes its content security policy first into the head and keeps it through serialize, copy and clone', () => {
     const policy = "default-src 'none'; script-src 'unsafe-inline'";
-    const object = KritzelIframeObject.create(createCore(), { html: '<p>Hi</p>', contentSecurityPolicy: policy });
+    const object = UpdrawIframeObject.create(createCore(), { html: '<p>Hi</p>', contentSecurityPolicy: policy });
     const iframe = document.createElement('iframe');
 
     object.mount(iframe);
 
     const head = iframe.srcdoc.slice(iframe.srcdoc.indexOf('<head>'), iframe.srcdoc.indexOf('<style>'));
     expect(head).toContain(`<meta http-equiv="Content-Security-Policy" content="${policy}">`);
-    expect(new KritzelIframeObject().deserialize<KritzelIframeObject>(object.serialize()).contentSecurityPolicy).toBe(policy);
+    expect(new UpdrawIframeObject().deserialize<UpdrawIframeObject>(object.serialize()).contentSecurityPolicy).toBe(policy);
     expect(object.copy().contentSecurityPolicy).toBe(policy);
     expect(object.clone().contentSecurityPolicy).toBe(policy);
   });
 
   it('has no content security policy by default and escapes one that would break out of the attribute', () => {
-    const plain = KritzelIframeObject.create(createCore(), { html: '<p>Hi</p>' });
+    const plain = UpdrawIframeObject.create(createCore(), { html: '<p>Hi</p>' });
     const plainFrame = document.createElement('iframe');
     plain.mount(plainFrame);
     expect(plainFrame.srcdoc).not.toContain('Content-Security-Policy');
 
-    const hostile = KritzelIframeObject.create(createCore(), { contentSecurityPolicy: '"><script>alert(1)</script>' });
+    const hostile = UpdrawIframeObject.create(createCore(), { contentSecurityPolicy: '"><script>alert(1)</script>' });
     const hostileFrame = document.createElement('iframe');
     hostile.mount(hostileFrame);
     expect(hostileFrame.srcdoc).toContain('content="&quot;>&lt;script>alert(1)&lt;/script>"');
   });
 
   it('serializes lifecycle state and revives without transient mounting state', () => {
-    class StatefulIframeObject extends KritzelIframeObject {
-      protected override onSerialize(context: KritzelIframeObjectLifecycleContext): Record<string, unknown> {
+    class StatefulIframeObject extends UpdrawIframeObject {
+      protected override onSerialize(context: UpdrawIframeObjectLifecycleContext): Record<string, unknown> {
         return { ...context.state, serialized: true };
       }
     }
 
     const object = new StatefulIframeObject({ html: '<p>Persisted</p>', state: { count: 2 } });
     const serialized = object.serialize();
-    const revived = new KritzelIframeObject().deserialize<KritzelIframeObject>(serialized);
+    const revived = new UpdrawIframeObject().deserialize<UpdrawIframeObject>(serialized);
 
     expect(serialized.state).toEqual({ count: 2, serialized: true });
     expect(serialized).not.toHaveProperty('messageListener');
@@ -188,7 +204,7 @@ describe('KritzelIframeObject', () => {
   });
 
   it('serializes while mounted without cloning the runtime listener', () => {
-    const object = new KritzelIframeObject({ state: { count: 2 } });
+    const object = new UpdrawIframeObject({ state: { count: 2 } });
     object.mount(document.createElement('iframe'));
 
     expect(() => object.serialize()).not.toThrow();
@@ -196,14 +212,14 @@ describe('KritzelIframeObject', () => {
   });
 
   it('adopts a mounted iframe without reloading its document', () => {
-    const previous = new KritzelIframeObject({ html: '<p>Mounted</p>', state: { count: 1 } });
+    const previous = new UpdrawIframeObject({ html: '<p>Mounted</p>', state: { count: 1 } });
     const iframe = document.createElement('iframe');
     previous.mount(iframe);
     previous.setIsInteractive(true);
     previous.isSelected = true;
     const source = iframe.srcdoc;
 
-    const revived = new KritzelIframeObject({ html: '<p>Mounted</p>', state: { count: 2 } });
+    const revived = new UpdrawIframeObject({ html: '<p>Mounted</p>', state: { count: 2 } });
     revived.adoptTransientStateFrom(previous);
 
     expect(revived.isMounted).toBe(true);
@@ -215,7 +231,7 @@ describe('KritzelIframeObject', () => {
   });
 
   it('reports its document as loaded once the iframe has loaded its first document', () => {
-    const object = new KritzelIframeObject({ html: '<p>Loaded</p>' });
+    const object = new UpdrawIframeObject({ html: '<p>Loaded</p>' });
     const iframe = document.createElement('iframe');
     const rerender = jest.fn();
     (object as any)._core = { rerender };
@@ -233,12 +249,12 @@ describe('KritzelIframeObject', () => {
   });
 
   it('keeps the loaded document when a synced update replaces the object', () => {
-    const previous = new KritzelIframeObject({ html: '<p>Loaded</p>' });
+    const previous = new UpdrawIframeObject({ html: '<p>Loaded</p>' });
     const iframe = document.createElement('iframe');
     previous.mount(iframe);
     iframe.dispatchEvent(new Event('load'));
 
-    const revived = new KritzelIframeObject({ html: '<p>Loaded</p>' });
+    const revived = new UpdrawIframeObject({ html: '<p>Loaded</p>' });
     revived.adoptTransientStateFrom(previous);
 
     expect(revived.isDocumentLoaded).toBe(true);
@@ -250,7 +266,7 @@ describe('KritzelIframeObject', () => {
       configurable: true,
       value: MouseEvent,
     });
-    const object = new KritzelIframeObject();
+    const object = new UpdrawIframeObject();
     const iframe = document.createElement('iframe');
     const dispatchEvent = jest.spyOn(iframe, 'dispatchEvent');
     let iframeLeft = 100;
@@ -273,7 +289,7 @@ describe('KritzelIframeObject', () => {
 
     const dispatchPointerMessage = (eventType: 'pointerdown' | 'pointermove', clientX: number, screenX: number) => {
       (object as any).dispatchPointerMessage({
-        type: 'kritzel-iframe-pointer',
+        type: 'updraw-iframe-pointer',
         eventType,
         pointerId: 1,
         pointerType: 'mouse',
@@ -307,8 +323,8 @@ describe('KritzelIframeObject', () => {
     });
   });
 
-  it('bridges the iframe contextmenu event so Kritzel opens its own context menu', () => {
-    const object = new KritzelIframeObject();
+  it('bridges the iframe contextmenu event so Updraw opens its own context menu', () => {
+    const object = new UpdrawIframeObject();
     const iframe = document.createElement('iframe');
     const dispatchEvent = jest.spyOn(iframe, 'dispatchEvent');
     jest.spyOn(iframe, 'getBoundingClientRect').mockReturnValue({
@@ -325,10 +341,10 @@ describe('KritzelIframeObject', () => {
     object.mount(iframe);
 
     expect(iframe.srcdoc).toContain("addEventListener('contextmenu'");
-    expect(iframe.srcdoc).toContain('kritzel-iframe-contextmenu');
+    expect(iframe.srcdoc).toContain('updraw-iframe-contextmenu');
 
     (object as any).dispatchContextMenuMessage({
-      type: 'kritzel-iframe-contextmenu',
+      type: 'updraw-iframe-contextmenu',
       clientX: 30,
       clientY: 20,
       button: 2,
@@ -346,8 +362,8 @@ describe('KritzelIframeObject', () => {
   });
 
   it('captures unmount state and removes runtime references', () => {
-    class StatefulIframeObject extends KritzelIframeObject {
-      protected override onUnmount(context: KritzelIframeObjectLifecycleContext): Record<string, unknown> {
+    class StatefulIframeObject extends UpdrawIframeObject {
+      protected override onUnmount(context: UpdrawIframeObjectLifecycleContext): Record<string, unknown> {
         return { ...context.state, unmounted: true };
       }
     }
@@ -367,7 +383,7 @@ describe('KritzelIframeObject', () => {
   });
 
   it('copies mutable state without sharing runtime resources', () => {
-    const object = new KritzelIframeObject({ state: { nested: { count: 1 } }, sandbox: ['allow-scripts', 'allow-forms'] });
+    const object = new UpdrawIframeObject({ state: { nested: { count: 1 } }, sandbox: ['allow-scripts', 'allow-forms'] });
     const copy = object.copy();
 
     (copy.state.nested as { count: number }).count = 2;
@@ -382,7 +398,7 @@ describe('KritzelIframeObject', () => {
   describe('element bridge', () => {
     const element = { selector: '#run', id: 'run', tagName: 'button', classList: [], attributes: {}, text: 'Run', rect: { x: 4, y: 6, width: 20, height: 10 } };
 
-    const mountWithWindow = (object: KritzelIframeObject) => {
+    const mountWithWindow = (object: UpdrawIframeObject) => {
       const iframe = document.createElement('iframe');
       const contentWindow = { postMessage: jest.fn() };
       Object.defineProperty(iframe, 'contentWindow', { configurable: true, value: contentWindow });
@@ -403,7 +419,7 @@ describe('KritzelIframeObject', () => {
     };
 
     it('runs the bridge in its own script in the head, before any script of the content', () => {
-      const object = new KritzelIframeObject({ html: '<script>const inline = 1;</script>', script: 'const marker = 1;' });
+      const object = new UpdrawIframeObject({ html: '<script>const inline = 1;</script>', script: 'const marker = 1;' });
       const iframe = document.createElement('iframe');
       object.mount(iframe);
 
@@ -413,7 +429,7 @@ describe('KritzelIframeObject', () => {
       expect(bridgeIndex).toBeLessThan(iframe.srcdoc.indexOf('const inline = 1;'));
       expect(bridgeIndex).toBeLessThan(iframe.srcdoc.indexOf('const marker = 1;'));
       expect(iframe.srcdoc.slice(bridgeIndex, iframe.srcdoc.indexOf('</head>'))).toContain('</script>');
-      expect(iframe.srcdoc).toContain('html[data-kritzel-picking]');
+      expect(iframe.srcdoc).toContain('html[data-updraw-picking]');
     });
 
     it('generates a bridge script that parses and can be inlined', () => {
@@ -425,13 +441,13 @@ describe('KritzelIframeObject', () => {
     });
 
     it('is recognized as an element-aware object', () => {
-      expect(ObjectHelper.isKritzelElementAwareObject(new KritzelIframeObject())).toBe(true);
-      expect(ObjectHelper.isKritzelElementAwareObject({ setElementPicking: () => undefined })).toBe(false);
-      expect(ObjectHelper.isKritzelElementAwareObject(null)).toBe(false);
+      expect(ObjectHelper.isUpdrawElementAwareObject(new UpdrawIframeObject())).toBe(true);
+      expect(ObjectHelper.isUpdrawElementAwareObject({ setElementPicking: () => undefined })).toBe(false);
+      expect(ObjectHelper.isUpdrawElementAwareObject(null)).toBe(false);
     });
 
     it('sends picking and highlights once the page is ready', () => {
-      const object = KritzelIframeObject.create(createCore());
+      const object = UpdrawIframeObject.create(createCore());
       const { receive, syncs } = mountWithWindow(object);
       object.setElementPicking(true, { selector: 'button' });
       object.setElementHighlights([{ selector: '#run', label: 'Run' }]);
@@ -445,7 +461,7 @@ describe('KritzelIframeObject', () => {
     });
 
     it('waits for a new ready after the document is reloaded', () => {
-      const object = KritzelIframeObject.create(createCore());
+      const object = UpdrawIframeObject.create(createCore());
       const { receive, syncs } = mountWithWindow(object);
       receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
       object.setContent({ html: '<p>New</p>' });
@@ -460,7 +476,7 @@ describe('KritzelIframeObject', () => {
 
     it('emits hovers, clicks and picks through the engine with the object id', () => {
       const core = createEngineCore();
-      const object = KritzelIframeObject.create(core);
+      const object = UpdrawIframeObject.create(core);
       const { receive } = mountWithWindow(object);
       object.setIsInteractive(true);
       receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
@@ -477,7 +493,7 @@ describe('KritzelIframeObject', () => {
 
     it('ignores element messages from other windows', () => {
       const core = createEngineCore();
-      const object = KritzelIframeObject.create(core);
+      const object = UpdrawIframeObject.create(core);
       mountWithWindow(object);
       object.setIsInteractive(true);
 
@@ -488,7 +504,7 @@ describe('KritzelIframeObject', () => {
 
     it('reports that the hover ended when the object stops being interactive or unmounts', () => {
       const core = createEngineCore();
-      const object = KritzelIframeObject.create(core);
+      const object = UpdrawIframeObject.create(core);
       const { receive } = mountWithWindow(object);
       object.setIsInteractive(true);
       receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element });
@@ -504,7 +520,7 @@ describe('KritzelIframeObject', () => {
     });
 
     it('keeps element state transient: not serialized and not copied', () => {
-      const object = new KritzelIframeObject();
+      const object = new UpdrawIframeObject();
       object.setElementHighlights([{ selector: 'p' }]);
       object.setElementPicking(true);
       object.trackElement('p');
@@ -520,7 +536,7 @@ describe('KritzelIframeObject', () => {
 
     it('hands element state to the instance that replaces it after a synced update', () => {
       const core = createEngineCore();
-      const previous = KritzelIframeObject.create(core);
+      const previous = UpdrawIframeObject.create(core);
       const { iframe, receive, syncs } = mountWithWindow(previous);
       receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
       previous.setIsInteractive(true);
@@ -528,7 +544,7 @@ describe('KritzelIframeObject', () => {
       previous.trackElement('#run');
       receive({ type: IFRAME_ELEMENT_MESSAGES.rects, rects: { '#run': element.rect } });
 
-      const revived = new KritzelIframeObject().deserialize<KritzelIframeObject>(previous.serialize());
+      const revived = new UpdrawIframeObject().deserialize<UpdrawIframeObject>(previous.serialize());
       revived._core = core;
       revived.adoptTransientStateFrom(previous);
 
@@ -545,14 +561,14 @@ describe('KritzelIframeObject', () => {
     });
 
     it('converts content coordinates to the object space using scale and border', () => {
-      const object = new KritzelIframeObject({ scale: 2 });
+      const object = new UpdrawIframeObject({ scale: 2 });
       object.borderWidth = 4;
 
       expect(object.contentToObjectLocal({ x: 10, y: 20 })).toEqual({ x: 7, y: 12 });
     });
 
     it('queries elements through the page', async () => {
-      const object = KritzelIframeObject.create(createCore());
+      const object = UpdrawIframeObject.create(createCore());
       const { receive, contentWindow } = mountWithWindow(object);
       receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
 
@@ -561,8 +577,8 @@ describe('KritzelIframeObject', () => {
       receive({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, elements: [element] });
 
       await expect(promise).resolves.toEqual([expect.objectContaining({ selector: '#run' })]);
-      await expect(new KritzelIframeObject().queryElements('button')).rejects.toThrow('is not mounted');
-      await expect(new KritzelIframeObject({ sandbox: ['allow-forms'] }).queryElements('button')).rejects.toThrow('without scripts');
+      await expect(new UpdrawIframeObject().queryElements('button')).rejects.toThrow('is not mounted');
+      await expect(new UpdrawIframeObject({ sandbox: ['allow-forms'] }).queryElements('button')).rejects.toThrow('without scripts');
     });
   });
 });

@@ -1,25 +1,25 @@
-import { KritzelZOrderHelper, KritzelZOrderItem, KritzelZOrderOperation } from './z-order.helper';
-import type { KritzelBaseObject } from '../classes/objects/base-object.class';
-import { KritzelGroup } from '../classes/objects/group.class';
+import { UpdrawZOrderHelper, UpdrawZOrderItem, UpdrawZOrderOperation } from './z-order.helper';
+import type { UpdrawBaseObject } from '../classes/objects/base-object.class';
+import { UpdrawGroup } from '../classes/objects/group.class';
 
-/** Builds a fake carrying the KritzelGroup prototype, so it counts as a group for instanceof checks. */
-const asGroupInstance = <T extends object>(fields: T): T => Object.assign(Object.create(KritzelGroup.prototype), fields);
+/** Builds a fake carrying the UpdrawGroup prototype, so it counts as a group for instanceof checks. */
+const asGroupInstance = <T extends object>(fields: T): T => Object.assign(Object.create(UpdrawGroup.prototype), fields);
 
 // Items are listed in store order; the order matters for tied zIndex values.
-const obj = (id: string, zIndex: number): KritzelZOrderItem => ({ id, zIndex, isGroup: false, childIds: [] });
-const grp = (id: string, zIndex: number, childIds: string[]): KritzelZOrderItem => ({ id, zIndex, isGroup: true, childIds });
+const obj = (id: string, zIndex: number): UpdrawZOrderItem => ({ id, zIndex, isGroup: false, childIds: [] });
+const grp = (id: string, zIndex: number, childIds: string[]): UpdrawZOrderItem => ({ id, zIndex, isGroup: true, childIds });
 
-const reorder = (items: KritzelZOrderItem[], ids: string[], operation: KritzelZOrderOperation) =>
-  Object.fromEntries(KritzelZOrderHelper.reorder(items, ids, operation));
+const reorder = (items: UpdrawZOrderItem[], ids: string[], operation: UpdrawZOrderOperation) =>
+  Object.fromEntries(UpdrawZOrderHelper.reorder(items, ids, operation));
 
-const ungroup = (items: KritzelZOrderItem[], groupId: string) => Object.fromEntries(KritzelZOrderHelper.planUngroup(items, [groupId]));
+const ungroup = (items: UpdrawZOrderItem[], groupId: string) => Object.fromEntries(UpdrawZOrderHelper.planUngroup(items, [groupId]));
 
 /** Applies planned values. Written objects move to the end of the store order, so ties cannot rely on it. */
 function applyUpdates(
-  items: KritzelZOrderItem[],
+  items: UpdrawZOrderItem[],
   updates: Map<string, number>,
-  change: { add?: KritzelZOrderItem; removeId?: string } = {},
-): KritzelZOrderItem[] {
+  change: { add?: UpdrawZOrderItem; removeId?: string } = {},
+): UpdrawZOrderItem[] {
   const remaining = items.filter(item => item.id !== change.removeId);
   const unchanged = remaining.filter(item => !updates.has(item.id));
   const changed = remaining.filter(item => updates.has(item.id)).map(item => ({ ...item, zIndex: updates.get(item.id) }));
@@ -27,7 +27,7 @@ function applyUpdates(
 }
 
 /** Visible (non-group) ids bottom to top as rendered: by zIndex, ties in store order. */
-function visibleRenderOrder(items: KritzelZOrderItem[]): string[] {
+function visibleRenderOrder(items: UpdrawZOrderItem[]): string[] {
   return items
     .map((item, index) => ({ item, index }))
     .filter(({ item }) => !item.isGroup)
@@ -35,9 +35,9 @@ function visibleRenderOrder(items: KritzelZOrderItem[]): string[] {
     .map(({ item }) => item.id);
 }
 
-const zIndexOf = (items: KritzelZOrderItem[]) => Object.fromEntries(items.map(item => [item.id, item.zIndex]));
+const zIndexOf = (items: UpdrawZOrderItem[]) => Object.fromEntries(items.map(item => [item.id, item.zIndex]));
 
-describe('KritzelZOrderHelper', () => {
+describe('UpdrawZOrderHelper', () => {
   describe('reorder: ungrouped objects', () => {
     const board = () => [obj('s1', 1), obj('s2', 2), obj('s3', 3)];
 
@@ -75,11 +75,11 @@ describe('KritzelZOrderHelper', () => {
 
     it('U3: forward then backward restores all values', () => {
       const items = [obj('below', 1), obj('obj', 3), obj('other', 5)];
-      const forward = KritzelZOrderHelper.reorder(items, ['obj'], 'forward');
+      const forward = UpdrawZOrderHelper.reorder(items, ['obj'], 'forward');
       expect(Object.fromEntries(forward)).toEqual({ other: 3, obj: 5 });
 
       const moved = applyUpdates(items, forward);
-      const backward = KritzelZOrderHelper.reorder(moved, ['obj'], 'backward');
+      const backward = UpdrawZOrderHelper.reorder(moved, ['obj'], 'backward');
       expect(zIndexOf(applyUpdates(moved, backward))).toEqual({ below: 1, obj: 3, other: 5 });
     });
 
@@ -208,7 +208,7 @@ describe('KritzelZOrderHelper', () => {
 
   describe('planGroup', () => {
     it('GR1: grouping adjacent objects writes nothing', () => {
-      const plan = KritzelZOrderHelper.planGroup([obj('W', 0), obj('a', 1), obj('b', 2), obj('X', 3), obj('Y', 4)], ['a', 'b']);
+      const plan = UpdrawZOrderHelper.planGroup([obj('W', 0), obj('a', 1), obj('b', 2), obj('X', 3), obj('Y', 4)], ['a', 'b']);
 
       expect(Object.fromEntries(plan.updates)).toEqual({});
       expect(plan.groupZIndex).toBe(2);
@@ -217,12 +217,12 @@ describe('KritzelZOrderHelper', () => {
     });
 
     it('returns the children bottom to top regardless of selection order', () => {
-      const plan = KritzelZOrderHelper.planGroup([obj('W', 0), obj('a', 1), obj('b', 2), obj('X', 3)], ['b', 'a']);
+      const plan = UpdrawZOrderHelper.planGroup([obj('W', 0), obj('a', 1), obj('b', 2), obj('X', 3)], ['b', 'a']);
       expect(plan.childIds).toEqual(['a', 'b']);
     });
 
     it('GR2: interleaved objects drop below the group', () => {
-      const plan = KritzelZOrderHelper.planGroup([obj('a', 1), obj('X', 2), obj('b', 3), obj('Y', 4)], ['a', 'b']);
+      const plan = UpdrawZOrderHelper.planGroup([obj('a', 1), obj('X', 2), obj('b', 3), obj('Y', 4)], ['a', 'b']);
 
       expect(Object.fromEntries(plan.updates)).toEqual({ X: 1, a: 2 });
       expect(plan.groupZIndex).toBe(3);
@@ -230,7 +230,7 @@ describe('KritzelZOrderHelper', () => {
     });
 
     it('GR3: a group selected together with its children is grouped as one root', () => {
-      const plan = KritzelZOrderHelper.planGroup([obj('a', 1), obj('b', 2), grp('H', 2, ['a', 'b']), obj('X', 3)], ['a', 'b', 'H', 'X']);
+      const plan = UpdrawZOrderHelper.planGroup([obj('a', 1), obj('b', 2), grp('H', 2, ['a', 'b']), obj('X', 3)], ['a', 'b', 'H', 'X']);
 
       expect(Object.fromEntries(plan.updates)).toEqual({});
       expect(plan.groupZIndex).toBe(3);
@@ -238,12 +238,12 @@ describe('KritzelZOrderHelper', () => {
     });
 
     it('GR4: returns null when fewer than two independent objects remain', () => {
-      const plan = KritzelZOrderHelper.planGroup([obj('a', 1), obj('b', 2), grp('H', 2, ['a', 'b']), obj('X', 3)], ['H', 'a', 'b']);
+      const plan = UpdrawZOrderHelper.planGroup([obj('a', 1), obj('b', 2), grp('H', 2, ['a', 'b']), obj('X', 3)], ['H', 'a', 'b']);
       expect(plan).toBeNull();
     });
 
     it('GR5: grouping a group with a distant object moves the group up to it', () => {
-      const plan = KritzelZOrderHelper.planGroup([obj('a', 1), obj('b', 2), grp('H', 2, ['a', 'b']), obj('X', 3), obj('c', 4)], ['H', 'c']);
+      const plan = UpdrawZOrderHelper.planGroup([obj('a', 1), obj('b', 2), grp('H', 2, ['a', 'b']), obj('X', 3), obj('c', 4)], ['H', 'c']);
 
       expect(Object.fromEntries(plan.updates)).toEqual({ X: 1, a: 2, b: 3, H: 3 });
       expect(plan.groupZIndex).toBe(4);
@@ -251,7 +251,7 @@ describe('KritzelZOrderHelper', () => {
     });
 
     it('puts empty groups after the visible roots', () => {
-      const plan = KritzelZOrderHelper.planGroup([obj('a', 1), grp('E', 5, ['gone']), obj('X', 2)], ['E', 'a']);
+      const plan = UpdrawZOrderHelper.planGroup([obj('a', 1), grp('E', 5, ['gone']), obj('X', 2)], ['E', 'a']);
 
       expect(Object.fromEntries(plan.updates)).toEqual({});
       expect(plan.groupZIndex).toBe(1);
@@ -259,7 +259,7 @@ describe('KritzelZOrderHelper', () => {
     });
 
     it('returns a null group zIndex when no root has visible members', () => {
-      const plan = KritzelZOrderHelper.planGroup([grp('E1', 1, []), grp('E2', 2, ['gone']), obj('X', 3)], ['E1', 'E2']);
+      const plan = UpdrawZOrderHelper.planGroup([grp('E1', 1, []), grp('E2', 2, ['gone']), obj('X', 3)], ['E1', 'E2']);
 
       expect(plan.groupZIndex).toBeNull();
       expect(plan.childIds).toEqual(['E1', 'E2']);
@@ -271,7 +271,7 @@ describe('KritzelZOrderHelper', () => {
     const board = () => [obj('x', 1), obj('c', 2), obj('d', 3), grp('H', 3, ['c', 'd']), obj('y', 4), grp('G', 4, ['x', 'H', 'y']), obj('X', 5)];
 
     it('groups objects of the same group inside that group', () => {
-      const plan = KritzelZOrderHelper.planGroup(board(), ['c', 'd']);
+      const plan = UpdrawZOrderHelper.planGroup(board(), ['c', 'd']);
 
       expect(plan.parentId).toBe('H');
       expect(plan.childIds).toEqual(['c', 'd']);
@@ -280,7 +280,7 @@ describe('KritzelZOrderHelper', () => {
     });
 
     it('restacks siblings within their parent group', () => {
-      const plan = KritzelZOrderHelper.planGroup(board(), ['y', 'x']);
+      const plan = UpdrawZOrderHelper.planGroup(board(), ['y', 'x']);
 
       expect(plan.parentId).toBe('G');
       expect(plan.childIds).toEqual(['x', 'y']);
@@ -289,7 +289,7 @@ describe('KritzelZOrderHelper', () => {
     });
 
     it('groups objects from different groups at their common level', () => {
-      const plan = KritzelZOrderHelper.planGroup(board(), ['c', 'y']);
+      const plan = UpdrawZOrderHelper.planGroup(board(), ['c', 'y']);
 
       expect(plan.parentId).toBe('G');
       expect(plan.childIds).toEqual(['H', 'y']);
@@ -297,13 +297,13 @@ describe('KritzelZOrderHelper', () => {
     });
 
     it('returns null when the selected ids are not in the store', () => {
-      expect(KritzelZOrderHelper.planGroup(board(), [])).toBeNull();
-      expect(KritzelZOrderHelper.planGroup(board(), ['missing', 'gone'])).toBeNull();
-      expect(KritzelZOrderHelper.planGroup(board(), ['x', 'gone'])).toBeNull();
+      expect(UpdrawZOrderHelper.planGroup(board(), [])).toBeNull();
+      expect(UpdrawZOrderHelper.planGroup(board(), ['missing', 'gone'])).toBeNull();
+      expect(UpdrawZOrderHelper.planGroup(board(), ['x', 'gone'])).toBeNull();
     });
 
     it('groups an inner group selected with a top-level object as its top-level group', () => {
-      const plan = KritzelZOrderHelper.planGroup(board(), ['H', 'X']);
+      const plan = UpdrawZOrderHelper.planGroup(board(), ['H', 'X']);
 
       expect(plan.parentId).toBeNull();
       expect(plan.childIds).toEqual(['G', 'X']);
@@ -317,13 +317,13 @@ describe('KritzelZOrderHelper', () => {
       // Pasted by older versions: children above their group, colliding with the next group.
       const items = [grp('G1', 10, ['a', 'b']), obj('a', 11), obj('b', 12), grp('G2', 11, ['c', 'd']), obj('c', 12), obj('d', 13)];
 
-      expect(Object.fromEntries(KritzelZOrderHelper.planUngroup(items, ['G1', 'G2']))).toEqual({ c: 13, d: 14 });
+      expect(Object.fromEntries(UpdrawZOrderHelper.planUngroup(items, ['G1', 'G2']))).toEqual({ c: 13, d: 14 });
     });
 
     it('separates tied members within each of several dissolved groups', () => {
       const items = [obj('a', 2), obj('b', 2), grp('G1', 2, ['a', 'b']), obj('c', 7), obj('d', 7), grp('G2', 7, ['c', 'd']), obj('z', 9)];
 
-      expect(Object.fromEntries(KritzelZOrderHelper.planUngroup(items, ['G1', 'G2']))).toEqual({ b: 3, d: 8 });
+      expect(Object.fromEntries(UpdrawZOrderHelper.planUngroup(items, ['G1', 'G2']))).toEqual({ b: 3, d: 8 });
     });
 
     it('UG1: ungrouping a well-formed group writes nothing', () => {
@@ -332,7 +332,7 @@ describe('KritzelZOrderHelper', () => {
 
     it('UG2: separates tied members and keeps the visible order', () => {
       const items = [obj('P', 0), obj('c1', 2), obj('c2', 2), obj('c3', 2), grp('G', 2, ['c1', 'c2', 'c3']), obj('Z3', 3), obj('Z4', 4), obj('Z5', 5)];
-      const updates = KritzelZOrderHelper.planUngroup(items, ['G']);
+      const updates = UpdrawZOrderHelper.planUngroup(items, ['G']);
       const after = applyUpdates(items, updates, { removeId: 'G' });
       const z = zIndexOf(after);
       const visibleValues = after.map(item => item.zIndex);
@@ -401,10 +401,10 @@ describe('KritzelZOrderHelper', () => {
 
     it('tolerates self references and cycles in childIds', () => {
       const items = [grp('G1', 1, ['G1', 'G2', 'a']), grp('G2', 2, ['G1', 'b']), obj('a', 1), obj('b', 2), obj('c', 3)];
-      const operations: KritzelZOrderOperation[] = ['forward', 'backward', 'front', 'back'];
+      const operations: UpdrawZOrderOperation[] = ['forward', 'backward', 'front', 'back'];
 
       for (const operation of operations) {
-        const after = applyUpdates(items, KritzelZOrderHelper.reorder(items, ['G1', 'G2', 'c'], operation));
+        const after = applyUpdates(items, UpdrawZOrderHelper.reorder(items, ['G1', 'G2', 'c'], operation));
         const visibleValues = after.filter(item => !item.isGroup).map(item => item.zIndex);
         expect(new Set(visibleValues).size).toBe(visibleValues.length);
       }
@@ -412,22 +412,22 @@ describe('KritzelZOrderHelper', () => {
   });
 
   describe('compareStackOrder', () => {
-    const object = (id: string, zIndex: number) => ({ id, zIndex, __class__: 'KritzelShape' }) as unknown as KritzelBaseObject;
-    const group = (id: string, zIndex: number) => asGroupInstance({ id, zIndex, __class__: 'KritzelGroup', childIds: [] }) as unknown as KritzelBaseObject;
+    const object = (id: string, zIndex: number) => ({ id, zIndex, __class__: 'UpdrawShape' }) as unknown as UpdrawBaseObject;
+    const group = (id: string, zIndex: number) => asGroupInstance({ id, zIndex, __class__: 'UpdrawGroup', childIds: [] }) as unknown as UpdrawBaseObject;
 
     it('sorts a group after a non-group with the same zIndex', () => {
-      expect(KritzelZOrderHelper.compareStackOrder(group('G', 2), object('b', 2))).toBeGreaterThan(0);
-      expect(KritzelZOrderHelper.compareStackOrder(object('b', 2), group('G', 2))).toBeLessThan(0);
+      expect(UpdrawZOrderHelper.compareStackOrder(group('G', 2), object('b', 2))).toBeGreaterThan(0);
+      expect(UpdrawZOrderHelper.compareStackOrder(object('b', 2), group('G', 2))).toBeLessThan(0);
     });
 
     it('sorts by zIndex otherwise', () => {
-      expect(KritzelZOrderHelper.compareStackOrder(group('G', 1), object('b', 2))).toBeLessThan(0);
-      expect(KritzelZOrderHelper.compareStackOrder(object('a', 3), group('G', 2))).toBeGreaterThan(0);
-      expect(KritzelZOrderHelper.compareStackOrder(object('a', 2), object('b', 2))).toBe(0);
+      expect(UpdrawZOrderHelper.compareStackOrder(group('G', 1), object('b', 2))).toBeLessThan(0);
+      expect(UpdrawZOrderHelper.compareStackOrder(object('a', 3), group('G', 2))).toBeGreaterThan(0);
+      expect(UpdrawZOrderHelper.compareStackOrder(object('a', 2), object('b', 2))).toBe(0);
     });
 
     it('keeps the input order of tied non-groups when sorting', () => {
-      const sorted = [group('G', 2), object('b', 2), object('c', 2), object('a', 1)].sort(KritzelZOrderHelper.compareStackOrder);
+      const sorted = [group('G', 2), object('b', 2), object('c', 2), object('a', 1)].sort(UpdrawZOrderHelper.compareStackOrder);
       expect(sorted.map(item => item.id)).toEqual(['a', 'b', 'c', 'G']);
     });
   });
@@ -441,17 +441,17 @@ describe('KritzelZOrderHelper', () => {
       kids?: FakeObject[];
     }
 
-    const fakeObject = (id: string, zIndex = 0): FakeObject => ({ id, zIndex, __class__: 'KritzelShape' });
+    const fakeObject = (id: string, zIndex = 0): FakeObject => ({ id, zIndex, __class__: 'UpdrawShape' });
     const fakeGroup = (id: string, kids: FakeObject[], zIndex = 0): FakeObject =>
       asGroupInstance({
         id,
         zIndex,
-        __class__: 'KritzelGroup',
+        __class__: 'UpdrawGroup',
         childIds: kids.map(kid => kid.id),
         kids,
       });
-    const asObject = (fake: FakeObject) => fake as unknown as KritzelBaseObject;
-    const getChildren = (group: KritzelGroup) => ((group as unknown as FakeObject).kids ?? []) as unknown as KritzelBaseObject[];
+    const asObject = (fake: FakeObject) => fake as unknown as UpdrawBaseObject;
+    const getChildren = (group: UpdrawGroup) => ((group as unknown as FakeObject).kids ?? []) as unknown as UpdrawBaseObject[];
 
     describe('allocate', () => {
       it('assigns consecutive values bottom to top and gives groups their top member value', () => {
@@ -462,7 +462,7 @@ describe('KritzelZOrderHelper', () => {
         const inner = fakeGroup('inner', [r2, r3]);
         const group = fakeGroup('group', [r1, inner, r4]);
 
-        const next = KritzelZOrderHelper.allocate(asObject(group), 5, getChildren);
+        const next = UpdrawZOrderHelper.allocate(asObject(group), 5, getChildren);
 
         expect(next).toBe(9);
         expect({ r1: r1.zIndex, r2: r2.zIndex, r3: r3.zIndex, inner: inner.zIndex, r4: r4.zIndex, group: group.zIndex }).toEqual({
@@ -478,7 +478,7 @@ describe('KritzelZOrderHelper', () => {
       it('gives an empty group its own slot', () => {
         const empty = fakeGroup('empty', []);
 
-        expect(KritzelZOrderHelper.allocate(asObject(empty), 3, getChildren)).toBe(4);
+        expect(UpdrawZOrderHelper.allocate(asObject(empty), 3, getChildren)).toBe(4);
         expect(empty.zIndex).toBe(3);
       });
 
@@ -488,45 +488,45 @@ describe('KritzelZOrderHelper', () => {
         const b = fakeObject('b');
         const group = fakeGroup('group', [a, empty, b]);
 
-        expect(KritzelZOrderHelper.allocate(asObject(group), 1, getChildren)).toBe(4);
+        expect(UpdrawZOrderHelper.allocate(asObject(group), 1, getChildren)).toBe(4);
         expect({ a: a.zIndex, empty: empty.zIndex, b: b.zIndex, group: group.zIndex }).toEqual({ a: 1, empty: 2, b: 3, group: 3 });
       });
 
       it('assigns a plain object the start value', () => {
         const object = fakeObject('o', 42);
 
-        expect(KritzelZOrderHelper.allocate(asObject(object), 7, getChildren)).toBe(8);
+        expect(UpdrawZOrderHelper.allocate(asObject(object), 7, getChildren)).toBe(8);
         expect(object.zIndex).toBe(7);
       });
     });
 
     describe('stackAnchor', () => {
       it('returns the own zIndex of a visible object', () => {
-        expect(KritzelZOrderHelper.stackAnchor(asObject(fakeObject('o', 4)), getChildren)).toBe(4);
+        expect(UpdrawZOrderHelper.stackAnchor(asObject(fakeObject('o', 4)), getChildren)).toBe(4);
       });
 
       it('returns the highest zIndex of the visible descendants of a group, ignoring its own value', () => {
         const group = fakeGroup('G', [fakeObject('a', 1), fakeGroup('H', [fakeObject('b', 7), fakeObject('c', 3)], 2), fakeObject('d', 5)], 99);
-        expect(KritzelZOrderHelper.stackAnchor(asObject(group), getChildren)).toBe(7);
+        expect(UpdrawZOrderHelper.stackAnchor(asObject(group), getChildren)).toBe(7);
       });
 
       it('falls back to the own zIndex of an empty group', () => {
-        expect(KritzelZOrderHelper.stackAnchor(asObject(fakeGroup('E', [], 6)), getChildren)).toBe(6);
-        expect(KritzelZOrderHelper.stackAnchor(asObject(fakeGroup('G', [fakeGroup('E', [], 9)], 6)), getChildren)).toBe(6);
+        expect(UpdrawZOrderHelper.stackAnchor(asObject(fakeGroup('E', [], 6)), getChildren)).toBe(6);
+        expect(UpdrawZOrderHelper.stackAnchor(asObject(fakeGroup('G', [fakeGroup('E', [], 9)], 6)), getChildren)).toBe(6);
       });
     });
 
     describe('toItem', () => {
       it('copies the childIds of a group', () => {
         const group = fakeGroup('G', [fakeObject('a'), fakeObject('b')], 2);
-        const item = KritzelZOrderHelper.toItem(asObject(group));
+        const item = UpdrawZOrderHelper.toItem(asObject(group));
 
         expect(item).toEqual({ id: 'G', zIndex: 2, isGroup: true, childIds: ['a', 'b'] });
         expect(item.childIds).not.toBe(group.childIds);
       });
 
       it('uses empty childIds for a non-group', () => {
-        expect(KritzelZOrderHelper.toItem(asObject(fakeObject('o', 3)))).toEqual({ id: 'o', zIndex: 3, isGroup: false, childIds: [] });
+        expect(UpdrawZOrderHelper.toItem(asObject(fakeObject('o', 3)))).toEqual({ id: 'o', zIndex: 3, isGroup: false, childIds: [] });
       });
     });
   });
@@ -598,7 +598,7 @@ describe('KritzelZOrderHelper', () => {
     }
 
     /** Well-formed items: unique visible values with random gaps, group = top member, shuffled store and childIds. */
-    function toWellFormedItems(random: Random, roots: ModelNode[]): KritzelZOrderItem[] {
+    function toWellFormedItems(random: Random, roots: ModelNode[]): UpdrawZOrderItem[] {
       const values = new Map<string, number>();
       let value = random.int(-3, 5);
       for (const id of roots.flatMap(visibleIds)) {
@@ -617,7 +617,7 @@ describe('KritzelZOrderHelper', () => {
     }
 
     /** Group hierarchy with the helper's rules: first parent wins, dangling ids and cycles are ignored. */
-    function buildTree(items: KritzelZOrderItem[]) {
+    function buildTree(items: UpdrawZOrderItem[]) {
       const byId = new Map(items.map(item => [item.id, item]));
       const parentOf = new Map<string, string>();
       for (const group of items.filter(item => item.isGroup)) {
@@ -637,7 +637,7 @@ describe('KritzelZOrderHelper', () => {
     }
 
     /** Top-level units with visible members, sorted by their topmost visible member. */
-    function rootAnchorOrder(items: KritzelZOrderItem[]): string[] {
+    function rootAnchorOrder(items: UpdrawZOrderItem[]): string[] {
       const tree = buildTree(items);
       const position = new Map(visibleRenderOrder(items).map((id, index) => [id, index]));
       const anchor = (id: string) => Math.max(...tree.visibleMembers(id).map(member => position.get(member)));
@@ -645,7 +645,7 @@ describe('KritzelZOrderHelper', () => {
     }
 
     /** Checks I1 (unique visible values), I2 (contiguous group bands) and I3 (group value = top member). */
-    function invariantViolation(items: KritzelZOrderItem[]): string | null {
+    function invariantViolation(items: UpdrawZOrderItem[]): string | null {
       const tree = buildTree(items);
       const order = visibleRenderOrder(items);
       const values = order.map(id => tree.byId.get(id).zIndex);
@@ -670,11 +670,11 @@ describe('KritzelZOrderHelper', () => {
       return null;
     }
 
-    const show = (items: KritzelZOrderItem[]) =>
+    const show = (items: UpdrawZOrderItem[]) =>
       items.map(item => (item.isGroup ? `[${item.id}{${item.childIds.join(',')}}]:${item.zIndex}` : `${item.id}:${item.zIndex}`)).join(' ');
 
     /** Applies a z-order operation to the model; returns the ids that may be written (moved units and passed units). */
-    function reorderModel(roots: ModelNode[], selection: string[], operation: KritzelZOrderOperation): Set<string> {
+    function reorderModel(roots: ModelNode[], selection: string[], operation: UpdrawZOrderOperation): Set<string> {
       const unique = [...new Set(selection)];
       const selected = unique.filter(id => !ancestorsOf(roots, id).some(ancestor => unique.includes(ancestor)));
       const byList = new Map<ModelNode[], Set<string>>();
@@ -736,7 +736,7 @@ describe('KritzelZOrderHelper', () => {
     it('keeps I1-I3 and the ideal stacking order on well-formed boards', () => {
       const random = new Random(1);
       const failures: string[] = [];
-      const operations: KritzelZOrderOperation[] = ['forward', 'backward', 'front', 'back'];
+      const operations: UpdrawZOrderOperation[] = ['forward', 'backward', 'front', 'back'];
 
       for (let board = 0; board < 250 && failures.length === 0; board++) {
         const roots = Array.from({ length: random.int(2, 9) }, () => generateNode(random, 0));
@@ -754,7 +754,7 @@ describe('KritzelZOrderHelper', () => {
             const selection = random.shuffle(roots.map(node => node.id)).slice(0, random.int(2, Math.min(3, roots.length)));
             const groupId = `N${idCounter++}`;
             const expected = groupModel(roots, selection, groupId, visibleRenderOrder(items));
-            const plan = KritzelZOrderHelper.planGroup(items, selection);
+            const plan = UpdrawZOrderHelper.planGroup(items, selection);
             description = `group(${selection})`;
             if (!plan || plan.childIds.join() !== expected.childIds.join()) {
               failures.push(`${description}: childIds ${plan?.childIds} instead of ${expected.childIds} on ${show(before)}`);
@@ -766,7 +766,7 @@ describe('KritzelZOrderHelper', () => {
           } else if (choice < 0.2 && roots.some(node => node.kids)) {
             const group = random.pick(roots.filter(node => node.kids));
             description = `ungroup(${group.id})`;
-            updates = KritzelZOrderHelper.planUngroup(items, [group.id]);
+            updates = UpdrawZOrderHelper.planUngroup(items, [group.id]);
             allowed = new Set();
             roots.splice(roots.indexOf(group), 1, ...group.kids);
             items = applyUpdates(items, updates, { removeId: group.id });
@@ -783,7 +783,7 @@ describe('KritzelZOrderHelper', () => {
               selection = [group.id, ...group.kids.map(kid => kid.id)];
             }
             description = `${operation}(${selection})`;
-            updates = KritzelZOrderHelper.reorder(items, selection, operation);
+            updates = UpdrawZOrderHelper.reorder(items, selection, operation);
             allowed = reorderModel(roots, selection, operation);
             items = applyUpdates(items, updates);
           }
@@ -811,8 +811,8 @@ describe('KritzelZOrderHelper', () => {
         const items = toWellFormedItems(random, roots);
         const unit = random.pick(roots.slice(0, -1)).id;
 
-        const moved = applyUpdates(items, KritzelZOrderHelper.reorder(items, [unit], 'forward'));
-        const restored = applyUpdates(moved, KritzelZOrderHelper.reorder(moved, [unit], 'backward'));
+        const moved = applyUpdates(items, UpdrawZOrderHelper.reorder(items, [unit], 'forward'));
+        const restored = applyUpdates(moved, UpdrawZOrderHelper.reorder(moved, [unit], 'backward'));
 
         const original = zIndexOf(items);
         if (restored.some(item => item.zIndex !== original[item.id])) {
@@ -829,7 +829,7 @@ describe('KritzelZOrderHelper', () => {
       const operations = ['forward', 'backward', 'front', 'back', 'group', 'ungroup'] as const;
 
       /** Random values for every object (ties, group objects anywhere), empty groups, dangling ids, double parents. */
-      const legacyBoard = (): KritzelZOrderItem[] => {
+      const legacyBoard = (): UpdrawZOrderItem[] => {
         const roots = Array.from({ length: random.int(2, 8) }, () => generateNode(random, 0));
         const nodes = roots.flatMap(function walk(node: ModelNode): ModelNode[] {
           return node.kids ? [node, ...node.kids.flatMap(walk)] : [node];
@@ -862,7 +862,7 @@ describe('KritzelZOrderHelper', () => {
             if (operation === 'group') {
               if (tree.roots.length < 2) continue;
               selection = random.shuffle([...tree.roots]).slice(0, random.int(2, Math.min(3, tree.roots.length)));
-              const plan = KritzelZOrderHelper.planGroup(items, selection);
+              const plan = UpdrawZOrderHelper.planGroup(items, selection);
               updates = plan.updates;
               const fallback = Math.max(...items.map(item => item.zIndex)) + 1;
               items = applyUpdates(items, updates, { add: grp(`N${idCounter++}`, plan.groupZIndex ?? fallback, plan.childIds) });
@@ -870,11 +870,11 @@ describe('KritzelZOrderHelper', () => {
               const groups = items.filter(item => item.isGroup);
               if (groups.length === 0) continue;
               selection = [random.pick(groups).id];
-              updates = KritzelZOrderHelper.planUngroup(items, [selection[0]]);
+              updates = UpdrawZOrderHelper.planUngroup(items, [selection[0]]);
               items = applyUpdates(items, updates, { removeId: selection[0] });
             } else {
               selection = random.next() < 0.7 ? [random.pick(tree.roots)] : [random.pick(items).id];
-              updates = KritzelZOrderHelper.reorder(items, selection, operation);
+              updates = UpdrawZOrderHelper.reorder(items, selection, operation);
               items = applyUpdates(items, updates);
             }
           } catch (error) {

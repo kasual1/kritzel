@@ -1,19 +1,19 @@
 ---
 sidebar_label: Theming
-title: "Theming | Kritzel for Angular"
-description: "Reference for every property supported by the KritzelTheme interface."
+title: "Theming | Updraw for Angular"
+description: "Reference for every property supported by the UpdrawTheme interface."
 toc_max_heading_level: 2
 ---
 
 # Theming
 
-This is the API reference for the `KritzelTheme`. It lists the
+This is the API reference for the `UpdrawTheme`. It lists the
 theme groups and their light and dark default values. Override selected values by spreading an existing preset and replacing only the properties you want to customize.
 
 ```ts
-import { KritzelTheme, lightTheme } from '@kritzel/angular-editor';
+import { UpdrawTheme, lightTheme } from '@updraw/angular-editor';
 
-const customTheme: KritzelTheme = {
+const customTheme: UpdrawTheme = {
 	...lightTheme,
 	name: 'branded-purple-flat',
 	global: {
@@ -113,7 +113,7 @@ const customTheme: KritzelTheme = {
 
 ## Dynamic Object
 
-Overrides the [Object](#object) corner radius and shadow for dynamic objects, as the CSS variables `--kritzel-dynamic-object-border-radius` and `--kritzel-dynamic-object-box-shadow`. Unset by default, so dynamic objects use `object.borderRadius` and `object.boxShadow`. A dynamic object's own `borderRadius` and `boxShadow` override both.
+Overrides the [Object](#object) corner radius and shadow for dynamic objects, as the CSS variables `--updraw-dynamic-object-border-radius` and `--updraw-dynamic-object-box-shadow`. Unset by default, so dynamic objects use `object.borderRadius` and `object.boxShadow`. A dynamic object's own `borderRadius` and `boxShadow` override both.
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
@@ -146,7 +146,7 @@ Overrides the [Object](#object) corner radius and shadow for dynamic objects, as
 
 ## Element Highlight
 
-Applies to the highlights and the picking highlight drawn inside the pages of iframe objects, see [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content). The values are applied as the CSS variables `--kritzel-element-highlight-color`, `--kritzel-element-highlight-background-color`, and `--kritzel-element-highlight-label-text-color`. A custom highlight or picking `color` is filled with a light tint of that color instead of `backgroundColor`.
+Applies to the highlights and the picking highlight drawn inside the pages of iframe objects, see [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content). The values are applied as the CSS variables `--updraw-element-highlight-color`, `--updraw-element-highlight-background-color`, and `--updraw-element-highlight-label-text-color`. A custom highlight or picking `color` is filled with a light tint of that color instead of `backgroundColor`.
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
@@ -170,7 +170,7 @@ Applies to the highlights and the picking highlight drawn inside the pages of if
 
 ## Iframe
 
-Overrides the [Object](#object) corner radius and shadow for iframe objects, as the CSS variables `--kritzel-iframe-border-radius` and `--kritzel-iframe-box-shadow`. Unset by default, so iframes use `object.borderRadius` and `object.boxShadow`. An iframe's own `borderRadius` and `boxShadow` override both.
+Overrides the [Object](#object) corner radius and shadow for iframe objects, as the CSS variables `--updraw-iframe-border-radius` and `--updraw-iframe-box-shadow`. Unset by default, so iframes use `object.borderRadius` and `object.boxShadow`. An iframe's own `borderRadius` and `boxShadow` override both.
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
@@ -179,7 +179,7 @@ Overrides the [Object](#object) corner radius and shadow for iframe objects, as 
 
 ## Image
 
-The corner radius and shadow of images, as the CSS variables `--kritzel-image-border-radius` and `--kritzel-image-drop-shadow`. Images are not cards, so they do not use the [Object](#object) defaults: the radius is unset by default, which keeps square corners. The shadow is a CSS `filter` made of `drop-shadow()` functions rather than a `box-shadow`, so it follows the visible shape of transparent images such as SVGs and icons, rounded corners included. Set it to `none` to remove it. An image's own `borderRadius` and `dropShadow` override both.
+The corner radius and shadow of images, as the CSS variables `--updraw-image-border-radius` and `--updraw-image-drop-shadow`. Images are not cards, so they do not use the [Object](#object) defaults: the radius is unset by default, which keeps square corners. The shadow is a CSS `filter` made of `drop-shadow()` functions rather than a `box-shadow`, so it follows the visible shape of transparent images such as SVGs and icons, rounded corners included. Set it to `none` to remove it. An image's own `borderRadius` and `dropShadow` override both.
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
@@ -197,7 +197,7 @@ The corner radius and shadow of images, as the CSS variables `--kritzel-image-bo
 
 ## Loading Placeholder
 
-Applies to the placeholder the engine draws over an object while its [`isLoading`](./objects.md#loading-state) is `true`: a grey surface with rounded corners and a glare that sweeps across it. The values are applied as the CSS variables `--kritzel-loading-placeholder-background-color`, `--kritzel-loading-placeholder-border-radius`, `--kritzel-loading-placeholder-glare-color`, `--kritzel-loading-placeholder-box-shadow`, and `--kritzel-loading-placeholder-animation-duration`. `borderRadius` and `boxShadow` are unset by default, so the placeholder takes the corner radius of the object it covers and `object.boxShadow`, and content keeps its corners and shadow when it replaces the placeholder. The glare stops when the user prefers reduced motion.
+Applies to the placeholder the engine draws over an object while its [`isLoading`](./objects.md#loading-state) is `true`: a grey surface with rounded corners and a glare that sweeps across it. The values are applied as the CSS variables `--updraw-loading-placeholder-background-color`, `--updraw-loading-placeholder-border-radius`, `--updraw-loading-placeholder-glare-color`, `--updraw-loading-placeholder-box-shadow`, and `--updraw-loading-placeholder-animation-duration`. `borderRadius` and `boxShadow` are unset by default, so the placeholder takes the corner radius of the object it covers and `object.boxShadow`, and content keeps its corners and shadow when it replaces the placeholder. The glare stops when the user prefers reduced motion.
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
@@ -338,9 +338,9 @@ Applies to the placeholder the engine draws over an object while its [`isLoading
 
 ## Object
 
-The default corner radius and shadow of the canvas objects that are cards: [iframes](#iframe) and [dynamic objects](#dynamic-object). They are applied as the CSS variables `--kritzel-object-border-radius` and `--kritzel-object-box-shadow`; set the shadow to `none` to remove it. `iframe` and `dynamicObject` override them for one kind of object, and an object's own `borderRadius` and `boxShadow` override both (`'none'` removes the shadow for that object). Images have their own shadow, see [Image](#image).
+The default corner radius and shadow of the canvas objects that are cards: [iframes](#iframe) and [dynamic objects](#dynamic-object). They are applied as the CSS variables `--updraw-object-border-radius` and `--updraw-object-box-shadow`; set the shadow to `none` to remove it. `iframe` and `dynamicObject` override them for one kind of object, and an object's own `borderRadius` and `boxShadow` override both (`'none'` removes the shadow for that object). Images have their own shadow, see [Image](#image).
 
-An iframe's document is always clipped to its rounded corners. A dynamic object clips its content to them too, unless its `clipContent` is `false`. Inside a card object, `var(--kritzel-content-border-radius)` holds its resolved radius, so content can round its own corners to match.
+An iframe's document is always clipped to its rounded corners. A dynamic object clips its content to them too, unless its `clipContent` is `false`. Inside a card object, `var(--updraw-content-border-radius)` holds its resolved radius, so content can round its own corners to match.
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
@@ -351,7 +351,7 @@ An iframe's document is always clipped to its rounded corners. A dynamic object 
 
 The appear animation of objects that come onto the canvas from app code or agents: objects added with the editor's `addObject()` and `addObjects()`, objects agents place with `agent.addObject()` (also with `instant`), and images picked with the image tool. They fade in while they rise into place. Objects added with one `addObjects()` call appear one after another, `stagger` apart; the tenth and later objects appear together with the ninth, and calls with more than 50 objects don't animate. Picked images appear together, with their selection. Objects the user draws, pastes or duplicates, the shapes, lines and texts agents draw, objects of collaborators, and loaded or restored documents don't appear.
 
-The animation is purely visual: the object is at its place, with its opacity, from the start, and nothing is written to the document. An iframe appears once its document has loaded, or at once while it shows its loading placeholder, and a group once its children can. Titlebars appear with their objects and stay hidden while their object waits. Screenshots and exports show objects in place. The tokens are applied as the CSS variables `--kritzel-object-appear-animation-duration`, `--kritzel-object-appear-animation-easing`, `--kritzel-object-appear-distance` (in canvas units) and `--kritzel-object-appear-stagger`. Set `animationDuration` to `0s` to turn the animation off. Give `animationDuration` and `stagger` as plain times (`600ms`, `0.6s`), not with `calc()` or `var()`. It is also off while the user prefers reduced motion.
+The animation is purely visual: the object is at its place, with its opacity, from the start, and nothing is written to the document. An iframe appears once its document has loaded, or at once while it shows its loading placeholder, and a group once its children can. Titlebars appear with their objects and stay hidden while their object waits. Screenshots and exports show objects in place. The tokens are applied as the CSS variables `--updraw-object-appear-animation-duration`, `--updraw-object-appear-animation-easing`, `--updraw-object-appear-distance` (in canvas units) and `--updraw-object-appear-stagger`. Set `animationDuration` to `0s` to turn the animation off. Give `animationDuration` and `stagger` as plain times (`600ms`, `0.6s`), not with `calc()` or `var()`. It is also off while the user prefers reduced motion.
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
@@ -516,7 +516,7 @@ Applies to [object titlebars](../fundamentals/controls.md#object-titlebar). `hei
 | buttonPressedBackgroundColor | rgba(0, 0, 0, 0.1) | rgba(255, 255, 255, 0.14) |
 | buttonSize | 22px | 22px |
 | focusRing | 2px solid #007aff | 2px solid #4da3ff |
-| fontFamily | var(--kritzel-global-font-family, sans-serif) | var(--kritzel-global-font-family, sans-serif) |
+| fontFamily | var(--updraw-global-font-family, sans-serif) | var(--updraw-global-font-family, sans-serif) |
 | fontSize | 12px | 12px |
 | fontWeight | 400 | 400 |
 | gap | 4px | 4px |
@@ -545,7 +545,7 @@ Applies to the menu that the editor opens from a titlebar `menu` element, see [O
 | border | 1px solid #ebebeb | 1px solid #3a3a3a |
 | borderRadius | 12px | 12px |
 | boxShadow | 0 1px 6px rgba(0, 0, 0, 0.12) | 0 1px 8px rgba(0, 0, 0, 0.4) |
-| fontFamily | var(--kritzel-global-font-family, sans-serif) | var(--kritzel-global-font-family, sans-serif) |
+| fontFamily | var(--updraw-global-font-family, sans-serif) | var(--updraw-global-font-family, sans-serif) |
 | gap | 2px | 2px |
 | itemBorderRadius | 12px | 12px |
 | itemColor | #333333 | #e0e0e0 |

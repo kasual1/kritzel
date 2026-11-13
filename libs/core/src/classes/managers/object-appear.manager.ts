@@ -1,22 +1,22 @@
-import { KritzelBaseObject } from '../objects/base-object.class';
+import { UpdrawBaseObject } from '../objects/base-object.class';
 
 /**
  * Batches bigger than this don't play the appear animation: many objects appearing at once read as a page load rather
  * than as content arriving, and animating them all costs frames.
  */
-export const KRITZEL_OBJECT_APPEAR_MAX_BATCH = 50;
+export const UPDRAW_OBJECT_APPEAR_MAX_BATCH = 50;
 
 /** Objects later than this in a batch appear together with it, so a long batch doesn't keep the canvas waiting. */
-export const KRITZEL_OBJECT_APPEAR_MAX_STAGGER_INDEX = 8;
+export const UPDRAW_OBJECT_APPEAR_MAX_STAGGER_INDEX = 8;
 
 /** Timing of the appear animation, from the theme (`objectAppear`), in milliseconds. */
-export interface KritzelObjectAppearTiming {
+export interface UpdrawObjectAppearTiming {
   duration: number;
   stagger: number;
 }
 
 /** The appear state of the rendered objects, resolved once per render. */
-export interface KritzelObjectAppearResolution {
+export interface UpdrawObjectAppearResolution {
   /** The objects whose animation runs, with their stagger index, by object ID. */
   appearing: Map<string, number>;
   /** The objects whose animation started in this render (also in `appearing`). */
@@ -25,7 +25,7 @@ export interface KritzelObjectAppearResolution {
   pending: Set<string>;
 }
 
-interface KritzelObjectAppearEntry {
+interface UpdrawObjectAppearEntry {
   /** Position in its batch; the animation is delayed by `index` times the theme's stagger. */
   index: number;
   /** When the animation started (`performance.now()`), once the object was first rendered ready to show. */
@@ -40,8 +40,8 @@ interface KritzelObjectAppearEntry {
  * Purely visual: the state lives here, keyed by object ID, and never reaches the document, so it survives the object
  * being replaced by a fresh instance (e.g. after a remote update) and is never synced, persisted or copied.
  */
-export class KritzelObjectAppearManager {
-  private readonly _entries = new Map<string, KritzelObjectAppearEntry>();
+export class UpdrawObjectAppearManager {
+  private readonly _entries = new Map<string, UpdrawObjectAppearEntry>();
 
   /**
    * Marks inserted objects to appear: a top-level object together with its group descendants, which are rendered as
@@ -49,8 +49,8 @@ export class KritzelObjectAppearManager {
    * @param objects - The inserted objects
    * @param index - Position of the top-level object in its batch, for the stagger
    */
-  mark(objects: KritzelBaseObject<any>[], index = 0): void {
-    const entryIndex = Math.min(Math.max(0, Math.floor(index)), KRITZEL_OBJECT_APPEAR_MAX_STAGGER_INDEX);
+  mark(objects: UpdrawBaseObject<any>[], index = 0): void {
+    const entryIndex = Math.min(Math.max(0, Math.floor(index)), UPDRAW_OBJECT_APPEAR_MAX_STAGGER_INDEX);
     objects.forEach(object => {
       if (object.id) {
         this._entries.set(object.id, { index: entryIndex });
@@ -72,11 +72,11 @@ export class KritzelObjectAppearManager {
    * @returns The appearing, just started and pending objects
    */
   resolve(
-    renderedObjects: KritzelBaseObject<any>[],
-    isReady: (object: KritzelBaseObject<any>) => boolean,
-    timing: KritzelObjectAppearTiming,
+    renderedObjects: UpdrawBaseObject<any>[],
+    isReady: (object: UpdrawBaseObject<any>) => boolean,
+    timing: UpdrawObjectAppearTiming,
     now: number,
-  ): KritzelObjectAppearResolution {
+  ): UpdrawObjectAppearResolution {
     const appearing = new Map<string, number>();
     const started = new Set<string>();
     const pending = new Set<string>();

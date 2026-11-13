@@ -84,21 +84,21 @@ async function openExportDialog(page: Page) {
   await page.getByTestId('more-menu-button').click();
   await page.getByTestId('menu-item-export').click();
 
-  const exportDialog = page.locator('kritzel-export kritzel-dialog[is-open]');
+  const exportDialog = page.locator('updraw-export updraw-dialog[is-open]');
   await exportDialog.waitFor({ state: 'attached' });
   await page.waitForTimeout(100);
 
-  return page.locator('kritzel-export');
+  return page.locator('updraw-export');
 }
 
 async function downloadWorkspaceExport(page: Page): Promise<string> {
   const exportRoot = await openExportDialog(page);
 
-  const workspaceTab = exportRoot.locator('kritzel-pill-tabs').getByRole('tab', { name: 'Export Workspace' });
+  const workspaceTab = exportRoot.locator('updraw-pill-tabs').getByRole('tab', { name: 'Export Workspace' });
   await workspaceTab.click();
   await expect(workspaceTab).toHaveAttribute('aria-selected', 'true');
 
-  const exportButton = page.locator('kritzel-export kritzel-dialog[is-open] button.export-primary-button');
+  const exportButton = page.locator('updraw-export updraw-dialog[is-open] button.export-primary-button');
   const downloadPromise = page.waitForEvent('download');
   await exportButton.click();
   const download = await downloadPromise;
@@ -133,12 +133,12 @@ test.describe('Workspace import via more-menu', () => {
     const objects = await editorPage.getAllObjects<{ __class__: string }>();
     expect(objects).toHaveLength(6);
     expect(objects.map(object => object.__class__)).toEqual([
-      'KritzelShape',
-      'KritzelPath',
-      'KritzelText',
-      'KritzelLine',
-      'KritzelImage',
-      'KritzelDynamicObject',
+      'UpdrawShape',
+      'UpdrawPath',
+      'UpdrawText',
+      'UpdrawLine',
+      'UpdrawImage',
+      'UpdrawDynamicObject',
     ]);
 
     await editorPage.clearSelection();

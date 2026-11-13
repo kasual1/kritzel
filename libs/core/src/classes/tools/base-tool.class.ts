@@ -1,31 +1,31 @@
-import { KritzelSerializable } from '../../interfaces/serializable.interface';
-import { KritzelToolType } from '../../interfaces/tool-type.interface';
-import { KritzelTool } from '../../interfaces/tool.interface';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawSerializable } from '../../interfaces/serializable.interface';
+import { UpdrawToolType } from '../../interfaces/tool-type.interface';
+import { UpdrawTool } from '../../interfaces/tool.interface';
+import { UpdrawCore } from '../core/core.class';
 
 /**
- * Abstract base class for all drawing tools in Kritzel.
+ * Abstract base class for all drawing tools in Updraw.
  * Provides common functionality and defines the interface that all tools must implement.
  * Tools handle user interactions (pointer events, wheel events) and can be serialized/deserialized.
  */
-export class KritzelBaseTool implements KritzelTool, KritzelSerializable {
+export class UpdrawBaseTool implements UpdrawTool, UpdrawSerializable {
   /** Class name identifier used for serialization/deserialization */
   __class__: string = this.constructor.name;
 
   /** Identifies the tool type for config resolution (survives minification and dual-package bundling) */
-  toolType: KritzelToolType = 'base';
+  toolType: UpdrawToolType = 'base';
 
   /** Human-readable name of the tool */
   name: string = 'base-tool';
 
-  /** Reference to the Kritzel core instance for accessing store, viewport, and other core functionality */
-  protected readonly _core: KritzelCore;
+  /** Reference to the Updraw core instance for accessing store, viewport, and other core functionality */
+  protected readonly _core: UpdrawCore;
 
   /**
-   * Creates a new instance of KritzelBaseTool.
-   * @param core - The KritzelCore instance that provides access to application state and functionality
+   * Creates a new instance of UpdrawBaseTool.
+   * @param core - The UpdrawCore instance that provides access to application state and functionality
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     this._core = core;
     void this._core; // Avoid unused variable warning
   }
@@ -113,8 +113,11 @@ export class KritzelBaseTool implements KritzelTool, KritzelSerializable {
    * @param object - The serialized tool data to restore
    * @returns This tool instance with restored properties
    */
-  deserialize(object: any): KritzelSerializable {
-    Object.assign(this, object);
+  deserialize(object: any): UpdrawSerializable {
+    // The class defines its own `__class__`; a serialized value (possibly a legacy name) must not override it.
+    const data = { ...object };
+    delete data.__class__;
+    Object.assign(this, data);
     return this;
   }
 }

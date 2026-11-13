@@ -6,6 +6,7 @@ import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
 import { load } from 'cheerio';
 import { describe, expect, test } from 'vitest';
+import { SITE_URL } from '../site-urls.mjs';
 
 interface MarkdownNode {
   type: string;
@@ -26,7 +27,7 @@ interface DocumentMetadata {
 
 const websiteRoot = fileURLToPath(new URL('../', import.meta.url));
 const buildRoot = path.join(websiteRoot, 'build');
-const siteOrigin = 'https://kritzel.io';
+const siteOrigin = SITE_URL;
 const baseUrl = `/${(process.env.Docusaurus_BASE_URL || '/').split('/').filter(Boolean).join('/')}/`.replace('//', '/');
 const frameworks = ['angular', 'react', 'vue'] as const;
 const parser = unified().use(remarkParse).use(remarkGfm);
@@ -75,7 +76,7 @@ function codeBlocks(markdown: string) {
 describe('Generated LLM documentation', () => {
   test('publishes integration guidance and one section per framework, without a combined bundle', () => {
     const index = readOutput('llms.txt');
-    expect(index).toMatch(/^# Kritzel\n\n> /);
+    expect(index).toMatch(/^# Updraw\n\n> /);
     for (const guidance of ['isReady', 'isEngineReady', 'syncConfig', 'editorId', 'TypeScript types', 'npx skills add kasual1/kritzel']) {
       expect(index).toContain(guidance);
     }
@@ -124,10 +125,10 @@ describe('Generated LLM documentation', () => {
       }
     }
     const quickStart = readOutput(`docs/${framework}/getting-started/quick-start.md`);
-    expect(quickStart).toContain(`@kritzel/${framework}-editor`);
+    expect(quickStart).toContain(`@updraw/${framework}-editor`);
     expect(quickStart).toContain(`https://github.com/kasual1/kritzel/tree/main/apps/demos/${framework}`);
     for (const other of frameworks.filter((candidate) => candidate !== framework)) {
-      expect(quickStart).not.toContain(`@kritzel/${other}-editor`);
+      expect(quickStart).not.toContain(`@updraw/${other}-editor`);
     }
   });
 

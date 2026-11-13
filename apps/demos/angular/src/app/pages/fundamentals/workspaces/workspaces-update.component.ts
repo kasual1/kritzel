@@ -8,15 +8,15 @@ import {
 import {
   EditorIsReadyEvent,
   InMemorySyncProvider,
-  KritzelBaseObject,
-  KritzelEditor,
-  KritzelLine,
-  KritzelPath,
-  KritzelShape,
-  KritzelSyncConfig,
-  KritzelWorkspace,
+  UpdrawBaseObject,
+  UpdrawEditor,
+  UpdrawLine,
+  UpdrawPath,
+  UpdrawShape,
+  UpdrawSyncConfig,
+  UpdrawWorkspace,
   ShapeType,
-} from '@kritzel/angular-editor';
+} from '@updraw/angular-editor';
 import { InfoPanelComponent } from '../../../components/info-panel.component';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -114,9 +114,9 @@ const WORKSPACE_VARIANTS: WorkspaceVariant[] = [
   },
 ];
 
-function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
+function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
   return [
-    new KritzelShape({
+    new UpdrawShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -126,7 +126,7 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
       strokeColor: variant.stroke,
       strokeWidth: 3,
     }),
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -137,7 +137,7 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
       strokeWidth: 3,
       rotation: variant.rotation,
     }),
-    new KritzelLine({
+    new UpdrawLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -145,7 +145,7 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
       stroke: variant.accent,
       strokeWidth: 3,
     }),
-    new KritzelPath({
+    new UpdrawPath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -168,7 +168,7 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
 
 @Component({
   selector: 'app-workspaces-update',
-  imports: [KritzelEditor, InfoPanelComponent, ToolbarComponent],
+  imports: [UpdrawEditor, InfoPanelComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -176,7 +176,7 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
       <span class="status">Current: {{ activeWorkspace()?.name }}</span>
     </app-toolbar>
     <div class="content">
-      <kritzel-editor
+      <updraw-editor
         editorId="workspaces-update"
         [theme]="'light'"
         [themes]="themes"
@@ -187,7 +187,7 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady($event)"
         (workspacesChange)="refreshActiveWorkspace()"
-      ></kritzel-editor>
+      ></updraw-editor>
       <app-info-panel>
         <h3>Active Workspace</h3>
         <pre>{{ activeWorkspaceJson() }}</pre>
@@ -208,7 +208,7 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
         min-height: 0;
         position: relative;
       }
-      kritzel-editor {
+      updraw-editor {
         flex: 1;
       }
       app-info-panel {
@@ -226,13 +226,13 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
   ],
 })
 export class WorkspacesUpdateComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-  syncConfig: KritzelSyncConfig = {
+  syncConfig: UpdrawSyncConfig = {
     providers: [InMemorySyncProvider],
   };
-  activeWorkspace = signal<KritzelWorkspace | null>(null);
+  activeWorkspace = signal<UpdrawWorkspace | null>(null);
   activeWorkspaceJson = computed(() => {
     const workspace = this.activeWorkspace();
     return workspace

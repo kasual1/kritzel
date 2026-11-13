@@ -1,30 +1,30 @@
-# Kritzel Editor for Vue
+# Updraw Editor for Vue
 
-Build infinite canvas and collaborative whiteboard experiences in Vue with Kritzel's native wrapper and TypeScript-first API.
+Build infinite canvas and collaborative whiteboard experiences in Vue with Updraw's native wrapper and TypeScript-first API.
 
-Kritzel is a framework-agnostic infinite canvas and collaborative whiteboard engine. It provides web components that work natively in any framework, with a first-class Vue wrapper for idiomatic template integration.
+Updraw is a framework-agnostic infinite canvas and collaborative whiteboard engine. It provides web components that work natively in any framework, with a first-class Vue wrapper for idiomatic template integration.
 
-Kritzel handles the hard parts of canvas-based applications — infinite pan and zoom, hit-testing, CRDT-based collaboration, undo and redo, and cross-browser rendering — so you can focus on your product's domain logic.
+Updraw handles the hard parts of canvas-based applications — infinite pan and zoom, hit-testing, CRDT-based collaboration, undo and redo, and cross-browser rendering — so you can focus on your product's domain logic.
 
-**Full documentation:** [kritzel.io/docs/vue/getting-started/quick-start](https://kritzel.io/docs/vue/getting-started/quick-start)
+**Full documentation:** [updraw.io/docs/vue/getting-started/quick-start](https://updraw.io/docs/vue/getting-started/quick-start)
 
 ## Installation
 
 ```bash
-npm install @kritzel/vue-editor
+npm install @updraw/vue-editor
 ```
 
 ## Setup
 
-Render Kritzel in your component:
+Render Updraw in your component:
 
 ```html
 <script setup lang="ts">
-import { KritzelEditor } from '@kritzel/vue-editor'
+import { UpdrawEditor } from '@updraw/vue-editor'
 </script>
 
 <template>
-  <KritzelEditor style="display: block; width: 100%; height: 100vh" />
+  <UpdrawEditor style="display: block; width: 100%; height: 100vh" />
 </template>
 ```
 
@@ -38,7 +38,7 @@ By default, the editor uses an empty sync provider list, so canvas state is rese
 
 ```html
 <script setup lang="ts">
-import { KritzelEditor, IndexedDBSyncProvider } from '@kritzel/vue-editor'
+import { UpdrawEditor, IndexedDBSyncProvider } from '@updraw/vue-editor'
 
 const syncConfig = {
   providers: [IndexedDBSyncProvider],
@@ -46,13 +46,13 @@ const syncConfig = {
 </script>
 
 <template>
-  <KritzelEditor :syncConfig="syncConfig" style="display: block; width: 100%; height: 100vh" />
+  <UpdrawEditor :syncConfig="syncConfig" style="display: block; width: 100%; height: 100vh" />
 </template>
 ```
 
 ### Apply Full Viewport Styling
 
-To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g. `styles.css`):
+To ensure the Updraw editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g. `styles.css`):
 
 ```css
 html,
@@ -79,17 +79,17 @@ For optimal rendering and responsiveness on mobile devices, add this meta tag wi
 
 ## Fundamentals
 
-Kritzel is composed of a small set of core concepts that work together to power your canvas experience:
+Updraw is composed of a small set of core concepts that work together to power your canvas experience:
 
-- **[Components](https://kritzel.io/docs/vue/getting-started/basic-usage)** — Two entry points, a batteries-included editor and a headless engine, to match any integration style.
-- **[Tools](https://kritzel.io/docs/vue/fundamentals/tools)** — State-machine interaction handlers that define how users draw, select, and manipulate the canvas.
-- **[Objects](https://kritzel.io/docs/vue/fundamentals/objects)** — The visual building blocks on the canvas, such as paths, shapes, text, and images with shared spatial properties.
-- **[Workspaces](https://kritzel.io/docs/vue/fundamentals/workspaces)** — Containers that manage an entire canvas collection, view state, and editor configuration.
-- **[Theming](https://kritzel.io/docs/vue/customization/themes)** — Built-in light and dark themes with full CSS variable customization to match your brand.
-- **[Collaboration](https://kritzel.io/docs/vue/advanced/collaboration)** — Real-time multi-user sync powered by Yjs CRDTs with pluggable transport providers.
+- **[Components](https://updraw.io/docs/vue/getting-started/basic-usage)** — Two entry points, a batteries-included editor and a headless engine, to match any integration style.
+- **[Tools](https://updraw.io/docs/vue/fundamentals/tools)** — State-machine interaction handlers that define how users draw, select, and manipulate the canvas.
+- **[Objects](https://updraw.io/docs/vue/fundamentals/objects)** — The visual building blocks on the canvas, such as paths, shapes, text, and images with shared spatial properties.
+- **[Workspaces](https://updraw.io/docs/vue/fundamentals/workspaces)** — Containers that manage an entire canvas collection, view state, and editor configuration.
+- **[Theming](https://updraw.io/docs/vue/customization/themes)** — Built-in light and dark themes with full CSS variable customization to match your brand.
+- **[Collaboration](https://updraw.io/docs/vue/advanced/collaboration)** — Real-time multi-user sync powered by Yjs CRDTs with pluggable transport providers.
 
-Learn more in the [full documentation](https://kritzel.io/docs/vue/getting-started/basic-usage).
+Learn more in the [full documentation](https://updraw.io/docs/vue/getting-started/basic-usage).
 
 ## License
 
-Kritzel is released under the [MIT License](./LICENSE.md).
+Updraw is released under the [MIT License](./LICENSE.md).

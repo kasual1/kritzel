@@ -1,0 +1,251 @@
+:host {
+  display: block;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: var(--updraw-engine-background-color, #ffffff);
+}
+
+:host,
+:host * {
+  touch-action: none;
+  user-select: none;
+}
+
+.ProseMirror {
+  outline: none;
+}
+
+.ProseMirror::selection,
+.ProseMirror ::selection {
+  background-color: var(--updraw-text-selection-background-color, #007AFF);
+  color: var(--updraw-text-selection-color, #ffffff);
+}
+
+p, h1, h2, h3, h4, h5, h6, blockquote, pre {
+  margin: 0;
+  padding: 0;
+}
+
+.debug-panel {
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  right: 0;
+}
+
+.origin {
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 0;
+  width: 0;
+  pointer-events: none;
+  -webkit-transform-origin: top left;
+  -moz-transform-origin: top left;
+  transform-origin: top left;
+  overflow: visible;
+}
+
+.object {
+  overflow: visible;
+}
+
+/*
+ * Appear animation of objects that app code or agents insert, from the theme (`objectAppear`): they fade in while
+ * they rise into place, objects of one batch one after another (`--updraw-object-appear-index`, set inline). Their
+ * titlebars (rendered in their own layer) appear with them. The engine adds the classes for one play only, so objects
+ * that scroll back into view don't appear again.
+ *
+ * Animates `translate` rather than `transform`, which holds the object's position (set inline). The distance is in
+ * canvas units, like the object's size. `opacity` multiplies with the object's own, which is set on its content.
+ */
+.object--appearing,
+.object-titlebar-anchor--appearing {
+  animation: updraw-object-appear var(--updraw-object-appear-animation-duration, 600ms)
+    var(--updraw-object-appear-animation-easing, cubic-bezier(0.33, 1, 0.68, 1)) backwards;
+  animation-delay: calc(var(--updraw-object-appear-stagger, 110ms) * var(--updraw-object-appear-index, 0));
+}
+
+@keyframes updraw-object-appear {
+  from {
+    opacity: 0;
+    translate: 0 var(--updraw-object-appear-distance, 14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .object--appearing,
+  .object-titlebar-anchor--appearing {
+    animation: none;
+  }
+}
+
+/*
+ * Corner radius of the objects that are cards and of images, from the theme (`object`, `iframe`, `dynamicObject`,
+ * `image`), as a variable on the object's container: its wrapper, its loading placeholder and its content all read
+ * it. An object's own `borderRadius` sets the variable inline and wins. Content can match it with `var(--updraw-content-border-radius)`.
+ */
+.object--iframe {
+  --updraw-content-border-radius: var(--updraw-iframe-border-radius, var(--updraw-object-border-radius, 12px));
+}
+
+.object--dynamic-object {
+  --updraw-content-border-radius: var(--updraw-dynamic-object-border-radius, var(--updraw-object-border-radius, 12px));
+}
+
+/* Images are not cards: they keep square corners unless the theme (`image.borderRadius`) or the image rounds them. */
+.object--image {
+  --updraw-content-border-radius: var(--updraw-image-border-radius, 0);
+}
+
+/* Deprecated alias for content saved before the rename, which may still use the old variable name. */
+.object--iframe,
+.object--dynamic-object,
+.object--image {
+  --kritzel-content-border-radius: var(--updraw-content-border-radius);
+}
+
+.updraw-iframe-object,
+.updraw-dynamic-object,
+.updraw-image-object,
+.updraw-image-placeholder {
+  border-radius: var(--updraw-content-border-radius);
+}
+
+/* The iframe and the overlay that catches pointers while it is not interactive. */
+.updraw-iframe-object > * {
+  border-radius: inherit;
+}
+
+/* Content is clipped to the rounded box; `clip` (unlike `hidden`) never scrolls, e.g. to a focused input. */
+.updraw-dynamic-object {
+  overflow: clip;
+}
+
+/*
+ * Shadows of the objects that are cards, from the theme (`object`, `iframe`, `dynamicObject`, `image`). An object's
+ * own `boxShadow` (images: `dropShadow`) is set inline and wins. Images use a `drop-shadow()` filter, which follows
+ * transparent images (SVGs, icons) instead of their box.
+ */
+.updraw-iframe-object {
+  box-shadow: var(--updraw-iframe-box-shadow, var(--updraw-object-box-shadow, 0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)));
+}
+
+.updraw-dynamic-object {
+  box-shadow: var(--updraw-dynamic-object-box-shadow, var(--updraw-object-box-shadow, 0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)));
+}
+
+.updraw-image-object {
+  filter: var(--updraw-image-drop-shadow, drop-shadow(0 1px 1px rgba(20, 18, 31, 0.06)) drop-shadow(0 8px 12px rgba(20, 18, 31, 0.14)));
+}
+
+/* Fades `opacity` (to the object's own) rather than `filter`, which holds the image's shadow. */
+.updraw-image-object--first-reveal {
+  animation: updraw-image-first-reveal 180ms ease-out backwards;
+  will-change: opacity;
+}
+
+@keyframes updraw-image-first-reveal {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .updraw-image-object--first-reveal {
+    animation: none;
+  }
+}
+
+.updraw-iframe-object--revealed {
+  animation: updraw-iframe-reveal 280ms ease-out backwards;
+}
+
+@keyframes updraw-iframe-reveal {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .updraw-iframe-object--revealed {
+    animation: none;
+  }
+}
+
+/*
+ * Loading placeholder drawn over an object while `object.isLoading` is set: a grey surface with a glare sweeping
+ * across it. Covers the whole object; its content stays mounted underneath.
+ */
+.updraw-loading-placeholder {
+  position: absolute;
+  left: 0;
+  top: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: var(--updraw-loading-placeholder-background-color, #e5e7eb);
+  border-radius: var(--updraw-loading-placeholder-border-radius, var(--updraw-content-border-radius, var(--updraw-object-border-radius, 12px)));
+  box-shadow: var(--updraw-loading-placeholder-box-shadow, var(--updraw-object-box-shadow, 0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)));
+  animation: updraw-loading-placeholder-reveal 200ms ease-out backwards;
+}
+
+.updraw-loading-placeholder::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    var(--updraw-loading-placeholder-glare-color, rgba(255, 255, 255, 0.6)) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  animation: updraw-loading-placeholder-glare var(--updraw-loading-placeholder-animation-duration, 1.6s) ease-in-out infinite;
+  will-change: transform;
+}
+
+/*
+ * The object's content is rendered before the placeholder, its UI (selection handles, debug info) after it. Hide the
+ * content so it can't show past the placeholder's rounded corners; it stays mounted, so it keeps loading.
+ */
+.object > :has(~ .updraw-loading-placeholder) {
+  visibility: hidden;
+}
+
+@keyframes updraw-loading-placeholder-glare {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes updraw-loading-placeholder-reveal {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .updraw-loading-placeholder,
+  .updraw-loading-placeholder::after {
+    animation: none;
+  }
+
+  .updraw-loading-placeholder::after {
+    display: none;
+  }
+}
+
+.PlaygroundEditorTheme__quote {
+  margin: 0;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: rgb(101, 103, 107);
+  border-left-color: rgb(206, 208, 212);
+  border-left-width: 4px;
+  border-left-style: solid;
+  padding-left: 16px;
+}

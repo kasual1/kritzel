@@ -7,7 +7,7 @@ export default new DataSource({
   type: 'postgres',
   url:
     process.env.DATABASE_URL ||
-    'postgresql://postgres:postgres@localhost:5432/kritzel',
+    'postgresql://postgres:postgres@localhost:5432/updraw',
   entities: [User, Document, Asset],
   migrations: [__dirname + '/migrations/*{.ts,.js}'],
   synchronize: false,

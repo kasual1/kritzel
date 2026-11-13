@@ -6,7 +6,7 @@ export type ThemeName = 'light' | 'dark' | (string & NonNullable<unknown>);
 /**
  * Complete theme definition with all CSS variable values grouped by category
  */
-export interface KritzelTheme {
+export interface UpdrawTheme {
   /** Theme identifier */
   name: ThemeName;
 
@@ -255,7 +255,7 @@ export interface KritzelTheme {
     topRightButtonsTop?: string;
   };
 
-  /** Element highlight variables, for highlights and picking inside the content of objects such as `KritzelIframeObject` */
+  /** Element highlight variables, for highlights and picking inside the content of objects such as `UpdrawIframeObject` */
   elementHighlight?: {
     backgroundColor?: string;
     color?: string;
@@ -671,7 +671,7 @@ export interface KritzelTheme {
     transition?: string;
   };
 
-  /** Titlebar menu variables, for the menu `kritzel-editor` opens from a titlebar `menu` element */
+  /** Titlebar menu variables, for the menu `updraw-editor` opens from a titlebar `menu` element */
   titlebarMenu?: {
     backgroundColor?: string;
     border?: string;

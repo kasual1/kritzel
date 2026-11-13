@@ -1,1 +1,1 @@
-CREATE DATABASE kritzel;
+CREATE DATABASE updraw;

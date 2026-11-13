@@ -1,6 +1,6 @@
 # Infographics
 
-A React app where every route hosts its own `kritzel-editor` showing one infographic. The pages
+A React app where every route hosts its own `updraw-editor` showing one infographic. The pages
 are meant to be recorded with the [recorder](../../tools/recorder/README.md).
 
 Each editor gets its initial scene through the `workspaces` property only — no sync provider and no
@@ -35,7 +35,7 @@ loads, three prompts are typed into the chat box one after another, and each sta
 recording widget and keeps recording: it starts each take with the record button and stops it with the next press,
 which saves the take to the list below. Studio presses record as soon as the widget is done. Covers draws four jazz covers for "Full Control" in a square in the middle of the canvas, and Social
 writes a social media post about the release. The work runs from left to right: widget, covers, post. The camera follows each agent to its work and finally pulls back to show
-all three results. Every agent's cursor leaves the view as soon as that agent is done. Each agent is a `KritzelAgent`: it is added
+all three results. Every agent's cursor leaves the view as soon as that agent is done. Each agent is an `UpdrawAgent`: it is added
 with `editor.addAgent()` when its cursor enters and is removed with `editor.removeAgent()` when it leaves. The agents
 work through their agent actions: each places its pages with `agent.addObject()`, so every page is that agent's change,
 and Studio presses the record button and the star of the favorite take with `agent.click()`. Between actions the
@@ -44,7 +44,7 @@ cursors glide with `agent.moveTo()`. The takes are saved by the widget, not by S
 the same; reload the page to play it again.
 
 Every page the agents add comes in smoothly: it fades in while it rises into place, and when it was showing the glare
-placeholder, its content fades in over the placeholder's grey. Both are Kritzel's own: objects placed with
+placeholder, its content fades in over the placeholder's grey. Both are Updraw's own: objects placed with
 `agent.addObject()` or added with `editor.addObject(s)` play the appear animation of the theme (`objectAppear`). The
 agentic canvas generative UI and agentic canvas cursors pages get the same effect.
 
@@ -70,13 +70,13 @@ a recording with `agent.click()` on the record button, waits beside it for 2.5 s
 second click. Stopping saves one track below the widget. On its way out the cursor clicks the track's star, which turns
 amber, and then leaves the view. The widget and the track stay on
 the canvas. It is scripted in `record-track-scene.ts` and reuses the widget, the track and the helpers of the agentic
-canvas page; Studio is a `KritzelAgent` there too.
+canvas page; Studio is an `UpdrawAgent` there too.
 
 ## Agentic canvas rectangle
 
 `src/infographics/agentic-canvas-rectangle/` shows the editor with an empty chat box. After 1.2 seconds "Please add a
 rectangle" is typed into the chat box, the loading ring runs briefly, and a rectangle is added in the middle of the view
-with `editor.addObjects()`, so it plays Kritzel's appear animation. 1.5 seconds later it is removed again. It is scripted
+with `editor.addObjects()`, so it plays Updraw's appear animation. 1.5 seconds later it is removed again. It is scripted
 in `rectangle-scene.ts` and reuses the helpers of the agentic canvas page.
 
 ## Generative UI API key
@@ -105,7 +105,7 @@ An element chip's close button drops that element, the page chip's deselects the
 find-and-replace edits (`edit_page`), so small changes are quick. Prompts don't share a conversation; the pages on the
 canvas are the state (`generative-ui-agent.ts`).
 
-Claude is a `KritzelAgent` with its own cursor, status and history: `add_page` places the page through
+Claude is an `UpdrawAgent` with its own cursor, status and history: `add_page` places the page through
 `agent.addObject()`, so the user's selection and undo history stay untouched, and `agent.tools()` adds `observe_canvas`,
 `move_object`, `resize_object` and `delete_objects` so Claude can see and arrange its pages. While Claude changes a page,
 its cursor points at the first picked element (`agent.moveTo({ objectId, selector })`), or at the page when none is
@@ -119,6 +119,6 @@ npm run record -- --url=http://localhost:5180/#/welcome --width=1280 --height=72
 
 ## Add an infographic
 
-Create a component under `src/infographics/<name>/` that renders a `KritzelEditor` with its scene in
+Create a component under `src/infographics/<name>/` that renders an `UpdrawEditor` with its scene in
 `workspaces`, and register it in `src/infographic-routes.ts`. For an SVG path that should draw itself
 on load, render `PathDrawingInfographic` from `src/infographics/shared/` with a drawing factory.

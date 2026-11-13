@@ -1,40 +1,40 @@
-import { KritzelObjectConfigManager } from './object-config.manager';
-import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelObjectConfig } from '../../interfaces/object-config.interface';
+import { UpdrawObjectConfigManager } from './object-config.manager';
+import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawObjectConfig } from '../../interfaces/object-config.interface';
 
-describe('KritzelObjectConfigManager', () => {
+describe('UpdrawObjectConfigManager', () => {
   let mockCore: any;
-  let objects: Map<string, KritzelBaseObject<any>>;
-  let manager: KritzelObjectConfigManager;
+  let objects: Map<string, UpdrawBaseObject<any>>;
+  let manager: UpdrawObjectConfigManager;
 
-  const setConfig = (config: KritzelObjectConfig | undefined) => {
+  const setConfig = (config: UpdrawObjectConfig | undefined) => {
     mockCore.engine.objectConfig = config;
   };
 
-  const createObject = (id: string, props: Record<string, unknown> = {}): KritzelBaseObject<any> => {
-    const object = Object.assign(Object.create(KritzelBaseObject.prototype), {
-      __class__: 'KritzelShape',
+  const createObject = (id: string, props: Record<string, unknown> = {}): UpdrawBaseObject<any> => {
+    const object = Object.assign(Object.create(UpdrawBaseObject.prototype), {
+      __class__: 'UpdrawShape',
       id,
       isRotatable: true,
       isResizable: true,
       ...props,
-    }) as KritzelBaseObject<any>;
+    }) as UpdrawBaseObject<any>;
     objects.set(id, object);
     return object;
   };
 
-  const createGroup = (id: string, childIds: string[], props: Record<string, unknown> = {}): KritzelGroup => {
-    const group = createObject(id, { __class__: 'KritzelGroup', ...props }) as unknown as KritzelGroup;
-    Object.setPrototypeOf(group, KritzelGroup.prototype);
+  const createGroup = (id: string, childIds: string[], props: Record<string, unknown> = {}): UpdrawGroup => {
+    const group = createObject(id, { __class__: 'UpdrawGroup', ...props }) as unknown as UpdrawGroup;
+    Object.setPrototypeOf(group, UpdrawGroup.prototype);
     group.childIds = childIds;
     return group;
   };
 
-  const createSelection = (...selected: KritzelBaseObject<any>[]): KritzelSelectionGroup => {
-    const selection = Object.create(KritzelSelectionGroup.prototype) as KritzelSelectionGroup;
-    Object.defineProperty(selection, '__class__', { value: 'KritzelSelectionGroup' });
+  const createSelection = (...selected: UpdrawBaseObject<any>[]): UpdrawSelectionGroup => {
+    const selection = Object.create(UpdrawSelectionGroup.prototype) as UpdrawSelectionGroup;
+    Object.defineProperty(selection, '__class__', { value: 'UpdrawSelectionGroup' });
     Object.defineProperty(selection, 'objects', { get: () => selected });
     return selection;
   };
@@ -45,7 +45,7 @@ describe('KritzelObjectConfigManager', () => {
       engine: { objectConfig: undefined },
       store: { objects: { findById: (id: string) => objects.get(id) } },
     };
-    manager = new KritzelObjectConfigManager(mockCore);
+    manager = new UpdrawObjectConfigManager(mockCore);
     jest.spyOn(console, 'warn').mockImplementation(() => undefined);
   });
 
@@ -84,10 +84,10 @@ describe('KritzelObjectConfigManager', () => {
     });
 
     it('accepts functions deciding per object', () => {
-      setConfig({ isRotatable: object => object.__class__ !== 'KritzelText' });
+      setConfig({ isRotatable: object => object.__class__ !== 'UpdrawText' });
 
       expect(manager.isRotatable(createObject('shape'))).toBe(true);
-      expect(manager.isRotatable(createObject('text', { __class__: 'KritzelText' }))).toBe(false);
+      expect(manager.isRotatable(createObject('text', { __class__: 'UpdrawText' }))).toBe(false);
     });
 
     it('uses the default for non-boolean results', () => {
@@ -150,10 +150,10 @@ describe('KritzelObjectConfigManager', () => {
     });
 
     it('applies the config to the objects inside a group', () => {
-      createObject('text', { __class__: 'KritzelText' });
+      createObject('text', { __class__: 'UpdrawText' });
       const group = createGroup('group', ['text']);
 
-      setConfig({ isResizable: object => object.__class__ !== 'KritzelText' });
+      setConfig({ isResizable: object => object.__class__ !== 'UpdrawText' });
 
       expect(manager.isResizable(group)).toBe(false);
     });

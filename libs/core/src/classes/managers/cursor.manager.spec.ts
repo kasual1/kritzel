@@ -1,12 +1,12 @@
-import { KritzelCursorManager } from './cursor.manager';
-import { KritzelCore } from '../core/core.class';
-import { KritzelCursorHelper } from '../../helpers/cursor.helper';
+import { UpdrawCursorManager } from './cursor.manager';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawCursorHelper } from '../../helpers/cursor.helper';
 
 jest.mock('../core/core.class');
 jest.mock('../../helpers/cursor.helper');
 
-describe('KritzelCursorManager', () => {
-  let manager: KritzelCursorManager;
+describe('UpdrawCursorManager', () => {
+  let manager: UpdrawCursorManager;
   let mockCore: any;
   let mockState: any;
 
@@ -56,12 +56,12 @@ describe('KritzelCursorManager', () => {
         get isPointerDown() { return mockState.pointers.size > 0; },
         selectionGroup: null,
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    (KritzelCursorHelper.getCursor as jest.Mock).mockReturnValue('url(data:image/svg+xml...) 4 4, auto');
-    (KritzelCursorHelper.getPointerCursor as jest.Mock).mockReturnValue('url(data:image/svg+xml...) 12 12, auto');
+    (UpdrawCursorHelper.getCursor as jest.Mock).mockReturnValue('url(data:image/svg+xml...) 4 4, auto');
+    (UpdrawCursorHelper.getPointerCursor as jest.Mock).mockReturnValue('url(data:image/svg+xml...) 12 12, auto');
 
-    manager = new KritzelCursorManager(mockCore);
+    manager = new UpdrawCursorManager(mockCore);
   });
 
   afterEach(() => {
@@ -87,11 +87,11 @@ describe('KritzelCursorManager', () => {
       manager.setTargetElement(element);
 
       expect(element.style.setProperty).toHaveBeenCalledWith(
-        '--kritzel-global-default-cursor',
+        '--updraw-global-default-cursor',
         expect.any(String)
       );
       expect(element.style.setProperty).toHaveBeenCalledWith(
-        '--kritzel-global-pointer-cursor',
+        '--updraw-global-pointer-cursor',
         expect.any(String)
       );
     });
@@ -104,8 +104,8 @@ describe('KritzelCursorManager', () => {
       manager.setTargetElement(newElement);
 
       expect(oldElement.style.cursor).toBe('');
-      expect(oldElement.style.removeProperty).toHaveBeenCalledWith('--kritzel-global-default-cursor');
-      expect(oldElement.style.removeProperty).toHaveBeenCalledWith('--kritzel-global-pointer-cursor');
+      expect(oldElement.style.removeProperty).toHaveBeenCalledWith('--updraw-global-default-cursor');
+      expect(oldElement.style.removeProperty).toHaveBeenCalledWith('--updraw-global-pointer-cursor');
       expect(manager.getTargetElement()).toBe(newElement);
     });
 
@@ -116,8 +116,8 @@ describe('KritzelCursorManager', () => {
       manager.setTargetElement(null);
 
       expect(element.style.cursor).toBe('');
-      expect(element.style.removeProperty).toHaveBeenCalledWith('--kritzel-global-default-cursor');
-      expect(element.style.removeProperty).toHaveBeenCalledWith('--kritzel-global-pointer-cursor');
+      expect(element.style.removeProperty).toHaveBeenCalledWith('--updraw-global-default-cursor');
+      expect(element.style.removeProperty).toHaveBeenCalledWith('--updraw-global-pointer-cursor');
       expect(manager.getTargetElement()).toBeNull();
     });
 
@@ -200,7 +200,7 @@ describe('KritzelCursorManager', () => {
     });
 
     it('should show the grab cursor over a titlebar drag surface', () => {
-      const title = { ...createMockElementWithClasses(), closest: (selector: string) => (selector === '[data-kritzel-titlebar-surface]' ? {} : null) };
+      const title = { ...createMockElementWithClasses(), closest: (selector: string) => (selector === '[data-updraw-titlebar-surface]' ? {} : null) };
       manager.setShadowRoot(createMockShadowRoot([title]));
 
       manager.updateHoverState(createMockPointerEvent());
@@ -358,7 +358,7 @@ describe('KritzelCursorManager', () => {
 
       manager.applyCursor();
 
-      expect(KritzelCursorHelper.getCursor).toHaveBeenCalledWith({
+      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalledWith({
         iconName: 'default',
         rotation: undefined,
       });
@@ -373,7 +373,7 @@ describe('KritzelCursorManager', () => {
 
       manager.applyCursor();
 
-      expect(KritzelCursorHelper.getCursor).toHaveBeenCalledWith({
+      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalledWith({
         iconName: 'handGrab',
         rotation: undefined,
       });
@@ -386,7 +386,7 @@ describe('KritzelCursorManager', () => {
 
       manager.applyCursor();
 
-      expect(KritzelCursorHelper.getCursor).toHaveBeenCalledWith({
+      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalledWith({
         iconName: 'hand',
         rotation: undefined,
       });
@@ -399,7 +399,7 @@ describe('KritzelCursorManager', () => {
 
       manager.applyCursor();
 
-      expect(KritzelCursorHelper.getCursor).toHaveBeenCalledWith({
+      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalledWith({
         iconName: 'moveVertical',
         rotation: 45,
       });
@@ -413,7 +413,7 @@ describe('KritzelCursorManager', () => {
 
       manager.applyCursor();
 
-      expect(KritzelCursorHelper.getCursor).toHaveBeenCalledWith({
+      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalledWith({
         iconName: 'hand',
         rotation: undefined,
       });
@@ -425,7 +425,7 @@ describe('KritzelCursorManager', () => {
       // Should not throw
       manager.applyCursor();
 
-      expect(KritzelCursorHelper.getCursor).toHaveBeenCalled();
+      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalled();
     });
 
     it('should handle undefined cursor state', () => {
@@ -435,7 +435,7 @@ describe('KritzelCursorManager', () => {
 
       manager.applyCursor();
 
-      expect(KritzelCursorHelper.getCursor).toHaveBeenCalledWith({
+      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalledWith({
         iconName: undefined,
         rotation: undefined,
       });
@@ -454,8 +454,8 @@ describe('KritzelCursorManager', () => {
       manager.cleanup();
 
       expect(element.style.cursor).toBe('');
-      expect(element.style.removeProperty).toHaveBeenCalledWith('--kritzel-global-default-cursor');
-      expect(element.style.removeProperty).toHaveBeenCalledWith('--kritzel-global-pointer-cursor');
+      expect(element.style.removeProperty).toHaveBeenCalledWith('--updraw-global-default-cursor');
+      expect(element.style.removeProperty).toHaveBeenCalledWith('--updraw-global-pointer-cursor');
     });
 
     it('should null out target element and shadow root', () => {

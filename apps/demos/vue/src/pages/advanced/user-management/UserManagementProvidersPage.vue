@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelLoginConfig,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawLoginConfig,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -19,9 +19,9 @@ const providerIcons: Record<string, string> = {
 }
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
-const loginConfig: KritzelLoginConfig = {
-  title: 'Sign in to Kritzel',
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const loginConfig: UpdrawLoginConfig = {
+  title: 'Sign in to Updraw',
   providers: [
     { name: 'google', icon: 'google', label: 'Continue with Google' },
     { name: 'facebook', icon: 'facebook', label: 'Continue with Facebook' },
@@ -35,7 +35,7 @@ async function onReady(): Promise<void> {
 </script>
 
 <template>
-  <KritzelEditor
+  <UpdrawEditor
     ref="editor"
     editorId="user-management-providers"
     :loginConfig="loginConfig"

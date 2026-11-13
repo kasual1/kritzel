@@ -1,4 +1,4 @@
-export interface KritzelBoundingBox {
+export interface UpdrawBoundingBox {
   x: number;
   y: number;
   z: number;

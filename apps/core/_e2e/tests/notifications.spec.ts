@@ -15,7 +15,7 @@ test.describe('Notifications', () => {
       timestampIso: FIXED_TIMESTAMP_ISO,
     });
 
-    const notificationCard = editorPage.page.locator('kritzel-notification-card');
+    const notificationCard = editorPage.page.locator('updraw-notification-card');
     await expect(notificationCard).toBeVisible();
     await expect(notificationCard.locator('.type-pill')).toHaveText('Info');
 
@@ -30,7 +30,7 @@ test.describe('Notifications', () => {
       timestampIso: FIXED_TIMESTAMP_ISO,
     });
 
-    const notificationCard = editorPage.page.locator('kritzel-notification-card');
+    const notificationCard = editorPage.page.locator('updraw-notification-card');
     await expect(notificationCard).toBeVisible();
     await expect(notificationCard.locator('.type-pill')).toHaveText('Warning');
 
@@ -45,7 +45,7 @@ test.describe('Notifications', () => {
       timestampIso: FIXED_TIMESTAMP_ISO,
     });
 
-    const notificationCard = editorPage.page.locator('kritzel-notification-card');
+    const notificationCard = editorPage.page.locator('updraw-notification-card');
     await expect(notificationCard).toBeVisible();
     await expect(notificationCard.locator('.type-pill')).toHaveText('Error');
 
@@ -60,7 +60,7 @@ test.describe('Notifications', () => {
       timestampIso: FIXED_TIMESTAMP_ISO,
     });
 
-    const notificationCard = editorPage.page.locator('kritzel-notification-card');
+    const notificationCard = editorPage.page.locator('updraw-notification-card');
     await expect(notificationCard).toBeVisible();
 
     await notificationCard.locator('.dismiss-button').click();
@@ -80,7 +80,7 @@ test.describe('Notifications', () => {
       timestampIso: FIXED_TIMESTAMP_ISO,
     });
 
-    const notificationCard = editorPage.page.locator('kritzel-notification-card');
+    const notificationCard = editorPage.page.locator('updraw-notification-card');
     await expect(notificationCard).toBeVisible();
 
     await editorPage.page.waitForTimeout(350);
@@ -100,7 +100,7 @@ test.describe('Notifications', () => {
       timestampIso: FIXED_TIMESTAMP_ISO,
     });
 
-    const notificationCard = editorPage.page.locator('kritzel-notification-card');
+    const notificationCard = editorPage.page.locator('updraw-notification-card');
     await expect(notificationCard).toBeVisible();
 
     await editorPage.page.waitForTimeout(350);

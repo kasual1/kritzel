@@ -6,16 +6,16 @@
 
 ## Base Class
 
-All tools extend `KritzelBaseTool` which implements `KritzelTool` and `KritzelSerializable`.
+All tools extend `UpdrawBaseTool` which implements `UpdrawTool` and `UpdrawSerializable`.
 
 ```typescript
-import { KritzelBaseTool } from './base-tool.class';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawBaseTool } from './base-tool.class';
+import { UpdrawCore } from '../core/core.class';
 
-export class MyTool extends KritzelBaseTool {
+export class MyTool extends UpdrawBaseTool {
   override name = 'my-tool';
 
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     super(core);
   }
 }
@@ -36,7 +36,7 @@ export class MyTool extends KritzelBaseTool {
 
 ## Lifecycle
 
-1. Tool is registered via `KritzelToolRegistry`
+1. Tool is registered via `UpdrawToolRegistry`
 2. User selects tool → `onActivate()` called
 3. Pointer events dispatched to active tool
 4. User switches tool → `onDeactivate()` called

@@ -1,7 +1,7 @@
-import { KritzelBaseObject } from './base-object.class';
-import { KritzelCore } from '../core/core.class';
-import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import { KritzelDevicesHelper } from '../../helpers/devices.helper';
+import { UpdrawBaseObject } from './base-object.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawKeyboardHelper } from '../../helpers/keyboard.helper';
+import { UpdrawDevicesHelper } from '../../helpers/devices.helper';
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
@@ -10,17 +10,17 @@ import { addListNodes } from 'prosemirror-schema-list';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
-import { KritzelColorHelper } from '../../helpers/color.helper';
-import { KritzelMathHelper } from '../../helpers/math.helper';
-import { KritzelFontRegistry } from '../registries/font-registry.class';
+import { UpdrawColorHelper } from '../../helpers/color.helper';
+import { UpdrawMathHelper } from '../../helpers/math.helper';
+import { UpdrawFontRegistry } from '../registries/font-registry.class';
 
 /**
- * Configuration options for creating a KritzelText instance.
+ * Configuration options for creating an UpdrawText instance.
  */
-export interface KritzelTextConfig {
+export interface UpdrawTextConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
-  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
+  /** Whether the engine's loading placeholder is drawn over the object, see `UpdrawBaseObject.setLoading()`. */
   isLoading?: boolean;
   text?: string;
   translateX?: number;
@@ -42,8 +42,8 @@ export interface KritzelTextConfig {
  * Represents a text object on the canvas that supports rich text editing via ProseMirror.
  * Extends the base object class to inherit common object properties and behaviors.
  */
-export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
-  override __class__: string = 'KritzelText';
+export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
+  override __class__: string = 'UpdrawText';
 
   fontFamily: string = 'Arial';
   fontSize: number = 8;
@@ -67,7 +67,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     marks: schema.spec.marks,
   });
 
-  uneditedObject: KritzelText | null = null;
+  uneditedObject: UpdrawText | null = null;
 
   readonly rows: number = 1;
 
@@ -91,10 +91,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   /**
-   * Constructs a new KritzelText instance with optional configuration.
+   * Constructs a new UpdrawText instance with optional configuration.
    * Can be used by consumers to create text objects programmatically:
    * ```ts
-   * const text = new KritzelText({ text: 'Hello World', translateX: 100, translateY: 100 });
+   * const text = new UpdrawText({ text: 'Hello World', translateX: 100, translateY: 100 });
    * await editor.addObject(text);
    * ```
    * @param config - Optional configuration object.
@@ -112,12 +112,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
    * @param config.scaleX - Horizontal scale factor.
    * @param config.scaleY - Vertical scale factor.
    */
-  constructor(config?: KritzelTextConfig) {
+  constructor(config?: UpdrawTextConfig) {
     super();
     this.name = config?.name;
     this.isLoading = config?.isLoading ?? false;
 
-    this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
+    this.rotation = UpdrawMathHelper.degreesToRadians(config?.rotation ?? 0);
 
     // Always create the editor so setContent() works immediately
     this.editor = this.createEditor();
@@ -154,16 +154,16 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   /**
-   * Factory method to create a new KritzelText instance with default settings.
+   * Factory method to create a new UpdrawText instance with default settings.
    * Initializes the editor and registers the object with the core store.
-   * @param core - The KritzelCore instance managing the canvas.
+   * @param core - The UpdrawCore instance managing the canvas.
    * @param fontSize - Optional font size in points.
    * @param fontFamily - Optional font family name.
    * @param scale - Optional scale factor (defaults to current viewport scale).
-   * @returns A new, fully initialized KritzelText instance.
+   * @returns A new, fully initialized UpdrawText instance.
    */
-  static override create(core: KritzelCore, fontSize?: number, fontFamily?: string, scale?: number, rotation?: number): KritzelText {
-    const object = new KritzelText();
+  static override create(core: UpdrawCore, fontSize?: number, fontFamily?: string, scale?: number, rotation?: number): UpdrawText {
+    const object = new UpdrawText();
 
     object._core = core;
     object.id = object.generateId();
@@ -173,7 +173,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.fontFamily = fontFamily || 'Arial';
     object.translateX = 0;
     object.translateY = 0;
-    object.rotation = KritzelMathHelper.degreesToRadians(rotation ?? 0);
+    object.rotation = UpdrawMathHelper.degreesToRadians(rotation ?? 0);
 
     const coreScale = core.store.state.scale;
     const effectiveScale = coreScale < 0 ? coreScale : 1;
@@ -202,9 +202,9 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    element.style.fontFamily = KritzelFontRegistry.resolveCssFontFamily(this.fontFamily);
+    element.style.fontFamily = UpdrawFontRegistry.resolveCssFontFamily(this.fontFamily);
     element.style.fontSize = `${this.fontSize}pt`;
-    element.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
+    element.style.color = UpdrawColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
 
     if (this.isMounted && this.elementRef === element && this.editor!.dom.parentElement === element) {
       if (!this._core.store.state.isScaling && !this._core.store.state.isPanning) {
@@ -364,7 +364,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
           this.editor!.dispatch(this.editor!.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
           this.editor!.focus();
 
-          if (KritzelDevicesHelper.isIOS()) {
+          if (UpdrawDevicesHelper.isIOS()) {
             this.scrollIntoViewOnIOS();
           }
           return;
@@ -375,7 +375,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       this.editor!.dispatch(this.editor!.state.tr.setSelection(TextSelection.create(doc, end)));
       this.editor!.focus();
 
-      if (KritzelDevicesHelper.isIOS()) {
+      if (UpdrawDevicesHelper.isIOS()) {
         this.scrollIntoViewOnIOS();
       }
     }
@@ -409,9 +409,9 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    KritzelKeyboardHelper.disableInteractiveWidget();
+    UpdrawKeyboardHelper.disableInteractiveWidget();
 
-    this.uneditedObject = this.clone() as KritzelText;
+    this.uneditedObject = this.clone() as UpdrawText;
 
     this._core.store.setState('activeTool', this._core.toolRegistry.getTool('text'));
 
@@ -427,7 +427,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       this.focus({ x: event?.clientX, y: event?.clientY });
     }
 
-    KritzelKeyboardHelper.enableInteractiveWidget();
+    UpdrawKeyboardHelper.enableInteractiveWidget();
   }
 
   /**
@@ -547,10 +547,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   /**
    * Creates a deep copy of this text object, including a new editor instance.
    * Preserves all content from the original object.
-   * @returns A new KritzelText instance with copied properties and content.
+   * @returns A new UpdrawText instance with copied properties and content.
    */
-  override copy(): KritzelText {
-    const copiedObject = super.copy() as KritzelText;
+  override copy(): UpdrawText {
+    const copiedObject = super.copy() as UpdrawText;
     copiedObject.editor = copiedObject.createEditor();
 
     if (this.content) {
@@ -581,15 +581,15 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   /**
    * Restores a text object from a serialized representation.
    * Reconstructs the editor content from the saved document state.
-   * @template KritzelText - The return type (for type inference).
+   * @template UpdrawText - The return type (for type inference).
    * @param object - The serialized object data to restore from.
    * @returns The deserialized text object instance.
    */
-  override deserialize<KritzelText>(object: any): KritzelText {
-    super.deserialize<KritzelText>(object);
+  override deserialize<UpdrawText>(object: any): UpdrawText {
+    super.deserialize<UpdrawText>(object);
     if (object.content) {
       this.setContent(object.content);
     }
-    return this as unknown as KritzelText;
+    return this as unknown as UpdrawText;
   }
 }

@@ -1,8 +1,8 @@
 import { createActorTools } from './agent-tools';
-import type { KritzelAgentToolsOptions } from '../../interfaces/agent.interface';
-import { KritzelViewport } from '../core/viewport.class';
+import type { UpdrawAgentToolsOptions } from '../../interfaces/agent.interface';
+import { UpdrawViewport } from '../core/viewport.class';
 
-/** The viewport tools on a real KritzelViewport of a minimal core: 1000×500 screen pixels at scale 1. */
+/** The viewport tools on a real UpdrawViewport of a minimal core: 1000×500 screen pixels at scale 1. */
 
 const createCore = (objects: Record<string, { x: number; y: number; width: number; height: number }> = {}) => {
   const state: Record<string, any> = {
@@ -27,7 +27,7 @@ const createCore = (objects: Record<string, { x: number; y: number; width: numbe
     updateWorkspaceViewport: jest.fn(),
   };
   const host = { clientWidth: 1000, clientHeight: 500 } as unknown as HTMLElement;
-  core.engine = { viewport: new KritzelViewport(core, host) };
+  core.engine = { viewport: new UpdrawViewport(core, host) };
   return core;
 };
 
@@ -41,7 +41,7 @@ const createActor = (core: any, kind: 'agent' | 'user' = 'user') => ({
   _describeObjects: jest.fn(() => []),
 });
 
-const run = async (actor: ReturnType<typeof createActor>, name: string, input: unknown, options: KritzelAgentToolsOptions = { instant: true }) => {
+const run = async (actor: ReturnType<typeof createActor>, name: string, input: unknown, options: UpdrawAgentToolsOptions = { instant: true }) => {
   const tool = createActorTools(actor as any, options).find(candidate => candidate.name === name);
   if (!tool) throw new Error(`no tool ${name}`);
   return JSON.parse(await tool.run(input));
@@ -50,7 +50,7 @@ const run = async (actor: ReturnType<typeof createActor>, name: string, input: u
 describe('viewport tools', () => {
   it('are offered to agents and to actors working as the user, unless viewport is false', () => {
     for (const kind of ['agent', 'user'] as const) {
-      const names = (options: KritzelAgentToolsOptions) => createActorTools(createActor(null, kind) as any, options).map(tool => tool.name);
+      const names = (options: UpdrawAgentToolsOptions) => createActorTools(createActor(null, kind) as any, options).map(tool => tool.name);
       expect(names({})).toEqual(expect.arrayContaining(['set_viewport', 'fit_viewport']));
       expect(names({ viewport: false })).not.toContain('set_viewport');
       expect(names({ viewport: false })).not.toContain('fit_viewport');

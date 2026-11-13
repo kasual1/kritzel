@@ -1,8 +1,8 @@
 import { useRef } from "react";
-import { KritzelEditor, type HTMLKritzelEditorElement, type KritzelFontMap, type KritzelTheme } from "@kritzel/react-editor";
+import { UpdrawEditor, type HTMLUpdrawEditorElement, type UpdrawFontMap, type UpdrawTheme } from "@updraw/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 
-const fonts: KritzelFontMap = {
+const fonts: UpdrawFontMap = {
   pacifico: {
     family: "Pacifico",
     label: "Pacifico Cursive",
@@ -11,16 +11,16 @@ const fonts: KritzelFontMap = {
   },
 };
 
-const themes: KritzelTheme[] = [{
+const themes: UpdrawTheme[] = [{
   ...reactThemeLight,
   global: { ...reactThemeLight.global, fontFamily: "'Pacifico', cursive" },
 }];
 
 export function FontsUiFontFamilyPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
 
   return (
-    <KritzelEditor
+    <UpdrawEditor
       ref={editorRef}
       editorId="fonts-ui-font-family"
       customFonts={fonts}

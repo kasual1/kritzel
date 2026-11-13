@@ -1,25 +1,25 @@
-import type { KritzelCore } from '../core/core.class';
-import type { KritzelObjectMap } from '../structures/object-map.structure';
-import type { KritzelBaseObject } from '../objects/base-object.class';
+import type { UpdrawCore } from '../core/core.class';
+import type { UpdrawObjectMap } from '../structures/object-map.structure';
+import type { UpdrawBaseObject } from '../objects/base-object.class';
 import type {
-  KritzelAgenticAction,
-  KritzelAgenticActionFailureReason,
-  KritzelAgenticActionResult,
+  UpdrawAgenticAction,
+  UpdrawAgenticActionFailureReason,
+  UpdrawAgenticActionResult,
 } from '../../interfaces/agentic-action.interface';
-import type { KritzelObjectChangeSource } from '../../interfaces/object-change-event.interface';
+import type { UpdrawObjectChangeSource } from '../../interfaces/object-change-event.interface';
 import { getAgenticActionExecutor } from '../registries/agentic-action-executor.registry';
-import { KritzelAgenticAbortError } from '../agent/agentic-abort-error.class';
-import type { KritzelAgenticPreparation, KritzelAgenticRefusal } from '../../types/agentic-action.types';
+import { UpdrawAgenticAbortError } from '../agent/agentic-abort-error.class';
+import type { UpdrawAgenticPreparation, UpdrawAgenticRefusal } from '../../types/agentic-action.types';
 import {
-  KritzelActorActionOptions,
-  KritzelActorKind,
-  KritzelActorSelection,
-  KritzelAgenticActionRun,
-  KritzelAgenticRunHost,
-  KritzelAgenticRunOutcome,
+  UpdrawActorActionOptions,
+  UpdrawActorKind,
+  UpdrawActorSelection,
+  UpdrawAgenticActionRun,
+  UpdrawAgenticRunHost,
+  UpdrawAgenticRunOutcome,
 } from './agentic-action-run.class';
 import {
-  KritzelAgenticFrameCache,
+  UpdrawAgenticFrameCache,
   buildFrameCache,
   collectHumanSelection,
   collectHumanSelectionGroupIds,
@@ -27,10 +27,10 @@ import {
   expandWithRelatives,
   isSelectionObject,
 } from '../../helpers/agentic-conflict.helper';
-import { KritzelEventHelper } from '../../helpers/event.helper';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
 
-type AnyObject = KritzelBaseObject<any>;
-type ObjectMap = KritzelObjectMap<AnyObject>;
+type AnyObject = UpdrawBaseObject<any>;
+type ObjectMap = UpdrawObjectMap<AnyObject>;
 
 interface AgenticSelection {
   /** Top-level IDs, as shown. */
@@ -40,15 +40,15 @@ interface AgenticSelection {
 }
 
 interface Conflict {
-  reason: KritzelAgenticActionFailureReason;
+  reason: UpdrawAgenticActionFailureReason;
   objectIds?: string[];
 }
 
 /** How an action ended; emitted to `onActionSettled` listeners. */
-export interface KritzelAgenticActionSettledEvent {
+export interface UpdrawAgenticActionSettledEvent {
   cursorId: string;
-  action: KritzelAgenticAction;
-  result: KritzelAgenticActionResult;
+  action: UpdrawAgenticAction;
+  result: UpdrawAgenticActionResult;
   /** Whether the action had started changing the canvas when it ended (`false` for refusals before it began). */
   executing: boolean;
   /** Whether the action's changes were kept. */
@@ -56,9 +56,9 @@ export interface KritzelAgenticActionSettledEvent {
 }
 
 /** Who performs actions under an ID. */
-export interface KritzelActorInfo {
+export interface UpdrawActorInfo {
   id: string;
-  kind: KritzelActorKind;
+  kind: UpdrawActorKind;
 }
 
 interface DeferredTask {
@@ -67,9 +67,9 @@ interface DeferredTask {
 }
 
 /** Reasons after which an aborted action keeps its partial change: the user has taken over the objects. */
-const KEEP_REASONS: ReadonlySet<KritzelAgenticActionFailureReason> = new Set(['user-selected', 'user-interaction']);
+const KEEP_REASONS: ReadonlySet<UpdrawAgenticActionFailureReason> = new Set(['user-selected', 'user-interaction']);
 /** Reasons after which nothing is emitted: the workspace is going away. */
-const SILENT_REASONS: ReadonlySet<KritzelAgenticActionFailureReason> = new Set(['workspace-changed', 'engine-disconnected']);
+const SILENT_REASONS: ReadonlySet<UpdrawAgenticActionFailureReason> = new Set(['workspace-changed', 'engine-disconnected']);
 
 /**
  * Runs agent actions (`agent.perform()`): one FIFO queue per agent, agents in parallel.
@@ -81,10 +81,10 @@ const SILENT_REASONS: ReadonlySet<KritzelAgenticActionFailureReason> = new Set([
  * other agents. Agent selections and claims are shared with collaborators as presence (awareness), never
  * synced as objects.
  */
-export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
-  private readonly _core: KritzelCore;
-  private readonly _queues = new Map<string, KritzelAgenticActionRun[]>();
-  private readonly _running = new Map<string, KritzelAgenticActionRun>();
+export class UpdrawAgenticActionManager implements UpdrawAgenticRunHost {
+  private readonly _core: UpdrawCore;
+  private readonly _queues = new Map<string, UpdrawAgenticActionRun[]>();
+  private readonly _running = new Map<string, UpdrawAgenticActionRun>();
   private readonly _runClaims = new Map<string, Set<string>>();
   private readonly _runReferences = new Map<string, Set<string>>();
   private readonly _selections = new Map<string, AgenticSelection>();
@@ -95,12 +95,12 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
   private _subscribed = false;
   private _disposing = false;
   private _lastFrameTime: number | null = null;
-  private readonly _settledListeners = new Set<(event: KritzelAgenticActionSettledEvent) => void>();
+  private readonly _settledListeners = new Set<(event: UpdrawAgenticActionSettledEvent) => void>();
   private readonly _idleWaiters = new Map<string, (() => void)[]>();
   /** Actors working as the local user, without a cursor. */
   private readonly _userActors = new Set<string>();
 
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     this._core = core;
   }
 
@@ -112,7 +112,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
    * Queues an action for a cursor. Rejects for unknown cursors and invalid actions; every runtime
    * condition resolves with `completed: false` and a reason.
    */
-  perform(cursorId: string, action: KritzelAgenticAction, options: KritzelActorActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  perform(cursorId: string, action: UpdrawAgenticAction, options: UpdrawActorActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     const actor = this.getActor(cursorId);
     if (!actor) {
       throw new Error(`Agent "${cursorId}" not found.`);
@@ -128,7 +128,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     }
 
     this.ensureSubscribed();
-    const run = new KritzelAgenticActionRun(this, this._core, cursorId, action, options ?? {}, executor, actor.kind);
+    const run = new UpdrawAgenticActionRun(this, this._core, cursorId, action, options ?? {}, executor, actor.kind);
     if (actor.kind === 'user') {
       run.selection = this.createUserSelection(run);
     }
@@ -148,7 +148,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
    * Aborts the running action of a cursor (rolling back its changes) and settles its queued actions,
    * all with `reason`. The cursor, its selection and its history are kept.
    */
-  cancel(cursorId: string, reason: KritzelAgenticActionFailureReason = 'aborted'): void {
+  cancel(cursorId: string, reason: UpdrawAgenticActionFailureReason = 'aborted'): void {
     const queue = this._queues.get(cursorId);
     queue?.splice(0).forEach(run => this.settleQueued(run, reason));
     this._running.get(cursorId)?.abort(reason);
@@ -182,7 +182,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
   }
 
   /** The actor behind an ID: an agent cursor or a user actor. */
-  getActor(actorId: string): KritzelActorInfo | null {
+  getActor(actorId: string): UpdrawActorInfo | null {
     if (this._userActors.has(actorId)) {
       return { id: actorId, kind: 'user' };
     }
@@ -193,7 +193,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
   }
 
   /** Subscribes to finished actions: completed, refused, aborted or failed. */
-  onActionSettled(listener: (event: KritzelAgenticActionSettledEvent) => void): () => void {
+  onActionSettled(listener: (event: UpdrawAgenticActionSettledEvent) => void): () => void {
     this._settledListeners.add(listener);
     return () => this._settledListeners.delete(listener);
   }
@@ -237,7 +237,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     this.showSelection(cursorId);
   }
 
-  claim(run: KritzelAgenticActionRun, objectId: string): void {
+  claim(run: UpdrawAgenticActionRun, objectId: string): void {
     let claims = this._runClaims.get(run.cursorId);
     if (!claims) {
       claims = new Set();
@@ -246,7 +246,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     claims.add(objectId);
   }
 
-  checkpoint(run: KritzelAgenticActionRun): void {
+  checkpoint(run: UpdrawAgenticActionRun): void {
     run.assertActive();
     const map = run.map;
     if (!map) {
@@ -277,7 +277,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
 
   // ─── Settling ───────────────────────────────────────────────────────────────
 
-  finishRun(run: KritzelAgenticActionRun, outcome: KritzelAgenticRunOutcome, options?: { sync?: boolean }): void {
+  finishRun(run: UpdrawAgenticActionRun, outcome: UpdrawAgenticRunOutcome, options?: { sync?: boolean }): void {
     if (run.settled) {
       return;
     }
@@ -307,12 +307,12 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     }
   }
 
-  private cleanupRun(run: KritzelAgenticActionRun, outcome: KritzelAgenticRunOutcome): void {
+  private cleanupRun(run: UpdrawAgenticActionRun, outcome: UpdrawAgenticRunOutcome): void {
     const cursors = this._core.agenticCursorManager;
     const map = run.map;
     const reason = outcome.kind === 'abort' ? outcome.reason : null;
     const keep = outcome.kind === 'commit' || (reason !== null && KEEP_REASONS.has(reason));
-    let events: ReturnType<KritzelAgenticActionManager['deriveEvents']> | null = null;
+    let events: ReturnType<UpdrawAgenticActionManager['deriveEvents']> | null = null;
 
     try {
       if (run.hasMutated && run.origin && map && map.isReady) {
@@ -353,7 +353,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
         map.resumeAgentRedo(run.cursorId, run.suspendedRedo, !(run.hasMutated && keep));
       }
     } catch (error) {
-      console.error('[Kritzel] Failed to finish an agentic action:', error);
+      console.error('[Updraw] Failed to finish an agentic action:', error);
     } finally {
       run.suspendedRedo = null;
     }
@@ -374,7 +374,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
       this.emitEvents(run, events);
     }
 
-    let result: KritzelAgenticActionResult | null = null;
+    let result: UpdrawAgenticActionResult | null = null;
     if (outcome.kind === 'commit') {
       result = { completed: true, objectIds: outcome.objectIds, ...run.elementOutcome };
       run.settleWith(result);
@@ -395,11 +395,11 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     }
   }
 
-  private emitSettled(event: KritzelAgenticActionSettledEvent): void {
-    this._settledListeners.forEach(listener => KritzelEventHelper.callListener(() => listener(event), 'Agentic action settled listener'));
+  private emitSettled(event: UpdrawAgenticActionSettledEvent): void {
+    this._settledListeners.forEach(listener => UpdrawEventHelper.callListener(() => listener(event), 'Agentic action settled listener'));
   }
 
-  private deriveEvents(run: KritzelAgenticActionRun, map: ObjectMap, recording: Map<string, boolean>) {
+  private deriveEvents(run: UpdrawAgenticActionRun, map: ObjectMap, recording: Map<string, boolean>) {
     const added: AnyObject[] = [];
     const removed: AnyObject[] = [];
     const updated: { object: AnyObject; changedProperties: string[] }[] = [];
@@ -422,10 +422,10 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     return { added, removed, updated };
   }
 
-  private emitEvents(run: KritzelAgenticActionRun, events: { added: AnyObject[]; removed: AnyObject[]; updated: { object: AnyObject; changedProperties: string[] }[] }): void {
+  private emitEvents(run: UpdrawAgenticActionRun, events: { added: AnyObject[]; removed: AnyObject[]; updated: { object: AnyObject; changedProperties: string[] }[] }): void {
     const engine = this._core.engine;
     // Changes made as the user carry no source, like the user's own.
-    const source: KritzelObjectChangeSource | undefined =
+    const source: UpdrawObjectChangeSource | undefined =
       run.actorKind === 'user' ? undefined : { type: 'agent', agentId: run.cursorId, actionType: run.action.type };
     try {
       if (events.added.length > 0) source ? engine.emitObjectsAdded(events.added, source) : engine.emitObjectsAdded(events.added);
@@ -436,7 +436,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
         engine.emitObjectsInViewportChange();
       }
     } catch (error) {
-      console.error('[Kritzel] Agentic action event listener failed:', error);
+      console.error('[Updraw] Agentic action event listener failed:', error);
     }
     this._core.rerender();
   }
@@ -488,7 +488,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     return false;
   }
 
-  private async start(run: KritzelAgenticActionRun): Promise<void> {
+  private async start(run: UpdrawAgenticActionRun): Promise<void> {
     try {
       run.started = true;
       const cursors = this._core.agenticCursorManager;
@@ -556,14 +556,14 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
         run.commit(objectIds);
       }
     } catch (error) {
-      if (error instanceof KritzelAgenticAbortError || run.settled) {
+      if (error instanceof UpdrawAgenticAbortError || run.settled) {
         return;
       }
       run.fail(error);
     }
   }
 
-  private handleSignalAbort(run: KritzelAgenticActionRun): void {
+  private handleSignalAbort(run: UpdrawAgenticActionRun): void {
     if (run.settled) {
       return;
     }
@@ -579,19 +579,19 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     this.settleQueued(run, 'aborted');
   }
 
-  private settleQueued(run: KritzelAgenticActionRun, reason: KritzelAgenticActionFailureReason): void {
+  private settleQueued(run: UpdrawAgenticActionRun, reason: UpdrawAgenticActionFailureReason): void {
     if (run.settled) {
       return;
     }
     run.settled = true;
     run.removeAbortListener();
-    const result: KritzelAgenticActionResult = { completed: false, reason };
+    const result: UpdrawAgenticActionResult = { completed: false, reason };
     run.settleWith(result);
     this.updateActivity(run.cursorId);
     this.emitSettled({ cursorId: run.cursorId, action: run.action, result, executing: false, keptChanges: false });
   }
 
-  private getQueue(cursorId: string): KritzelAgenticActionRun[] {
+  private getQueue(cursorId: string): UpdrawAgenticActionRun[] {
     let queue = this._queues.get(cursorId);
     if (!queue) {
       queue = [];
@@ -608,7 +608,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     if (this._running.size === 0) {
       return;
     }
-    let cache: KritzelAgenticFrameCache | null = null;
+    let cache: UpdrawAgenticFrameCache | null = null;
     for (const run of Array.from(this._running.values())) {
       if (run.settled || !run.executing || !run.map) {
         continue;
@@ -625,19 +625,19 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
         this.recordNewInstances(run);
         run.advance(now);
       } catch (error) {
-        if (!(error instanceof KritzelAgenticAbortError)) {
+        if (!(error instanceof UpdrawAgenticAbortError)) {
           run.fail(error);
         }
       }
     }
   }
 
-  private buildCache(map: ObjectMap): KritzelAgenticFrameCache {
+  private buildCache(map: ObjectMap): UpdrawAgenticFrameCache {
     return buildFrameCache(this._core, map);
   }
 
   /** Objects that join the checked set mid-action (e.g. newly anchored lines) are claimed when first seen. */
-  private recordNewInstances(run: KritzelAgenticActionRun): void {
+  private recordNewInstances(run: UpdrawAgenticActionRun): void {
     const map = run.map!;
     run.checkedIds().forEach(id => {
       if (!run.knownInstances.has(id)) {
@@ -650,7 +650,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     });
   }
 
-  private detectConflicts(run: KritzelAgenticActionRun, cache: KritzelAgenticFrameCache): Conflict | null {
+  private detectConflicts(run: UpdrawAgenticActionRun, cache: UpdrawAgenticFrameCache): Conflict | null {
     const runReason = this.detectRunConflict(run);
     if (runReason) {
       return { reason: runReason };
@@ -685,7 +685,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     return null;
   }
 
-  private detectRunConflict(run: KritzelAgenticActionRun): KritzelAgenticActionFailureReason | null {
+  private detectRunConflict(run: UpdrawAgenticActionRun): UpdrawAgenticActionFailureReason | null {
     const cursors = this._core.agenticCursorManager;
     if (run.options.signal?.aborted) {
       return 'aborted';
@@ -831,7 +831,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
    * (outside a transaction, like the user's own selection changes), so a rollback restores the previous selection
    * and a kept action carries it into the user's history.
    */
-  private createUserSelection(run: KritzelAgenticActionRun): KritzelActorSelection {
+  private createUserSelection(run: UpdrawAgenticActionRun): UpdrawActorSelection {
     const core = this._core;
     return {
       get: () => {
@@ -895,7 +895,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
   }
 
   /** Cancels running and queued actions; with a map, only runs bound to it are rolled back. */
-  private cancelAll(reason: KritzelAgenticActionFailureReason, map: ObjectMap | null): void {
+  private cancelAll(reason: UpdrawAgenticActionFailureReason, map: ObjectMap | null): void {
     // Finish deferred work for the map while it is still alive.
     this.drainDeferred(true, map);
     for (const run of Array.from(this._running.values())) {
@@ -959,8 +959,8 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
       try {
         task.run();
       } catch (error) {
-        if (!(error instanceof KritzelAgenticAbortError)) {
-          console.error('[Kritzel] Deferred agentic action task failed:', error);
+        if (!(error instanceof UpdrawAgenticAbortError)) {
+          console.error('[Updraw] Deferred agentic action task failed:', error);
         }
       }
     }
@@ -968,6 +968,6 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
 }
 
 /** Whether a preparation result is a refusal. */
-function isAgenticRefusal(value: KritzelAgenticPreparation | KritzelAgenticRefusal): value is KritzelAgenticRefusal {
-  return typeof (value as KritzelAgenticRefusal).reason === 'string';
+function isAgenticRefusal(value: UpdrawAgenticPreparation | UpdrawAgenticRefusal): value is UpdrawAgenticRefusal {
+  return typeof (value as UpdrawAgenticRefusal).reason === 'string';
 }

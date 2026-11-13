@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  KritzelAgent,
-  KritzelChatSession,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelBaseObject,
-  type KritzelChatBoxChip,
-  type KritzelChatMessage,
-} from "@kritzel/react-editor";
+  UpdrawAgent,
+  UpdrawChatSession,
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawBaseObject,
+  type UpdrawChatBoxChip,
+  type UpdrawChatMessage,
+} from "@updraw/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -20,7 +20,7 @@ const USER = { id: "demo-user", name: "Demo User" };
 const SYSTEM = "You draw on a whiteboard. Keep answers short.";
 
 /** One line of the transcript: who wrote it and what. */
-function describe(message: KritzelChatMessage): string {
+function describe(message: UpdrawChatMessage): string {
   return message.parts
     .map(part => {
       if (part.type === "text") return part.text;
@@ -32,19 +32,19 @@ function describe(message: KritzelChatMessage): string {
 }
 
 export function ChatSessionsModesPage() {
-  const workspaces = useMemo(() => [new KritzelWorkspace({ objects: createSeedObjects() })], []);
+  const workspaces = useMemo(() => [new UpdrawWorkspace({ objects: createSeedObjects() })], []);
   // One session per mode, created once: switching the mode binds the other one.
   const sessions = useMemo(() => {
     const transport = createDemoTransport();
-    const agent = new KritzelAgent({ id: "assistant", name: "Assistant", color: "#7C3AED" });
+    const agent = new UpdrawAgent({ id: "assistant", name: "Assistant", color: "#7C3AED" });
     return {
-      user: new KritzelChatSession({ transport, system: SYSTEM }),
-      agent: new KritzelChatSession({ transport, system: SYSTEM, agent }),
+      user: new UpdrawChatSession({ transport, system: SYSTEM }),
+      agent: new UpdrawChatSession({ transport, system: SYSTEM, agent }),
     };
   }, []);
   const [mode, setMode] = useState<Mode>("user");
-  const [chips, setChips] = useState<KritzelChatBoxChip[]>([]);
-  const [messages, setMessages] = useState<readonly KritzelChatMessage[]>([]);
+  const [chips, setChips] = useState<UpdrawChatBoxChip[]>([]);
+  const [messages, setMessages] = useState<readonly UpdrawChatMessage[]>([]);
   const session = sessions[mode];
 
   useEffect(() => {
@@ -52,12 +52,12 @@ export function ChatSessionsModesPage() {
     return session.on("change", () => setMessages(session.messages));
   }, [session]);
 
-  function handleSelection(objects: KritzelBaseObject[]) {
+  function handleSelection(objects: UpdrawBaseObject[]) {
     setChips(
       objects.map(object => ({
         id: object.id,
         objectId: object.id,
-        label: object.name || object.__class__.replace("Kritzel", ""),
+        label: object.name || object.__class__.replace("Updraw", ""),
         icon: "cursor",
       })),
     );
@@ -76,7 +76,7 @@ export function ChatSessionsModesPage() {
         <span className="label">Try “{SLOW_PHRASE}” to stop a response.</span>
       </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        <KritzelEditor
+        <UpdrawEditor
           editorId="chat-sessions-modes"
           theme="light"
           themes={[reactThemeLight, reactThemeDark]}

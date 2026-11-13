@@ -1,4 +1,4 @@
-import { createScriptedTransport, type KritzelChatRequest, type KritzelScriptedAnswer } from "@kritzel/react-editor";
+import { createScriptedTransport, type UpdrawChatRequest, type UpdrawScriptedAnswer } from "@updraw/react-editor";
 
 /** A canned UI: the prompt it answers and the code a model would write for it with create_iframe. */
 export interface MockUi {
@@ -215,13 +215,13 @@ export const MOCK_UIS: readonly MockUi[] = [
 ];
 
 /** The text of the newest user message, including the chips sent with it. */
-function lastPrompt(request: KritzelChatRequest): string {
+function lastPrompt(request: UpdrawChatRequest): string {
   const user = [...request.messages].reverse().find((message) => message.role === "user");
   return user?.parts.map((part) => (part.type === "text" ? part.text : "")).join("\n") ?? "";
 }
 
 /** How many UIs the conversation has created, to place the next one to the right of them. */
-function countCreatedUis(request: KritzelChatRequest): number {
+function countCreatedUis(request: UpdrawChatRequest): number {
   return request.messages.flatMap((message) => message.parts).filter((part) => part.type === "tool-call" && part.name === "create_iframe").length;
 }
 
@@ -232,7 +232,7 @@ function countCreatedUis(request: KritzelChatRequest): number {
  */
 export function createMockTransport() {
   return createScriptedTransport(
-    (request): string | KritzelScriptedAnswer => {
+    (request): string | UpdrawScriptedAnswer => {
       const last = request.messages[request.messages.length - 1];
       if (last?.role === "tool") {
         return "Done. Select it to ask for a change, or press ▶ in its titlebar to open it fullscreen.";

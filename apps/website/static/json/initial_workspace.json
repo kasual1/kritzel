@@ -1,5 +1,5 @@
 {
-  "__class__": "KritzelWorkspace",
+  "__class__": "UpdrawWorkspace",
   "version": "1.0.0",
   "id": "u0h5sz1jf",
   "name": "New Workspace",
@@ -12,7 +12,7 @@
   },
   "objects": [
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "d85ghljxa",
       "workspaceId": "u0h5sz1jf",
       "x": 362,
@@ -8731,7 +8731,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "f622pd0h7",
       "workspaceId": "u0h5sz1jf",
       "x": 925,
@@ -26738,7 +26738,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "frsmf3fqt",
       "workspaceId": "u0h5sz1jf",
       "x": 772,
@@ -35169,7 +35169,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "0m3rv9vff",
       "workspaceId": "u0h5sz1jf",
       "x": 500,
@@ -45796,7 +45796,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "23bwbp2sf",
       "workspaceId": "u0h5sz1jf",
       "x": 877,
@@ -60047,7 +60047,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "axajziyak",
       "workspaceId": "u0h5sz1jf",
       "x": 121,
@@ -61189,7 +61189,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "wwdg8merl",
       "workspaceId": "u0h5sz1jf",
       "x": 183,
@@ -62923,7 +62923,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "2tb1pqovh",
       "workspaceId": "u0h5sz1jf",
       "x": 318,
@@ -63505,7 +63505,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "5zf0fxbqb",
       "workspaceId": "u0h5sz1jf",
       "x": 1209,
@@ -65175,7 +65175,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "s6fuk4car",
       "workspaceId": "u0h5sz1jf",
       "x": 1138,
@@ -65789,7 +65789,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "ixrpielkl",
       "workspaceId": "u0h5sz1jf",
       "x": 1238,
@@ -66875,7 +66875,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "ztm93118l",
       "workspaceId": "u0h5sz1jf",
       "x": 1232,
@@ -67137,7 +67137,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "icupe8iq4",
       "workspaceId": "u0h5sz1jf",
       "x": 1086,
@@ -67575,7 +67575,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "5qkotfhrx",
       "workspaceId": "u0h5sz1jf",
       "x": 1127,
@@ -68357,7 +68357,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "fd1iluxo9",
       "workspaceId": "u0h5sz1jf",
       "x": 1042,
@@ -69099,7 +69099,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "8h9c2p3t2",
       "workspaceId": "u0h5sz1jf",
       "x": 1230,
@@ -70906,7 +70906,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "6qsc7ekty",
       "workspaceId": "u0h5sz1jf",
       "x": 1164,
@@ -71528,7 +71528,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "80witemoi",
       "workspaceId": "u0h5sz1jf",
       "x": 1138,
@@ -73462,7 +73462,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "b0ymuii6y",
       "workspaceId": "u0h5sz1jf",
       "x": 628,
@@ -74644,7 +74644,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "gq0ya9gio",
       "workspaceId": "u0h5sz1jf",
       "x": 731,
@@ -75186,7 +75186,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "des5hudew",
       "workspaceId": "u0h5sz1jf",
       "x": 761,
@@ -75832,7 +75832,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "l1tgslyd1",
       "workspaceId": "u0h5sz1jf",
       "x": 657,
@@ -76334,7 +76334,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "rvj6l33kz",
       "workspaceId": "u0h5sz1jf",
       "x": 745,
@@ -77068,7 +77068,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "apbm0dx15",
       "workspaceId": "u0h5sz1jf",
       "x": 688,
@@ -78146,7 +78146,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "vjibik0gu",
       "workspaceId": "u0h5sz1jf",
       "x": 862,
@@ -78408,7 +78408,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "1aj4y3btm",
       "workspaceId": "u0h5sz1jf",
       "x": 900,
@@ -78686,7 +78686,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "akffltb5s",
       "workspaceId": "u0h5sz1jf",
       "x": 481,
@@ -80133,7 +80133,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "l653h66kw",
       "workspaceId": "u0h5sz1jf",
       "x": 405,
@@ -81592,7 +81592,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "sce5cx1ox",
       "workspaceId": "u0h5sz1jf",
       "x": 212,
@@ -83231,7 +83231,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "ynb574dbz",
       "workspaceId": "u0h5sz1jf",
       "x": 1001,
@@ -84678,7 +84678,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "0od805jcx",
       "workspaceId": "u0h5sz1jf",
       "x": 1148,
@@ -86017,7 +86017,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "5r9yuri5r",
       "workspaceId": "u0h5sz1jf",
       "x": 1297,
@@ -87440,7 +87440,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "jm0bpg9u7",
       "workspaceId": "u0h5sz1jf",
       "x": 1356,
@@ -88563,7 +88563,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "2efye5760",
       "workspaceId": "u0h5sz1jf",
       "x": 995,
@@ -94126,7 +94126,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "ll62wnt1l",
       "workspaceId": "u0h5sz1jf",
       "x": 829,
@@ -94684,7 +94684,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "d7blmac2b",
       "workspaceId": "u0h5sz1jf",
       "x": 1071,
@@ -95234,7 +95234,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "ro2l3dx8t",
       "workspaceId": "u0h5sz1jf",
       "x": 424,
@@ -96722,7 +96722,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "zmh60iomp",
       "workspaceId": "u0h5sz1jf",
       "x": 1028,
@@ -97618,7 +97618,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "ivfh56lap",
       "workspaceId": "u0h5sz1jf",
       "x": 746,
@@ -99402,7 +99402,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "hyyvlikqm",
       "workspaceId": "u0h5sz1jf",
       "x": 1390,
@@ -100314,7 +100314,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "decla4j5n",
       "workspaceId": "u0h5sz1jf",
       "x": 1070,
@@ -101378,7 +101378,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "03svpwkj6",
       "workspaceId": "u0h5sz1jf",
       "x": 1523,
@@ -102898,7 +102898,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "4h8if7kce",
       "workspaceId": "u0h5sz1jf",
       "x": 119,
@@ -104682,7 +104682,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "iefz28y08",
       "workspaceId": "u0h5sz1jf",
       "x": 837,
@@ -105426,7 +105426,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "39e6rh11w",
       "workspaceId": "u0h5sz1jf",
       "x": 886,
@@ -105594,7 +105594,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "7w27hd6le",
       "workspaceId": "u0h5sz1jf",
       "x": 917,
@@ -105754,7 +105754,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "yiqfamd7g",
       "workspaceId": "u0h5sz1jf",
       "x": 844,
@@ -105882,7 +105882,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "ngru0ew8f",
       "workspaceId": "u0h5sz1jf",
       "x": 935,
@@ -106514,7 +106514,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "negk95b3s",
       "workspaceId": "u0h5sz1jf",
       "x": 971,
@@ -106650,7 +106650,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "5mwqntxu3",
       "workspaceId": "u0h5sz1jf",
       "x": 1031,
@@ -106786,7 +106786,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "l1qoryc32",
       "workspaceId": "u0h5sz1jf",
       "x": 941,
@@ -106914,7 +106914,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "182nbll27",
       "workspaceId": "u0h5sz1jf",
       "x": 787,
@@ -107322,7 +107322,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "1huqueb2i",
       "workspaceId": "u0h5sz1jf",
       "x": 900,
@@ -107786,7 +107786,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "wp7ou8u9k",
       "workspaceId": "u0h5sz1jf",
       "x": 1037,
@@ -108274,7 +108274,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "y2yxz1yug",
       "workspaceId": "u0h5sz1jf",
       "x": 350,
@@ -109146,7 +109146,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "88grti82v",
       "workspaceId": "u0h5sz1jf",
       "x": 350,
@@ -109322,7 +109322,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "vuw3ja4dx",
       "workspaceId": "u0h5sz1jf",
       "x": 359,
@@ -109634,7 +109634,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "lmvxo3kbz",
       "workspaceId": "u0h5sz1jf",
       "x": 383,
@@ -109946,7 +109946,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "ey0avmuv3",
       "workspaceId": "u0h5sz1jf",
       "x": 378,
@@ -110106,7 +110106,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "kczegd6xt",
       "workspaceId": "u0h5sz1jf",
       "x": 420,
@@ -110882,7 +110882,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "s9zyqxr7e",
       "workspaceId": "u0h5sz1jf",
       "x": 420,
@@ -111282,7 +111282,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "mwd6uvusr",
       "workspaceId": "u0h5sz1jf",
       "x": 426,
@@ -111578,7 +111578,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "2pf85t1x4",
       "workspaceId": "u0h5sz1jf",
       "x": 448,
@@ -112082,7 +112082,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "xwrqn1tyd",
       "workspaceId": "u0h5sz1jf",
       "x": 567,
@@ -112738,7 +112738,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "5alai4q2c",
       "workspaceId": "u0h5sz1jf",
       "x": 593,
@@ -113114,7 +113114,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "se524gcay",
       "workspaceId": "u0h5sz1jf",
       "x": 575,
@@ -113730,7 +113730,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "idixz613c",
       "workspaceId": "u0h5sz1jf",
       "x": 609,
@@ -115122,7 +115122,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "w9totyfm3",
       "workspaceId": "u0h5sz1jf",
       "x": 631,
@@ -115378,7 +115378,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "nl0ewdcn7",
       "workspaceId": "u0h5sz1jf",
       "x": 350,
@@ -116650,7 +116650,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "sq5gxeb2h",
       "workspaceId": "u0h5sz1jf",
       "x": 380,
@@ -116914,7 +116914,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "fhukm3vpb",
       "workspaceId": "u0h5sz1jf",
       "x": 525,
@@ -118170,7 +118170,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "7zhmkpihu",
       "workspaceId": "u0h5sz1jf",
       "x": 1085,
@@ -119298,7 +119298,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "zdw63orud",
       "workspaceId": "u0h5sz1jf",
       "x": 1266,
@@ -120634,7 +120634,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "3tr73gjcq",
       "workspaceId": "u0h5sz1jf",
       "x": 1447,
@@ -121546,7 +121546,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "v4784wbos",
       "workspaceId": "u0h5sz1jf",
       "x": 1480,
@@ -121826,7 +121826,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "emwbvppc6",
       "workspaceId": "u0h5sz1jf",
       "x": 1516,
@@ -123034,7 +123034,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "ztyzw9gfv",
       "workspaceId": "u0h5sz1jf",
       "x": 1547,
@@ -123290,7 +123290,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "3djlrrtn8",
       "workspaceId": "u0h5sz1jf",
       "x": 1115,
@@ -123538,7 +123538,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "5g57ttcrj",
       "workspaceId": "u0h5sz1jf",
       "x": 1378,
@@ -124482,7 +124482,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "yja5y5brl",
       "workspaceId": "u0h5sz1jf",
       "x": 1558,
@@ -124914,7 +124914,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "cffb8lka8",
       "workspaceId": "u0h5sz1jf",
       "x": 1507,
@@ -125410,7 +125410,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "mev49sr8x",
       "workspaceId": "u0h5sz1jf",
       "x": 1515,
@@ -126138,7 +126138,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "167emf0vq",
       "workspaceId": "u0h5sz1jf",
       "x": 1481,
@@ -127666,7 +127666,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "neytma2oy",
       "workspaceId": "u0h5sz1jf",
       "x": 1226,
@@ -128146,7 +128146,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "4aiwzcm5c",
       "workspaceId": "u0h5sz1jf",
       "x": 1322,
@@ -128402,7 +128402,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "k37tne4q0",
       "workspaceId": "u0h5sz1jf",
       "x": 1405,
@@ -128546,7 +128546,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "xupbmdnda",
       "workspaceId": "u0h5sz1jf",
       "x": 1526,
@@ -129146,7 +129146,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "li2mlc4mv",
       "workspaceId": "u0h5sz1jf",
       "x": 1310,
@@ -129354,7 +129354,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "omv1hvz7g",
       "workspaceId": "u0h5sz1jf",
       "x": 1287,
@@ -130066,7 +130066,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "om5mqtmec",
       "workspaceId": "u0h5sz1jf",
       "x": 1352,
@@ -130498,7 +130498,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "fdu6uvbn4",
       "workspaceId": "u0h5sz1jf",
       "x": 1374,
@@ -130882,7 +130882,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "z0uavuqap",
       "workspaceId": "u0h5sz1jf",
       "x": 1383,
@@ -131322,7 +131322,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "4v4jnx701",
       "workspaceId": "u0h5sz1jf",
       "x": 1418,
@@ -131850,7 +131850,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "6oc77wyx4",
       "workspaceId": "u0h5sz1jf",
       "x": 1441,
@@ -132242,7 +132242,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "wk0o69dbo",
       "workspaceId": "u0h5sz1jf",
       "x": 1458,
@@ -132394,7 +132394,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "b29pj0g1r",
       "workspaceId": "u0h5sz1jf",
       "x": 1425,
@@ -132578,7 +132578,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "h91szuqyh",
       "workspaceId": "u0h5sz1jf",
       "x": 1521,
@@ -132722,7 +132722,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "xmk5wsztu",
       "workspaceId": "u0h5sz1jf",
       "x": 1439,
@@ -133170,7 +133170,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "07ftwkraq",
       "workspaceId": "u0h5sz1jf",
       "x": 1470,
@@ -133434,7 +133434,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "0hs61o5j3",
       "workspaceId": "u0h5sz1jf",
       "x": 1493,
@@ -133674,7 +133674,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "6hochc3pk",
       "workspaceId": "u0h5sz1jf",
       "x": 257,
@@ -133802,7 +133802,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "fv0j2r3sh",
       "workspaceId": "u0h5sz1jf",
       "x": 285,
@@ -134202,7 +134202,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "qujofs433",
       "workspaceId": "u0h5sz1jf",
       "x": 259,
@@ -134354,7 +134354,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "txdd70sf4",
       "workspaceId": "u0h5sz1jf",
       "x": 268,
@@ -134466,7 +134466,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "m4shlg76y",
       "workspaceId": "u0h5sz1jf",
       "x": 283,
@@ -134594,7 +134594,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "23s06qukc",
       "workspaceId": "u0h5sz1jf",
       "x": 520,
@@ -134922,7 +134922,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "dycqy0f75",
       "workspaceId": "u0h5sz1jf",
       "x": 446,
@@ -135210,7 +135210,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "y10ymxfah",
       "workspaceId": "u0h5sz1jf",
       "x": 789,
@@ -135314,7 +135314,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "184a5z0e4",
       "workspaceId": "u0h5sz1jf",
       "x": 797,
@@ -135570,7 +135570,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "0vqnyezdn",
       "workspaceId": "u0h5sz1jf",
       "x": 652,
@@ -135882,7 +135882,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "n8yfgqg29",
       "workspaceId": "u0h5sz1jf",
       "x": 683,
@@ -135994,7 +135994,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "7k6h49xnz",
       "workspaceId": "u0h5sz1jf",
       "x": 693,
@@ -136154,7 +136154,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "yjmo1ugfj",
       "workspaceId": "u0h5sz1jf",
       "x": 701,
@@ -136298,7 +136298,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "rywu0aews",
       "workspaceId": "u0h5sz1jf",
       "x": 1011,
@@ -136450,7 +136450,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "qnyw5quxd",
       "workspaceId": "u0h5sz1jf",
       "x": 1026,
@@ -136762,7 +136762,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "gxbr1lvsu",
       "workspaceId": "u0h5sz1jf",
       "x": 1479,
@@ -137098,7 +137098,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "23beboenk",
       "workspaceId": "u0h5sz1jf",
       "x": 1530,
@@ -137370,7 +137370,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "tge554c1b",
       "workspaceId": "u0h5sz1jf",
       "x": 1660,
@@ -137514,7 +137514,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "4maqs1a7l",
       "workspaceId": "u0h5sz1jf",
       "x": 1670,
@@ -137674,7 +137674,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "zfwvxgtyr",
       "workspaceId": "u0h5sz1jf",
       "x": 1683,
@@ -137810,7 +137810,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "paknngdrv",
       "workspaceId": "u0h5sz1jf",
       "x": 1882,
@@ -137954,7 +137954,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "fqflltfw7",
       "workspaceId": "u0h5sz1jf",
       "x": 1822,
@@ -138202,7 +138202,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "t0gzm4xjs",
       "workspaceId": "u0h5sz1jf",
       "x": 726,
@@ -138322,7 +138322,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "3a3pfzuzm",
       "workspaceId": "u0h5sz1jf",
       "x": 734,
@@ -138674,7 +138674,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "3g8u61gyg",
       "workspaceId": "u0h5sz1jf",
       "x": 711,
@@ -138922,7 +138922,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "5fmoiarql",
       "workspaceId": "u0h5sz1jf",
       "x": 194,
@@ -140746,7 +140746,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "dcn8bdzor",
       "workspaceId": "u0h5sz1jf",
       "x": 207,
@@ -142378,7 +142378,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "dhxuxo5xd",
       "workspaceId": "u0h5sz1jf",
       "x": 183,
@@ -142602,7 +142602,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "an1wje5om",
       "workspaceId": "u0h5sz1jf",
       "x": 314,
@@ -142738,7 +142738,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "3trbsuyk7",
       "workspaceId": "u0h5sz1jf",
       "x": 433,
@@ -143202,7 +143202,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "gtdegkrat",
       "workspaceId": "u0h5sz1jf",
       "x": 598,
@@ -145706,7 +145706,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "jtsdl1ntx",
       "workspaceId": "u0h5sz1jf",
       "x": 469,
@@ -148370,7 +148370,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "8ya3dmirz",
       "workspaceId": "u0h5sz1jf",
       "x": 1004,
@@ -149522,7 +149522,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "kpk59z39p",
       "workspaceId": "u0h5sz1jf",
       "x": 1243,
@@ -150714,7 +150714,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "myofmqvte",
       "workspaceId": "u0h5sz1jf",
       "x": 977,
@@ -152330,7 +152330,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "nm56fyhbf",
       "workspaceId": "u0h5sz1jf",
       "x": 854,
@@ -154354,7 +154354,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "3cxkyqan7",
       "workspaceId": "u0h5sz1jf",
       "x": 841,
@@ -155594,7 +155594,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "5qsshmdhl",
       "workspaceId": "u0h5sz1jf",
       "x": 1056,
@@ -156138,7 +156138,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "u01dhunkb",
       "workspaceId": "u0h5sz1jf",
       "x": 1107,
@@ -156666,7 +156666,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "psf9vyhlb",
       "workspaceId": "u0h5sz1jf",
       "x": 298,
@@ -211801,7 +211801,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "0qd6glbb0",
       "workspaceId": "u0h5sz1jf",
       "x": 226,
@@ -246380,7 +246380,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "wi6ogf14h",
       "workspaceId": "u0h5sz1jf",
       "x": 245,
@@ -247666,7 +247666,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "blmsqtsdv",
       "workspaceId": "u0h5sz1jf",
       "x": 328,
@@ -248496,7 +248496,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "4vptwn0km",
       "workspaceId": "u0h5sz1jf",
       "x": 402,
@@ -250350,7 +250350,7 @@
       "_adjustedPoints": null
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "5vz3e6z92",
       "workspaceId": "u0h5sz1jf",
       "x": 523,
@@ -253117,7 +253117,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "v894pmklo",
       "workspaceId": "u0h5sz1jf",
       "x": 1073,
@@ -266684,7 +266684,7 @@
       ]
     },
     {
-      "__class__": "KritzelPath",
+      "__class__": "UpdrawPath",
       "id": "lxzfddamv",
       "workspaceId": "u0h5sz1jf",
       "x": 226,

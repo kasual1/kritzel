@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelBaseObject,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawBaseObject,
+} from '@updraw/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -18,10 +18,10 @@ import { useInfoPanel } from '../../../components/info-panel'
 const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
 const editor = getEditorRef('editor')
-const selected = ref<KritzelBaseObject | null>(null)
+const selected = ref<UpdrawBaseObject | null>(null)
 const selectionCount = ref(0)
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 
 async function refreshSelection() {
   const selection = (await editor.value?.getSelectedObjects()) ?? []
@@ -96,7 +96,7 @@ async function toggleOpacity() {
       <InfoPanelToggle :panel="infoPanel" />
     </Toolbar>
     <div class="content">
-      <KritzelEditor
+      <UpdrawEditor
         ref="editor"
         editorId="objects-update"
         theme="light"

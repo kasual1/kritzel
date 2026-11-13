@@ -1,7 +1,7 @@
 /**
  * Event payload emitted when the public sharing state changes.
  */
-export interface IKritzelIsPublicChangeEvent {
+export interface IUpdrawIsPublicChangeEvent {
   /** ID of the workspace whose sharing state changed */
   workspaceId: string;
   /** Whether the workspace is now publicly accessible */

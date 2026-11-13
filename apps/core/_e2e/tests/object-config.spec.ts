@@ -7,12 +7,12 @@ async function nextFrame(page: Page) {
 
 /** The four corner resize handles of the current selection (overlays have their own class). */
 function resizeHandles(page: Page): Locator {
-  return page.locator('kritzel-engine .selection-group-handles .resize-handle');
+  return page.locator('updraw-engine .selection-group-handles .resize-handle');
 }
 
 /** The rotation handle of the current selection. */
 function rotationHandle(page: Page): Locator {
-  return page.locator('kritzel-engine .selection-group-handles .rotation-handle');
+  return page.locator('updraw-engine .selection-group-handles .rotation-handle');
 }
 
 test.describe('Object config', () => {
@@ -34,7 +34,7 @@ test.describe('Object config', () => {
 
   test('isRotatable: false hides the rotation handle but keeps the resize handles', async ({ editorPage, page }) => {
     await page.evaluate(() => {
-      (document.querySelector('kritzel-editor') as any).objectConfig = { isRotatable: false };
+      (document.querySelector('updraw-editor') as any).objectConfig = { isRotatable: false };
     });
     await nextFrame(page);
     const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 200, height: 150 });
@@ -48,7 +48,7 @@ test.describe('Object config', () => {
 
   test('an isResizable function decides per object', async ({ editorPage, page }) => {
     await page.evaluate(() => {
-      (document.querySelector('kritzel-editor') as any).objectConfig = { isResizable: (object: any) => object.__class__ !== 'KritzelText' };
+      (document.querySelector('updraw-editor') as any).objectConfig = { isResizable: (object: any) => object.__class__ !== 'UpdrawText' };
     });
     await nextFrame(page);
     const text = await editorPage.addText({ text: 'Fixed size', translateX: 200, translateY: 200, fontSize: 24 });
@@ -68,7 +68,7 @@ test.describe('Object config', () => {
 
   test('a multi-selection hides a handle when one selected object forbids it', async ({ editorPage, page }) => {
     await page.evaluate(() => {
-      (document.querySelector('kritzel-editor') as any).objectConfig = { isRotatable: (object: any) => object.name !== 'Locked' };
+      (document.querySelector('updraw-editor') as any).objectConfig = { isRotatable: (object: any) => object.name !== 'Locked' };
     });
     await nextFrame(page);
     const allowed = await editorPage.addShape({ translateX: 200, translateY: 200, width: 150, height: 150, name: 'Free' });
@@ -97,7 +97,7 @@ test.describe('Object config', () => {
     const child = await editorPage.getObjectById<{ isRotatable: boolean }>(first.id as string);
     expect(child!.isRotatable).toBe(false);
     const allObjects = await editorPage.getAllObjects<{ id: string; __class__: string }>();
-    const group = allObjects.find(object => object.__class__ === 'KritzelGroup');
+    const group = allObjects.find(object => object.__class__ === 'UpdrawGroup');
     expect(group).toBeDefined();
 
     await editorPage.selectObjects([group!]);
@@ -117,14 +117,14 @@ test.describe('Object config', () => {
     await expect(rotationHandle(page)).toHaveCount(1);
 
     await page.evaluate(() => {
-      (document.querySelector('kritzel-editor') as any).objectConfig = { isRotatable: false, isResizable: false };
+      (document.querySelector('updraw-editor') as any).objectConfig = { isRotatable: false, isResizable: false };
     });
     await nextFrame(page);
     await expect(resizeHandles(page)).toHaveCount(0);
     await expect(rotationHandle(page)).toHaveCount(0);
 
     await page.evaluate(() => {
-      (document.querySelector('kritzel-editor') as any).objectConfig = {};
+      (document.querySelector('updraw-editor') as any).objectConfig = {};
     });
     await nextFrame(page);
     await expect(resizeHandles(page)).toHaveCount(4);

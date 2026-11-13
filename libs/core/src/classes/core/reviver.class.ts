@@ -1,51 +1,52 @@
-import { KritzelImage } from "../objects/image.class";
-import { KritzelLine } from "../objects/line.class";
-import { KritzelPath } from "../objects/path.class";
-import { KritzelShape } from "../objects/shape.class";
-import { KritzelSelectionGroup } from "../objects/selection-group.class";
-import { KritzelGroup } from "../objects/group.class";
-import { KritzelText } from "../objects/text.class";
-import { KritzelBrushTool } from "../tools/brush-tool.class";
-import { KritzelEraserTool } from "../tools/eraser-tool.class";
-import { KritzelImageTool } from "../tools/image-tool.class";
-import { KritzelLineTool } from "../tools/line-tool.class";
-import { KritzelSelectionTool } from "../tools/selection-tool.class";
-import { KritzelTextTool } from "../tools/text-tool.class";
-import { KritzelShapeTool } from "../tools/shape-tool.class";
-import { KritzelDynamicObject } from "../objects/dynamic-object.class";
-import { KritzelIframeObject } from "../objects/iframe.class";
-import type { KritzelCore } from "./core.class";
-import { KritzelWorkspace } from "./workspace.class";
+import { UpdrawImage } from "../objects/image.class";
+import { UpdrawLine } from "../objects/line.class";
+import { UpdrawPath } from "../objects/path.class";
+import { UpdrawShape } from "../objects/shape.class";
+import { UpdrawSelectionGroup } from "../objects/selection-group.class";
+import { UpdrawGroup } from "../objects/group.class";
+import { UpdrawText } from "../objects/text.class";
+import { UpdrawBrushTool } from "../tools/brush-tool.class";
+import { UpdrawEraserTool } from "../tools/eraser-tool.class";
+import { UpdrawImageTool } from "../tools/image-tool.class";
+import { UpdrawLineTool } from "../tools/line-tool.class";
+import { UpdrawSelectionTool } from "../tools/selection-tool.class";
+import { UpdrawTextTool } from "../tools/text-tool.class";
+import { UpdrawShapeTool } from "../tools/shape-tool.class";
+import { UpdrawDynamicObject } from "../objects/dynamic-object.class";
+import { UpdrawIframeObject } from "../objects/iframe.class";
+import type { UpdrawCore } from "./core.class";
+import { UpdrawWorkspace } from "./workspace.class";
+import { normalizeLegacyClassName } from "../../migrations/legacy-brand";
 
 /**
- * Handles deserialization/revival of Kritzel objects from plain JavaScript objects.
+ * Handles deserialization/revival of Updraw objects from plain JavaScript objects.
  * This class uses a pattern similar to JSON.parse reviver to reconstruct class instances
  * from their serialized representations, preserving the object's prototype chain and methods.
  */
-export class KritzelReviver {
+export class UpdrawReviver {
 
-  /** Reference to the KritzelCore instance for creating objects */
-  private readonly _core: KritzelCore;
+  /** Reference to the UpdrawCore instance for creating objects */
+  private readonly _core: UpdrawCore;
 
   /**
-   * Creates a new KritzelReviver instance.
-   * @param core - The KritzelCore instance used to create revived objects
+   * Creates a new UpdrawReviver instance.
+   * @param core - The UpdrawCore instance used to create revived objects
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     this._core = core;
   }
 
   /**
-   * Recursively revives a plain JavaScript object (or array) into typed Kritzel instances.
+   * Recursively revives a plain JavaScript object (or array) into typed Updraw instances.
    * Uses the `__class__` property to determine the correct class to instantiate.
    * Objects without `__class__` are recursively processed to revive nested objects.
    *
    * Supported classes:
-   * - Objects: KritzelPath, KritzelLine, KritzelText, KritzelShape, KritzelImage,
-   *            KritzelDynamicObject, KritzelSelectionGroup, KritzelGroup
-   * - Workspace: KritzelWorkspace
-   * - Tools: KritzelBrushTool, KritzelEraserTool, KritzelImageTool, KritzelSelectionTool,
-   *          KritzelTextTool, KritzelLineTool, KritzelShapeTool
+   * - Objects: UpdrawPath, UpdrawLine, UpdrawText, UpdrawShape, UpdrawImage,
+   *            UpdrawDynamicObject, UpdrawSelectionGroup, UpdrawGroup
+   * - Workspace: UpdrawWorkspace
+   * - Tools: UpdrawBrushTool, UpdrawEraserTool, UpdrawImageTool, UpdrawSelectionTool,
+   *          UpdrawTextTool, UpdrawLineTool, UpdrawShapeTool
    *
    * @typeParam T - The expected return type after revival
    * @param obj - The plain object to revive, typically from JSON deserialization
@@ -55,66 +56,70 @@ export class KritzelReviver {
     if (obj && typeof obj === 'object') {
       if (obj.__class__) {
         let revivedObj;
+        // Objects saved before the rename carry legacy class names (see migrations/legacy-brand.ts).
+        // Revive them from a copy with the current name; never mutate the stored object.
+        const className = normalizeLegacyClassName(obj.__class__);
+        const data = className === obj.__class__ ? obj : { ...obj, __class__: className };
 
-        switch (obj.__class__) {
-          case 'KritzelPath':
-            revivedObj = KritzelPath.create(this._core).deserialize(obj);
+        switch (className) {
+          case 'UpdrawPath':
+            revivedObj = UpdrawPath.create(this._core).deserialize(data);
             break;
-          case 'KritzelLine':
-            revivedObj = KritzelLine.create(this._core).deserialize(obj);
+          case 'UpdrawLine':
+            revivedObj = UpdrawLine.create(this._core).deserialize(data);
             break;
-          case 'KritzelText':
-            revivedObj = KritzelText.create(this._core, obj.fontSize, obj.fontFamily).deserialize(obj);
+          case 'UpdrawText':
+            revivedObj = UpdrawText.create(this._core, data.fontSize, data.fontFamily).deserialize(data);
             break;
-          case 'KritzelShape':
-            revivedObj = KritzelShape.create(this._core, {
-              shapeType: obj.shapeType,
-              fillColor: obj.fillColor,
-              strokeColor: obj.strokeColor,
-              strokeWidth: obj.strokeWidth,
-              fontSize: obj.fontSize,
-              fontFamily: obj.fontFamily,
-              fontColor: obj.fontColor,
-            }).deserialize(obj);
+          case 'UpdrawShape':
+            revivedObj = UpdrawShape.create(this._core, {
+              shapeType: data.shapeType,
+              fillColor: data.fillColor,
+              strokeColor: data.strokeColor,
+              strokeWidth: data.strokeWidth,
+              fontSize: data.fontSize,
+              fontFamily: data.fontFamily,
+              fontColor: data.fontColor,
+            }).deserialize(data);
             break;
-          case 'KritzelImage':
-            revivedObj = KritzelImage.create(this._core).deserialize(obj);
+          case 'UpdrawImage':
+            revivedObj = UpdrawImage.create(this._core).deserialize(data);
             break;
-          case 'KritzelDynamicObject':
-            revivedObj = KritzelDynamicObject.create(this._core).deserialize(obj);
+          case 'UpdrawDynamicObject':
+            revivedObj = UpdrawDynamicObject.create(this._core).deserialize(data);
             break;
-          case 'KritzelIframeObject':
-            revivedObj = KritzelIframeObject.create(this._core).deserialize(obj);
+          case 'UpdrawIframeObject':
+            revivedObj = UpdrawIframeObject.create(this._core).deserialize(data);
             break;
-          case 'KritzelSelectionGroup':
-            revivedObj = KritzelSelectionGroup.create(this._core).deserialize(obj);
+          case 'UpdrawSelectionGroup':
+            revivedObj = UpdrawSelectionGroup.create(this._core).deserialize(data);
             break;
-          case 'KritzelGroup':
-            revivedObj = KritzelGroup.create(this._core).deserialize(obj);
+          case 'UpdrawGroup':
+            revivedObj = UpdrawGroup.create(this._core).deserialize(data);
             break;
-          case 'KritzelWorkspace':
-            revivedObj = KritzelWorkspace.create(this._core, obj).deserialize(obj);
+          case 'UpdrawWorkspace':
+            revivedObj = UpdrawWorkspace.create(this._core, data).deserialize(data);
             break;
-          case 'KritzelBrushTool':
-            revivedObj = new KritzelBrushTool(this._core);
+          case 'UpdrawBrushTool':
+            revivedObj = new UpdrawBrushTool(this._core);
             break;
-          case 'KritzelEraserTool':
-            revivedObj = new KritzelEraserTool(this._core);
+          case 'UpdrawEraserTool':
+            revivedObj = new UpdrawEraserTool(this._core);
             break;
-          case 'KritzelImageTool':
-            revivedObj = new KritzelImageTool(this._core);
+          case 'UpdrawImageTool':
+            revivedObj = new UpdrawImageTool(this._core);
             break;
-          case 'KritzelSelectionTool':
-            revivedObj = new KritzelSelectionTool(this._core);
+          case 'UpdrawSelectionTool':
+            revivedObj = new UpdrawSelectionTool(this._core);
             break;
-          case 'KritzelTextTool':
-            revivedObj = new KritzelTextTool(this._core);
+          case 'UpdrawTextTool':
+            revivedObj = new UpdrawTextTool(this._core);
             break;
-          case 'KritzelLineTool':
-            revivedObj = new KritzelLineTool(this._core);
+          case 'UpdrawLineTool':
+            revivedObj = new UpdrawLineTool(this._core);
             break;
-          case 'KritzelShapeTool':
-            revivedObj = new KritzelShapeTool(this._core);
+          case 'UpdrawShapeTool':
+            revivedObj = new UpdrawShapeTool(this._core);
             break;
 
           default:

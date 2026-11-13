@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelBaseObject,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawBaseObject,
+} from '@updraw/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -21,12 +21,12 @@ import { useInfoPanel } from '../../../components/info-panel'
 const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
 const editor = getEditorRef('editor')
-const selectedObjects = ref<KritzelBaseObject[]>([])
+const selectedObjects = ref<UpdrawBaseObject[]>([])
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 
 async function refreshSelection() {
-  selectedObjects.value = ((await editor.value?.getSelectedObjects()) ?? []) as KritzelBaseObject<HTMLElement | SVGElement>[]
+  selectedObjects.value = ((await editor.value?.getSelectedObjects()) ?? []) as UpdrawBaseObject<HTMLElement | SVGElement>[]
 }
 
 async function selectAll() {
@@ -57,7 +57,7 @@ async function clearSelection() {
       <InfoPanelToggle :panel="infoPanel" />
     </Toolbar>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
-      <KritzelEditor
+      <UpdrawEditor
         ref="editor"
         editorId="objects-selection"
         theme="light"

@@ -1,5 +1,5 @@
-import { KritzelBaseObject } from '../classes/objects/base-object.class';
-import { KritzelAlignment } from '../enums/alignment.enum';
+import { UpdrawBaseObject } from '../classes/objects/base-object.class';
+import { UpdrawAlignment } from '../enums/alignment.enum';
 
 /**
  * Helper class for aligning objects within a selection group.
@@ -8,7 +8,7 @@ export class AlignmentHelper {
   /**
    * Calculates the selection bounds from all objects' rotated bounding boxes.
    */
-  private static calculateSelectionBounds(objects: KritzelBaseObject[]): {
+  private static calculateSelectionBounds(objects: UpdrawBaseObject[]): {
     minX: number;
     minY: number;
     maxX: number;
@@ -31,8 +31,8 @@ export class AlignmentHelper {
    * @returns A map of object IDs to their new translateX and translateY values
    */
   static calculateAlignedPositions(
-    objects: KritzelBaseObject[],
-    alignment: KritzelAlignment
+    objects: UpdrawBaseObject[],
+    alignment: UpdrawAlignment
   ): Map<string, { translateX: number; translateY: number }> {
     const result = new Map<string, { translateX: number; translateY: number }>();
 
@@ -52,37 +52,37 @@ export class AlignmentHelper {
       const offsetY = objBounds.y - obj.translateY;
 
       switch (alignment) {
-        case KritzelAlignment.StartHorizontal:
+        case UpdrawAlignment.StartHorizontal:
           // Align left edges to selection's left edge
           newTranslateX = selectionBounds.minX - offsetX;
           break;
 
-        case KritzelAlignment.CenterHorizontal:
+        case UpdrawAlignment.CenterHorizontal:
           // Align centers horizontally
           const selectionCenterX = (selectionBounds.minX + selectionBounds.maxX) / 2;
           const objCenterX = objBounds.x + objBounds.width / 2;
           newTranslateX = obj.translateX + (selectionCenterX - objCenterX);
           break;
 
-        case KritzelAlignment.EndHorizontal:
+        case UpdrawAlignment.EndHorizontal:
           // Align right edges to selection's right edge
           const objRightEdge = objBounds.x + objBounds.width;
           newTranslateX = obj.translateX + (selectionBounds.maxX - objRightEdge);
           break;
 
-        case KritzelAlignment.StartVertical:
+        case UpdrawAlignment.StartVertical:
           // Align top edges to selection's top edge
           newTranslateY = selectionBounds.minY - offsetY;
           break;
 
-        case KritzelAlignment.CenterVertical:
+        case UpdrawAlignment.CenterVertical:
           // Align centers vertically
           const selectionCenterY = (selectionBounds.minY + selectionBounds.maxY) / 2;
           const objCenterY = objBounds.y + objBounds.height / 2;
           newTranslateY = obj.translateY + (selectionCenterY - objCenterY);
           break;
 
-        case KritzelAlignment.EndVertical:
+        case UpdrawAlignment.EndVertical:
           // Align bottom edges to selection's bottom edge
           const objBottomEdge = objBounds.y + objBounds.height;
           newTranslateY = obj.translateY + (selectionBounds.maxY - objBottomEdge);

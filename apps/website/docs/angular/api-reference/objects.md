@@ -1,17 +1,17 @@
 ---
 sidebar_label: Objects
-title: "Objects | Kritzel for Angular"
-description: "Reference for all canvas object types in Kritzel: brush, line, shape, text, and image."
+title: "Objects | Updraw for Angular"
+description: "Reference for all canvas object types in Updraw: brush, line, shape, text, and image."
 toc_max_heading_level: 2
 ---
 # Objects
 
-This is the API reference for all canvas object types in Kritzel.
+This is the API reference for all canvas object types in Updraw.
 Every object consists of properties, computed properties and methods.
 
 ## Base Object
 
-`KritzelBaseObject` is the abstract base class for every object that can be placed on the canvas. All other object types listed below extend this class and inherit its properties, computed properties, and methods and extend them with their own specific functionality.
+`UpdrawBaseObject` is the abstract base class for every object that can be placed on the canvas. All other object types listed below extend this class and inherit its properties, computed properties, and methods and extend them with their own specific functionality.
 
 ### Properties
 
@@ -50,15 +50,15 @@ Every object consists of properties, computed properties and methods.
 | centerY | number | Center Y coordinate |
 | totalWidth | number | Width including padding and borders |
 | totalHeight | number | Height including padding and borders |
-| boundingBox | KritzelBoundingBox | Axis-aligned bounding box |
-| rotatedBoundingBox | KritzelBoundingBox | Bounding box accounting for rotation |
-| rotatedPolygon | KritzelPolygon | Four corners of the rotated rectangle |
+| boundingBox | UpdrawBoundingBox | Axis-aligned bounding box |
+| rotatedBoundingBox | UpdrawBoundingBox | Bounding box accounting for rotation |
+| rotatedPolygon | UpdrawPolygon | Four corners of the rotated rectangle |
 | transformationMatrix | DOMMatrix | Full transformation matrix |
 | rotationDegrees | number | Rotation converted to degrees |
 
 ### Common Constructor Options
 
-The constructor of every object accepts the following options in addition to its own, for example in `KritzelShapeConfig` or `KritzelTextConfig`.
+The constructor of every object accepts the following options in addition to its own, for example in `UpdrawShapeConfig` or `UpdrawTextConfig`.
 
 | Option | Type | Description |
 |--------|------|-------------|
@@ -66,7 +66,7 @@ The constructor of every object accepts the following options in addition to its
 | isLoading | boolean | Whether the object starts out with a loading placeholder. Defaults to `false` |
 
 ```ts
-const frame = new KritzelShape({ translateX: 0, translateY: 0, width: 400, height: 240, name: 'Desktop' });
+const frame = new UpdrawShape({ translateX: 0, translateY: 0, width: 400, height: 240, name: 'Desktop' });
 ```
 
 See [Object Titlebar](../fundamentals/controls.md#object-titlebar) for details.
@@ -77,7 +77,7 @@ While `isLoading` is `true`, the engine draws a grey placeholder with a glare an
 
 ```ts
 const card = await this.editor.addObject(
-  new KritzelShape({ translateX: 0, translateY: 0, width: 320, height: 200, isLoading: true }),
+  new UpdrawShape({ translateX: 0, translateY: 0, width: 320, height: 200, isLoading: true }),
 );
 
 // later, once the content is ready
@@ -234,8 +234,8 @@ hitTestPolygon(polygon)
 
 ## Path
 
-`KritzelPath` represents a brush stroke rendered as an SVG path.
-It is created by the `KritzelBrushTool` when the user draws a freehand stroke.
+`UpdrawPath` represents a brush stroke rendered as an SVG path.
+It is created by the `UpdrawBrushTool` when the user draws a freehand stroke.
 
 ### Properties
 
@@ -255,7 +255,7 @@ It is created by the `KritzelBrushTool` when the user draws a freehand stroke.
 
 ## Line
 
-`KritzelLine` represents a straight or curved line with configurable arrowheads at either end. `KritzelLineTool` creates lines, which can snap their endpoints to anchors on other objects. Arrowheads support triangle, open, diamond, and circle styles.
+`UpdrawLine` represents a straight or curved line with configurable arrowheads at either end. `UpdrawLineTool` creates lines, which can snap their endpoints to anchors on other objects. Arrowheads support triangle, open, diamond, and circle styles.
 
 ### Properties
 
@@ -281,7 +281,7 @@ It is created by the `KritzelBrushTool` when the user draws a freehand stroke.
 
 ## Shape
 
-`KritzelShape` represents a rectangle, ellipse, or triangle created by `KritzelShapeTool`. Shapes can contain editable text, and the shapeType property determines their geometry.
+`UpdrawShape` represents a rectangle, ellipse, or triangle created by `UpdrawShapeTool`. Shapes can contain editable text, and the shapeType property determines their geometry.
 
 ### Properties
 
@@ -298,7 +298,7 @@ It is created by the `KritzelBrushTool` when the user draws a freehand stroke.
 | isEditing | boolean | Whether the shape's text is currently being edited |
 | editor | EditorView | ProseMirror editor instance for the shape's text |
 | content | any | Serialized ProseMirror document content |
-| uneditedObject | KritzelShape | Snapshot of the shape before editing started |
+| uneditedObject | UpdrawShape | Snapshot of the shape before editing started |
 | viewBox | string | SVG viewBox using screen-space coordinates |
 
 ### Methods
@@ -339,7 +339,7 @@ focus(coords)
 
 ## Text
 
-`KritzelText` represents rich text on the canvas. It is created via the `KritzelTextTool` and supports inline text editing.
+`UpdrawText` represents rich text on the canvas. It is created via the `UpdrawTextTool` and supports inline text editing.
 
 ### Properties
 
@@ -356,7 +356,7 @@ focus(coords)
 | isNewlyCreated | boolean | Whether the text object was just created and not yet edited |
 | editor | EditorView | ProseMirror editor instance |
 | content | any | Serialized ProseMirror document content |
-| uneditedObject | KritzelText | Snapshot of the text object before editing started |
+| uneditedObject | UpdrawText | Snapshot of the text object before editing started |
 | rows | number | Number of text rows |
 | isEmpty | boolean | Whether the editor is empty or contains only whitespace |
 
@@ -398,7 +398,7 @@ focus(coords)
 
 ## Image
 
-`KritzelImage` represents a raster image placed on the canvas by `KritzelImageTool`. It supports resizing while preserving the image's aspect ratio.
+`UpdrawImage` represents a raster image placed on the canvas by `UpdrawImageTool`. It supports resizing while preserving the image's aspect ratio.
 
 ### Properties
 
@@ -411,7 +411,7 @@ focus(coords)
 | maxHeight | number | Maximum height in pixels |
 | maxCompressionSize | number | Maximum size used when compressing the image |
 | resolvedSrc | string | URL resolved from the asset storage layer (not persisted) |
-| loadState | KritzelAssetLoadState | Current load state of the referenced asset (not persisted) |
+| loadState | UpdrawAssetLoadState | Current load state of the referenced asset (not persisted) |
 | maxLoadAttempts | number | Maximum number of definitive resolution failures before giving up |
 | loadAttempts | number | Number of definitive resolution failures so far (not persisted) |
 | maxTransientRetryDurationMs | number | Maximum time to keep retrying transient failures |
@@ -431,14 +431,14 @@ ensureResolved()
 
 ## Group
 
-`KritzelGroup` permanently groups multiple objects so that they can be manipulated as a single unit. Groups may be nested. Selecting a child selects its group. Their children move, resize, and rotate as a unit.
+`UpdrawGroup` permanently groups multiple objects so that they can be manipulated as a single unit. Groups may be nested. Selecting a child selects its group. Their children move, resize, and rotate as a unit.
 
 ### Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
 | childIds | string[] | IDs of the child objects within this group |
-| children | KritzelBaseObject[] | The actual child objects resolved from the store |
+| children | UpdrawBaseObject[] | The actual child objects resolved from the store |
 | length | number | Number of children in this group |
 
 ### Methods
@@ -513,7 +513,7 @@ collectDescendantIds(group)
 
 ## Dynamic Object
 
-`KritzelDynamicObject` represents a user-defined custom HTML element on the canvas. It can embed arbitrary HTML content and participates in selection, movement, and z-ordering like any other object.
+`UpdrawDynamicObject` represents a user-defined custom HTML element on the canvas. It can embed arbitrary HTML content and participates in selection, movement, and z-ordering like any other object.
 
 ### Properties
 
@@ -545,14 +545,14 @@ hasFocusedInputElement()
 
 ## Iframe Object
 
-`KritzelIframeObject` renders HTML, CSS, and JavaScript in a sandboxed iframe on the canvas. See [Rendering iFrames](../advanced/dynamic-objects.md#rendering-iframes) and [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content). The editor's [object element methods](./editor.md#object-elements) call the element methods below by object ID.
+`UpdrawIframeObject` renders HTML, CSS, and JavaScript in a sandboxed iframe on the canvas. See [Rendering iFrames](../advanced/dynamic-objects.md#rendering-iframes) and [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content). The editor's [object element methods](./editor.md#object-elements) call the element methods below by object ID.
 
 ### Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
-| content | KritzelIframeContent | The `html`, `css`, and `script` of the page |
-| state | `Record<string, unknown>` | Serializable state shared with the page as `kritzel.state` |
+| content | UpdrawIframeContent | The `html`, `css`, and `script` of the page |
+| state | `Record<string, unknown>` | Serializable state shared with the page as `updraw.state` |
 | title | string | Title of the iframe element |
 | sandbox | string[] | Sandbox tokens of the iframe. Defaults to `['allow-scripts']` |
 | isElementPicking | boolean | Whether the object is picking elements (not persisted) |
@@ -609,7 +609,7 @@ queryElements(selector, limitOrOptions)
 
 #### interactWithElement
 
-Performs an interaction on the first element of the page that matches a CSS selector, as a user would: a click, hover, fill, check, key press, or scroll (see [`KritzelObjectElementInteraction`](./agent.md#kritzelobjectelementinteraction)). The page scrolls the element into view and checks that it is visible, enabled, and not covered, then dispatches the events of the interaction. It works whether or not the object is selected. With `{ trial: true }`, only the checks run. It resolves with `completed: false` and a `reason` when the interaction can't be performed, also when the object isn't mounted or the page doesn't respond, and rejects only for an invalid selector or interaction. Agents use it through [`interactWithElement()`](./agent.md#interactwithelement).
+Performs an interaction on the first element of the page that matches a CSS selector, as a user would: a click, hover, fill, check, key press, or scroll (see [`UpdrawObjectElementInteraction`](./agent.md#updrawobjectelementinteraction)). The page scrolls the element into view and checks that it is visible, enabled, and not covered, then dispatches the events of the interaction. It works whether or not the object is selected. With `{ trial: true }`, only the checks run. It resolves with `completed: false` and a `reason` when the interaction can't be performed, also when the object isn't mounted or the page doesn't respond, and rejects only for an invalid selector or interaction. Agents use it through [`interactWithElement()`](./agent.md#interactwithelement).
 
 ```ts
 interactWithElement(selector, interaction, options)

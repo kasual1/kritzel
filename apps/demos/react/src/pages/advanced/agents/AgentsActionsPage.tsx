@@ -1,18 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BroadcastSyncProvider,
-  KritzelAgent,
-  KritzelAgentActionError,
-  KritzelEditor,
-  KritzelShape,
-  KritzelWorkspace,
+  UpdrawAgent,
+  UpdrawAgentActionError,
+  UpdrawEditor,
+  UpdrawShape,
+  UpdrawWorkspace,
   ShapeType,
-  type HTMLKritzelEditorElement,
-  type IKritzelUser,
-  type KritzelAgentState,
-  type KritzelObjectChangeSource,
-  type KritzelSyncConfig,
-} from "@kritzel/react-editor";
+  type HTMLUpdrawEditorElement,
+  type IUpdrawUser,
+  type UpdrawAgentState,
+  type UpdrawObjectChangeSource,
+  type UpdrawSyncConfig,
+} from "@updraw/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { Toolbar } from "../../../components/Toolbar";
@@ -23,7 +23,7 @@ const ELLIPSE_ID = "agentic-actions-ellipse";
 
 /** Seeds with fixed IDs, so every tab of this page works on the same objects. */
 function createActionSeeds() {
-  const rectangle = new KritzelShape({
+  const rectangle = new UpdrawShape({
     translateX: -260,
     translateY: -120,
     width: 140,
@@ -34,7 +34,7 @@ function createActionSeeds() {
     strokeWidth: 3,
   });
   rectangle.id = RECTANGLE_ID;
-  const ellipse = new KritzelShape({
+  const ellipse = new UpdrawShape({
     translateX: -260,
     translateY: 80,
     width: 120,
@@ -49,8 +49,8 @@ function createActionSeeds() {
 }
 
 export function AgentsActionsPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const [agent] = useState(() => new KritzelAgent({ id: AGENT, name: "Agent", color: "#7C3AED", position: { x: -400, y: -200 } }));
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const [agent] = useState(() => new UpdrawAgent({ id: AGENT, name: "Agent", color: "#7C3AED", position: { x: -400, y: -200 } }));
   const [isRunning, setIsRunning] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -58,19 +58,19 @@ export function AgentsActionsPage() {
   const [lastChange, setLastChange] = useState("");
 
   // Awareness shares presence between the tabs: each tab sees the other tab's agent and cursor.
-  const syncConfig = useMemo<KritzelSyncConfig>(() => ({ providers: [BroadcastSyncProvider.with({ awareness: true })] }), []);
+  const syncConfig = useMemo<UpdrawSyncConfig>(() => ({ providers: [BroadcastSyncProvider.with({ awareness: true })] }), []);
   // One user per tab, so selections in other tabs count as collaborators.
-  const user = useMemo<IKritzelUser>(() => {
+  const user = useMemo<IUpdrawUser>(() => {
     const id = Math.random().toString(36).slice(2, 8);
     return { id: `tab-${id}`, displayName: `Tab ${id}` };
   }, []);
   const workspaces = useMemo(
-    () => [new KritzelWorkspace({ id: "agentic-actions-demo", name: "Agentic Actions", objects: createActionSeeds() })],
+    () => [new UpdrawWorkspace({ id: "agentic-actions-demo", name: "Agentic Actions", objects: createActionSeeds() })],
     [],
   );
 
   useEffect(() => {
-    const syncHistory = (state: KritzelAgentState) => {
+    const syncHistory = (state: UpdrawAgentState) => {
       setCanUndo(state.canUndo);
       setCanRedo(state.canRedo);
     };
@@ -118,7 +118,7 @@ export function AgentsActionsPage() {
       });
       setMessage("Script finished. Undo the agent's steps one by one, or open a second tab to watch the changes sync.");
     } catch (error) {
-      if (error instanceof KritzelAgentActionError) {
+      if (error instanceof UpdrawAgentActionError) {
         setMessage(`${error.action.type} stopped: ${error.reason}`);
       } else {
         setMessage(error instanceof Error ? error.message : String(error));
@@ -135,7 +135,7 @@ export function AgentsActionsPage() {
     setMessage(result.completed ? `Agent ${type} done.` : `Agent ${type} stopped: ${result.reason}`);
   }
 
-  function onChange(source: KritzelObjectChangeSource | undefined, kind: string) {
+  function onChange(source: UpdrawObjectChangeSource | undefined, kind: string) {
     if (source) {
       setLastChange(`${kind} by ${source.agentId} (${source.actionType})`);
     }
@@ -152,7 +152,7 @@ export function AgentsActionsPage() {
         {message && <span className="label">{message}</span>}
         {lastChange && <span className="status">{lastChange}</span>}
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="agents-actions"
         syncConfig={syncConfig}

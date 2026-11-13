@@ -1,4 +1,4 @@
-export enum KritzelAlignment {
+export enum UpdrawAlignment {
   StartHorizontal = 'start-horizontal',
   CenterHorizontal = 'center-horizontal',
   EndHorizontal = 'end-horizontal',

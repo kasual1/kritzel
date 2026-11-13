@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, signal } from '@angular/core';
 
 import {
-  KritzelDynamicObject,
-  KritzelDynamicObjectRendererRegistry,
-  KritzelEditor,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawDynamicObject,
+  UpdrawDynamicObjectRendererRegistry,
+  UpdrawEditor,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 
@@ -21,7 +21,7 @@ interface HtmlCalculatorState {
 }
 
 interface HtmlCalculatorRendererContext {
-  object: KritzelDynamicObject;
+  object: UpdrawDynamicObject;
   container: HTMLElement | null;
   data?: unknown;
 }
@@ -89,7 +89,7 @@ function createHtmlCalculatorElement(initialState: HtmlCalculatorState): HtmlCal
     .html-calculator-operator-label { color: #dd0031; font-size: 13px; font-weight: 700; }
     .html-calculator-display { display: flex; align-items: center; justify-content: flex-end; min-height: 0; padding: 0 12px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #202124; font-size: clamp(16px, 8cqh, 24px); font-weight: 700; line-height: 1; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .html-calculator-keypad { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: clamp(4px, 1.5cqh, 6px); min-height: 0; overflow: hidden; }
-    .html-calculator-button { min-width: 0; min-height: 0; height: auto; border: 1px solid #dadce0; border-radius: 6px; background: #ffffff; color: #202124; cursor: var(--kritzel-global-pointer-cursor, pointer); font-size: clamp(11px, 5cqh, 15px); font-weight: 600; line-height: 1; }
+    .html-calculator-button { min-width: 0; min-height: 0; height: auto; border: 1px solid #dadce0; border-radius: 6px; background: #ffffff; color: #202124; cursor: var(--updraw-global-pointer-cursor, pointer); font-size: clamp(11px, 5cqh, 15px); font-weight: 600; line-height: 1; }
     .html-calculator-button:hover { background: #f8f9fa; }
     .html-calculator-button--operator { border-color: #dd0031; color: #dd0031; }
     .html-calculator-button--muted { color: #5f6368; }
@@ -269,10 +269,10 @@ function createHtmlCalculatorElement(initialState: HtmlCalculatorState): HtmlCal
 
 @Component({
   selector: 'app-dynamic-objects-html',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="dynamic-objects-html"
       [theme]="'light'"
       [themes]="themes"
@@ -281,14 +281,14 @@ function createHtmlCalculatorElement(initialState: HtmlCalculatorState): HtmlCal
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       [workspaces]="workspaces()"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; }
     .toolbar-note { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; font: 13px Roboto, sans-serif; }
     .toolbar-note strong { color: #dd0031; }
     .toolbar-note span { color: #555; }
-    kritzel-editor { flex: 1; min-height: 0; }
+    updraw-editor { flex: 1; min-height: 0; }
   `],
 })
 export class DynamicObjectsHtmlComponent implements OnDestroy {
@@ -296,7 +296,7 @@ export class DynamicObjectsHtmlComponent implements OnDestroy {
 
   themes = [angularThemeLight, angularThemeDark];
   workspaces = signal([
-    new KritzelWorkspace({ objects: [this.createInitialDynamicObject()] }),
+    new UpdrawWorkspace({ objects: [this.createInitialDynamicObject()] }),
   ]);
 
   constructor() {
@@ -326,14 +326,14 @@ export class DynamicObjectsHtmlComponent implements OnDestroy {
       },
     };
 
-    KritzelDynamicObjectRendererRegistry.register(HTML_CALCULATOR_RENDERER_KEY, renderer);
+    UpdrawDynamicObjectRendererRegistry.register(HTML_CALCULATOR_RENDERER_KEY, renderer);
   }
 
-  private createInitialDynamicObject(): KritzelDynamicObject {
+  private createInitialDynamicObject(): UpdrawDynamicObject {
     const placeholder = document.createElement('div');
     placeholder.textContent = 'Loading Calculator...';
 
-    const dynamicObject = new KritzelDynamicObject({
+    const dynamicObject = new UpdrawDynamicObject({
       element: placeholder,
       rendererKey: HTML_CALCULATOR_RENDERER_KEY,
       rendererData: createHtmlCalculatorInitialState(),
@@ -368,6 +368,6 @@ export class DynamicObjectsHtmlComponent implements OnDestroy {
     });
     this.mountedCalculators.clear();
 
-    KritzelDynamicObjectRendererRegistry.unregister(HTML_CALCULATOR_RENDERER_KEY);
+    UpdrawDynamicObjectRendererRegistry.unregister(HTML_CALCULATOR_RENDERER_KEY);
   }
 }

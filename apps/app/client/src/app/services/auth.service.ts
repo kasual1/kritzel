@@ -147,7 +147,7 @@ export class AuthService implements OnDestroy {
       return null;
     }
 
-    // write the guest back into kritzel_user so a following reload's resolver
+    // write the guest back into updraw_user so a following reload's resolver
     // can pick it up immediately instead of waiting on the /api/auth/me round trip
     localStorage.setItem(USER_STORAGE_KEY, guest);
 

@@ -1,4 +1,4 @@
-name: kritzel-app
+name: updraw-app
 
 services:
   postgres:
@@ -40,6 +40,14 @@ services:
       R2_BUCKET: ${R2_BUCKET}
       R2_PUBLIC_BASE_URL: ${R2_PUBLIC_BASE_URL}
       ASSET_MAX_SIZE_BYTES: ${ASSET_MAX_SIZE_BYTES}
+    # GET / only answers once TypeORM has run the pending migrations (migrationsRun), so the websocket
+    # server, which waits for a healthy api, never serves a half-migrated database (busybox wget).
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 120s
     depends_on:
       postgres:
         condition: service_healthy
@@ -61,7 +69,7 @@ services:
       postgres:
         condition: service_healthy
       api:
-        condition: service_started
+        condition: service_healthy
 
   nginx:
     build:
@@ -71,7 +79,7 @@ services:
       - "8080:80"
     volumes:
       - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
-    # The Angular client runs on the host (npm run app:client) so it can use the local kritzel libs.
+    # The Angular client runs on the host (npm run app:client) so it can use the local updraw libs.
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

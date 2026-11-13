@@ -91,11 +91,11 @@ async function openExportDialog(page: Page) {
   await page.getByTestId('more-menu-button').click();
   await page.getByTestId('menu-item-export').click();
 
-  const exportDialog = page.locator('kritzel-export kritzel-dialog[is-open]');
+  const exportDialog = page.locator('updraw-export updraw-dialog[is-open]');
   await exportDialog.waitFor({ state: 'attached' });
   await page.waitForTimeout(100);
 
-  const exportRoot = page.locator('kritzel-export');
+  const exportRoot = page.locator('updraw-export');
   await expect(exportDialog).toBeAttached();
   return exportRoot;
 }
@@ -104,7 +104,7 @@ function normalizeExportedViewportSvg(svg: string): string {
   return svg
     .replace(/\r\n/g, '\n')
     .replace(/<\?xml[^>]*>\s*/g, '')
-    .replace(/<kritzel-sync-indicator[\s\S]*?<\/kritzel-sync-indicator>/g, '')
+    .replace(/<updraw-sync-indicator[\s\S]*?<\/updraw-sync-indicator>/g, '')
     .replace(/\sclass="hydrated"/g, '')
     .replace(/\sid="[^"]*"/g, '')
     .replace(/\sstyle="[^"]*"/g, '')
@@ -152,18 +152,18 @@ test.describe('Export dialog', () => {
 
     const exportRoot = await openExportDialog(page);
 
-    const activeTab = exportRoot.locator('kritzel-pill-tabs').getByRole('tab', { selected: true });
+    const activeTab = exportRoot.locator('updraw-pill-tabs').getByRole('tab', { selected: true });
     await expect(activeTab).toHaveText('Export Viewport');
 
     const previewImg = exportRoot.locator('.preview-container img');
     await expect(previewImg).toBeVisible();
 
-    const formatDropdown = exportRoot.locator('kritzel-dropdown');
+    const formatDropdown = exportRoot.locator('updraw-dropdown');
     await expect(formatDropdown).toBeVisible();
 
     await expect(page).toHaveScreenshot('export-dialog-preview-all-objects.png', { timeout: 1000 });
 
-    await page.locator('kritzel-export kritzel-dialog[is-open] button[aria-label="Close dialog"]').click();
+    await page.locator('updraw-export updraw-dialog[is-open] button[aria-label="Close dialog"]').click();
   });
 
   test('downloads a PNG that matches the baseline screenshot', async ({ editorPage, page }) => {
@@ -173,7 +173,7 @@ test.describe('Export dialog', () => {
     await addAllObjectTypesToCanvas(editorPage, page);
     await openExportDialog(page);
 
-    const exportButton = page.locator('kritzel-export kritzel-dialog[is-open] button.export-primary-button');
+    const exportButton = page.locator('updraw-export updraw-dialog[is-open] button.export-primary-button');
     const downloadPromise = page.waitForEvent('download');
     await exportButton.click();
     const download = await downloadPromise;
@@ -194,11 +194,11 @@ test.describe('Export dialog', () => {
     await addAllObjectTypesToCanvas(editorPage, page);
     const exportRoot = await openExportDialog(page);
 
-    const formatDropdown = exportRoot.locator('kritzel-dropdown');
+    const formatDropdown = exportRoot.locator('updraw-dropdown');
     await formatDropdown.locator('button').click();
     await formatDropdown.locator('li', { hasText: 'SVG' }).click();
 
-    const exportButton = page.locator('kritzel-export kritzel-dialog[is-open] button.export-primary-button');
+    const exportButton = page.locator('updraw-export updraw-dialog[is-open] button.export-primary-button');
     const downloadPromise = page.waitForEvent('download');
     await exportButton.click();
     const download = await downloadPromise;
@@ -216,11 +216,11 @@ test.describe('Export dialog', () => {
     await addAllObjectTypesToCanvas(editorPage, page);
     const exportRoot = await openExportDialog(page);
 
-    const workspaceTab = exportRoot.locator('kritzel-pill-tabs').getByRole('tab', { name: 'Export Workspace' });
+    const workspaceTab = exportRoot.locator('updraw-pill-tabs').getByRole('tab', { name: 'Export Workspace' });
     await workspaceTab.click();
     await expect(workspaceTab).toHaveAttribute('aria-selected', 'true');
 
-    const exportButton = page.locator('kritzel-export kritzel-dialog[is-open] button.export-primary-button');
+    const exportButton = page.locator('updraw-export updraw-dialog[is-open] button.export-primary-button');
     const downloadPromise = page.waitForEvent('download');
     await exportButton.click();
     const download = await downloadPromise;
@@ -233,7 +233,7 @@ test.describe('Export dialog', () => {
     const downloadedJson = await readFile(downloadPath!, 'utf8');
     const payload = JSON.parse(downloadedJson) as WorkspaceExportPayload;
 
-    expect(payload.__class__).toBe('KritzelWorkspace');
+    expect(payload.__class__).toBe('UpdrawWorkspace');
     expect(payload.version).toBe('1.3.0');
     expect(payload.exportMode).toBe('portable');
     expect(payload.isPublic).toBe(false);
@@ -248,15 +248,15 @@ test.describe('Export dialog', () => {
     const objects = payload.objects ?? [];
     expect(objects).toHaveLength(6);
     expect(objects.map(object => object.__class__)).toEqual([
-      'KritzelShape',
-      'KritzelPath',
-      'KritzelText',
-      'KritzelLine',
-      'KritzelImage',
-      'KritzelDynamicObject',
+      'UpdrawShape',
+      'UpdrawPath',
+      'UpdrawText',
+      'UpdrawLine',
+      'UpdrawImage',
+      'UpdrawDynamicObject',
     ]);
 
-    const shape = getExportedObjectByClass(objects, 'KritzelShape');
+    const shape = getExportedObjectByClass(objects, 'UpdrawShape');
     expect(shape.translateX).toBe(-150);
     expect(shape.translateY).toBe(-100);
     expect(shape.width).toBe(100);
@@ -264,26 +264,26 @@ test.describe('Export dialog', () => {
     expect(shape.fillColor).toEqual({ light: '#ff9999', dark: '#cc3333' });
     expect(shape.strokeColor).toEqual({ light: '#000000', dark: '#ffffff' });
 
-    const path = getExportedObjectByClass(objects, 'KritzelPath');
+    const path = getExportedObjectByClass(objects, 'UpdrawPath');
     expect(path.points).toEqual([[0, 0], [30, 30], [60, 0]]);
     expect(path.strokeWidth).toBe(3);
     expect(path.width).toBeGreaterThan(0);
     expect(path.height).toBeGreaterThan(0);
 
-    const text = getExportedObjectByClass(objects, 'KritzelText');
+    const text = getExportedObjectByClass(objects, 'UpdrawText');
     expect(text.translateX).toBe(100);
     expect(text.translateY).toBe(-100);
     expect(text.fontSize).toBe(20);
     expect(downloadedJson).toContain('Export Preview Text');
 
-    const line = getExportedObjectByClass(objects, 'KritzelLine');
+    const line = getExportedObjectByClass(objects, 'UpdrawLine');
     expect(line.startX).toBe(-150);
     expect(line.startY).toBe(50);
     expect(line.endX).toBe(-50);
     expect(line.endY).toBe(100);
     expect(line.strokeWidth).toBe(2);
 
-    const image = getExportedObjectByClass(objects, 'KritzelImage');
+    const image = getExportedObjectByClass(objects, 'UpdrawImage');
     expect(image.translateX).toBe(0);
     expect(image.translateY).toBe(50);
     expect(typeof image.assetId).toBe('string');
@@ -291,7 +291,7 @@ test.describe('Export dialog', () => {
     expect(image.mimeType).toBe('image/png');
     expect(image.src).toBe('');
 
-    const dynamicObject = getExportedObjectByClass(objects, 'KritzelDynamicObject');
+    const dynamicObject = getExportedObjectByClass(objects, 'UpdrawDynamicObject');
     expect(dynamicObject.translateX).toBe(120);
     expect(dynamicObject.translateY).toBe(50);
     expect(dynamicObject.width).toBe(100);

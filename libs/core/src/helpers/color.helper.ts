@@ -1,8 +1,8 @@
 import { ThemeAwareColor, resolveColor } from '../constants/color-palette.constants';
 import { ThemeName } from '../interfaces/theme.interface';
-import { KritzelThemeManager } from '../classes/managers/theme.manager';
+import { UpdrawThemeManager } from '../classes/managers/theme.manager';
 
-export class KritzelColorHelper {
+export class UpdrawColorHelper {
   /**
    * Resolves a color value based on the current theme.
    * Handles both simple string colors and theme-aware color objects.
@@ -15,7 +15,7 @@ export class KritzelColorHelper {
       return '';
     }
     
-    const currentTheme = theme ?? KritzelThemeManager.getStoredTheme();
+    const currentTheme = theme ?? UpdrawThemeManager.getStoredTheme();
     return resolveColor(color, currentTheme as ThemeName);
   }
 

@@ -1,6 +1,6 @@
-import type { KritzelAgenticResizeObjectAction } from '../../interfaces/agentic-action.interface';
-import { KritzelGroup } from '../objects/group.class';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpdrawAgenticResizeObjectAction } from '../../interfaces/agentic-action.interface';
+import { UpdrawGroup } from '../objects/group.class';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
 import { collectWithDescendants } from '../../helpers/agentic-conflict.helper';
 import { prepareTopLevelTargets } from './select.executor';
 import { AGENTIC_RESIZE_HANDLES, assertObjectId } from '../../helpers/agentic-validation.helper';
@@ -13,7 +13,7 @@ function assertPositiveSize(value: unknown, field: string): void {
 }
 
 /** `resizeObject`: grabs a corner handle and drags it until the object has the new size. */
-export const resizeObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticResizeObjectAction> = {
+export const resizeObjectExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticResizeObjectAction> = {
   mutates: true,
 
   validate(action) {
@@ -82,9 +82,9 @@ export const resizeObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticRe
     // Groups keep their child snapshots stable while the agent resizes them (like a user resize).
     const locked = Array.from(collectWithDescendants(map, [id]))
       .map(objectId => map.findById(objectId))
-      .filter((candidate): candidate is KritzelGroup => candidate instanceof KritzelGroup);
-    locked.forEach(groupObject => KritzelGroup.transformLocks.add(groupObject));
-    run.onSettle(() => locked.forEach(groupObject => KritzelGroup.transformLocks.delete(groupObject)));
+      .filter((candidate): candidate is UpdrawGroup => candidate instanceof UpdrawGroup);
+    locked.forEach(groupObject => UpdrawGroup.transformLocks.add(groupObject));
+    run.onSettle(() => locked.forEach(groupObject => UpdrawGroup.transformLocks.delete(groupObject)));
 
     await run.fly(start.handle);
     await run.press();

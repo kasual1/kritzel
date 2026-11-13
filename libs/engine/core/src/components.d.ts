@@ -5,16 +5,16 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelChatSession, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelRemoteAgentPresence, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
+import { ContextMenuItem, IUpdrawUser, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName, UpdrawAgent, UpdrawAgentsChangeEvent, UpdrawAlignment, UpdrawAssetStorageConfig, UpdrawBaseObject, UpdrawBaseTool, UpdrawBrushToolConfig, UpdrawChatSession, UpdrawContextMenuState, UpdrawCore, UpdrawDebugInfo, UpdrawEngineState, UpdrawGroup, UpdrawIconName, UpdrawLineToolConfig, UpdrawLocale, UpdrawNotification, UpdrawObjectConfig, UpdrawObjectElementClickEvent, UpdrawObjectElementHighlight, UpdrawObjectElementHoverEvent, UpdrawObjectElementInfo, UpdrawObjectElementPickEvent, UpdrawObjectElementPickingOptions, UpdrawObjectExportFormat, UpdrawObjectTitlebarActionEvent, UpdrawObjectTitlebarConfig, UpdrawObjectTitlebarMenuState, UpdrawRemoteAgentPresence, UpdrawResolvedTitlebar, UpdrawSettingsConfig, UpdrawShapeToolConfig, UpdrawShortcut, UpdrawSyncConfig, UpdrawTermKey, UpdrawTermVars, UpdrawTextToolConfig, UpdrawTheme, UpdrawToolDefinition, UpdrawUndoState, UpdrawViewportState, UpdrawWorkspace } from "@updraw/core";
 import { Element, Event } from "@stencil/core";
-import { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
-export { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelChatSession, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelRemoteAgentPresence, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
+import { UpdrawTitlebarElementClickHandler, UpdrawTitlebarTitleEditHandlers } from "./components/updraw-object-titlebar-layer/updraw-object-titlebar-layer";
+export { ContextMenuItem, IUpdrawUser, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName, UpdrawAgent, UpdrawAgentsChangeEvent, UpdrawAlignment, UpdrawAssetStorageConfig, UpdrawBaseObject, UpdrawBaseTool, UpdrawBrushToolConfig, UpdrawChatSession, UpdrawContextMenuState, UpdrawCore, UpdrawDebugInfo, UpdrawEngineState, UpdrawGroup, UpdrawIconName, UpdrawLineToolConfig, UpdrawLocale, UpdrawNotification, UpdrawObjectConfig, UpdrawObjectElementClickEvent, UpdrawObjectElementHighlight, UpdrawObjectElementHoverEvent, UpdrawObjectElementInfo, UpdrawObjectElementPickEvent, UpdrawObjectElementPickingOptions, UpdrawObjectExportFormat, UpdrawObjectTitlebarActionEvent, UpdrawObjectTitlebarConfig, UpdrawObjectTitlebarMenuState, UpdrawRemoteAgentPresence, UpdrawResolvedTitlebar, UpdrawSettingsConfig, UpdrawShapeToolConfig, UpdrawShortcut, UpdrawSyncConfig, UpdrawTermKey, UpdrawTermVars, UpdrawTextToolConfig, UpdrawTheme, UpdrawToolDefinition, UpdrawUndoState, UpdrawViewportState, UpdrawWorkspace } from "@updraw/core";
 export { Element, Event } from "@stencil/core";
-export { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
+export { UpdrawTitlebarElementClickHandler, UpdrawTitlebarTitleEditHandlers } from "./components/updraw-object-titlebar-layer/updraw-object-titlebar-layer";
 export namespace Components {
     /**
-     * Renders the cursors of the local agents (`KritzelAgenticCursorManager`) and of collaborators' agents
-     * (`KritzelRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
+     * Renders the cursors of the local agents (`UpdrawAgenticCursorManager`) and of collaborators' agents
+     * (`UpdrawRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
      * selection of one object, its rotation handle. Everything is keyed by the cursor key, so the same agent ID
      * in two tabs never collides.
      * Structural changes (added/removed cursors, name, color, status, selections) re-render through
@@ -22,8 +22,8 @@ export namespace Components {
      * elements, in Stencil's write phase: the engine renders objects there too, so an outline is drawn in
      * the same frame as the object state it follows and never runs ahead of the object.
      */
-    interface KritzelAgenticCursors {
-        "core": KritzelCore;
+    interface UpdrawAgenticCursors {
+        "core": UpdrawCore;
         /**
           * @default 8
          */
@@ -33,8 +33,8 @@ export namespace Components {
          */
         "showEdgeIndicators": boolean;
     }
-    interface KritzelAwarenessCursors {
-        "core": KritzelCore;
+    interface UpdrawAwarenessCursors {
+        "core": UpdrawCore;
         /**
           * @default 8
          */
@@ -44,41 +44,41 @@ export namespace Components {
          */
         "showEdgeIndicators": boolean;
     }
-    interface KritzelCursorTrail {
-        "core": KritzelCore;
+    interface UpdrawCursorTrail {
+        "core": UpdrawCore;
     }
-    interface KritzelEngine {
+    interface UpdrawEngine {
         /**
           * Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.
          */
         "activeWorkspaceId"?: string;
         /**
           * Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to one editor at a time; an agent of an editor that was removed from the page moves here.
-          * @param agent - A `new KritzelAgent({ name })`.
+          * @param agent - A `new UpdrawAgent({ name })`.
           * @returns The same agent.
          */
-        "addAgent": (agent: KritzelAgent) => Promise<KritzelAgent>;
+        "addAgent": (agent: UpdrawAgent) => Promise<UpdrawAgent>;
         /**
           * Adds a new object to the canvas. The object will be assigned an ID, core reference, and z-index automatically.
           * @param object - The object instance to add.
           * @returns The added object.
          */
-        "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "addObject": <T extends UpdrawBaseObject>(object: T) => Promise<T | null>;
         /**
           * Adds multiple objects to the canvas in a single batch operation. All objects are inserted within one Yjs transaction (single undo step), triggering only one rerender cycle. Intended for programmatic streaming scenarios where per-object overhead would cause stutter.
           * @param objects - The object instances to add.
           * @returns The added objects.
          */
-        "addObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
+        "addObjects": <T extends UpdrawBaseObject>(objects: T[]) => Promise<T[]>;
         /**
           * Aligns the currently selected objects according to the specified alignment.
           * @param alignment - The alignment direction (e.g., `CenterHorizontal`, `StartVertical`).
          */
-        "alignObjects": (alignment: KritzelAlignment) => Promise<void>;
+        "alignObjects": (alignment: UpdrawAlignment) => Promise<void>;
         /**
           * Configuration for binary asset storage (e.g., images).  The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as `HttpAssetProvider` or `PresignedAssetProvider`.
          */
-        "assetStorageConfig"?: KritzelAssetStorageConfig;
+        "assetStorageConfig"?: UpdrawAssetStorageConfig;
         /**
           * Pans and zooms the viewport to fit the nearest content, with padding. Useful when the user has panned away from all objects.
           * @returns `true` if content was found and the viewport was adjusted, `false` otherwise.
@@ -92,16 +92,16 @@ export namespace Components {
           * Moves an object, or each selected layer, one layer forward in the z-order, past the next layer above it. A group is one layer: all of its children move together. A grouped object moves within its group.
           * @param object - The object to move. If omitted, applies to the current selection.
          */
-        "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "bringForward": (object?: UpdrawBaseObject<any>) => Promise<void>;
         /**
           * Moves an object, or the selected layers, to the very front of the z-order, keeping the relative order of the moved layers. A group moves together with all of its children; a grouped object moves to the front of its group.
           * @param object - The object to move. If omitted, applies to the current selection.
          */
-        "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "bringToFront": (object?: UpdrawBaseObject<any>) => Promise<void>;
         /**
           * Checks whether the currently selected object supports a specific export format. Returns false when none or multiple objects are selected.
          */
-        "canExportSelectedObjectAs": (format: KritzelObjectExportFormat) => Promise<boolean>;
+        "canExportSelectedObjectAs": (format: UpdrawObjectExportFormat) => Promise<boolean>;
         /**
           * Cancels an active file picker opened by importFromFile.
          */
@@ -117,18 +117,18 @@ export namespace Components {
           * @param object - The object to center in the viewport.
           * @returns The centered object.
          */
-        "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
+        "centerObjectInViewport": (object: UpdrawBaseObject) => Promise<UpdrawBaseObject<HTMLElement | SVGElement>>;
         /**
           * Pans and zooms the viewport to fit the provided objects. Calculates the combined bounding box of the given objects and centers the viewport to show them.
           * @param objects - The objects to center and fit in the viewport.
           * @param animate - Whether to animate the viewport transition (default: true).
           * @returns `true` if objects were provided and the viewport was adjusted, `false` otherwise.
          */
-        "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
+        "centerObjects": (objects: UpdrawBaseObject[], animate?: boolean) => Promise<boolean>;
         /**
           * A chat session bound to this engine: its tools act on this canvas. With an agent, the agent is added here. A session replaced by another one is unbound once its running prompt ends.
          */
-        "chatSession"?: KritzelChatSession | null;
+        "chatSession"?: UpdrawChatSession | null;
         /**
           * Removes element highlights.
           * @param objectId - The object whose highlights are removed. Removes the highlights of all objects when omitted.
@@ -146,7 +146,7 @@ export namespace Components {
           * Declaratively configures the full locale catalog, replacing the available locale set. Pass `undefined` to restore the built-in locales (en/de/fr).
           * @param locales - The full locale catalog, or `undefined` for built-ins.
          */
-        "configureLocales": (locales?: KritzelLocale[]) => Promise<void>;
+        "configureLocales": (locales?: UpdrawLocale[]) => Promise<void>;
         /**
           * Copies the currently selected objects to the internal clipboard.
          */
@@ -156,7 +156,7 @@ export namespace Components {
           * @param workspace - The workspace instance to create.
           * @returns The created workspace.
          */
-        "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
+        "createWorkspace": (workspace: UpdrawWorkspace) => Promise<UpdrawWorkspace | null>;
         /**
           * The HTML element to apply cursor styles to. Defaults to `document.body` if not set.
          */
@@ -168,7 +168,7 @@ export namespace Components {
         /**
           * Debug info display options controlling which debug overlays are visible
          */
-        "debugInfo"?: KritzelDebugInfo;
+        "debugInfo"?: UpdrawDebugInfo;
         /**
           * Deletes the currently selected objects from the canvas.
          */
@@ -177,7 +177,7 @@ export namespace Components {
           * Deletes a workspace and emits a `workspacesChange` event.
           * @param workspace - The workspace to delete.
          */
-        "deleteWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        "deleteWorkspace": (workspace: UpdrawWorkspace) => Promise<void>;
         /**
           * Disables all user interaction with the engine (pointer, keyboard, etc.).
          */
@@ -207,7 +207,7 @@ export namespace Components {
         /**
           * Exports the currently selected object in the requested format and triggers a file download. Only supports single selection.
          */
-        "exportSelectedObject": (format: KritzelObjectExportFormat) => Promise<void>;
+        "exportSelectedObject": (format: UpdrawObjectExportFormat) => Promise<void>;
         /**
           * Exports the current viewport as a PNG file and triggers a browser download.
          */
@@ -225,26 +225,26 @@ export namespace Components {
           * Returns all objects that match the given predicate function. Excludes internal selection-related objects (selection groups and selection boxes).
           * @param predicate - A filter function called for each object. Return `true` to include.
           * @returns An array of matching objects.
-          * @example ```ts // Find all text objects const texts = await engine.findObjects(obj => obj.__class__ === 'KritzelText');  // Find objects at a point const hits = await engine.findObjects(obj => obj.hitTest(100, 200));  // Combine criteria const filtered = await engine.findObjects(obj => obj.__class__ === 'KritzelPath' && obj.opacity < 0.5); ```
+          * @example ```ts // Find all text objects const texts = await engine.findObjects(obj => obj.__class__ === 'UpdrawText');  // Find objects at a point const hits = await engine.findObjects(obj => obj.hitTest(100, 200));  // Combine criteria const filtered = await engine.findObjects(obj => obj.__class__ === 'UpdrawPath' && obj.opacity < 0.5); ```
          */
-        "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean) => Promise<T[]>;
+        "findObjects": <T extends UpdrawBaseObject>(predicate: (obj: UpdrawBaseObject<Element>) => boolean) => Promise<T[]>;
         /**
           * Returns the currently active workspace.
          */
-        "getActiveWorkspace": () => Promise<KritzelWorkspace>;
+        "getActiveWorkspace": () => Promise<UpdrawWorkspace>;
         /**
           * Returns an added agent by its ID.
           * @param id - The agent's ID.
          */
-        "getAgent": (id: string) => Promise<KritzelAgent | null>;
+        "getAgent": (id: string) => Promise<UpdrawAgent | null>;
         /**
           * Returns the added agents.
          */
-        "getAgents": () => Promise<KritzelAgent[]>;
+        "getAgents": () => Promise<UpdrawAgent[]>;
         /**
           * Returns all objects on the canvas across all layers.
          */
-        "getAllObjects": <T extends KritzelBaseObject>() => Promise<T[]>;
+        "getAllObjects": <T extends UpdrawBaseObject>() => Promise<T[]>;
         /**
           * Gets the list of available locales as `{ code, label }` options for a selector.
          */
@@ -256,7 +256,7 @@ export namespace Components {
         /**
           * Returns all registered keyboard shortcuts (without action/condition) for display in a help UI.
          */
-        "getDisplayableShortcuts": () => Promise<Omit<KritzelShortcut, "action" | "condition">[]>;
+        "getDisplayableShortcuts": () => Promise<Omit<UpdrawShortcut, "action" | "condition">[]>;
         /**
           * Gets whether the active workspace is publicly accessible.
           * @returns True if the workspace is public, false otherwise
@@ -271,11 +271,11 @@ export namespace Components {
           * @param id - The object's unique identifier.
           * @returns The matching object, or `null` if not found.
          */
-        "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
+        "getObjectById": <T extends UpdrawBaseObject>(id: string) => Promise<T | null>;
         /**
           * Returns all objects currently visible within the viewport bounds.
          */
-        "getObjectsInViewport": () => Promise<KritzelBaseObject[]>;
+        "getObjectsInViewport": () => Promise<UpdrawBaseObject[]>;
         /**
           * Returns the total number of objects on the canvas.
          */
@@ -283,11 +283,11 @@ export namespace Components {
         /**
           * Returns the agents of collaborators, as shared through presence.
          */
-        "getRemoteAgents": () => Promise<KritzelRemoteAgentPresence[]>;
+        "getRemoteAgents": () => Promise<UpdrawRemoteAgentPresence[]>;
         /**
           * Resolves every known term key for the active locale into a flat map. Useful for UI layers that need to localize many strings at once.
          */
-        "getResolvedTerms": () => Promise<Partial<Record<KritzelTermKey, string>>>;
+        "getResolvedTerms": () => Promise<Partial<Record<UpdrawTermKey, string>>>;
         /**
           * Captures a screenshot of the current viewport as a data URL.
           * @param format - The image format: `'png'` (default) or `'svg'`.
@@ -297,34 +297,34 @@ export namespace Components {
         /**
           * Returns export formats supported by the currently selected object. Only returns formats when exactly one object is selected.
          */
-        "getSelectedObjectSupportedExportFormats": () => Promise<KritzelObjectExportFormat[]>;
+        "getSelectedObjectSupportedExportFormats": () => Promise<UpdrawObjectExportFormat[]>;
         /**
           * Returns the currently selected objects. Returns an empty array if nothing is selected.
          */
-        "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
+        "getSelectedObjects": () => Promise<UpdrawBaseObject<any>[]>;
         /**
           * Returns a tool registered in this engine instance.
          */
-        "getTool": (toolName: string) => Promise<KritzelBaseTool | null>;
+        "getTool": (toolName: string) => Promise<UpdrawBaseTool | null>;
         /**
           * Returns the current viewport state including position, scale, and dimensions.
           * @returns The current viewport state.
          */
-        "getViewport": () => Promise<KritzelViewportState>;
+        "getViewport": () => Promise<UpdrawViewportState>;
         /**
           * Returns all available workspaces.
          */
-        "getWorkspaces": () => Promise<KritzelWorkspace[]>;
+        "getWorkspaces": () => Promise<UpdrawWorkspace[]>;
         /**
           * Context menu items shown when right-clicking the canvas background.
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
-          * Creates a group (`KritzelGroup`) from the given objects. Requires at least two objects. The grouped objects become one layer at the position of the topmost object, as a single undoable step.  Objects are resolved by id, so stale references work. Objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. An object passed together with one of its ancestor groups is grouped as part of that ancestor. Selected objects that end up in the group are replaced by the group in the selection.  To group the current selection, pass `await getSelectedObjects()`.
+          * Creates a group (`UpdrawGroup`) from the given objects. Requires at least two objects. The grouped objects become one layer at the position of the topmost object, as a single undoable step.  Objects are resolved by id, so stale references work. Objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. An object passed together with one of its ancestor groups is grouped as part of that ancestor. Selected objects that end up in the group are replaced by the group in the selection.  To group the current selection, pass `await getSelectedObjects()`.
           * @param objects - The objects to group.
           * @returns The created group, or `null` (with a console warning) when fewer than two objects could be grouped.
          */
-        "group": (objects: KritzelBaseObject<any>[]) => Promise<KritzelGroup | null>;
+        "group": (objects: UpdrawBaseObject<any>[]) => Promise<UpdrawGroup | null>;
         /**
           * Hides the context menu and resets any associated selection state.
          */
@@ -334,7 +334,7 @@ export namespace Components {
           * @param objectId - The object ID.
           * @param highlights - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted.
          */
-        "highlightObjectElements": (objectId: string, highlights: KritzelObjectElementHighlight[]) => Promise<void>;
+        "highlightObjectElements": (objectId: string, highlights: UpdrawObjectElementHighlight[]) => Promise<void>;
         /**
           * Opens a file picker dialog and imports the selected JSON file into the workspace. This method creates a hidden file input, triggers the browser's file chooser, reads the selected JSON file, and imports it using importFromJson.
           * @returns A promise that resolves when the import is complete or rejects on error/cancel.
@@ -352,7 +352,7 @@ export namespace Components {
          */
         "isPanningEnabled": boolean;
         /**
-          * Whether the "Powered by Kritzel" watermark is shown. Keeping it visible helps support the project.
+          * Whether the "Powered by Updraw" watermark is shown. Keeping it visible helps support the project.
           * @default true
          */
         "isWatermarkVisible": boolean;
@@ -372,7 +372,7 @@ export namespace Components {
           * Loads the persisted settings object from localStorage.
           * @returns The stored settings, or null if nothing is stored or the value is invalid.
          */
-        "loadSettings": () => Promise<Partial<KritzelSettingsConfig> | null>;
+        "loadSettings": () => Promise<Partial<UpdrawSettingsConfig> | null>;
         /**
           * Loads a shared workspace by token. If the workspace exists locally, it switches to it. If it doesn't exist, it adds it to the local workspaces list and then switches to it.
           * @param token - The connection token identifying the shared workspace
@@ -386,7 +386,7 @@ export namespace Components {
         /**
           * An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty.
          */
-        "locales"?: KritzelLocale[];
+        "locales"?: UpdrawLocale[];
         /**
           * When true, objects are drawn at a fixed visual size regardless of zoom level
           * @default true
@@ -395,7 +395,7 @@ export namespace Components {
         /**
           * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
          */
-        "objectConfig"?: KritzelObjectConfig;
+        "objectConfig"?: UpdrawObjectConfig;
         /**
           * Context menu items shown when right-clicking a selected object.
          */
@@ -403,7 +403,7 @@ export namespace Components {
         /**
           * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
          */
-        "objectTitlebar"?: KritzelObjectTitlebarConfig;
+        "objectTitlebar"?: UpdrawObjectTitlebarConfig;
         /**
           * Programmatically opens the context menu at a specified world-coordinate position. If `objectId` is provided and found, the object context menu is shown for that object. If no `objectId` is provided but a selection group already exists, the object context menu is shown. Otherwise, the global context menu is shown.
           * @param options.x - The X position in world (canvas) coordinates.
@@ -421,7 +421,7 @@ export namespace Components {
           * Pans the viewport to center on the given object without changing the zoom level. Unlike `centerObjectInViewport`, this moves the camera — not the object.
           * @param object - The object whose center the viewport should pan to.
          */
-        "panToObject": (object: KritzelBaseObject) => Promise<void>;
+        "panToObject": (object: UpdrawBaseObject) => Promise<void>;
         /**
           * Pastes previously copied objects at the specified world coordinates.
           * @param x - X position in world coordinates.
@@ -431,11 +431,11 @@ export namespace Components {
         /**
           * Describes the elements inside an object's content that match a CSS selector, in document order. The object must be mounted, which it is while it is in or near the viewport.
           * @param objectId - The object ID.
-          * @param selector - A CSS selector, e.g. `'button'` or `'[data-kritzel-id]'`.
+          * @param selector - A CSS selector, e.g. `'button'` or `'[data-updraw-id]'`.
           * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
           * @returns The matching elements, each with a `selector` that can be used to highlight it or point an agent's cursor at it with `agent.moveTo({ objectId, selector })`.
          */
-        "queryObjectElements": (objectId: string, selector: string, limit?: number) => Promise<KritzelObjectElementInfo[]>;
+        "queryObjectElements": (objectId: string, selector: string, limit?: number) => Promise<UpdrawObjectElementInfo[]>;
         /**
           * Redoes the last undone action.
          */
@@ -444,15 +444,15 @@ export namespace Components {
           * Registers additional locale definitions (with optional partial term overrides).
           * @param locales - The locale definitions to register.
          */
-        "registerLocales": (locales: KritzelLocale[]) => Promise<void>;
+        "registerLocales": (locales: UpdrawLocale[]) => Promise<void>;
         /**
           * Registers a new drawing tool with the engine.
           * @param toolName - Unique identifier for the tool (e.g., 'brush', 'eraser').
-          * @param toolClass - Constructor class extending `KritzelBaseTool`.
+          * @param toolClass - Constructor class extending `UpdrawBaseTool`.
           * @param toolConfig - Optional initial configuration to apply to the tool instance.
           * @returns The registered tool instance, or `null` if registration failed.
          */
-        "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool | null>;
+        "registerTool": (toolName: string, toolClass: any, toolConfig?: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig) => Promise<UpdrawBaseTool | null>;
         /**
           * Reinitializes sync by performing a full teardown and re-initialization. Destroys the current Yjs documents and providers, then rebuilds everything from the current syncConfig. Data reloads from IndexedDB nearly instantly. Call this after updating the syncConfig prop (e.g. after authentication state changes).
          */
@@ -462,24 +462,24 @@ export namespace Components {
           * @param agent - The agent or its ID.
           * @returns `false` if the agent was not added.
          */
-        "removeAgent": (agent: KritzelAgent | string) => Promise<boolean>;
+        "removeAgent": (agent: UpdrawAgent | string) => Promise<boolean>;
         /**
           * Removes an object from the canvas.
           * @param object - The object to remove.
           * @returns The removed object.
          */
-        "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "removeObject": <T extends UpdrawBaseObject>(object: T) => Promise<T | null>;
         /**
           * Removes multiple objects from the canvas in a single batch operation. All removals happen within one Yjs transaction (single undo step), triggering only one rerender cycle. Intended for programmatic streaming scenarios where per-object overhead would cause stutter.
           * @param objects - The objects to remove.
           * @returns The removed objects.
          */
-        "removeObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
+        "removeObjects": <T extends UpdrawBaseObject>(objects: T[]) => Promise<T[]>;
         /**
           * Persists the given settings object to localStorage using the namespaced storage key.
           * @param settings - The settings configuration to persist.
          */
-        "saveSettings": (settings: KritzelSettingsConfig) => Promise<void>;
+        "saveSettings": (settings: UpdrawSettingsConfig) => Promise<void>;
         /**
           * Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.
           * @default 1000
@@ -510,17 +510,17 @@ export namespace Components {
           * Programmatically selects the given objects. Switches to the selection tool automatically.
           * @param objects - The objects to select.
          */
-        "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
+        "selectObjects": (objects: UpdrawBaseObject[]) => Promise<void>;
         /**
           * Moves an object, or each selected layer, one layer backward in the z-order, past the next layer below it. A group is one layer: all of its children move together. A grouped object moves within its group.
           * @param object - The object to move. If omitted, applies to the current selection.
          */
-        "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "sendBackward": (object?: UpdrawBaseObject<any>) => Promise<void>;
         /**
           * Moves an object, or the selected layers, to the very back of the z-order, keeping the relative order of the moved layers. A group moves together with all of its children; a grouped object moves to the back of its group.
           * @param object - The object to move. If omitted, applies to the current selection.
          */
-        "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "sendToBack": (object?: UpdrawBaseObject<any>) => Promise<void>;
         /**
           * Switches the active drawing tool by its registered name.
           * @param toolName - The name the tool was registered with (e.g., 'brush', 'eraser').
@@ -542,7 +542,7 @@ export namespace Components {
           * @param enabled - Whether the object picks elements.
           * @param options - `selector` limits picking to matching elements, `color` sets the highlight color.
          */
-        "setObjectElementPicking": (objectId: string, enabled: boolean, options?: KritzelObjectElementPickingOptions) => Promise<void>;
+        "setObjectElementPicking": (objectId: string, enabled: boolean, options?: UpdrawObjectElementPickingOptions) => Promise<void>;
         /**
           * Sets the viewport to center on the given world coordinates at the specified scale.
           * @param x - X position in world coordinates to center on.
@@ -553,13 +553,13 @@ export namespace Components {
         /**
           * Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).
          */
-        "syncConfig"?: KritzelSyncConfig;
+        "syncConfig"?: UpdrawSyncConfig;
         /**
           * Resolves a term key to its translated string for the active locale.
           * @param key - The term key to resolve.
           * @param vars - Optional values for `{placeholder}` interpolation.
          */
-        "t": (key: KritzelTermKey, vars?: KritzelTermVars) => Promise<string>;
+        "t": (key: UpdrawTermKey, vars?: UpdrawTermVars) => Promise<string>;
         /**
           * The current theme to apply to the editor
           * @default 'light'
@@ -568,12 +568,12 @@ export namespace Components {
         /**
           * An array of available themes for the editor.
          */
-        "themes"?: KritzelTheme[];
+        "themes"?: UpdrawTheme[];
         /**
           * Tool definitions to register with this engine instance.
           * @default []
          */
-        "tools": KritzelToolDefinition[];
+        "tools": UpdrawToolDefinition[];
         /**
           * Manually triggers the `objectsSelectionChange` event.
          */
@@ -583,27 +583,27 @@ export namespace Components {
          */
         "undo": () => Promise<void>;
         /**
-          * Ungroups the given groups. Their children become individual objects again and keep their stacking order; the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step.  Groups are resolved by id, so stale references work. Entries that are not a `KritzelGroup` or not in the active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their children.  To ungroup the current selection, pass the `KritzelGroup` objects from `await getSelectedObjects()`.
+          * Ungroups the given groups. Their children become individual objects again and keep their stacking order; the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step.  Groups are resolved by id, so stale references work. Entries that are not an `UpdrawGroup` or not in the active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their children.  To ungroup the current selection, pass the `UpdrawGroup` objects from `await getSelectedObjects()`.
           * @param groups - The groups to ungroup.
           * @returns The extracted children.
          */
-        "ungroup": (groups: KritzelGroup[]) => Promise<KritzelBaseObject<any>[]>;
+        "ungroup": (groups: UpdrawGroup[]) => Promise<UpdrawBaseObject<any>[]>;
         /**
           * Updates properties of an existing canvas object.
           * @param object - The object to update.
           * @param updatedProperties - A partial set of properties to apply.
           * @returns The updated object.
          */
-        "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
+        "updateObject": <T extends UpdrawBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         /**
           * Applies a workspace as declared and emits a `workspacesChange` event. Metadata and viewport are always applied. When `workspace.objects` is set it is treated as the complete desired object set (`undefined` leaves objects untouched, `[]` removes them all); updating objects of a non-active workspace requires a configured sync provider.
           * @param workspace - The workspace describing the desired state.
          */
-        "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        "updateWorkspace": (workspace: UpdrawWorkspace) => Promise<void>;
         /**
           * The current user for awareness broadcasting (name, id, cursor position).
          */
-        "user"?: IKritzelUser;
+        "user"?: IUpdrawUser;
         /**
           * Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.
           * @default Infinity
@@ -627,7 +627,7 @@ export namespace Components {
         /**
           * Authoritative workspace catalog for this engine instance. When provided, provider-only workspaces are hidden but not deleted.
          */
-        "workspaces"?: KritzelWorkspace[];
+        "workspaces"?: UpdrawWorkspace[];
         /**
           * Converts world coordinates to screen-relative pixel coordinates.
           * @param x - X position in world coordinates.
@@ -655,9 +655,9 @@ export namespace Components {
          */
         "zoomTo": (scale: number, worldX?: number, worldY?: number) => Promise<void>;
     }
-    interface KritzelIcon {
+    interface UpdrawIcon {
         "label"?: string;
-        "name": KritzelIconName;
+        "name": UpdrawIconName;
         /**
           * @default 24
          */
@@ -667,10 +667,10 @@ export namespace Components {
      * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
      * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
      * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
-     * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+     * `updraw-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
      * Must never use the `object` class: pointer handling treats `.object` elements as objects.
      */
-    interface KritzelObjectTitlebarLayer {
+    interface UpdrawObjectTitlebarLayer {
         /**
           * The objects playing their appear animation, with their stagger index, by object ID. Their titlebars appear with them.
          */
@@ -678,7 +678,7 @@ export namespace Components {
         /**
           * Called when a titlebar button or menu button is clicked.
          */
-        "elementClick"?: KritzelTitlebarElementClickHandler;
+        "elementClick"?: UpdrawTitlebarElementClickHandler;
         /**
           * Pointer events of the drag surfaces. Controls always receive pointer input.
           * @default 'none'
@@ -687,38 +687,38 @@ export namespace Components {
         /**
           * Called while a title is edited to rename its object.
          */
-        "titleEdit"?: KritzelTitlebarTitleEditHandlers;
+        "titleEdit"?: UpdrawTitlebarTitleEditHandlers;
         /**
           * The titlebars to render, resolved by the engine for the current frame.
           * @default []
          */
-        "titlebars": KritzelResolvedTitlebar[];
+        "titlebars": UpdrawResolvedTitlebar[];
     }
     /**
-     * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
+     * "Powered by Updraw" watermark shown in the bottom-right corner of the engine.
      * Rendered inside the engine's Shadow DOM unless the engine's
-     * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
+     * `isWatermarkVisible` prop is set to false. The badge links to the Updraw
      * website.
      */
-    interface KritzelWatermark {
+    interface UpdrawWatermark {
         /**
           * The core instance used to resolve localized terms.
          */
-        "core": KritzelCore;
+        "core": UpdrawCore;
         /**
-          * Resolved "Powered by Kritzel" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
+          * Resolved "Powered by Updraw" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
          */
         "label"?: string;
     }
 }
-export interface KritzelEngineCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawEngineCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelEngineElement;
+    target: HTMLUpdrawEngineElement;
 }
 declare global {
     /**
-     * Renders the cursors of the local agents (`KritzelAgenticCursorManager`) and of collaborators' agents
-     * (`KritzelRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
+     * Renders the cursors of the local agents (`UpdrawAgenticCursorManager`) and of collaborators' agents
+     * (`UpdrawRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
      * selection of one object, its rotation handle. Everything is keyed by the cursor key, so the same agent ID
      * in two tabs never collides.
      * Structural changes (added/removed cursors, name, color, status, selections) re-render through
@@ -726,108 +726,108 @@ declare global {
      * elements, in Stencil's write phase: the engine renders objects there too, so an outline is drawn in
      * the same frame as the object state it follows and never runs ahead of the object.
      */
-    interface HTMLKritzelAgenticCursorsElement extends Components.KritzelAgenticCursors, HTMLStencilElement {
+    interface HTMLUpdrawAgenticCursorsElement extends Components.UpdrawAgenticCursors, HTMLStencilElement {
     }
-    var HTMLKritzelAgenticCursorsElement: {
-        prototype: HTMLKritzelAgenticCursorsElement;
-        new (): HTMLKritzelAgenticCursorsElement;
+    var HTMLUpdrawAgenticCursorsElement: {
+        prototype: HTMLUpdrawAgenticCursorsElement;
+        new (): HTMLUpdrawAgenticCursorsElement;
     };
-    interface HTMLKritzelAwarenessCursorsElement extends Components.KritzelAwarenessCursors, HTMLStencilElement {
+    interface HTMLUpdrawAwarenessCursorsElement extends Components.UpdrawAwarenessCursors, HTMLStencilElement {
     }
-    var HTMLKritzelAwarenessCursorsElement: {
-        prototype: HTMLKritzelAwarenessCursorsElement;
-        new (): HTMLKritzelAwarenessCursorsElement;
+    var HTMLUpdrawAwarenessCursorsElement: {
+        prototype: HTMLUpdrawAwarenessCursorsElement;
+        new (): HTMLUpdrawAwarenessCursorsElement;
     };
-    interface HTMLKritzelCursorTrailElement extends Components.KritzelCursorTrail, HTMLStencilElement {
+    interface HTMLUpdrawCursorTrailElement extends Components.UpdrawCursorTrail, HTMLStencilElement {
     }
-    var HTMLKritzelCursorTrailElement: {
-        prototype: HTMLKritzelCursorTrailElement;
-        new (): HTMLKritzelCursorTrailElement;
+    var HTMLUpdrawCursorTrailElement: {
+        prototype: HTMLUpdrawCursorTrailElement;
+        new (): HTMLUpdrawCursorTrailElement;
     };
-    interface HTMLKritzelEngineElementEventMap {
-        "isEngineReady": KritzelEngineState;
-        "activeToolChange": KritzelBaseTool;
-        "workspacesChange": KritzelWorkspace[];
-        "activeWorkspaceChange": KritzelWorkspace;
+    interface HTMLUpdrawEngineElementEventMap {
+        "isEngineReady": UpdrawEngineState;
+        "activeToolChange": UpdrawBaseTool;
+        "workspacesChange": UpdrawWorkspace[];
+        "activeWorkspaceChange": UpdrawWorkspace;
         "longpress": PointerEvent;
-        "objectsChange": KritzelBaseObject[];
+        "objectsChange": UpdrawBaseObject[];
         "objectsAdded": ObjectsAddedEvent;
         "objectsRemoved": ObjectsRemovedEvent;
         "objectsUpdated": ObjectsUpdatedEvent;
-        "objectsSelectionChange": KritzelBaseObject[];
-        "undoStateChange": KritzelUndoState;
+        "objectsSelectionChange": UpdrawBaseObject[];
+        "undoStateChange": UpdrawUndoState;
         "objectsInViewportChange": ObjectsInViewportChangeEvent;
-        "viewportChange": KritzelViewportState;
+        "viewportChange": UpdrawViewportState;
         "awarenessChange": Map<number, Record<string, any>>;
-        "notificationsChange": KritzelNotification;
-        "contextMenuStateChange": KritzelContextMenuState;
+        "notificationsChange": UpdrawNotification;
+        "contextMenuStateChange": UpdrawContextMenuState;
         "isLoadingChange": boolean;
-        "agentsChange": KritzelAgentsChangeEvent;
-        "objectTitlebarAction": KritzelObjectTitlebarActionEvent;
-        "objectTitlebarMenuStateChange": KritzelObjectTitlebarMenuState;
-        "objectElementHover": KritzelObjectElementHoverEvent;
-        "objectElementClick": KritzelObjectElementClickEvent;
-        "objectElementPick": KritzelObjectElementPickEvent;
+        "agentsChange": UpdrawAgentsChangeEvent;
+        "objectTitlebarAction": UpdrawObjectTitlebarActionEvent;
+        "objectTitlebarMenuStateChange": UpdrawObjectTitlebarMenuState;
+        "objectElementHover": UpdrawObjectElementHoverEvent;
+        "objectElementClick": UpdrawObjectElementClickEvent;
+        "objectElementPick": UpdrawObjectElementPickEvent;
     }
-    interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawEngineElement extends Components.UpdrawEngine, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawEngineElementEventMap>(type: K, listener: (this: HTMLUpdrawEngineElement, ev: UpdrawEngineCustomEvent<HTMLUpdrawEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawEngineElementEventMap>(type: K, listener: (this: HTMLUpdrawEngineElement, ev: UpdrawEngineCustomEvent<HTMLUpdrawEngineElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelEngineElement: {
-        prototype: HTMLKritzelEngineElement;
-        new (): HTMLKritzelEngineElement;
+    var HTMLUpdrawEngineElement: {
+        prototype: HTMLUpdrawEngineElement;
+        new (): HTMLUpdrawEngineElement;
     };
-    interface HTMLKritzelIconElement extends Components.KritzelIcon, HTMLStencilElement {
+    interface HTMLUpdrawIconElement extends Components.UpdrawIcon, HTMLStencilElement {
     }
-    var HTMLKritzelIconElement: {
-        prototype: HTMLKritzelIconElement;
-        new (): HTMLKritzelIconElement;
+    var HTMLUpdrawIconElement: {
+        prototype: HTMLUpdrawIconElement;
+        new (): HTMLUpdrawIconElement;
     };
     /**
      * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
      * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
      * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
-     * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+     * `updraw-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
      * Must never use the `object` class: pointer handling treats `.object` elements as objects.
      */
-    interface HTMLKritzelObjectTitlebarLayerElement extends Components.KritzelObjectTitlebarLayer, HTMLStencilElement {
+    interface HTMLUpdrawObjectTitlebarLayerElement extends Components.UpdrawObjectTitlebarLayer, HTMLStencilElement {
     }
-    var HTMLKritzelObjectTitlebarLayerElement: {
-        prototype: HTMLKritzelObjectTitlebarLayerElement;
-        new (): HTMLKritzelObjectTitlebarLayerElement;
+    var HTMLUpdrawObjectTitlebarLayerElement: {
+        prototype: HTMLUpdrawObjectTitlebarLayerElement;
+        new (): HTMLUpdrawObjectTitlebarLayerElement;
     };
     /**
-     * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
+     * "Powered by Updraw" watermark shown in the bottom-right corner of the engine.
      * Rendered inside the engine's Shadow DOM unless the engine's
-     * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
+     * `isWatermarkVisible` prop is set to false. The badge links to the Updraw
      * website.
      */
-    interface HTMLKritzelWatermarkElement extends Components.KritzelWatermark, HTMLStencilElement {
+    interface HTMLUpdrawWatermarkElement extends Components.UpdrawWatermark, HTMLStencilElement {
     }
-    var HTMLKritzelWatermarkElement: {
-        prototype: HTMLKritzelWatermarkElement;
-        new (): HTMLKritzelWatermarkElement;
+    var HTMLUpdrawWatermarkElement: {
+        prototype: HTMLUpdrawWatermarkElement;
+        new (): HTMLUpdrawWatermarkElement;
     };
     interface HTMLElementTagNameMap {
-        "kritzel-agentic-cursors": HTMLKritzelAgenticCursorsElement;
-        "kritzel-awareness-cursors": HTMLKritzelAwarenessCursorsElement;
-        "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
-        "kritzel-engine": HTMLKritzelEngineElement;
-        "kritzel-icon": HTMLKritzelIconElement;
-        "kritzel-object-titlebar-layer": HTMLKritzelObjectTitlebarLayerElement;
-        "kritzel-watermark": HTMLKritzelWatermarkElement;
+        "updraw-agentic-cursors": HTMLUpdrawAgenticCursorsElement;
+        "updraw-awareness-cursors": HTMLUpdrawAwarenessCursorsElement;
+        "updraw-cursor-trail": HTMLUpdrawCursorTrailElement;
+        "updraw-engine": HTMLUpdrawEngineElement;
+        "updraw-icon": HTMLUpdrawIconElement;
+        "updraw-object-titlebar-layer": HTMLUpdrawObjectTitlebarLayerElement;
+        "updraw-watermark": HTMLUpdrawWatermarkElement;
     }
 }
 declare namespace LocalJSX {
     /**
-     * Renders the cursors of the local agents (`KritzelAgenticCursorManager`) and of collaborators' agents
-     * (`KritzelRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
+     * Renders the cursors of the local agents (`UpdrawAgenticCursorManager`) and of collaborators' agents
+     * (`UpdrawRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
      * selection of one object, its rotation handle. Everything is keyed by the cursor key, so the same agent ID
      * in two tabs never collides.
      * Structural changes (added/removed cursors, name, color, status, selections) re-render through
@@ -835,8 +835,8 @@ declare namespace LocalJSX {
      * elements, in Stencil's write phase: the engine renders objects there too, so an outline is drawn in
      * the same frame as the object state it follows and never runs ahead of the object.
      */
-    interface KritzelAgenticCursors {
-        "core": KritzelCore;
+    interface UpdrawAgenticCursors {
+        "core": UpdrawCore;
         /**
           * @default 8
          */
@@ -846,8 +846,8 @@ declare namespace LocalJSX {
          */
         "showEdgeIndicators"?: boolean;
     }
-    interface KritzelAwarenessCursors {
-        "core": KritzelCore;
+    interface UpdrawAwarenessCursors {
+        "core": UpdrawCore;
         /**
           * @default 8
          */
@@ -857,10 +857,10 @@ declare namespace LocalJSX {
          */
         "showEdgeIndicators"?: boolean;
     }
-    interface KritzelCursorTrail {
-        "core": KritzelCore;
+    interface UpdrawCursorTrail {
+        "core": UpdrawCore;
     }
-    interface KritzelEngine {
+    interface UpdrawEngine {
         /**
           * Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.
          */
@@ -868,11 +868,11 @@ declare namespace LocalJSX {
         /**
           * Configuration for binary asset storage (e.g., images).  The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as `HttpAssetProvider` or `PresignedAssetProvider`.
          */
-        "assetStorageConfig"?: KritzelAssetStorageConfig;
+        "assetStorageConfig"?: UpdrawAssetStorageConfig;
         /**
           * A chat session bound to this engine: its tools act on this canvas. With an agent, the agent is added here. A session replaced by another one is unbound once its running prompt ends.
          */
-        "chatSession"?: KritzelChatSession | null;
+        "chatSession"?: UpdrawChatSession | null;
         /**
           * The HTML element to apply cursor styles to. Defaults to `document.body` if not set.
          */
@@ -880,7 +880,7 @@ declare namespace LocalJSX {
         /**
           * Debug info display options controlling which debug overlays are visible
          */
-        "debugInfo"?: KritzelDebugInfo;
+        "debugInfo"?: UpdrawDebugInfo;
         /**
           * Optional unique identifier for namespacing storage keys across multiple editor instances.
          */
@@ -900,7 +900,7 @@ declare namespace LocalJSX {
          */
         "isPanningEnabled"?: boolean;
         /**
-          * Whether the "Powered by Kritzel" watermark is shown. Keeping it visible helps support the project.
+          * Whether the "Powered by Updraw" watermark is shown. Keeping it visible helps support the project.
           * @default true
          */
         "isWatermarkVisible"?: boolean;
@@ -917,7 +917,7 @@ declare namespace LocalJSX {
         /**
           * An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty.
          */
-        "locales"?: KritzelLocale[];
+        "locales"?: UpdrawLocale[];
         /**
           * When true, objects are drawn at a fixed visual size regardless of zoom level
           * @default true
@@ -926,7 +926,7 @@ declare namespace LocalJSX {
         /**
           * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
          */
-        "objectConfig"?: KritzelObjectConfig;
+        "objectConfig"?: UpdrawObjectConfig;
         /**
           * Context menu items shown when right-clicking a selected object.
          */
@@ -934,99 +934,99 @@ declare namespace LocalJSX {
         /**
           * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
          */
-        "objectTitlebar"?: KritzelObjectTitlebarConfig;
+        "objectTitlebar"?: UpdrawObjectTitlebarConfig;
         /**
           * Emitted when the active drawing tool changes.
          */
-        "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;
+        "onActiveToolChange"?: (event: UpdrawEngineCustomEvent<UpdrawBaseTool>) => void;
         /**
           * Emitted when the active workspace changes (e.g., after import).
          */
-        "onActiveWorkspaceChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace>) => void;
+        "onActiveWorkspaceChange"?: (event: UpdrawEngineCustomEvent<UpdrawWorkspace>) => void;
         /**
           * Emitted when agents are added or removed, or when what the avatar stack shows of them changes (name, color, avatar, status, visibility, activity). Lists the local agents first, then the agents of collaborators (`isRemote: true`). Never emitted for plain cursor motion.
          */
-        "onAgentsChange"?: (event: KritzelEngineCustomEvent<KritzelAgentsChangeEvent>) => void;
+        "onAgentsChange"?: (event: UpdrawEngineCustomEvent<UpdrawAgentsChangeEvent>) => void;
         /**
           * Emitted when the awareness state changes (remote user cursors, presence).
          */
-        "onAwarenessChange"?: (event: KritzelEngineCustomEvent<Map<number, Record<string, any>>>) => void;
+        "onAwarenessChange"?: (event: UpdrawEngineCustomEvent<Map<number, Record<string, any>>>) => void;
         /**
           * Emitted when context-menu visibility, items, or position changes.
          */
-        "onContextMenuStateChange"?: (event: KritzelEngineCustomEvent<KritzelContextMenuState>) => void;
+        "onContextMenuStateChange"?: (event: UpdrawEngineCustomEvent<UpdrawContextMenuState>) => void;
         /**
           * Emitted when the engine has fully initialized and is ready for interaction.
          */
-        "onIsEngineReady"?: (event: KritzelEngineCustomEvent<KritzelEngineState>) => void;
+        "onIsEngineReady"?: (event: UpdrawEngineCustomEvent<UpdrawEngineState>) => void;
         /**
           * Emitted while the selected workspace's objects are being initialized and synchronized.
          */
-        "onIsLoadingChange"?: (event: KritzelEngineCustomEvent<boolean>) => void;
+        "onIsLoadingChange"?: (event: UpdrawEngineCustomEvent<boolean>) => void;
         /**
           * Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.
          */
-        "onLongpress"?: (event: KritzelEngineCustomEvent<PointerEvent>) => void;
+        "onLongpress"?: (event: UpdrawEngineCustomEvent<PointerEvent>) => void;
         /**
           * Emitted when notifications change.
          */
-        "onNotificationsChange"?: (event: KritzelEngineCustomEvent<KritzelNotification>) => void;
+        "onNotificationsChange"?: (event: UpdrawEngineCustomEvent<UpdrawNotification>) => void;
         /**
           * Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual.
          */
-        "onObjectElementClick"?: (event: KritzelEngineCustomEvent<KritzelObjectElementClickEvent>) => void;
+        "onObjectElementClick"?: (event: UpdrawEngineCustomEvent<UpdrawObjectElementClickEvent>) => void;
         /**
           * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object, such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
          */
-        "onObjectElementHover"?: (event: KritzelEngineCustomEvent<KritzelObjectElementHoverEvent>) => void;
+        "onObjectElementHover"?: (event: UpdrawEngineCustomEvent<UpdrawObjectElementHoverEvent>) => void;
         /**
           * Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`.
          */
-        "onObjectElementPick"?: (event: KritzelEngineCustomEvent<KritzelObjectElementPickEvent>) => void;
+        "onObjectElementPick"?: (event: UpdrawEngineCustomEvent<UpdrawObjectElementPickEvent>) => void;
         /**
           * Emitted when a button or a menu item in an object titlebar is clicked.
          */
-        "onObjectTitlebarAction"?: (event: KritzelEngineCustomEvent<KritzelObjectTitlebarActionEvent>) => void;
+        "onObjectTitlebarAction"?: (event: UpdrawEngineCustomEvent<UpdrawObjectTitlebarActionEvent>) => void;
         /**
           * Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`.
          */
-        "onObjectTitlebarMenuStateChange"?: (event: KritzelEngineCustomEvent<KritzelObjectTitlebarMenuState>) => void;
+        "onObjectTitlebarMenuStateChange"?: (event: UpdrawEngineCustomEvent<UpdrawObjectTitlebarMenuState>) => void;
         /**
           * Emitted when one or more objects are added to the canvas. `source` is set when an agent made the change.
          */
-        "onObjectsAdded"?: (event: KritzelEngineCustomEvent<ObjectsAddedEvent>) => void;
+        "onObjectsAdded"?: (event: UpdrawEngineCustomEvent<ObjectsAddedEvent>) => void;
         /**
           * Emitted when objects on the canvas are added, removed, or modified.
          */
-        "onObjectsChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject[]>) => void;
+        "onObjectsChange"?: (event: UpdrawEngineCustomEvent<UpdrawBaseObject[]>) => void;
         /**
           * Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).
          */
-        "onObjectsInViewportChange"?: (event: KritzelEngineCustomEvent<ObjectsInViewportChangeEvent>) => void;
+        "onObjectsInViewportChange"?: (event: UpdrawEngineCustomEvent<ObjectsInViewportChangeEvent>) => void;
         /**
           * Emitted when one or more objects are removed from the canvas. `source` is set when an agent made the change.
          */
-        "onObjectsRemoved"?: (event: KritzelEngineCustomEvent<ObjectsRemovedEvent>) => void;
+        "onObjectsRemoved"?: (event: UpdrawEngineCustomEvent<ObjectsRemovedEvent>) => void;
         /**
           * Emitted when the set of selected objects changes.
          */
-        "onObjectsSelectionChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject[]>) => void;
+        "onObjectsSelectionChange"?: (event: UpdrawEngineCustomEvent<UpdrawBaseObject[]>) => void;
         /**
           * Emitted when one or more objects are updated on the canvas. `source` is set when an agent made the change.
          */
-        "onObjectsUpdated"?: (event: KritzelEngineCustomEvent<ObjectsUpdatedEvent>) => void;
+        "onObjectsUpdated"?: (event: UpdrawEngineCustomEvent<ObjectsUpdatedEvent>) => void;
         /**
           * Emitted when the undo/redo state changes, providing current undo availability.
          */
-        "onUndoStateChange"?: (event: KritzelEngineCustomEvent<KritzelUndoState>) => void;
+        "onUndoStateChange"?: (event: UpdrawEngineCustomEvent<UpdrawUndoState>) => void;
         /**
           * Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize).
          */
-        "onViewportChange"?: (event: KritzelEngineCustomEvent<KritzelViewportState>) => void;
+        "onViewportChange"?: (event: UpdrawEngineCustomEvent<UpdrawViewportState>) => void;
         /**
           * Emitted when workspaces are created, updated, or deleted.
          */
-        "onWorkspacesChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace[]>) => void;
+        "onWorkspacesChange"?: (event: UpdrawEngineCustomEvent<UpdrawWorkspace[]>) => void;
         /**
           * Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.
           * @default 1000
@@ -1040,7 +1040,7 @@ declare namespace LocalJSX {
         /**
           * Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).
          */
-        "syncConfig"?: KritzelSyncConfig;
+        "syncConfig"?: UpdrawSyncConfig;
         /**
           * The current theme to apply to the editor
           * @default 'light'
@@ -1049,16 +1049,16 @@ declare namespace LocalJSX {
         /**
           * An array of available themes for the editor.
          */
-        "themes"?: KritzelTheme[];
+        "themes"?: UpdrawTheme[];
         /**
           * Tool definitions to register with this engine instance.
           * @default []
          */
-        "tools"?: KritzelToolDefinition[];
+        "tools"?: UpdrawToolDefinition[];
         /**
           * The current user for awareness broadcasting (name, id, cursor position).
          */
-        "user"?: IKritzelUser;
+        "user"?: IUpdrawUser;
         /**
           * Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.
           * @default Infinity
@@ -1082,11 +1082,11 @@ declare namespace LocalJSX {
         /**
           * Authoritative workspace catalog for this engine instance. When provided, provider-only workspaces are hidden but not deleted.
          */
-        "workspaces"?: KritzelWorkspace[];
+        "workspaces"?: UpdrawWorkspace[];
     }
-    interface KritzelIcon {
+    interface UpdrawIcon {
         "label"?: string;
-        "name"?: KritzelIconName;
+        "name"?: UpdrawIconName;
         /**
           * @default 24
          */
@@ -1096,10 +1096,10 @@ declare namespace LocalJSX {
      * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
      * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
      * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
-     * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+     * `updraw-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
      * Must never use the `object` class: pointer handling treats `.object` elements as objects.
      */
-    interface KritzelObjectTitlebarLayer {
+    interface UpdrawObjectTitlebarLayer {
         /**
           * The objects playing their appear animation, with their stagger index, by object ID. Their titlebars appear with them.
          */
@@ -1107,7 +1107,7 @@ declare namespace LocalJSX {
         /**
           * Called when a titlebar button or menu button is clicked.
          */
-        "elementClick"?: KritzelTitlebarElementClickHandler;
+        "elementClick"?: UpdrawTitlebarElementClickHandler;
         /**
           * Pointer events of the drag surfaces. Controls always receive pointer input.
           * @default 'none'
@@ -1116,39 +1116,39 @@ declare namespace LocalJSX {
         /**
           * Called while a title is edited to rename its object.
          */
-        "titleEdit"?: KritzelTitlebarTitleEditHandlers;
+        "titleEdit"?: UpdrawTitlebarTitleEditHandlers;
         /**
           * The titlebars to render, resolved by the engine for the current frame.
           * @default []
          */
-        "titlebars"?: KritzelResolvedTitlebar[];
+        "titlebars"?: UpdrawResolvedTitlebar[];
     }
     /**
-     * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
+     * "Powered by Updraw" watermark shown in the bottom-right corner of the engine.
      * Rendered inside the engine's Shadow DOM unless the engine's
-     * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
+     * `isWatermarkVisible` prop is set to false. The badge links to the Updraw
      * website.
      */
-    interface KritzelWatermark {
+    interface UpdrawWatermark {
         /**
           * The core instance used to resolve localized terms.
          */
-        "core": KritzelCore;
+        "core": UpdrawCore;
         /**
-          * Resolved "Powered by Kritzel" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
+          * Resolved "Powered by Updraw" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
          */
         "label"?: string;
     }
 
-    interface KritzelAgenticCursorsAttributes {
+    interface UpdrawAgenticCursorsAttributes {
         "showEdgeIndicators": boolean;
         "edgeIndicatorPadding": number;
     }
-    interface KritzelAwarenessCursorsAttributes {
+    interface UpdrawAwarenessCursorsAttributes {
         "showEdgeIndicators": boolean;
         "edgeIndicatorPadding": number;
     }
-    interface KritzelEngineAttributes {
+    interface UpdrawEngineAttributes {
         "editorId": string;
         "activeWorkspaceId": string;
         "scaleMax": number;
@@ -1165,26 +1165,26 @@ declare namespace LocalJSX {
         "isPanningEnabled": boolean;
         "isZoomingEnabled": boolean;
     }
-    interface KritzelIconAttributes {
-        "name": KritzelIconName;
+    interface UpdrawIconAttributes {
+        "name": UpdrawIconName;
         "label": string;
         "size": number;
     }
-    interface KritzelObjectTitlebarLayerAttributes {
+    interface UpdrawObjectTitlebarLayerAttributes {
         "surfacePointerEvents": 'auto' | 'none';
     }
-    interface KritzelWatermarkAttributes {
+    interface UpdrawWatermarkAttributes {
         "label": string;
     }
 
     interface IntrinsicElements {
-        "kritzel-agentic-cursors": Omit<KritzelAgenticCursors, keyof KritzelAgenticCursorsAttributes> & { [K in keyof KritzelAgenticCursors & keyof KritzelAgenticCursorsAttributes]?: KritzelAgenticCursors[K] } & { [K in keyof KritzelAgenticCursors & keyof KritzelAgenticCursorsAttributes as `attr:${K}`]?: KritzelAgenticCursorsAttributes[K] } & { [K in keyof KritzelAgenticCursors & keyof KritzelAgenticCursorsAttributes as `prop:${K}`]?: KritzelAgenticCursors[K] };
-        "kritzel-awareness-cursors": Omit<KritzelAwarenessCursors, keyof KritzelAwarenessCursorsAttributes> & { [K in keyof KritzelAwarenessCursors & keyof KritzelAwarenessCursorsAttributes]?: KritzelAwarenessCursors[K] } & { [K in keyof KritzelAwarenessCursors & keyof KritzelAwarenessCursorsAttributes as `attr:${K}`]?: KritzelAwarenessCursorsAttributes[K] } & { [K in keyof KritzelAwarenessCursors & keyof KritzelAwarenessCursorsAttributes as `prop:${K}`]?: KritzelAwarenessCursors[K] };
-        "kritzel-cursor-trail": KritzelCursorTrail;
-        "kritzel-engine": Omit<KritzelEngine, keyof KritzelEngineAttributes> & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes]?: KritzelEngine[K] } & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes as `attr:${K}`]?: KritzelEngineAttributes[K] } & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes as `prop:${K}`]?: KritzelEngine[K] };
-        "kritzel-icon": Omit<KritzelIcon, keyof KritzelIconAttributes> & { [K in keyof KritzelIcon & keyof KritzelIconAttributes]?: KritzelIcon[K] } & { [K in keyof KritzelIcon & keyof KritzelIconAttributes as `attr:${K}`]?: KritzelIconAttributes[K] } & { [K in keyof KritzelIcon & keyof KritzelIconAttributes as `prop:${K}`]?: KritzelIcon[K] };
-        "kritzel-object-titlebar-layer": Omit<KritzelObjectTitlebarLayer, keyof KritzelObjectTitlebarLayerAttributes> & { [K in keyof KritzelObjectTitlebarLayer & keyof KritzelObjectTitlebarLayerAttributes]?: KritzelObjectTitlebarLayer[K] } & { [K in keyof KritzelObjectTitlebarLayer & keyof KritzelObjectTitlebarLayerAttributes as `attr:${K}`]?: KritzelObjectTitlebarLayerAttributes[K] } & { [K in keyof KritzelObjectTitlebarLayer & keyof KritzelObjectTitlebarLayerAttributes as `prop:${K}`]?: KritzelObjectTitlebarLayer[K] };
-        "kritzel-watermark": Omit<KritzelWatermark, keyof KritzelWatermarkAttributes> & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes]?: KritzelWatermark[K] } & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes as `attr:${K}`]?: KritzelWatermarkAttributes[K] } & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes as `prop:${K}`]?: KritzelWatermark[K] };
+        "updraw-agentic-cursors": Omit<UpdrawAgenticCursors, keyof UpdrawAgenticCursorsAttributes> & { [K in keyof UpdrawAgenticCursors & keyof UpdrawAgenticCursorsAttributes]?: UpdrawAgenticCursors[K] } & { [K in keyof UpdrawAgenticCursors & keyof UpdrawAgenticCursorsAttributes as `attr:${K}`]?: UpdrawAgenticCursorsAttributes[K] } & { [K in keyof UpdrawAgenticCursors & keyof UpdrawAgenticCursorsAttributes as `prop:${K}`]?: UpdrawAgenticCursors[K] };
+        "updraw-awareness-cursors": Omit<UpdrawAwarenessCursors, keyof UpdrawAwarenessCursorsAttributes> & { [K in keyof UpdrawAwarenessCursors & keyof UpdrawAwarenessCursorsAttributes]?: UpdrawAwarenessCursors[K] } & { [K in keyof UpdrawAwarenessCursors & keyof UpdrawAwarenessCursorsAttributes as `attr:${K}`]?: UpdrawAwarenessCursorsAttributes[K] } & { [K in keyof UpdrawAwarenessCursors & keyof UpdrawAwarenessCursorsAttributes as `prop:${K}`]?: UpdrawAwarenessCursors[K] };
+        "updraw-cursor-trail": UpdrawCursorTrail;
+        "updraw-engine": Omit<UpdrawEngine, keyof UpdrawEngineAttributes> & { [K in keyof UpdrawEngine & keyof UpdrawEngineAttributes]?: UpdrawEngine[K] } & { [K in keyof UpdrawEngine & keyof UpdrawEngineAttributes as `attr:${K}`]?: UpdrawEngineAttributes[K] } & { [K in keyof UpdrawEngine & keyof UpdrawEngineAttributes as `prop:${K}`]?: UpdrawEngine[K] };
+        "updraw-icon": Omit<UpdrawIcon, keyof UpdrawIconAttributes> & { [K in keyof UpdrawIcon & keyof UpdrawIconAttributes]?: UpdrawIcon[K] } & { [K in keyof UpdrawIcon & keyof UpdrawIconAttributes as `attr:${K}`]?: UpdrawIconAttributes[K] } & { [K in keyof UpdrawIcon & keyof UpdrawIconAttributes as `prop:${K}`]?: UpdrawIcon[K] };
+        "updraw-object-titlebar-layer": Omit<UpdrawObjectTitlebarLayer, keyof UpdrawObjectTitlebarLayerAttributes> & { [K in keyof UpdrawObjectTitlebarLayer & keyof UpdrawObjectTitlebarLayerAttributes]?: UpdrawObjectTitlebarLayer[K] } & { [K in keyof UpdrawObjectTitlebarLayer & keyof UpdrawObjectTitlebarLayerAttributes as `attr:${K}`]?: UpdrawObjectTitlebarLayerAttributes[K] } & { [K in keyof UpdrawObjectTitlebarLayer & keyof UpdrawObjectTitlebarLayerAttributes as `prop:${K}`]?: UpdrawObjectTitlebarLayer[K] };
+        "updraw-watermark": Omit<UpdrawWatermark, keyof UpdrawWatermarkAttributes> & { [K in keyof UpdrawWatermark & keyof UpdrawWatermarkAttributes]?: UpdrawWatermark[K] } & { [K in keyof UpdrawWatermark & keyof UpdrawWatermarkAttributes as `attr:${K}`]?: UpdrawWatermarkAttributes[K] } & { [K in keyof UpdrawWatermark & keyof UpdrawWatermarkAttributes as `prop:${K}`]?: UpdrawWatermark[K] };
     }
 }
 export { LocalJSX as JSX };
@@ -1192,8 +1192,8 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             /**
-             * Renders the cursors of the local agents (`KritzelAgenticCursorManager`) and of collaborators' agents
-             * (`KritzelRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
+             * Renders the cursors of the local agents (`UpdrawAgenticCursorManager`) and of collaborators' agents
+             * (`UpdrawRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
              * selection of one object, its rotation handle. Everything is keyed by the cursor key, so the same agent ID
              * in two tabs never collides.
              * Structural changes (added/removed cursors, name, color, status, selections) re-render through
@@ -1201,26 +1201,26 @@ declare module "@stencil/core" {
              * elements, in Stencil's write phase: the engine renders objects there too, so an outline is drawn in
              * the same frame as the object state it follows and never runs ahead of the object.
              */
-            "kritzel-agentic-cursors": LocalJSX.IntrinsicElements["kritzel-agentic-cursors"] & JSXBase.HTMLAttributes<HTMLKritzelAgenticCursorsElement>;
-            "kritzel-awareness-cursors": LocalJSX.IntrinsicElements["kritzel-awareness-cursors"] & JSXBase.HTMLAttributes<HTMLKritzelAwarenessCursorsElement>;
-            "kritzel-cursor-trail": LocalJSX.IntrinsicElements["kritzel-cursor-trail"] & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
-            "kritzel-engine": LocalJSX.IntrinsicElements["kritzel-engine"] & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
-            "kritzel-icon": LocalJSX.IntrinsicElements["kritzel-icon"] & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
+            "updraw-agentic-cursors": LocalJSX.IntrinsicElements["updraw-agentic-cursors"] & JSXBase.HTMLAttributes<HTMLUpdrawAgenticCursorsElement>;
+            "updraw-awareness-cursors": LocalJSX.IntrinsicElements["updraw-awareness-cursors"] & JSXBase.HTMLAttributes<HTMLUpdrawAwarenessCursorsElement>;
+            "updraw-cursor-trail": LocalJSX.IntrinsicElements["updraw-cursor-trail"] & JSXBase.HTMLAttributes<HTMLUpdrawCursorTrailElement>;
+            "updraw-engine": LocalJSX.IntrinsicElements["updraw-engine"] & JSXBase.HTMLAttributes<HTMLUpdrawEngineElement>;
+            "updraw-icon": LocalJSX.IntrinsicElements["updraw-icon"] & JSXBase.HTMLAttributes<HTMLUpdrawIconElement>;
             /**
              * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
              * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
              * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
-             * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+             * `updraw-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
              * Must never use the `object` class: pointer handling treats `.object` elements as objects.
              */
-            "kritzel-object-titlebar-layer": LocalJSX.IntrinsicElements["kritzel-object-titlebar-layer"] & JSXBase.HTMLAttributes<HTMLKritzelObjectTitlebarLayerElement>;
+            "updraw-object-titlebar-layer": LocalJSX.IntrinsicElements["updraw-object-titlebar-layer"] & JSXBase.HTMLAttributes<HTMLUpdrawObjectTitlebarLayerElement>;
             /**
-             * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
+             * "Powered by Updraw" watermark shown in the bottom-right corner of the engine.
              * Rendered inside the engine's Shadow DOM unless the engine's
-             * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
+             * `isWatermarkVisible` prop is set to false. The badge links to the Updraw
              * website.
              */
-            "kritzel-watermark": LocalJSX.IntrinsicElements["kritzel-watermark"] & JSXBase.HTMLAttributes<HTMLKritzelWatermarkElement>;
+            "updraw-watermark": LocalJSX.IntrinsicElements["updraw-watermark"] & JSXBase.HTMLAttributes<HTMLUpdrawWatermarkElement>;
         }
     }
 }

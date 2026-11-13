@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelPath,
-  KritzelShape,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawPath,
+  UpdrawShape,
+  UpdrawWorkspace,
   ShapeType,
-  type KritzelBaseObject,
-} from '@kritzel/vue-editor'
+  type UpdrawBaseObject,
+} from '@updraw/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -16,9 +16,9 @@ import { editorStyle, hostStyle } from '../../shared/demo-shared'
 import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
-const objects = ref<KritzelBaseObject[]>([])
+const objects = ref<UpdrawBaseObject[]>([])
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 
 function randomOffset() {
   return Math.floor(Math.random() * 200) - 100
@@ -29,7 +29,7 @@ async function refreshObjects() {
 }
 
 async function addRectangle() {
-  await editor.value?.addObject(new KritzelShape({
+  await editor.value?.addObject(new UpdrawShape({
     translateX: randomOffset(),
     translateY: randomOffset(),
     width: 120,
@@ -43,7 +43,7 @@ async function addRectangle() {
 }
 
 async function addEllipse() {
-  await editor.value?.addObject(new KritzelShape({
+  await editor.value?.addObject(new UpdrawShape({
     translateX: randomOffset(),
     translateY: randomOffset(),
     width: 100,
@@ -57,7 +57,7 @@ async function addEllipse() {
 }
 
 async function addPath() {
-  await editor.value?.addObject(new KritzelPath({
+  await editor.value?.addObject(new UpdrawPath({
     points: [
       [0, 0, 0.5],
       [20, -15, 0.5],
@@ -84,7 +84,7 @@ async function addPath() {
       <button @click="addPath">Add Path</button>
       <span class="object-count">Objects: {{ objects.length }}</span>
     </Toolbar>
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="objects-add"
       theme="light"

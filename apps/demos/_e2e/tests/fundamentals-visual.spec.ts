@@ -4,17 +4,17 @@ async function waitForFundamentalPage(editorPage: { page: import('@playwright/te
   const { page } = editorPage;
 
   await page.waitForFunction(
-    () => !!document.querySelector('kritzel-editor') || !!document.querySelector('kritzel-engine'),
+    () => !!document.querySelector('updraw-editor') || !!document.querySelector('updraw-engine'),
     undefined,
     { timeout: 15_000 },
   );
 
-  if ((await page.locator('kritzel-editor').count()) > 0) {
+  if ((await page.locator('updraw-editor').count()) > 0) {
     await editorPage.waitForReady();
     return;
   }
 
-  await page.locator('kritzel-engine').first().waitFor({ state: 'visible', timeout: 15_000 });
+  await page.locator('updraw-engine').first().waitFor({ state: 'visible', timeout: 15_000 });
   await page.evaluate(
     () =>
       new Promise<void>((resolve) => {
@@ -33,7 +33,7 @@ async function expectFundamentalScreenshot(
   await editorPage.goto(route);
   await waitForFundamentalPage(editorPage);
 
-  const screenshotTarget = target === 'editor' ? editorPage.page.locator('kritzel-editor').first() : editorPage.page;
+  const screenshotTarget = target === 'editor' ? editorPage.page.locator('updraw-editor').first() : editorPage.page;
 
   await expect(screenshotTarget).toHaveScreenshot(`${routeName}.png`);
 }

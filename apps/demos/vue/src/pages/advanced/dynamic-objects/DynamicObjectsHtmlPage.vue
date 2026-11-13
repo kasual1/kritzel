@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onBeforeUnmount } from 'vue'
 import {
-  KritzelDynamicObjectRendererRegistry,
-  KritzelEditor,
-  KritzelWorkspace,
-} from '@kritzel/vue-editor'
+  UpdrawDynamicObjectRendererRegistry,
+  UpdrawEditor,
+  UpdrawWorkspace,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
@@ -26,7 +26,7 @@ function destroyCalculator(objectId: string, container: HTMLElement | null): voi
   }
 }
 
-KritzelDynamicObjectRendererRegistry.register(HTML_CALCULATOR_RENDERER_KEY, {
+UpdrawDynamicObjectRendererRegistry.register(HTML_CALCULATOR_RENDERER_KEY, {
   onMount: ({ object, container, data }) => {
     if (!container) {
       return
@@ -46,17 +46,17 @@ KritzelDynamicObjectRendererRegistry.register(HTML_CALCULATOR_RENDERER_KEY, {
   },
 })
 
-const workspaces = [new KritzelWorkspace({ objects: [createHtmlCalculatorObject()] })]
+const workspaces = [new UpdrawWorkspace({ objects: [createHtmlCalculatorObject()] })]
 
 onBeforeUnmount(() => {
   mountedCalculators.forEach((calculator) => calculator.destroy())
   mountedCalculators.clear()
-  KritzelDynamicObjectRendererRegistry.unregister(HTML_CALCULATOR_RENDERER_KEY)
+  UpdrawDynamicObjectRendererRegistry.unregister(HTML_CALCULATOR_RENDERER_KEY)
 })
 </script>
 
 <template>
-  <KritzelEditor
+  <UpdrawEditor
     editorId="dynamic-objects-html"
     theme="light"
     :themes="themes"

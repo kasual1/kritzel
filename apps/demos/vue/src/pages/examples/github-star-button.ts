@@ -1,4 +1,4 @@
-import { KritzelDynamicObject } from '@kritzel/vue-editor'
+import { UpdrawDynamicObject } from '@updraw/vue-editor'
 
 export const GITHUB_STAR_RENDERER_KEY = 'vue-examples-github-star-button'
 export const GITHUB_REPO_URL = 'https://github.com/kasual1/kritzel'
@@ -42,7 +42,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg'
 const STYLES = `
   .github-star-button { display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; height: 100%; box-sizing: border-box; border: 1px solid #d0d7de; border-radius: ${STAR_BORDER_RADIUS}px; background: #f6f8fa; color: #24292f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 600; line-height: 1; white-space: nowrap; user-select: none; }
   .github-star-button svg { width: 1.1em; height: 1.1em; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  [data-github-star]:hover { cursor: var(--kritzel-global-pointer-cursor, pointer); }
+  [data-github-star]:hover { cursor: var(--updraw-global-pointer-cursor, pointer); }
   [data-github-star]:hover > .github-star-button { border-color: #afb8c1; background: #eaeef2; }
   [data-github-star]:hover > .github-star-button svg { fill: #ffd21f; stroke: #f5b400; }
 `
@@ -126,10 +126,10 @@ export function mountGithubStarButton(container: HTMLElement, data: GithubStarBu
   }
 }
 
-export function createGithubStarObject(x: number, y: number): KritzelDynamicObject {
+export function createGithubStarObject(x: number, y: number): UpdrawDynamicObject {
   const placeholder = document.createElement('div')
   placeholder.textContent = 'Star'
-  const object = new KritzelDynamicObject({
+  const object = new UpdrawDynamicObject({
     element: placeholder,
     rendererKey: GITHUB_STAR_RENDERER_KEY,
     rendererData: { label: 'Star' } satisfies GithubStarButtonData,
@@ -150,7 +150,7 @@ export function createGithubStarObject(x: number, y: number): KritzelDynamicObje
  * initial viewport), so the first screen looks equally full for every count and larger counts
  * only grow the board outward. The board keeps a 16:9 shape; a partial last row is centered.
  */
-export function createGithubStarObjects(count: number): KritzelDynamicObject[] {
+export function createGithubStarObjects(count: number): UpdrawDynamicObject[] {
   const columns = Math.max(1, Math.round(Math.sqrt((count * BOARD_ASPECT * CELL_HEIGHT) / CELL_WIDTH)))
   const rows = Math.ceil(count / columns)
   const top = -(rows * CELL_HEIGHT - STAR_GAP) / 2

@@ -8,14 +8,14 @@ import {
 } from '@angular/core';
 import {
   EditorIsReadyEvent,
-  KritzelBrushTool,
-  KritzelEditor,
-  KritzelImage,
-  KritzelTextTool,
-  KritzelTheme,
-  KritzelViewportState,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawBrushTool,
+  UpdrawEditor,
+  UpdrawImage,
+  UpdrawTextTool,
+  UpdrawTheme,
+  UpdrawViewportState,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import {
   LucideMinus,
   LucidePlus,
@@ -35,12 +35,12 @@ type ColorTool = {
 
 @Component({
   selector: 'app-image-annotation-studio',
-  imports: [KritzelEditor, LucideMinus, LucidePlus, LucideRedo2, LucideUndo2],
+  imports: [UpdrawEditor, LucideMinus, LucidePlus, LucideRedo2, LucideUndo2],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="annotation-page">
       @if (workspaces().length > 0) {
-        <kritzel-editor
+        <updraw-editor
           #editorHost
           editorId="image-annotation-studio"
           [themes]="themes"
@@ -56,7 +56,7 @@ type ColorTool = {
           [isZoomPanelVisible]="false"
           [workspaces]="workspaces()"
           (isReady)="onReady($event)"
-        ></kritzel-editor>
+        ></updraw-editor>
       }
 
       <div class="action-bar">
@@ -163,7 +163,7 @@ type ColorTool = {
       overflow: hidden;
     }
 
-    kritzel-editor {
+    updraw-editor {
       display: block;
       width: 100%;
       height: 100%;
@@ -376,11 +376,11 @@ type ColorTool = {
   `,
 })
 export class ImageAnnotationStudioComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
   @ViewChild('editorHost', { read: ElementRef })
   editorHost!: ElementRef<HTMLElement>;
 
-  readonly annotationThemeDark: KritzelTheme = {
+  readonly annotationThemeDark: UpdrawTheme = {
     ...angularThemeDark,
     name: 'dark',
     engine: {
@@ -405,7 +405,7 @@ export class ImageAnnotationStudioComponent {
 
   readonly activeMode = signal<AnnotationMode>('sketch');
   readonly activeSketchTool = signal<string>('ink-red');
-  readonly workspaces = signal<KritzelWorkspace[]>([]);
+  readonly workspaces = signal<UpdrawWorkspace[]>([]);
 
   constructor() {
     void this.initializeWorkspace();
@@ -461,7 +461,7 @@ export class ImageAnnotationStudioComponent {
 
   private async registerColorTools() {
     for (const tool of this.colorTools) {
-      await this.editor.registerTool(tool.name, KritzelBrushTool, {
+      await this.editor.registerTool(tool.name, UpdrawBrushTool, {
         color: {
           light: tool.color,
           dark: tool.color,
@@ -492,13 +492,13 @@ export class ImageAnnotationStudioComponent {
     // aligned with the currently selected sketch swatch.
     const textToolConfig = {
       fontColor: textColor,
-    } as unknown as Parameters<KritzelEditor['registerTool']>[2];
+    } as unknown as Parameters<UpdrawEditor['registerTool']>[2];
 
-    await this.editor.registerTool('text', KritzelTextTool, textToolConfig);
+    await this.editor.registerTool('text', UpdrawTextTool, textToolConfig);
   }
 
   private async initializeWorkspace(): Promise<void> {
-    const image = await KritzelImage.fromUrl(
+    const image = await UpdrawImage.fromUrl(
       'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1800&q=80',
       {
         maxWidth: 660,
@@ -509,6 +509,6 @@ export class ImageAnnotationStudioComponent {
     image.translateX = -image.width / 2;
     image.translateY = (-image.height / 2) - 50;
 
-    this.workspaces.set([new KritzelWorkspace({ objects: [image] })]);
+    this.workspaces.set([new UpdrawWorkspace({ objects: [image] })]);
   }
 }

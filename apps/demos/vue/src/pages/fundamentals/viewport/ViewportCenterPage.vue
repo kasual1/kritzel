@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelBaseObject,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawBaseObject,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -15,8 +15,8 @@ import {
 import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
-const objects: KritzelBaseObject<HTMLElement | SVGElement>[] = createSeedObjects()
-const workspaces = [new KritzelWorkspace({ objects })]
+const objects: UpdrawBaseObject<HTMLElement | SVGElement>[] = createSeedObjects()
+const workspaces = [new UpdrawWorkspace({ objects })]
 const editor = getEditorRef('editor')
 
 async function centerOn(index: number) {
@@ -40,7 +40,7 @@ async function backToContent() {
       <button :disabled="objects.length < 4" @click="centerOn(3)">Center on Path</button>
       <button @click="backToContent">Back to Content</button>
     </Toolbar>
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="viewport-center"
       theme="light"

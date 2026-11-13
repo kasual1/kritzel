@@ -1,24 +1,24 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
   DEFAULT_BRUSH_CONFIG,
-  KritzelBrushTool,
-  KritzelEditor,
-  KritzelSelectionTool,
-  KritzelSyncConfig,
-  KritzelTextTool,
-  KritzelToolbarItem,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawBrushTool,
+  UpdrawEditor,
+  UpdrawSelectionTool,
+  UpdrawSyncConfig,
+  UpdrawTextTool,
+  UpdrawToolbarItem,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-tools-toolbar',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="tools-toolbar"
       [theme]="'light'"
       [themes]="themes"
@@ -28,7 +28,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: `
     :host {
@@ -40,26 +40,26 @@ import { createSeedObjects } from '../../../const/seed-objects';
 export class ToolsToolbarComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
-  toolbarItems: KritzelToolbarItem[] = [
+  toolbarItems: UpdrawToolbarItem[] = [
     {
       name: 'selection',
       type: 'tool',
-      tool: KritzelSelectionTool,
+      tool: UpdrawSelectionTool,
       icon: 'cursor',
     },
     {
       name: 'brush',
       type: 'tool',
-      tool: KritzelBrushTool,
+      tool: UpdrawBrushTool,
       icon: 'pen',
       isDefault: true,
     },
     {
       name: 'text',
       type: 'tool',
-      tool: KritzelTextTool,
+      tool: UpdrawTextTool,
       icon: 'type',
     },
     {

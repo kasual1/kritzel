@@ -2,10 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
-import { KritzelPath, KritzelImage, KritzelText, KritzelLine, KritzelShape, KritzelGroup, KritzelDynamicObject, ShapeType } from '@kritzel/react-editor'
+import { UpdrawPath, UpdrawImage, UpdrawText, UpdrawLine, UpdrawShape, UpdrawGroup, UpdrawDynamicObject, ShapeType } from '@updraw/react-editor'
 
-// Expose Kritzel classes on window for Playwright e2e tests
-(window as any).__kritzel__ = { KritzelPath, KritzelImage, KritzelText, KritzelLine, KritzelShape, KritzelGroup, KritzelDynamicObject, ShapeType };
+// Expose Updraw classes on window for Playwright e2e tests
+(window as any).__updraw__ = { UpdrawPath, UpdrawImage, UpdrawText, UpdrawLine, UpdrawShape, UpdrawGroup, UpdrawDynamicObject, ShapeType };
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

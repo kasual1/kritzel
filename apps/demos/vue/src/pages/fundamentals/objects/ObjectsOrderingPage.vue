@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelBaseObject,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawBaseObject,
+} from '@updraw/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -20,7 +20,7 @@ import { useInfoPanel } from '../../../components/info-panel'
 
 const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
-function createOverlappingSeedObjects(): KritzelBaseObject[] {
+function createOverlappingSeedObjects(): UpdrawBaseObject[] {
   return createSeedObjects().map((object) => {
     object.translateX -= object.centerX
     object.translateY -= object.centerY
@@ -30,13 +30,13 @@ function createOverlappingSeedObjects(): KritzelBaseObject[] {
 
 const editor = getEditorRef('editor')
 const seedObjects = createOverlappingSeedObjects()
-const objects = ref<KritzelBaseObject[]>(seedObjects)
+const objects = ref<UpdrawBaseObject[]>(seedObjects)
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: seedObjects })]
+const workspaces = [new UpdrawWorkspace({ objects: seedObjects })]
 
 async function refreshObjects() {
   const all = (await editor.value?.findObjects(
-    (object) => object.__class__ !== 'KritzelSelectionBox',
+    (object) => object.__class__ !== 'UpdrawSelectionBox',
   )) ?? []
   objects.value = [...all].sort(
     (a, b) => a.zIndex - b.zIndex,
@@ -81,7 +81,7 @@ async function sendToBack() {
       <InfoPanelToggle :panel="infoPanel" />
     </Toolbar>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
-      <KritzelEditor
+      <UpdrawEditor
         ref="editor"
         editorId="objects-ordering"
         theme="light"

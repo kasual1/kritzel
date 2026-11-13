@@ -2,7 +2,7 @@
 
 ## Overview
 
-Fundamentals pages introduce fundamental architectural pillars of Kritzel (such as Viewport, Workspaces, Tools, Objects, Theming, Persistence). Unlike the exhaustive, deep-dive Example pages, Fundamentals pages are designed to give users a quick, high-level understanding of a concept, accompanied by very focused, small live-demo examples.
+Fundamentals pages introduce fundamental architectural pillars of Updraw (such as Viewport, Workspaces, Tools, Objects, Theming, Persistence). Unlike the exhaustive, deep-dive Example pages, Fundamentals pages are designed to give users a quick, high-level understanding of a concept, accompanied by very focused, small live-demo examples.
 
 These pages bridge the gap between abstract architectural concepts and practical API usage.
 
@@ -17,8 +17,8 @@ These pages bridge the gap between abstract architectural concepts and practical
 ---
 sidebar_label: <Concept Name>
 displayed_sidebar: tutorialSidebar
-title: "<Concept Name> Concept | Kritzel for Angular"
-description: "Understand the fundamental concept of <Concept Name> in Kritzel."
+title: "<Concept Name> Concept | Updraw for Angular"
+description: "Understand the fundamental concept of <Concept Name> in Updraw."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -27,7 +27,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 ## Page Structure
 
 1. **`# <Concept Name>`** — The main page title.
-2. **`## Overview`** — Explain what the concept is, its role within the Kritzel architecture, and why a developer should care. Keep it high-level.
+2. **`## Overview`** — Explain what the concept is, its role within the Updraw architecture, and why a developer should care. Keep it high-level.
 3. **Use Case Sections (`##` or `###`)** — Provide multiple *very focused* live-demo examples showing users exactly how to accomplish specific, atomic tasks related to the concept. **Do not** use a literal `## Focused Use Cases` heading; instead, promote the use cases to top-level or natural descriptive headings (e.g., `## Using the Editor Component`).
 4. **`## API Details`** — A quick bulleted list linking to the most relevant API reference sections associated with this concept.
   - Start with: `For the full list of related APIs, see the following reference sections.`
@@ -62,10 +62,10 @@ Just like in the Examples pattern, embed previews with:
 
 ## Content Mapping (Fundamentals to API)
 
-When authoring a Fundamentals page, draw upon the appropriate subset of the Kritzel Editor API:
+When authoring a Fundamentals page, draw upon the appropriate subset of the Updraw Editor API:
 
 ### 1. Components (Editor, Engine)
-- **Concept:** The relationship between the visual `<kritzel-editor>` and the headless `<kritzel-engine>`, showing they share identical public APIs exposing asynchronous methods (returning Promises).
+- **Concept:** The relationship between the visual `<updraw-editor>` and the headless `<updraw-engine>`, showing they share identical public APIs exposing asynchronous methods (returning Promises).
 - **Relevant Usage:** Mounting, basic sizing, and UI configuration (e.g., hiding or showing the workspace-manager or the more-menu).
 
 ### 2. Tools
@@ -84,20 +84,20 @@ When authoring a Fundamentals page, draw upon the appropriate subset of the Krit
   - Selection: `getSelectedObjects`, `selectObjects`, `clearSelection`.
 
 ### 4. Workspaces
-- **Concept:** Managing multiple distinct document states or "pages" within a single Kritzel instance.
+- **Concept:** Managing multiple distinct document states or "pages" within a single Updraw instance.
 - **Relevant Usage:** 
   - `createWorkspace`, `updateWorkspace`, `deleteWorkspace`.
   - `getWorkspaces`, `getActiveWorkspace`.
 
 ### 5. Viewport
-- **Concept:** Camera control, zooming, and panning behavior natively handled by Kritzel. Navigating infinite or bounded canvas structures.
+- **Concept:** Camera control, zooming, and panning behavior natively handled by Updraw. Navigating infinite or bounded canvas structures.
 - **Relevant Usage:** 
   - State reading: `getViewport`
   - Camera control: `setViewport`, `panTo`, `zoomTo`, `centerObjectInViewport`, `backToContent`.
   - Coordinate Mapping: `screenToWorld`, `worldToScreen`.
 
 ### 6. Theming
-- **Concept:** Adapting the visual look of Kritzel tools, toolbars, and context menus via CSS overrides or configuration objects.
+- **Concept:** Adapting the visual look of Updraw tools, toolbars, and context menus via CSS overrides or configuration objects.
 
 ## AI Authoring & Editing Guidelines
 
@@ -123,7 +123,7 @@ Quick checks before finishing:
 
 1. Keep conceptual sections aligned across frameworks (Overview, focused demos, API Details).
 2. Translate framework-specific naming in prose and snippets.
-3. In React/Vue docs, use `<KritzelEditor>` and avoid `<kritzel-editor>`.
+3. In React/Vue docs, use `<UpdrawEditor>` and avoid `<updraw-editor>`.
 4. In Vue docs, use `html` fences for embedded component/template snippets.
 5. Port `<LiveDemo>` with framework-specific `repoUrl` and matching `repoFiles` extensions.
 6. Re-validate internal links for each framework docs tree.

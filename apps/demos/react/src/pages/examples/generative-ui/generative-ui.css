@@ -4,7 +4,7 @@
   height: 100%;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   /* UIs resize from their corners like frames in a design tool, without the corner squares. */
-  --kritzel-selection-resize-handle-visibility: hidden;
+  --updraw-selection-resize-handle-visibility: hidden;
 }
 
 .generative-ui__editor {

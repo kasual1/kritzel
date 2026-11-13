@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
-  KritzelEditor,
-  KritzelShape,
-  KritzelText,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawShape,
+  UpdrawText,
+  UpdrawWorkspace,
   ShapeType,
-} from '@kritzel/angular-editor';
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 
@@ -17,7 +17,7 @@ interface Slide {
 
 @Component({
   selector: 'app-slideshow-presentation',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <header class="presentation-header">
@@ -50,7 +50,7 @@ interface Slide {
     </header>
 
     <div class="editor-container">
-      <kritzel-editor
+      <updraw-editor
         editorId="slideshow-presentation"
         [theme]="'light'"
         [themes]="themes"
@@ -61,7 +61,7 @@ interface Slide {
         [isWorkspaceManagerVisible]="false"
         [workspaces]="workspaces()"
         (isReady)="onReady()"
-      ></kritzel-editor>
+      ></updraw-editor>
     </div>
   `,
   styles: `
@@ -162,7 +162,7 @@ interface Slide {
       position: relative;
     }
 
-    kritzel-editor {
+    updraw-editor {
       display: block;
       width: 100%;
       height: 100%;
@@ -170,15 +170,15 @@ interface Slide {
   `,
 })
 export class SlideshowPresentationComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
   workspaces = signal([
-    new KritzelWorkspace({ objects: this.createSeedSlides() }),
+    new UpdrawWorkspace({ objects: this.createSeedSlides() }),
   ]);
 
   slides: Slide[] = [
-    { title: '1. Welcome to Kritzel', centerX: 0, centerY: 0 },
+    { title: '1. Welcome to Updraw', centerX: 0, centerY: 0 },
     { title: '2. Core Frontend Capabilities', centerX: 1200, centerY: 0 },
     { title: '3. Seamless Presentation Layout', centerX: 2400, centerY: 0 },
   ];
@@ -189,9 +189,9 @@ export class SlideshowPresentationComponent {
     await this.navigateToSlide(0);
   }
 
-  private createSeedSlides(): Array<KritzelShape | KritzelText> {
+  private createSeedSlides(): Array<UpdrawShape | UpdrawText> {
     return [
-      new KritzelShape({
+      new UpdrawShape({
         translateX: -400,
         translateY: -225,
         width: 800,
@@ -201,21 +201,21 @@ export class SlideshowPresentationComponent {
         strokeColor: { light: '#dd0031', dark: '#b30027' },
         strokeWidth: 4,
       }),
-      new KritzelText({
-        text: 'Welcome to Kritzel',
+      new UpdrawText({
+        text: 'Welcome to Updraw',
         translateX: -350,
         translateY: -150,
         fontSize: 36,
         fontColor: { light: '#dd0031', dark: '#ff4d6d' },
       }),
-      new KritzelText({
+      new UpdrawText({
         text: 'A modern vector drawing component for web builders. This workspace demonstrates Slideshow Mode, spacing slide sheets on a virtual horizontal track.\n\nUse the presentation controls above to glide smoothly between slides!',
         translateX: -350,
         translateY: -50,
         fontSize: 20,
         fontColor: { light: '#333333', dark: '#eeeeee' },
       }),
-      new KritzelShape({
+      new UpdrawShape({
         translateX: 200,
         translateY: 50,
         width: 120,
@@ -225,7 +225,7 @@ export class SlideshowPresentationComponent {
         strokeColor: { light: '#1565c0', dark: '#90caf9' },
         strokeWidth: 2,
       }),
-      new KritzelShape({
+      new UpdrawShape({
         translateX: 800,
         translateY: -225,
         width: 800,
@@ -235,21 +235,21 @@ export class SlideshowPresentationComponent {
         strokeColor: { light: '#dd0031', dark: '#b30027' },
         strokeWidth: 4,
       }),
-      new KritzelText({
+      new UpdrawText({
         text: 'Core Frontend Power',
         translateX: 850,
         translateY: -150,
         fontSize: 36,
         fontColor: { light: '#dd0031', dark: '#ff4d6d' },
       }),
-      new KritzelText({
+      new UpdrawText({
         text: 'â€¢ Offline-First Canvas Persistence\nâ€¢ Dynamic Viewport & Navigation Helpers\nâ€¢ Tailored Custom Color Tool Palettes\nâ€¢ Entirely Interactive Drawing Tools',
         translateX: 850,
         translateY: -50,
         fontSize: 20,
         fontColor: { light: '#333333', dark: '#eeeeee' },
       }),
-      new KritzelShape({
+      new UpdrawShape({
         translateX: 1400,
         translateY: 50,
         width: 120,
@@ -259,7 +259,7 @@ export class SlideshowPresentationComponent {
         strokeColor: { light: '#c62828', dark: '#ef9a9a' },
         strokeWidth: 2,
       }),
-      new KritzelShape({
+      new UpdrawShape({
         translateX: 2000,
         translateY: -225,
         width: 800,
@@ -269,21 +269,21 @@ export class SlideshowPresentationComponent {
         strokeColor: { light: '#dd0031', dark: '#b30027' },
         strokeWidth: 4,
       }),
-      new KritzelText({
+      new UpdrawText({
         text: 'Seamless Bounded Layouts',
         translateX: 2050,
         translateY: -150,
         fontSize: 36,
         fontColor: { light: '#dd0031', dark: '#ff4d6d' },
       }),
-      new KritzelText({
+      new UpdrawText({
         text: 'By setting finite limits on the viewport bounds, the user can draw and interact inside the slide card, but cannot pan away to empty space.\n\nCombined with pan animation flows, this makes a wonderful presentation experience.',
         translateX: 2050,
         translateY: -50,
         fontSize: 20,
         fontColor: { light: '#333333', dark: '#eeeeee' },
       }),
-      new KritzelShape({
+      new UpdrawShape({
         translateX: 2600,
         translateY: 50,
         width: 100,

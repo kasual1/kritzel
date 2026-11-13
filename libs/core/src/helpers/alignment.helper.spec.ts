@@ -1,15 +1,15 @@
 import { AlignmentHelper } from './alignment.helper';
-import { KritzelAlignment } from '../enums/alignment.enum';
-import { KritzelBaseObject } from '../classes/objects/base-object.class';
-import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
+import { UpdrawAlignment } from '../enums/alignment.enum';
+import { UpdrawBaseObject } from '../classes/objects/base-object.class';
+import { UpdrawBoundingBox } from '../interfaces/bounding-box.interface';
 
 describe('AlignmentHelper', () => {
   const createMockObject = (
     id: string,
     translateX: number,
     translateY: number,
-    rotatedBoundingBox: KritzelBoundingBox
-  ): Partial<KritzelBaseObject> => ({
+    rotatedBoundingBox: UpdrawBoundingBox
+  ): Partial<UpdrawBaseObject> => ({
     id,
     translateX,
     translateY,
@@ -22,15 +22,15 @@ describe('AlignmentHelper', () => {
     it('should return empty map when less than 2 objects', () => {
       const objects = [
         createMockObject('obj1', 0, 0, { x: 0, y: 0, z: 1, width: 100, height: 50 }),
-      ] as KritzelBaseObject[];
+      ] as UpdrawBaseObject[];
 
-      const result = AlignmentHelper.calculateAlignedPositions(objects, KritzelAlignment.StartHorizontal);
+      const result = AlignmentHelper.calculateAlignedPositions(objects, UpdrawAlignment.StartHorizontal);
 
       expect(result.size).toBe(0);
     });
 
     it('should return empty map when no objects provided', () => {
-      const result = AlignmentHelper.calculateAlignedPositions([], KritzelAlignment.CenterHorizontal);
+      const result = AlignmentHelper.calculateAlignedPositions([], UpdrawAlignment.CenterHorizontal);
 
       expect(result.size).toBe(0);
     });
@@ -41,9 +41,9 @@ describe('AlignmentHelper', () => {
           createMockObject('obj1', 20, 10, { x: 20, y: 10, z: 1, width: 100, height: 50 }),
           createMockObject('obj2', 100, 50, { x: 100, y: 50, z: 1, width: 80, height: 60 }),
           createMockObject('obj3', 60, 30, { x: 60, y: 30, z: 1, width: 120, height: 40 }),
-        ] as KritzelBaseObject[];
+        ] as UpdrawBaseObject[];
 
-        const result = AlignmentHelper.calculateAlignedPositions(objects, KritzelAlignment.StartHorizontal);
+        const result = AlignmentHelper.calculateAlignedPositions(objects, UpdrawAlignment.StartHorizontal);
 
         // Selection left edge is at x=20 (min of all x values)
         expect(result.get('obj1')?.translateX).toBe(20); // Already at left
@@ -57,9 +57,9 @@ describe('AlignmentHelper', () => {
         const objects = [
           createMockObject('obj1', 10, 20, { x: 10, y: 20, z: 1, width: 100, height: 50 }),
           createMockObject('obj2', 100, 50, { x: 100, y: 50, z: 1, width: 80, height: 60 }),
-        ] as KritzelBaseObject[];
+        ] as UpdrawBaseObject[];
 
-        const result = AlignmentHelper.calculateAlignedPositions(objects, KritzelAlignment.EndHorizontal);
+        const result = AlignmentHelper.calculateAlignedPositions(objects, UpdrawAlignment.EndHorizontal);
 
         // Selection right edge is at x=180 (100 + 80)
         // obj1 right should be at 180, so translateX = 180 - 100 = 80
@@ -74,9 +74,9 @@ describe('AlignmentHelper', () => {
         const objects = [
           createMockObject('obj1', 0, 10, { x: 0, y: 10, z: 1, width: 40, height: 50 }),
           createMockObject('obj2', 60, 50, { x: 60, y: 50, z: 1, width: 40, height: 60 }),
-        ] as KritzelBaseObject[];
+        ] as UpdrawBaseObject[];
 
-        const result = AlignmentHelper.calculateAlignedPositions(objects, KritzelAlignment.CenterHorizontal);
+        const result = AlignmentHelper.calculateAlignedPositions(objects, UpdrawAlignment.CenterHorizontal);
 
         // Selection: minX=0, maxX=100 (60+40), centerX=50
         // obj1 center at x=20 (0 + 40/2), should move to 50, so translateX = 30
@@ -92,9 +92,9 @@ describe('AlignmentHelper', () => {
           createMockObject('obj1', 10, 20, { x: 10, y: 20, z: 1, width: 100, height: 50 }),
           createMockObject('obj2', 50, 100, { x: 50, y: 100, z: 1, width: 80, height: 60 }),
           createMockObject('obj3', 30, 60, { x: 30, y: 60, z: 1, width: 120, height: 40 }),
-        ] as KritzelBaseObject[];
+        ] as UpdrawBaseObject[];
 
-        const result = AlignmentHelper.calculateAlignedPositions(objects, KritzelAlignment.StartVertical);
+        const result = AlignmentHelper.calculateAlignedPositions(objects, UpdrawAlignment.StartVertical);
 
         // Selection top edge is at y=20 (min of all y values)
         expect(result.get('obj1')?.translateY).toBe(20); // Already at top
@@ -108,9 +108,9 @@ describe('AlignmentHelper', () => {
         const objects = [
           createMockObject('obj1', 10, 20, { x: 10, y: 20, z: 1, width: 100, height: 50 }),
           createMockObject('obj2', 50, 100, { x: 50, y: 100, z: 1, width: 80, height: 60 }),
-        ] as KritzelBaseObject[];
+        ] as UpdrawBaseObject[];
 
-        const result = AlignmentHelper.calculateAlignedPositions(objects, KritzelAlignment.EndVertical);
+        const result = AlignmentHelper.calculateAlignedPositions(objects, UpdrawAlignment.EndVertical);
 
         // Selection bottom edge is at y=160 (100 + 60)
         // obj1 bottom should be at 160, so translateY = 160 - 50 = 110
@@ -125,9 +125,9 @@ describe('AlignmentHelper', () => {
         const objects = [
           createMockObject('obj1', 10, 0, { x: 10, y: 0, z: 1, width: 100, height: 40 }),
           createMockObject('obj2', 50, 60, { x: 50, y: 60, z: 1, width: 80, height: 40 }),
-        ] as KritzelBaseObject[];
+        ] as UpdrawBaseObject[];
 
-        const result = AlignmentHelper.calculateAlignedPositions(objects, KritzelAlignment.CenterVertical);
+        const result = AlignmentHelper.calculateAlignedPositions(objects, UpdrawAlignment.CenterVertical);
 
         // Selection: minY=0, maxY=100 (60+40), centerY=50
         // obj1 center at y=20 (0 + 40/2), should move to 50, so translateY = 30
@@ -143,9 +143,9 @@ describe('AlignmentHelper', () => {
         const objects = [
           createMockObject('obj1', 10, 10, { x: 5, y: 5, z: 1, width: 30, height: 30 }),
           createMockObject('obj2', 100, 100, { x: 95, y: 95, z: 1, width: 30, height: 30 }),
-        ] as KritzelBaseObject[];
+        ] as UpdrawBaseObject[];
 
-        const result = AlignmentHelper.calculateAlignedPositions(objects, KritzelAlignment.StartHorizontal);
+        const result = AlignmentHelper.calculateAlignedPositions(objects, UpdrawAlignment.StartHorizontal);
 
         // Selection left edge is at x=5
         // obj1: offset = 5 - 10 = -5, newTranslateX = 5 - (-5) = 10 (unchanged)
@@ -159,9 +159,9 @@ describe('AlignmentHelper', () => {
       const objects = [
         createMockObject('obj1', 10, 20, { x: 10, y: 20, z: 1, width: 100, height: 50 }),
         createMockObject('obj2', 50, 100, { x: 50, y: 100, z: 1, width: 80, height: 60 }),
-      ] as KritzelBaseObject[];
+      ] as UpdrawBaseObject[];
 
-      const result = AlignmentHelper.calculateAlignedPositions(objects, KritzelAlignment.StartHorizontal);
+      const result = AlignmentHelper.calculateAlignedPositions(objects, UpdrawAlignment.StartHorizontal);
 
       // Y values should remain unchanged
       expect(result.get('obj1')?.translateY).toBe(20);
@@ -172,9 +172,9 @@ describe('AlignmentHelper', () => {
       const objects = [
         createMockObject('obj1', 10, 20, { x: 10, y: 20, z: 1, width: 100, height: 50 }),
         createMockObject('obj2', 50, 100, { x: 50, y: 100, z: 1, width: 80, height: 60 }),
-      ] as KritzelBaseObject[];
+      ] as UpdrawBaseObject[];
 
-      const result = AlignmentHelper.calculateAlignedPositions(objects, KritzelAlignment.StartVertical);
+      const result = AlignmentHelper.calculateAlignedPositions(objects, UpdrawAlignment.StartVertical);
 
       // X values should remain unchanged
       expect(result.get('obj1')?.translateX).toBe(10);

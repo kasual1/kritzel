@@ -1,10 +1,10 @@
-import { KritzelEventHelper } from '../../helpers/event.helper';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
 
-import { KritzelCore } from '../core/core.class';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelBaseHandler } from './base.handler';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawBaseHandler } from './base.handler';
 import { SnapTarget } from '../../interfaces/anchor.interface';
-import { KritzelColorHelper } from '../../helpers/color.helper';
+import { UpdrawColorHelper } from '../../helpers/color.helper';
 
 /** The type of line handle being manipulated: start point, end point, or center control point. */
 export type LineHandleType = 'start' | 'end' | 'center';
@@ -14,7 +14,7 @@ export type LineHandleType = 'start' | 'end' | 'center';
  * Manages dragging of line start/end points and curve control points,
  * including snap-to-object functionality for creating anchored connections.
  */
-export class KritzelLineHandleHandler extends KritzelBaseHandler {
+export class UpdrawLineHandleHandler extends UpdrawBaseHandler {
   initialMouseX = 0;
   initialMouseY = 0;
 
@@ -34,9 +34,9 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
 
   /**
    * Creates a new instance of the line handle handler.
-   * @param core - The KritzelCore instance providing access to the drawing engine and state management.
+   * @param core - The UpdrawCore instance providing access to the drawing engine and state management.
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     super(core);
   }
 
@@ -70,7 +70,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
    */
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      if (KritzelEventHelper.isLeftClick(event)) {
+      if (UpdrawEventHelper.isLeftClick(event)) {
         this.startHandleDrag(event);
       }
     }
@@ -364,7 +364,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
    * @param worldY - The Y coordinate in world/canvas space.
    * @returns An object containing the transformed local X and Y coordinates.
    */
-  private worldToLineLocal(line: KritzelLine, worldX: number, worldY: number): { x: number; y: number } {
+  private worldToLineLocal(line: UpdrawLine, worldX: number, worldY: number): { x: number; y: number } {
     const dx = (worldX - line.translateX) * line.scale;
     const dy = (worldY - line.translateY) * line.scale;
 
@@ -393,7 +393,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
    * @param localY - The Y coordinate in the line's local space.
    * @returns An object containing the transformed world X and Y coordinates.
    */
-  private lineLocalToWorld(line: KritzelLine, localX: number, localY: number): { x: number; y: number } {
+  private lineLocalToWorld(line: UpdrawLine, localX: number, localY: number): { x: number; y: number } {
     const px = localX - line.x;
     const py = localY - line.y;
 
@@ -424,9 +424,9 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
    * @param endX - The new X coordinate for the line's end point in local space.
    * @param endY - The new Y coordinate for the line's end point in local space.
    */
-  private updateLineEndpoint(line: KritzelLine, startX: number, startY: number, endX: number, endY: number): void {
+  private updateLineEndpoint(line: UpdrawLine, startX: number, startY: number, endX: number, endY: number): void {
     // Calculate new bounding box using the static method that accounts for curve extrema
-    const { minX, minY, maxX, maxY } = KritzelLine.calculateBoundingBox(startX, startY, endX, endY, line.controlX, line.controlY, line.strokeWidth);
+    const { minX, minY, maxX, maxY } = UpdrawLine.calculateBoundingBox(startX, startY, endX, endY, line.controlX, line.controlY, line.strokeWidth);
 
     const newWidth = maxX - minX;
     const newHeight = maxY - minY;
@@ -437,7 +437,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
       minY: oldMinY,
       maxX: oldMaxX,
       maxY: oldMaxY,
-    } = KritzelLine.calculateBoundingBox(this.initialStartX, this.initialStartY, this.initialEndX, this.initialEndY, this.initialControlX, this.initialControlY, line.strokeWidth);
+    } = UpdrawLine.calculateBoundingBox(this.initialStartX, this.initialStartY, this.initialEndX, this.initialEndY, this.initialControlX, this.initialControlY, line.strokeWidth);
 
     const oldWidth = oldMaxX - oldMinX;
     const oldHeight = oldMaxY - oldMinY;
@@ -525,18 +525,18 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
 
   /**
    * Retrieves the currently selected line object, if any.
-   * Returns the line only when exactly one object is selected and it is a KritzelLine instance.
+   * Returns the line only when exactly one object is selected and it is an UpdrawLine instance.
    *
-   * @returns The selected KritzelLine object, or null if no single line is selected.
+   * @returns The selected UpdrawLine object, or null if no single line is selected.
    */
-  private getSelectedLine(): KritzelLine | null {
+  private getSelectedLine(): UpdrawLine | null {
     const selectionGroup = this._core.store.selectionGroup;
     if (!selectionGroup || selectionGroup.objects.length !== 1) {
       return null;
     }
 
     const object = selectionGroup.objects[0];
-    if (object instanceof KritzelLine) {
+    if (object instanceof UpdrawLine) {
       return object;
     }
 
@@ -544,7 +544,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
   }
 
   private createIndicatorCandidate(
-    line: KritzelLine,
+    line: UpdrawLine,
     endpoint: 'start' | 'end',
     target: SnapTarget,
     otherEndpointWorld: { x: number; y: number },
@@ -563,7 +563,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
       t: clipInfo?.t,
       edgeX: clipInfo?.edgeX,
       edgeY: clipInfo?.edgeY,
-      lineStroke: KritzelColorHelper.resolveThemeColor(line.stroke, this._core.themeManager.currentTheme),
+      lineStroke: UpdrawColorHelper.resolveThemeColor(line.stroke, this._core.themeManager.currentTheme),
       lineStrokeWidth: line.strokeWidth / line.scale,
       arrowOffset:
         endpoint === 'start'

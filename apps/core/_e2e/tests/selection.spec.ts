@@ -188,8 +188,8 @@ test.describe('Selection', () => {
 
       // Set up listener for the selectionChange event on the engine
       await editorPage.page.evaluate(() => {
-        const engine = document.querySelector('kritzel-engine');
-        if (!engine) throw new Error('kritzel-engine not found');
+        const engine = document.querySelector('updraw-engine');
+        if (!engine) throw new Error('updraw-engine not found');
         (window as any).__selectionChangeReceived = false;
         engine.addEventListener(
           'objectsSelectionChange',

@@ -1,10 +1,10 @@
-import { AGENTIC_CURSOR_MAX_DURATION, AGENTIC_CURSOR_MIN_DURATION, KritzelAgenticCursorManager } from './agentic-cursor.manager';
-import type { KritzelAgenticCursorOptions } from '../../interfaces/agentic-cursor.interface';
+import { AGENTIC_CURSOR_MAX_DURATION, AGENTIC_CURSOR_MIN_DURATION, UpdrawAgenticCursorManager } from './agentic-cursor.manager';
+import type { UpdrawAgenticCursorOptions } from '../../interfaces/agentic-cursor.interface';
 
 jest.mock('../core/core.class');
 
-describe('KritzelAgenticCursorManager', () => {
-  let manager: KritzelAgenticCursorManager;
+describe('UpdrawAgenticCursorManager', () => {
+  let manager: UpdrawAgenticCursorManager;
   let objects: Map<string, any>;
   let state: any;
   let core: any;
@@ -26,7 +26,7 @@ describe('KritzelAgenticCursorManager', () => {
   });
   let cursorCount = 0;
   /** Adds a cursor with a fresh ID unless one is given, as an agent would. */
-  const addCursor = (options: Partial<KritzelAgenticCursorOptions> = {}) => manager.add({ id: `cursor-${++cursorCount}`, appearance: appearance(), ...options });
+  const addCursor = (options: Partial<UpdrawAgenticCursorOptions> = {}) => manager.add({ id: `cursor-${++cursorCount}`, appearance: appearance(), ...options });
 
   beforeEach(() => {
     now = 1000;
@@ -41,7 +41,7 @@ describe('KritzelAgenticCursorManager', () => {
       // No titlebars: the plain screen distance of the rotation handle.
       objectTitlebarManager: { getRotationHandleDistance: () => 15 },
     };
-    manager = new KritzelAgenticCursorManager(core);
+    manager = new UpdrawAgenticCursorManager(core);
   });
 
   afterEach(() => {

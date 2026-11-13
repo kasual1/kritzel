@@ -1,13 +1,13 @@
 import { useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
-  KritzelAgent,
-  KritzelEditor,
-  KritzelIframeObject,
-  KritzelWorkspace,
-  type HTMLKritzelEditorElement,
-  type KritzelObjectElementInfo,
-  type KritzelObjectElementPickEvent,
-} from "@kritzel/react-editor";
+  UpdrawAgent,
+  UpdrawEditor,
+  UpdrawIframeObject,
+  UpdrawWorkspace,
+  type HTMLUpdrawEditorElement,
+  type UpdrawObjectElementInfo,
+  type UpdrawObjectElementPickEvent,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { iframeElementsContent } from "./iframe-elements-content";
@@ -31,15 +31,15 @@ const toggleButtonStyle: CSSProperties = { ...buttonStyle, flexBasis: "100%" };
 const activeButtonStyle: CSSProperties = { borderColor: "#4a7dff", background: "#4a7dff", color: "#ffffff" };
 
 /** Short, readable description of an element inside the iframe, e.g. `checkout "Checkout"`. */
-function describe(element: KritzelObjectElementInfo): string {
-  const name = element.kritzelId ?? element.tagName;
+function describe(element: UpdrawObjectElementInfo): string {
+  const name = element.updrawId ?? element.tagName;
   if (!element.text) return name;
   const text = element.text.length > MAX_TEXT_LENGTH ? `${element.text.slice(0, MAX_TEXT_LENGTH - 1)}…` : element.text;
   return `${name} "${text}"`;
 }
 
-function createPlanObject(): KritzelIframeObject {
-  const object = new KritzelIframeObject({
+function createPlanObject(): UpdrawIframeObject {
+  const object = new UpdrawIframeObject({
     name: "Team plan",
     title: "Team plan",
     content: iframeElementsContent,
@@ -64,10 +64,10 @@ function Row({ label, testId, children }: { label: string; testId: string; child
 }
 
 export function DynamicObjectsIframeElementsPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const planObject = useMemo(() => createPlanObject(), []);
-  const [agent] = useState(() => new KritzelAgent({ id: AGENT, name: "Agent", status: "Pick an element", position: AGENT_START }));
-  const workspaces = useMemo(() => [new KritzelWorkspace({ objects: [planObject] })], [planObject]);
+  const [agent] = useState(() => new UpdrawAgent({ id: AGENT, name: "Agent", status: "Pick an element", position: AGENT_START }));
+  const workspaces = useMemo(() => [new UpdrawWorkspace({ objects: [planObject] })], [planObject]);
   const [hovered, setHovered] = useState(EMPTY);
   const [clicked, setClicked] = useState(EMPTY);
   const [picked, setPicked] = useState(EMPTY);
@@ -116,7 +116,7 @@ export function DynamicObjectsIframeElementsPage() {
     }
   }
 
-  async function handlePick({ objectId, element }: KritzelObjectElementPickEvent) {
+  async function handlePick({ objectId, element }: UpdrawObjectElementPickEvent) {
     setPicked(describe(element));
     setIsPicking(false);
     const editor = editorRef.current;
@@ -125,7 +125,7 @@ export function DynamicObjectsIframeElementsPage() {
     try {
       await editor.setObjectElementPicking(objectId, false);
       await editor.highlightObjectElements(objectId, [{ selector: element.selector, label: "Picked" }]);
-      agent.setStatus(`Looking at ${element.kritzelId ?? element.tagName}`);
+      agent.setStatus(`Looking at ${element.updrawId ?? element.tagName}`);
       // An element target: the agent's cursor moves to the element inside the iframe and follows it from then on.
       await agent.moveTo({ objectId, selector: element.selector });
     } catch (error) {
@@ -135,7 +135,7 @@ export function DynamicObjectsIframeElementsPage() {
 
   return (
     <div style={{ position: "relative", height: "100%" }}>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="dynamic-objects-iframe-elements"
         theme="light"

@@ -3,20 +3,20 @@ import {
   IFRAME_ELEMENT_LOAD_TIMEOUT,
   IFRAME_ELEMENT_MAX_FILL_LENGTH,
   IFRAME_ELEMENT_QUERY_TIMEOUT,
-  KritzelIframeElementBridge,
-  KritzelIframeElementBridgeOwner,
+  UpdrawIframeElementBridge,
+  UpdrawIframeElementBridgeOwner,
   readElementInfo,
   readElementInteraction,
 } from './iframe-element-bridge.class';
 import { IFRAME_ELEMENT_MESSAGES } from './iframe-element-bridge.script';
 
-describe('KritzelIframeElementBridge', () => {
+describe('UpdrawIframeElementBridge', () => {
   const element = (overrides: Record<string, unknown> = {}) => ({
-    selector: '[data-kritzel-id="equals"]',
-    kritzelId: 'equals',
+    selector: '[data-updraw-id="equals"]',
+    updrawId: 'equals',
     tagName: 'button',
     classList: ['operator'],
-    attributes: { 'data-kritzel-id': 'equals', type: 'button' },
+    attributes: { 'data-updraw-id': 'equals', type: 'button' },
     text: '=',
     rect: { x: 10, y: 20, width: 30, height: 40 },
     visibleRect: { x: 10, y: 20, width: 30, height: 35 },
@@ -24,8 +24,8 @@ describe('KritzelIframeElementBridge', () => {
   });
 
   let postMessage: jest.Mock;
-  let owner: KritzelIframeElementBridgeOwner & { isInteractive: boolean; isMounted: boolean; emitHover: jest.Mock; emitClick: jest.Mock; emitPick: jest.Mock };
-  let bridge: KritzelIframeElementBridge;
+  let owner: UpdrawIframeElementBridgeOwner & { isInteractive: boolean; isMounted: boolean; emitHover: jest.Mock; emitClick: jest.Mock; emitPick: jest.Mock };
+  let bridge: UpdrawIframeElementBridge;
 
   const sent = () => postMessage.mock.calls.map(call => call[0]);
   const lastSync = () => sent().filter(message => message.type === IFRAME_ELEMENT_MESSAGES.sync).pop();
@@ -46,7 +46,7 @@ describe('KritzelIframeElementBridge', () => {
       emitClick: jest.fn(),
       emitPick: jest.fn(),
     };
-    bridge = new KritzelIframeElementBridge(owner);
+    bridge = new UpdrawIframeElementBridge(owner);
   });
 
   afterEach(() => {
@@ -56,7 +56,7 @@ describe('KritzelIframeElementBridge', () => {
   describe('state sync', () => {
     it('waits for the page to be ready and then sends the whole state', () => {
       bridge.setHighlights([{ selector: '.key', color: 'red', label: 'Keys' }]);
-      bridge.setPicking(true, { selector: '[data-kritzel-id]', color: 'green' });
+      bridge.setPicking(true, { selector: '[data-updraw-id]', color: 'green' });
       bridge.track('#display');
       expect(postMessage).not.toHaveBeenCalled();
 
@@ -67,7 +67,7 @@ describe('KritzelIframeElementBridge', () => {
         version: 1,
         interactive: true,
         picking: true,
-        pickSelector: '[data-kritzel-id]',
+        pickSelector: '[data-updraw-id]',
         pickColor: 'green',
         highlights: [{ selector: '.key', color: 'red', label: 'Keys' }],
         track: ['#display'],
@@ -102,8 +102,8 @@ describe('KritzelIframeElementBridge', () => {
     it('reads highlight colors from the theme variables of the iframe', () => {
       const getComputedStyle = jest.spyOn(globalThis, 'getComputedStyle').mockReturnValue({
         getPropertyValue: (name: string) => ({
-          '--kritzel-element-highlight-color': ' #ff00ff ',
-          '--kritzel-element-highlight-background-color': 'rgba(1, 2, 3, 0.4)',
+          '--updraw-element-highlight-color': ' #ff00ff ',
+          '--updraw-element-highlight-background-color': 'rgba(1, 2, 3, 0.4)',
         } as Record<string, string>)[name] ?? '',
       } as CSSStyleDeclaration);
 
@@ -148,7 +148,7 @@ describe('KritzelIframeElementBridge', () => {
     });
 
     it('ignores messages that do not belong to the element bridge', () => {
-      expect(receive({ type: 'kritzel-iframe-state', state: {} })).toBe(false);
+      expect(receive({ type: 'updraw-iframe-state', state: {} })).toBe(false);
       expect(receive({})).toBe(false);
     });
   });
@@ -184,7 +184,7 @@ describe('KritzelIframeElementBridge', () => {
       expect(() => bridge.setHighlights([{ selector: 'button[' }])).toThrow('Invalid highlight selector "button["');
       expect(() => bridge.track('#a,,')).toThrow('Invalid element selector "#a,,"');
       await expect(bridge.query('button[')).rejects.toThrow('Invalid element selector "button["');
-      expect(() => bridge.setHighlights([{ selector: '[data-kritzel-id="equals"] > span:nth-of-type(2)' }])).not.toThrow();
+      expect(() => bridge.setHighlights([{ selector: '[data-updraw-id="equals"] > span:nth-of-type(2)' }])).not.toThrow();
       // Only syntax errors count: other failures of the DOM implementation must not reject valid selectors.
       expect(() => bridge.track(':unsupported-by-this-dom')).not.toThrow();
       createDocumentFragment.mockRestore();
@@ -203,7 +203,7 @@ describe('KritzelIframeElementBridge', () => {
     it('emits hovers with the picking state and ignores repeated leaves', () => {
       ready();
       receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
-      expect(owner.emitHover).toHaveBeenLastCalledWith(expect.objectContaining({ selector: '[data-kritzel-id="equals"]' }), false);
+      expect(owner.emitHover).toHaveBeenLastCalledWith(expect.objectContaining({ selector: '[data-updraw-id="equals"]' }), false);
       expect(bridge.hoveredElement?.tagName).toBe('button');
 
       bridge.setPicking(true);
@@ -269,7 +269,7 @@ describe('KritzelIframeElementBridge', () => {
 
       bridge.setPicking(true);
       receive({ type: IFRAME_ELEMENT_MESSAGES.pick, element: element(), altKey: true });
-      expect(owner.emitPick).toHaveBeenCalledWith(expect.objectContaining({ kritzelId: 'equals' }), { shiftKey: false, ctrlKey: false, altKey: true, metaKey: false });
+      expect(owner.emitPick).toHaveBeenCalledWith(expect.objectContaining({ updrawId: 'equals' }), { shiftKey: false, ctrlKey: false, altKey: true, metaKey: false });
 
       owner.isInteractive = false;
       receive({ type: IFRAME_ELEMENT_MESSAGES.pick, element: element() });
@@ -426,7 +426,7 @@ describe('KritzelIframeElementBridge', () => {
         elements: [element(), { selector: 'broken' }, element({ selector: 'button:nth-of-type(2)' }), element({ selector: 'button:nth-of-type(3)' })],
       });
 
-      await expect(promise).resolves.toEqual([expect.objectContaining({ selector: '[data-kritzel-id="equals"]' })]);
+      await expect(promise).resolves.toEqual([expect.objectContaining({ selector: '[data-updraw-id="equals"]' })]);
     });
 
     it('stores the visible part of the first match as the rect of a tracked selector', async () => {
@@ -563,7 +563,7 @@ describe('KritzelIframeElementBridge', () => {
   });
 });
 
-describe('KritzelIframeElementBridge interactions', () => {
+describe('UpdrawIframeElementBridge interactions', () => {
   const element = (overrides: Record<string, unknown> = {}) => ({
     selector: '#play',
     tagName: 'div',
@@ -575,8 +575,8 @@ describe('KritzelIframeElementBridge interactions', () => {
   });
 
   let postMessage: jest.Mock;
-  let owner: KritzelIframeElementBridgeOwner & { isMounted: boolean };
-  let bridge: KritzelIframeElementBridge;
+  let owner: UpdrawIframeElementBridgeOwner & { isMounted: boolean };
+  let bridge: UpdrawIframeElementBridge;
 
   const sent = () => postMessage.mock.calls.map(call => call[0]);
   const requests = () => sent().filter(message => message.type === IFRAME_ELEMENT_MESSAGES.interact);
@@ -598,7 +598,7 @@ describe('KritzelIframeElementBridge interactions', () => {
       emitClick: jest.fn(),
       emitPick: jest.fn(),
     };
-    bridge = new KritzelIframeElementBridge(owner);
+    bridge = new UpdrawIframeElementBridge(owner);
   });
 
   afterEach(() => {

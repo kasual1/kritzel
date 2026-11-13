@@ -1,16 +1,16 @@
 import { useRef, useState, type CSSProperties } from "react";
 import {
   InMemorySyncProvider,
-  KritzelEditor,
-  KritzelLine,
-  KritzelPath,
-  KritzelShape,
+  UpdrawEditor,
+  UpdrawLine,
+  UpdrawPath,
+  UpdrawShape,
   ShapeType,
-  type HTMLKritzelEditorElement,
-  type KritzelBaseObject,
-  type KritzelSyncConfig,
-  type KritzelWorkspace,
-} from "@kritzel/react-editor";
+  type HTMLUpdrawEditorElement,
+  type UpdrawBaseObject,
+  type UpdrawSyncConfig,
+  type UpdrawWorkspace,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
@@ -30,7 +30,7 @@ interface WorkspaceVariant {
 }
 
 const themes = [reactThemeLight, reactThemeDark];
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [InMemorySyncProvider],
 };
 const workspaceVariants: WorkspaceVariant[] = [
@@ -59,9 +59,9 @@ const jsonStyle: CSSProperties = {
   lineHeight: 1.45,
 };
 
-function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
+function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
   return [
-    new KritzelShape({
+    new UpdrawShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -71,7 +71,7 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
       strokeColor: variant.stroke,
       strokeWidth: 3,
     }),
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -82,7 +82,7 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
       strokeWidth: 3,
       rotation: variant.rotation,
     }),
-    new KritzelLine({
+    new UpdrawLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -90,7 +90,7 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
       stroke: variant.accent,
       strokeWidth: 3,
     }),
-    new KritzelPath({
+    new UpdrawPath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -112,9 +112,9 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
 }
 
 export function WorkspacesUpdatePage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const variantIndexRef = useRef(0);
-  const [activeWorkspace, setActiveWorkspace] = useState<KritzelWorkspace | null>(
+  const [activeWorkspace, setActiveWorkspace] = useState<UpdrawWorkspace | null>(
     null,
   );
 
@@ -156,7 +156,7 @@ export function WorkspacesUpdatePage() {
         </span>
       </Toolbar>
       <div style={contentStyle}>
-        <KritzelEditor
+        <UpdrawEditor
           ref={editorRef}
           editorId="workspaces-update"
           theme="light"

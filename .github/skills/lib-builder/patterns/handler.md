@@ -6,14 +6,14 @@
 
 ## Base Class
 
-All handlers extend `KritzelBaseHandler`.
+All handlers extend `UpdrawBaseHandler`.
 
 ```typescript
-import { KritzelBaseHandler } from './base.handler';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawBaseHandler } from './base.handler';
+import { UpdrawCore } from '../core/core.class';
 
-export class MyHandler extends KritzelBaseHandler {
-  constructor(core: KritzelCore) {
+export class MyHandler extends UpdrawBaseHandler {
+  constructor(core: UpdrawCore) {
     super(core);
   }
 }
@@ -36,7 +36,7 @@ Handlers manage specific categories of user interaction that are independent of 
 ## Conventions
 
 - File name: `<domain>.handler.ts` (e.g., `snap.handler.ts`)
-- Receives `KritzelCore` via constructor
+- Receives `UpdrawCore` via constructor
 - Access state via `this._core.store`
 - Handlers are instantiated by the engine and called from the rendering component
 - Keep handlers stateless where possible; use `this._core.store` for shared state
@@ -55,7 +55,7 @@ Recommended options:
 Example approach:
 
 ```typescript
-export class MyHandler extends KritzelBaseHandler {
+export class MyHandler extends UpdrawBaseHandler {
   items: MenuItem[] = [];
 
   setItems(items: MenuItem[] | undefined): void {
@@ -87,4 +87,4 @@ Each shortcut has:
 
 ## Integration
 
-Handlers are typically instantiated and held by `KritzelCore` or the engine component, then invoked from event listeners in the rendering layer.
+Handlers are typically instantiated and held by `UpdrawCore` or the engine component, then invoked from event listeners in the rendering layer.

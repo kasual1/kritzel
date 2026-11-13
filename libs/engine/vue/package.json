@@ -1,8 +1,8 @@
 {
-  "name": "@kritzel/vue-engine",
+  "name": "@updraw/vue-engine",
   "version": "0.6.2",
-  "homepage": "https://kritzel.io/",
-  "description": "Kritzel engine wrapper for Vue.",
+  "homepage": "https://updraw.io/",
+  "description": "Updraw engine wrapper for Vue.",
   "keywords": [
     "infinite canvas",
     "collaboration",
@@ -38,6 +38,6 @@
     "@stencil/vue-output-target": "0.11.8"
   },
   "peerDependencies": {
-    "@kritzel/engine": "^0.6.2"
+    "@updraw/engine": "^0.6.2"
   }
 }

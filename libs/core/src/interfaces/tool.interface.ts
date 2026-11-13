@@ -1,15 +1,15 @@
-import { KritzelBaseTool } from '../classes/tools/base-tool.class';
-import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from './toolbar-item.interface';
+import { UpdrawBaseTool } from '../classes/tools/base-tool.class';
+import { UpdrawBrushToolConfig, UpdrawLineToolConfig, UpdrawShapeToolConfig, UpdrawTextToolConfig } from './toolbar-item.interface';
 
-export type KritzelToolConstructor = new (...args: any[]) => KritzelBaseTool;
+export type UpdrawToolConstructor = new (...args: any[]) => UpdrawBaseTool;
 
-export type KritzelToolConfig = KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig;
+export type UpdrawToolConfig = UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig;
 
-export interface KritzelToolDefinition {
+export interface UpdrawToolDefinition {
   name: string;
-  tool: KritzelToolConstructor | KritzelBaseTool;
-  config?: KritzelToolConfig;
-}export interface KritzelTool {
+  tool: UpdrawToolConstructor | UpdrawBaseTool;
+  config?: UpdrawToolConfig;
+}export interface UpdrawTool {
   name: string;
   toolType: string;
   handlePointerDown(event: PointerEvent): void;

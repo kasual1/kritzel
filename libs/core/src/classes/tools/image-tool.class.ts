@@ -1,9 +1,9 @@
-import { KritzelImage } from '../objects/image.class';
-import { KritzelBaseTool } from './base-tool.class';
+import { UpdrawImage } from '../objects/image.class';
+import { UpdrawBaseTool } from './base-tool.class';
 import imageCompression from 'browser-image-compression';
-import { KritzelCore } from '../core/core.class';
-import { KRITZEL_OBJECT_APPEAR_MAX_BATCH } from '../managers/object-appear.manager';
-import { KritzelImageFileHelper } from '../../helpers/image-file.helper';
+import { UpdrawCore } from '../core/core.class';
+import { UPDRAW_OBJECT_APPEAR_MAX_BATCH } from '../managers/object-appear.manager';
+import { UpdrawImageFileHelper } from '../../helpers/image-file.helper';
 
 /**
  * Image tool for importing and placing images on the canvas.
@@ -15,11 +15,11 @@ import { KritzelImageFileHelper } from '../../helpers/image-file.helper';
  *   3. Intrinsic dimensions are measured from a temporary object URL.
  *   4. Bytes are uploaded through the asset resolver (write-through:
  *      local IndexedDB immediately, remote providers in the background).
- *   5. A `KritzelImage` is created carrying only the resulting asset id
+ *   5. An `UpdrawImage` is created carrying only the resulting asset id
  *      and MIME type, then added to the canvas. The renderer resolves
  *      the id to a URL via the asset resolver.
  */
-export class KritzelImageTool extends KritzelBaseTool {
+export class UpdrawImageTool extends UpdrawBaseTool {
   override toolType = 'image' as const;
 
   /** Hidden file input element for image selection */
@@ -32,11 +32,11 @@ export class KritzelImageTool extends KritzelBaseTool {
   multiImportOffset: number = 20;
 
   /**
-   * Creates a new instance of KritzelImageTool.
+   * Creates a new instance of UpdrawImageTool.
    * Sets up the hidden file input element for image selection.
-   * @param core - The KritzelCore instance that provides access to application state and functionality
+   * @param core - The UpdrawCore instance that provides access to application state and functionality
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     super(core);
     this.setupFileInput();
   }
@@ -98,12 +98,12 @@ export class KritzelImageTool extends KritzelBaseTool {
 
     const prepared = files.map(async file => {
       const preparedFile = await this.prepareImageFile(file);
-      return KritzelImage.fromBlob(this._core, preparedFile);
+      return UpdrawImage.fromBlob(this._core, preparedFile);
     });
 
     Promise.allSettled(prepared)
       .then(results => {
-        const images: KritzelImage[] = [];
+        const images: UpdrawImage[] = [];
         for (const result of results) {
           if (result.status === 'fulfilled') {
             images.push(result.value);
@@ -131,7 +131,7 @@ export class KritzelImageTool extends KritzelBaseTool {
    * @returns 
    */
   private async prepareImageFile(file: File): Promise<File> {
-    if (KritzelImageFileHelper.isGifFile(file)) {
+    if (UpdrawImageFileHelper.isGifFile(file)) {
       return file;
     }
 
@@ -145,9 +145,9 @@ export class KritzelImageTool extends KritzelBaseTool {
    * not fully overlap. All images are selected together and a single
    * batch change/added event is emitted.
    *
-   * @param images - The prepared `KritzelImage` objects to add
+   * @param images - The prepared `UpdrawImage` objects to add
    */
-  private addImagesToStore(images: KritzelImage[]): void {
+  private addImagesToStore(images: UpdrawImage[]): void {
     const baseZIndex = this._core.store.currentZIndex;
 
     images.forEach((image, index) => {
@@ -164,7 +164,7 @@ export class KritzelImageTool extends KritzelBaseTool {
     this._core.selectObjects(images);
     // Picked images play the appear animation, like images that app code adds: all at once, with the selection
     // frame around them, so the frame is never shown around images that haven't appeared yet.
-    if (images.length <= KRITZEL_OBJECT_APPEAR_MAX_BATCH) {
+    if (images.length <= UPDRAW_OBJECT_APPEAR_MAX_BATCH) {
       const selectionGroup = this._core.store.selectionGroup;
       this._core.objectAppearManager.mark(selectionGroup ? [...images, selectionGroup] : images, 0);
     }

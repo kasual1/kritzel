@@ -1,8 +1,8 @@
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelBaseTool } from './base-tool.class';
-import { KritzelCore } from '../core/core.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawBaseTool } from './base-tool.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
 import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
@@ -13,7 +13,7 @@ import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
  * Supports configurable stroke color, width, opacity, and arrow heads.
  * Automatically switches to selection tool after line completion.
  */
-export class KritzelLineTool extends KritzelBaseTool {
+export class UpdrawLineTool extends UpdrawBaseTool {
   override toolType = 'line' as const;
 
   /** The stroke color of the line (supports theme-aware light/dark colors) */
@@ -44,16 +44,16 @@ export class KritzelLineTool extends KritzelBaseTool {
   private _currentLineId: string | null = null;
 
   /**
-   * Creates a new instance of KritzelLineTool.
-   * @param core - The KritzelCore instance that provides access to application state and functionality
+   * Creates a new instance of UpdrawLineTool.
+   * @param core - The UpdrawCore instance that provides access to application state and functionality
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     super(core);
   }
 
   /**
    * Handles pointer down events to start drawing a new line.
-   * Creates a new KritzelLine object at the pointer position with start and end points at the same location.
+   * Creates a new UpdrawLine object at the pointer position with start and end points at the same location.
    * Supports both mouse (left-click) and touch/pen input.
    * @param event - The PointerEvent containing pointer position and input type information
    */
@@ -63,7 +63,7 @@ export class KritzelLineTool extends KritzelBaseTool {
     }
 
     if (event.pointerType === 'mouse') {
-      if (KritzelEventHelper.isLeftClick(event)) {
+      if (UpdrawEventHelper.isLeftClick(event)) {
         this._core.store.state.isDrawing = true;
         const viewportScale = this._core.store.state.scale;
         const lockScale = this._core.store.state.lockDrawingScale;
@@ -74,7 +74,7 @@ export class KritzelLineTool extends KritzelBaseTool {
         this._startX = x;
         this._startY = y;
 
-        const line = KritzelLine.create(this._core, {
+        const line = UpdrawLine.create(this._core, {
           startX: x,
           startY: y,
           endX: x,
@@ -109,7 +109,7 @@ export class KritzelLineTool extends KritzelBaseTool {
         this._startX = x;
         this._startY = y;
 
-        const line = KritzelLine.create(this._core, {
+        const line = UpdrawLine.create(this._core, {
           startX: x,
           startY: y,
           endX: x,
@@ -144,7 +144,7 @@ export class KritzelLineTool extends KritzelBaseTool {
 
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isDrawing && this._currentLineId) {
-        const currentLine = this._core.store.objects.findById(this._currentLineId) as KritzelLine | undefined;
+        const currentLine = this._core.store.objects.findById(this._currentLineId) as UpdrawLine | undefined;
         if (currentLine) {
           const viewportScale = this._core.store.state.scale;
           const lockScale = this._core.store.state.lockDrawingScale;
@@ -152,7 +152,7 @@ export class KritzelLineTool extends KritzelBaseTool {
           const x = (event.clientX - this._core.store.offsetX) / divider;
           const y = (event.clientY - this._core.store.offsetY) / divider;
 
-          const updatedLine = KritzelLine.create(this._core, {
+          const updatedLine = UpdrawLine.create(this._core, {
             startX: this._startX,
             startY: this._startY,
             endX: x,
@@ -179,7 +179,7 @@ export class KritzelLineTool extends KritzelBaseTool {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (activePointers.length === 1 && this._currentLineId) {
-        const currentLine = this._core.store.objects.findById(this._currentLineId) as KritzelLine | undefined;
+        const currentLine = this._core.store.objects.findById(this._currentLineId) as UpdrawLine | undefined;
         if (currentLine) {
           const viewportScale = this._core.store.state.scale;
           const lockScale = this._core.store.state.lockDrawingScale;
@@ -187,7 +187,7 @@ export class KritzelLineTool extends KritzelBaseTool {
           const x = Math.round((activePointers[0].clientX - this._core.store.offsetX) / divider);
           const y = Math.round((activePointers[0].clientY - this._core.store.offsetY) / divider);
 
-          const updatedLine = KritzelLine.create(this._core, {
+          const updatedLine = UpdrawLine.create(this._core, {
             startX: this._startX,
             startY: this._startY,
             endX: x,
@@ -227,7 +227,7 @@ export class KritzelLineTool extends KritzelBaseTool {
         this._core.store.state.isDrawing = false;
 
         if (this._currentLineId) {
-          const currentLine = this._core.store.objects.findById(this._currentLineId) as KritzelLine | undefined;
+          const currentLine = this._core.store.objects.findById(this._currentLineId) as UpdrawLine | undefined;
           if (currentLine) {
             currentLine.isCompleted = true;
             this._core.store.objects.update(currentLine);
@@ -249,7 +249,7 @@ export class KritzelLineTool extends KritzelBaseTool {
         this._core.store.state.isDrawing = false;
 
         if (this._currentLineId) {
-          const currentLine = this._core.store.objects.findById(this._currentLineId) as KritzelLine | undefined;
+          const currentLine = this._core.store.objects.findById(this._currentLineId) as UpdrawLine | undefined;
           if (currentLine) {
             currentLine.isCompleted = true;
             this._core.store.objects.update(currentLine);
@@ -270,11 +270,11 @@ export class KritzelLineTool extends KritzelBaseTool {
   /**
    * Creates a selection group with the drawn line, selects it, and switches to the selection tool.
    * This provides immediate editing capability for the newly drawn line.
-   * @param line - The KritzelLine object to select
+   * @param line - The UpdrawLine object to select
    */
-  private selectLineAndSwitchTool(line: KritzelLine): void {
+  private selectLineAndSwitchTool(line: UpdrawLine): void {
     // Create a selection group with the drawn line
-    const selectionGroup = KritzelSelectionGroup.create(this._core);
+    const selectionGroup = UpdrawSelectionGroup.create(this._core);
     selectionGroup.addOrRemove(line);
     selectionGroup.isSelected = true;
     selectionGroup.rotation = line.rotation;

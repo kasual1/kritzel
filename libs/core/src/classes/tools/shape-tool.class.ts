@@ -1,7 +1,7 @@
-import { KritzelShape } from '../objects/shape.class';
-import { KritzelBaseTool } from './base-tool.class';
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawShape } from '../objects/shape.class';
+import { UpdrawBaseTool } from './base-tool.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpdrawCore } from '../core/core.class';
 import { ShapeType } from '../../enums/shape-type.enum';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
@@ -12,7 +12,7 @@ import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
  * Supports configurable shape type, fill color, stroke color, stroke width, opacity, and text properties.
  * Automatically switches to selection tool after shape completion.
  */
-export class KritzelShapeTool extends KritzelBaseTool {
+export class UpdrawShapeTool extends UpdrawBaseTool {
   override toolType = 'shape' as const;
 
   /** The type of shape to create (rectangle, ellipse, etc.) */
@@ -55,13 +55,13 @@ export class KritzelShapeTool extends KritzelBaseTool {
   private isDrawing: boolean = false;
 
   /** Reference to the shape being drawn */
-  private currentShape: KritzelShape | null = null;
+  private currentShape: UpdrawShape | null = null;
 
   /**
-   * Creates a new instance of KritzelShapeTool.
-   * @param core - The KritzelCore instance that provides access to application state and functionality
+   * Creates a new instance of UpdrawShapeTool.
+   * @param core - The UpdrawCore instance that provides access to application state and functionality
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     super(core);
   }
 
@@ -83,25 +83,25 @@ export class KritzelShapeTool extends KritzelBaseTool {
 
       const activeShape = this._core.store.activeShape;
 
-      if (activeShape === null && object instanceof KritzelShape) {
+      if (activeShape === null && object instanceof UpdrawShape) {
         object.edit(event);
         return;
       }
 
-      if (activeShape !== null && object instanceof KritzelShape) {
+      if (activeShape !== null && object instanceof UpdrawShape) {
         activeShape.save();
         object.edit(event);
         return;
       }
 
-      if (activeShape !== null && object instanceof KritzelShape === false) {
+      if (activeShape !== null && object instanceof UpdrawShape === false) {
         this._core.resetActiveShape();
         this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
         this.continueTitlebarPress(event);
         return;
       }
 
-      if (KritzelEventHelper.isLeftClick(event) === false) {
+      if (UpdrawEventHelper.isLeftClick(event) === false) {
         return;
       }
 
@@ -117,18 +117,18 @@ export class KritzelShapeTool extends KritzelBaseTool {
 
       const activeShape = this._core.store.activeShape;
 
-      if (activeShape === null && object instanceof KritzelShape) {
+      if (activeShape === null && object instanceof UpdrawShape) {
         object.edit(event);
         return;
       }
 
-      if (activeShape !== null && object instanceof KritzelShape) {
+      if (activeShape !== null && object instanceof UpdrawShape) {
         activeShape.save();
         object.edit(event);
         return;
       }
 
-      if (activeShape !== null && object instanceof KritzelShape === false) {
+      if (activeShape !== null && object instanceof UpdrawShape === false) {
         this._core.resetActiveShape();
         this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
         this.continueTitlebarPress(event);
@@ -195,7 +195,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
 
   /**
    * Initializes the shape drawing process at the given screen coordinates.
-   * Creates a new KritzelShape object with initial dimensions of 1x1 pixel.
+   * Creates a new UpdrawShape object with initial dimensions of 1x1 pixel.
    * Follows the same coordinate pattern as LineTool/BrushTool for consistency.
    * @param clientX - The X coordinate in screen/client space
    * @param clientY - The Y coordinate in screen/client space
@@ -210,7 +210,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
     this.isDrawing = true;
 
     // Create shape using screen coordinates, following Path/Line pattern
-    this.currentShape = KritzelShape.create(this._core, {
+    this.currentShape = UpdrawShape.create(this._core, {
       x: this.startX,
       y: this.startY,
       translateX: -this._core.store.state.translateX / divider,

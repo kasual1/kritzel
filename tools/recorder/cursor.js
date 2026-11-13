@@ -1,10 +1,10 @@
 // Injected into every page of the recording context. Playwright's screencast does
-// not capture the OS cursor, so we draw the Kritzel cursor and a click ripple in the DOM.
+// not capture the OS cursor, so we draw the Updraw cursor and a click ripple in the DOM.
 function installRecorderCursor({ svg, hotspot }) {
-	if (window.__kritzelRecorderCursor) {
+	if (window.__updrawRecorderCursor) {
 		return;
 	}
-	window.__kritzelRecorderCursor = true;
+	window.__updrawRecorderCursor = true;
 
 	const STYLE = `
 		html, html * { cursor: none !important; }

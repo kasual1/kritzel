@@ -1,8 +1,8 @@
 ---
 sidebar_label: Objects
 displayed_sidebar: tutorialSidebar
-title: "Objects Concept | Kritzel for Vue"
-description: "Understand the core concept of Objects in Kritzel."
+title: "Objects Concept | Updraw for Vue"
+description: "Understand the core concept of Objects in Updraw."
 heading_badges:
   configuring-objects: Preview
 ---
@@ -13,9 +13,9 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Everything placed on the Kritzel canvas is considered an object. Objects can be either added using a tool from the toolbar or programmatically through the editor's API.
+Everything placed on the Updraw canvas is considered an object. Objects can be either added using a tool from the toolbar or programmatically through the editor's API.
 
-Kritzel comes with the following built-in objects:
+Updraw comes with the following built-in objects:
 
 - [Path](../api-reference/objects.md#path)
 - [Line](../api-reference/objects.md#line)
@@ -69,7 +69,7 @@ You can programmatically retrieve the currently selected objects, select specifi
 
 ## Filtering Objects
 
-Use `getAllObjects()` to retrieve the current canvas objects, or `findObjects()` to return only the objects that match a predicate. `findObjects()` excludes Kritzel's internal selection-related objects.
+Use `getAllObjects()` to retrieve the current canvas objects, or `findObjects()` to return only the objects that match a predicate. `findObjects()` excludes Updraw's internal selection-related objects.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
@@ -99,15 +99,15 @@ Objects' z-index can be changed to control their visual stacking order, for exam
 
 ## Configuring Objects
 
-Bind a `KritzelObjectConfig` to `:objectConfig` to decide in one place which objects can be rotated or resized and which get a [titlebar](./controls.md#object-titlebar). Each option is either a boolean for every object or a function that receives an object and returns a boolean. Decide by type with `instanceof` against the classes your Kritzel package exports, or compare `object.__class__` as below.
+Bind an `UpdrawObjectConfig` to `:objectConfig` to decide in one place which objects can be rotated or resized and which get a [titlebar](./controls.md#object-titlebar). Each option is either a boolean for every object or a function that receives an object and returns a boolean. Decide by type with `instanceof` against the classes your Updraw package exports, or compare `object.__class__` as below.
 
 ```ts
-import type { KritzelObjectConfig } from '@kritzel/vue-editor'
+import type { UpdrawObjectConfig } from '@updraw/vue-editor'
 
-const objectConfig: KritzelObjectConfig = {
+const objectConfig: UpdrawObjectConfig = {
   hasTitlebar: object => !!object.name,
-  isRotatable: object => object.__class__ !== 'KritzelText',
-  isResizable: object => object.__class__ !== 'KritzelImage',
+  isRotatable: object => object.__class__ !== 'UpdrawText',
+  isResizable: object => object.__class__ !== 'UpdrawImage',
 }
 ```
 

@@ -1,22 +1,22 @@
-import { KritzelCursorHelper } from './cursor.helper';
+import { UpdrawCursorHelper } from './cursor.helper';
 
 jest.mock('../classes/registries/icon-registry.class', () => ({
-  KritzelIconRegistry: {
+  UpdrawIconRegistry: {
     get: jest.fn(),
   },
 }));
 
-import { KritzelIconRegistry } from '../classes/registries/icon-registry.class';
+import { UpdrawIconRegistry } from '../classes/registries/icon-registry.class';
 
-const mockedGet = KritzelIconRegistry.get as jest.Mock;
+const mockedGet = UpdrawIconRegistry.get as jest.Mock;
 
 const FAKE_SVG = '<svg width="24" height="24"><path d="M0 0" fill="currentColor"/></svg>';
 
-describe('KritzelCursorHelper', () => {
+describe('UpdrawCursorHelper', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Reset the cached pointer cursor
-    (KritzelCursorHelper as any)._pointerCursor = null;
+    (UpdrawCursorHelper as any)._pointerCursor = null;
   });
 
   describe('getCursor', () => {
@@ -24,7 +24,7 @@ describe('KritzelCursorHelper', () => {
       mockedGet.mockReturnValue(undefined);
       const spy = jest.spyOn(console, 'warn').mockImplementation();
 
-      const result = KritzelCursorHelper.getCursor({ iconName: 'unknown' });
+      const result = UpdrawCursorHelper.getCursor({ iconName: 'unknown' });
 
       expect(result).toBe('auto');
       expect(spy).toHaveBeenCalledWith('Icon "unknown" not found in registry.');
@@ -34,7 +34,7 @@ describe('KritzelCursorHelper', () => {
     it('should look up "mousePointer" when iconName is "default"', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      KritzelCursorHelper.getCursor({ iconName: 'default' });
+      UpdrawCursorHelper.getCursor({ iconName: 'default' });
 
       expect(mockedGet).toHaveBeenCalledWith('mousePointer');
     });
@@ -42,7 +42,7 @@ describe('KritzelCursorHelper', () => {
     it('should look up the provided iconName directly', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      KritzelCursorHelper.getCursor({ iconName: 'crosshair' });
+      UpdrawCursorHelper.getCursor({ iconName: 'crosshair' });
 
       expect(mockedGet).toHaveBeenCalledWith('crosshair');
     });
@@ -50,7 +50,7 @@ describe('KritzelCursorHelper', () => {
     it('should return a cursor string with data URI', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      const result = KritzelCursorHelper.getCursor({ iconName: 'crosshair' });
+      const result = UpdrawCursorHelper.getCursor({ iconName: 'crosshair' });
 
       expect(result).toMatch(/^url\('data:image\/svg\+xml;charset=utf-8,.+'\) .+ .+, auto$/);
     });
@@ -58,7 +58,7 @@ describe('KritzelCursorHelper', () => {
     it('should use default size of 24', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      const result = KritzelCursorHelper.getCursor({ iconName: 'crosshair' });
+      const result = UpdrawCursorHelper.getCursor({ iconName: 'crosshair' });
 
       // For non-default icons, hotspot is center: size/2 = 12
       expect(result).toContain('12 12, auto');
@@ -67,7 +67,7 @@ describe('KritzelCursorHelper', () => {
     it('should use custom size', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      const result = KritzelCursorHelper.getCursor({ iconName: 'crosshair', size: 32 });
+      const result = UpdrawCursorHelper.getCursor({ iconName: 'crosshair', size: 32 });
 
       // Center hotspot: 32/2 = 16
       expect(result).toContain('16 16, auto');
@@ -76,7 +76,7 @@ describe('KritzelCursorHelper', () => {
     it('should use hotspot (4, 4) for "default" icon', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      const result = KritzelCursorHelper.getCursor({ iconName: 'default' });
+      const result = UpdrawCursorHelper.getCursor({ iconName: 'default' });
 
       expect(result).toContain('4 4, auto');
     });
@@ -84,7 +84,7 @@ describe('KritzelCursorHelper', () => {
     it('should use custom hotspot when provided', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      const result = KritzelCursorHelper.getCursor({ iconName: 'crosshair', hotspot: { x: 2, y: 3 } });
+      const result = UpdrawCursorHelper.getCursor({ iconName: 'crosshair', hotspot: { x: 2, y: 3 } });
 
       expect(result).toContain('2 3, auto');
     });
@@ -92,7 +92,7 @@ describe('KritzelCursorHelper', () => {
     it('should replace currentColor with provided color', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      const result = KritzelCursorHelper.getCursor({ iconName: 'crosshair', color: 'red' });
+      const result = UpdrawCursorHelper.getCursor({ iconName: 'crosshair', color: 'red' });
       const decoded = decodeURIComponent(result);
 
       expect(decoded).toContain('red');
@@ -102,7 +102,7 @@ describe('KritzelCursorHelper', () => {
     it('should default color to black', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      const result = KritzelCursorHelper.getCursor({ iconName: 'crosshair' });
+      const result = UpdrawCursorHelper.getCursor({ iconName: 'crosshair' });
       const decoded = decodeURIComponent(result);
 
       expect(decoded).toContain('black');
@@ -111,7 +111,7 @@ describe('KritzelCursorHelper', () => {
     it('should apply rotation transform', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      const result = KritzelCursorHelper.getCursor({ iconName: 'crosshair', rotation: 45 });
+      const result = UpdrawCursorHelper.getCursor({ iconName: 'crosshair', rotation: 45 });
       const decoded = decodeURIComponent(result);
 
       expect(decoded).toContain('rotate(45 12 12)');
@@ -120,7 +120,7 @@ describe('KritzelCursorHelper', () => {
     it('should default rotation to 0', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      const result = KritzelCursorHelper.getCursor({ iconName: 'crosshair' });
+      const result = UpdrawCursorHelper.getCursor({ iconName: 'crosshair' });
       const decoded = decodeURIComponent(result);
 
       expect(decoded).toContain('rotate(0 12 12)');
@@ -129,7 +129,7 @@ describe('KritzelCursorHelper', () => {
     it('should replace width and height in the SVG content', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      const result = KritzelCursorHelper.getCursor({ iconName: 'crosshair', size: 32 });
+      const result = UpdrawCursorHelper.getCursor({ iconName: 'crosshair', size: 32 });
       const decoded = decodeURIComponent(result);
 
       expect(decoded).toContain('width="32"');
@@ -141,7 +141,7 @@ describe('KritzelCursorHelper', () => {
     it('should call getCursor with "pointer" iconName', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      const result = KritzelCursorHelper.getPointerCursor();
+      const result = UpdrawCursorHelper.getPointerCursor();
 
       expect(mockedGet).toHaveBeenCalledWith('pointer');
       expect(result).toMatch(/^url\('/);
@@ -150,8 +150,8 @@ describe('KritzelCursorHelper', () => {
     it('should cache the result on subsequent calls', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
-      const first = KritzelCursorHelper.getPointerCursor();
-      const second = KritzelCursorHelper.getPointerCursor();
+      const first = UpdrawCursorHelper.getPointerCursor();
+      const second = UpdrawCursorHelper.getPointerCursor();
 
       expect(first).toBe(second);
       // Only called once because the result is cached

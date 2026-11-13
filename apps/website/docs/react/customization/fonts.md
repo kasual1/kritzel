@@ -1,8 +1,8 @@
 ---
 sidebar_label: Fonts
 displayed_sidebar: tutorialSidebar
-title: "Custom Fonts Concept | Kritzel for React"
-description: "Understand the core concept of Custom Fonts in Kritzel."
+title: "Custom Fonts Concept | Updraw for React"
+description: "Understand the core concept of Custom Fonts in Updraw."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,11 +11,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel has a dedicated custom-font system for text objects on the canvas and for the editor UI. Fonts can come from Google Fonts, another hosted stylesheet, or a self-hosted source.
+Updraw has a dedicated custom-font system for text objects on the canvas and for the editor UI. Fonts can come from Google Fonts, another hosted stylesheet, or a self-hosted source.
 
 ## Registering Custom Fonts
 
-Register fonts declaratively with the `customFonts` prop on `<KritzelEditor>` or programmatically with `registerFonts()` through a typed editor ref. Registered fonts immediately become available to the text tool and can also be used by the editor UI.
+Register fonts declaratively with the `customFonts` prop on `<UpdrawEditor>` or programmatically with `registerFonts()` through a typed editor ref. Registered fonts immediately become available to the text tool and can also be used by the editor UI.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"

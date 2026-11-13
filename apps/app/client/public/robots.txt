@@ -13,4 +13,4 @@ Allow: /*.jpg
 Allow: /*.svg
 Allow: /*.ico
 
-Sitemap: https://app.kritzel.io/sitemap.xml
+Sitemap: https://app.updraw.io/sitemap.xml

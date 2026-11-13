@@ -1,21 +1,21 @@
-import { KritzelObjectMap } from '../structures/object-map.structure';
-import { KritzelAgenticCursorManager } from './agentic-cursor.manager';
-import { KritzelAgenticActionManager } from './agentic-action.manager';
-import { KritzelAnchorManager } from './anchor.manager';
-import { KritzelShape } from '../objects/shape.class';
-import { KritzelText } from '../objects/text.class';
-import { KritzelPath } from '../objects/path.class';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelCore } from '../core/core.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelClipboardManager } from './clipboard.manager';
-import { KritzelObjectAppearManager } from './object-appear.manager';
+import { UpdrawObjectMap } from '../structures/object-map.structure';
+import { UpdrawAgenticCursorManager } from './agentic-cursor.manager';
+import { UpdrawAgenticActionManager } from './agentic-action.manager';
+import { UpdrawAnchorManager } from './anchor.manager';
+import { UpdrawShape } from '../objects/shape.class';
+import { UpdrawText } from '../objects/text.class';
+import { UpdrawPath } from '../objects/path.class';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawClipboardManager } from './clipboard.manager';
+import { UpdrawObjectAppearManager } from './object-appear.manager';
 import { lineMidpoint, readLineGeometry } from '../executors/line-handles';
 import { drawLineExecutor } from '../executors/draw-line.executor';
 import { editLineExecutor } from '../executors/edit-line.executor';
-import { KritzelIframeObject } from '../objects/iframe.class';
-import type { KritzelAgenticFill } from '../../interfaces/agentic-action.interface';
+import { UpdrawIframeObject } from '../objects/iframe.class';
+import type { UpdrawAgenticFill } from '../../interfaces/agentic-action.interface';
 
 /** How the test agent's cursor looks; agents own these values in the editor. */
 const AGENT_APPEARANCE = { name: 'Agent', color: '#7C3AED', status: null, visible: true };
@@ -59,9 +59,9 @@ const flushMicrotasks = async () => {
 
 describe('agentic create and transform actions', () => {
   let now: number;
-  let map: KritzelObjectMap<any>;
-  let cursors: KritzelAgenticCursorManager;
-  let actions: KritzelAgenticActionManager;
+  let map: UpdrawObjectMap<any>;
+  let cursors: UpdrawAgenticCursorManager;
+  let actions: UpdrawAgenticActionManager;
   let core: any;
   let tools: any[];
 
@@ -83,7 +83,7 @@ describe('agentic create and transform actions', () => {
   const perform = (action: any, options: any = { instant: true }) => settle(actions.perform('agent', action, options));
 
   const addShape = (x: number, y: number, width: number, height: number) => {
-    const shape = KritzelShape.create(core, { x, y, translateX: 0, translateY: 0, width, height, scale: 1 });
+    const shape = UpdrawShape.create(core, { x, y, translateX: 0, translateY: 0, width, height, scale: 1 });
     map.insert(shape);
     map.stopUndoCapturing();
     return shape;
@@ -146,16 +146,16 @@ describe('agentic create and transform actions', () => {
     };
     // The real insert preparation, as engine.addObject() and the addObject action use it.
     core._store = core.store;
-    core.prepareObjectForInsert = KritzelCore.prototype.prepareObjectForInsert;
-    core.insertPreparedObject = KritzelCore.prototype.insertPreparedObject;
-    core.objectAppearManager = new KritzelObjectAppearManager();
-    core.anchorManager = new KritzelAnchorManager(core);
-    core.clipboardManager = new KritzelClipboardManager(core);
-    map = new KritzelObjectMap<any>();
-    await map.initialize(core as unknown as KritzelCore, 'ws', { providers: [] });
-    cursors = new KritzelAgenticCursorManager(core);
+    core.prepareObjectForInsert = UpdrawCore.prototype.prepareObjectForInsert;
+    core.insertPreparedObject = UpdrawCore.prototype.insertPreparedObject;
+    core.objectAppearManager = new UpdrawObjectAppearManager();
+    core.anchorManager = new UpdrawAnchorManager(core);
+    core.clipboardManager = new UpdrawClipboardManager(core);
+    map = new UpdrawObjectMap<any>();
+    await map.initialize(core as unknown as UpdrawCore, 'ws', { providers: [] });
+    cursors = new UpdrawAgenticCursorManager(core);
     core.agenticCursorManager = cursors;
-    actions = new KritzelAgenticActionManager(core);
+    actions = new UpdrawAgenticActionManager(core);
     cursors.add({ appearance: AGENT_APPEARANCE, id: 'agent', position: { x: 0, y: 0 } });
   });
 
@@ -172,8 +172,8 @@ describe('agentic create and transform actions', () => {
       const result = await perform({ type: 'createShape', x: 100, y: 50, width: 200, height: 80, style: { strokeColor: '#ff0000' } }, {});
 
       expect(result.completed).toBe(true);
-      const shape = map.findById(result.objectIds![0]) as KritzelShape;
-      expect(shape).toBeInstanceOf(KritzelShape);
+      const shape = map.findById(result.objectIds![0]) as UpdrawShape;
+      expect(shape).toBeInstanceOf(UpdrawShape);
       expect(shape.boundingBox.x).toBeCloseTo(100 - shape.padding);
       expect(shape.boundingBox.y).toBeCloseTo(50 - shape.padding);
       expect(shape.width).toBeCloseTo(200);
@@ -188,7 +188,7 @@ describe('agentic create and transform actions', () => {
       core.store.state.lockDrawingScale = false;
       core.store.state.scale = 2;
       const result = await perform({ type: 'createShape', x: 10, y: 20, width: 30, height: 40 });
-      const shape = map.findById(result.objectIds![0]) as KritzelShape;
+      const shape = map.findById(result.objectIds![0]) as UpdrawShape;
       // The shape tool stores screen-like units (world * scale) with scale = viewport scale.
       expect(shape.scale).toBe(2);
       expect(shape.translateX).toBeCloseTo(10);
@@ -200,7 +200,7 @@ describe('agentic create and transform actions', () => {
     it('types text into the new shape and undoes everything as one agent step', async () => {
       const userStack = map.undoManager!.undoStack.length;
       const result = await perform({ type: 'createShape', x: 0, y: 0, width: 100, height: 60, text: 'Hi\nthere' });
-      const shape = map.findById(result.objectIds![0]) as KritzelShape;
+      const shape = map.findById(result.objectIds![0]) as UpdrawShape;
       expect(shape.editor!.state.doc.textContent).toBe('Hithere');
       expect(map.getAgentUndoStackLength('agent')).toBe(1);
       expect(map.undoManager!.undoStack.length).toBe(userStack);
@@ -229,8 +229,8 @@ describe('agentic create and transform actions', () => {
     it('creates a text at the point with the text tool defaults and types it', async () => {
       tools.push({ toolType: 'text', defaultFontSize: 24, defaultFontFamily: 'Georgia', fontSize: 99 });
       const result = await perform({ type: 'createText', x: 40, y: 60, text: 'Hello' }, {});
-      const text = map.findById(result.objectIds![0]) as KritzelText;
-      expect(text).toBeInstanceOf(KritzelText);
+      const text = map.findById(result.objectIds![0]) as UpdrawText;
+      expect(text).toBeInstanceOf(UpdrawText);
       expect(text.translateX).toBe(40);
       expect(text.translateY).toBe(60);
       expect(text.fontSize).toBe(24);
@@ -245,9 +245,9 @@ describe('agentic create and transform actions', () => {
       const created = await perform({ type: 'createText', x: 0, y: 0, text: 'One' });
       const id = created.objectIds![0];
       await perform({ type: 'typeText', objectId: id, text: ' two' });
-      expect((map.findById(id) as KritzelText).editor!.state.doc.textContent).toBe('One two');
+      expect((map.findById(id) as UpdrawText).editor!.state.doc.textContent).toBe('One two');
       await perform({ type: 'typeText', objectId: id, text: 'Fresh', mode: 'replace' });
-      expect((map.findById(id) as KritzelText).editor!.state.doc.textContent).toBe('Fresh');
+      expect((map.findById(id) as UpdrawText).editor!.state.doc.textContent).toBe('Fresh');
       expect(core.engine.emitObjectsUpdated).toHaveBeenLastCalledWith(
         [{ object: map.findById(id), changedProperties: ['content', 'width', 'height'] }],
         { type: 'agent', agentId: 'agent', actionType: 'typeText' },
@@ -255,7 +255,7 @@ describe('agentic create and transform actions', () => {
     });
 
     it('refuses to type into objects that are not text or shapes', async () => {
-      const path = KritzelPath.create(core, { points: [[0, 0], [10, 10]] });
+      const path = UpdrawPath.create(core, { points: [[0, 0], [10, 10]] });
       map.insert(path);
       await expect(perform({ type: 'typeText', objectId: path.id, text: 'x' })).resolves.toMatchObject({ completed: false, reason: 'invalid-target' });
     });
@@ -291,7 +291,7 @@ describe('agentic create and transform actions', () => {
     it('resizes groups with stable child snapshots and unlocks them afterwards', async () => {
       const first = addShape(0, 0, 50, 50);
       const second = addShape(100, 0, 50, 50);
-      const group = KritzelGroup.createFromObjects(core, [first, second]);
+      const group = UpdrawGroup.createFromObjects(core, [first, second]);
       map.insert(group);
       map.stopUndoCapturing();
       const widthBefore = group.boundingBox.width;
@@ -301,7 +301,7 @@ describe('agentic create and transform actions', () => {
       const original = groupAny.captureChildSnapshots.bind(group);
       let capturesWhileLocked = 0;
       groupAny.captureChildSnapshots = () => {
-        if (KritzelGroup.transformLocks.has(group)) capturesWhileLocked++;
+        if (UpdrawGroup.transformLocks.has(group)) capturesWhileLocked++;
         original();
       };
 
@@ -309,13 +309,13 @@ describe('agentic create and transform actions', () => {
 
       expect(result.completed).toBe(true);
       expect(capturesWhileLocked).toBe(0);
-      expect(KritzelGroup.transformLocks.has(group)).toBe(false);
+      expect(UpdrawGroup.transformLocks.has(group)).toBe(false);
       expect(group.boundingBox.width).toBeGreaterThan(widthBefore * 1.5);
     });
 
     it('refuses to resize objects inside a group', async () => {
       const child = addShape(0, 0, 50, 50);
-      const group = KritzelGroup.createFromObjects(core, [child]);
+      const group = UpdrawGroup.createFromObjects(core, [child]);
       map.insert(group);
       await expect(perform({ type: 'resizeObject', objectId: child.id, width: 100 })).resolves.toMatchObject({ reason: 'invalid-target' });
     });
@@ -350,7 +350,7 @@ describe('agentic create and transform actions', () => {
       const shape = addShape(0, 0, 100, 100);
       await perform({ type: 'rotateObject', objectId: shape.id, angle: 45 });
       await perform({ type: 'undo' });
-      expect((map.findById(shape.id) as KritzelShape).rotation).toBeCloseTo(0);
+      expect((map.findById(shape.id) as UpdrawShape).rotation).toBeCloseTo(0);
     });
   });
 
@@ -368,7 +368,7 @@ describe('agentic create and transform actions', () => {
       const result = await perform({ type: 'copyObjects', objectIds: [a.id, b.id], to: { x: 500, y: 400 } }, {});
 
       expect(result.completed).toBe(true);
-      const copies = result.objectIds!.map(id => map.findById(id) as KritzelShape);
+      const copies = result.objectIds!.map(id => map.findById(id) as UpdrawShape);
       expect(copies).toHaveLength(2);
       expect(copies.map(copy => copy.id)).not.toContain(a.id);
       copies.forEach(copy => expect(copy.userId).toBe('agent'));
@@ -383,7 +383,7 @@ describe('agentic create and transform actions', () => {
     it('puts the copies right next to the originals by default and undoes them in one step', async () => {
       const a = addShape(0, 0, 100, 50);
       const [copyId] = (await perform({ type: 'copyObjects', objectIds: [a.id] }, {})).objectIds!;
-      const copy = map.findById(copyId) as KritzelShape;
+      const copy = map.findById(copyId) as UpdrawShape;
       expect(copy.rotatedBoundingBox.x).toBeCloseTo(a.rotatedBoundingBox.x + a.rotatedBoundingBox.width + 24);
       expect(copy.rotatedBoundingBox.y).toBeCloseTo(a.rotatedBoundingBox.y);
 
@@ -395,7 +395,7 @@ describe('agentic create and transform actions', () => {
     it('copies group children and keeps lines between copied objects connected', async () => {
       const first = addShape(0, 0, 50, 50);
       const second = addShape(100, 0, 50, 50);
-      const group = KritzelGroup.createFromObjects(core, [first, second]);
+      const group = UpdrawGroup.createFromObjects(core, [first, second]);
       map.insert(group);
       const other = addShape(0, 200, 50, 50);
       const [lineId] = (await perform({ type: 'connect', from: group.id, to: other.id })).objectIds!;
@@ -403,16 +403,16 @@ describe('agentic create and transform actions', () => {
       const result = await perform({ type: 'copyObjects', objectIds: [group.id, other.id, lineId], to: { x: 600, y: 600 } });
 
       const [groupCopy, otherCopy, lineCopy] = result.objectIds!.map(id => map.findById(id));
-      expect(groupCopy).toBeInstanceOf(KritzelGroup);
-      const childCopies = (groupCopy as KritzelGroup).childIds.map(id => map.findById(id));
+      expect(groupCopy).toBeInstanceOf(UpdrawGroup);
+      const childCopies = (groupCopy as UpdrawGroup).childIds.map(id => map.findById(id));
       expect(childCopies).toHaveLength(2);
       childCopies.forEach(child => {
-        expect(child).toBeInstanceOf(KritzelShape);
+        expect(child).toBeInstanceOf(UpdrawShape);
         expect([first.id, second.id]).not.toContain(child.id);
         expect(child.userId).toBe('agent');
       });
-      expect((lineCopy as KritzelLine).startAnchor?.objectId).toBe(groupCopy.id);
-      expect((lineCopy as KritzelLine).endAnchor?.objectId).toBe(otherCopy.id);
+      expect((lineCopy as UpdrawLine).startAnchor?.objectId).toBe(groupCopy.id);
+      expect((lineCopy as UpdrawLine).endAnchor?.objectId).toBe(otherCopy.id);
     });
 
     it('detaches a copied line from objects that stay behind', async () => {
@@ -422,10 +422,10 @@ describe('agentic create and transform actions', () => {
 
       const result = await perform({ type: 'copyObjects', objectIds: [a.id, lineId], to: { x: 200, y: 400 } });
 
-      const [aCopy, lineCopy] = result.objectIds!.map(id => map.findById(id)) as [KritzelShape, KritzelLine];
+      const [aCopy, lineCopy] = result.objectIds!.map(id => map.findById(id)) as [UpdrawShape, UpdrawLine];
       expect(lineCopy.startAnchor?.objectId).toBe(aCopy.id);
       expect(lineCopy.endAnchor).toBeUndefined();
-      expect((map.findById(lineId) as KritzelLine).endAnchor?.objectId).toBe(b.id);
+      expect((map.findById(lineId) as UpdrawLine).endAnchor?.objectId).toBe(b.id);
     });
 
     it('replaces copied originals in its selection', async () => {
@@ -444,8 +444,8 @@ describe('agentic create and transform actions', () => {
       const result = await perform({ type: 'groupObjects', objectIds: [b.id, a.id] }, {});
 
       expect(result.completed).toBe(true);
-      const group = map.findById(result.objectIds![0]) as KritzelGroup;
-      expect(group).toBeInstanceOf(KritzelGroup);
+      const group = map.findById(result.objectIds![0]) as UpdrawGroup;
+      expect(group).toBeInstanceOf(UpdrawGroup);
       expect(group.childIds).toEqual([a.id, b.id]);
       expect(group.userId).toBe('agent');
       expect(group.zIndex).toBe(Math.max(a.zIndex, b.zIndex));
@@ -460,7 +460,7 @@ describe('agentic create and transform actions', () => {
       const a = addShape(0, 0, 50, 50);
       const b = addShape(100, 0, 50, 50);
       expect(() => actions.perform('agent', { type: 'groupObjects', objectIds: [a.id, a.id] })).toThrow('at least two');
-      const group = KritzelGroup.createFromObjects(core, [b]);
+      const group = UpdrawGroup.createFromObjects(core, [b]);
       map.insert(group);
       await expect(perform({ type: 'groupObjects', objectIds: [a.id, b.id] })).resolves.toMatchObject({ reason: 'invalid-target', objectIds: [b.id] });
     });
@@ -477,7 +477,7 @@ describe('agentic create and transform actions', () => {
     it('dissolves groups as the agent, keeps the children, and undoes it in one step', async () => {
       const a = addShape(0, 0, 50, 50);
       const b = addShape(100, 0, 50, 50);
-      const group = KritzelGroup.createFromObjects(core, [a, b]);
+      const group = UpdrawGroup.createFromObjects(core, [a, b]);
       map.insert(group);
       map.stopUndoCapturing();
       await perform({ type: 'select', objectIds: [group.id] });
@@ -491,7 +491,7 @@ describe('agentic create and transform actions', () => {
       expect(core.engine.emitObjectsRemoved).toHaveBeenCalledWith([expect.objectContaining({ id: group.id })], { type: 'agent', agentId: 'agent', actionType: 'ungroupObjects' });
 
       await perform({ type: 'undo' });
-      expect((map.findById(group.id) as KritzelGroup).childIds).toEqual([a.id, b.id]);
+      expect((map.findById(group.id) as UpdrawGroup).childIds).toEqual([a.id, b.id]);
     });
 
     it('refuses to ungroup objects that are not groups', async () => {
@@ -501,7 +501,7 @@ describe('agentic create and transform actions', () => {
   });
 
   describe('orderObjects', () => {
-    const stack = () => [...map.allObjects()].filter(o => o instanceof KritzelShape).sort((x, y) => x.zIndex - y.zIndex).map(o => o.id);
+    const stack = () => [...map.allObjects()].filter(o => o instanceof UpdrawShape).sort((x, y) => x.zIndex - y.zIndex).map(o => o.id);
 
     it('moves objects to the front, back, forward and backward as the agent', async () => {
       const a = addShape(0, 0, 50, 50);
@@ -561,9 +561,9 @@ describe('agentic create and transform actions', () => {
       tools.push({ toolType: 'brush', size: 9, color: { light: '#123', dark: '#321' } });
       const points = [{ x: 0, y: 0 }, { x: 100, y: 0 }, { x: 100, y: 100 }];
       const result = await perform({ type: 'drawPath', points }, {});
-      const path = map.findById(result.objectIds![0]) as KritzelPath;
+      const path = map.findById(result.objectIds![0]) as UpdrawPath;
 
-      expect(path).toBeInstanceOf(KritzelPath);
+      expect(path).toBeInstanceOf(UpdrawPath);
       expect(path.isCompleted).toBe(true);
       expect(path.strokeWidth).toBe(9);
       expect(path.fill).toEqual({ light: '#123', dark: '#321' });
@@ -586,8 +586,8 @@ describe('agentic create and transform actions', () => {
       const b = addShape(300, 0, 50, 50);
       const result = await perform({ type: 'connect', from: a.id, to: b.id }, {});
 
-      const line = map.findById(result.objectIds![0]) as KritzelLine;
-      expect(line).toBeInstanceOf(KritzelLine);
+      const line = map.findById(result.objectIds![0]) as UpdrawLine;
+      expect(line).toBeInstanceOf(UpdrawLine);
       expect(line.startAnchor).toEqual({ objectId: a.id });
       expect(line.endAnchor).toEqual({ objectId: b.id });
       expect(core.anchorManager.getLinesAnchoredTo(b.id)).toEqual([{ lineId: line.id, endpoint: 'end' }]);
@@ -596,7 +596,7 @@ describe('agentic create and transform actions', () => {
     it('refuses self-connections and lines as ends', async () => {
       const a = addShape(0, 0, 50, 50);
       await expect(perform({ type: 'connect', from: a.id, to: a.id })).resolves.toMatchObject({ reason: 'invalid-target' });
-      const line = KritzelLine.create(core, { startX: 0, startY: 0, endX: 10, endY: 10 });
+      const line = UpdrawLine.create(core, { startX: 0, startY: 0, endX: 10, endY: 10 });
       map.insert(line);
       await expect(perform({ type: 'connect', from: a.id, to: line.id })).resolves.toMatchObject({ reason: 'invalid-target' });
     });
@@ -610,16 +610,16 @@ describe('agentic create and transform actions', () => {
       const controller = new AbortController();
       const promise = actions.perform('agent', { type: 'moveObject', objectId: lineId, to: { x: 500, y: 500 } }, { signal: controller.signal });
       await flushMicrotasks();
-      for (let i = 0; i < 80 && (map.findById(lineId) as KritzelLine).startAnchor; i++) {
+      for (let i = 0; i < 80 && (map.findById(lineId) as UpdrawLine).startAnchor; i++) {
         now += 16;
         cursors.tick(now);
         await flushMicrotasks();
       }
-      expect((map.findById(lineId) as KritzelLine).startAnchor).toBeUndefined();
+      expect((map.findById(lineId) as UpdrawLine).startAnchor).toBeUndefined();
       controller.abort();
       await expect(settle(promise)).resolves.toMatchObject({ reason: 'aborted' });
 
-      const line = map.findById(lineId) as KritzelLine;
+      const line = map.findById(lineId) as UpdrawLine;
       expect(line.startAnchor).toEqual({ objectId: a.id });
       expect(line.endAnchor).toEqual({ objectId: b.id });
       expect(core.anchorManager.getLinesAnchoredTo(a.id)).toEqual([{ lineId, endpoint: 'start' }]);
@@ -630,19 +630,19 @@ describe('agentic create and transform actions', () => {
       const b = addShape(900, 0, 50, 50);
       const promise = actions.perform('agent', { type: 'connect', from: a.id, to: b.id });
       await flushMicrotasks();
-      for (let i = 0; i < 80 && !map.allObjects().some((o: any) => o instanceof KritzelLine); i++) {
+      for (let i = 0; i < 80 && !map.allObjects().some((o: any) => o instanceof UpdrawLine); i++) {
         now += 16;
         cursors.tick(now);
         await flushMicrotasks();
       }
       map.remove((o: any) => o.id === b.id);
       await expect(settle(promise)).resolves.toMatchObject({ completed: false, reason: 'object-removed' });
-      expect(map.allObjects().some((o: any) => o instanceof KritzelLine)).toBe(false);
+      expect(map.allObjects().some((o: any) => o instanceof UpdrawLine)).toBe(false);
     });
   });
   describe('drawLine and editLine', () => {
-    const geometryOf = (id: string) => readLineGeometry(core, map.findById(id) as KritzelLine);
-    const center = (shape: KritzelShape) => ({ x: shape.centerX, y: shape.centerY });
+    const geometryOf = (id: string) => readLineGeometry(core, map.findById(id) as UpdrawLine);
+    const center = (shape: UpdrawShape) => ({ x: shape.centerX, y: shape.centerY });
     const expectPoint = (actual: { x: number; y: number }, expected: { x: number; y: number }) => {
       expect(actual.x).toBeCloseTo(expected.x, 3);
       expect(actual.y).toBeCloseTo(expected.y, 3);
@@ -651,8 +651,8 @@ describe('agentic create and transform actions', () => {
     it('draws a free line between two points, without anchors', async () => {
       const result = await perform({ type: 'drawLine', from: { x: 10, y: 20 }, to: { x: 210, y: 120 } });
 
-      const line = map.findById(result.objectIds![0]) as KritzelLine;
-      expect(line).toBeInstanceOf(KritzelLine);
+      const line = map.findById(result.objectIds![0]) as UpdrawLine;
+      expect(line).toBeInstanceOf(UpdrawLine);
       expect(line.startAnchor).toBeUndefined();
       expect(line.endAnchor).toBeUndefined();
       expectPoint(geometryOf(line.id).start, { x: 10, y: 20 });
@@ -665,13 +665,13 @@ describe('agentic create and transform actions', () => {
       const result = await perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { objectId: box.id } }, {});
       const id = result.objectIds![0];
 
-      const line = map.findById(id) as KritzelLine;
+      const line = map.findById(id) as UpdrawLine;
       expect(line.startAnchor).toBeUndefined();
       expect(line.endAnchor).toEqual({ objectId: box.id });
       expectPoint(geometryOf(id).end, center(box));
 
       await perform({ type: 'moveObject', objectId: box.id, to: { x: 500, y: 400 } });
-      expectPoint(geometryOf(id).end, center(map.findById(box.id) as KritzelShape));
+      expectPoint(geometryOf(id).end, center(map.findById(box.id) as UpdrawShape));
       expectPoint(geometryOf(id).start, { x: 0, y: 0 });
     });
 
@@ -686,7 +686,7 @@ describe('agentic create and transform actions', () => {
 
     it('refuses the same object at both ends, lines as ends and unknown objects', async () => {
       const box = addShape(0, 0, 50, 50);
-      const line = KritzelLine.create(core, { startX: 0, startY: 0, endX: 10, endY: 10 });
+      const line = UpdrawLine.create(core, { startX: 0, startY: 0, endX: 10, endY: 10 });
       map.insert(line);
       await expect(perform({ type: 'drawLine', from: { objectId: box.id }, to: { objectId: box.id } })).resolves.toMatchObject({ reason: 'invalid-target' });
       await expect(perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { objectId: line.id } })).resolves.toMatchObject({ reason: 'invalid-target' });
@@ -707,7 +707,7 @@ describe('agentic create and transform actions', () => {
 
       await perform({ type: 'editLine', lineId: id, to: { x: 400, y: 300 } }, {});
 
-      const line = map.findById(id) as KritzelLine;
+      const line = map.findById(id) as UpdrawLine;
       expect(line.startAnchor).toEqual({ objectId: a.id });
       expect(line.endAnchor).toBeUndefined();
       expect(core.anchorManager.getLinesAnchoredTo(b.id)).toEqual([]);
@@ -721,7 +721,7 @@ describe('agentic create and transform actions', () => {
 
       await perform({ type: 'editLine', lineId: id, from: { objectId: box.id } });
 
-      expect((map.findById(id) as KritzelLine).startAnchor).toEqual({ objectId: box.id });
+      expect((map.findById(id) as UpdrawLine).startAnchor).toEqual({ objectId: box.id });
       expectPoint(geometryOf(id).start, center(box));
       expectPoint(geometryOf(id).end, { x: 100, y: 0 });
     });
@@ -768,16 +768,16 @@ describe('agentic create and transform actions', () => {
       const controller = new AbortController();
       const promise = actions.perform('agent', { type: 'editLine', lineId: id, to: { x: 900, y: 900 } }, { signal: controller.signal });
       await flushMicrotasks();
-      for (let i = 0; i < 120 && (map.findById(id) as KritzelLine).endAnchor; i++) {
+      for (let i = 0; i < 120 && (map.findById(id) as UpdrawLine).endAnchor; i++) {
         now += 16;
         cursors.tick(now);
         await flushMicrotasks();
       }
-      expect((map.findById(id) as KritzelLine).endAnchor).toBeUndefined();
+      expect((map.findById(id) as UpdrawLine).endAnchor).toBeUndefined();
       controller.abort();
       await expect(settle(promise)).resolves.toMatchObject({ reason: 'aborted' });
 
-      expect((map.findById(id) as KritzelLine).endAnchor).toEqual({ objectId: b.id });
+      expect((map.findById(id) as UpdrawLine).endAnchor).toEqual({ objectId: b.id });
       expect(core.anchorManager.getLinesAnchoredTo(b.id)).toEqual([{ lineId: id, endpoint: 'end' }]);
       expectPoint(geometryOf(id).end, before.end);
     });
@@ -808,7 +808,7 @@ describe('agentic create and transform actions', () => {
       const result = await perform({ type: 'setStyle', objectIds: [shape.id], style: { fillColor: '#000000', fontColor: '#ff0000', strokeWidth: 9 } });
 
       expect(result).toEqual({ completed: true, objectIds: [shape.id] });
-      const styled = map.findById(shape.id) as KritzelShape;
+      const styled = map.findById(shape.id) as UpdrawShape;
       expect(styled.fillColor).toEqual({ light: '#000000', dark: '#000000' });
       expect(styled.fontColor).toEqual({ light: '#ff0000', dark: '#ff0000' });
       expect(styled.strokeWidth).toBe(9);
@@ -818,7 +818,7 @@ describe('agentic create and transform actions', () => {
       );
 
       await perform({ type: 'undo' });
-      expect((map.findById(shape.id) as KritzelShape).strokeWidth).not.toBe(9);
+      expect((map.findById(shape.id) as UpdrawShape).strokeWidth).not.toBe(9);
     });
 
     it('maps strokeColor to the color property of strokes and lines and styles group children', async () => {
@@ -826,16 +826,16 @@ describe('agentic create and transform actions', () => {
       const b = addShape(300, 0, 100, 50);
       const [pathId] = (await perform({ type: 'drawPath', points: [{ x: 0, y: 200 }, { x: 80, y: 220 }] })).objectIds!;
       const [lineId] = (await perform({ type: 'connect', from: a.id, to: b.id })).objectIds!;
-      const group = KritzelGroup.createFromObjects(core, [map.findById(pathId), map.findById(lineId)]);
+      const group = UpdrawGroup.createFromObjects(core, [map.findById(pathId), map.findById(lineId)]);
       map.insert(group);
       map.stopUndoCapturing();
 
       const arrows = { end: { enabled: true, style: 'open' as const } };
       await perform({ type: 'setStyle', objectIds: [group.id], style: { strokeColor: '#00ff00', arrows } });
 
-      expect((map.findById(pathId) as KritzelPath).fill).toEqual({ light: '#00ff00', dark: '#00ff00' });
-      expect((map.findById(lineId) as KritzelLine).stroke).toEqual({ light: '#00ff00', dark: '#00ff00' });
-      expect((map.findById(lineId) as KritzelLine).arrows).toEqual(arrows);
+      expect((map.findById(pathId) as UpdrawPath).fill).toEqual({ light: '#00ff00', dark: '#00ff00' });
+      expect((map.findById(lineId) as UpdrawLine).stroke).toEqual({ light: '#00ff00', dark: '#00ff00' });
+      expect((map.findById(lineId) as UpdrawLine).arrows).toEqual(arrows);
     });
 
     it('changes only the arrow ends it is given and keeps the other one', async () => {
@@ -847,7 +847,7 @@ describe('agentic create and transform actions', () => {
       const end = { enabled: true, style: 'triangle' as const };
       await perform({ type: 'setStyle', objectIds: [lineId], style: { arrows: { end } } });
 
-      const line = map.findById(lineId) as KritzelLine;
+      const line = map.findById(lineId) as UpdrawLine;
       expect(line.arrows!.start).toEqual({ enabled: true, style: 'open' });
       expect(line.arrows!.end).toEqual(end);
       expect(line.arrows!.end).not.toBe(end);
@@ -870,7 +870,7 @@ describe('agentic create and transform actions', () => {
 
   describe('addObject', () => {
     it('lets the placed object appear, unlike the shapes an agent draws', async () => {
-      const shape = new KritzelShape({ translateX: 400, translateY: 300, width: 120, height: 80 });
+      const shape = new UpdrawShape({ translateX: 400, translateY: 300, width: 120, height: 80 });
 
       await perform({ type: 'addObject', object: shape }, {});
       const drawn = await perform({ type: 'createShape', x: 0, y: 0, width: 100, height: 60 });
@@ -883,7 +883,7 @@ describe('agentic create and transform actions', () => {
     it('places a pre-built object as the agent, with a fresh ID, and keeps the user selection', async () => {
       core.user = { id: 'human' };
       const held = addShape(0, 0, 50, 50);
-      const selection = Object.create(KritzelSelectionGroup.prototype);
+      const selection = Object.create(UpdrawSelectionGroup.prototype);
       const fields: Record<string, unknown> = {
         id: 'sg-user',
         objectIds: [held.id],
@@ -899,7 +899,7 @@ describe('agentic create and transform actions', () => {
       }
       map.insert(selection);
       map.stopUndoCapturing();
-      const shape = new KritzelShape({ translateX: 400, translateY: 300, width: 120, height: 80 });
+      const shape = new UpdrawShape({ translateX: 400, translateY: 300, width: 120, height: 80 });
       const originalId = shape.id;
 
       const result = await perform({ type: 'addObject', object: shape }, {});
@@ -917,9 +917,9 @@ describe('agentic create and transform actions', () => {
     });
 
     it('adds a group with its children as one step', async () => {
-      const group = new KritzelGroup();
-      const a = new KritzelShape({ translateX: 0, translateY: 0, width: 50, height: 50 });
-      const b = new KritzelShape({ translateX: 100, translateY: 0, width: 50, height: 50 });
+      const group = new UpdrawGroup();
+      const a = new UpdrawShape({ translateX: 0, translateY: 0, width: 50, height: 50 });
+      const b = new UpdrawShape({ translateX: 100, translateY: 0, width: 50, height: 50 });
       group.addChild(a);
       group.addChild(b);
 
@@ -937,8 +937,8 @@ describe('agentic create and transform actions', () => {
     it('refuses a group whose child is already on the canvas and leaves that object alone', async () => {
       const live = addShape(0, 0, 50, 50);
       const liveId = live.id;
-      const group = new KritzelGroup();
-      group.addChild(new KritzelShape({ translateX: 100, translateY: 0, width: 50, height: 50 }));
+      const group = new UpdrawGroup();
+      group.addChild(new UpdrawShape({ translateX: 100, translateY: 0, width: 50, height: 50 }));
       group.addChild(live);
 
       await expect(perform({ type: 'addObject', object: group })).resolves.toEqual({ completed: false, reason: 'invalid-target', objectIds: [liveId] });
@@ -947,9 +947,9 @@ describe('agentic create and transform actions', () => {
     });
 
     it('changes nothing of the object until the insert, which takes the z-index of that moment', async () => {
-      const group = new KritzelGroup();
-      const a = new KritzelShape({ translateX: 0, translateY: 0, width: 50, height: 50 });
-      const b = new KritzelShape({ translateX: 100, translateY: 0, width: 50, height: 50 });
+      const group = new UpdrawGroup();
+      const a = new UpdrawShape({ translateX: 0, translateY: 0, width: 50, height: 50 });
+      const b = new UpdrawShape({ translateX: 100, translateY: 0, width: 50, height: 50 });
       group.addChild(a);
       group.addChild(b);
       const ids = [group.id, a.id, b.id];
@@ -970,7 +970,7 @@ describe('agentic create and transform actions', () => {
       now += 16;
       cursors.tick(now);
       await flushMicrotasks();
-      const other = KritzelShape.create(core, { x: 500, y: 500, translateX: 0, translateY: 0, width: 50, height: 50, scale: 1 });
+      const other = UpdrawShape.create(core, { x: 500, y: 500, translateX: 0, translateY: 0, width: 50, height: 50, scale: 1 });
       other.zIndex = core.store.currentZIndex;
       map.insert(other);
       map.stopUndoCapturing();
@@ -982,7 +982,7 @@ describe('agentic create and transform actions', () => {
     });
 
     it('refuses at the insert an object that landed on the canvas while the cursor flew', async () => {
-      const shape = new KritzelShape({ translateX: 400, translateY: 300, width: 120, height: 80 });
+      const shape = new UpdrawShape({ translateX: 400, translateY: 300, width: 120, height: 80 });
       const added = actions.perform('agent', { type: 'addObject', object: shape }, {});
       now += 16;
       cursors.tick(now);
@@ -997,8 +997,8 @@ describe('agentic create and transform actions', () => {
     });
 
     it('keeps collecting children added to a group after a stopped addObject', async () => {
-      const group = new KritzelGroup();
-      const a = new KritzelShape({ translateX: 0, translateY: 0, width: 50, height: 50 });
+      const group = new UpdrawGroup();
+      const a = new UpdrawShape({ translateX: 0, translateY: 0, width: 50, height: 50 });
       group.addChild(a);
       const controller = new AbortController();
       const stopped = actions.perform('agent', { type: 'addObject', object: group }, { signal: controller.signal });
@@ -1008,7 +1008,7 @@ describe('agentic create and transform actions', () => {
       controller.abort();
       await settle(stopped);
 
-      const b = new KritzelShape({ translateX: 100, translateY: 0, width: 50, height: 50 });
+      const b = new UpdrawShape({ translateX: 100, translateY: 0, width: 50, height: 50 });
       group.addChild(b);
       await expect(perform({ type: 'addObject', object: group })).resolves.toMatchObject({ completed: true });
 
@@ -1018,23 +1018,23 @@ describe('agentic create and transform actions', () => {
     });
 
     it('refuses an empty group and keeps the cursor usable', async () => {
-      const empty = new KritzelGroup();
+      const empty = new UpdrawGroup();
       await expect(settle(actions.perform('agent', { type: 'addObject', object: empty }, {}))).resolves.toEqual({
         completed: false,
         reason: 'invalid-target',
         objectIds: [empty.id],
       });
 
-      const shape = new KritzelShape({ translateX: 10, translateY: 10, width: 50, height: 50 });
+      const shape = new UpdrawShape({ translateX: 10, translateY: 10, width: 50, height: 50 });
       await expect(settle(actions.perform('agent', { type: 'addObject', object: shape }, {}))).resolves.toMatchObject({ completed: true });
       expect(Number.isFinite(cursors.get('agent')!.position.x)).toBe(true);
     });
 
     it('refuses an instance that the group tree holds twice', async () => {
-      const shared = new KritzelShape({ translateX: 0, translateY: 0, width: 50, height: 50 });
-      const inner = new KritzelGroup();
+      const shared = new UpdrawShape({ translateX: 0, translateY: 0, width: 50, height: 50 });
+      const inner = new UpdrawGroup();
       inner.addChild(shared);
-      const outer = new KritzelGroup();
+      const outer = new UpdrawGroup();
       outer.addChild(inner);
       outer.addChild(shared);
 
@@ -1043,14 +1043,14 @@ describe('agentic create and transform actions', () => {
     });
 
     it('refuses a nested group whose children were inserted before', async () => {
-      const inner = new KritzelGroup();
-      inner.addChild(new KritzelShape({ translateX: 0, translateY: 0, width: 50, height: 50 }));
+      const inner = new UpdrawGroup();
+      inner.addChild(new UpdrawShape({ translateX: 0, translateY: 0, width: 50, height: 50 }));
       await expect(perform({ type: 'addObject', object: inner })).resolves.toMatchObject({ completed: true });
       await perform({ type: 'undo' });
 
-      const outer = new KritzelGroup();
+      const outer = new UpdrawGroup();
       outer.addChild(inner);
-      outer.addChild(new KritzelShape({ translateX: 100, translateY: 0, width: 50, height: 50 }));
+      outer.addChild(new UpdrawShape({ translateX: 100, translateY: 0, width: 50, height: 50 }));
 
       await expect(perform({ type: 'addObject', object: outer })).resolves.toEqual({ completed: false, reason: 'invalid-target', objectIds: [inner.id] });
       expect(map.allObjects()).toEqual([]);
@@ -1060,7 +1060,7 @@ describe('agentic create and transform actions', () => {
       const shape = addShape(0, 0, 50, 50);
 
       await expect(perform({ type: 'addObject', object: shape })).resolves.toMatchObject({ completed: false, reason: 'invalid-target' });
-      expect(() => actions.perform('agent', { type: 'addObject', object: { id: 'x' } } as any)).toThrow('must be a Kritzel object');
+      expect(() => actions.perform('agent', { type: 'addObject', object: { id: 'x' } } as any)).toThrow('must be an Updraw object');
     });
 
     describe('with a fill', () => {
@@ -1074,7 +1074,7 @@ describe('agentic create and transform actions', () => {
         promise.catch(() => undefined);
         return { promise, resolve, reject };
       };
-      const widget = (html = '') => new KritzelIframeObject({ name: 'Counter', html, translateX: 100, translateY: 100, width: 200, height: 120 });
+      const widget = (html = '') => new UpdrawIframeObject({ name: 'Counter', html, translateX: 100, translateY: 100, width: 200, height: 120 });
       const copyContent = (placeholder: any, content: any) => {
         placeholder.content = { ...content.content };
       };
@@ -1088,7 +1088,7 @@ describe('agentic create and transform actions', () => {
       };
 
       it('places a loading placeholder, waits for the fill and fills it in as one step', async () => {
-        const fill = deferred<KritzelAgenticFill>();
+        const fill = deferred<UpdrawAgenticFill>();
         const placeholder = widget();
         let settled = false;
         const placing = actions.perform('agent', { type: 'addObject', object: placeholder, fill: fill.promise }, { instant: true });
@@ -1112,7 +1112,7 @@ describe('agentic create and transform actions', () => {
       });
 
       it('rolls the placeholder back when the fill is rejected or the action is stopped', async () => {
-        const rejected = deferred<KritzelAgenticFill>();
+        const rejected = deferred<UpdrawAgenticFill>();
         const first = widget();
         const placing = actions.perform('agent', { type: 'addObject', object: first, fill: rejected.promise }, { instant: true });
         await run(placing);
@@ -1123,7 +1123,7 @@ describe('agentic create and transform actions', () => {
 
         const controller = new AbortController();
         const second = widget();
-        const stopped = actions.perform('agent', { type: 'addObject', object: second, fill: deferred<KritzelAgenticFill>().promise }, { instant: true, signal: controller.signal });
+        const stopped = actions.perform('agent', { type: 'addObject', object: second, fill: deferred<UpdrawAgenticFill>().promise }, { instant: true, signal: controller.signal });
         await run(stopped);
         expect(map.findById(second.id)).toBe(second);
         controller.abort();
@@ -1133,7 +1133,7 @@ describe('agentic create and transform actions', () => {
       });
 
       it('lets the user move the placeholder while it waits, and fills it in where the user put it', async () => {
-        const fill = deferred<KritzelAgenticFill>();
+        const fill = deferred<UpdrawAgenticFill>();
         const placeholder = widget();
         const placing = actions.perform('agent', { type: 'addObject', object: placeholder, fill: fill.promise }, { instant: true });
         await run(placing);
@@ -1148,7 +1148,7 @@ describe('agentic create and transform actions', () => {
       });
 
       it('answers object-removed when the user deletes the placeholder while it waits', async () => {
-        const fill = deferred<KritzelAgenticFill>();
+        const fill = deferred<UpdrawAgenticFill>();
         const placeholder = widget();
         const placing = actions.perform('agent', { type: 'addObject', object: placeholder, fill: fill.promise }, { instant: true });
         await run(placing);
@@ -1163,7 +1163,7 @@ describe('agentic create and transform actions', () => {
       it("makes the user's changes to a waiting placeholder part of the action: a stop removes it, an undo after the fill too", async () => {
         const controller = new AbortController();
         const stopped = widget();
-        const stopping = actions.perform('agent', { type: 'addObject', object: stopped, fill: deferred<KritzelAgenticFill>().promise }, { instant: true, signal: controller.signal });
+        const stopping = actions.perform('agent', { type: 'addObject', object: stopped, fill: deferred<UpdrawAgenticFill>().promise }, { instant: true, signal: controller.signal });
         await run(stopping);
         stopped.translateX = 500;
         map.update(stopped);
@@ -1176,7 +1176,7 @@ describe('agentic create and transform actions', () => {
         await expect(settle(stopping)).resolves.toMatchObject({ reason: 'aborted' });
         expect(map.allObjects()).toEqual([]);
 
-        const fill = deferred<KritzelAgenticFill>();
+        const fill = deferred<UpdrawAgenticFill>();
         const filled = widget();
         const userSteps = map.undoManager!.undoStack.length;
         const placing = actions.perform('agent', { type: 'addObject', object: filled, fill: fill.promise }, { instant: true });
@@ -1193,7 +1193,7 @@ describe('agentic create and transform actions', () => {
       });
 
       it('routes only while the action waits', async () => {
-        const fill = deferred<KritzelAgenticFill>();
+        const fill = deferred<UpdrawAgenticFill>();
         const placeholder = widget();
         const placing = actions.perform('agent', { type: 'addObject', object: placeholder, fill: fill.promise }, { instant: true });
         await run(placing);
@@ -1207,18 +1207,18 @@ describe('agentic create and transform actions', () => {
 
       it('refuses a fill that is not a promise, and a group as the placeholder', () => {
         expect(() => actions.perform('agent', { type: 'addObject', object: widget(), fill: {} as any })).toThrow('"fill" must be a promise.');
-        const group = new KritzelGroup();
+        const group = new UpdrawGroup();
         group.addChild(widget());
-        expect(() => actions.perform('agent', { type: 'addObject', object: group, fill: deferred<KritzelAgenticFill>().promise })).toThrow("A group can't be a placeholder.");
+        expect(() => actions.perform('agent', { type: 'addObject', object: group, fill: deferred<UpdrawAgenticFill>().promise })).toThrow("A group can't be a placeholder.");
       });
     });
   });
 
   describe('updateIframe with a fill', () => {
     const addWidget = async () => {
-      const iframe = new KritzelIframeObject({ name: 'Counter', html: '<b>old</b>', translateX: 100, translateY: 100, width: 200, height: 120 });
+      const iframe = new UpdrawIframeObject({ name: 'Counter', html: '<b>old</b>', translateX: 100, translateY: 100, width: 200, height: 120 });
       await perform({ type: 'addObject', object: iframe });
-      return map.findById(iframe.id) as KritzelIframeObject;
+      return map.findById(iframe.id) as UpdrawIframeObject;
     };
     /** Starts the action and lets it run until it waits for its changes. */
     const start = async (action: any) => {
@@ -1245,7 +1245,7 @@ describe('agentic create and transform actions', () => {
 
       finish({ objectId: iframe.id, name: 'Timer', html: '<b>new</b>' });
       await expect(result).resolves.toEqual({ completed: true, objectIds: [iframe.id] });
-      const current = map.findById(iframe.id) as KritzelIframeObject;
+      const current = map.findById(iframe.id) as UpdrawIframeObject;
       expect(current.isLoading).toBe(false);
       expect(current.html).toBe('<b>new</b>');
       expect(current.name).toBe('Timer');
@@ -1258,7 +1258,7 @@ describe('agentic create and transform actions', () => {
       expect(iframe.isLoading).toBe(true);
       fail(new Error('cancelled'));
       await expect(result).resolves.toMatchObject({ completed: false, reason: 'aborted' });
-      const current = map.findById(iframe.id) as KritzelIframeObject;
+      const current = map.findById(iframe.id) as UpdrawIframeObject;
       expect(current.isLoading).toBe(false);
       expect(current.html).toBe('<b>old</b>');
     });

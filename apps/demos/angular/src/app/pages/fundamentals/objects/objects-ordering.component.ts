@@ -5,10 +5,10 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  KritzelEditor,
-  KritzelBaseObject,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawEditor,
+  UpdrawBaseObject,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -18,7 +18,7 @@ import {
 } from '../../../components/info-panel.component';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 
-function createOverlappingSeedObjects(): KritzelBaseObject[] {
+function createOverlappingSeedObjects(): UpdrawBaseObject[] {
   return createSeedObjects().map((object) => {
     object.translateX -= object.centerX;
     object.translateY -= object.centerY;
@@ -28,7 +28,7 @@ function createOverlappingSeedObjects(): KritzelBaseObject[] {
 
 @Component({
   selector: 'app-objects-ordering',
-  imports: [KritzelEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
+  imports: [UpdrawEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -41,7 +41,7 @@ function createOverlappingSeedObjects(): KritzelBaseObject[] {
       <app-info-panel-toggle [panel]="infoPanel"></app-info-panel-toggle>
     </app-toolbar>
     <div class="content">
-      <kritzel-editor
+      <updraw-editor
         editorId="objects-ordering"
         [theme]="'light'"
         [themes]="themes"
@@ -51,7 +51,7 @@ function createOverlappingSeedObjects(): KritzelBaseObject[] {
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (objectSelectionChange)="handleObjectSelectionChange()"
-      ></kritzel-editor>
+      ></updraw-editor>
       <app-info-panel #infoPanel [hasToolbarToggle]="true">
         <h3>Objects</h3>
         <ul>
@@ -79,7 +79,7 @@ function createOverlappingSeedObjects(): KritzelBaseObject[] {
         min-height: 0;
         position: relative;
       }
-      kritzel-editor {
+      updraw-editor {
         flex: 1;
       }
       app-info-panel {
@@ -109,13 +109,13 @@ function createOverlappingSeedObjects(): KritzelBaseObject[] {
   ],
 })
 export class ObjectsOrderingComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
   private readonly seedObjects = createOverlappingSeedObjects();
-  workspaces = signal([new KritzelWorkspace({ objects: this.seedObjects })]);
-  objects = signal<KritzelBaseObject[]>(this.seedObjects);
+  workspaces = signal([new UpdrawWorkspace({ objects: this.seedObjects })]);
+  objects = signal<UpdrawBaseObject[]>(this.seedObjects);
 
   async handleObjectSelectionChange() {
     this.refreshObjects();
@@ -147,7 +147,7 @@ export class ObjectsOrderingComponent {
   }
 
   private async refreshObjects() {
-    const all = await this.editor.findObjects(obj => obj.__class__ !== 'KritzelSelectionBox');
+    const all = await this.editor.findObjects(obj => obj.__class__ !== 'UpdrawSelectionBox');
     this.objects.set([...all].sort((a, b) => a.zIndex - b.zIndex));
   }
 }

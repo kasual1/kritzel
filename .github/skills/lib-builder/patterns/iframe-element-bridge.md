@@ -2,20 +2,20 @@
 
 ## Scope
 
-Use this pattern when maintaining how hosts observe, pick, highlight, query and point at elements inside the page of a `KritzelIframeObject`: the `objectElementHover`, `objectElementClick` and `objectElementPick` events, the `setObjectElementPicking`, `highlightObjectElements`, `clearObjectElementHighlights` and `queryObjectElements` methods, element targets of agents' cursors (`KritzelAgenticElementTarget`: `{ objectId, selector }`, used by `agent.moveTo()` and the `position` of `KritzelAgentOptions`), and the `elementHighlight` theme tokens. Also use it before adding the capability to another object type.
+Use this pattern when maintaining how hosts observe, pick, highlight, query and point at elements inside the page of an `UpdrawIframeObject`: the `objectElementHover`, `objectElementClick` and `objectElementPick` events, the `setObjectElementPicking`, `highlightObjectElements`, `clearObjectElementHighlights` and `queryObjectElements` methods, element targets of agents' cursors (`UpdrawAgenticElementTarget`: `{ objectId, selector }`, used by `agent.moveTo()` and the `position` of `UpdrawAgentOptions`), and the `elementHighlight` theme tokens. Also use it before adding the capability to another object type.
 
 Primary touchpoints:
-- `libs/core/src/interfaces/object-element.interface.ts` — public types (`KritzelObjectElementInfo`, `KritzelObjectElementRect`, `KritzelObjectElementHighlight`, `KritzelObjectElementPickingOptions`, hover/click/pick event payloads) and the `KritzelElementAwareObject` capability interface
+- `libs/core/src/interfaces/object-element.interface.ts` — public types (`UpdrawObjectElementInfo`, `UpdrawObjectElementRect`, `UpdrawObjectElementHighlight`, `UpdrawObjectElementPickingOptions`, hover/click/pick event payloads) and the `UpdrawElementAwareObject` capability interface
 - `libs/core/src/classes/objects/iframe-element-bridge.script.ts` — `IFRAME_ELEMENT_MESSAGES`, overlay tag, picking attribute and CSS, and `createIframeElementBridgeScript(documentToken)`, the page side as a string
-- `libs/core/src/classes/objects/iframe-element-bridge.class.ts` — `KritzelIframeElementBridge` (host side), `readElementInfo`, `isValidElementSelector`, limits and timeouts
-- `libs/core/src/classes/objects/iframe.class.ts` — `iframeElementBridges` WeakMap, the `KritzelElementAwareObject` implementation, `createSourceDocument()`, message routing, `adoptTransientStateFrom` / `adoptElementStateFrom`, `contentToObjectLocal`
-- `libs/core/src/helpers/object.helper.ts` — `ObjectHelper.isKritzelElementAwareObject` (duck-typed guard)
-- `libs/core/src/interfaces/agentic-cursor.interface.ts` — `KritzelAgenticElementTarget` (part of `KritzelAgenticTarget`) and `KritzelAgenticAttachment.selector`
-- `libs/core/src/classes/managers/agentic-cursor.manager.ts` — element targets (internal machinery behind `KritzelAgent.moveTo()` in `libs/core/src/classes/agent/agent.class.ts`)
+- `libs/core/src/classes/objects/iframe-element-bridge.class.ts` — `UpdrawIframeElementBridge` (host side), `readElementInfo`, `isValidElementSelector`, limits and timeouts
+- `libs/core/src/classes/objects/iframe.class.ts` — `iframeElementBridges` WeakMap, the `UpdrawElementAwareObject` implementation, `createSourceDocument()`, message routing, `adoptTransientStateFrom` / `adoptElementStateFrom`, `contentToObjectLocal`
+- `libs/core/src/helpers/object.helper.ts` — `ObjectHelper.isUpdrawElementAwareObject` (duck-typed guard)
+- `libs/core/src/interfaces/agentic-cursor.interface.ts` — `UpdrawAgenticElementTarget` (part of `UpdrawAgenticTarget`) and `UpdrawAgenticAttachment.selector`
+- `libs/core/src/classes/managers/agentic-cursor.manager.ts` — element targets (internal machinery behind `UpdrawAgent.moveTo()` in `libs/core/src/classes/agent/agent.class.ts`)
 - `libs/core/src/classes/core/core.class.ts` — `reconcileWorkspaceObjects` hands element state to a replacing instance
 - `libs/core/src/interfaces/engine-host.interface.ts` — `emitObjectElementHover` / `emitObjectElementClick` / `emitObjectElementPick`
-- `libs/engine/core/src/components/kritzel-engine/kritzel-engine.tsx` — events, `@Method()`s, `getElementAwareObjectOrThrow`, `refreshObjectElementThemes()` in the `theme` and `themes` watchers
-- `libs/editor/core/src/components/kritzel-editor/kritzel-editor.tsx` — re-emits the three events and forwards the methods
+- `libs/engine/core/src/components/updraw-engine/updraw-engine.tsx` — events, `@Method()`s, `getElementAwareObjectOrThrow`, `refreshObjectElementThemes()` in the `theme` and `themes` watchers
+- `libs/editor/core/src/components/updraw-editor/updraw-editor.tsx` — re-emits the three events and forwards the methods
 - `libs/core/src/interfaces/theme.interface.ts`, `themes/light-theme.ts`, `themes/dark-theme.ts` — `elementHighlight` section (`element-highlight` is in `KNOWN_CATEGORIES` of `scripts/generate-theme-interface.js`)
 
 ## Architecture
@@ -25,20 +25,20 @@ The page is sandboxed (usually `allow-scripts` only, so it has an opaque origin)
 | Half | Where it lives | Responsibility |
 |---|---|---|
 | Page script | `<script>` in the `<head>` of the `srcdoc` built by `createSourceDocument()`, generated by `createIframeElementBridgeScript(documentToken)` | Describes elements, reports hovers, clicks and picks, blocks presses while picking, draws highlights, reports positions of tracked elements, answers queries |
-| Host bridge | One `KritzelIframeElementBridge` per object, stored in the `iframeElementBridges` WeakMap in `iframe.class.ts` | Holds the transient state (picking, highlights, tracked selectors and their rects, pending queries, hovered element), sends it to the page, validates everything the page reports, and emits engine events through its owner |
+| Host bridge | One `UpdrawIframeElementBridge` per object, stored in the `iframeElementBridges` WeakMap in `iframe.class.ts` | Holds the transient state (picking, highlights, tracked selectors and their rects, pending queries, hovered element), sends it to the page, validates everything the page reports, and emits engine events through its owner |
 
 Page script:
 - Plain JavaScript in a template string, wrapped in an IIFE with `'use strict'` so its names can't clash with the content's scripts. It can't import anything; constants are interpolated (`JSON.stringify(IFRAME_ELEMENT_MESSAGES)`, the document token).
 - It is inlined into `srcdoc`, so it must stay free of `</script`, and backslashes must be escaped for the template string (`'\\u2026'`, `/\\s+/g`).
 - It runs in `<head>`, before any script of the content, and registers its capture listeners on `window`. That order lets picking stop presses before the content sees them. Never move it into `<body>` or after the content's script.
 - It posts `ready` on `DOMContentLoaded`, when the content's scripts have run.
-- Highlights are drawn in a `<kritzel-element-overlay>` with a closed shadow root (page CSS can't reach in), `all: initial`, fixed full-viewport position, max `z-index` and `pointer-events: none`. Where supported it is a `popover="manual"`, so it sits in the top layer above the page's modal dialogs and popovers, and it is raised again when the page opens another one. The overlay is excluded from queries, generated selectors, text and picking.
+- Highlights are drawn in a `<updraw-element-overlay>` with a closed shadow root (page CSS can't reach in), `all: initial`, fixed full-viewport position, max `z-index` and `pointer-events: none`. Where supported it is a `popover="manual"`, so it sits in the top layer above the page's modal dialogs and popovers, and it is raised again when the page opens another one. The overlay is excluded from queries, generated selectors, text and picking.
 - A single `requestAnimationFrame` loop draws the highlight boxes and reports tracked rects while anything is active (highlights, tracked selectors, or picking with a hovered element). Clip boxes of ancestors are memoized per frame.
 
 Host bridge:
 - Lives outside the object instance so it is never serialized, cloned, copied or synced. `copy()`, `clone()` and `serialize()` must not reach it.
-- Created lazily by the private `elementBridge` getter. Its owner (`KritzelIframeElementBridgeOwner`) is a small adapter with live getters (`id`, `isInteractive`, `isMounted`), `getIframe()`, `getContentSize()` (`totalWidth` / `totalHeight`), and `emitHover` / `emitClick` / `emitPick`, which call `object._core?.engine?.emitObjectElement*` with the object id.
-- `KritzelIframeObject.handleMessage` checks `event.source === iframe.contentWindow` first and then offers the message to `elementBridge.handleMessage()`. That returns `true` for every bridge message type, even ignored ones, and `false` for the object's own messages (state, pointer, context menu).
+- Created lazily by the private `elementBridge` getter. Its owner (`UpdrawIframeElementBridgeOwner`) is a small adapter with live getters (`id`, `isInteractive`, `isMounted`), `getIframe()`, `getContentSize()` (`totalWidth` / `totalHeight`), and `emitHover` / `emitClick` / `emitPick`, which call `object._core?.engine?.emitObjectElement*` with the object id.
+- `UpdrawIframeObject.handleMessage` checks `event.source === iframe.contentWindow` first and then offers the message to `elementBridge.handleMessage()`. That returns `true` for every bridge message type, even ignored ones, and `false` for the object's own messages (state, pointer, context menu).
 
 ## Message Protocol
 
@@ -46,14 +46,14 @@ All messages are plain objects with a `type` from `IFRAME_ELEMENT_MESSAGES`. Eve
 
 | Type | Direction | Payload | Notes |
 |---|---|---|---|
-| `kritzel-iframe-ready` | page → host | — | Once per document load. The host marks the page ready, syncs, and re-sends pending queries |
-| `kritzel-iframe-element-sync` | host → page | `version`, `interactive`, `picking`, `pickSelector`, `pickColor`, `highlights`, `track`, `theme` | The complete state, sent on every change. The page replaces its state, it never patches it |
-| `kritzel-iframe-element-query` | host → page | `requestId`, `selector`, `limit` | |
-| `kritzel-iframe-element-query-result` | page → host | `requestId`, `elements` or `error` | `error` for selectors the page can't parse |
-| `kritzel-iframe-element-hover` | page → host | `element` (description or `null`), `version` | Mouse and pen only; sent when the resolved element changes |
-| `kritzel-iframe-element-click` | page → host | `element`, modifier keys, `version` | Trusted clicks while not picking. Ignored when the press moved more than `CLICK_SLOP` (6 px); a label click and the click it forwards to its control are reported once |
-| `kritzel-iframe-element-pick` | page → host | `element`, modifier keys, `version` | While picking: on `pointerup` (button 0) of a press the script blocked, or a keyboard click (`detail === 0`). Picking on release also covers disabled controls, which get no `click` |
-| `kritzel-iframe-element-rects` | page → host | `rects`: selector → rect or `null` | Visible rect of the first match of each tracked selector; only sent when one changed. `null` means the element can't be seen |
+| `updraw-iframe-ready` | page → host | — | Once per document load. The host marks the page ready, syncs, and re-sends pending queries |
+| `updraw-iframe-element-sync` | host → page | `version`, `interactive`, `picking`, `pickSelector`, `pickColor`, `highlights`, `track`, `theme` | The complete state, sent on every change. The page replaces its state, it never patches it |
+| `updraw-iframe-element-query` | host → page | `requestId`, `selector`, `limit` | |
+| `updraw-iframe-element-query-result` | page → host | `requestId`, `elements` or `error` | `error` for selectors the page can't parse |
+| `updraw-iframe-element-hover` | page → host | `element` (description or `null`), `version` | Mouse and pen only; sent when the resolved element changes |
+| `updraw-iframe-element-click` | page → host | `element`, modifier keys, `version` | Trusted clicks while not picking. Ignored when the press moved more than `CLICK_SLOP` (6 px); a label click and the click it forwards to its control are reported once |
+| `updraw-iframe-element-pick` | page → host | `element`, modifier keys, `version` | While picking: on `pointerup` (button 0) of a press the script blocked, or a keyboard click (`detail === 0`). Picking on release also covers disabled controls, which get no `click` |
+| `updraw-iframe-element-rects` | page → host | `rects`: selector → rect or `null` | Visible rect of the first match of each tracked selector; only sent when one changed. `null` means the element can't be seen |
 
 Add new types to `IFRAME_ELEMENT_MESSAGES` only. `BRIDGE_MESSAGE_TYPES` is derived from it and decides which messages the bridge consumes.
 
@@ -61,7 +61,7 @@ Add new types to `IFRAME_ELEMENT_MESSAGES` only. `BRIDGE_MESSAGE_TYPES` is deriv
 
 The page runs arbitrary, often LLM-written content, and that content can post any message with any `type` to the parent. Everything from the page is untrusted:
 
-- **Source** — `KritzelIframeObject.handleMessage` drops messages whose `event.source` isn't its iframe's `contentWindow`. The bridge relies on that check.
+- **Source** — `UpdrawIframeObject.handleMessage` drops messages whose `event.source` isn't its iframe's `contentWindow`. The bridge relies on that check.
 - **Document** — messages whose `doc` isn't the current token are consumed and ignored. `beginDocument()` increments the token every time `createSourceDocument()` builds a new `srcdoc`, so messages of a replaced document that were still in flight can't land on the new one.
 - **Shape** — `readElementInfo` requires a `selector`, a `tagName` and a finite, non-negative `rect`, truncates strings (selectors 2000, other strings 500 characters), keeps at most 50 classes and 50 attributes, drops values of the wrong type, and drops an invalid `visibleRect`. Never forward page data without it.
 - **State** — hovers are accepted only while the object is interactive; clicks only while interactive and the page was not picking; picks only while interactive and the page was picking. "Was picking" is judged by `version`: each `sync` gets a new version, `_versions` remembers its picking flag and when a newer state replaced it, and the page sends the version it had applied. A replaced version is accepted for `VERSION_GRACE_PERIOD` (1 s) only, enough for a click that raced with a state change; unknown and expired versions are dropped. After `ready`, version 0 (the page's initial state) is current until the first sync replaces it. This keeps a click that raced with turning picking on a click, but it can't stop a page from reporting fake clicks or picks in the states that allow them — event payloads stay untrusted.
@@ -76,17 +76,17 @@ The page runs arbitrary, often LLM-written content, and that content can post an
 - The host never assumes the page has state. `sync()` posts only while `_isReady`; changes made before `ready` are kept and sent with the first sync.
 - `beginDocument()` runs while each `srcdoc` is built (in `mount()` and in `refreshDocument()` for `setContent`). Toggling `isLoading` does not touch the document: the engine draws its loading placeholder over the mounted iframe. It resets `_isReady` and clears the hover, emitting `element: null` if something was hovered.
 - On `ready`, the bridge marks the page ready, syncs, and posts every pending query again, because queries sent to a previous document are lost with it. A second `ready` for the same document (it reloaded without a new `srcdoc`, for example after the iframe moved in the DOM) clears the hover first.
-- Queries are posted right away when the page is ready and then get `IFRAME_ELEMENT_QUERY_TIMEOUT` (3 s) to answer; otherwise they wait for `ready`. Re-sending a query after a reload never restarts that timer, and every query has an absolute deadline of `IFRAME_ELEMENT_LOAD_TIMEOUT` (15 s) from its creation, so a page that keeps reloading can't hold it (or the element a cursor tracks for it) forever. The page answers queries only after it posted `ready`, so a document that reloads by itself (same token, e.g. after the iframe moved in the DOM) never answers from a half-parsed DOM; on that second `ready` the host re-sends pending queries with a new answer timeout, still capped by the deadline. `onUnmounted()` rejects every pending query, and late answers for unknown `requestId`s are ignored. `KritzelIframeObject.queryElements()` rejects right away when the sandbox has no `allow-scripts`, because the bridge can't run.
+- Queries are posted right away when the page is ready and then get `IFRAME_ELEMENT_QUERY_TIMEOUT` (3 s) to answer; otherwise they wait for `ready`. Re-sending a query after a reload never restarts that timer, and every query has an absolute deadline of `IFRAME_ELEMENT_LOAD_TIMEOUT` (15 s) from its creation, so a page that keeps reloading can't hold it (or the element a cursor tracks for it) forever. The page answers queries only after it posted `ready`, so a document that reloads by itself (same token, e.g. after the iframe moved in the DOM) never answers from a half-parsed DOM; on that second `ready` the host re-sends pending queries with a new answer timeout, still capped by the deadline. `onUnmounted()` rejects every pending query, and late answers for unknown `requestId`s are ignored. `UpdrawIframeObject.queryElements()` rejects right away when the sandbox has no `allow-scripts`, because the bridge can't run.
 - `setIsInteractive()` calls `onInteractivityChange()` when the value changed: the hover is cleared when the object stops being interactive, and the new state is synced so the page drops its hovered element too. The iframe gets `pointer-events: none` while not interactive, so the page receives no pointer input then.
-- Theme changes: the page can't read the engine's CSS variables, so the bridge reads `--kritzel-element-highlight-color`, `-background-color` and `-label-text-color` from the iframe's computed style and sends them with every sync. The engine calls `refreshElementTheme()` on every element-aware object when `theme` or `themes` change.
+- Theme changes: the page can't read the engine's CSS variables, so the bridge reads `--updraw-element-highlight-color`, `-background-color` and `-label-text-color` from the iframe's computed style and sends them with every sync. The engine calls `refreshElementTheme()` on every element-aware object when `theme` or `themes` change.
 - Because picking, highlights and tracked selectors live in the bridge, they survive content reloads and are re-sent on the next `ready`.
 
 ## Adoption
 
 Element state belongs to the object id, not to the instance. Two paths replace an instance with a new one of the same id:
 
-- Synced updates: `KritzelObjectMap` calls `adoptTransientStateFrom(previous)`. `KritzelIframeObject` moves the bridge with `adoptElementStateFrom(previous)` and re-attaches the mounted iframe and its message listener.
-- Workspace reconciliation (`updateWorkspace` with new instances): `KritzelCore.reconcileWorkspaceObjects` detaches the previous instance and then calls the optional `adoptElementStateFrom(previous)`.
+- Synced updates: `UpdrawObjectMap` calls `adoptTransientStateFrom(previous)`. `UpdrawIframeObject` moves the bridge with `adoptElementStateFrom(previous)` and re-attaches the mounted iframe and its message listener.
+- Workspace reconciliation (`updateWorkspace` with new instances): `UpdrawCore.reconcileWorkspaceObjects` detaches the previous instance and then calls the optional `adoptElementStateFrom(previous)`.
 
 Moving the bridge means deleting it from the WeakMap under the previous instance, storing it under the new one, and calling `bridge.attach(newOwner)` so events carry the new instance's id and core. Never copy bridge state onto the instance.
 
@@ -96,18 +96,18 @@ Moving the bridge means deleting it from the WeakMap under the previous instance
 - The page computes the visible rect of the first match of each tracked selector every frame and posts only changes. `visibleRectOf` clips the border box by every ancestor that clips overflow or has `contain: paint | strict | content`, stops at `position: fixed` ancestors, and clips to the page viewport. It returns `null` for elements that aren't rendered, are `visibility: hidden` or `collapse`, have zero size, or are scrolled out of view.
 - On the host, `null` (or a rect clamped away) keeps the last known rect, so a cursor stays where the element was while the page is regenerated. `handleQueryResult` also stores `elements[0].visibleRect` for a tracked selector, so a cursor can start moving right after its lookup.
 - Content coordinates are CSS pixels relative to the iframe viewport, before canvas zoom, object scale and rotation. `contentToObjectLocal` converts them to world units in the object's unrotated local space: `(borderWidth + p) / scale`. The cursor manager applies the anchor factors to the element rect, adds the offset and the `boundingBox` origin, and rotates around the object center.
-- Agents' cursors: `agent.moveTo({ objectId, selector })` hands the move to the cursor manager, which tracks the selector, then calls `queryElements(selector, 1)`. It rejects when nothing matches or the match has no `visibleRect`, and keeps the previous move, attachment and tracked element until the lookup succeeds. Superseding the move or removing the agent (which removes its cursor) resolves it with `completed: false` and untracks the lookup. An agent added with an element `position` (`new KritzelAgent({ position: { objectId, selector } })`) tracks first and starts at the center of the object until a rect is known. While attached, `agent.state.attachedTo.selector` names the element.
+- Agents' cursors: `agent.moveTo({ objectId, selector })` hands the move to the cursor manager, which tracks the selector, then calls `queryElements(selector, 1)`. It rejects when nothing matches or the match has no `visibleRect`, and keeps the previous move, attachment and tracked element until the lookup succeeds. Superseding the move or removing the agent (which removes its cursor) resolves it with `completed: false` and untracks the lookup. An agent added with an element `position` (`new UpdrawAgent({ position: { objectId, selector } })`) tracks first and starts at the center of the object until a rect is known. While attached, `agent.state.attachedTo.selector` names the element.
 
-## Extending to Other Objects (e.g. `KritzelDynamicObject`)
+## Extending to Other Objects (e.g. `UpdrawDynamicObject`)
 
-The engine, the editor and the cursor manager depend only on `KritzelElementAwareObject` through `ObjectHelper.isKritzelElementAwareObject`, never on `KritzelIframeObject`. To add the capability to `KritzelDynamicObject`:
+The engine, the editor and the cursor manager depend only on `UpdrawElementAwareObject` through `ObjectHelper.isUpdrawElementAwareObject`, never on `UpdrawIframeObject`. To add the capability to `UpdrawDynamicObject`:
 
-1. Implement every member of `KritzelElementAwareObject`, plus `adoptElementStateFrom` if instances can be replaced. Keep the state transient: outside the instance (a WeakMap, as here) or excluded from `serialize()`, `copy()` and `clone()`.
-2. Same-document content needs no `postMessage`, but must follow the same description rules: selectors built from `data-kritzel-id`, then `id`, then `:nth-of-type` paths, and only reported when unique; the same text and attribute allow-list; no form values. Move the description, visibility and overlay logic into a shared module both sides use rather than copying the string script.
+1. Implement every member of `UpdrawElementAwareObject`, plus `adoptElementStateFrom` if instances can be replaced. Keep the state transient: outside the instance (a WeakMap, as here) or excluded from `serialize()`, `copy()` and `clone()`.
+2. Same-document content needs no `postMessage`, but must follow the same description rules: selectors built from `data-updraw-id`, then `id`, then `:nth-of-type` paths, and only reported when unique; the same text and attribute allow-list; no form values. Move the description, visibility and overlay logic into a shared module both sides use rather than copying the string script.
 3. Report rects in content coordinates of the object's content box and implement `contentToObjectLocal` for the object's border, padding and scale.
 4. Emit through `core.engine.emitObjectElementHover` / `Click` / `Pick` with the object id: hovers and clicks only while interactive, picks only while picking. Clear the hover (`element: null`) when the object stops being interactive or unmounts.
 5. Picking must stop presses before the content's own listeners, for example with capture listeners on the object container that are registered before the content mounts.
-6. Draw highlights where content CSS can't affect them (a shadow root), above the content's popovers, clipped to the visible part, using `--kritzel-element-highlight-*`, and refresh them in `refreshElementTheme()`.
+6. Draw highlights where content CSS can't affect them (a shadow root), above the content's popovers, clipped to the visible part, using `--updraw-element-highlight-*`, and refresh them in `refreshElementTheme()`.
 7. Update the website docs ("Interacting with iFrame Content", API reference "Object Elements") and the `has no content elements` error expectations in the engine spec.
 
 ## Rules
@@ -119,14 +119,14 @@ The engine, the editor and the cursor manager depend only on `KritzelElementAwar
 - Send the full state on every change and on every `ready`; never rely on the page remembering anything across documents.
 - Reject invalid selectors on the host (`isValidElementSelector`) so callers get an error instead of silence.
 - New public types go into `object-element.interface.ts`, the core barrel and all three wrapper export lists (see the lib-builder Public Exports section).
-- Never write wildcard custom-property names such as `--kritzel-element-highlight-*` in `libs/**/src` files, including comments: the theme generator would emit a bogus token.
+- Never write wildcard custom-property names such as `--updraw-element-highlight-*` in `libs/**/src` files, including comments: the theme generator would emit a bogus token.
 
 ## Testing
 
 - Unit tests run with Jest from the repository root (`npm run test`):
   - `iframe-element-bridge.class.spec.ts` — state sync, validation of host input, hover/click/pick rules (including versions and document tokens), tracking and clamping, queries and timeouts, `readElementInfo`
   - `iframe.class.spec.ts` › `element bridge` — script in `<head>` before the content's scripts, script parses (`new Function`) and contains no `</script`, element-aware guard, sync on ready, new document after reloads, events carry the object id, foreign windows ignored, state transient across serialize/copy, adoption, `contentToObjectLocal`, queries through the page
-  - `agentic-cursor.manager.spec.ts` › `element targets`, `kritzel-engine.spec.ts` › `object elements`, `kritzel-editor.spec.ts` (re-emission and forwarding), `theme.helper.spec.ts` (theme variable count)
+  - `agentic-cursor.manager.spec.ts` › `element targets`, `updraw-engine.spec.ts` › `object elements`, `updraw-editor.spec.ts` (re-emission and forwarding), `theme.helper.spec.ts` (theme variable count)
 - In unit tests, mount with a fake `contentWindow: { postMessage: jest.fn() }` and feed page messages through `handleMessage` with the current `doc` (`bridge.documentToken`) and `version` (`bridge.syncVersion`).
 - The page script only runs in real browsers. jsdom doesn't load `srcdoc` and has no layout, top layer or popovers, so unit tests can only check that the script is generated, parses and is placed correctly. Verify page behavior in Chromium: the Playwright suite `apps/demos/_e2e/tests/advanced-iframe-elements.spec.ts` runs against the `/advanced/dynamic-objects/iframe-elements` demo.
 

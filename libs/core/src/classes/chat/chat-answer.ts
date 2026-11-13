@@ -1,18 +1,18 @@
 import type {
-  KritzelChatMessage,
-  KritzelChatPart,
-  KritzelChatProviderData,
-  KritzelChatStreamEvent,
-  KritzelChatToolCallPart,
-  KritzelChatToolCallState,
-  KritzelChatToolCallUpdate,
-  KritzelChatToolResultPart,
+  UpdrawChatMessage,
+  UpdrawChatPart,
+  UpdrawChatProviderData,
+  UpdrawChatStreamEvent,
+  UpdrawChatToolCallPart,
+  UpdrawChatToolCallState,
+  UpdrawChatToolCallUpdate,
+  UpdrawChatToolResultPart,
 } from '../../interfaces/chat-session.interface';
-import type { KritzelAgentToolCall } from '../../interfaces/agent.interface';
+import type { UpdrawAgentToolCall } from '../../interfaces/agent.interface';
 
 /** What running one tool call gave. `ran`: the tool was called (`false`: there is no such tool). */
 export interface ChatAnswerRunOutcome {
-  result: KritzelChatToolResultPart;
+  result: UpdrawChatToolResultPart;
   ran: boolean;
 }
 
@@ -27,14 +27,14 @@ export interface ChatAnswerOptions {
   /** Result of calls that did not run because the answer failed. */
   interruptedOutput: string;
   /** Receives the progress of the streamed calls. */
-  report: (update: KritzelChatToolCallUpdate) => void;
+  report: (update: UpdrawChatToolCallUpdate) => void;
   /**
    * Runs one call; calls `onRunning` right before its tool runs. A call that began (see `begin`) is finished
    * through its `handle`. Never rejects.
    */
-  run: (call: KritzelChatToolCallPart, onRunning: () => void, handle: KritzelAgentToolCall | null) => Promise<ChatAnswerRunOutcome>;
+  run: (call: UpdrawChatToolCallPart, onRunning: () => void, handle: UpdrawAgentToolCall | null) => Promise<ChatAnswerRunOutcome>;
   /** Begins a streamed call with its tool's `begin`, if the tool has one; `null` otherwise. */
-  begin?: (call: { id: string; name: string }) => KritzelAgentToolCall | null;
+  begin?: (call: { id: string; name: string }) => UpdrawAgentToolCall | null;
 }
 
 /**
@@ -49,16 +49,16 @@ interface StreamedCall {
   name: string;
   inputText: string;
   /** The complete tool-call part, from `ready` on. */
-  part: KritzelChatToolCallPart | null;
+  part: UpdrawChatToolCallPart | null;
   state: CallState;
   /** Its result, once it is queued. */
-  pending: Promise<KritzelChatToolResultPart | null> | null;
+  pending: Promise<UpdrawChatToolResultPart | null> | null;
   /** Whether its part arrived as a `part` event, which runs it while the answer streams when eager. */
   eager: boolean;
   /** Whether it was offered to its tool's `begin`. */
   begun: boolean;
   /** Its begun call, if its tool began it: finished or cancelled exactly once. */
-  handle: KritzelAgentToolCall | null;
+  handle: UpdrawAgentToolCall | null;
 }
 
 /**
@@ -75,8 +75,8 @@ export class ChatAnswer {
   executed = false;
 
   private readonly calls = new Map<string, StreamedCall>();
-  private parts: KritzelChatPart[] = [];
-  private providerData: KritzelChatProviderData | undefined;
+  private parts: UpdrawChatPart[] = [];
+  private providerData: UpdrawChatProviderData | undefined;
   /** The calls run one after another. */
   private tail: Promise<unknown> = Promise.resolve();
   /** Set once the answer ends early: calls that have not started get it as their result. */
@@ -92,7 +92,7 @@ export class ChatAnswer {
   constructor(private readonly options: ChatAnswerOptions) {}
 
   /** Reads a streamed answer into one message, reporting (and, when eager, running) its calls on the way. */
-  async read(stream: AsyncIterable<KritzelChatStreamEvent>, signal: AbortSignal): Promise<KritzelChatMessage> {
+  async read(stream: AsyncIterable<UpdrawChatStreamEvent>, signal: AbortSignal): Promise<UpdrawChatMessage> {
     try {
       for await (const event of stream) {
         if (signal.aborted) {
@@ -117,7 +117,7 @@ export class ChatAnswer {
             continue;
           }
           // Tool calls get their ID on arrival: they can run (and are reported) before the answer ends.
-          const part = isToolCallPart(event.part) ? (normalizePart(event.part) as KritzelChatToolCallPart) : event.part;
+          const part = isToolCallPart(event.part) ? (normalizePart(event.part) as UpdrawChatToolCallPart) : event.part;
           this.parts.push(part);
           if (isToolCallPart(part)) {
             this.complete(part, true);
@@ -145,7 +145,7 @@ export class ChatAnswer {
   }
 
   /** The answer read so far, e.g. when it failed: its text and the calls that completed. */
-  partial(): Omit<KritzelChatMessage, 'role'> {
+  partial(): Omit<UpdrawChatMessage, 'role'> {
     return this.snapshot();
   }
 
@@ -153,7 +153,7 @@ export class ChatAnswer {
    * Runs the calls of the final message that have not run yet, in order, and resolves with the results of all
    * of them. Streamed calls the message does not hold are dropped, unless they already ran.
    */
-  runRest(calls: KritzelChatToolCallPart[]): Promise<KritzelChatToolResultPart[]> {
+  runRest(calls: UpdrawChatToolCallPart[]): Promise<UpdrawChatToolResultPart[]> {
     this.committed = true;
     const used = new Set<StreamedCall>();
     const tracked = calls.map(part => {
@@ -177,7 +177,7 @@ export class ChatAnswer {
       }
     }
     const pending = calls.map((part, index) => tracked[index]?.pending ?? this.schedule(() => this.execute(null, part)));
-    return Promise.all(pending) as Promise<KritzelChatToolResultPart[]>;
+    return Promise.all(pending) as Promise<UpdrawChatToolResultPart[]>;
   }
 
   /**
@@ -231,7 +231,7 @@ export class ChatAnswer {
   }
 
   /** A complete tool-call part. `queue`: from a `part` event, which runs right away when eager. */
-  private complete(part: KritzelChatToolCallPart, queue: boolean): void {
+  private complete(part: UpdrawChatToolCallPart, queue: boolean): void {
     const known = this.calls.get(part.id);
     if (known && known.state !== 'streaming') {
       // A second part with the same ID, or one of a dropped call: not reported; it runs as its own call once the
@@ -259,7 +259,7 @@ export class ChatAnswer {
    * (those stay in the answer as they ran); calls still being written wait for their part. Calls it holds are
    * complete, and run once the answer has ended unless queued.
    */
-  private replace(parts: KritzelChatPart[]): KritzelChatPart[] {
+  private replace(parts: UpdrawChatPart[]): UpdrawChatPart[] {
     const ids = new Set(parts.filter(isToolCallPart).map(part => part.id));
     for (const call of this.calls.values()) {
       if (ids.has(call.id) || call.state === 'streaming') {
@@ -361,7 +361,7 @@ export class ChatAnswer {
     try {
       call.handle = this.options.begin({ id: call.id, name: call.name });
     } catch (error) {
-      console.error(`[Kritzel] Beginning tool call "${call.id}" (${call.name}) failed:`, error);
+      console.error(`[Updraw] Beginning tool call "${call.id}" (${call.name}) failed:`, error);
       call.handle = null;
     }
     if (call.inputText) {
@@ -374,7 +374,7 @@ export class ChatAnswer {
     try {
       call.handle?.update(call.inputText);
     } catch (error) {
-      console.error(`[Kritzel] Tool call "${call.id}" (${call.name}) failed to take its input:`, error);
+      console.error(`[Updraw] Tool call "${call.id}" (${call.name}) failed to take its input:`, error);
       this.endHandle(call);
     }
   }
@@ -384,7 +384,7 @@ export class ChatAnswer {
     const handle = call.handle;
     call.handle = null;
     if (handle) {
-      const report = (error: unknown) => console.error(`[Kritzel] Cancelling tool call "${call.id}" (${call.name}) failed:`, error);
+      const report = (error: unknown) => console.error(`[Updraw] Cancelling tool call "${call.id}" (${call.name}) failed:`, error);
       try {
         this.cancellations.push(Promise.resolve(handle.cancel()).catch(report));
       } catch (error) {
@@ -394,7 +394,7 @@ export class ChatAnswer {
   }
 
   /** The parts so far; calls that ran but were left out by a `message` event are appended. */
-  private snapshot(): Omit<KritzelChatMessage, 'role'> {
+  private snapshot(): Omit<UpdrawChatMessage, 'role'> {
     const ids = new Set(this.parts.filter(isToolCallPart).map(part => part.id));
     const retained = [...this.calls.values()].filter(call => hasStarted(call) && !ids.has(call.id)).map(call => call.part!);
     return { parts: [...this.parts, ...retained], ...(this.providerData ? { providerData: this.providerData } : {}) };
@@ -402,7 +402,7 @@ export class ChatAnswer {
 
   // ─── Running ────────────────────────────────────────────────────────────────
 
-  private enqueue(call: StreamedCall): Promise<KritzelChatToolResultPart | null> {
+  private enqueue(call: StreamedCall): Promise<UpdrawChatToolResultPart | null> {
     call.state = 'queued';
     call.pending = this.schedule(() => this.execute(call, null));
     return call.pending;
@@ -416,7 +416,7 @@ export class ChatAnswer {
   }
 
   /** Runs a streamed call (reported) or a call of a whole answer (`part`, unreported). */
-  private async execute(call: StreamedCall | null, part: KritzelChatToolCallPart | null): Promise<KritzelChatToolResultPart | null> {
+  private async execute(call: StreamedCall | null, part: UpdrawChatToolCallPart | null): Promise<UpdrawChatToolResultPart | null> {
     if (call?.state === 'discarded') {
       return null;
     }
@@ -464,7 +464,7 @@ export class ChatAnswer {
   // ─── Reports ────────────────────────────────────────────────────────────────
 
   /** Every report is a fresh object: listeners never see or change the answer's state. */
-  private emit(call: StreamedCall, state: KritzelChatToolCallState, extra: Partial<KritzelChatToolCallUpdate> = {}): void {
+  private emit(call: StreamedCall, state: UpdrawChatToolCallState, extra: Partial<UpdrawChatToolCallUpdate> = {}): void {
     this.options.report({
       id: call.id,
       name: call.name,
@@ -480,22 +480,22 @@ export class ChatAnswer {
       return;
     }
     this.warned.add(call.id);
-    console.warn(`[Kritzel] ${message}`);
+    console.warn(`[Updraw] ${message}`);
   }
 }
 
 let generatedCallIds = 0;
 
 /** A copy of the part; a tool call without an ID gets one. */
-export function normalizePart(part: KritzelChatPart): KritzelChatPart {
+export function normalizePart(part: UpdrawChatPart): UpdrawChatPart {
   if (part.type === 'tool-call' && (typeof part.id !== 'string' || part.id === '')) {
     return { ...part, id: `call-${Date.now().toString(36)}-${++generatedCallIds}` };
   }
   return { ...part };
 }
 
-export function isToolCallPart(part: unknown): part is KritzelChatToolCallPart {
-  return typeof part === 'object' && part !== null && (part as KritzelChatPart).type === 'tool-call';
+export function isToolCallPart(part: unknown): part is UpdrawChatToolCallPart {
+  return typeof part === 'object' && part !== null && (part as UpdrawChatPart).type === 'tool-call';
 }
 
 /** Whether the call's turn came: it runs or ran, so it can't be taken back. */
@@ -503,11 +503,11 @@ function hasStarted(call: StreamedCall): boolean {
   return call.state === 'taken' || call.state === 'running' || call.state === 'done';
 }
 
-function isPart(part: unknown): part is KritzelChatPart {
+function isPart(part: unknown): part is UpdrawChatPart {
   return typeof part === 'object' && part !== null;
 }
 
-function nameOf(part: KritzelChatToolCallPart): string {
+function nameOf(part: UpdrawChatToolCallPart): string {
   return typeof part.name === 'string' ? part.name : '';
 }
 

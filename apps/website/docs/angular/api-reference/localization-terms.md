@@ -1,21 +1,21 @@
 ---
 sidebar_label: Localization Terms
 displayed_sidebar: tutorialSidebar
-title: "Localization Terms | Kritzel for Angular"
-description: "Reference for all built-in localization keys and their default English text in Kritzel."
+title: "Localization Terms | Updraw for Angular"
+description: "Reference for all built-in localization keys and their default English text in Updraw."
 toc_max_heading_level: 4
 ---
 
 # Localization Terms
 
-This is the API reference for all built-in localization keys in Kritzel. Every key has a default English text that can be overridden by custom locales.
+This is the API reference for all built-in localization keys in Updraw. Every key has a default English text that can be overridden by custom locales.
 
 Override selected keys by providing a partial custom locale. Keys you omit continue to use the default English text.
 
 ```ts
-import { KritzelLocale } from '@kritzel/angular-editor';
+import { UpdrawLocale } from '@updraw/angular-editor';
 
-const customEnglish: KritzelLocale = {
+const customEnglish: UpdrawLocale = {
 	code: 'en',
 	label: 'English',
 	terms: {
@@ -24,11 +24,11 @@ const customEnglish: KritzelLocale = {
 	},
 };
 
-customLocales: KritzelLocale[] = [customEnglish];
+customLocales: UpdrawLocale[] = [customEnglish];
 ```
 
 ```html
-<kritzel-editor [locales]="customLocales"></kritzel-editor>
+<updraw-editor [locales]="customLocales"></updraw-editor>
 ```
 
 ## Built-in localization keys
@@ -124,7 +124,7 @@ customLocales: KritzelLocale[] = [customEnglish];
 | settings.developer.showMigrationInfo.description | Display debug information about data migrations. |
 | settings.categories.about | About |
 | settings.about.title | About |
-| settings.about.description | Kritzel - A drawing application |
+| settings.about.description | Updraw - A drawing application |
 
 ### Export dialog
 
@@ -203,7 +203,7 @@ customLocales: KritzelLocale[] = [customEnglish];
 
 | Key | Default text |
 |------|--------------|
-| watermark.poweredBy | Powered by Kritzel |
+| watermark.poweredBy | Powered by Updraw |
 
 ### Object type labels
 

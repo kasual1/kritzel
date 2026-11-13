@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
 import {
-  KritzelAgent,
-  KritzelEditor,
-  KritzelIframeObject,
-  KritzelObjectElementClickEvent,
-  KritzelObjectElementHoverEvent,
-  KritzelObjectElementInfo,
-  KritzelObjectElementPickEvent,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawAgent,
+  UpdrawEditor,
+  UpdrawIframeObject,
+  UpdrawObjectElementClickEvent,
+  UpdrawObjectElementHoverEvent,
+  UpdrawObjectElementInfo,
+  UpdrawObjectElementPickEvent,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { iframeElementsContent } from './iframe-elements-content';
@@ -21,8 +21,8 @@ const MAX_TEXT_LENGTH = 24;
 const CARD_TOP = -250;
 const AGENT_START = { x: 170, y: CARD_TOP + 10 };
 
-function describe(element: KritzelObjectElementInfo): string {
-  const name = element.kritzelId ?? element.tagName;
+function describe(element: UpdrawObjectElementInfo): string {
+  const name = element.updrawId ?? element.tagName;
   if (!element.text) {
     return name;
   }
@@ -33,10 +33,10 @@ function describe(element: KritzelObjectElementInfo): string {
 
 @Component({
   selector: 'app-dynamic-objects-iframe-elements',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="dynamic-objects-iframe-elements"
       [theme]="'light'"
       [themes]="themes"
@@ -51,7 +51,7 @@ function describe(element: KritzelObjectElementInfo): string {
       (objectElementHover)="onElementHover($event)"
       (objectElementClick)="onElementClick($event)"
       (objectElementPick)="onElementPick($event)"
-    ></kritzel-editor>
+    ></updraw-editor>
     <section class="events-panel" aria-label="Iframe element events">
       <p class="hint">Select the card, then hover, click or pick an element.</p>
       <dl>
@@ -84,7 +84,7 @@ function describe(element: KritzelObjectElementInfo): string {
   `,
   styles: [`
     :host { position: relative; display: block; height: 100%; }
-    kritzel-editor { display: block; width: 100%; height: 100%; }
+    updraw-editor { display: block; width: 100%; height: 100%; }
     .events-panel { position: absolute; left: 16px; bottom: 16px; z-index: 20; display: flex; flex-direction: column; gap: 8px; box-sizing: border-box; width: min(280px, calc(100% - 32px)); padding: 12px; border: 1px solid #e5e7eb; border-radius: 12px; background: #ffffff; box-shadow: 0 8px 24px rgba(32, 33, 36, 0.12); color: #202124; font-family: Roboto, system-ui, sans-serif; font-size: 13px; line-height: 1.4; }
     .hint { margin: 0; color: #5f6368; }
     dl { display: grid; gap: 4px; margin: 0; }
@@ -101,12 +101,12 @@ function describe(element: KritzelObjectElementInfo): string {
   `],
 })
 export class DynamicObjectsIframeElementsComponent {
-  private readonly editor = viewChild(KritzelEditor);
+  private readonly editor = viewChild(UpdrawEditor);
   private readonly iframeObject = this.createIframeObject();
-  private readonly agent = new KritzelAgent({ id: AGENT, name: 'Agent', status: 'Pick an element', position: AGENT_START });
+  private readonly agent = new UpdrawAgent({ id: AGENT, name: 'Agent', status: 'Pick an element', position: AGENT_START });
 
   themes = [angularThemeLight, angularThemeDark];
-  workspaces = signal([new KritzelWorkspace({ objects: [this.iframeObject] })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: [this.iframeObject] })]);
   hovered = signal(EMPTY_VALUE);
   clicked = signal(EMPTY_VALUE);
   picked = signal(EMPTY_VALUE);
@@ -125,16 +125,16 @@ export class DynamicObjectsIframeElementsComponent {
     }
   }
 
-  onElementHover(event: CustomEvent<KritzelObjectElementHoverEvent>): void {
+  onElementHover(event: CustomEvent<UpdrawObjectElementHoverEvent>): void {
     const { element } = event.detail;
     this.hovered.set(element ? describe(element) : EMPTY_VALUE);
   }
 
-  onElementClick(event: CustomEvent<KritzelObjectElementClickEvent>): void {
+  onElementClick(event: CustomEvent<UpdrawObjectElementClickEvent>): void {
     this.clicked.set(describe(event.detail.element));
   }
 
-  async onElementPick(event: CustomEvent<KritzelObjectElementPickEvent>): Promise<void> {
+  async onElementPick(event: CustomEvent<UpdrawObjectElementPickEvent>): Promise<void> {
     const { objectId, element } = event.detail;
     this.picked.set(describe(element));
     this.isPicking.set(false);
@@ -145,7 +145,7 @@ export class DynamicObjectsIframeElementsComponent {
     try {
       await editor.setObjectElementPicking(objectId, false);
       await editor.highlightObjectElements(objectId, [{ selector: element.selector, label: 'Picked' }]);
-      this.agent.setStatus(`Looking at ${element.kritzelId ?? element.tagName}`);
+      this.agent.setStatus(`Looking at ${element.updrawId ?? element.tagName}`);
       // An element target: the agent's cursor moves to the element inside the iframe and follows it from then on.
       await this.agent.moveTo({ objectId, selector: element.selector });
     } catch (error) {
@@ -182,8 +182,8 @@ export class DynamicObjectsIframeElementsComponent {
     }
   }
 
-  private createIframeObject(): KritzelIframeObject {
-    const iframeObject = new KritzelIframeObject({
+  private createIframeObject(): UpdrawIframeObject {
+    const iframeObject = new UpdrawIframeObject({
       name: 'Team plan',
       title: 'Team plan',
       content: iframeElementsContent,

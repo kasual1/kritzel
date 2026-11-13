@@ -1,19 +1,19 @@
 import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
 import {
   BroadcastSyncProvider,
-  IKritzelUser,
-  KritzelAgent,
-  KritzelAgentActionError,
-  KritzelEditor,
-  KritzelObjectChangeSource,
-  KritzelShape,
-  KritzelSyncConfig,
-  KritzelWorkspace,
+  IUpdrawUser,
+  UpdrawAgent,
+  UpdrawAgentActionError,
+  UpdrawEditor,
+  UpdrawObjectChangeSource,
+  UpdrawShape,
+  UpdrawSyncConfig,
+  UpdrawWorkspace,
   ObjectsAddedEvent,
   ObjectsRemovedEvent,
   ObjectsUpdatedEvent,
   ShapeType,
-} from '@kritzel/angular-editor';
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { ToolbarComponent } from '../../../components/toolbar.component';
@@ -23,8 +23,8 @@ const RECTANGLE_ID = 'agentic-actions-rectangle';
 const ELLIPSE_ID = 'agentic-actions-ellipse';
 
 /** Seeds with fixed IDs, so every tab of this page works on the same objects. */
-function createActionSeeds(): KritzelShape[] {
-  const rectangle = new KritzelShape({
+function createActionSeeds(): UpdrawShape[] {
+  const rectangle = new UpdrawShape({
     translateX: -260,
     translateY: -120,
     width: 140,
@@ -35,7 +35,7 @@ function createActionSeeds(): KritzelShape[] {
     strokeWidth: 3,
   });
   rectangle.id = RECTANGLE_ID;
-  const ellipse = new KritzelShape({
+  const ellipse = new UpdrawShape({
     translateX: -260,
     translateY: 80,
     width: 120,
@@ -51,7 +51,7 @@ function createActionSeeds(): KritzelShape[] {
 
 @Component({
   selector: 'app-agents-actions',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -68,7 +68,7 @@ function createActionSeeds(): KritzelShape[] {
       }
     </app-toolbar>
     <div class="editor-wrap">
-      <kritzel-editor
+      <updraw-editor
         editorId="agents-actions"
         [syncConfig]="syncConfig"
         [user]="user"
@@ -83,7 +83,7 @@ function createActionSeeds(): KritzelShape[] {
         (objectsAdded)="onAdded($event)"
         (objectsUpdated)="onUpdated($event)"
         (objectsRemoved)="onRemoved($event)"
-      ></kritzel-editor>
+      ></updraw-editor>
     </div>
   `,
   styles: [
@@ -102,20 +102,20 @@ function createActionSeeds(): KritzelShape[] {
   ],
 })
 export class AgentsActionsComponent {
-  editor = viewChild(KritzelEditor);
+  editor = viewChild(UpdrawEditor);
 
   themes = [angularThemeLight, angularThemeDark];
 
   // Awareness shares presence between the tabs: each tab sees the other tab's agent and cursor.
-  syncConfig: KritzelSyncConfig = { providers: [BroadcastSyncProvider.with({ awareness: true })] };
+  syncConfig: UpdrawSyncConfig = { providers: [BroadcastSyncProvider.with({ awareness: true })] };
 
   // One user per tab, so selections in other tabs count as collaborators.
-  user: IKritzelUser = (() => {
+  user: IUpdrawUser = (() => {
     const id = Math.random().toString(36).slice(2, 8);
     return { id: `tab-${id}`, displayName: `Tab ${id}` };
   })();
 
-  workspaces = signal([new KritzelWorkspace({ id: 'agentic-actions-demo', name: 'Agentic Actions', objects: createActionSeeds() })]);
+  workspaces = signal([new UpdrawWorkspace({ id: 'agentic-actions-demo', name: 'Agentic Actions', objects: createActionSeeds() })]);
 
   isRunning = signal(false);
   canUndo = signal(false);
@@ -123,7 +123,7 @@ export class AgentsActionsComponent {
   message = signal('');
   lastChange = signal('');
 
-  private readonly agent = new KritzelAgent({ id: AGENT, name: 'Agent', color: '#7C3AED', position: { x: -400, y: -200 } });
+  private readonly agent = new UpdrawAgent({ id: AGENT, name: 'Agent', color: '#7C3AED', position: { x: -400, y: -200 } });
 
   constructor() {
     this.agent.on('change', state => {
@@ -173,7 +173,7 @@ export class AgentsActionsComponent {
       });
       this.message.set("Script finished. Undo the agent's steps one by one, or open a second tab to watch the changes sync.");
     } catch (error) {
-      if (error instanceof KritzelAgentActionError) {
+      if (error instanceof UpdrawAgentActionError) {
         this.message.set(`${error.action.type} stopped: ${error.reason}`);
       } else {
         this.message.set(error instanceof Error ? error.message : String(error));
@@ -206,7 +206,7 @@ export class AgentsActionsComponent {
     this.onChange(event.detail.source, 'Removed');
   }
 
-  private onChange(source: KritzelObjectChangeSource | undefined, kind: string): void {
+  private onChange(source: UpdrawObjectChangeSource | undefined, kind: string): void {
     if (source) {
       this.lastChange.set(`${kind} by ${source.agentId} (${source.actionType})`);
     }

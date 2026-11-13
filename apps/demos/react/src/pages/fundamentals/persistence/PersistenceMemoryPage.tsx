@@ -1,12 +1,12 @@
 import { useRef, useState } from "react";
 import {
   InMemorySyncProvider,
-  KritzelEditor,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawWorkspace,
   type ActiveWorkspaceChangeEvent,
-  type HTMLKritzelEditorElement,
-  type KritzelSyncConfig,
-} from "@kritzel/react-editor";
+  type HTMLUpdrawEditorElement,
+  type UpdrawSyncConfig,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -17,14 +17,14 @@ import {
 import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [InMemorySyncProvider],
 };
 
 function createInitialWorkspaces() {
   return ["Board 1", "Board 2", "Board 3"].map(
     (name, index) =>
-      new KritzelWorkspace({
+      new UpdrawWorkspace({
         id: `board-${index + 1}`,
         name,
         objects: createSeedObjects(),
@@ -33,7 +33,7 @@ function createInitialWorkspaces() {
 }
 
 export function PersistenceMemoryPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [workspaces] = useState(createInitialWorkspaces);
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | undefined>(
     "board-1",
@@ -45,7 +45,7 @@ export function PersistenceMemoryPage() {
     setActiveWorkspaceId(event.detail.id);
   }
 
-  async function switchTo(workspace: KritzelWorkspace) {
+  async function switchTo(workspace: UpdrawWorkspace) {
     await editorRef.current?.setActiveWorkspace(workspace.id);
   }
 
@@ -67,7 +67,7 @@ export function PersistenceMemoryPage() {
           </button>
         ))}
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="persistence-memory"
         syncConfig={syncConfig}

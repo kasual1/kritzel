@@ -2,10 +2,10 @@ import { useMemo } from "react";
 import {
   HocuspocusSyncProvider,
   IndexedDBSyncProvider,
-  KritzelEditor,
-  type KritzelSyncConfig,
-  KritzelWorkspace,
-} from "@kritzel/react-editor";
+  UpdrawEditor,
+  type UpdrawSyncConfig,
+  UpdrawWorkspace,
+} from "@updraw/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -16,7 +16,7 @@ import {
 import { Toolbar } from "../../../components/Toolbar";
 
 export function CollaborationRealtimePage() {
-  const syncConfig = useMemo<KritzelSyncConfig>(
+  const syncConfig = useMemo<UpdrawSyncConfig>(
     () => ({
       providers: [
         IndexedDBSyncProvider,
@@ -26,7 +26,7 @@ export function CollaborationRealtimePage() {
     [],
   );
   const workspaces = useMemo(
-    () => [new KritzelWorkspace({ objects: createSeedObjects() })],
+    () => [new UpdrawWorkspace({ objects: createSeedObjects() })],
     [],
   );
 
@@ -36,7 +36,7 @@ export function CollaborationRealtimePage() {
         <span className="label">Real-time Sync</span>
         <span className="status">Configured for Hocuspocus server</span>
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         editorId="collaboration-realtime"
         syncConfig={syncConfig}
         theme="light"

@@ -5,11 +5,11 @@ async function openSettingsDialog(page: Page) {
   await page.getByTestId('more-menu-button').click();
   await page.getByTestId('menu-item-settings').click();
 
-  const settingsDialog = page.locator('kritzel-settings kritzel-dialog[is-open]');
+  const settingsDialog = page.locator('updraw-settings updraw-dialog[is-open]');
   await settingsDialog.waitFor({ state: 'attached' });
   await page.waitForTimeout(100);
 
-  const settingsRoot = page.locator('kritzel-settings');
+  const settingsRoot = page.locator('updraw-settings');
   await expect(settingsDialog).toBeAttached();
   await expect(settingsRoot.getByRole('heading', { name: 'General Settings' })).toBeVisible();
 
@@ -23,7 +23,7 @@ test.describe('Settings dialog', () => {
 
     const settingsRoot = await openSettingsDialog(page);
 
-    const themeDropdown = settingsRoot.locator('kritzel-dropdown').first();
+    const themeDropdown = settingsRoot.locator('updraw-dropdown').first();
     await themeDropdown.locator('button').click();
     await themeDropdown.locator('li', { hasText: 'dark' }).click();
 
@@ -31,7 +31,7 @@ test.describe('Settings dialog', () => {
     expect(appliedTheme).toBe('dark');
 
     await page.waitForTimeout(100);
-    const detailPanel = settingsRoot.locator('kritzel-master-detail .detail-panel');
+    const detailPanel = settingsRoot.locator('updraw-master-detail .detail-panel');
     await detailPanel.evaluate(element => element.scrollTo(0, 0));
     await expect.poll(() => detailPanel.evaluate(element => element.scrollTop)).toBe(0);
     await expect(editorPage.engine).toHaveScreenshot('Settings-dialog-dark-theme.png', { timeout: 1000 });
@@ -65,13 +65,13 @@ test.describe('Settings dialog', () => {
 
     const settingsRoot = await openSettingsDialog(page);
 
-    const lockToggle = settingsRoot.locator('kritzel-slide-toggle[aria-label="Lock Drawing Scale"]');
+    const lockToggle = settingsRoot.locator('updraw-slide-toggle[aria-label="Lock Drawing Scale"]');
     await lockToggle.click();
 
     const appliedLockDrawingScale = await editorPage.getProp<boolean>('lockDrawingScale');
     expect(appliedLockDrawingScale).toBe(false);
 
-    await page.locator('kritzel-settings kritzel-dialog[is-open] button[aria-label="Close dialog"]').click();
+    await page.locator('updraw-settings updraw-dialog[is-open] button[aria-label="Close dialog"]').click();
 
     await editorPage.prepareWaitForObjectsAdded();
     await editorPage.drawStroke([
@@ -102,7 +102,7 @@ test.describe('Settings dialog', () => {
 
     const settingsRoot = await openSettingsDialog(page);
 
-    const languageDropdown = settingsRoot.locator('kritzel-dropdown').nth(1);
+    const languageDropdown = settingsRoot.locator('updraw-dropdown').nth(1);
     await languageDropdown.locator('button').click();
     await languageDropdown.locator('li', { hasText: 'Deutsch' }).click();
 
@@ -117,9 +117,9 @@ test.describe('Settings dialog', () => {
     await editorPage.waitForReady();
 
     const settingsRoot = await openSettingsDialog(page);
-    await settingsRoot.locator('kritzel-master-detail').getByRole('tab', { name: /developer/i }).click();
+    await settingsRoot.locator('updraw-master-detail').getByRole('tab', { name: /developer/i }).click();
 
-    const viewportInfoToggle = settingsRoot.locator('kritzel-slide-toggle[aria-label="Show Viewport Info"]');
+    const viewportInfoToggle = settingsRoot.locator('updraw-slide-toggle[aria-label="Show Viewport Info"]');
     await viewportInfoToggle.click();
 
     const debugPanel = editorPage.engine.locator('.debug-panel');
@@ -161,9 +161,9 @@ test.describe('Settings dialog', () => {
     await editorPage.waitForObjectsAdded();
 
     const settingsRoot = await openSettingsDialog(page);
-    await settingsRoot.locator('kritzel-master-detail').getByRole('tab', { name: /developer/i }).click();
+    await settingsRoot.locator('updraw-master-detail').getByRole('tab', { name: /developer/i }).click();
 
-    const objectInfoToggle = settingsRoot.locator('kritzel-slide-toggle[aria-label="Show Object Info"]');
+    const objectInfoToggle = settingsRoot.locator('updraw-slide-toggle[aria-label="Show Object Info"]');
     await objectInfoToggle.click();
 
     const objectWrappers = editorPage.engine.locator('.object');
@@ -173,7 +173,7 @@ test.describe('Settings dialog', () => {
       await expect(objectWrappers.nth(index)).toContainText('Id:');
     }
 
-    await page.locator('kritzel-settings kritzel-dialog[is-open] button[aria-label="Close dialog"]').click();
+    await page.locator('updraw-settings updraw-dialog[is-open] button[aria-label="Close dialog"]').click();
     await expect(editorPage.engine).toHaveScreenshot('Settings-dialog-show-object-info.png', { timeout: 1000 });
   });
 
@@ -182,15 +182,15 @@ test.describe('Settings dialog', () => {
     await editorPage.waitForReady();
 
     const settingsRoot = await openSettingsDialog(page);
-    await settingsRoot.locator('kritzel-master-detail').getByRole('tab', { name: /about/i }).click();
+    await settingsRoot.locator('updraw-master-detail').getByRole('tab', { name: /about/i }).click();
 
     const aboutPanel = settingsRoot.locator('.settings-tab-panel.is-active');
     await expect(aboutPanel).toContainText('About');
-    await expect(aboutPanel).toContainText('Kritzel - A drawing application');
+    await expect(aboutPanel).toContainText('Updraw - A drawing application');
 
     const snapshot = await aboutPanel.locator('p').allTextContents();
     const snapshotText = snapshot.join('\n');
-    expect(snapshotText).toContain('Kritzel - A drawing application');
+    expect(snapshotText).toContain('Updraw - A drawing application');
     expect(snapshotText).toContain('Version');
     expect(snapshotText).toContain('App-State Schema v');
     expect(snapshotText).toContain('Workspace Schema v');
@@ -201,7 +201,7 @@ test.describe('Settings dialog', () => {
     await editorPage.waitForReady();
 
     const settingsRoot = await openSettingsDialog(page);
-    await settingsRoot.locator('kritzel-master-detail').getByRole('tab', { name: /keyboard shortcuts/i }).click();
+    await settingsRoot.locator('updraw-master-detail').getByRole('tab', { name: /keyboard shortcuts/i }).click();
 
     const shortcutsPanel = settingsRoot.locator('.settings-tab-panel.is-active');
     await expect(shortcutsPanel).toContainText('Keyboard Shortcuts');

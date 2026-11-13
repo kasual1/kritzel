@@ -1,11 +1,11 @@
-import { KritzelPath } from './path.class';
-import { KritzelCore } from '../core/core.class';
-import { KritzelPolygon } from '../../interfaces/polygon.interface';
+import { UpdrawPath } from './path.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawPolygon } from '../../interfaces/polygon.interface';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 
-describe('KritzelPath', () => {
-  let path: KritzelPath;
-  let mockCore: jest.Mocked<KritzelCore>;
+describe('UpdrawPath', () => {
+  let path: UpdrawPath;
+  let mockCore: jest.Mocked<UpdrawCore>;
   let mockObjectsUpdate: jest.Mock;
 
   beforeEach(() => {
@@ -32,9 +32,9 @@ describe('KritzelPath', () => {
       anchorManager: {
         updateAnchorsForObject: jest.fn(),
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    path = new KritzelPath({
+    path = new UpdrawPath({
       points: [
         [0, 0],
         [50, 50],
@@ -51,19 +51,19 @@ describe('KritzelPath', () => {
 
   describe('constructor', () => {
     it('should create a path with default values when no config provided', () => {
-      const defaultPath = new KritzelPath();
+      const defaultPath = new UpdrawPath();
 
       expect(defaultPath.points).toEqual([]);
       // Note: translateX/Y become Infinity when points array is empty due to Math.min/max on empty array
       expect(defaultPath.scale).toBe(1);
       expect(defaultPath.strokeWidth).toBe(8);
       expect(defaultPath.fill).toEqual({ light: '#000000', dark: '#ffffff' });
-      expect(defaultPath.__class__).toBe('KritzelPath');
+      expect(defaultPath.__class__).toBe('UpdrawPath');
     });
 
     it('should create a path with provided config values', () => {
       const themeAwareColor: ThemeAwareColor = { light: '#00ff00', dark: '#00ff00' };
-      const configuredPath = new KritzelPath({
+      const configuredPath = new UpdrawPath({
         points: [[10, 10], [20, 20]],
         translateX: 100,
         translateY: 200,
@@ -81,7 +81,7 @@ describe('KritzelPath', () => {
     });
 
     it('should convert constructor rotation from degrees to radians', () => {
-      const configuredPath = new KritzelPath({
+      const configuredPath = new UpdrawPath({
         points: [[10, 10], [20, 20]],
         rotation: -90,
       });
@@ -91,13 +91,13 @@ describe('KritzelPath', () => {
 
     it('should keep the same base placement with and without constructor rotation', () => {
       const points = [[0, 0], [50, 50], [100, 0]];
-      const withoutRotation = new KritzelPath({
+      const withoutRotation = new UpdrawPath({
         points,
         translateX: 120,
         translateY: 240,
         strokeWidth: 8,
       });
-      const withRotation = new KritzelPath({
+      const withRotation = new UpdrawPath({
         points,
         translateX: 120,
         translateY: 240,
@@ -128,7 +128,7 @@ describe('KritzelPath', () => {
   describe('static create', () => {
     it('should create a path with core reference and workspace id', () => {
       const themeAwareColor: ThemeAwareColor = { light: '#0000ff', dark: '#0000ff' };
-      const createdPath = KritzelPath.create(mockCore, {
+      const createdPath = UpdrawPath.create(mockCore, {
         points: [[0, 0], [10, 10]],
         fill: themeAwareColor,
       });
@@ -140,7 +140,7 @@ describe('KritzelPath', () => {
     });
 
     it('should convert create rotation from degrees to radians', () => {
-      const createdPath = KritzelPath.create(mockCore, {
+      const createdPath = UpdrawPath.create(mockCore, {
         points: [[0, 0], [10, 10]],
         rotation: -90,
       });
@@ -149,7 +149,7 @@ describe('KritzelPath', () => {
     });
 
     it('should use default options when not provided', () => {
-      const createdPath = KritzelPath.create(mockCore);
+      const createdPath = UpdrawPath.create(mockCore);
 
       expect(createdPath.points).toEqual([]);
       // Note: translateX/Y become Infinity when points array is empty due to Math.min/max on empty array
@@ -159,8 +159,8 @@ describe('KritzelPath', () => {
     });
 
     it('should generate a unique id', () => {
-      const path1 = KritzelPath.create(mockCore);
-      const path2 = KritzelPath.create(mockCore);
+      const path1 = UpdrawPath.create(mockCore);
+      const path2 = UpdrawPath.create(mockCore);
 
       expect(path1.id).toBeDefined();
       expect(path2.id).toBeDefined();
@@ -206,7 +206,7 @@ describe('KritzelPath', () => {
       ];
       const offset = 40_000_000;
 
-      const far = KritzelPath.create(mockCore, {
+      const far = UpdrawPath.create(mockCore, {
         points: shape.map(([x, y]) => [x + offset, y + offset]),
         strokeWidth: 6,
       });
@@ -226,13 +226,13 @@ describe('KritzelPath', () => {
         [40_000_000, 40_000_010],
         [40_000_005, 40_000_005],
       ];
-      const original = KritzelPath.create(mockCore, { points: shape, strokeWidth: 6 });
+      const original = UpdrawPath.create(mockCore, { points: shape, strokeWidth: 6 });
 
       const serialized = original.serialize() as Record<string, unknown>;
       // Simulate legacy persisted data whose `d` was stored in absolute coordinates.
       serialized.d = 'M40000000.00,40000000.00 L40000010.00,40000010.00';
 
-      const revived = KritzelPath.create(mockCore).deserialize<KritzelPath>(serialized);
+      const revived = UpdrawPath.create(mockCore).deserialize<UpdrawPath>(serialized);
 
       expect(revived.d).not.toContain('40000000');
       expect(maxAbsCoordinate(revived.d)).toBeLessThan(1000);
@@ -371,7 +371,7 @@ describe('KritzelPath', () => {
 
   describe('hitTest', () => {
     beforeEach(() => {
-      path = new KritzelPath({
+      path = new UpdrawPath({
         points: [[0, 0], [100, 0]],
         translateX: 0,
         translateY: 0,
@@ -398,7 +398,7 @@ describe('KritzelPath', () => {
     });
 
     it('should handle single point paths', () => {
-      const singlePointPath = new KritzelPath({
+      const singlePointPath = new UpdrawPath({
         points: [[50, 50]],
         translateX: 0,
         translateY: 0,
@@ -429,7 +429,7 @@ describe('KritzelPath', () => {
 
   describe('hitTestPolygon', () => {
     beforeEach(() => {
-      path = new KritzelPath({
+      path = new UpdrawPath({
         points: [[0, 0], [100, 0], [100, 100]],
         translateX: 0,
         translateY: 0,
@@ -443,7 +443,7 @@ describe('KritzelPath', () => {
     });
 
     it('should return true when polygon overlaps path', () => {
-      const polygon: KritzelPolygon = {
+      const polygon: UpdrawPolygon = {
         topLeft: { x: 40, y: -20 },
         topRight: { x: 60, y: -20 },
         bottomRight: { x: 60, y: 20 },
@@ -454,7 +454,7 @@ describe('KritzelPath', () => {
     });
 
     it('should return false when polygon does not overlap path', () => {
-      const polygon: KritzelPolygon = {
+      const polygon: UpdrawPolygon = {
         topLeft: { x: 500, y: 500 },
         topRight: { x: 600, y: 500 },
         bottomRight: { x: 600, y: 600 },
@@ -465,7 +465,7 @@ describe('KritzelPath', () => {
     });
 
     it('should return true when path point is inside polygon', () => {
-      const polygon: KritzelPolygon = {
+      const polygon: UpdrawPolygon = {
         topLeft: { x: -50, y: -50 },
         topRight: { x: 150, y: -50 },
         bottomRight: { x: 150, y: 150 },
@@ -476,7 +476,7 @@ describe('KritzelPath', () => {
     });
 
     it('should return true when polygon edge intersects path', () => {
-      path = new KritzelPath({
+      path = new UpdrawPath({
         points: [[0, 0], [200, 200]],
         translateX: 0,
         translateY: 0,
@@ -486,7 +486,7 @@ describe('KritzelPath', () => {
       path._core = mockCore;
       path.rotation = 0;
 
-      const polygon: KritzelPolygon = {
+      const polygon: UpdrawPolygon = {
         topLeft: { x: 50, y: 0 },
         topRight: { x: 150, y: 0 },
         bottomRight: { x: 150, y: 50 },
@@ -523,10 +523,10 @@ describe('KritzelPath', () => {
 
   describe('isLowRes', () => {
     it('should return false when core is not set', () => {
-      const pathWithoutCore = new KritzelPath({
+      const pathWithoutCore = new UpdrawPath({
         points: [[0, 0], [100, 100]],
       });
-      pathWithoutCore._core = undefined as unknown as KritzelCore;
+      pathWithoutCore._core = undefined as unknown as UpdrawCore;
 
       expect(pathWithoutCore.isLowRes()).toBe(false);
     });
@@ -567,7 +567,7 @@ describe('KritzelPath', () => {
 
   describe('getClipPoint', () => {
     beforeEach(() => {
-      path = new KritzelPath({
+      path = new UpdrawPath({
         points: [[50, 50], [100, 50], [150, 50]],
         translateX: 0,
         translateY: 0,
@@ -583,7 +583,7 @@ describe('KritzelPath', () => {
     });
 
     it('should return null when path has no points', () => {
-      const emptyPath = new KritzelPath({ points: [] });
+      const emptyPath = new UpdrawPath({ points: [] });
       emptyPath._core = mockCore;
 
       const result = emptyPath.getClipPoint({ x: 0, y: 0 });
@@ -607,7 +607,7 @@ describe('KritzelPath', () => {
 
     it('should return null when no intersection found', () => {
       // Create a path with points far from the test line
-      const isolatedPath = new KritzelPath({
+      const isolatedPath = new UpdrawPath({
         points: [[1000, 1000], [1100, 1000]],
         translateX: 0,
         translateY: 0,
@@ -630,7 +630,7 @@ describe('KritzelPath', () => {
     });
 
     it('should handle single point paths', () => {
-      const singlePointPath = new KritzelPath({
+      const singlePointPath = new UpdrawPath({
         points: [[50, 50]],
         translateX: 0,
         translateY: 0,
@@ -656,7 +656,7 @@ describe('KritzelPath', () => {
 
   describe('SVG path generation', () => {
     it('should generate valid SVG path for multiple points', () => {
-      const pathWithPoints = new KritzelPath({
+      const pathWithPoints = new UpdrawPath({
         points: [
           [0, 0],
           [10, 10],
@@ -674,7 +674,7 @@ describe('KritzelPath', () => {
 
     it('should return empty string for paths with less than 4 stroke points', () => {
       // Very short paths may not generate enough stroke points
-      const shortPath = new KritzelPath({
+      const shortPath = new UpdrawPath({
         points: [[0, 0]],
       });
 
@@ -683,7 +683,7 @@ describe('KritzelPath', () => {
     });
 
     it('should end with Z for closed paths', () => {
-      const pathWithPoints = new KritzelPath({
+      const pathWithPoints = new UpdrawPath({
         points: [
           [0, 0],
           [50, 50],
@@ -701,7 +701,7 @@ describe('KritzelPath', () => {
 
   describe('dimension calculations', () => {
     it('should calculate width and height based on points', () => {
-      const pathWithKnownPoints = new KritzelPath({
+      const pathWithKnownPoints = new UpdrawPath({
         points: [
           [0, 0],
           [100, 0],
@@ -717,12 +717,12 @@ describe('KritzelPath', () => {
     });
 
     it('should include stroke width in dimensions', () => {
-      const pathNoStroke = new KritzelPath({
+      const pathNoStroke = new UpdrawPath({
         points: [[0, 0], [100, 0]],
         strokeWidth: 0,
       });
 
-      const pathWithStroke = new KritzelPath({
+      const pathWithStroke = new UpdrawPath({
         points: [[0, 0], [100, 0]],
         strokeWidth: 20,
       });
@@ -734,7 +734,7 @@ describe('KritzelPath', () => {
 
   describe('rotation handling', () => {
     it('should apply rotation to adjusted points', () => {
-      path = new KritzelPath({
+      path = new UpdrawPath({
         points: [[0, 0], [100, 0]],
         translateX: 0,
         translateY: 0,
@@ -757,9 +757,9 @@ describe('KritzelPath', () => {
     });
   });
 
-  describe('inheritance from KritzelBaseObject', () => {
-    it('should have __class__ set to KritzelPath', () => {
-      expect(path.__class__).toBe('KritzelPath');
+  describe('inheritance from UpdrawBaseObject', () => {
+    it('should have __class__ set to UpdrawPath', () => {
+      expect(path.__class__).toBe('UpdrawPath');
     });
 
     it('should inherit boundingBox getter', () => {
@@ -777,8 +777,8 @@ describe('KritzelPath', () => {
     });
 
     it('should be identifiable via isClass method', () => {
-      expect(path.isClass('KritzelPath')).toBe(true);
-      expect(path.isClass('KritzelBaseObject')).toBe(false);
+      expect(path.isClass('UpdrawPath')).toBe(true);
+      expect(path.isClass('UpdrawBaseObject')).toBe(false);
     });
   });
 });

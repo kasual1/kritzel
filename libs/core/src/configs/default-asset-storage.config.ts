@@ -1,4 +1,4 @@
-import { KritzelAssetStorageConfig } from '../interfaces/asset-storage-config.interface';
+import { UpdrawAssetStorageConfig } from '../interfaces/asset-storage-config.interface';
 
 /**
  * Default asset storage configuration. Stores bytes in IndexedDB only,
@@ -6,6 +6,6 @@ import { KritzelAssetStorageConfig } from '../interfaces/asset-storage-config.in
  * that sync Yjs over the network should also configure a remote provider
  * (e.g. HttpAssetProvider) so images are available across devices.
  */
-export const DEFAULT_ASSET_STORAGE_CONFIG: KritzelAssetStorageConfig = {
+export const DEFAULT_ASSET_STORAGE_CONFIG: UpdrawAssetStorageConfig = {
   providers: [],
 };

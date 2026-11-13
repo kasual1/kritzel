@@ -1,11 +1,11 @@
 import { useMemo, useRef, useState } from "react";
 import {
-  KritzelAgent,
-  KritzelEditor,
-  KritzelWorkspace,
-  type HTMLKritzelEditorElement,
-  type KritzelAgentOptions,
-} from "@kritzel/react-editor";
+  UpdrawAgent,
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type HTMLUpdrawEditorElement,
+  type UpdrawAgentOptions,
+} from "@updraw/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -15,19 +15,19 @@ const PLANNER = "planner";
 const WRITER = "writer";
 
 export function AgentsBasicPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   // Recreated by Reset, so the Planner starts at the rectangle again.
-  const plannerRef = useRef<KritzelAgent | null>(null);
-  const writerRef = useRef<KritzelAgent | null>(null);
+  const plannerRef = useRef<UpdrawAgent | null>(null);
+  const writerRef = useRef<UpdrawAgent | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [message, setMessage] = useState("");
   const workspaces = useMemo(
-    () => [new KritzelWorkspace({ objects: createSeedObjects() })],
+    () => [new UpdrawWorkspace({ objects: createSeedObjects() })],
     [],
   );
 
   async function getShapeIds() {
-    const shapes = (await editorRef.current?.findObjects(obj => obj.__class__ === "KritzelShape")) ?? [];
+    const shapes = (await editorRef.current?.findObjects(obj => obj.__class__ === "UpdrawShape")) ?? [];
     return shapes.map(shape => shape.id);
   }
 
@@ -56,8 +56,8 @@ export function AgentsBasicPage() {
     await editor.addAgent(writerRef.current);
   }
 
-  function createAgent(options: KritzelAgentOptions) {
-    const agent = new KritzelAgent(options);
+  function createAgent(options: UpdrawAgentOptions) {
+    const agent = new UpdrawAgent(options);
     agent.on("detached", ({ reason }) => setMessage(`"${agent.id}" detached (${reason}).`));
     return agent;
   }
@@ -121,7 +121,7 @@ export function AgentsBasicPage() {
         <button onClick={() => void addAgents()}>Reset</button>
         {message && <span className="label">{message}</span>}
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="agents-basic"
         theme="light"

@@ -1,15 +1,15 @@
 ---
 sidebar_label: Icons
-title: "Icons | Kritzel for Angular"
-description: "Reference table for the default Kritzel icon names registered by KritzelIconRegistry."
+title: "Icons | Updraw for Angular"
+description: "Reference table for the default Updraw icon names registered by UpdrawIconRegistry."
 toc_max_heading_level: 2
 ---
 
 # Icons
 
-Kritzel registers the following default SVG icons through `KritzelIconRegistry`. Use these names anywhere an API accepts a `KritzelIconName`, such as toolbar items, menu items, login providers, cursor configuration, or the `customSvgIcons` map.
+Updraw registers the following default SVG icons through `UpdrawIconRegistry`. Use these names anywhere an API accepts an `UpdrawIconName`, such as toolbar items, menu items, login providers, cursor configuration, or the `customSvgIcons` map.
 
-Custom icon names are still supported. Register them through `[customSvgIcons]` or `KritzelIconRegistry.register()` and then reference the same string where an icon name is accepted.
+Custom icon names are still supported. Register them through `[customSvgIcons]` or `UpdrawIconRegistry.register()` and then reference the same string where an icon name is accepted.
 
 ## Default Icon Map
 

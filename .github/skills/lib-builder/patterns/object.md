@@ -6,16 +6,16 @@
 
 ## Base Class
 
-All canvas objects extend `KritzelBaseObject<T>` where `T` is the mounted DOM element type.
+All canvas objects extend `UpdrawBaseObject<T>` where `T` is the mounted DOM element type.
 
 ```typescript
-import { KritzelBaseObject } from './base-object.class';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawBaseObject } from './base-object.class';
+import { UpdrawCore } from '../core/core.class';
 
-export class MyObject extends KritzelBaseObject<HTMLElement> {
+export class MyObject extends UpdrawBaseObject<HTMLElement> {
   override __class__: string = 'MyObject';
 
-  static override create(core: KritzelCore): MyObject {
+  static override create(core: UpdrawCore): MyObject {
     const object = new MyObject();
     object._core = core;
     object.id = object.generateId();
@@ -55,7 +55,7 @@ Objects use a static `create(core)` factory — never construct directly outside
 
 ## Serialization
 
-Objects implement `KritzelSerializable`:
+Objects implement `UpdrawSerializable`:
 
 ```typescript
 override serialize(): Record<string, unknown> {
@@ -74,15 +74,15 @@ override deserialize(data: Record<string, unknown>): void {
 
 ## Revival
 
-The `KritzelReviver` uses `__class__` to reconstruct the correct instance during deserialization (e.g., from Yjs doc or localStorage).
+The `UpdrawReviver` uses `__class__` to reconstruct the correct instance during deserialization (e.g., from Yjs doc or localStorage).
 
 ## Rendering
 
-Objects are rendered in `kritzel-engine.tsx`. The engine iterates over `store.objects` and renders each based on its class (`object instanceof KritzelText`, …) using conditional blocks.
+Objects are rendered in `updraw-engine.tsx`. The engine iterates over `store.objects` and renders each based on its class (`object instanceof UpdrawText`, …) using conditional blocks.
 
 ## Loading State
 
-Loading is generic and owned by the base class: `isLoading` (default `false`, serialized and synced) and `setLoading(isLoading)` live on `KritzelBaseObject`, and every object config accepts `isLoading?: boolean`. `setLoading()` no-ops when unchanged, otherwise calls `update()` and `_core.rerender()`. The engine draws `<div class="kritzel-loading-placeholder">` inside the object's `.object` wrapper (after the type-specific content, before selection UI; not for selection groups or selection boxes), covering `totalWidth` × `totalHeight`. It keeps `pointer-events: auto` so the object can still be selected and moved while its content can't be used. Its look comes from the `loadingPlaceholder` theme tokens (`--kritzel-loading-placeholder-*`, see [theme.md](theme.md)).
+Loading is generic and owned by the base class: `isLoading` (default `false`, serialized and synced) and `setLoading(isLoading)` live on `UpdrawBaseObject`, and every object config accepts `isLoading?: boolean`. `setLoading()` no-ops when unchanged, otherwise calls `update()` and `_core.rerender()`. The engine draws `<div class="updraw-loading-placeholder">` inside the object's `.object` wrapper (after the type-specific content, before selection UI; not for selection groups or selection boxes), covering `totalWidth` × `totalHeight`. It keeps `pointer-events: auto` so the object can still be selected and moved while its content can't be used. Its look comes from the `loadingPlaceholder` theme tokens (`--updraw-loading-placeholder-*`, see [theme.md](theme.md)).
 
 Objects must not render their own loading content or override `setLoading()` — keep the content mounted underneath and let the engine draw the placeholder.
 
@@ -98,12 +98,12 @@ Use `ThemeAwareColor` for colors that change with the theme:
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 
 object.backgroundColor = {
-  light: 'var(--kritzel-my-object-bg)',
-  dark: 'var(--kritzel-my-object-bg)',
+  light: 'var(--updraw-my-object-bg)',
+  dark: 'var(--updraw-my-object-bg)',
 } as ThemeAwareColor;
 ```
 
-Colors are resolved at render time via `KritzelColorHelper.resolveThemeColor()`.
+Colors are resolved at render time via `UpdrawColorHelper.resolveThemeColor()`.
 
 ## Conventions
 

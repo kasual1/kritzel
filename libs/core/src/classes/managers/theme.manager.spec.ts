@@ -1,5 +1,5 @@
-import { KritzelThemeManager } from './theme.manager';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawThemeManager } from './theme.manager';
+import { UpdrawCore } from '../core/core.class';
 import { ThemeHelper } from '../../helpers/theme.helper';
 import { lightTheme } from '../../themes/light-theme';
 import { darkTheme } from '../../themes/dark-theme';
@@ -7,8 +7,8 @@ import { darkTheme } from '../../themes/dark-theme';
 jest.mock('../core/core.class');
 jest.mock('../../helpers/theme.helper');
 
-describe('KritzelThemeManager', () => {
-  let manager: KritzelThemeManager;
+describe('UpdrawThemeManager', () => {
+  let manager: UpdrawThemeManager;
   let mockCore: any;
 
   const createMockElement = (): HTMLElement => {
@@ -24,9 +24,9 @@ describe('KritzelThemeManager', () => {
     jest.clearAllMocks();
     localStorage.clear();
 
-    mockCore = {} as unknown as jest.Mocked<KritzelCore>;
+    mockCore = {} as unknown as jest.Mocked<UpdrawCore>;
 
-    manager = new KritzelThemeManager(mockCore);
+    manager = new UpdrawThemeManager(mockCore);
   });
 
   afterEach(() => {
@@ -44,26 +44,26 @@ describe('KritzelThemeManager', () => {
     });
 
     it('should restore stored theme from settings object', () => {
-      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'dark' }));
+      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'dark' }));
 
-      const freshManager = new KritzelThemeManager(mockCore);
+      const freshManager = new UpdrawThemeManager(mockCore);
 
       expect(freshManager.currentTheme).toBe('dark');
     });
 
     it('should allow unregistered themes to be loaded from settings', () => {
-      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'neon' }));
+      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'neon' }));
 
-      const freshManager = new KritzelThemeManager(mockCore);
+      const freshManager = new UpdrawThemeManager(mockCore);
 
       // The manager allows unregistered themes because they might be registered later
       expect(freshManager.currentTheme).toBe('neon');
     });
 
     it('should fallback to default theme when applying an unregistered theme', () => {
-      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'neon' }));
+      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'neon' }));
 
-      const freshManager = new KritzelThemeManager(mockCore);
+      const freshManager = new UpdrawThemeManager(mockCore);
       const element = createMockElement();
       freshManager.setTargetElement(element);
 
@@ -72,17 +72,17 @@ describe('KritzelThemeManager', () => {
     });
 
     it('should default to light when settings object has no theme', () => {
-      localStorage.setItem('kritzel-settings', JSON.stringify({ scaleMin: 0.1 }));
+      localStorage.setItem('updraw-settings', JSON.stringify({ scaleMin: 0.1 }));
 
-      const freshManager = new KritzelThemeManager(mockCore);
+      const freshManager = new UpdrawThemeManager(mockCore);
 
       expect(freshManager.currentTheme).toBe('light');
     });
 
     it('should default to light when settings value is invalid JSON', () => {
-      localStorage.setItem('kritzel-settings', 'not-json');
+      localStorage.setItem('updraw-settings', 'not-json');
 
-      const freshManager = new KritzelThemeManager(mockCore);
+      const freshManager = new UpdrawThemeManager(mockCore);
 
       expect(freshManager.currentTheme).toBe('light');
     });
@@ -96,44 +96,44 @@ describe('KritzelThemeManager', () => {
     let mockCoreWithId: any;
 
     beforeEach(() => {
-      mockCoreWithId = { editorId: 'homepage' } as unknown as jest.Mocked<KritzelCore>;
+      mockCoreWithId = { editorId: 'homepage' } as unknown as jest.Mocked<UpdrawCore>;
     });
 
     it('should restore theme from namespaced settings key', () => {
-      localStorage.setItem('kritzel-settings-homepage', JSON.stringify({ theme: 'dark' }));
+      localStorage.setItem('updraw-settings-homepage', JSON.stringify({ theme: 'dark' }));
 
-      const freshManager = new KritzelThemeManager(mockCoreWithId);
+      const freshManager = new UpdrawThemeManager(mockCoreWithId);
 
       expect(freshManager.currentTheme).toBe('dark');
     });
 
     it('should not read from the non-namespaced key when editorId is set', () => {
-      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'dark' }));
+      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'dark' }));
 
-      const freshManager = new KritzelThemeManager(mockCoreWithId);
+      const freshManager = new UpdrawThemeManager(mockCoreWithId);
 
       expect(freshManager.currentTheme).toBe('light');
     });
 
     it('should isolate storage between different editorIds', () => {
-      const mockCoreA = { editorId: 'editor-a' } as unknown as jest.Mocked<KritzelCore>;
-      const mockCoreB = { editorId: 'editor-b' } as unknown as jest.Mocked<KritzelCore>;
+      const mockCoreA = { editorId: 'editor-a' } as unknown as jest.Mocked<UpdrawCore>;
+      const mockCoreB = { editorId: 'editor-b' } as unknown as jest.Mocked<UpdrawCore>;
 
-      localStorage.setItem('kritzel-settings-editor-a', JSON.stringify({ theme: 'dark' }));
-      localStorage.setItem('kritzel-settings-editor-b', JSON.stringify({ theme: 'light' }));
+      localStorage.setItem('updraw-settings-editor-a', JSON.stringify({ theme: 'dark' }));
+      localStorage.setItem('updraw-settings-editor-b', JSON.stringify({ theme: 'light' }));
 
-      const managerA = new KritzelThemeManager(mockCoreA);
-      const managerB = new KritzelThemeManager(mockCoreB);
+      const managerA = new UpdrawThemeManager(mockCoreA);
+      const managerB = new UpdrawThemeManager(mockCoreB);
 
       expect(managerA.currentTheme).toBe('dark');
       expect(managerB.currentTheme).toBe('light');
     });
 
     it('should use default key when editorId is undefined', () => {
-      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'dark' }));
-      const noIdCore = { editorId: undefined } as unknown as jest.Mocked<KritzelCore>;
+      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'dark' }));
+      const noIdCore = { editorId: undefined } as unknown as jest.Mocked<UpdrawCore>;
 
-      const noIdManager = new KritzelThemeManager(noIdCore);
+      const noIdManager = new UpdrawThemeManager(noIdCore);
 
       expect(noIdManager.currentTheme).toBe('dark');
     });
@@ -161,8 +161,8 @@ describe('KritzelThemeManager', () => {
     });
 
     it('should apply dark theme when current theme is dark', () => {
-      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'dark' }));
-      const darkManager = new KritzelThemeManager(mockCore);
+      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'dark' }));
+      const darkManager = new UpdrawThemeManager(mockCore);
       const element = createMockElement();
 
       darkManager.setTargetElement(element);
@@ -221,31 +221,31 @@ describe('KritzelThemeManager', () => {
 
   describe('getStoredTheme', () => {
     it('should return light when nothing is stored', () => {
-      expect(KritzelThemeManager.getStoredTheme()).toBe('light');
+      expect(UpdrawThemeManager.getStoredTheme()).toBe('light');
     });
 
     it('should return dark when dark is stored in settings', () => {
-      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'dark' }));
+      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'dark' }));
 
-      expect(KritzelThemeManager.getStoredTheme()).toBe('dark');
+      expect(UpdrawThemeManager.getStoredTheme()).toBe('dark');
     });
 
     it('should return light when light is stored in settings', () => {
-      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'light' }));
+      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'light' }));
 
-      expect(KritzelThemeManager.getStoredTheme()).toBe('light');
+      expect(UpdrawThemeManager.getStoredTheme()).toBe('light');
     });
 
     it('should return the theme name from settings even if unregistered', () => {
-      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'invalid' }));
+      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'invalid' }));
 
-      expect(KritzelThemeManager.getStoredTheme()).toBe('invalid');
+      expect(UpdrawThemeManager.getStoredTheme()).toBe('invalid');
     });
 
     it('should return light for invalid JSON', () => {
-      localStorage.setItem('kritzel-settings', 'not-json');
+      localStorage.setItem('updraw-settings', 'not-json');
 
-      expect(KritzelThemeManager.getStoredTheme()).toBe('light');
+      expect(UpdrawThemeManager.getStoredTheme()).toBe('light');
     });
   });
 
@@ -263,7 +263,7 @@ describe('KritzelThemeManager', () => {
     it('should not persist the theme to localStorage', () => {
       manager.setTheme('dark');
 
-      expect(localStorage.getItem('kritzel-settings')).toBeNull();
+      expect(localStorage.getItem('updraw-settings')).toBeNull();
     });
 
     it('should apply theme to target element when one is set', () => {

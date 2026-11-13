@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { KritzelEditor, type HTMLKritzelEditorElement, type LocaleCode } from "@kritzel/react-editor";
+import { UpdrawEditor, type HTMLUpdrawEditorElement, type LocaleCode } from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
@@ -14,7 +14,7 @@ const localeOptions: { code: LocaleCode; label: string }[] = [
 ];
 
 export function LocalizationListenPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const infoPanel = useInfoPanel({ hasToolbarToggle: true });
   const [activeLocale, setActiveLocale] = useState<LocaleCode>("en");
   const [localeHistory, setLocaleHistory] = useState<LocaleCode[]>([]);
@@ -37,7 +37,7 @@ export function LocalizationListenPage() {
         <InfoPanelToggle panel={infoPanel} />
       </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        <KritzelEditor
+        <UpdrawEditor
           ref={editorRef}
           editorId="localization-listen"
           locale={activeLocale}

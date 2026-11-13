@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawWorkspace,
   type ContextMenuItem,
-} from '@kritzel/vue-editor'
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -12,7 +12,7 @@ import { editorStyle, hostStyle } from '../../shared/demo-shared'
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 
 const globalItems: ContextMenuItem[] = [
   {
@@ -96,7 +96,7 @@ async function onReady() {
 
 <template>
   <div :style="hostStyle">
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="custom-context-menu-object-inspector"
       theme="light"

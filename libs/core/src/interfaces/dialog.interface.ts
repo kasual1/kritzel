@@ -1,5 +1,5 @@
-export type KritzelDialogCloseReason = 'backdrop' | 'escape' | 'close-button' | 'programmatic';
+export type UpdrawDialogCloseReason = 'backdrop' | 'escape' | 'close-button' | 'programmatic';
 
-export interface IKritzelDialogCloseEvent {
-  reason: KritzelDialogCloseReason;
+export interface IUpdrawDialogCloseEvent {
+  reason: UpdrawDialogCloseReason;
 }

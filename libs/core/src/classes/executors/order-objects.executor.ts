@@ -1,15 +1,15 @@
-import type { KritzelAgenticOrderObjectsAction } from '../../interfaces/agentic-action.interface';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
-import type { KritzelAgenticActionRun } from '../managers/agentic-action-run.class';
+import type { UpdrawAgenticOrderObjectsAction } from '../../interfaces/agentic-action.interface';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpdrawAgenticActionRun } from '../managers/agentic-action-run.class';
 import { flyToObjects, prepareTopLevelTargets } from './select.executor';
 import { AGENTIC_ORDERS, assertObjectIds, uniqueIds } from '../../helpers/agentic-validation.helper';
-import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
+import { UpdrawZOrderHelper } from '../../helpers/z-order.helper';
 
 /**
  * Writes planned z-indices under the run's agent origin and records them for `objectsUpdated`. Objects that are
  * gone (e.g. a group the action just dissolved) are skipped. Call it inside `run.mutate()`.
  */
-export function applyZIndexUpdates(run: KritzelAgenticActionRun, updates: Map<string, number>): void {
+export function applyZIndexUpdates(run: UpdrawAgenticActionRun, updates: Map<string, number>): void {
   const map = run.map!;
   updates.forEach((zIndex, id) => {
     const object = map.findById(id);
@@ -23,7 +23,7 @@ export function applyZIndexUpdates(run: KritzelAgenticActionRun, updates: Map<st
 }
 
 /** `orderObjects`: clicks the objects and moves them in the stacking order, like "Bring to front". */
-export const orderObjectsExecutor: KritzelAgenticActionExecutor<KritzelAgenticOrderObjectsAction> = {
+export const orderObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticOrderObjectsAction> = {
   mutates: true,
 
   validate(action) {
@@ -43,8 +43,8 @@ export const orderObjectsExecutor: KritzelAgenticActionExecutor<KritzelAgenticOr
     await run.click();
 
     // Planned on the state right before the change; objects already in place change nothing.
-    const { items } = KritzelZOrderHelper.collect(run.map!.allObjects());
-    const updates = KritzelZOrderHelper.reorder(items, ids, action.order);
+    const { items } = UpdrawZOrderHelper.collect(run.map!.allObjects());
+    const updates = UpdrawZOrderHelper.reorder(items, ids, action.order);
     if (updates.size > 0) {
       run.mutate(() => applyZIndexUpdates(run, updates));
     }

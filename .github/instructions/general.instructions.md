@@ -1,12 +1,12 @@
 ### Project Overview
-Kritzel is a component library for creating interactive sketches and drawings in web applications on an infinite canvas. It provides a simple API for handling user input, rendering graphics, and managing state.
+Updraw is a component library for creating interactive sketches and drawings in web applications on an infinite canvas. It provides a simple API for handling user input, rendering graphics, and managing state.
 It is built with Stencil and has wrappers for Angular, React, and Vue.
 
 ### General Folder Structure
-Kritzel is a monorepo containing the core library and its framework-specific wrappers. The core functionality is built with Stencil, and wrappers are provided for Angular, React, and Vue.
+Updraw is a monorepo containing the core library and its framework-specific wrappers. The core functionality is built with Stencil, and wrappers are provided for Angular, React, and Vue.
 
-- **`libs/core`**: `@kritzel/core`, a plain TypeScript package (no Stencil) holding the business logic, canvas entities, providers, managers, helpers, interfaces, themes and locales. `@kritzel/engine` and `@kritzel/editor` depend on it and keep it external in their builds, so apps get one copy of every class.
-- **`libs/engine/core`**: The engine Stencil library with the engine component and its internal child components. It imports all logic from `@kritzel/core` and re-exports it.
+- **`libs/core`**: `@updraw/core`, a plain TypeScript package (no Stencil) holding the business logic, canvas entities, providers, managers, helpers, interfaces, themes and locales. `@updraw/engine` and `@updraw/editor` depend on it and keep it external in their builds, so apps get one copy of every class.
+- **`libs/engine/core`**: The engine Stencil library with the engine component and its internal child components. It imports all logic from `@updraw/core` and re-exports it.
 - **`libs/engine/angular`**, **`libs/engine/react`**, **`libs/engine/vue`**: Framework-specific wrapper package slots for engine-only consumption.
 - **`libs/editor/core`**: The editor package slot for the higher-level UI shell.
 - **`libs/editor/angular`**, **`libs/editor/react`**, **`libs/editor/vue`**: Framework-specific wrapper libraries for editor consumption.
@@ -36,7 +36,7 @@ The logic lives in `libs/core/src`; the Stencil components live in `libs/engine/
 
 ### Coding Conventions
 - Follow consistent naming conventions for files, classes, methods, and variables.
-- All classes inside `libs/core` and `libs/engine/core` should be prefixed with `Kritzel` but their filenames should not have the prefix.
+- All classes inside `libs/core` and `libs/engine/core` should be prefixed with `Updraw` but their filenames should not have the prefix.
 
 ### Unit Testing
 - Unit test files use the `.spec.ts` extension and should be placed in the same directory as the file they are testing (e.g., `my-class.ts` and `my-class.spec.ts` should be in the same folder).
@@ -49,8 +49,8 @@ The logic lives in `libs/core/src`; the Stencil components live in `libs/engine/
 - E2E tests have a strong focus on Playwright screenshot testing.
 
 ### Theming
-Kritzel uses a CSS custom property (CSS variables) based theming system. All themeable properties are defined as `--kritzel-*` CSS variables in component stylesheets.
+Updraw uses a CSS custom property (CSS variables) based theming system. All themeable properties are defined as `--updraw-*` CSS variables in component stylesheets.
 
-- **Theme Interface Generation**: Run `node scripts/generate-theme-interface.js` to scan all CSS and TSX files for `--kritzel-*` variables and automatically generate/update the `KritzelTheme` interface in `libs/core/src/interfaces/theme.interface.ts`. This groups variables by category (e.g., toolbar, menu, dialog).
-- **Theme Definitions**: Theme presets are defined in `libs/core/src/themes/` (e.g., `light-theme.ts`, `dark-theme.ts`) and implement the `KritzelTheme` interface.
+- **Theme Interface Generation**: Run `node scripts/generate-theme-interface.js` to scan all CSS and TSX files for `--updraw-*` variables and automatically generate/update the `UpdrawTheme` interface in `libs/core/src/interfaces/theme.interface.ts`. This groups variables by category (e.g., toolbar, menu, dialog).
+- **Theme Definitions**: Theme presets are defined in `libs/core/src/themes/` (e.g., `light-theme.ts`, `dark-theme.ts`) and implement the `UpdrawTheme` interface.
 - **Adding New Theme Variables**: When adding new CSS variables to components, re-run the generation script and update the theme files accordingly.

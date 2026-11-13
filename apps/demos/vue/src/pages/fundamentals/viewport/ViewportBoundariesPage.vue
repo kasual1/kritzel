@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getEditorRef, KritzelEditor, KritzelWorkspace } from '@kritzel/vue-editor'
+import { getEditorRef, UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -8,7 +8,7 @@ import Toolbar from '../../../components/Toolbar.vue'
 
 const panStep = 100
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 const editor = getEditorRef('editor')
 
 async function panBy(offsetX: number, offsetY: number) {
@@ -51,7 +51,7 @@ async function panRight() {
       <button @click="panLeft">Pan Left</button>
       <button @click="panRight">Pan Right</button>
     </Toolbar>
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="viewport-boundaries"
       theme="light"

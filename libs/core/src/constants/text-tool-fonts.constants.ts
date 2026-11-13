@@ -1,6 +1,6 @@
-import { KritzelFontRegistration } from '../interfaces/font.interface';
+import { UpdrawFontRegistration } from '../interfaces/font.interface';
 
-export const DEFAULT_TEXT_TOOL_AVAILABLE_FONTS: KritzelFontRegistration[] = [
+export const DEFAULT_TEXT_TOOL_AVAILABLE_FONTS: UpdrawFontRegistration[] = [
   'Arial',
   'Verdana',
   'Helvetica',
@@ -14,8 +14,8 @@ export const DEFAULT_TEXT_TOOL_AVAILABLE_FONTS: KritzelFontRegistration[] = [
 ];
 
 export const resolveTextToolAvailableFonts = (
-  availableFonts?: KritzelFontRegistration[],
-): KritzelFontRegistration[] => {
+  availableFonts?: UpdrawFontRegistration[],
+): UpdrawFontRegistration[] => {
   if (!availableFonts || availableFonts.length === 0) {
     return [...DEFAULT_TEXT_TOOL_AVAILABLE_FONTS];
   }

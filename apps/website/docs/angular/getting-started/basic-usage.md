@@ -1,8 +1,8 @@
 ---
 sidebar_label: Basic Usage
 displayed_sidebar: tutorialSidebar
-title: "Basic Usage | Kritzel for Angular"
-description: "Learn the main ways to interact with Kritzel from Angular: set props, listen to events, and call public methods."
+title: "Basic Usage | Updraw for Angular"
+description: "Learn the main ways to interact with Updraw from Angular: set props, listen to events, and call public methods."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,31 +11,31 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-For most use cases `<kritzel-editor>` is the preferred choice. It gives you a ready made whiteboard experience and includes customizable controls that can be further tuned to your needs. Only use `<kritzel-engine>` when you want to build the entire UI yourself.
+For most use cases `<updraw-editor>` is the preferred choice. It gives you a ready made whiteboard experience and includes customizable controls that can be further tuned to your needs. Only use `<updraw-engine>` when you want to build the entire UI yourself.
 
-Once `<kritzel-editor>` or `<kritzel-engine>` is rendering in your application, you can interact with the canvas in three complementary ways:
+Once `<updraw-editor>` or `<updraw-engine>` is rendering in your application, you can interact with the canvas in three complementary ways:
 
 - **Setting props** to configure the component declaratively.
 - **Listening to events** to react to changes from the editor or engine.
 - **Calling methods** to make imperative changes or query state.
 
-While the `<kritzel-editor>` is the main way to integrate Kritzel into your application, the same APIs also apply to `<kritzel-engine>`. The examples below focus on `<kritzel-editor>`, but the concepts carry over to the engine as well.
+While the `<updraw-editor>` is the main way to integrate Updraw into your application, the same APIs also apply to `<updraw-engine>`. The examples below focus on `<updraw-editor>`, but the concepts carry over to the engine as well.
 
 For the full documentation, please see the API reference of the [Editor](../api-reference/editor.md) or the [Engine](../api-reference/engine.md).
 
 ## Waiting for Initialization
 
-Before interacting with an editor instance through its public API, you must wait for the editor's `isReady` event. The `<kritzel-editor>` emits `isReady` after the engine is mounted, the internal rendering context is created, and the initial workspace state is available.
+Before interacting with an editor instance through its public API, you must wait for the editor's `isReady` event. The `<updraw-editor>` emits `isReady` after the engine is mounted, the internal rendering context is created, and the initial workspace state is available.
 
 ```ts
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  template: `<kritzel-editor #editor (isReady)="onReady()"></kritzel-editor>`
+  template: `<updraw-editor #editor (isReady)="onReady()"></updraw-editor>`
 })
 export class AppComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   onReady() {
     this.editor.setActiveTool('brush');
@@ -51,13 +51,13 @@ Props are the declarative way to configure the editor. Use props such as `theme`
 
 ```ts
 import { Component } from '@angular/core';
-import { KritzelEditor, KritzelSyncConfig } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawSyncConfig } from '@updraw/angular-editor';
 
 @Component({
   selector: 'app-canvas',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   template: `
-    <kritzel-editor [isToolbarVisible]="isToolbarVisible"></kritzel-editor>
+    <updraw-editor [isToolbarVisible]="isToolbarVisible"></updraw-editor>
   `,
 })
 export class CanvasComponent {
@@ -72,22 +72,22 @@ For example, changing `isToolbarVisible` from application state hides the editor
 Events are the way the editor reports state changes. Bind custom-element events in the template and read their payload from `event.detail`. The payload type depends on the event; for example, `objectsChange` contains the current objects and `viewportChange` contains the current viewport state.
 
 ```html
-<kritzel-editor
+<updraw-editor
   (objectsChange)="onObjectsChange($event)"
   (viewportChange)="onViewportChange($event)">
-</kritzel-editor>
+</updraw-editor>
 ```
 
 ```ts
-import { KritzelBaseObject, KritzelViewportState } from '@kritzel/angular-editor';
+import { UpdrawBaseObject, UpdrawViewportState } from '@updraw/angular-editor';
 
 onObjectsChange(event: Event) {
-  const objects = (event as CustomEvent<KritzelBaseObject[]>).detail;
+  const objects = (event as CustomEvent<UpdrawBaseObject[]>).detail;
   console.log('Canvas objects updated:', objects.length);
 }
 
 onViewportChange(event: Event) {
-  const viewport = (event as CustomEvent<KritzelViewportState>).detail;
+  const viewport = (event as CustomEvent<UpdrawViewportState>).detail;
   console.log('Viewport updated:', viewport);
 }
 ```
@@ -96,13 +96,13 @@ The `isReady` event is also an event you can listen to. Treat it as the point at
 
 ## Calling Methods
 
-Public methods are the imperative way to control the editor canvas and query its state. Kritzel methods are asynchronous and return Promises, so call them from an `async` function and `await` their results. The element reference must be ready before these calls are made. The following example demonstrates adding a text object programmatically.
+Public methods are the imperative way to control the editor canvas and query its state. Updraw methods are asynchronous and return Promises, so call them from an `async` function and `await` their results. The element reference must be ready before these calls are made. The following example demonstrates adding a text object programmatically.
 
 ```ts
-import { KritzelText } from '@kritzel/angular-editor';
+import { UpdrawText } from '@updraw/angular-editor';
 
 async addText() {
-  await this.editor.addObject(new KritzelText({
+  await this.editor.addObject(new UpdrawText({
     text: 'Programmatic text!',
     translateX: 0,
     translateY: 0,

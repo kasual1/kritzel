@@ -1,10 +1,10 @@
 ---
 name: docs-builder
-description: "Create, edit, and maintain Docusaurus documentation pages for the Kritzel website. Covers example pages, API reference pages, and conceptual docs. Use when iterating on content inside apps/website/docs/."
+description: "Create, edit, and maintain Docusaurus documentation pages for the Updraw website. Covers example pages, API reference pages, and conceptual docs. Use when iterating on content inside apps/website/docs/."
 argument-hint: "Describe the doc page to create or edit"
 ---
 
-# Docs Builder — Kritzel Website Documentation
+# Docs Builder — Updraw Website Documentation
 
 ## When to Use
 
@@ -15,7 +15,7 @@ argument-hint: "Describe the doc page to create or edit"
 
 ## Important: Angular-First Workflow
 
-**All documentation is authored targeting the Angular implementation only.** The `apps/website/docs/angular/` folder is the source of truth. A separate skill (`kritzel-docs-example` or a future translation skill) handles porting content to `apps/website/docs/react/` and `apps/website/docs/vue/`.
+**All documentation is authored targeting the Angular implementation only.** The `apps/website/docs/angular/` folder is the source of truth. A separate skill (`updraw-docs-example` or a future translation skill) handles porting content to `apps/website/docs/react/` and `apps/website/docs/vue/`.
 
 When working with docs-builder:
 
@@ -60,7 +60,7 @@ Detailed conventions for each documentation category live in the `patterns/` sub
 - [`patterns/core-concept.md`](patterns/core-concept.md) — How to write, structure, and maintain Fundamentals pages
 - [`patterns/advanced-concept.md`](patterns/advanced-concept.md) — How to write, structure, and maintain Advanced pages
 - [`patterns/framework-porting.md`](patterns/framework-porting.md) — How to port Angular source docs to React and Vue consistently
-- [`patterns/dynamic-objects.md`](patterns/dynamic-objects.md) — How to document and demo `KritzelDynamicObject` lifecycle, renderer state persistence, wheel behavior, and Vue-specific embedding constraints
+- [`patterns/dynamic-objects.md`](patterns/dynamic-objects.md) — How to document and demo `UpdrawDynamicObject` lifecycle, renderer state persistence, wheel behavior, and Vue-specific embedding constraints
 
 For runnable demo implementation under `apps/demos/**`, use the `demo-builder` skill:
 
@@ -93,12 +93,12 @@ Apply these rules whenever docs include `<LiveDemo>` (especially during Angular 
 - When a task explicitly requests React/Vue updates, perform full translation plus demo wiring checks, not markdown-only edits.
 
 6. Account for framework-specific editor/engine ref access.
-- Vue demos must resolve the editor/engine via the `getEditorRef` / `getEngineRef` composables from `@kritzel/vue-editor` (a Vue template ref points at the component instance, not the native element).
-- Angular and React resolve the native `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement` directly (Angular `viewChild`/`ElementRef`, React `useRef`) — no composable needed.
+- Vue demos must resolve the editor/engine via the `getEditorRef` / `getEngineRef` composables from `@updraw/vue-editor` (a Vue template ref points at the component instance, not the native element).
+- Angular and React resolve the native `HTMLUpdrawEditorElement` / `HTMLUpdrawEngineElement` directly (Angular `viewChild`/`ElementRef`, React `useRef`) — no composable needed.
 - See `.github/skills/demo-builder/patterns/vue-demo-pages.md` ("Editor / Engine Ref Access") for the required Vue usage.
 
 7. For dynamic object documentation, apply lifecycle and framework constraints.
-- Load `patterns/dynamic-objects.md` whenever docs or demos cover `KritzelDynamicObject`, `rendererKey`, or `rendererData`.
+- Load `patterns/dynamic-objects.md` whenever docs or demos cover `UpdrawDynamicObject`, `rendererKey`, or `rendererData`.
 - In Vue-facing dynamic object docs, explicitly call out style/encapsulation caveats and prefer Vue custom-element based renderer strategies over ad-hoc SFC mounting.
 
 ## Workflow

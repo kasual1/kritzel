@@ -7,9 +7,10 @@ import Calculator from "./Calculator";
 import HeroTitle from "./HeroTitle";
 import ImageCard from "./ImageCard";
 import MenuButton from "./MenuButton";
-import { HELLO_DOT, HELLO_EXCLAMATION, HELLO_STROKES, KRITZEL_LOGO_PATH } from "./paths";
+import { HELLO_DOT, HELLO_EXCLAMATION, HELLO_STROKES, UPDRAW_LOGO_PATH } from "./paths";
 import { TOOLS } from "./tools";
 import styles from "./styles.module.css";
+import { useAppUrl } from "@site/src/utils/siteUrls";
 
 function DraggableCanvasItem({
   children,
@@ -113,6 +114,7 @@ function DraggableCanvasItem({
 }
 
 function MockToolbar() {
+  const appUrl = useAppUrl();
   const [showNotification, setShowNotification] = useState(false);
   const notificationTimer = useRef<number | undefined>(undefined);
 
@@ -138,7 +140,7 @@ function MockToolbar() {
           aria-hidden={!showNotification}
           inert={!showNotification}
         >
-          <span>Go to <Link href="https://app.kritzel.io" target="_blank" rel="noopener noreferrer">full demo</Link></span>
+          <span>Go to <Link href={appUrl} target="_blank" rel="noopener noreferrer">full demo</Link></span>
           <button type="button" aria-label="Dismiss notification" onClick={dismissNotification}>
             <Icon size={16}><path d="m6 6 12 12M18 6 6 18" /></Icon>
           </button>
@@ -323,9 +325,9 @@ export default function Hero({
       <div ref={canvasRef} className={styles.heroCanvas}>
         <Link to="/" className={styles.brand}>
           <svg width="40" height="35" viewBox="0 0 321.05759 277.97299" aria-hidden="true">
-            <path fill="currentColor" d={KRITZEL_LOGO_PATH} />
+            <path fill="currentColor" d={UPDRAW_LOGO_PATH} />
           </svg>
-          Kritzel
+          Updraw
         </Link>
         <nav ref={navRef} aria-label="Main" className={styles.topNav}>
           <Link to="/blog" className={styles.topNavLink}>
@@ -352,7 +354,7 @@ export default function Hero({
             </nav>
             <HeroTitle />
             <p className={styles.heroSubtitle}>
-              Kritzel is a framework-agnostic infinite canvas library that helps you build custom whiteboard
+              Updraw is a framework-agnostic infinite canvas library that helps you build custom whiteboard
               experiences with React, Vue and Angular.
             </p>
             <CallToActionBar docsPath={docsPath} />

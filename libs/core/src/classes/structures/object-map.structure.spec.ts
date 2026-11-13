@@ -1,6 +1,6 @@
-import { KritzelObjectMap } from './object-map.structure';
-import { KritzelSelectionBox } from '../objects/selection-box.class';
-import type { KritzelCore } from '../core/core.class';
+import { UpdrawObjectMap } from './object-map.structure';
+import { UpdrawSelectionBox } from '../objects/selection-box.class';
+import type { UpdrawCore } from '../core/core.class';
 
 // --- Mock Yjs ---
 const mockMapObserve = jest.fn();
@@ -72,7 +72,7 @@ const mockQuadtreeReset = jest.fn();
 let mockQuadtreeSize = 0;
 
 jest.mock('./quadtree.structure', () => ({
-  KritzelQuadtree: jest.fn().mockImplementation(() => ({
+  UpdrawQuadtree: jest.fn().mockImplementation(() => ({
     insert: mockQuadtreeInsert,
     update: mockQuadtreeUpdate,
     reindex: mockQuadtreeReindex,
@@ -88,7 +88,7 @@ jest.mock('./quadtree.structure', () => ({
 // --- Mock Reviver ---
 const mockRevive = jest.fn();
 jest.mock('../core/reviver.class', () => ({
-  KritzelReviver: jest.fn().mockImplementation(() => ({
+  UpdrawReviver: jest.fn().mockImplementation(() => ({
     revive: mockRevive,
   })),
 }));
@@ -110,10 +110,10 @@ jest.mock('../../helpers/migration.helper', () => ({
   runMigrations: (...args: unknown[]) => mockRunMigrations(...args),
 }));
 
-// --- Mock barrel export for KritzelUndoState ---
+// --- Mock barrel export for UpdrawUndoState ---
 jest.mock('../..', () => ({}));
 
-type MockCore = jest.Mocked<Pick<KritzelCore, 'rerender' | 'editorId'>> & {
+type MockCore = jest.Mocked<Pick<UpdrawCore, 'rerender' | 'editorId'>> & {
   anchorManager: {
     rebuildIndex: jest.Mock;
   };
@@ -167,13 +167,13 @@ const createMockObject = (id: string, opts: { isSelectionBox?: boolean } = {}): 
     serialize: jest.fn().mockReturnValue({ id, type: 'mock' }),
   };
   if (opts.isSelectionBox) {
-    Object.setPrototypeOf(obj, KritzelSelectionBox.prototype);
+    Object.setPrototypeOf(obj, UpdrawSelectionBox.prototype);
   }
   return obj;
 };
 
-describe('KritzelObjectMap', () => {
-  let objectMap: KritzelObjectMap<any>;
+describe('UpdrawObjectMap', () => {
+  let objectMap: UpdrawObjectMap<any>;
   let mockCore: MockCore;
 
   beforeEach(() => {
@@ -185,14 +185,14 @@ describe('KritzelObjectMap', () => {
     mockUndoManagerCanRedo.mockReturnValue(false);
     mockQuadtreeFilter.mockReturnValue([]);
 
-    objectMap = new KritzelObjectMap();
+    objectMap = new UpdrawObjectMap();
     mockCore = createMockCore();
   });
 
   describe('constructor', () => {
     it('should create a quadtree with infinite bounds', () => {
-      const { KritzelQuadtree } = require('./quadtree.structure');
-      expect(KritzelQuadtree).toHaveBeenCalledWith(
+      const { UpdrawQuadtree } = require('./quadtree.structure');
+      expect(UpdrawQuadtree).toHaveBeenCalledWith(
         { x: -Infinity, y: -Infinity, z: 0, width: Infinity, height: Infinity },
         8,
       );
@@ -213,20 +213,20 @@ describe('KritzelObjectMap', () => {
 
   describe('initialize', () => {
     it('should set isReady to true after initialization', async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       expect(objectMap.isReady).toBe(true);
     });
 
     it('should set workspaceId', async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-42', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-42', { providers: [] });
 
       expect(objectMap.workspaceId).toBe('ws-42');
     });
 
     it('should create Y.Doc and get objects map', async () => {
       const Y = require('yjs');
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       expect(Y.Doc).toHaveBeenCalled();
       expect(mockYdocGetMap).toHaveBeenCalledWith('objects');
@@ -234,13 +234,13 @@ describe('KritzelObjectMap', () => {
 
     it('should create UndoManager', async () => {
       const Y = require('yjs');
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       expect(Y.UndoManager).toHaveBeenCalled();
     });
 
     it('should observe the objects map', async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       expect(mockMapObserve).toHaveBeenCalledWith(expect.any(Function));
     });
@@ -248,9 +248,9 @@ describe('KritzelObjectMap', () => {
     it('should connect providers from config', async () => {
       const provider = createMockProvider();
       const factory = { create: jest.fn().mockReturnValue(provider) };
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
-      expect(factory.create).toHaveBeenCalledWith('kritzel-workspace-ws-1', expect.anything(), expect.anything());
+      expect(factory.create).toHaveBeenCalledWith('updraw-workspace-ws-1', expect.anything(), expect.anything());
       expect(provider.connect).toHaveBeenCalled();
     });
 
@@ -258,9 +258,9 @@ describe('KritzelObjectMap', () => {
       const provider = createMockProvider();
       const ProviderClass = jest.fn().mockImplementation(() => provider) as any;
 
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [ProviderClass] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [ProviderClass] });
 
-      expect(ProviderClass).toHaveBeenCalledWith('kritzel-workspace-ws-1', expect.anything(), expect.anything());
+      expect(ProviderClass).toHaveBeenCalledWith('updraw-workspace-ws-1', expect.anything(), expect.anything());
       expect(provider.connect).toHaveBeenCalled();
     });
 
@@ -269,9 +269,9 @@ describe('KritzelObjectMap', () => {
       const provider = createMockProvider();
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      await objectMap.initialize(coreWithId as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      await objectMap.initialize(coreWithId as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
-      expect(factory.create).toHaveBeenCalledWith('kritzel-workspace-homepage-ws-1', expect.anything(), expect.anything());
+      expect(factory.create).toHaveBeenCalledWith('updraw-workspace-homepage-ws-1', expect.anything(), expect.anything());
     });
 
     it('should use default doc name when editorId is undefined', async () => {
@@ -279,20 +279,20 @@ describe('KritzelObjectMap', () => {
       const provider = createMockProvider();
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      await objectMap.initialize(coreNoId as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      await objectMap.initialize(coreNoId as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
-      expect(factory.create).toHaveBeenCalledWith('kritzel-workspace-ws-1', expect.anything(), expect.anything());
+      expect(factory.create).toHaveBeenCalledWith('updraw-workspace-ws-1', expect.anything(), expect.anything());
     });
 
     it('should load objects from Yjs after connecting', async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       expect(mockQuadtreeReset).toHaveBeenCalled();
       expect(mockMapForEach).toHaveBeenCalled();
     });
 
     it('should register undo manager event listeners', async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       expect(mockUndoManagerOn).toHaveBeenCalledWith('stack-item-added', expect.any(Function));
       expect(mockUndoManagerOn).toHaveBeenCalledWith('stack-item-popped', expect.any(Function));
@@ -301,7 +301,7 @@ describe('KritzelObjectMap', () => {
 
   describe('whenNetworkSynced', () => {
     it('resolves immediately when there are no network providers', async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       await expect(objectMap.whenNetworkSynced()).resolves.toBeUndefined();
     });
@@ -310,7 +310,7 @@ describe('KritzelObjectMap', () => {
       const provider = createMockProvider('local');
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
       await expect(objectMap.whenNetworkSynced()).resolves.toBeUndefined();
     });
@@ -325,7 +325,7 @@ describe('KritzelObjectMap', () => {
       );
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
       let settled = false;
       const syncPromise = objectMap.whenNetworkSynced().then(() => {
@@ -345,7 +345,7 @@ describe('KritzelObjectMap', () => {
       provider.connect.mockRejectedValue(new Error('connection timeout'));
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
       await expect(objectMap.whenNetworkSynced()).resolves.toBeUndefined();
     });
@@ -355,7 +355,7 @@ describe('KritzelObjectMap', () => {
       provider.connect.mockReturnValue(new Promise<void>(() => undefined));
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
       expect(objectMap.isReady).toBe(true);
     });
@@ -363,7 +363,7 @@ describe('KritzelObjectMap', () => {
 
   describe('insert', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
       mockMapSet.mockClear();
       mockYdocTransact.mockClear();
     });
@@ -406,7 +406,7 @@ describe('KritzelObjectMap', () => {
 
   describe('update', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
     });
 
     it('should update existing object in quadtree and Yjs', () => {
@@ -483,7 +483,7 @@ describe('KritzelObjectMap', () => {
 
   describe('remove', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
     });
 
     it('should remove matching objects from quadtree and Yjs', () => {
@@ -517,7 +517,7 @@ describe('KritzelObjectMap', () => {
 
   describe('filter / allObjects / query', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
     });
 
     it('should delegate filter to quadtree', () => {
@@ -551,7 +551,7 @@ describe('KritzelObjectMap', () => {
 
   describe('transaction', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
     });
 
     it('should run callback inside a Y.Doc transaction with local origin', () => {
@@ -566,7 +566,7 @@ describe('KritzelObjectMap', () => {
 
   describe('reset', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
     });
 
     it('should reset quadtree and clear Yjs map', () => {
@@ -581,7 +581,7 @@ describe('KritzelObjectMap', () => {
 
   describe('undo / redo', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
     });
 
     it('should call undoManager.undo when canUndo is true', () => {
@@ -623,7 +623,7 @@ describe('KritzelObjectMap', () => {
 
   describe('canUndo / canRedo', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
     });
 
     it('should delegate canUndo to undoManager', () => {
@@ -643,7 +643,7 @@ describe('KritzelObjectMap', () => {
     });
 
     it('should return false when undoManager is null', () => {
-      const freshMap = new KritzelObjectMap();
+      const freshMap = new UpdrawObjectMap();
       expect(freshMap.canUndo()).toBe(false);
       expect(freshMap.canRedo()).toBe(false);
     });
@@ -651,7 +651,7 @@ describe('KritzelObjectMap', () => {
 
   describe('undoState', () => {
     it('should return all-false state when undoManager is null', () => {
-      const freshMap = new KritzelObjectMap();
+      const freshMap = new UpdrawObjectMap();
 
       expect(freshMap.undoState).toEqual({
         canUndo: false,
@@ -662,7 +662,7 @@ describe('KritzelObjectMap', () => {
     });
 
     it('should reflect undoManager state after initialization', async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
       mockUndoManagerCanUndo.mockReturnValue(true);
       mockUndoManagerCanRedo.mockReturnValue(false);
       mockUndoStack.push({}, {});
@@ -681,7 +681,7 @@ describe('KritzelObjectMap', () => {
 
   describe('clearHistory', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
     });
 
     it('should clear the undoManager', () => {
@@ -693,7 +693,7 @@ describe('KritzelObjectMap', () => {
 
   describe('consolidateTemporaryItems', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
     });
 
     it('should do nothing when temporaryItemsCount is 0', () => {
@@ -722,7 +722,7 @@ describe('KritzelObjectMap', () => {
 
   describe('clearTemporaryItems', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
     });
 
     it('should do nothing when temporaryItemsCount is 0', () => {
@@ -750,7 +750,7 @@ describe('KritzelObjectMap', () => {
 
   describe('stack-item event handlers', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
     });
 
     it('should increment temporaryItemsCount on temporary stack-item-added', () => {
@@ -820,19 +820,19 @@ describe('KritzelObjectMap', () => {
       // Create a mock SelectionGroup
       mockSelectionGroup = {
         id: 'sg-1',
-        __class__: 'KritzelSelectionGroup',
+        __class__: 'UpdrawSelectionGroup',
         objectIds: ['obj-1', 'obj-2'],
         deselectAllChildren: jest.fn(),
         invalidateObjectsCache: jest.fn(),
         refreshObjectDimensions: jest.fn(),
         captureUnchangedSnapshots: jest.fn(),
         rotatedBoundingBox: { x: 0, y: 0, z: 0, width: 100, height: 100 },
-        serialize: jest.fn().mockReturnValue({ id: 'sg-1', __class__: 'KritzelSelectionGroup' }),
+        serialize: jest.fn().mockReturnValue({ id: 'sg-1', __class__: 'UpdrawSelectionGroup' }),
       };
 
       // Make the mock a SelectionGroup instance
-      const { KritzelSelectionGroup } = require('../objects/selection-group.class');
-      Object.setPrototypeOf(mockSelectionGroup, KritzelSelectionGroup.prototype);
+      const { UpdrawSelectionGroup } = require('../objects/selection-group.class');
+      Object.setPrototypeOf(mockSelectionGroup, UpdrawSelectionGroup.prototype);
 
       // Setup mock store with invalidateSelectionCache
       mockStore = {
@@ -844,7 +844,7 @@ describe('KritzelObjectMap', () => {
         store: mockStore,
       };
 
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       // Capture the observer callback
       observerCallback = mockMapObserve.mock.calls[0][0];
@@ -858,7 +858,7 @@ describe('KritzelObjectMap', () => {
       mockQuadtreeFilter.mockReturnValue([mockSelectionGroup]);
 
       // Mock the serialized data in Yjs map
-      mockMapGet.mockReturnValueOnce({ id: 'sg-1', __class__: 'KritzelSelectionGroup' });
+      mockMapGet.mockReturnValueOnce({ id: 'sg-1', __class__: 'UpdrawSelectionGroup' });
 
       // Create a mock YMapEvent for a non-local transaction (undo/redo scenario)
       const mockEvent = {
@@ -882,7 +882,7 @@ describe('KritzelObjectMap', () => {
       // Mock the reviver to return our SelectionGroup
       mockRevive.mockReturnValueOnce(mockSelectionGroup);
       mockQuadtreeFilter.mockReturnValue([mockSelectionGroup]);
-      mockMapGet.mockReturnValueOnce({ id: 'sg-1', __class__: 'KritzelSelectionGroup' });
+      mockMapGet.mockReturnValueOnce({ id: 'sg-1', __class__: 'UpdrawSelectionGroup' });
 
       // Clear transact calls after initialization
       mockYdocTransact.mockClear();
@@ -908,9 +908,9 @@ describe('KritzelObjectMap', () => {
     it('should refresh existing SelectionGroups when their child objects change via undo/redo', () => {
       const mockChildObject = {
         id: 'obj-1',
-        __class__: 'KritzelPath',
+        __class__: 'UpdrawPath',
         rotatedBoundingBox: { x: 0, y: 0, z: 0, width: 50, height: 50 },
-        serialize: jest.fn().mockReturnValue({ id: 'obj-1', __class__: 'KritzelPath' }),
+        serialize: jest.fn().mockReturnValue({ id: 'obj-1', __class__: 'UpdrawPath' }),
       };
 
       // Insert the child object first so _idMap.has('obj-1') returns true (simulates existing object)
@@ -923,7 +923,7 @@ describe('KritzelObjectMap', () => {
       mockQuadtreeFilter
         .mockReturnValueOnce([mockSelectionGroup]); // filter: find SelectionGroups
 
-      mockMapGet.mockReturnValueOnce({ id: 'obj-1', __class__: 'KritzelPath' });
+      mockMapGet.mockReturnValueOnce({ id: 'obj-1', __class__: 'UpdrawPath' });
 
       mockYdocTransact.mockClear();
 
@@ -952,7 +952,7 @@ describe('KritzelObjectMap', () => {
     it('should invalidate store selection cache after processing undo/redo changes', () => {
       mockRevive.mockReturnValueOnce(mockSelectionGroup);
       mockQuadtreeFilter.mockReturnValue([mockSelectionGroup]);
-      mockMapGet.mockReturnValueOnce({ id: 'sg-1', __class__: 'KritzelSelectionGroup' });
+      mockMapGet.mockReturnValueOnce({ id: 'sg-1', __class__: 'UpdrawSelectionGroup' });
 
       const mockEvent = {
         transaction: { origin: null },
@@ -1000,7 +1000,7 @@ describe('KritzelObjectMap', () => {
         setIsInteractive: jest.fn(),
         hasFocusedInputElement: jest.fn(),
         getEmbeddedContentRoots: jest.fn(),
-        serialize: jest.fn().mockReturnValue({ id: 'frame-1', __class__: 'KritzelIframeObject' }),
+        serialize: jest.fn().mockReturnValue({ id: 'frame-1', __class__: 'UpdrawIframeObject' }),
       };
       objectMap.insert(embedded);
 
@@ -1015,17 +1015,17 @@ describe('KritzelObjectMap', () => {
     });
 
     it('should rebuild the anchor index when a remote line is updated', () => {
-      const { KritzelLine } = require('../objects/line.class');
+      const { UpdrawLine } = require('../objects/line.class');
       const mockLine: any = {
         id: 'line-1',
-        __class__: 'KritzelLine',
-        serialize: jest.fn().mockReturnValue({ id: 'line-1', __class__: 'KritzelLine' }),
+        __class__: 'UpdrawLine',
+        serialize: jest.fn().mockReturnValue({ id: 'line-1', __class__: 'UpdrawLine' }),
         adoptTransientStateFrom: jest.fn(),
       };
-      Object.setPrototypeOf(mockLine, KritzelLine.prototype);
+      Object.setPrototypeOf(mockLine, UpdrawLine.prototype);
 
       mockRevive.mockReturnValueOnce(mockLine);
-      mockMapGet.mockReturnValueOnce({ id: 'line-1', __class__: 'KritzelLine' });
+      mockMapGet.mockReturnValueOnce({ id: 'line-1', __class__: 'UpdrawLine' });
 
       const mockEvent = {
         transaction: { origin: null },
@@ -1041,9 +1041,9 @@ describe('KritzelObjectMap', () => {
     });
 
     it('should rebuild the anchor index when a remote line is deleted', () => {
-      const { KritzelLine } = require('../objects/line.class');
-      const mockLine: any = { id: 'line-1', __class__: 'KritzelLine' };
-      Object.setPrototypeOf(mockLine, KritzelLine.prototype);
+      const { UpdrawLine } = require('../objects/line.class');
+      const mockLine: any = { id: 'line-1', __class__: 'UpdrawLine' };
+      Object.setPrototypeOf(mockLine, UpdrawLine.prototype);
 
       // The line must already exist locally so the delete path can detect its type.
       objectMap.insert(mockLine);
@@ -1064,12 +1064,12 @@ describe('KritzelObjectMap', () => {
     it('should not rebuild the anchor index when only non-line objects change remotely', () => {
       const mockPath = {
         id: 'obj-1',
-        __class__: 'KritzelPath',
-        serialize: jest.fn().mockReturnValue({ id: 'obj-1', __class__: 'KritzelPath' }),
+        __class__: 'UpdrawPath',
+        serialize: jest.fn().mockReturnValue({ id: 'obj-1', __class__: 'UpdrawPath' }),
       };
 
       mockRevive.mockReturnValueOnce(mockPath);
-      mockMapGet.mockReturnValueOnce({ id: 'obj-1', __class__: 'KritzelPath' });
+      mockMapGet.mockReturnValueOnce({ id: 'obj-1', __class__: 'UpdrawPath' });
 
       const mockEvent = {
         transaction: { origin: null },
@@ -1093,7 +1093,7 @@ describe('KritzelObjectMap', () => {
         cb({ id: 'revived-1', type: 'path' });
       });
 
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       expect(mockQuadtreeReset).toHaveBeenCalled();
       expect(mockRevive).toHaveBeenCalledWith({ id: 'revived-1', type: 'path' });
@@ -1103,7 +1103,7 @@ describe('KritzelObjectMap', () => {
 
   describe('destroy', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
     });
 
     it('should unobserve the objects map', () => {
@@ -1146,8 +1146,8 @@ describe('KritzelObjectMap', () => {
       const provider = createMockProvider();
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      const map2 = new KritzelObjectMap();
-      await map2.initialize(mockCore as unknown as KritzelCore, 'ws-2', { providers: [factory] });
+      const map2 = new UpdrawObjectMap();
+      await map2.initialize(mockCore as unknown as UpdrawCore, 'ws-2', { providers: [factory] });
 
       map2.destroy();
 
@@ -1157,7 +1157,7 @@ describe('KritzelObjectMap', () => {
 
   describe('schema migrations', () => {
     it('should call runMigrations during initialization', async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       expect(mockRunMigrations).toHaveBeenCalledWith(
         expect.anything(), // ydoc
@@ -1172,7 +1172,7 @@ describe('KritzelObjectMap', () => {
     it('should set schemaVersion in metadata for new documents', async () => {
       mockMapGet.mockReturnValue(undefined);
 
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       expect(mockMapSet).toHaveBeenCalledWith('schemaVersion', expect.any(Number));
     });
@@ -1185,7 +1185,7 @@ describe('KritzelObjectMap', () => {
         return undefined;
       });
 
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       const schemaVersionCalls = mockMapSet.mock.calls.filter(
         (call: unknown[]) => call[0] === 'schemaVersion'
@@ -1194,7 +1194,7 @@ describe('KritzelObjectMap', () => {
     });
 
     it('should skip processing for migration origin in handleObjectsChange', async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
       const observerCallback = mockMapObserve.mock.calls[0][0];
 
       mockCore.rerender.mockClear();
@@ -1228,8 +1228,8 @@ describe('KritzelObjectMap', () => {
       provider.awareness = mockAwareness;
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      const map2 = new KritzelObjectMap();
-      await map2.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      const map2 = new UpdrawObjectMap();
+      await map2.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
       expect(map2.hasAwareness).toBe(true);
     });
@@ -1252,8 +1252,8 @@ describe('KritzelObjectMap', () => {
       provider.awareness = mockAwareness;
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      const map2 = new KritzelObjectMap();
-      await map2.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      const map2 = new UpdrawObjectMap();
+      await map2.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
       expect(map2.localClientId).toBe(42);
     });
@@ -1277,8 +1277,8 @@ describe('KritzelObjectMap', () => {
       provider.awareness = mockAwareness;
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      const map2 = new KritzelObjectMap();
-      await map2.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      const map2 = new UpdrawObjectMap();
+      await map2.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
       map2.setActiveDrawingObject('obj-123');
 
@@ -1297,8 +1297,8 @@ describe('KritzelObjectMap', () => {
       provider.awareness = mockAwareness;
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      const map2 = new KritzelObjectMap();
-      await map2.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      const map2 = new UpdrawObjectMap();
+      await map2.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
       map2.setActiveDrawingObject(null);
 
@@ -1324,20 +1324,20 @@ describe('KritzelObjectMap', () => {
     });
 
     const createMockSelectionGroup = (id: string, userId: string | null) => {
-      const { KritzelSelectionGroup } = require('../objects/selection-group.class');
+      const { UpdrawSelectionGroup } = require('../objects/selection-group.class');
       const sg: any = {
         id,
         userId,
-        __class__: 'KritzelSelectionGroup',
+        __class__: 'UpdrawSelectionGroup',
         rotatedBoundingBox: { x: 0, y: 0, z: 0, width: 10, height: 10 },
-        serialize: jest.fn().mockReturnValue({ id, __class__: 'KritzelSelectionGroup' }),
+        serialize: jest.fn().mockReturnValue({ id, __class__: 'UpdrawSelectionGroup' }),
       };
-      Object.setPrototypeOf(sg, KritzelSelectionGroup.prototype);
+      Object.setPrototypeOf(sg, UpdrawSelectionGroup.prototype);
       return sg;
     };
 
     it('should do nothing when no awareness is available', async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       objectMap.removeOrphanedSelectionGroups();
 
@@ -1359,8 +1359,8 @@ describe('KritzelObjectMap', () => {
         store: { invalidateSelectionCache: jest.fn() },
       };
 
-      const map2 = new KritzelObjectMap();
-      await map2.initialize(coreWithUser as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      const map2 = new UpdrawObjectMap();
+      await map2.initialize(coreWithUser as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
       const orphanedGroup = createMockSelectionGroup('sg-remote', 'disconnected-user');
       mockQuadtreeFilter.mockReturnValueOnce([orphanedGroup]);
@@ -1389,8 +1389,8 @@ describe('KritzelObjectMap', () => {
         store: { invalidateSelectionCache: jest.fn() },
       };
 
-      const map2 = new KritzelObjectMap();
-      await map2.initialize(coreWithUser as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      const map2 = new UpdrawObjectMap();
+      await map2.initialize(coreWithUser as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
       // The filter should receive a predicate that excludes the local user's group
       mockQuadtreeFilter.mockReturnValueOnce([]);
@@ -1417,8 +1417,8 @@ describe('KritzelObjectMap', () => {
         store: { invalidateSelectionCache: jest.fn() },
       };
 
-      const map2 = new KritzelObjectMap();
-      await map2.initialize(coreWithUser as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      const map2 = new UpdrawObjectMap();
+      await map2.initialize(coreWithUser as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
       // The filter should return nothing since no groups are orphaned
       mockQuadtreeFilter.mockReturnValueOnce([]);
@@ -1443,8 +1443,8 @@ describe('KritzelObjectMap', () => {
         store: { invalidateSelectionCache: jest.fn() },
       };
 
-      const map2 = new KritzelObjectMap();
-      await map2.initialize(coreWithUser as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      const map2 = new UpdrawObjectMap();
+      await map2.initialize(coreWithUser as unknown as UpdrawCore, 'ws-1', { providers: [factory] });
 
       // Get the awareness change handler that was registered
       const awarenessHandler = mockAwareness.on.mock.calls.find(
@@ -1465,17 +1465,17 @@ describe('KritzelObjectMap', () => {
 
   describe('loadFromYjs - stale selection group cleanup', () => {
     it('should skip remote selection groups during load', async () => {
-      const { KritzelSelectionGroup } = require('../objects/selection-group.class');
+      const { UpdrawSelectionGroup } = require('../objects/selection-group.class');
 
       const normalObject = createMockObject('obj-1');
       const remoteSelGroup: any = {
         id: 'sg-remote',
         userId: 'other-user',
-        __class__: 'KritzelSelectionGroup',
+        __class__: 'UpdrawSelectionGroup',
         rotatedBoundingBox: { x: 0, y: 0, z: 0, width: 10, height: 10 },
         serialize: jest.fn(),
       };
-      Object.setPrototypeOf(remoteSelGroup, KritzelSelectionGroup.prototype);
+      Object.setPrototypeOf(remoteSelGroup, UpdrawSelectionGroup.prototype);
 
       let callIndex = 0;
       mockRevive.mockImplementation(() => {
@@ -1484,7 +1484,7 @@ describe('KritzelObjectMap', () => {
 
       mockMapForEach.mockImplementation((cb: (val: any, key: string) => void) => {
         cb({ id: 'obj-1', type: 'path' }, 'obj-1');
-        cb({ id: 'sg-remote', __class__: 'KritzelSelectionGroup' }, 'sg-remote');
+        cb({ id: 'sg-remote', __class__: 'UpdrawSelectionGroup' }, 'sg-remote');
       });
 
       const coreWithUser = {
@@ -1492,7 +1492,7 @@ describe('KritzelObjectMap', () => {
         user: { id: 'local-user' },
       };
 
-      await objectMap.initialize(coreWithUser as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(coreWithUser as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       // Normal object should be inserted
       expect(mockQuadtreeInsert).toHaveBeenCalledWith(normalObject);
@@ -1501,20 +1501,20 @@ describe('KritzelObjectMap', () => {
     });
 
     it('should keep the local user selection group during load', async () => {
-      const { KritzelSelectionGroup } = require('../objects/selection-group.class');
+      const { UpdrawSelectionGroup } = require('../objects/selection-group.class');
 
       const localSelGroup: any = {
         id: 'sg-local',
         userId: 'local-user',
-        __class__: 'KritzelSelectionGroup',
+        __class__: 'UpdrawSelectionGroup',
         rotatedBoundingBox: { x: 0, y: 0, z: 0, width: 10, height: 10 },
-        serialize: jest.fn().mockReturnValue({ id: 'sg-local', __class__: 'KritzelSelectionGroup' }),
+        serialize: jest.fn().mockReturnValue({ id: 'sg-local', __class__: 'UpdrawSelectionGroup' }),
       };
-      Object.setPrototypeOf(localSelGroup, KritzelSelectionGroup.prototype);
+      Object.setPrototypeOf(localSelGroup, UpdrawSelectionGroup.prototype);
 
       mockRevive.mockReturnValue(localSelGroup);
       mockMapForEach.mockImplementation((cb: (val: any, key: string) => void) => {
-        cb({ id: 'sg-local', __class__: 'KritzelSelectionGroup' }, 'sg-local');
+        cb({ id: 'sg-local', __class__: 'UpdrawSelectionGroup' }, 'sg-local');
       });
 
       const coreWithUser = {
@@ -1522,7 +1522,7 @@ describe('KritzelObjectMap', () => {
         user: { id: 'local-user' },
       };
 
-      await objectMap.initialize(coreWithUser as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(coreWithUser as unknown as UpdrawCore, 'ws-1', { providers: [] });
 
       // Local user's selection group should be inserted, not deleted
       expect(mockQuadtreeInsert).toHaveBeenCalledWith(localSelGroup);
@@ -1532,7 +1532,7 @@ describe('KritzelObjectMap', () => {
 
   describe('agent origins', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as UpdrawCore, 'ws-1', { providers: [] });
       mockYdocTransact.mockClear();
       mockUndoManagerStopCapturing.mockClear();
     });
@@ -1579,7 +1579,7 @@ describe('KritzelObjectMap', () => {
     });
 
     it('returns no agent origin before initialization', () => {
-      expect(new KritzelObjectMap().getAgentOrigin('agent')).toBeNull();
+      expect(new UpdrawObjectMap().getAgentOrigin('agent')).toBeNull();
     });
   });
 });

@@ -1,12 +1,12 @@
-import { KritzelImage } from './image.class';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawImage } from './image.class';
+import { UpdrawCore } from '../core/core.class';
 
-describe('KritzelImage', () => {
-  let imageObject: KritzelImage;
-  let mockCore: jest.Mocked<KritzelCore>;
+describe('UpdrawImage', () => {
+  let imageObject: UpdrawImage;
+  let mockCore: jest.Mocked<UpdrawCore>;
   let mockObjectsUpdate: jest.Mock;
 
-  const createMockCore = (): jest.Mocked<KritzelCore> => {
+  const createMockCore = (): jest.Mocked<UpdrawCore> => {
     const objectsUpdate = jest.fn();
     mockObjectsUpdate = objectsUpdate;
 
@@ -35,12 +35,12 @@ describe('KritzelImage', () => {
       anchorManager: {
         updateAnchorsForObject: jest.fn(),
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
   };
 
   beforeEach(() => {
     mockCore = createMockCore();
-    imageObject = KritzelImage.create(mockCore);
+    imageObject = UpdrawImage.create(mockCore);
   });
 
   afterEach(() => {
@@ -50,9 +50,9 @@ describe('KritzelImage', () => {
 
   describe('constructor', () => {
     it('should create an image with default values when no config provided', () => {
-      const defaultImage = new KritzelImage();
+      const defaultImage = new UpdrawImage();
 
-      expect(defaultImage.__class__).toBe('KritzelImage');
+      expect(defaultImage.__class__).toBe('UpdrawImage');
       expect(defaultImage.src).toBe('');
       expect(defaultImage.x).toBe(0);
       expect(defaultImage.y).toBe(0);
@@ -65,7 +65,7 @@ describe('KritzelImage', () => {
     });
 
     it('should create an image with provided config values', () => {
-      const customImage = new KritzelImage({
+      const customImage = new UpdrawImage({
         src: 'data:image/png;base64,test',
         x: 10,
         y: 20,
@@ -83,7 +83,7 @@ describe('KritzelImage', () => {
     });
 
     it('should convert constructor rotation from degrees to radians', () => {
-      const customImage = new KritzelImage({
+      const customImage = new UpdrawImage({
         rotation: -90,
       });
 
@@ -91,8 +91,8 @@ describe('KritzelImage', () => {
     });
 
     it('should generate a unique id on instantiation', () => {
-      const img1 = new KritzelImage();
-      const img2 = new KritzelImage();
+      const img1 = new UpdrawImage();
+      const img2 = new UpdrawImage();
       expect(img1.id).toBeDefined();
       expect(img2.id).toBeDefined();
       expect(img1.id).not.toBe(img2.id);
@@ -101,40 +101,40 @@ describe('KritzelImage', () => {
 
   describe('static create', () => {
     it('should create an image with core reference', () => {
-      const image = KritzelImage.create(mockCore);
+      const image = UpdrawImage.create(mockCore);
       expect(image._core).toBe(mockCore);
     });
 
     it('should set workspaceId from active workspace', () => {
-      const image = KritzelImage.create(mockCore);
+      const image = UpdrawImage.create(mockCore);
       expect(image.workspaceId).toBe('workspace-1');
     });
 
     it('should generate a unique id', () => {
-      const image = KritzelImage.create(mockCore);
+      const image = UpdrawImage.create(mockCore);
       expect(image.id).toBeDefined();
       expect(typeof image.id).toBe('string');
       expect(image.id.length).toBeGreaterThan(0);
     });
 
     it('should set scale from core store state', () => {
-      const image = KritzelImage.create(mockCore);
+      const image = UpdrawImage.create(mockCore);
       expect(image.scale).toBe(1);
     });
 
     it('should set scale correctly when core has different scale', () => {
       mockCore.store.state.scale = 2;
-      const image = KritzelImage.create(mockCore);
+      const image = UpdrawImage.create(mockCore);
       expect(image.scale).toBe(2);
     });
 
     it('should set zIndex from currentZIndex', () => {
-      const image = KritzelImage.create(mockCore);
+      const image = UpdrawImage.create(mockCore);
       expect(image.zIndex).toBe(5);
     });
 
     it('should initialize position to 0', () => {
-      const image = KritzelImage.create(mockCore);
+      const image = UpdrawImage.create(mockCore);
       expect(image.x).toBe(0);
       expect(image.y).toBe(0);
       expect(image.translateX).toBe(0);
@@ -142,13 +142,13 @@ describe('KritzelImage', () => {
     });
 
     it('should create multiple unique images', () => {
-      const img1 = KritzelImage.create(mockCore);
-      const img2 = KritzelImage.create(mockCore);
+      const img1 = UpdrawImage.create(mockCore);
+      const img2 = UpdrawImage.create(mockCore);
       expect(img1.id).not.toBe(img2.id);
     });
 
     it('should convert create rotation from degrees to radians', () => {
-      const image = KritzelImage.create(mockCore, { rotation: -90 });
+      const image = UpdrawImage.create(mockCore, { rotation: -90 });
 
       expect(image.rotation).toBeCloseTo(-Math.PI / 2);
     });
@@ -422,9 +422,9 @@ describe('KritzelImage', () => {
     });
   });
 
-  describe('inheritance from KritzelBaseObject', () => {
-    it('should inherit default property values from KritzelBaseObject', () => {
-      const image = new KritzelImage();
+  describe('inheritance from UpdrawBaseObject', () => {
+    it('should inherit default property values from UpdrawBaseObject', () => {
+      const image = new UpdrawImage();
       expect(image.opacity).toBe(1);
       expect(image.padding).toBe(0);
       expect(image.rotation).toBe(0);

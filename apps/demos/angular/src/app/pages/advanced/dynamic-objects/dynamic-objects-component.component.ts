@@ -11,11 +11,11 @@ import {
 } from '@angular/core';
 
 import {
-  KritzelDynamicObject,
-  KritzelDynamicObjectRendererRegistry,
-  KritzelEditor,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawDynamicObject,
+  UpdrawDynamicObjectRendererRegistry,
+  UpdrawEditor,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { CalculatorWidgetComponent, CalculatorWidgetState, createCalculatorWidgetInitialState } from './calculator-widget.component';
@@ -23,17 +23,17 @@ import { CalculatorWidgetComponent, CalculatorWidgetState, createCalculatorWidge
 const CALCULATOR_RENDERER_KEY = 'angular-dynamic-object-calculator';
 
 type CalculatorRendererContext = {
-  object: KritzelDynamicObject;
+  object: UpdrawDynamicObject;
   container: HTMLElement | null;
   data?: unknown;
 };
 
 @Component({
   selector: 'app-dynamic-objects-component',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="dynamic-objects-component"
       [theme]="'light'"
       [themes]="themes"
@@ -42,14 +42,14 @@ type CalculatorRendererContext = {
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       [workspaces]="workspaces()"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; }
     .toolbar-note { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; font: 13px Roboto, sans-serif; }
     .toolbar-note strong { color: #dd0031; }
     .toolbar-note span { color: #555; }
-    kritzel-editor { flex: 1; min-height: 0; }
+    updraw-editor { flex: 1; min-height: 0; }
   `],
 })
 export class DynamicObjectsComponentComponent implements OnDestroy {
@@ -59,11 +59,11 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
 
   themes = [angularThemeLight, angularThemeDark];
   workspaces = signal([
-    new KritzelWorkspace({ objects: [this.createInitialDynamicObject()] }),
+    new UpdrawWorkspace({ objects: [this.createInitialDynamicObject()] }),
   ]);
 
   constructor() {
-    KritzelDynamicObjectRendererRegistry.register(CALCULATOR_RENDERER_KEY, {
+    UpdrawDynamicObjectRendererRegistry.register(CALCULATOR_RENDERER_KEY, {
       onMount: ({ object, container, data }: CalculatorRendererContext) => {
         if (!container) {
           return;
@@ -115,11 +115,11 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
     });
   }
 
-  private createInitialDynamicObject(): KritzelDynamicObject {
+  private createInitialDynamicObject(): UpdrawDynamicObject {
     const placeholder = document.createElement('div');
     placeholder.textContent = 'Loading Calculator...';
 
-    const dynamicObject = new KritzelDynamicObject({
+    const dynamicObject = new UpdrawDynamicObject({
       element: placeholder,
       rendererKey: CALCULATOR_RENDERER_KEY,
       rendererData: createCalculatorWidgetInitialState(),
@@ -142,6 +142,6 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
     });
     this.mountedCalculators.clear();
 
-    KritzelDynamicObjectRendererRegistry.unregister(CALCULATOR_RENDERER_KEY);
+    UpdrawDynamicObjectRendererRegistry.unregister(CALCULATOR_RENDERER_KEY);
   }
 }

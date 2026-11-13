@@ -1,12 +1,12 @@
-import { KritzelClipboardPayload, CLIPBOARD_PAYLOAD_PREFIX, PasteIntent } from '../../managers/clipboard.types';
-import { KritzelPasteIntentProvider, KritzelPasteIntentProviderContext } from '../../../interfaces/paste-intent-provider.interface';
+import { UpdrawClipboardPayload, getClipboardPayloadJson, PasteIntent } from '../../managers/clipboard.types';
+import { UpdrawPasteIntentProvider, UpdrawPasteIntentProviderContext } from '../../../interfaces/paste-intent-provider.interface';
 
-export class KritzelEventPasteIntentProvider implements KritzelPasteIntentProvider {
-  canHandle(context: KritzelPasteIntentProviderContext): boolean {
+export class UpdrawEventPasteIntentProvider implements UpdrawPasteIntentProvider {
+  canHandle(context: UpdrawPasteIntentProviderContext): boolean {
     return !!context.event?.clipboardData;
   }
 
-  async getPasteIntent(context: KritzelPasteIntentProviderContext): Promise<PasteIntent> {
+  async getPasteIntent(context: UpdrawPasteIntentProviderContext): Promise<PasteIntent> {
     const data = context.event?.clipboardData;
     if (!data) {
       return { type: 'unknown' };
@@ -27,13 +27,14 @@ export class KritzelEventPasteIntentProvider implements KritzelPasteIntentProvid
     return { type: 'unknown' };
   }
 
-  private parseClipboardPayload(text: string | null | undefined): KritzelClipboardPayload | null {
-    if (!text || !text.startsWith(CLIPBOARD_PAYLOAD_PREFIX)) {
+  private parseClipboardPayload(text: string | null | undefined): UpdrawClipboardPayload | null {
+    const json = getClipboardPayloadJson(text);
+    if (json === null) {
       return null;
     }
 
     try {
-      const parsed = JSON.parse(text.slice(CLIPBOARD_PAYLOAD_PREFIX.length)) as KritzelClipboardPayload;
+      const parsed = JSON.parse(json) as UpdrawClipboardPayload;
       if (parsed?.version !== 1 || !Array.isArray(parsed.objects)) {
         return null;
       }
@@ -47,7 +48,7 @@ export class KritzelEventPasteIntentProvider implements KritzelPasteIntentProvid
   private determineTextPasteIntent(text: string | null | undefined): PasteIntent | null {
     const payload = this.parseClipboardPayload(text);
     if (payload) {
-      return { type: 'kritzel_objects', payload };
+      return { type: 'updraw_objects', payload };
     }
 
     if (text && text.trim().length > 0) {

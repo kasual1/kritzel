@@ -1,18 +1,18 @@
-import type { KritzelCore } from '../core/core.class';
-import type { KritzelBaseObject } from '../objects/base-object.class';
-import type { KritzelObjectMap } from '../structures/object-map.structure';
+import type { UpdrawCore } from '../core/core.class';
+import type { UpdrawBaseObject } from '../objects/base-object.class';
+import type { UpdrawObjectMap } from '../structures/object-map.structure';
 import type { ThemeAwareColor } from '../../constants/color-palette.constants';
-import type { KritzelCanvasObject, KritzelCanvasSnapshot, KritzelObserveOptions } from '../../interfaces/agent.interface';
-import { KritzelShape } from '../objects/shape.class';
-import { KritzelText } from '../objects/text.class';
-import { KritzelPath } from '../objects/path.class';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelImage } from '../objects/image.class';
-import { KritzelIframeObject } from '../objects/iframe.class';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelDynamicObject } from '../objects/dynamic-object.class';
-import { KritzelRichTextHelper } from '../../helpers/rich-text.helper';
-import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
+import type { UpdrawCanvasObject, UpdrawCanvasSnapshot, UpdrawObserveOptions } from '../../interfaces/agent.interface';
+import { UpdrawShape } from '../objects/shape.class';
+import { UpdrawText } from '../objects/text.class';
+import { UpdrawPath } from '../objects/path.class';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawImage } from '../objects/image.class';
+import { UpdrawIframeObject } from '../objects/iframe.class';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawDynamicObject } from '../objects/dynamic-object.class';
+import { UpdrawRichTextHelper } from '../../helpers/rich-text.helper';
+import { UpdrawZOrderHelper } from '../../helpers/z-order.helper';
 import {
   buildFrameCache,
   buildParentIndex,
@@ -21,13 +21,13 @@ import {
   isSelectionObject,
 } from '../../helpers/agentic-conflict.helper';
 
-type AnyObject = KritzelBaseObject<any>;
+type AnyObject = UpdrawBaseObject<any>;
 
 const DEFAULT_MAX_OBJECTS = 100;
 const DEFAULT_MAX_TEXT_LENGTH = 300;
 
 /** The visible area of the user's viewport in world units, with the zoom level (`scale`, 1 = 100%). */
-export function describeViewport(core: KritzelCore): KritzelCanvasSnapshot['viewport'] {
+export function describeViewport(core: UpdrawCore): UpdrawCanvasSnapshot['viewport'] {
   const state = core.store.state;
   const scale = state.scale || 1;
   return {
@@ -44,14 +44,14 @@ export function describeViewport(core: KritzelCore): KritzelCanvasSnapshot['view
  * objects with their geometry, text, connections and style. Never includes image data, iframe code or
  * path points. Throws when no workspace is ready.
  */
-export function buildCanvasSnapshot(core: KritzelCore, agentId: string, options?: KritzelObserveOptions): KritzelCanvasSnapshot;
+export function buildCanvasSnapshot(core: UpdrawCore, agentId: string, options?: UpdrawObserveOptions): UpdrawCanvasSnapshot;
 /**
  * For an actor working as the local user: `agent` describes the actor (no position, the user's selection as its
  * selection) and the user's selection never marks objects as busy.
  * @internal
  */
-export function buildCanvasSnapshot(core: KritzelCore, actor: { kind: 'user'; id: string }, options?: KritzelObserveOptions): KritzelCanvasSnapshot;
-export function buildCanvasSnapshot(core: KritzelCore, actor: string | { kind: 'user'; id: string }, options: KritzelObserveOptions = {}): KritzelCanvasSnapshot {
+export function buildCanvasSnapshot(core: UpdrawCore, actor: { kind: 'user'; id: string }, options?: UpdrawObserveOptions): UpdrawCanvasSnapshot;
+export function buildCanvasSnapshot(core: UpdrawCore, actor: string | { kind: 'user'; id: string }, options: UpdrawObserveOptions = {}): UpdrawCanvasSnapshot {
   const asUser = typeof actor !== 'string';
   const agentId = typeof actor === 'string' ? actor : actor.id;
   const map = getMap(core);
@@ -85,7 +85,7 @@ export function buildCanvasSnapshot(core: KritzelCore, actor: string | { kind: '
     objects = keepMostRelevant(objects, maxObjects, new Set([...userSelection, ...agentSelection]), viewport, parents);
     truncated = true;
   }
-  objects = [...objects].sort(KritzelZOrderHelper.compareStackOrder);
+  objects = [...objects].sort(UpdrawZOrderHelper.compareStackOrder);
 
   const maxTextLength = Math.max(1, options.maxTextLength ?? DEFAULT_MAX_TEXT_LENGTH);
   const described = objects.map(object => {
@@ -94,7 +94,7 @@ export function buildCanvasSnapshot(core: KritzelCore, actor: string | { kind: '
     if (parent) {
       entry.parentId = parent.id;
     }
-    if ((!asUser && frame.humanSelectedIds.has(object.id)) || (object instanceof KritzelText && object.isEditing)) {
+    if ((!asUser && frame.humanSelectedIds.has(object.id)) || (object instanceof UpdrawText && object.isEditing)) {
       entry.busy = 'user';
     } else if (frame.collaboratorIds.has(object.id)) {
       entry.busy = 'collaborator';
@@ -116,9 +116,9 @@ export function buildCanvasSnapshot(core: KritzelCore, actor: string | { kind: '
 }
 
 /** Describes one object for a snapshot (without `parentId` and `busy`). */
-export function describeObject(object: AnyObject, theme: string, maxTextLength: number = DEFAULT_MAX_TEXT_LENGTH): KritzelCanvasObject {
+export function describeObject(object: AnyObject, theme: string, maxTextLength: number = DEFAULT_MAX_TEXT_LENGTH): UpdrawCanvasObject {
   const box = object.boundingBox;
-  const entry: KritzelCanvasObject = {
+  const entry: UpdrawCanvasObject = {
     id: object.id,
     type: typeOf(object),
     x: round(box.x),
@@ -126,10 +126,10 @@ export function describeObject(object: AnyObject, theme: string, maxTextLength: 
     width: round(box.width),
     height: round(box.height),
   };
-  if (object instanceof KritzelShape) {
+  if (object instanceof UpdrawShape) {
     entry.shapeType = object.shapeType;
   }
-  const name = object instanceof KritzelIframeObject ? object.name || object.title : object.name;
+  const name = object instanceof UpdrawIframeObject ? object.name || object.title : object.name;
   if (name) {
     entry.name = name;
   }
@@ -137,16 +137,16 @@ export function describeObject(object: AnyObject, theme: string, maxTextLength: 
   if (rotation !== 0) {
     entry.rotation = rotation;
   }
-  if (object instanceof KritzelShape || object instanceof KritzelText) {
-    const text = object.editor ? KritzelRichTextHelper.getPlainText(object.editor) : KritzelRichTextHelper.toPlainText(object.content);
+  if (object instanceof UpdrawShape || object instanceof UpdrawText) {
+    const text = object.editor ? UpdrawRichTextHelper.getPlainText(object.editor) : UpdrawRichTextHelper.toPlainText(object.content);
     if (text) {
       entry.text = text.length > maxTextLength ? `${text.slice(0, maxTextLength)}…` : text;
     }
   }
-  if (object instanceof KritzelGroup) {
+  if (object instanceof UpdrawGroup) {
     entry.childIds = [...object.childIds];
   }
-  if (object instanceof KritzelLine) {
+  if (object instanceof UpdrawLine) {
     if (object.startAnchor?.objectId) entry.from = object.startAnchor.objectId;
     if (object.endAnchor?.objectId) entry.to = object.endAnchor.objectId;
   }
@@ -160,23 +160,23 @@ export function describeObject(object: AnyObject, theme: string, maxTextLength: 
   return entry;
 }
 
-function describeStyle(object: AnyObject, theme: string): KritzelCanvasObject['style'] | undefined {
-  const style: NonNullable<KritzelCanvasObject['style']> = {};
-  if (object instanceof KritzelShape) {
+function describeStyle(object: AnyObject, theme: string): UpdrawCanvasObject['style'] | undefined {
+  const style: NonNullable<UpdrawCanvasObject['style']> = {};
+  if (object instanceof UpdrawShape) {
     style.fillColor = colorOf(object.fillColor, theme);
     style.strokeColor = colorOf(object.strokeColor, theme);
     style.strokeWidth = object.strokeWidth;
     style.fontSize = object.fontSize;
     style.fontFamily = object.fontFamily;
     style.fontColor = colorOf(object.fontColor, theme);
-  } else if (object instanceof KritzelText) {
+  } else if (object instanceof UpdrawText) {
     style.fontSize = object.fontSize;
     style.fontFamily = object.fontFamily;
     style.fontColor = colorOf(object.fontColor, theme);
-  } else if (object instanceof KritzelPath) {
+  } else if (object instanceof UpdrawPath) {
     style.strokeColor = colorOf(object.fill, theme);
     style.strokeWidth = object.strokeWidth;
-  } else if (object instanceof KritzelLine) {
+  } else if (object instanceof UpdrawLine) {
     style.strokeColor = colorOf(object.stroke, theme);
     style.strokeWidth = object.strokeWidth;
     const start = object.arrows?.start?.enabled ? object.arrows.start.style ?? 'triangle' : undefined;
@@ -189,18 +189,18 @@ function describeStyle(object: AnyObject, theme: string): KritzelCanvasObject['s
     style.opacity = object.opacity;
   }
   const entries = Object.entries(style).filter(([, value]) => value !== undefined && value !== '');
-  return entries.length > 0 ? (Object.fromEntries(entries) as KritzelCanvasObject['style']) : undefined;
+  return entries.length > 0 ? (Object.fromEntries(entries) as UpdrawCanvasObject['style']) : undefined;
 }
 
-function typeOf(object: AnyObject): KritzelCanvasObject['type'] {
-  if (object instanceof KritzelShape) return 'shape';
-  if (object instanceof KritzelText) return 'text';
-  if (object instanceof KritzelPath) return 'path';
-  if (object instanceof KritzelLine) return 'line';
-  if (object instanceof KritzelImage) return 'image';
-  if (object instanceof KritzelIframeObject) return 'iframe';
-  if (object instanceof KritzelGroup) return 'group';
-  if (object instanceof KritzelDynamicObject) return 'custom';
+function typeOf(object: AnyObject): UpdrawCanvasObject['type'] {
+  if (object instanceof UpdrawShape) return 'shape';
+  if (object instanceof UpdrawText) return 'text';
+  if (object instanceof UpdrawPath) return 'path';
+  if (object instanceof UpdrawLine) return 'line';
+  if (object instanceof UpdrawImage) return 'image';
+  if (object instanceof UpdrawIframeObject) return 'iframe';
+  if (object instanceof UpdrawGroup) return 'group';
+  if (object instanceof UpdrawDynamicObject) return 'custom';
   return 'object';
 }
 
@@ -225,7 +225,7 @@ function keepMostRelevant(
   max: number,
   selected: Set<string>,
   viewport: { x: number; y: number; width: number; height: number },
-  parents: Map<string, KritzelGroup>,
+  parents: Map<string, UpdrawGroup>,
 ): AnyObject[] {
   const cx = viewport.x + viewport.width / 2;
   const cy = viewport.y + viewport.height / 2;
@@ -306,9 +306,9 @@ function keepMostRelevant(
   return result;
 }
 
-function getMap(core: KritzelCore): KritzelObjectMap<AnyObject> | null {
+function getMap(core: UpdrawCore): UpdrawObjectMap<AnyObject> | null {
   try {
-    const map = core.store.objects as KritzelObjectMap<AnyObject> | undefined;
+    const map = core.store.objects as UpdrawObjectMap<AnyObject> | undefined;
     return map && map.isReady && !map.isHeadless ? map : null;
   } catch {
     return null;

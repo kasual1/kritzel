@@ -1,8 +1,8 @@
 {
-  "name": "@kritzel/angular-engine",
+  "name": "@updraw/angular-engine",
   "version": "0.6.2",
-  "homepage": "https://kritzel.io/",
-  "description": "Kritzel engine wrapper for Angular.",
+  "homepage": "https://updraw.io/",
+  "description": "Updraw engine wrapper for Angular.",
   "keywords": [
     "infinite canvas",
     "collaboration",
@@ -14,7 +14,7 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
     "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
-    "@kritzel/engine": "^0.6.2"
+    "@updraw/engine": "^0.6.2"
   },
   "dependencies": {
     "tslib": "^2.3.0"

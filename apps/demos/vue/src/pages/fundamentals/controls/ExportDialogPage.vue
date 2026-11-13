@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getEditorRef, KritzelEditor, KritzelWorkspace } from '@kritzel/vue-editor'
+import { getEditorRef, UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -8,7 +8,7 @@ import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 
 async function openDialog() {
   await editor.value?.openExportDialog()
@@ -30,7 +30,7 @@ async function onReady() {
       <button type="button" @click="openDialog">Open export dialog</button>
       <button type="button" @click="closeDialog">Close export dialog</button>
     </Toolbar>
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="export-dialog"
       theme="light"

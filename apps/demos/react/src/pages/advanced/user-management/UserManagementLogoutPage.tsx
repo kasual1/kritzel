@@ -1,16 +1,16 @@
 import { useMemo, useRef, useState } from "react";
-import { KritzelEditor, type HTMLKritzelEditorElement, type IKritzelUser } from "@kritzel/react-editor";
+import { UpdrawEditor, type HTMLUpdrawEditorElement, type IUpdrawUser } from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createAuthenticatedUser, createUserManagementWorkspaces, currentUser, loginConfig } from "./user-management-shared";
 
 export function UserManagementLogoutPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const [user, setUser] = useState<IKritzelUser | undefined>(currentUser);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const [user, setUser] = useState<IUpdrawUser | undefined>(currentUser);
   const workspaces = useMemo(() => createUserManagementWorkspaces(), []);
 
   return (
-    <KritzelEditor
+    <UpdrawEditor
       ref={editorRef}
       editorId="user-management-logout"
       loginConfig={loginConfig}

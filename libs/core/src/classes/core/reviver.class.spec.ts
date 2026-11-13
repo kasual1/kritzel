@@ -1,22 +1,22 @@
-import { KritzelReviver } from './reviver.class';
-import { KritzelCore } from './core.class';
-import { KritzelPath } from '../objects/path.class';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelText } from '../objects/text.class';
-import { KritzelShape } from '../objects/shape.class';
-import { KritzelImage } from '../objects/image.class';
-import { KritzelDynamicObject } from '../objects/dynamic-object.class';
-import { KritzelIframeObject } from '../objects/iframe.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelWorkspace } from './workspace.class';
-import { KritzelBrushTool } from '../tools/brush-tool.class';
-import { KritzelEraserTool } from '../tools/eraser-tool.class';
-import { KritzelImageTool } from '../tools/image-tool.class';
-import { KritzelLineTool } from '../tools/line-tool.class';
-import { KritzelSelectionTool } from '../tools/selection-tool.class';
-import { KritzelTextTool } from '../tools/text-tool.class';
-import { KritzelShapeTool } from '../tools/shape-tool.class';
+import { UpdrawReviver } from './reviver.class';
+import { UpdrawCore } from './core.class';
+import { UpdrawPath } from '../objects/path.class';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawText } from '../objects/text.class';
+import { UpdrawShape } from '../objects/shape.class';
+import { UpdrawImage } from '../objects/image.class';
+import { UpdrawDynamicObject } from '../objects/dynamic-object.class';
+import { UpdrawIframeObject } from '../objects/iframe.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawWorkspace } from './workspace.class';
+import { UpdrawBrushTool } from '../tools/brush-tool.class';
+import { UpdrawEraserTool } from '../tools/eraser-tool.class';
+import { UpdrawImageTool } from '../tools/image-tool.class';
+import { UpdrawLineTool } from '../tools/line-tool.class';
+import { UpdrawSelectionTool } from '../tools/selection-tool.class';
+import { UpdrawTextTool } from '../tools/text-tool.class';
+import { UpdrawShapeTool } from '../tools/shape-tool.class';
 
 jest.mock('../objects/path.class');
 jest.mock('../objects/line.class');
@@ -28,7 +28,7 @@ jest.mock('../objects/iframe.class');
 jest.mock('../objects/selection-group.class');
 jest.mock('../objects/group.class');
 jest.mock('./workspace.class', () => ({
-  KritzelWorkspace: {
+  UpdrawWorkspace: {
     create: jest.fn(),
   },
 }));
@@ -40,11 +40,11 @@ jest.mock('../tools/selection-tool.class');
 jest.mock('../tools/text-tool.class');
 jest.mock('../tools/shape-tool.class');
 
-describe('KritzelReviver', () => {
-  let reviver: KritzelReviver;
-  let mockCore: jest.Mocked<KritzelCore>;
+describe('UpdrawReviver', () => {
+  let reviver: UpdrawReviver;
+  let mockCore: jest.Mocked<UpdrawCore>;
 
-  const createMockCore = (): jest.Mocked<KritzelCore> => {
+  const createMockCore = (): jest.Mocked<UpdrawCore> => {
     return {
       store: {
         state: {
@@ -71,7 +71,7 @@ describe('KritzelReviver', () => {
         emitObjectsRemoved: jest.fn(),
         emitObjectsUpdated: jest.fn(),
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
   };
 
   const createMockDeserializable = (className: string) => {
@@ -84,7 +84,7 @@ describe('KritzelReviver', () => {
 
   beforeEach(() => {
     mockCore = createMockCore();
-    reviver = new KritzelReviver(mockCore);
+    reviver = new UpdrawReviver(mockCore);
 
     jest.clearAllMocks();
   });
@@ -95,7 +95,7 @@ describe('KritzelReviver', () => {
 
   describe('constructor', () => {
     it('should create a reviver instance with a core reference', () => {
-      const reviverInstance = new KritzelReviver(mockCore);
+      const reviverInstance = new UpdrawReviver(mockCore);
       expect(reviverInstance).toBeDefined();
     });
   });
@@ -165,36 +165,36 @@ describe('KritzelReviver', () => {
       });
     });
 
-    describe('KritzelPath revival', () => {
-      it('should revive a KritzelPath object', () => {
-        const mockDeserializable = createMockDeserializable('KritzelPath');
-        (KritzelPath.create as jest.Mock).mockReturnValue({
+    describe('UpdrawPath revival', () => {
+      it('should revive an UpdrawPath object', () => {
+        const mockDeserializable = createMockDeserializable('UpdrawPath');
+        (UpdrawPath.create as jest.Mock).mockReturnValue({
           deserialize: mockDeserializable.deserialize,
         });
 
         const serialized = {
-          __class__: 'KritzelPath',
+          __class__: 'UpdrawPath',
           points: [[0, 0], [50, 50]],
           strokeWidth: 8,
         };
 
         const result = reviver.revive(serialized);
 
-        expect(KritzelPath.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawPath.create).toHaveBeenCalledWith(mockCore);
         expect(mockDeserializable.deserialize).toHaveBeenCalledWith(serialized);
         expect(result).toBe(mockDeserializable.instance);
       });
     });
 
-    describe('KritzelLine revival', () => {
-      it('should revive a KritzelLine object', () => {
-        const mockDeserializable = createMockDeserializable('KritzelLine');
-        (KritzelLine.create as jest.Mock).mockReturnValue({
+    describe('UpdrawLine revival', () => {
+      it('should revive an UpdrawLine object', () => {
+        const mockDeserializable = createMockDeserializable('UpdrawLine');
+        (UpdrawLine.create as jest.Mock).mockReturnValue({
           deserialize: mockDeserializable.deserialize,
         });
 
         const serialized = {
-          __class__: 'KritzelLine',
+          __class__: 'UpdrawLine',
           startX: 0,
           startY: 0,
           endX: 100,
@@ -203,21 +203,21 @@ describe('KritzelReviver', () => {
 
         const result = reviver.revive(serialized);
 
-        expect(KritzelLine.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore);
         expect(mockDeserializable.deserialize).toHaveBeenCalledWith(serialized);
         expect(result).toBe(mockDeserializable.instance);
       });
     });
 
-    describe('KritzelText revival', () => {
-      it('should revive a KritzelText object with fontSize and fontFamily', () => {
-        const mockDeserializable = createMockDeserializable('KritzelText');
-        (KritzelText.create as jest.Mock).mockReturnValue({
+    describe('UpdrawText revival', () => {
+      it('should revive an UpdrawText object with fontSize and fontFamily', () => {
+        const mockDeserializable = createMockDeserializable('UpdrawText');
+        (UpdrawText.create as jest.Mock).mockReturnValue({
           deserialize: mockDeserializable.deserialize,
         });
 
         const serialized = {
-          __class__: 'KritzelText',
+          __class__: 'UpdrawText',
           fontSize: 24,
           fontFamily: 'Arial',
           content: 'Hello',
@@ -225,21 +225,21 @@ describe('KritzelReviver', () => {
 
         const result = reviver.revive(serialized);
 
-        expect(KritzelText.create).toHaveBeenCalledWith(mockCore, 24, 'Arial');
+        expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 24, 'Arial');
         expect(mockDeserializable.deserialize).toHaveBeenCalledWith(serialized);
         expect(result).toBe(mockDeserializable.instance);
       });
     });
 
-    describe('KritzelShape revival', () => {
-      it('should revive a KritzelShape object with full config', () => {
-        const mockDeserializable = createMockDeserializable('KritzelShape');
-        (KritzelShape.create as jest.Mock).mockReturnValue({
+    describe('UpdrawShape revival', () => {
+      it('should revive an UpdrawShape object with full config', () => {
+        const mockDeserializable = createMockDeserializable('UpdrawShape');
+        (UpdrawShape.create as jest.Mock).mockReturnValue({
           deserialize: mockDeserializable.deserialize,
         });
 
         const serialized = {
-          __class__: 'KritzelShape',
+          __class__: 'UpdrawShape',
           shapeType: 'rectangle',
           fillColor: { light: '#ffffff', dark: '#000000' },
           strokeColor: { light: '#000000', dark: '#ffffff' },
@@ -251,7 +251,7 @@ describe('KritzelReviver', () => {
 
         const result = reviver.revive(serialized);
 
-        expect(KritzelShape.create).toHaveBeenCalledWith(mockCore, {
+        expect(UpdrawShape.create).toHaveBeenCalledWith(mockCore, {
           shapeType: 'rectangle',
           fillColor: { light: '#ffffff', dark: '#000000' },
           strokeColor: { light: '#000000', dark: '#ffffff' },
@@ -265,198 +265,198 @@ describe('KritzelReviver', () => {
       });
     });
 
-    describe('KritzelImage revival', () => {
-      it('should revive a KritzelImage object', () => {
-        const mockDeserializable = createMockDeserializable('KritzelImage');
-        (KritzelImage.create as jest.Mock).mockReturnValue({
+    describe('UpdrawImage revival', () => {
+      it('should revive an UpdrawImage object', () => {
+        const mockDeserializable = createMockDeserializable('UpdrawImage');
+        (UpdrawImage.create as jest.Mock).mockReturnValue({
           deserialize: mockDeserializable.deserialize,
         });
 
         const serialized = {
-          __class__: 'KritzelImage',
+          __class__: 'UpdrawImage',
           src: 'data:image/png;base64,abc',
         };
 
         const result = reviver.revive(serialized);
 
-        expect(KritzelImage.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawImage.create).toHaveBeenCalledWith(mockCore);
         expect(mockDeserializable.deserialize).toHaveBeenCalledWith(serialized);
         expect(result).toBe(mockDeserializable.instance);
       });
     });
 
-    describe('KritzelDynamicObject revival', () => {
-      it('should revive a KritzelDynamicObject object', () => {
-        const mockDeserializable = createMockDeserializable('KritzelDynamicObject');
-        (KritzelDynamicObject.create as jest.Mock).mockReturnValue({
+    describe('UpdrawDynamicObject revival', () => {
+      it('should revive an UpdrawDynamicObject object', () => {
+        const mockDeserializable = createMockDeserializable('UpdrawDynamicObject');
+        (UpdrawDynamicObject.create as jest.Mock).mockReturnValue({
           deserialize: mockDeserializable.deserialize,
         });
 
         const serialized = {
-          __class__: 'KritzelDynamicObject',
+          __class__: 'UpdrawDynamicObject',
           width: 200,
           height: 150,
         };
 
         const result = reviver.revive(serialized);
 
-        expect(KritzelDynamicObject.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawDynamicObject.create).toHaveBeenCalledWith(mockCore);
         expect(mockDeserializable.deserialize).toHaveBeenCalledWith(serialized);
         expect(result).toBe(mockDeserializable.instance);
       });
     });
 
-    describe('KritzelIframeObject revival', () => {
-      it('should revive a KritzelIframeObject object', () => {
-        const mockDeserializable = createMockDeserializable('KritzelIframeObject');
-        (KritzelIframeObject.create as jest.Mock).mockReturnValue({
+    describe('UpdrawIframeObject revival', () => {
+      it('should revive an UpdrawIframeObject object', () => {
+        const mockDeserializable = createMockDeserializable('UpdrawIframeObject');
+        (UpdrawIframeObject.create as jest.Mock).mockReturnValue({
           deserialize: mockDeserializable.deserialize,
         });
 
         const serialized = {
-          __class__: 'KritzelIframeObject',
+          __class__: 'UpdrawIframeObject',
           html: '<main>Embedded</main>',
           state: { ready: true },
         };
 
         const result = reviver.revive(serialized);
 
-        expect(KritzelIframeObject.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawIframeObject.create).toHaveBeenCalledWith(mockCore);
         expect(mockDeserializable.deserialize).toHaveBeenCalledWith(serialized);
         expect(result).toBe(mockDeserializable.instance);
       });
     });
 
-    describe('KritzelSelectionGroup revival', () => {
-      it('should revive a KritzelSelectionGroup object', () => {
-        const mockDeserializable = createMockDeserializable('KritzelSelectionGroup');
-        (KritzelSelectionGroup.create as jest.Mock).mockReturnValue({
+    describe('UpdrawSelectionGroup revival', () => {
+      it('should revive an UpdrawSelectionGroup object', () => {
+        const mockDeserializable = createMockDeserializable('UpdrawSelectionGroup');
+        (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue({
           deserialize: mockDeserializable.deserialize,
         });
 
         const serialized = {
-          __class__: 'KritzelSelectionGroup',
+          __class__: 'UpdrawSelectionGroup',
           childIds: ['id-1', 'id-2'],
         };
 
         const result = reviver.revive(serialized);
 
-        expect(KritzelSelectionGroup.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawSelectionGroup.create).toHaveBeenCalledWith(mockCore);
         expect(mockDeserializable.deserialize).toHaveBeenCalledWith(serialized);
         expect(result).toBe(mockDeserializable.instance);
       });
     });
 
-    describe('KritzelGroup revival', () => {
-      it('should revive a KritzelGroup object', () => {
-        const mockDeserializable = createMockDeserializable('KritzelGroup');
-        (KritzelGroup.create as jest.Mock).mockReturnValue({
+    describe('UpdrawGroup revival', () => {
+      it('should revive an UpdrawGroup object', () => {
+        const mockDeserializable = createMockDeserializable('UpdrawGroup');
+        (UpdrawGroup.create as jest.Mock).mockReturnValue({
           deserialize: mockDeserializable.deserialize,
         });
 
         const serialized = {
-          __class__: 'KritzelGroup',
+          __class__: 'UpdrawGroup',
           childIds: ['id-3', 'id-4'],
         };
 
         const result = reviver.revive(serialized);
 
-        expect(KritzelGroup.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawGroup.create).toHaveBeenCalledWith(mockCore);
         expect(mockDeserializable.deserialize).toHaveBeenCalledWith(serialized);
         expect(result).toBe(mockDeserializable.instance);
       });
     });
 
-    describe('KritzelWorkspace revival', () => {
-      it('should revive a KritzelWorkspace object', () => {
-        const mockDeserializable = createMockDeserializable('KritzelWorkspace');
-        (KritzelWorkspace.create as jest.Mock).mockReturnValue({
+    describe('UpdrawWorkspace revival', () => {
+      it('should revive an UpdrawWorkspace object', () => {
+        const mockDeserializable = createMockDeserializable('UpdrawWorkspace');
+        (UpdrawWorkspace.create as jest.Mock).mockReturnValue({
           deserialize: mockDeserializable.deserialize,
         });
 
         const serialized = {
-          __class__: 'KritzelWorkspace',
+          __class__: 'UpdrawWorkspace',
           id: 'ws-1',
           name: 'Test Workspace',
         };
 
         const result = reviver.revive(serialized);
 
-        expect(KritzelWorkspace.create).toHaveBeenCalledWith(mockCore, serialized);
+        expect(UpdrawWorkspace.create).toHaveBeenCalledWith(mockCore, serialized);
         expect(mockDeserializable.deserialize).toHaveBeenCalledWith(serialized);
         expect(result).toBe(mockDeserializable.instance);
       });
     });
 
     describe('tool revival', () => {
-      it('should revive a KritzelBrushTool', () => {
-        const serialized = { __class__: 'KritzelBrushTool' };
+      it('should revive an UpdrawBrushTool', () => {
+        const serialized = { __class__: 'UpdrawBrushTool' };
         const result = reviver.revive(serialized);
 
-        expect(KritzelBrushTool).toHaveBeenCalledWith(mockCore);
-        expect(result).toBeInstanceOf(KritzelBrushTool);
+        expect(UpdrawBrushTool).toHaveBeenCalledWith(mockCore);
+        expect(result).toBeInstanceOf(UpdrawBrushTool);
       });
 
-      it('should revive a KritzelEraserTool', () => {
-        const serialized = { __class__: 'KritzelEraserTool' };
+      it('should revive an UpdrawEraserTool', () => {
+        const serialized = { __class__: 'UpdrawEraserTool' };
         const result = reviver.revive(serialized);
 
-        expect(KritzelEraserTool).toHaveBeenCalledWith(mockCore);
-        expect(result).toBeInstanceOf(KritzelEraserTool);
+        expect(UpdrawEraserTool).toHaveBeenCalledWith(mockCore);
+        expect(result).toBeInstanceOf(UpdrawEraserTool);
       });
 
-      it('should revive a KritzelImageTool', () => {
-        const serialized = { __class__: 'KritzelImageTool' };
+      it('should revive an UpdrawImageTool', () => {
+        const serialized = { __class__: 'UpdrawImageTool' };
         const result = reviver.revive(serialized);
 
-        expect(KritzelImageTool).toHaveBeenCalledWith(mockCore);
-        expect(result).toBeInstanceOf(KritzelImageTool);
+        expect(UpdrawImageTool).toHaveBeenCalledWith(mockCore);
+        expect(result).toBeInstanceOf(UpdrawImageTool);
       });
 
-      it('should revive a KritzelSelectionTool', () => {
-        const serialized = { __class__: 'KritzelSelectionTool' };
+      it('should revive an UpdrawSelectionTool', () => {
+        const serialized = { __class__: 'UpdrawSelectionTool' };
         const result = reviver.revive(serialized);
 
-        expect(KritzelSelectionTool).toHaveBeenCalledWith(mockCore);
-        expect(result).toBeInstanceOf(KritzelSelectionTool);
+        expect(UpdrawSelectionTool).toHaveBeenCalledWith(mockCore);
+        expect(result).toBeInstanceOf(UpdrawSelectionTool);
       });
 
-      it('should revive a KritzelTextTool', () => {
-        const serialized = { __class__: 'KritzelTextTool' };
+      it('should revive an UpdrawTextTool', () => {
+        const serialized = { __class__: 'UpdrawTextTool' };
         const result = reviver.revive(serialized);
 
-        expect(KritzelTextTool).toHaveBeenCalledWith(mockCore);
-        expect(result).toBeInstanceOf(KritzelTextTool);
+        expect(UpdrawTextTool).toHaveBeenCalledWith(mockCore);
+        expect(result).toBeInstanceOf(UpdrawTextTool);
       });
 
-      it('should revive a KritzelLineTool', () => {
-        const serialized = { __class__: 'KritzelLineTool' };
+      it('should revive an UpdrawLineTool', () => {
+        const serialized = { __class__: 'UpdrawLineTool' };
         const result = reviver.revive(serialized);
 
-        expect(KritzelLineTool).toHaveBeenCalledWith(mockCore);
-        expect(result).toBeInstanceOf(KritzelLineTool);
+        expect(UpdrawLineTool).toHaveBeenCalledWith(mockCore);
+        expect(result).toBeInstanceOf(UpdrawLineTool);
       });
 
-      it('should revive a KritzelShapeTool', () => {
-        const serialized = { __class__: 'KritzelShapeTool' };
+      it('should revive an UpdrawShapeTool', () => {
+        const serialized = { __class__: 'UpdrawShapeTool' };
         const result = reviver.revive(serialized);
 
-        expect(KritzelShapeTool).toHaveBeenCalledWith(mockCore);
-        expect(result).toBeInstanceOf(KritzelShapeTool);
+        expect(UpdrawShapeTool).toHaveBeenCalledWith(mockCore);
+        expect(result).toBeInstanceOf(UpdrawShapeTool);
       });
     });
 
     describe('recursive revival', () => {
       it('should revive nested objects with __class__ properties', () => {
-        const mockPathDeserializable = createMockDeserializable('KritzelPath');
-        (KritzelPath.create as jest.Mock).mockReturnValue({
+        const mockPathDeserializable = createMockDeserializable('UpdrawPath');
+        (UpdrawPath.create as jest.Mock).mockReturnValue({
           deserialize: mockPathDeserializable.deserialize,
         });
 
         const nested = {
           layer: {
             child: {
-              __class__: 'KritzelPath',
+              __class__: 'UpdrawPath',
               points: [[10, 10]],
             },
           },
@@ -464,18 +464,18 @@ describe('KritzelReviver', () => {
 
         const result = reviver.revive<any>(nested);
 
-        expect(KritzelPath.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawPath.create).toHaveBeenCalledWith(mockCore);
         expect(result.layer.child).toBe(mockPathDeserializable.instance);
       });
 
       it('should revive objects inside arrays', () => {
-        const mockLineDeserializable = createMockDeserializable('KritzelLine');
-        (KritzelLine.create as jest.Mock).mockReturnValue({
+        const mockLineDeserializable = createMockDeserializable('UpdrawLine');
+        (UpdrawLine.create as jest.Mock).mockReturnValue({
           deserialize: mockLineDeserializable.deserialize,
         });
 
         const arr = [
-          { __class__: 'KritzelLine', startX: 0, startY: 0 },
+          { __class__: 'UpdrawLine', startX: 0, startY: 0 },
           'plain string',
           42,
         ];
@@ -483,35 +483,35 @@ describe('KritzelReviver', () => {
         const result = reviver.revive<any[]>(arr);
 
         expect(Array.isArray(result)).toBe(true);
-        expect(KritzelLine.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore);
         expect(result[0]).toBe(mockLineDeserializable.instance);
         expect(result[1]).toBe('plain string');
         expect(result[2]).toBe(42);
       });
 
       it('should revive multiple different object types in a nested structure', () => {
-        const mockPathDeserializable = createMockDeserializable('KritzelPath');
-        const mockImageDeserializable = createMockDeserializable('KritzelImage');
+        const mockPathDeserializable = createMockDeserializable('UpdrawPath');
+        const mockImageDeserializable = createMockDeserializable('UpdrawImage');
 
-        (KritzelPath.create as jest.Mock).mockReturnValue({
+        (UpdrawPath.create as jest.Mock).mockReturnValue({
           deserialize: mockPathDeserializable.deserialize,
         });
-        (KritzelImage.create as jest.Mock).mockReturnValue({
+        (UpdrawImage.create as jest.Mock).mockReturnValue({
           deserialize: mockImageDeserializable.deserialize,
         });
 
         const nested = {
           items: [
-            { __class__: 'KritzelPath', points: [] },
-            { __class__: 'KritzelImage', src: 'test.png' },
+            { __class__: 'UpdrawPath', points: [] },
+            { __class__: 'UpdrawImage', src: 'test.png' },
           ],
           metadata: { name: 'test' },
         };
 
         const result = reviver.revive<any>(nested);
 
-        expect(KritzelPath.create).toHaveBeenCalledWith(mockCore);
-        expect(KritzelImage.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawPath.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawImage.create).toHaveBeenCalledWith(mockCore);
         expect(result.items[0]).toBe(mockPathDeserializable.instance);
         expect(result.items[1]).toBe(mockImageDeserializable.instance);
         expect(result.metadata).toEqual({ name: 'test' });
@@ -519,16 +519,16 @@ describe('KritzelReviver', () => {
     });
   });
 
-  describe('KritzelDynamicObject revival with HTML payload', () => {
+  describe('UpdrawDynamicObject revival with HTML payload', () => {
     it('should revive dynamic object from serialized object', () => {
-      const mockDynamicObjectDeserializable = createMockDeserializable('KritzelDynamicObject');
+      const mockDynamicObjectDeserializable = createMockDeserializable('UpdrawDynamicObject');
 
-      (KritzelDynamicObject.create as jest.Mock).mockReturnValue({
+      (UpdrawDynamicObject.create as jest.Mock).mockReturnValue({
         deserialize: mockDynamicObjectDeserializable.deserialize,
       });
 
       const serialized = {
-        __class__: 'KritzelDynamicObject',
+        __class__: 'UpdrawDynamicObject',
         htmlString: '<div id="test">Custom Content</div>',
         width: 200,
         height: 100,
@@ -536,29 +536,29 @@ describe('KritzelReviver', () => {
         translateY: 20,
       };
 
-      const revived = reviver.revive<KritzelDynamicObject>(serialized);
+      const revived = reviver.revive<UpdrawDynamicObject>(serialized);
 
-      expect(KritzelDynamicObject.create).toHaveBeenCalledWith(mockCore);
+      expect(UpdrawDynamicObject.create).toHaveBeenCalledWith(mockCore);
       expect(revived).toBe(mockDynamicObjectDeserializable.instance);
     });
 
     it('should revive dynamic object with empty htmlString fallback', () => {
-      const mockDynamicObjectDeserializable = createMockDeserializable('KritzelDynamicObject');
+      const mockDynamicObjectDeserializable = createMockDeserializable('UpdrawDynamicObject');
 
-      (KritzelDynamicObject.create as jest.Mock).mockReturnValue({
+      (UpdrawDynamicObject.create as jest.Mock).mockReturnValue({
         deserialize: mockDynamicObjectDeserializable.deserialize,
       });
 
       const serialized = {
-        __class__: 'KritzelDynamicObject',
+        __class__: 'UpdrawDynamicObject',
         htmlString: '',
         width: 100,
         height: 100,
       };
 
-      const revived = reviver.revive<KritzelDynamicObject>(serialized);
+      const revived = reviver.revive<UpdrawDynamicObject>(serialized);
 
-      expect(KritzelDynamicObject.create).toHaveBeenCalledWith(mockCore);
+      expect(UpdrawDynamicObject.create).toHaveBeenCalledWith(mockCore);
       expect(revived).toBe(mockDynamicObjectDeserializable.instance);
     });
 

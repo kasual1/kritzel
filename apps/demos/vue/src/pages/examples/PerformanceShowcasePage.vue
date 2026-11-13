@@ -2,11 +2,11 @@
 import { onBeforeUnmount, ref } from 'vue'
 import {
   getEditorRef,
-  KritzelDynamicObjectRendererRegistry,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelSyncConfig,
-} from '@kritzel/vue-editor'
+  UpdrawDynamicObjectRendererRegistry,
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawSyncConfig,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../const/vue-theme-dark'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import {
@@ -22,7 +22,7 @@ import {
 const editor = getEditorRef('editor')
 const mountedButtons = new Map<string, GithubStarButtonInstance>()
 const themes = [vueThemeLight, vueThemeDark]
-const syncConfig: KritzelSyncConfig = { providers: [] }
+const syncConfig: UpdrawSyncConfig = { providers: [] }
 const editorStyle = { display: 'block', width: '100%', height: '100%' }
 
 const starCount = ref(DEFAULT_STAR_COUNT)
@@ -36,7 +36,7 @@ function destroyButton(objectId: string, container: HTMLElement | null): void {
   }
 }
 
-KritzelDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
+UpdrawDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
   onMount: ({ object, container, data }) => {
     if (!container) {
       return
@@ -53,7 +53,7 @@ KritzelDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
   },
 })
 
-const workspaces = [new KritzelWorkspace({ objects: createGithubStarObjects(DEFAULT_STAR_COUNT) })]
+const workspaces = [new UpdrawWorkspace({ objects: createGithubStarObjects(DEFAULT_STAR_COUNT) })]
 
 async function changeStarCount(count: number) {
   if (!editor.value || isBusy.value || count === starCount.value) {
@@ -74,13 +74,13 @@ async function changeStarCount(count: number) {
 onBeforeUnmount(() => {
   mountedButtons.forEach((button) => button.destroy())
   mountedButtons.clear()
-  KritzelDynamicObjectRendererRegistry.unregister(GITHUB_STAR_RENDERER_KEY)
+  UpdrawDynamicObjectRendererRegistry.unregister(GITHUB_STAR_RENDERER_KEY)
 })
 </script>
 
 <template>
   <div class="performance-showcase">
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="examples-performance-showcase"
       theme="light"

@@ -1,8 +1,8 @@
 ---
 sidebar_label: Icons
 displayed_sidebar: tutorialSidebar
-title: "Custom Icons Concept | Kritzel for Angular"
-description: "Understand how to register and use custom SVG icons in Kritzel."
+title: "Custom Icons Concept | Updraw for Angular"
+description: "Understand how to register and use custom SVG icons in Updraw."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,7 +11,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel comes with a dedicated system for managing all icons used in the editor's user interface.
+Updraw comes with a dedicated system for managing all icons used in the editor's user interface.
 You can replace built-in icons or add new ones for your own tools and components.
 
 See the [Icons API reference](../api-reference/icons.md) for the full list of default icon names.
@@ -28,7 +28,7 @@ The primary way to customize Kirtzel's built-in icons is to override the existin
 
 ## Registering New Icons
 
-Of course, you can also register entirely new icons that are specific to your application and reference them in all components that have icon support, such as the `KritzelToolbarItem` or `ContextMenuItem`.
+Of course, you can also register entirely new icons that are specific to your application and reference them in all components that have icon support, such as the `UpdrawToolbarItem` or `ContextMenuItem`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"

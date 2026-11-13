@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
-  KritzelEditor,
-  KritzelShape,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawShape,
+  UpdrawWorkspace,
   ShapeType,
-  type KritzelObjectConfig,
-  type KritzelObjectTitlebarConfig,
-  type KritzelTheme,
-} from '@kritzel/vue-editor'
+  type UpdrawObjectConfig,
+  type UpdrawObjectTitlebarConfig,
+  type UpdrawTheme,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
@@ -21,25 +21,25 @@ const transparentTitlebar = {
   paddingX: '0',
 }
 
-const transparentTitlebarLightTheme: KritzelTheme = {
+const transparentTitlebarLightTheme: UpdrawTheme = {
   ...vueThemeLight,
   titlebar: { ...vueThemeLight.titlebar, ...transparentTitlebar },
 }
 
-const transparentTitlebarDarkTheme: KritzelTheme = {
+const transparentTitlebarDarkTheme: UpdrawTheme = {
   ...vueThemeDark,
   titlebar: { ...vueThemeDark.titlebar, ...transparentTitlebar },
 }
 
 const themes = [transparentTitlebarLightTheme, transparentTitlebarDarkTheme]
 
-const objectConfig: KritzelObjectConfig = {
-  hasTitlebar: object => object.__class__ === 'KritzelShape',
+const objectConfig: UpdrawObjectConfig = {
+  hasTitlebar: object => object.__class__ === 'UpdrawShape',
   isRotatable: false,
   isResizable: false,
 }
 
-const objectTitlebar: KritzelObjectTitlebarConfig = {
+const objectTitlebar: UpdrawObjectTitlebarConfig = {
   left: [{ type: 'title', id: 'title' }],
   right: [
     { type: 'button', id: 'settings', icon: 'settings', tooltip: 'Settings' },
@@ -56,10 +56,10 @@ const frameConfig = {
 }
 
 const workspaces = [
-  new KritzelWorkspace({
+  new UpdrawWorkspace({
     objects: [
-      new KritzelShape({ ...frameConfig, name: 'Landing page', translateX: -270, translateY: -110, width: 300, height: 200 }),
-      new KritzelShape({ ...frameConfig, name: 'Pricing', translateX: 70, translateY: -110, width: 200, height: 200 }),
+      new UpdrawShape({ ...frameConfig, name: 'Landing page', translateX: -270, translateY: -110, width: 300, height: 200 }),
+      new UpdrawShape({ ...frameConfig, name: 'Pricing', translateX: 70, translateY: -110, width: 200, height: 200 }),
     ],
   }),
 ]
@@ -67,7 +67,7 @@ const workspaces = [
 
 <template>
   <div :style="hostStyle">
-    <KritzelEditor
+    <UpdrawEditor
       editorId="titlebar-styling"
       theme="light"
       :themes="themes"

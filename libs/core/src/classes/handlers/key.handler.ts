@@ -1,21 +1,21 @@
-import { KritzelBaseHandler } from './base.handler';
-import { KritzelCore } from '../core/core.class';
-import { KritzelShortcut } from '../../interfaces/shortcut.interface';
+import { UpdrawBaseHandler } from './base.handler';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawShortcut } from '../../interfaces/shortcut.interface';
 
 /** The amount of pixels to move an object when using arrow key nudging. */
 const NUDGE_AMOUNT = 10;
 
 /**
- * Handles keyboard events and manages keyboard shortcuts for the Kritzel canvas.
+ * Handles keyboard events and manages keyboard shortcuts for the Updraw canvas.
  * Provides functionality for tool switching, object manipulation,
  * undo/redo, and navigation via keyboard input.
  */
-export class KritzelKeyHandler extends KritzelBaseHandler {
+export class UpdrawKeyHandler extends UpdrawBaseHandler {
   /**
    * Array of registered keyboard shortcuts with their associated actions.
    * Each shortcut defines the key combination, display label, category, optional condition, and action to execute.
    */
-  private shortcuts: KritzelShortcut[] = [
+  private shortcuts: UpdrawShortcut[] = [
     // General
     {
       key: 'Escape',
@@ -110,9 +110,9 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
 
   /**
    * Creates a new instance of the key handler.
-   * @param core - The KritzelCore instance that provides access to the canvas state and operations.
+   * @param core - The UpdrawCore instance that provides access to the canvas state and operations.
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     super(core);
   }
 
@@ -169,7 +169,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
    * Excludes the action and condition properties to provide only the display-relevant information.
    * @returns An array of shortcut objects containing key, modifiers, label, and category.
    */
-  getDisplayableShortcuts(): Omit<KritzelShortcut, 'action' | 'condition'>[] {
+  getDisplayableShortcuts(): Omit<UpdrawShortcut, 'action' | 'condition'>[] {
     return this.shortcuts.map(({ key, ctrl, shift, label, category }) => ({
       key,
       ctrl,

@@ -1,8 +1,8 @@
-import { IKritzelUser } from './user.interface';
+import { IUpdrawUser } from './user.interface';
 
-export interface KritzelRemoteCursorState {
+export interface UpdrawRemoteCursorState {
   clientId: number;
-  user: IKritzelUser;
+  user: IUpdrawUser;
   cursor: { x: number; y: number } | null;
   activeObjectId: string | null;
   selectionBox: { x: number; y: number; width: number; height: number } | null;

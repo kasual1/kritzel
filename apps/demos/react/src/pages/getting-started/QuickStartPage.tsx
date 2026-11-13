@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { KritzelEditor, KritzelWorkspace } from "@kritzel/react-editor";
+import { UpdrawEditor, UpdrawWorkspace } from "@updraw/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 import { createSeedObjects } from "./seed-objects";
 
@@ -9,12 +9,12 @@ const hostStyle: CSSProperties = {
 };
 
 const themes = [reactThemeLight];
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })];
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })];
 
 export function QuickStartPage() {
   return (
     <div style={hostStyle}>
-      <KritzelEditor
+      <UpdrawEditor
         editorId="quickstart"
         theme="light"
         themes={themes}

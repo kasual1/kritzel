@@ -1,29 +1,29 @@
 
-import { KritzelMouseButton } from '../enums/event-button.enum';
-import { KritzelEventHelper } from './event.helper';
+import { UpdrawMouseButton } from '../enums/event-button.enum';
+import { UpdrawEventHelper } from './event.helper';
 
-describe('KritzelEventHelper', () => {
+describe('UpdrawEventHelper', () => {
   describe('isRightClick', () => {
     it('should return true if button is right mouse button', () => {
-      const event = { button: KritzelMouseButton.Right } as MouseEvent;
-      expect(KritzelEventHelper.isRightClick(event)).toBe(true);
+      const event = { button: UpdrawMouseButton.Right } as MouseEvent;
+      expect(UpdrawEventHelper.isRightClick(event)).toBe(true);
     });
 
     it('should return false if button is not right mouse button', () => {
-      const event = { button: KritzelMouseButton.Left } as MouseEvent;
-      expect(KritzelEventHelper.isRightClick(event)).toBe(false);
+      const event = { button: UpdrawMouseButton.Left } as MouseEvent;
+      expect(UpdrawEventHelper.isRightClick(event)).toBe(false);
     });
   });
 
   describe('isLeftClick', () => {
     it('should return true if button is left mouse button', () => {
-      const event = { button: KritzelMouseButton.Left } as MouseEvent;
-      expect(KritzelEventHelper.isLeftClick(event)).toBe(true);
+      const event = { button: UpdrawMouseButton.Left } as MouseEvent;
+      expect(UpdrawEventHelper.isLeftClick(event)).toBe(true);
     });
 
     it('should return false if button is not left mouse button', () => {
-      const event = { button: KritzelMouseButton.Right } as MouseEvent;
-      expect(KritzelEventHelper.isLeftClick(event)).toBe(false);
+      const event = { button: UpdrawMouseButton.Right } as MouseEvent;
+      expect(UpdrawEventHelper.isLeftClick(event)).toBe(false);
     });
   });
 
@@ -38,7 +38,7 @@ describe('KritzelEventHelper', () => {
         composedPath: () => [child, contextMenu, document.body, document.documentElement],
       } as unknown as PointerEvent;
 
-      expect(KritzelEventHelper.isPointerEventOnContextMenu(event)).toBe(true);
+      expect(UpdrawEventHelper.isPointerEventOnContextMenu(event)).toBe(true);
     });
 
     it('should return false if event path does not contain context-menu', () => {
@@ -47,7 +47,7 @@ describe('KritzelEventHelper', () => {
         composedPath: () => [otherElement, document.body, document.documentElement],
       } as unknown as PointerEvent;
 
-      expect(KritzelEventHelper.isPointerEventOnContextMenu(event)).toBe(false);
+      expect(UpdrawEventHelper.isPointerEventOnContextMenu(event)).toBe(false);
     });
   });
 
@@ -71,7 +71,7 @@ describe('KritzelEventHelper', () => {
         target,
       } as unknown as PointerEvent;
 
-      KritzelEventHelper.onLongPress(event, onSuccess, onCancel);
+      UpdrawEventHelper.onLongPress(event, onSuccess, onCancel);
 
       expect(onSuccess).not.toHaveBeenCalled();
       jest.advanceTimersByTime(400);
@@ -84,7 +84,7 @@ describe('KritzelEventHelper', () => {
       const onCancel = jest.fn();
       const event = { pointerType: 'mouse' } as PointerEvent;
 
-      KritzelEventHelper.onLongPress(event, onSuccess, onCancel);
+      UpdrawEventHelper.onLongPress(event, onSuccess, onCancel);
 
       jest.advanceTimersByTime(400);
       expect(onSuccess).not.toHaveBeenCalled();
@@ -102,7 +102,7 @@ describe('KritzelEventHelper', () => {
         target,
       } as unknown as PointerEvent;
 
-      const cancel = KritzelEventHelper.onLongPress(event, onSuccess, onCancel);
+      const cancel = UpdrawEventHelper.onLongPress(event, onSuccess, onCancel);
       cancel();
 
       jest.advanceTimersByTime(400);

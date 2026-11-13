@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { KritzelEditor, type HTMLKritzelEditorElement } from "@kritzel/react-editor";
+import { UpdrawEditor, type HTMLUpdrawEditorElement } from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
@@ -8,7 +8,7 @@ import { Toolbar } from "../../../components/Toolbar";
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ViewportPanPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
 
   async function setViewportCenter() {
     const editor = editorRef.current;
@@ -27,7 +27,7 @@ export function ViewportPanPage() {
         <button onClick={() => void editorRef.current?.panTo(200, 150)}>Pan to (200, 150)</button>
         <button onClick={() => void setViewportCenter()}>Center on (100, 100)</button>
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="viewport-pan"
         theme="light"

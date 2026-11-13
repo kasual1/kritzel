@@ -3,15 +3,15 @@ import { computed, shallowRef, type CSSProperties } from 'vue'
 import {
   getEditorRef,
   InMemorySyncProvider,
-  KritzelEditor,
-  KritzelLine,
-  KritzelPath,
-  KritzelShape,
+  UpdrawEditor,
+  UpdrawLine,
+  UpdrawPath,
+  UpdrawShape,
   ShapeType,
-  type KritzelBaseObject,
-  type KritzelSyncConfig,
-  type KritzelWorkspace,
-} from '@kritzel/vue-editor'
+  type UpdrawBaseObject,
+  type UpdrawSyncConfig,
+  type UpdrawWorkspace,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
@@ -113,9 +113,9 @@ const workspaceVariants: WorkspaceVariant[] = [
   },
 ]
 
-function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
+function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
   return [
-    new KritzelShape({
+    new UpdrawShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -125,7 +125,7 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
       strokeColor: variant.stroke,
       strokeWidth: 3,
     }),
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -136,7 +136,7 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
       strokeWidth: 3,
       rotation: variant.rotation,
     }),
-    new KritzelLine({
+    new UpdrawLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -144,7 +144,7 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
       stroke: variant.accent,
       strokeWidth: 3,
     }),
-    new KritzelPath({
+    new UpdrawPath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -167,10 +167,10 @@ function createVariantObjects(variant: WorkspaceVariant): KritzelBaseObject[] {
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [InMemorySyncProvider],
 }
-const activeWorkspace = shallowRef<KritzelWorkspace | null>(null)
+const activeWorkspace = shallowRef<UpdrawWorkspace | null>(null)
 const activeWorkspaceJson = computed(() =>
   activeWorkspace.value
     ? JSON.stringify(
@@ -230,7 +230,7 @@ async function updateWorkspace() {
       <span>Current: {{ activeWorkspace?.name }}</span>
     </Toolbar>
     <div :style="contentStyle">
-      <KritzelEditor
+      <UpdrawEditor
         ref="editor"
         editorId="workspaces-update"
         theme="light"

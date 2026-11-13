@@ -1,0 +1,39 @@
+:host {
+  display: contents;
+}
+
+updraw-dialog {
+  --updraw-dialog-width-small: 380px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.user-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--updraw-current-user-dialog-name-color, #333333);
+  text-align: center;
+  margin-top: 8px;
+}
+
+.user-email {
+  font-size: 14px;
+  color: var(--updraw-current-user-dialog-email-color, #666666);
+  text-align: center;
+}
+
+.logout-button {
+  margin-top: 16px;
+  width: 100%;
+  --updraw-button-width: 100%;
+  --updraw-button-primary-background-color: var(--updraw-current-user-dialog-logout-button-background-color, #007AFF);
+  --updraw-button-primary-hover-background-color: var(--updraw-current-user-dialog-logout-button-hover-background-color, #006ae6);
+  --updraw-button-primary-active-background-color: var(--updraw-current-user-dialog-logout-button-active-background-color, #005bbf);
+  --updraw-button-primary-color: var(--updraw-current-user-dialog-logout-button-color, #ffffff);
+}

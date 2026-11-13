@@ -16,7 +16,7 @@ async function openWorkspaceMenu(page: import('@playwright/test').Page, workspac
     return;
   }
 
-  const menuButton = page.locator('kritzel-workspace-manager button[aria-label="Open menu"]');
+  const menuButton = page.locator('updraw-workspace-manager button[aria-label="Open menu"]');
   await menuButton.click();
   if (await menuItem.isVisible()) {
     return;
@@ -27,13 +27,13 @@ async function openWorkspaceMenu(page: import('@playwright/test').Page, workspac
 }
 
 async function createWorkspaceViaManager(page: import('@playwright/test').Page, workspaceName: string) {
-  await page.locator('kritzel-workspace-manager button[aria-label="Main action"]').click();
+  await page.locator('updraw-workspace-manager button[aria-label="Main action"]').click();
 
-  const editInput = page.locator('kritzel-menu:visible kritzel-menu-item.editing input.edit-input');
+  const editInput = page.locator('updraw-menu:visible updraw-menu-item.editing input.edit-input');
   await expect(editInput).toBeVisible();
   await editInput.fill(workspaceName);
 
-  const saveButton = page.locator('kritzel-menu:visible kritzel-menu-item.editing .menu-item-content.right .action-button').nth(1);
+  const saveButton = page.locator('updraw-menu:visible updraw-menu-item.editing .menu-item-content.right .action-button').nth(1);
   await saveButton.click();
 }
 
@@ -52,11 +52,11 @@ async function renameWorkspaceViaManager(page: import('@playwright/test').Page, 
   await expect(renameItem).toBeVisible();
   await renameItem.click();
 
-  const editInput = page.locator('kritzel-menu:visible kritzel-menu-item.editing input.edit-input');
+  const editInput = page.locator('updraw-menu:visible updraw-menu-item.editing input.edit-input');
   await expect(editInput).toBeVisible();
   await editInput.fill(newName);
 
-  const saveButton = page.locator('kritzel-menu:visible kritzel-menu-item.editing .menu-item-content.right .action-button').nth(1);
+  const saveButton = page.locator('updraw-menu:visible updraw-menu-item.editing .menu-item-content.right .action-button').nth(1);
   await saveButton.click();
 }
 
@@ -160,7 +160,7 @@ test.describe('Workspace manager', () => {
     await expect(newestWorkspaceItem).toBeVisible();
 
     const workspaceMenu = page
-      .locator('kritzel-menu')
+      .locator('updraw-menu')
       .filter({ has: page.locator(`[data-testid="menu-item-${newestWorkspace.id}"]`) });
 
     const scrollMetrics = await workspaceMenu.evaluateAll(menus => {
@@ -194,7 +194,7 @@ test.describe('Workspace manager', () => {
         return null;
       }
 
-      const menuItems = Array.from(visibleMenu.shadowRoot?.querySelectorAll('kritzel-menu-item') ?? []) as HTMLElement[];
+      const menuItems = Array.from(visibleMenu.shadowRoot?.querySelectorAll('updraw-menu-item') ?? []) as HTMLElement[];
       if (menuItems.length < 2) {
         return null;
       }

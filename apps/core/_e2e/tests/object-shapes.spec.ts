@@ -45,7 +45,7 @@ test.describe('Shape objects', () => {
 
       // Verify the SVG fill attribute matches the configured color
       const fill = await editorPage.page.evaluate(() => {
-        const engine = document.querySelector('kritzel-engine');
+        const engine = document.querySelector('updraw-engine');
         if (!engine?.shadowRoot) return null;
         const svg = engine.shadowRoot.querySelector('.object svg');
         if (!svg) return null;

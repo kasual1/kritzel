@@ -8,7 +8,7 @@
  * to Yjs), so the action can emit precise events and persist pending changes on commit.
  * @internal
  */
-export class KritzelAgentOrigin {
+export class UpdrawAgentOrigin {
   /** Object ID -> whether the object existed before the first change of the running action. */
   private _recording: Map<string, boolean> | null = null;
   /** Objects changed in local-only mode during the running action. */

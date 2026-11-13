@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, OnDestroy, signal } from '@angular/core';
 
 import {
-  KritzelEditor,
-  KritzelIframeObject,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawEditor,
+  UpdrawIframeObject,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 
@@ -54,7 +54,7 @@ const CALCULATOR_BASE_CSS = `
   .keypad { display: grid; gap: 6px; min-height: 0; }
   .simple-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); }
   .scientific-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); }
-  button { min-width: 0; min-height: 0; border: 1px solid #dadce0; border-radius: 7px; background: #ffffff; color: #202124; cursor: var(--kritzel-iframe-pointer-cursor, pointer); font: inherit; font-size: 14px; font-weight: 700; line-height: 1; }
+  button { min-width: 0; min-height: 0; border: 1px solid #dadce0; border-radius: 7px; background: #ffffff; color: #202124; cursor: var(--updraw-iframe-pointer-cursor, pointer); font: inherit; font-size: 14px; font-weight: 700; line-height: 1; }
   button:hover { background: #f3f4f6; }
   .operator { border-color: #dd0031; color: #dd0031; }
   .muted { color: #5f6368; }
@@ -77,15 +77,15 @@ const CALCULATOR_SCRIPT = `
   const operatorLabels = { add: '+', subtract: '-', multiply: 'x', divide: '/' };
 
   const getState = () => ({
-    displayValue: String(kritzel.state.displayValue ?? '0'),
-    storedValue: typeof kritzel.state.storedValue === 'number' ? kritzel.state.storedValue : null,
-    pendingOperator: kritzel.state.pendingOperator ?? null,
-    shouldReplaceDisplay: typeof kritzel.state.shouldReplaceDisplay === 'boolean' ? kritzel.state.shouldReplaceDisplay : true,
-    mode: kritzel.state.mode === 'scientific' ? 'scientific' : 'simple',
+    displayValue: String(updraw.state.displayValue ?? '0'),
+    storedValue: typeof updraw.state.storedValue === 'number' ? updraw.state.storedValue : null,
+    pendingOperator: updraw.state.pendingOperator ?? null,
+    shouldReplaceDisplay: typeof updraw.state.shouldReplaceDisplay === 'boolean' ? updraw.state.shouldReplaceDisplay : true,
+    mode: updraw.state.mode === 'scientific' ? 'scientific' : 'simple',
   });
 
   const setState = (nextState) => {
-    kritzel.setState({ ...getState(), ...nextState });
+    updraw.setState({ ...getState(), ...nextState });
     render();
   };
 
@@ -163,7 +163,7 @@ const CALCULATOR_SCRIPT = `
   document.querySelectorAll('[data-operator]').forEach((button) => button.addEventListener('click', () => chooseOperator(button.dataset.operator)));
   document.querySelectorAll('[data-action]').forEach((button) => button.addEventListener('click', () => button.dataset.action === 'equals' ? calculate() : applyFunction(button.dataset.action)));
   toggleButtons.forEach((button) => button.addEventListener('click', () => setState({ mode: button.dataset.mode })));
-  addEventListener('kritzelstatechange', render);
+  addEventListener('updrawstatechange', render);
   render();
 `;
 
@@ -239,10 +239,10 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
 
 @Component({
   selector: 'app-dynamic-objects-iframe',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="dynamic-objects-iframe"
       [theme]="'light'"
       [themes]="themes"
@@ -252,7 +252,7 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       [workspaces]="workspaces()"
-    ></kritzel-editor>
+    ></updraw-editor>
     <div class="chat-input">
       <div class="textarea-wrapper">
         <textarea
@@ -271,7 +271,7 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
   `,
   styles: [`
     :host { position: relative; display: block; height: 100%; }
-    kritzel-editor { display: block; width: 100%; height: 100%; }
+    updraw-editor { display: block; width: 100%; height: 100%; }
     .chat-input { position: absolute; left: 50%; bottom: 18px; z-index: 20; display: block; width: min(460px, calc(100% - 32px)); padding: 10px; border: 1px solid #e5e7eb; border-radius: 16px; background: #ffffff; box-shadow: 0 16px 42px rgba(32, 33, 36, 0.18); box-sizing: border-box; transform: translateX(-50%); font-family: Roboto, sans-serif; }
     .textarea-wrapper { position: relative; width: 100%; }
     textarea { display: block; width: 100%; height: 98px; min-height: 98px; max-height: 98px; resize: none; border: 0; border-radius: 12px; padding: 12px 14px 38px 14px; box-sizing: border-box; background: #f3f4f6; color: #202124; font: inherit; line-height: 1.45; }
@@ -294,7 +294,7 @@ export class DynamicObjectsIframeComponent implements OnDestroy {
   isFirstQuery = computed(() => this.promptIndex() === 0);
   isLastQuery = computed(() => this.promptIndex() === MOCK_CHAT_PROMPTS.length - 1);
   workspaces = signal([
-    new KritzelWorkspace({ objects: [this.runtimeObject] }),
+    new UpdrawWorkspace({ objects: [this.runtimeObject] }),
   ]);
 
   updatePromptText(event: Event): void {
@@ -350,9 +350,9 @@ export class DynamicObjectsIframeComponent implements OnDestroy {
     }, 1100);
   }
 
-  private createRuntimeObject(): KritzelIframeObject {
+  private createRuntimeObject(): UpdrawIframeObject {
     const definition = MOCK_COMPONENT_DEFINITIONS[0];
-    const iframeObject = new KritzelIframeObject({
+    const iframeObject = new UpdrawIframeObject({
       content: definition.content,
       state: definition.initialState,
       title: 'Simple calculator',

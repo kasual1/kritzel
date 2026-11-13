@@ -6,7 +6,7 @@ interface PublicConfig {
   assetBaseUrl: string;
 }
 
-const CONFIG_CACHE_KEY = 'kritzel_public_config';
+const CONFIG_CACHE_KEY = 'updraw_public_config';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService {

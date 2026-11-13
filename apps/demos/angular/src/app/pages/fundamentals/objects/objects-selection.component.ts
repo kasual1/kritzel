@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
-  KritzelEditor,
+  UpdrawEditor,
   IndexedDBSyncProvider,
-  KritzelBaseObject,
-  KritzelSyncConfig,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawBaseObject,
+  UpdrawSyncConfig,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -17,7 +17,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-objects-selection',
-  imports: [KritzelEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
+  imports: [UpdrawEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -27,7 +27,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       <app-info-panel-toggle [panel]="infoPanel"></app-info-panel-toggle>
     </app-toolbar>
     <div class="content">
-      <kritzel-editor
+      <updraw-editor
         editorId="objects-selection"
         [theme]="'light'"
         [themes]="themes"
@@ -37,7 +37,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (objectsSelectionChange)="refreshSelection()"
-      ></kritzel-editor>
+      ></updraw-editor>
       <app-info-panel #infoPanel [hasToolbarToggle]="true">
         <h3>Objects</h3>
         <ul>
@@ -57,7 +57,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
     .content { display: flex; flex: 1; min-height: 0; position: relative; }
-    kritzel-editor { flex: 1; }
+    updraw-editor { flex: 1; }
     ul { list-style: none; margin: 0; padding: 0; }
     li { padding: 4px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
     .type { color: #333; font-weight: 500; }
@@ -66,19 +66,19 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   `],
 })
 export class ObjectsSelectionComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
-  syncConfig: KritzelSyncConfig = {
+  syncConfig: UpdrawSyncConfig = {
     providers: [IndexedDBSyncProvider],
     
 
   };
 
-  selectedObjects = signal<KritzelBaseObject[]>([]);
+  selectedObjects = signal<UpdrawBaseObject[]>([]);
 
   async selectAll() {
     const all = await this.editor.getAllObjects();

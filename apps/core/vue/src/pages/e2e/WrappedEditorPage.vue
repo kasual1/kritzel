@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { KritzelEditor } from '@kritzel/vue-editor'
+import { UpdrawEditor } from '@updraw/vue-editor'
 import { useRoute } from 'vue-router'
 import { vueThemeLight } from '../../const/vue-theme-light'
 
@@ -22,7 +22,7 @@ const height = parseInt((route.query.height as string) || '600', 10)
       margin: '24px',
     }"
   >
-    <KritzelEditor
+    <UpdrawEditor
       style="width: 100%; height: 100%"
       theme="light"
       :themes="[vueThemeLight]"

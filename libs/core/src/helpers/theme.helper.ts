@@ -1,4 +1,4 @@
-import { KritzelTheme } from '../interfaces/theme.interface';
+import { UpdrawTheme } from '../interfaces/theme.interface';
 
 export class ThemeHelper {
   private static readonly appliedVariableNames = new WeakMap<HTMLElement, Set<string>>();
@@ -18,20 +18,20 @@ export class ThemeHelper {
    * Skips the 'name' property at the root level since it's the theme identifier, not a CSS value.
    *
    * @param theme - The theme object to flatten
-   * @param prefix - The CSS variable prefix (default: '--kritzel')
+   * @param prefix - The CSS variable prefix (default: '--updraw')
    * @returns A Map of CSS variable names to their values
    *
    * @example
    * ThemeHelper.flattenThemeToVariables(lightTheme)
    * // Returns Map {
-   * //   '--kritzel-global-pointer-cursor' => 'pointer',
-  * //   '--kritzel-toolbar-gap' => '8px',
+   * //   '--updraw-global-pointer-cursor' => 'pointer',
+  * //   '--updraw-toolbar-gap' => '8px',
    * //   ...
    * // }
    */
   static flattenThemeToVariables(
-    theme: KritzelTheme,
-    prefix = '--kritzel',
+    theme: UpdrawTheme,
+    prefix = '--updraw',
   ): Map<string, string> {
     const variables = new Map<string, string>();
 
@@ -79,7 +79,7 @@ export class ThemeHelper {
    * @param element - The target HTML element
    * @param theme - The theme object to apply
    */
-  static applyThemeToElement(element: HTMLElement, theme: KritzelTheme): void {
+  static applyThemeToElement(element: HTMLElement, theme: UpdrawTheme): void {
     const variables = ThemeHelper.flattenThemeToVariables(theme);
     const previousVariableNames = ThemeHelper.appliedVariableNames.get(element);
 

@@ -1,5 +1,5 @@
 // Color schemes for the thumbnails, built from the framework brand colors:
-// Angular #dd0031, React #4A7DFF (also the Kritzel primary) and Vue #42b883.
+// Angular #dd0031, React #4A7DFF (also the Updraw primary) and Vue #42b883.
 // Every scheme is a function of the framework the seed picked (and a seeded rand), never of the post itself,
 // so a seed alone reproduces the image. A palette has these parts, all consumed by painting.mjs:
 //   base  — the mesh gradient's background color (rgb),

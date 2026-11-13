@@ -1,18 +1,18 @@
-import type { KritzelCore } from '../classes/core/core.class';
-import type { KritzelBaseTool } from '../classes/tools/base-tool.class';
+import type { UpdrawCore } from '../classes/core/core.class';
+import type { UpdrawBaseTool } from '../classes/tools/base-tool.class';
 import type {
-  KritzelAgenticColor,
-  KritzelAgenticLineStyle,
-  KritzelAgenticShapeStyle,
-  KritzelAgenticStrokeStyle,
-  KritzelAgenticTextStyle,
+  UpdrawAgenticColor,
+  UpdrawAgenticLineStyle,
+  UpdrawAgenticShapeStyle,
+  UpdrawAgenticStrokeStyle,
+  UpdrawAgenticTextStyle,
 } from '../interfaces/agentic-action.interface';
 import type { LineArrowConfig } from '../interfaces/arrow-head.interface';
 import { DEFAULT_COLOR_PALETTE, type ThemeAwareColor } from '../constants/color-palette.constants';
 import { ShapeType } from '../enums/shape-type.enum';
 
 /** The first registered tool of a type. Tool names are configurable, so tools are matched by type. */
-export function findToolByType(core: KritzelCore, toolType: string): KritzelBaseTool | null {
+export function findToolByType(core: UpdrawCore, toolType: string): UpdrawBaseTool | null {
   const registry = core.toolRegistry;
   if (!registry) {
     return null;
@@ -29,20 +29,20 @@ export function findToolByType(core: KritzelCore, toolType: string): KritzelBase
 }
 
 /** A CSS color string applies to both themes. */
-export function toThemeColor(color: KritzelAgenticColor | undefined): ThemeAwareColor | undefined {
+export function toThemeColor(color: UpdrawAgenticColor | undefined): ThemeAwareColor | undefined {
   if (color === undefined) {
     return undefined;
   }
   return typeof color === 'string' ? { light: color, dark: color } : color;
 }
 
-function read<T>(tool: KritzelBaseTool | null, key: string, fallback: T): T {
+function read<T>(tool: UpdrawBaseTool | null, key: string, fallback: T): T {
   const value = tool ? (tool as unknown as Record<string, unknown>)[key] : undefined;
   return value === undefined || value === null ? fallback : (value as T);
 }
 
 /** Resolved style of an agent-created shape. */
-export interface KritzelResolvedShapeStyle {
+export interface UpdrawResolvedShapeStyle {
   shapeType: ShapeType;
   fillColor: ThemeAwareColor;
   strokeColor: ThemeAwareColor;
@@ -54,7 +54,7 @@ export interface KritzelResolvedShapeStyle {
 }
 
 /** Style for an agent shape: the overrides, else the shape tool's current settings. */
-export function resolveShapeStyle(core: KritzelCore, style: KritzelAgenticShapeStyle = {}, shapeType?: string): KritzelResolvedShapeStyle {
+export function resolveShapeStyle(core: UpdrawCore, style: UpdrawAgenticShapeStyle = {}, shapeType?: string): UpdrawResolvedShapeStyle {
   const tool = findToolByType(core, 'shape');
   return {
     shapeType: (shapeType as ShapeType) ?? read(tool, 'shapeType', ShapeType.Rectangle),
@@ -69,7 +69,7 @@ export function resolveShapeStyle(core: KritzelCore, style: KritzelAgenticShapeS
 }
 
 /** Resolved style of agent-created text. */
-export interface KritzelResolvedTextStyle {
+export interface UpdrawResolvedTextStyle {
   fontSize: number;
   fontFamily: string;
   fontColor: ThemeAwareColor;
@@ -77,7 +77,7 @@ export interface KritzelResolvedTextStyle {
 }
 
 /** Style for agent text: the overrides, else the text tool's defaults (never the text being edited). */
-export function resolveTextStyle(core: KritzelCore, style: KritzelAgenticTextStyle = {}): KritzelResolvedTextStyle {
+export function resolveTextStyle(core: UpdrawCore, style: UpdrawAgenticTextStyle = {}): UpdrawResolvedTextStyle {
   const tool = findToolByType(core, 'text');
   return {
     fontSize: style.fontSize ?? read(tool, 'defaultFontSize', 16),
@@ -88,7 +88,7 @@ export function resolveTextStyle(core: KritzelCore, style: KritzelAgenticTextSty
 }
 
 /** Resolved style of an agent stroke or line. */
-export interface KritzelResolvedStrokeStyle {
+export interface UpdrawResolvedStrokeStyle {
   color: ThemeAwareColor;
   strokeWidth: number;
   opacity: number;
@@ -96,7 +96,7 @@ export interface KritzelResolvedStrokeStyle {
 }
 
 /** Style for an agent freehand path: the overrides, else the brush tool's current settings. */
-export function resolveBrushStyle(core: KritzelCore, style: KritzelAgenticStrokeStyle = {}): KritzelResolvedStrokeStyle {
+export function resolveBrushStyle(core: UpdrawCore, style: UpdrawAgenticStrokeStyle = {}): UpdrawResolvedStrokeStyle {
   const tool = findToolByType(core, 'brush');
   return {
     color: toThemeColor(style.strokeColor) ?? read(tool, 'color', DEFAULT_COLOR_PALETTE[0]),
@@ -106,7 +106,7 @@ export function resolveBrushStyle(core: KritzelCore, style: KritzelAgenticStroke
 }
 
 /** Style for an agent line: the overrides, else the line tool's current settings. */
-export function resolveLineStyle(core: KritzelCore, style: KritzelAgenticLineStyle = {}): KritzelResolvedStrokeStyle {
+export function resolveLineStyle(core: UpdrawCore, style: UpdrawAgenticLineStyle = {}): UpdrawResolvedStrokeStyle {
   const tool = findToolByType(core, 'line');
   return {
     color: toThemeColor(style.strokeColor) ?? read(tool, 'color', DEFAULT_COLOR_PALETTE[0]),

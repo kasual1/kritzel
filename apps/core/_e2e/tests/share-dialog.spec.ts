@@ -4,25 +4,25 @@ async function openShareDialog(page: import('@playwright/test').Page) {
   await page.getByTestId('more-menu-button').click();
   await page.getByTestId('menu-item-share').click();
 
-  const dialog = page.locator('kritzel-share-dialog kritzel-dialog[is-open]');
+  const dialog = page.locator('updraw-share-dialog updraw-dialog[is-open]');
   await dialog.waitFor({ state: 'attached' });
   return dialog;
 }
 
 async function closeShareDialog(page: import('@playwright/test').Page) {
-  const closeButton = page.locator('kritzel-share-dialog kritzel-dialog[is-open] button[aria-label="Close dialog"]');
+  const closeButton = page.locator('updraw-share-dialog updraw-dialog[is-open] button[aria-label="Close dialog"]');
   await closeButton.click();
-  await expect(page.locator('kritzel-share-dialog kritzel-dialog[is-open]')).toHaveCount(0);
+  await expect(page.locator('updraw-share-dialog updraw-dialog[is-open]')).toHaveCount(0);
 }
 
 async function isWorkspaceMarkedShared(page: import('@playwright/test').Page, workspaceId: string) {
   return page.evaluate((id: string) => {
-    const manager = document.querySelector('kritzel-workspace-manager') as HTMLElement | null;
+    const manager = document.querySelector('updraw-workspace-manager') as HTMLElement | null;
     if (!manager?.shadowRoot) {
       return false;
     }
 
-    const splitButton = manager.shadowRoot.querySelector('kritzel-split-button') as (HTMLElement & { items?: Array<{ id: string; icon?: string }> }) | null;
+    const splitButton = manager.shadowRoot.querySelector('updraw-split-button') as (HTMLElement & { items?: Array<{ id: string; icon?: string }> }) | null;
     const items = Array.isArray(splitButton?.items) ? splitButton.items : [];
     const workspaceItem = items.find(item => item.id === id);
 
@@ -39,16 +39,16 @@ test.describe('Share dialog', () => {
   test('toggles link sharing on and off correctly', async ({ page }) => {
     await openShareDialog(page);
 
-    const toggle = page.locator('kritzel-share-dialog kritzel-slide-toggle');
+    const toggle = page.locator('updraw-share-dialog updraw-slide-toggle');
     await expect(toggle).toHaveAttribute('aria-checked', 'false');
 
     await toggle.click();
     await expect(toggle).toHaveAttribute('aria-checked', 'true');
-    await expect(page.locator('kritzel-share-dialog input.share-url-input')).toBeVisible();
+    await expect(page.locator('updraw-share-dialog input.share-url-input')).toBeVisible();
 
     await toggle.click();
     await expect(toggle).toHaveAttribute('aria-checked', 'false');
-    await expect(page.locator('kritzel-share-dialog input.share-url-input')).toHaveCount(0);
+    await expect(page.locator('updraw-share-dialog input.share-url-input')).toHaveCount(0);
   });
 
   test('creates the expected share link', async ({ editorPage, page }) => {
@@ -57,11 +57,11 @@ test.describe('Share dialog', () => {
 
     await openShareDialog(page);
 
-    const toggle = page.locator('kritzel-share-dialog kritzel-slide-toggle');
+    const toggle = page.locator('updraw-share-dialog updraw-slide-toggle');
     await toggle.click();
     await expect(toggle).toHaveAttribute('aria-checked', 'true');
 
-    const shareUrlInput = page.locator('kritzel-share-dialog input.share-url-input');
+    const shareUrlInput = page.locator('updraw-share-dialog input.share-url-input');
     await expect(shareUrlInput).toBeVisible();
 
     const expectedShareUrl = new URL(workspace.id, new URL(page.url()).origin);
@@ -76,7 +76,7 @@ test.describe('Share dialog', () => {
 
     await openShareDialog(page);
 
-    const toggle = page.locator('kritzel-share-dialog kritzel-slide-toggle');
+    const toggle = page.locator('updraw-share-dialog updraw-slide-toggle');
     await expect(toggle).toHaveAttribute('aria-checked', 'false');
 
     await toggle.click();
@@ -96,7 +96,7 @@ test.describe('Share dialog', () => {
 
     await openShareDialog(page);
 
-    const toggleReopened = page.locator('kritzel-share-dialog kritzel-slide-toggle');
+    const toggleReopened = page.locator('updraw-share-dialog updraw-slide-toggle');
     await expect(toggleReopened).toHaveAttribute('aria-checked', 'true');
 
     await toggleReopened.click();

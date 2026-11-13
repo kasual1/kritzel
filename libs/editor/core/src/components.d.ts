@@ -5,33 +5,33 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgent, KritzelAgentPresence, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelChatBoxChip, KritzelChatSession, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelGroup, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelRemoteAgentPresence, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelTitlebarMenuItem, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/core";
-import { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
-import { KritzelChatBoxMode } from "./components/kritzel-chat-box/kritzel-chat-box";
-import { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
-import { KritzelChatBoxMode as KritzelChatBoxMode1 } from "./components/kritzel-chat-box/kritzel-chat-box";
+import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IUpdrawDialogCloseEvent, IUpdrawIsPublicChangeEvent, IUpdrawMasterDetailItem, IUpdrawMasterDetailSelectEvent, IUpdrawMenuItem, IUpdrawMenuItemSelectEvent, IUpdrawMenuItemToggleChildMenuEvent, IUpdrawUser, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues, UpdrawAgent, UpdrawAgentPresence, UpdrawAgentsChangeEvent, UpdrawAlignment, UpdrawAssetStorageConfig, UpdrawBaseObject, UpdrawBaseTool, UpdrawBrushToolConfig, UpdrawChatBoxChip, UpdrawChatSession, UpdrawDebugInfo, UpdrawDialogCloseReason, UpdrawFontMap, UpdrawGroup, UpdrawLineToolConfig, UpdrawLocale, UpdrawLoginConfig, UpdrawLoginProvider, UpdrawNotification, UpdrawObjectConfig, UpdrawObjectElementClickEvent, UpdrawObjectElementHighlight, UpdrawObjectElementHoverEvent, UpdrawObjectElementInfo, UpdrawObjectElementPickEvent, UpdrawObjectElementPickingOptions, UpdrawObjectExportFormat, UpdrawObjectTitlebarActionEvent, UpdrawObjectTitlebarConfig, UpdrawRemoteAgentPresence, UpdrawSettingsConfig, UpdrawShapeToolConfig, UpdrawShortcut, UpdrawSvgIconMap, UpdrawSyncConfig, UpdrawTermKey, UpdrawTermVars, UpdrawTextToolConfig, UpdrawTheme, UpdrawTitlebarMenuItem, UpdrawToolbarItem, UpdrawUndoState, UpdrawViewportState, UpdrawWorkspace } from "@updraw/core";
+import { BrushStyleOption } from "./components/updraw-brush-style/updraw-brush-style";
+import { UpdrawChatBoxMode } from "./components/updraw-chat-box/updraw-chat-box";
+import { DropdownOption } from "./components/updraw-dropdown/updraw-dropdown";
+import { UpdrawChatBoxMode as UpdrawChatBoxMode1 } from "./components/updraw-chat-box/updraw-chat-box";
 import { Element } from "@stencil/core";
-import { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
-import { LineEndingType } from "./components/kritzel-line-endings/kritzel-line-endings";
-import { KritzelPillTab } from "./components/kritzel-pill-tabs/kritzel-pill-tabs";
-import { ShapeFillType } from "./components/kritzel-shape-fill/kritzel-shape-fill";
-export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgent, KritzelAgentPresence, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelChatBoxChip, KritzelChatSession, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelGroup, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelRemoteAgentPresence, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelTitlebarMenuItem, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/core";
-export { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
-export { KritzelChatBoxMode } from "./components/kritzel-chat-box/kritzel-chat-box";
-export { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
-export { KritzelChatBoxMode as KritzelChatBoxMode1 } from "./components/kritzel-chat-box/kritzel-chat-box";
+import { FontOption } from "./components/updraw-font-family/updraw-font-family";
+import { LineEndingType } from "./components/updraw-line-endings/updraw-line-endings";
+import { UpdrawPillTab } from "./components/updraw-pill-tabs/updraw-pill-tabs";
+import { ShapeFillType } from "./components/updraw-shape-fill/updraw-shape-fill";
+export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IUpdrawDialogCloseEvent, IUpdrawIsPublicChangeEvent, IUpdrawMasterDetailItem, IUpdrawMasterDetailSelectEvent, IUpdrawMenuItem, IUpdrawMenuItemSelectEvent, IUpdrawMenuItemToggleChildMenuEvent, IUpdrawUser, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues, UpdrawAgent, UpdrawAgentPresence, UpdrawAgentsChangeEvent, UpdrawAlignment, UpdrawAssetStorageConfig, UpdrawBaseObject, UpdrawBaseTool, UpdrawBrushToolConfig, UpdrawChatBoxChip, UpdrawChatSession, UpdrawDebugInfo, UpdrawDialogCloseReason, UpdrawFontMap, UpdrawGroup, UpdrawLineToolConfig, UpdrawLocale, UpdrawLoginConfig, UpdrawLoginProvider, UpdrawNotification, UpdrawObjectConfig, UpdrawObjectElementClickEvent, UpdrawObjectElementHighlight, UpdrawObjectElementHoverEvent, UpdrawObjectElementInfo, UpdrawObjectElementPickEvent, UpdrawObjectElementPickingOptions, UpdrawObjectExportFormat, UpdrawObjectTitlebarActionEvent, UpdrawObjectTitlebarConfig, UpdrawRemoteAgentPresence, UpdrawSettingsConfig, UpdrawShapeToolConfig, UpdrawShortcut, UpdrawSvgIconMap, UpdrawSyncConfig, UpdrawTermKey, UpdrawTermVars, UpdrawTextToolConfig, UpdrawTheme, UpdrawTitlebarMenuItem, UpdrawToolbarItem, UpdrawUndoState, UpdrawViewportState, UpdrawWorkspace } from "@updraw/core";
+export { BrushStyleOption } from "./components/updraw-brush-style/updraw-brush-style";
+export { UpdrawChatBoxMode } from "./components/updraw-chat-box/updraw-chat-box";
+export { DropdownOption } from "./components/updraw-dropdown/updraw-dropdown";
+export { UpdrawChatBoxMode as UpdrawChatBoxMode1 } from "./components/updraw-chat-box/updraw-chat-box";
 export { Element } from "@stencil/core";
-export { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
-export { LineEndingType } from "./components/kritzel-line-endings/kritzel-line-endings";
-export { KritzelPillTab } from "./components/kritzel-pill-tabs/kritzel-pill-tabs";
-export { ShapeFillType } from "./components/kritzel-shape-fill/kritzel-shape-fill";
+export { FontOption } from "./components/updraw-font-family/updraw-font-family";
+export { LineEndingType } from "./components/updraw-line-endings/updraw-line-endings";
+export { UpdrawPillTab } from "./components/updraw-pill-tabs/updraw-pill-tabs";
+export { ShapeFillType } from "./components/updraw-shape-fill/updraw-shape-fill";
 export namespace Components {
-    interface KritzelActiveUsers {
+    interface UpdrawActiveUsers {
         /**
           * Agents to display after the users: local agents and agents of collaborators. Shown with a bot badge, a ring while they work and their status in the tooltip.
           * @default []
          */
-        "agents": (KritzelAgentPresence | KritzelRemoteAgentPresence)[];
+        "agents": (UpdrawAgentPresence | UpdrawRemoteAgentPresence)[];
         /**
           * Avatar size in pixels
           * @default 40
@@ -51,9 +51,9 @@ export namespace Components {
           * Array of active users to display
           * @default []
          */
-        "users": IKritzelUser[];
+        "users": IUpdrawUser[];
     }
-    interface KritzelAvatar {
+    interface UpdrawAvatar {
         /**
           * Background color for initials fallback
          */
@@ -70,9 +70,9 @@ export namespace Components {
         /**
           * Full user object. If provided, individual props are ignored.
          */
-        "user"?: IKritzelUser;
+        "user"?: IUpdrawUser;
     }
-    interface KritzelBackToContent {
+    interface UpdrawBackToContent {
         /**
           * The text to display on the button
           * @default 'Back to content'
@@ -84,7 +84,7 @@ export namespace Components {
          */
         "visible": boolean;
     }
-    interface KritzelBrushStyle {
+    interface UpdrawBrushStyle {
         /**
           * @default [     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]
          */
@@ -94,7 +94,7 @@ export namespace Components {
          */
         "type": 'pen' | 'highlighter';
     }
-    interface KritzelButton {
+    interface UpdrawButton {
         /**
           * Whether the button is disabled
           * @default false
@@ -111,12 +111,12 @@ export namespace Components {
          */
         "variant": 'primary' | 'secondary' | 'text';
     }
-    interface KritzelChatBox {
+    interface UpdrawChatBox {
         /**
           * Chips shown above the box, e.g. the object or element the next prompt refers to. The first three share one row as wide as the box; the rest are summarized as "+N more". The box never changes this array: pass a new array to add, change or remove chips. Each chip's remove button emits `chatChipRemove`.
           * @default []
          */
-        "chips": KritzelChatBoxChip[];
+        "chips": UpdrawChatBoxChip[];
         /**
           * Whether the chat box is disabled.
           * @default false
@@ -131,7 +131,7 @@ export namespace Components {
           * Display mode. `collapsed` shows a single row and switches to `expanded` automatically while focused once the text no longer fits on one line, collapsing again when focus is lost.
           * @default 'collapsed'
          */
-        "mode": KritzelChatBoxMode;
+        "mode": UpdrawChatBoxMode;
         /**
           * Placeholder text shown when the chat box is empty. Falls back to the localized term.
          */
@@ -140,14 +140,14 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<KritzelTermKey, string>>;
+        "terms": Partial<Record<UpdrawTermKey, string>>;
         /**
           * Current text value of the chat box.
           * @default ''
          */
         "value": string;
     }
-    interface KritzelColor {
+    interface UpdrawColor {
         /**
           * @default 24
          */
@@ -155,7 +155,7 @@ export namespace Components {
         "theme": ThemeName;
         "value": string | ThemeAwareColor;
     }
-    interface KritzelColorPalette {
+    interface UpdrawColorPalette {
         /**
           * @default []
          */
@@ -178,11 +178,11 @@ export namespace Components {
         "selectedColor": ThemeAwareColor | null;
         "theme": ThemeName;
     }
-    interface KritzelContextMenu {
+    interface UpdrawContextMenu {
         "items": ContextMenuItem[];
-        "objects": KritzelBaseObject[];
+        "objects": UpdrawBaseObject[];
     }
-    interface KritzelCurrentUser {
+    interface UpdrawCurrentUser {
         /**
           * Avatar size in pixels
           * @default 40
@@ -192,23 +192,23 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<KritzelTermKey, string>>;
+        "terms": Partial<Record<UpdrawTermKey, string>>;
         /**
           * The current user to display
          */
-        "user"?: IKritzelUser;
+        "user"?: IUpdrawUser;
     }
-    interface KritzelCurrentUserDialog {
+    interface UpdrawCurrentUserDialog {
         "close": () => Promise<void>;
         "open": () => Promise<void>;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<KritzelTermKey, string>>;
-        "user"?: IKritzelUser;
+        "terms": Partial<Record<UpdrawTermKey, string>>;
+        "user"?: IUpdrawUser;
     }
-    interface KritzelDialog {
+    interface UpdrawDialog {
         /**
           * Whether to auto-focus the first focusable element when opened
           * @default true
@@ -219,7 +219,7 @@ export namespace Components {
           * @default true
          */
         "closable": boolean;
-        "close": (reason?: KritzelDialogCloseReason) => Promise<void>;
+        "close": (reason?: UpdrawDialogCloseReason) => Promise<void>;
         /**
           * Whether clicking the backdrop closes the dialog
           * @default true
@@ -262,7 +262,7 @@ export namespace Components {
          */
         "trapFocus": boolean;
     }
-    interface KritzelDropdown {
+    interface UpdrawDropdown {
         /**
           * Force the dropdown to open in a specific direction instead of auto-detecting
          */
@@ -278,47 +278,47 @@ export namespace Components {
         "value": string;
         "width"?: string;
     }
-    interface KritzelEditor {
-        "activeUsers"?: IKritzelUser[];
+    interface UpdrawEditor {
+        "activeUsers"?: IUpdrawUser[];
         /**
           * Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID.
          */
         "activeWorkspaceId"?: string;
         /**
           * Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to one editor at a time; an agent of an editor that was removed from the page moves here. Call it after the editor emitted `isReady`.
-          * @param agent - A `new KritzelAgent({ name })`.
+          * @param agent - A `new UpdrawAgent({ name })`.
           * @returns The same agent.
          */
-        "addAgent": (agent: KritzelAgent) => Promise<KritzelAgent>;
-        "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
-        "addObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
-        "alignObjects": (alignment: KritzelAlignment) => Promise<void>;
+        "addAgent": (agent: UpdrawAgent) => Promise<UpdrawAgent>;
+        "addObject": <T extends UpdrawBaseObject>(object: T) => Promise<T | null>;
+        "addObjects": <T extends UpdrawBaseObject>(objects: T[]) => Promise<T[]>;
+        "alignObjects": (alignment: UpdrawAlignment) => Promise<void>;
         /**
           * @default DEFAULT_ASSET_STORAGE_CONFIG
          */
-        "assetStorageConfig"?: KritzelAssetStorageConfig;
+        "assetStorageConfig"?: UpdrawAssetStorageConfig;
         "backToContent": () => Promise<boolean>;
         "beginSceneBootstrap": () => Promise<void>;
-        "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
-        "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
-        "canExportSelectedObjectAs": (format: KritzelObjectExportFormat) => Promise<boolean>;
+        "bringForward": (object?: UpdrawBaseObject<any>) => Promise<void>;
+        "bringToFront": (object?: UpdrawBaseObject<any>) => Promise<void>;
+        "canExportSelectedObjectAs": (format: UpdrawObjectExportFormat) => Promise<boolean>;
         "centerAllObjects": (animate?: boolean) => Promise<boolean>;
-        "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
-        "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
+        "centerObjectInViewport": (object: UpdrawBaseObject) => Promise<UpdrawBaseObject<HTMLElement | SVGElement>>;
+        "centerObjects": (objects: UpdrawBaseObject[], animate?: boolean) => Promise<boolean>;
         /**
           * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Up to three share one row as wide as the box; the rest are summarized as "+N more". Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
           * @default []
          */
-        "chatBoxChips": KritzelChatBoxChip[];
+        "chatBoxChips": UpdrawChatBoxChip[];
         /**
           * Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row.
           * @default "collapsed"
          */
-        "chatBoxMode": KritzelChatBoxMode1;
+        "chatBoxMode": UpdrawChatBoxMode1;
         /**
           * A chat session the chat box sends its prompts to, with `chatBoxChips` as what they refer to. While it runs, the chat box shows its progress and the stop button stops it. Call `preventDefault()` on `chatSubmit` to send a prompt yourself.
          */
-        "chatSession"?: KritzelChatSession | null;
+        "chatSession"?: UpdrawChatSession | null;
         /**
           * Removes element highlights.
           * @param objectId - The object whose highlights are removed. Removes the highlights of all objects when omitted.
@@ -334,7 +334,7 @@ export namespace Components {
         "closeUserDialog": () => Promise<void>;
         "closeWorkspaceManagerMenu": () => Promise<void>;
         "copy": () => Promise<void>;
-        "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
+        "createWorkspace": (workspace: UpdrawWorkspace) => Promise<UpdrawWorkspace | null>;
         /**
           * The element to use as the target for the cursor. Defaults to the editor container if not set.
          */
@@ -343,18 +343,18 @@ export namespace Components {
           * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts.
           * @default {}
          */
-        "customFonts": KritzelFontMap;
+        "customFonts": UpdrawFontMap;
         /**
           * @default {}
          */
-        "customSvgIcons": KritzelSvgIconMap;
+        "customSvgIcons": UpdrawSvgIconMap;
         "cut": () => Promise<void>;
         /**
           * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,     showAssetResolverInfo: false,   }
          */
-        "debugInfo": KritzelDebugInfo;
+        "debugInfo": UpdrawDebugInfo;
         "delete": () => Promise<void>;
-        "deleteWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        "deleteWorkspace": (workspace: UpdrawWorkspace) => Promise<void>;
         "disable": () => Promise<void>;
         "downloadAsJson": (filename?: string) => Promise<void>;
         /**
@@ -364,7 +364,7 @@ export namespace Components {
         "enable": () => Promise<void>;
         "endSceneBootstrap": () => Promise<void>;
         "exportAsJson": () => Promise<string>;
-        "exportSelectedObject": (format: KritzelObjectExportFormat) => Promise<void>;
+        "exportSelectedObject": (format: UpdrawObjectExportFormat) => Promise<void>;
         "exportViewportAsPng": () => Promise<void>;
         "exportViewportAsSvg": () => Promise<void>;
         /**
@@ -372,51 +372,51 @@ export namespace Components {
           * @default "en"
          */
         "fallbackLocale": LocaleCode;
-        "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean) => Promise<T[]>;
-        "getActiveWorkspace": () => Promise<KritzelWorkspace>;
+        "findObjects": <T extends UpdrawBaseObject>(predicate: (obj: UpdrawBaseObject<Element>) => boolean) => Promise<T[]>;
+        "getActiveWorkspace": () => Promise<UpdrawWorkspace>;
         /**
           * Returns an added agent by its ID.
           * @param id - The agent's ID.
          */
-        "getAgent": (id: string) => Promise<KritzelAgent | null>;
+        "getAgent": (id: string) => Promise<UpdrawAgent | null>;
         /**
           * Returns the added agents.
          */
-        "getAgents": () => Promise<KritzelAgent[]>;
-        "getAllObjects": <T extends KritzelBaseObject>() => Promise<T[]>;
+        "getAgents": () => Promise<UpdrawAgent[]>;
+        "getAllObjects": <T extends UpdrawBaseObject>() => Promise<T[]>;
         /**
           * Gets the list of available locale codes (built-in and registered).
          */
         "getAvailableLocales": () => Promise<LocaleCode[]>;
-        "getDisplayableShortcuts": () => Promise<Omit<KritzelShortcut, "action" | "condition">[]>;
+        "getDisplayableShortcuts": () => Promise<Omit<UpdrawShortcut, "action" | "condition">[]>;
         /**
           * Gets the currently active locale code.
          */
         "getLocale": () => Promise<LocaleCode>;
-        "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
-        "getObjectsInViewport": () => Promise<KritzelBaseObject[]>;
+        "getObjectById": <T extends UpdrawBaseObject>(id: string) => Promise<T | null>;
+        "getObjectsInViewport": () => Promise<UpdrawBaseObject[]>;
         "getObjectsTotalCount": () => Promise<number>;
         /**
           * Returns the agents of collaborators, as shared through presence.
          */
-        "getRemoteAgents": () => Promise<KritzelRemoteAgentPresence[]>;
+        "getRemoteAgents": () => Promise<UpdrawRemoteAgentPresence[]>;
         "getScreenshot": (format?: "png" | "svg") => Promise<string | null>;
-        "getSelectedObjectSupportedExportFormats": () => Promise<KritzelObjectExportFormat[]>;
-        "getSelectedObjects": () => Promise<KritzelBaseObject[]>;
-        "getViewport": () => Promise<KritzelViewportState>;
-        "getWorkspaces": () => Promise<KritzelWorkspace[]>;
+        "getSelectedObjectSupportedExportFormats": () => Promise<UpdrawObjectExportFormat[]>;
+        "getSelectedObjects": () => Promise<UpdrawBaseObject[]>;
+        "getViewport": () => Promise<UpdrawViewportState>;
+        "getWorkspaces": () => Promise<UpdrawWorkspace[]>;
         /**
           * @default [     {       label: "menu.paste",       icon: "paste",       action: (menu) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.selectAll",       icon: "selectAll",       action: () => this.selectAllObjectsInViewport(),     },   ]
          */
         "globalContextMenuItems": ContextMenuItem[];
-        "group": (objects: KritzelBaseObject<any>[]) => Promise<KritzelGroup | null>;
+        "group": (objects: UpdrawBaseObject<any>[]) => Promise<UpdrawGroup | null>;
         "hideContextMenu": () => Promise<void>;
         /**
           * Highlights elements inside an object's content, replacing its previous highlights. Highlights are local: they are neither saved nor shown to collaborators.
           * @param objectId - The object ID.
           * @param highlights - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted.
          */
-        "highlightObjectElements": (objectId: string, highlights: KritzelObjectElementHighlight[]) => Promise<void>;
+        "highlightObjectElements": (objectId: string, highlights: UpdrawObjectElementHighlight[]) => Promise<void>;
         "importFromFile": () => Promise<void>;
         "importFromJson": (json: string) => Promise<void>;
         /**
@@ -450,7 +450,7 @@ export namespace Components {
          */
         "isUtilityPanelVisible": boolean;
         /**
-          * Whether the "Powered by Kritzel" watermark is shown. Keeping it visible helps support the project.
+          * Whether the "Powered by Updraw" watermark is shown. Keeping it visible helps support the project.
           * @default true
          */
         "isWatermarkVisible": boolean;
@@ -476,7 +476,7 @@ export namespace Components {
         /**
           * An array of available locale definitions (with optional partial term overrides).
          */
-        "locales"?: KritzelLocale[];
+        "locales"?: UpdrawLocale[];
         /**
           * @default true
          */
@@ -484,23 +484,23 @@ export namespace Components {
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
          */
-        "loginConfig"?: KritzelLoginConfig;
+        "loginConfig"?: UpdrawLoginConfig;
         /**
           * @default [     {       id: "share",       label: "menu.share",       icon: "share",       isVisible: async () => hasRemoteSyncProvider(this.syncConfig),       action: () => {         if (!this.isLoggedIn && this.loginConfig) {           this.openLoginDialog();           return;         }         this.shareDialogRef.open();       },     },     {       id: "export",       label: "menu.export",       icon: "upload",       action: async () => {         const preview = await this.engineRef.getScreenshot("png");         this.exportRef.open(preview ?? undefined);       },     },     {       id: "import",       label: "menu.import",       icon: "download",       action: () => this.engineRef.importFromFile(),     },     {       id: "settings",       label: "menu.settings",       icon: "settings",       action: () => this.settingsRef.open(),     },   ]
          */
-        "moreMenuItems"?: IKritzelMenuItem[];
+        "moreMenuItems"?: IUpdrawMenuItem[];
         /**
           * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
          */
-        "objectConfig"?: KritzelObjectConfig;
+        "objectConfig"?: UpdrawObjectConfig;
         /**
-          * @default [     {       label: "menu.copy",       icon: "copy",       group: "clipboard",       action: () => this.engineRef.copy(),     },     {       label: "menu.cut",       icon: "cut",       group: "clipboard",       action: () => this.engineRef.cut(),     },     {       label: "menu.paste",       icon: "paste",       group: "clipboard",       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.export",       icon: "upload",       group: "clipboard",       isVisible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: "menu.order",       icon: "ordering",       group: "other",       children: [         {           label: "menu.bringToFront",           icon: "bringToFront",           action: () => this.engineRef.bringToFront(),         },         {           label: "menu.sendToBack",           icon: "sendToBack",           action: () => this.engineRef.sendToBack(),         },         {           label: "menu.moveUp",           icon: "arrowUpFromDot",           action: () => this.engineRef.bringForward(),         },         {           label: "menu.moveDown",           icon: "arrowDownFromDot",           action: () => this.engineRef.sendBackward(),         },       ],     },     {       label: "menu.align",       icon: "align",       group: "other",       children: [         {           label: "menu.alignLeft",           icon: "alignStartVertical",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.StartHorizontal),         },         {           label: "menu.alignCenterHorizontal",           icon: "alignCenterHorizontal",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal),         },         {           label: "menu.alignRight",           icon: "alignEndVertical",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.EndHorizontal),         },         {           label: "menu.alignTop",           icon: "alignStartHorizontal",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.StartVertical),         },         {           label: "menu.alignCenterVertical",           icon: "alignCenterVertical",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.CenterVertical),         },         {           label: "menu.alignBottom",           icon: "alignEndHorizontal",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.EndVertical),         },       ],     },     {       label: "menu.group",       icon: "group",       group: "other",       children: [         {           label: "menu.group",           icon: "group",           action: (_, objects) => this.engineRef.group(objects),         },         {           label: "menu.ungroup",           icon: "ungroup",           action: (_, objects) => {             const groups = objects.filter(               (object): object is KritzelGroup =>                 object.__class__ === "KritzelGroup",             );             this.engineRef.ungroup(groups);           },         },       ],     },     {       label: "menu.delete",       icon: "delete",       group: "edit",       action: () => this.engineRef.delete(),     },   ]
+          * @default [     {       label: "menu.copy",       icon: "copy",       group: "clipboard",       action: () => this.engineRef.copy(),     },     {       label: "menu.cut",       icon: "cut",       group: "clipboard",       action: () => this.engineRef.cut(),     },     {       label: "menu.paste",       icon: "paste",       group: "clipboard",       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.export",       icon: "upload",       group: "clipboard",       isVisible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: "menu.order",       icon: "ordering",       group: "other",       children: [         {           label: "menu.bringToFront",           icon: "bringToFront",           action: () => this.engineRef.bringToFront(),         },         {           label: "menu.sendToBack",           icon: "sendToBack",           action: () => this.engineRef.sendToBack(),         },         {           label: "menu.moveUp",           icon: "arrowUpFromDot",           action: () => this.engineRef.bringForward(),         },         {           label: "menu.moveDown",           icon: "arrowDownFromDot",           action: () => this.engineRef.sendBackward(),         },       ],     },     {       label: "menu.align",       icon: "align",       group: "other",       children: [         {           label: "menu.alignLeft",           icon: "alignStartVertical",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.StartHorizontal),         },         {           label: "menu.alignCenterHorizontal",           icon: "alignCenterHorizontal",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.CenterHorizontal),         },         {           label: "menu.alignRight",           icon: "alignEndVertical",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.EndHorizontal),         },         {           label: "menu.alignTop",           icon: "alignStartHorizontal",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.StartVertical),         },         {           label: "menu.alignCenterVertical",           icon: "alignCenterVertical",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.CenterVertical),         },         {           label: "menu.alignBottom",           icon: "alignEndHorizontal",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.EndVertical),         },       ],     },     {       label: "menu.group",       icon: "group",       group: "other",       children: [         {           label: "menu.group",           icon: "group",           action: (_, objects) => this.engineRef.group(objects),         },         {           label: "menu.ungroup",           icon: "ungroup",           action: (_, objects) => {             const groups = objects.filter(               (object): object is UpdrawGroup =>                 object.__class__ === "UpdrawGroup",             );             this.engineRef.ungroup(groups);           },         },       ],     },     {       label: "menu.delete",       icon: "delete",       group: "edit",       action: () => this.engineRef.delete(),     },   ]
          */
         "objectContextMenuItems": ContextMenuItem[];
         /**
           * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
          */
-        "objectTitlebar"?: KritzelObjectTitlebarConfig;
+        "objectTitlebar"?: UpdrawObjectTitlebarConfig;
         "openContextMenu": (options: { x: number; y: number; objectId?: string; }) => Promise<void>;
         "openExportDialog": () => Promise<void>;
         "openImportDialog": () => Promise<void>;
@@ -511,38 +511,38 @@ export namespace Components {
         "openUserDialog": () => Promise<void>;
         "openWorkspaceManagerMenu": () => Promise<void>;
         "panTo": (x: number, y: number) => Promise<void>;
-        "panToObject": (object: KritzelBaseObject) => Promise<void>;
+        "panToObject": (object: UpdrawBaseObject) => Promise<void>;
         "paste": (x: number, y: number) => Promise<void>;
         /**
           * Describes the elements inside an object's content that match a CSS selector, in document order. The object must be mounted, which it is while it is in or near the viewport.
           * @param objectId - The object ID.
-          * @param selector - A CSS selector, e.g. `'button'` or `'[data-kritzel-id]'`.
+          * @param selector - A CSS selector, e.g. `'button'` or `'[data-updraw-id]'`.
           * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
           * @returns The matching elements, each with a `selector` that can be used to highlight it or point an agent's cursor at it with `agent.moveTo({ objectId, selector })`.
          */
-        "queryObjectElements": (objectId: string, selector: string, limit?: number) => Promise<KritzelObjectElementInfo[]>;
+        "queryObjectElements": (objectId: string, selector: string, limit?: number) => Promise<UpdrawObjectElementInfo[]>;
         "redo": () => Promise<void>;
         /**
           * Registers custom fonts for the editor runtime.
           * @param fonts - Mapping from font keys to family names or font definitions.
           * @remarks This no longer controls the text-tool config tooltip font options. Configure tooltip fonts via toolbarItems[].config.availableFonts.
          */
-        "registerFonts": (fonts: KritzelFontMap) => Promise<void>;
+        "registerFonts": (fonts: UpdrawFontMap) => Promise<void>;
         /**
           * Registers additional locale definitions (with optional partial term overrides).
           * @param locales - The locale definitions to register.
          */
-        "registerLocales": (locales: KritzelLocale[]) => Promise<void>;
-        "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool | null>;
+        "registerLocales": (locales: UpdrawLocale[]) => Promise<void>;
+        "registerTool": (toolName: string, toolClass: any, toolConfig?: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig) => Promise<UpdrawBaseTool | null>;
         "reinitSync": () => Promise<void>;
         /**
           * Removes an agent: its running action is rolled back, its queued actions resolve with `'agent-removed'`, and its cursor and history are dropped. The agent can be added again.
           * @param agent - The agent or its ID.
           * @returns `false` if the agent was not added.
          */
-        "removeAgent": (agent: KritzelAgent | string) => Promise<boolean>;
-        "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
-        "removeObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
+        "removeAgent": (agent: UpdrawAgent | string) => Promise<boolean>;
+        "removeObject": <T extends UpdrawBaseObject>(object: T) => Promise<T | null>;
+        "removeObjects": <T extends UpdrawBaseObject>(objects: T[]) => Promise<T[]>;
         /**
           * @default 1000
          */
@@ -553,9 +553,9 @@ export namespace Components {
         "scaleMin": number;
         "screenToWorld": (x: number, y: number) => Promise<{ x: number; y: number; }>;
         "selectAllObjectsInViewport": () => Promise<void>;
-        "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
-        "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
-        "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "selectObjects": (objects: UpdrawBaseObject[]) => Promise<void>;
+        "sendBackward": (object?: UpdrawBaseObject<any>) => Promise<void>;
+        "sendToBack": (object?: UpdrawBaseObject<any>) => Promise<void>;
         "setActiveTool": (toolName: string) => Promise<void>;
         "setActiveWorkspace": (id: string) => Promise<void>;
         /**
@@ -570,38 +570,38 @@ export namespace Components {
           * @param enabled - Whether the object picks elements.
           * @param options - `selector` limits picking to matching elements, `color` sets the highlight color.
          */
-        "setObjectElementPicking": (objectId: string, enabled: boolean, options?: KritzelObjectElementPickingOptions) => Promise<void>;
+        "setObjectElementPicking": (objectId: string, enabled: boolean, options?: UpdrawObjectElementPickingOptions) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
           * @default DEFAULT_SYNC_CONFIG
          */
-        "syncConfig"?: KritzelSyncConfig;
+        "syncConfig"?: UpdrawSyncConfig;
         /**
           * Resolves a term key to its translated string for the active locale.
           * @param key - The term key to resolve.
           * @param vars - Optional values for `{placeholder}` interpolation.
          */
-        "t": (key: KritzelTermKey, vars?: KritzelTermVars) => Promise<string>;
+        "t": (key: UpdrawTermKey, vars?: UpdrawTermVars) => Promise<string>;
         /**
           * @default "light"
          */
         "theme": ThemeName;
-        "themes"?: KritzelTheme[];
+        "themes"?: UpdrawTheme[];
         /**
-          * @default [     {       name: "selection",       type: "tool",       isDefault: true,       tool: KritzelSelectionTool,       icon: "cursor",     },     {       name: "brush",       type: "tool",       tool: KritzelBrushTool,       icon: "pen",       config: DEFAULT_BRUSH_CONFIG,     },     {       name: "eraser",       type: "tool",       tool: KritzelEraserTool,       icon: "eraser",     },     {       name: "line",       type: "tool",       tool: KritzelLineTool,       icon: "arrow",       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: "shape",       type: "tool",       tool: KritzelShapeTool,       icon: "shapeRectangle",       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         {           id: "rectangle",           icon: "shapeRectangle",           label: "Rectangle",           value: ShapeType.Rectangle,           toolProperty: "shapeType",         },         {           id: "ellipse",           icon: "shapeEllipse",           label: "Ellipse",           value: ShapeType.Ellipse,           toolProperty: "shapeType",         },         {           id: "triangle",           icon: "shapeTriangle",           label: "Triangle",           value: ShapeType.Triangle,           toolProperty: "shapeType",         },       ],     },     {       name: "text",       type: "tool",       tool: KritzelTextTool,       icon: "type",       config: DEFAULT_TEXT_CONFIG,     },     {       name: "image",       type: "tool",       tool: KritzelImageTool,       icon: "image",     },     {       name: "config",       type: "config",     },   ]
+          * @default [     {       name: "selection",       type: "tool",       isDefault: true,       tool: UpdrawSelectionTool,       icon: "cursor",     },     {       name: "brush",       type: "tool",       tool: UpdrawBrushTool,       icon: "pen",       config: DEFAULT_BRUSH_CONFIG,     },     {       name: "eraser",       type: "tool",       tool: UpdrawEraserTool,       icon: "eraser",     },     {       name: "line",       type: "tool",       tool: UpdrawLineTool,       icon: "arrow",       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: "shape",       type: "tool",       tool: UpdrawShapeTool,       icon: "shapeRectangle",       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         {           id: "rectangle",           icon: "shapeRectangle",           label: "Rectangle",           value: ShapeType.Rectangle,           toolProperty: "shapeType",         },         {           id: "ellipse",           icon: "shapeEllipse",           label: "Ellipse",           value: ShapeType.Ellipse,           toolProperty: "shapeType",         },         {           id: "triangle",           icon: "shapeTriangle",           label: "Triangle",           value: ShapeType.Triangle,           toolProperty: "shapeType",         },       ],     },     {       name: "text",       type: "tool",       tool: UpdrawTextTool,       icon: "type",       config: DEFAULT_TEXT_CONFIG,     },     {       name: "image",       type: "tool",       tool: UpdrawImageTool,       icon: "image",     },     {       name: "config",       type: "config",     },   ]
          */
-        "toolbarItems": KritzelToolbarItem[];
+        "toolbarItems": UpdrawToolbarItem[];
         /**
           * Triggers a UI notification programmatically.
           * @param notification - Notification payload. `id` and `timestamp` are optional.
          */
-        "triggerNotification": (notification: Omit<KritzelNotification, "id"> & Partial<Pick<KritzelNotification, "id" | "timestamp">>) => Promise<void>;
+        "triggerNotification": (notification: Omit<UpdrawNotification, "id"> & Partial<Pick<UpdrawNotification, "id" | "timestamp">>) => Promise<void>;
         "triggerSelectionChange": () => Promise<void>;
         "undo": () => Promise<void>;
-        "ungroup": (groups: KritzelGroup[]) => Promise<KritzelBaseObject<any>[]>;
-        "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
-        "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
-        "user"?: IKritzelUser;
+        "ungroup": (groups: UpdrawGroup[]) => Promise<UpdrawBaseObject<any>[]>;
+        "updateObject": <T extends UpdrawBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
+        "updateWorkspace": (workspace: UpdrawWorkspace) => Promise<void>;
+        "user"?: IUpdrawUser;
         /**
           * @default Infinity
          */
@@ -621,27 +621,27 @@ export namespace Components {
         /**
           * Authoritative workspace catalog for this editor instance. When provided, provider-only workspaces are hidden but not deleted.
          */
-        "workspaces"?: KritzelWorkspace[];
+        "workspaces"?: UpdrawWorkspace[];
         "worldToScreen": (x: number, y: number) => Promise<{ x: number; y: number; }>;
         "zoomIn": (factor?: number, duration?: number) => Promise<void>;
         "zoomOut": (factor?: number, duration?: number) => Promise<void>;
         "zoomTo": (scale: number, worldX?: number, worldY?: number) => Promise<void>;
     }
-    interface KritzelExport {
+    interface UpdrawExport {
         "close": () => Promise<void>;
         "open": (previewUrl?: string) => Promise<void>;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<KritzelTermKey, string>>;
+        "terms": Partial<Record<UpdrawTermKey, string>>;
         /**
           * The name of the current workspace, used as default filename
           * @default 'workspace'
          */
         "workspaceName": string;
     }
-    interface KritzelFont {
+    interface UpdrawFont {
         /**
           * @default '#000000'
          */
@@ -655,14 +655,14 @@ export namespace Components {
          */
         "size": number;
     }
-    interface KritzelFontFamily {
+    interface UpdrawFontFamily {
         /**
           * @default []
          */
         "fontOptions": FontOption[];
         "selectedFontFamily": string;
     }
-    interface KritzelFontSize {
+    interface UpdrawFontSize {
         /**
           * @default 'Arial'
          */
@@ -676,7 +676,7 @@ export namespace Components {
          */
         "sizes": number[];
     }
-    interface KritzelInput {
+    interface UpdrawInput {
         /**
           * Whether the input is disabled
           * @default false
@@ -708,7 +708,7 @@ export namespace Components {
          */
         "value": string;
     }
-    interface KritzelLineEndings {
+    interface UpdrawLineEndings {
         /**
           * Available ending styles
           * @default ['none', 'triangle']
@@ -722,9 +722,9 @@ export namespace Components {
     /**
      * Login dialog component for displaying authentication provider buttons.
      * This is a presentational component that emits events for all actions.
-     * The parent component (kritzel-editor) handles the actual authentication flow.
+     * The parent component (updraw-editor) handles the actual authentication flow.
      */
-    interface KritzelLoginDialog {
+    interface UpdrawLoginDialog {
         /**
           * Closes the login dialog
          */
@@ -742,7 +742,7 @@ export namespace Components {
           * Array of authentication provider buttons to render
           * @default []
          */
-        "providers": KritzelLoginProvider[];
+        "providers": UpdrawLoginProvider[];
         /**
           * Sets or clears the loading state on a provider button
          */
@@ -752,34 +752,34 @@ export namespace Components {
          */
         "subtitle"?: string;
     }
-    interface KritzelMasterDetail {
+    interface UpdrawMasterDetail {
         /**
           * Array of menu items to display in the master (left) panel
           * @default []
          */
-        "items": IKritzelMasterDetailItem[];
+        "items": IUpdrawMasterDetailItem[];
         /**
           * ID of the currently selected item
          */
         "selectedItemId": string;
     }
-    interface KritzelMenu {
-        "items": IKritzelMenuItem[];
+    interface UpdrawMenu {
+        "items": IUpdrawMenuItem[];
         /**
           * @default null
          */
-        "parent": IKritzelMenuItem;
+        "parent": IUpdrawMenuItem;
         "setFocus": () => Promise<void>;
         "setScrollTop": (scrollTop: number) => Promise<void>;
     }
-    interface KritzelMenuItem {
-        "item": IKritzelMenuItem;
+    interface UpdrawMenuItem {
+        "item": IUpdrawMenuItem;
         /**
           * @default null
          */
-        "parent": IKritzelMenuItem;
+        "parent": IUpdrawMenuItem;
     }
-    interface KritzelMoreMenu {
+    interface UpdrawMoreMenu {
         "close": () => Promise<void>;
         /**
           * The icon to display on the button
@@ -795,7 +795,7 @@ export namespace Components {
           * The menu items to display in the dropdown. Items with `isVisible` set to `false` will be filtered out. Items with an `action` will have that action invoked on selection.
           * @default []
          */
-        "items": IKritzelMenuItem[];
+        "items": IUpdrawMenuItem[];
         /**
           * Offset Y for the portal positioning
           * @default 4
@@ -806,14 +806,14 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<KritzelTermKey, string>>;
+        "terms": Partial<Record<UpdrawTermKey, string>>;
         /**
           * Whether the menu button is visible
           * @default false
          */
         "visible": boolean;
     }
-    interface KritzelNotificationCard {
+    interface UpdrawNotificationCard {
         /**
           * Locale used for formatting the timestamp.
          */
@@ -821,14 +821,14 @@ export namespace Components {
         /**
           * Notification data rendered by this card.
          */
-        "notification"?: KritzelNotification;
+        "notification"?: UpdrawNotification;
         /**
           * Whether a formatted timestamp should be displayed when available.
           * @default true
          */
         "showTimestamp": boolean;
     }
-    interface KritzelNumericInput {
+    interface UpdrawNumericInput {
         /**
           * Label text displayed above the input
           * @default ''
@@ -859,7 +859,7 @@ export namespace Components {
          */
         "value"?: number;
     }
-    interface KritzelOpacitySlider {
+    interface UpdrawOpacitySlider {
         /**
           * Maximum opacity value
           * @default 1
@@ -886,18 +886,18 @@ export namespace Components {
          */
         "value": number;
     }
-    interface KritzelPillTabs {
+    interface UpdrawPillTabs {
         /**
           * Array of tab definitions to render
           * @default []
          */
-        "tabs": KritzelPillTab[];
+        "tabs": UpdrawPillTab[];
         /**
           * Currently selected tab ID
          */
         "value": string;
     }
-    interface KritzelPortal {
+    interface UpdrawPortal {
         "anchor": HTMLElement;
         /**
           * @default true
@@ -906,7 +906,7 @@ export namespace Components {
         "offsetX": number;
         "offsetY": number;
     }
-    interface KritzelSettings {
+    interface UpdrawSettings {
         /**
           * Available locales as `{ code, label }` options for the language selector.
           * @default []
@@ -922,18 +922,18 @@ export namespace Components {
         /**
           * Current settings values. Used to initialize and sync the component's internal state.
          */
-        "settings"?: Partial<KritzelSettingsConfig>;
+        "settings"?: Partial<UpdrawSettingsConfig>;
         /**
           * @default []
          */
-        "shortcuts": Omit<KritzelShortcut, 'action' | 'condition'>[];
+        "shortcuts": Omit<UpdrawShortcut, 'action' | 'condition'>[];
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<KritzelTermKey, string>>;
+        "terms": Partial<Record<UpdrawTermKey, string>>;
     }
-    interface KritzelShapeFill {
+    interface UpdrawShapeFill {
         /**
           * Current fill type
           * @default 'transparent'
@@ -943,9 +943,9 @@ export namespace Components {
     /**
      * Share dialog component for managing workspace link sharing.
      * This is a presentational component that emits events for all actions.
-     * The parent component (kritzel-editor) handles the business logic.
+     * The parent component (updraw-editor) handles the business logic.
      */
-    interface KritzelShareDialog {
+    interface UpdrawShareDialog {
         /**
           * Closes the share dialog.
          */
@@ -963,14 +963,14 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<KritzelTermKey, string>>;
+        "terms": Partial<Record<UpdrawTermKey, string>>;
         /**
           * The ID of the workspace being shared. Used to build the share URL.
           * @default undefined
          */
         "workspaceId": string | undefined;
     }
-    interface KritzelSlideToggle {
+    interface UpdrawSlideToggle {
         /**
           * Whether the toggle is checked/on
           * @default false
@@ -986,7 +986,7 @@ export namespace Components {
          */
         "label"?: string;
     }
-    interface KritzelSplitButton {
+    interface UpdrawSplitButton {
         /**
           * @default 'plus'
          */
@@ -1000,7 +1000,7 @@ export namespace Components {
         /**
           * @default []
          */
-        "items": IKritzelMenuItem[];
+        "items": IUpdrawMenuItem[];
         /**
           * @default false
          */
@@ -1011,7 +1011,7 @@ export namespace Components {
         "menuButtonDisabled": boolean;
         "open": () => Promise<void>;
     }
-    interface KritzelStrokeSize {
+    interface UpdrawStrokeSize {
         /**
           * @default null
          */
@@ -1022,17 +1022,17 @@ export namespace Components {
         "sizes": number[];
     }
     /**
-     * The menu opened from a titlebar `menu` element: a compact `kritzel-menu` styled like the
-     * context menu through the `--kritzel-titlebar-menu-*` theme variables.
+     * The menu opened from a titlebar `menu` element: a compact `updraw-menu` styled like the
+     * context menu through the `--updraw-titlebar-menu-*` theme variables.
      */
-    interface KritzelTitlebarMenu {
+    interface UpdrawTitlebarMenu {
         /**
           * Menu items of the open titlebar menu, as resolved by the engine.
           * @default []
          */
-        "items": KritzelTitlebarMenuItem[];
+        "items": UpdrawTitlebarMenuItem[];
     }
-    interface KritzelToolConfig {
+    interface UpdrawToolConfig {
         "engine": HTMLElement;
         /**
           * @default false
@@ -1042,15 +1042,15 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<KritzelTermKey, string>>;
+        "terms": Partial<Record<UpdrawTermKey, string>>;
         "theme": ThemeName;
         "tool": ConfigurableTool;
     }
-    interface KritzelToolbar {
+    interface UpdrawToolbar {
         /**
           * @default null
          */
-        "activeControl": KritzelToolbarItem | null;
+        "activeControl": UpdrawToolbarItem | null;
         "closeTooltip": () => Promise<void>;
         /**
           * @default true
@@ -1060,7 +1060,7 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<KritzelTermKey, string>>;
+        "terms": Partial<Record<UpdrawTermKey, string>>;
         /**
           * @default 'light'
          */
@@ -1068,17 +1068,17 @@ export namespace Components {
         /**
           * @default []
          */
-        "toolbarItems": KritzelToolbarItem[];
+        "toolbarItems": UpdrawToolbarItem[];
         /**
           * @default null
          */
-        "undoState": KritzelUndoState;
+        "undoState": UpdrawUndoState;
         /**
           * @default true
          */
         "visible": boolean;
     }
-    interface KritzelTooltip {
+    interface UpdrawTooltip {
         "anchorElement": HTMLElement;
         "close": () => Promise<void>;
         "focusContent": () => Promise<void>;
@@ -1094,26 +1094,26 @@ export namespace Components {
         "toggle": () => Promise<void>;
         "triggerElement": HTMLElement;
     }
-    interface KritzelUtilityPanel {
+    interface UpdrawUtilityPanel {
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<KritzelTermKey, string>>;
+        "terms": Partial<Record<UpdrawTermKey, string>>;
         /**
           * @default null
          */
-        "undoState": KritzelUndoState;
+        "undoState": UpdrawUndoState;
     }
-    interface KritzelWorkspaceManager {
-        "activeWorkspace": KritzelWorkspace;
+    interface UpdrawWorkspaceManager {
+        "activeWorkspace": UpdrawWorkspace;
         "close": () => Promise<void>;
         "open": () => Promise<void>;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<KritzelTermKey, string>>;
+        "terms": Partial<Record<UpdrawTermKey, string>>;
         /**
           * Whether the workspace manager is visible
           * @default false
@@ -1122,9 +1122,9 @@ export namespace Components {
         /**
           * @default []
          */
-        "workspaces": KritzelWorkspace[];
+        "workspaces": UpdrawWorkspace[];
     }
-    interface KritzelZoomPanel {
+    interface UpdrawZoomPanel {
         /**
           * Whether both zoom buttons are disabled.
           * @default false
@@ -1134,7 +1134,7 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<KritzelTermKey, string>>;
+        "terms": Partial<Record<UpdrawTermKey, string>>;
         /**
           * Whether the zoom panel is visible.
           * @default true
@@ -1147,956 +1147,956 @@ export namespace Components {
         "zoomPercent": number;
     }
 }
-export interface KritzelBackToContentCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawBackToContentCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelBackToContentElement;
+    target: HTMLUpdrawBackToContentElement;
 }
-export interface KritzelBrushStyleCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawBrushStyleCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelBrushStyleElement;
+    target: HTMLUpdrawBrushStyleElement;
 }
-export interface KritzelButtonCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelButtonElement;
+    target: HTMLUpdrawButtonElement;
 }
-export interface KritzelChatBoxCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawChatBoxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelChatBoxElement;
+    target: HTMLUpdrawChatBoxElement;
 }
-export interface KritzelColorPaletteCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawColorPaletteCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelColorPaletteElement;
+    target: HTMLUpdrawColorPaletteElement;
 }
-export interface KritzelContextMenuCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawContextMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelContextMenuElement;
+    target: HTMLUpdrawContextMenuElement;
 }
-export interface KritzelCurrentUserDialogCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawCurrentUserDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelCurrentUserDialogElement;
+    target: HTMLUpdrawCurrentUserDialogElement;
 }
-export interface KritzelDialogCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelDialogElement;
+    target: HTMLUpdrawDialogElement;
 }
-export interface KritzelDropdownCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelDropdownElement;
+    target: HTMLUpdrawDropdownElement;
 }
-export interface KritzelEditorCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawEditorCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelEditorElement;
+    target: HTMLUpdrawEditorElement;
 }
-export interface KritzelExportCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawExportCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelExportElement;
+    target: HTMLUpdrawExportElement;
 }
-export interface KritzelFontFamilyCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawFontFamilyCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelFontFamilyElement;
+    target: HTMLUpdrawFontFamilyElement;
 }
-export interface KritzelFontSizeCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawFontSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelFontSizeElement;
+    target: HTMLUpdrawFontSizeElement;
 }
-export interface KritzelInputCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelInputElement;
+    target: HTMLUpdrawInputElement;
 }
-export interface KritzelLineEndingsCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawLineEndingsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelLineEndingsElement;
+    target: HTMLUpdrawLineEndingsElement;
 }
-export interface KritzelLoginDialogCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawLoginDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelLoginDialogElement;
+    target: HTMLUpdrawLoginDialogElement;
 }
-export interface KritzelMasterDetailCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawMasterDetailCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelMasterDetailElement;
+    target: HTMLUpdrawMasterDetailElement;
 }
-export interface KritzelMenuCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelMenuElement;
+    target: HTMLUpdrawMenuElement;
 }
-export interface KritzelMenuItemCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawMenuItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelMenuItemElement;
+    target: HTMLUpdrawMenuItemElement;
 }
-export interface KritzelMoreMenuCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawMoreMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelMoreMenuElement;
+    target: HTMLUpdrawMoreMenuElement;
 }
-export interface KritzelNotificationCardCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawNotificationCardCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelNotificationCardElement;
+    target: HTMLUpdrawNotificationCardElement;
 }
-export interface KritzelNumericInputCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawNumericInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelNumericInputElement;
+    target: HTMLUpdrawNumericInputElement;
 }
-export interface KritzelOpacitySliderCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawOpacitySliderCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelOpacitySliderElement;
+    target: HTMLUpdrawOpacitySliderElement;
 }
-export interface KritzelPillTabsCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawPillTabsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelPillTabsElement;
+    target: HTMLUpdrawPillTabsElement;
 }
-export interface KritzelPortalCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawPortalCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelPortalElement;
+    target: HTMLUpdrawPortalElement;
 }
-export interface KritzelSettingsCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawSettingsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelSettingsElement;
+    target: HTMLUpdrawSettingsElement;
 }
-export interface KritzelShapeFillCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawShapeFillCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelShapeFillElement;
+    target: HTMLUpdrawShapeFillElement;
 }
-export interface KritzelShareDialogCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawShareDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelShareDialogElement;
+    target: HTMLUpdrawShareDialogElement;
 }
-export interface KritzelSlideToggleCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawSlideToggleCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelSlideToggleElement;
+    target: HTMLUpdrawSlideToggleElement;
 }
-export interface KritzelSplitButtonCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawSplitButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelSplitButtonElement;
+    target: HTMLUpdrawSplitButtonElement;
 }
-export interface KritzelStrokeSizeCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawStrokeSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelStrokeSizeElement;
+    target: HTMLUpdrawStrokeSizeElement;
 }
-export interface KritzelTitlebarMenuCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawTitlebarMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelTitlebarMenuElement;
+    target: HTMLUpdrawTitlebarMenuElement;
 }
-export interface KritzelToolConfigCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawToolConfigCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelToolConfigElement;
+    target: HTMLUpdrawToolConfigElement;
 }
-export interface KritzelToolbarCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawToolbarCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelToolbarElement;
+    target: HTMLUpdrawToolbarElement;
 }
-export interface KritzelTooltipCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawTooltipCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelTooltipElement;
+    target: HTMLUpdrawTooltipElement;
 }
-export interface KritzelUtilityPanelCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawUtilityPanelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelUtilityPanelElement;
+    target: HTMLUpdrawUtilityPanelElement;
 }
-export interface KritzelWorkspaceManagerCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawWorkspaceManagerCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelWorkspaceManagerElement;
+    target: HTMLUpdrawWorkspaceManagerElement;
 }
-export interface KritzelZoomPanelCustomEvent<T> extends CustomEvent<T> {
+export interface UpdrawZoomPanelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLKritzelZoomPanelElement;
+    target: HTMLUpdrawZoomPanelElement;
 }
 declare global {
-    interface HTMLKritzelActiveUsersElement extends Components.KritzelActiveUsers, HTMLStencilElement {
+    interface HTMLUpdrawActiveUsersElement extends Components.UpdrawActiveUsers, HTMLStencilElement {
     }
-    var HTMLKritzelActiveUsersElement: {
-        prototype: HTMLKritzelActiveUsersElement;
-        new (): HTMLKritzelActiveUsersElement;
+    var HTMLUpdrawActiveUsersElement: {
+        prototype: HTMLUpdrawActiveUsersElement;
+        new (): HTMLUpdrawActiveUsersElement;
     };
-    interface HTMLKritzelAvatarElement extends Components.KritzelAvatar, HTMLStencilElement {
+    interface HTMLUpdrawAvatarElement extends Components.UpdrawAvatar, HTMLStencilElement {
     }
-    var HTMLKritzelAvatarElement: {
-        prototype: HTMLKritzelAvatarElement;
-        new (): HTMLKritzelAvatarElement;
+    var HTMLUpdrawAvatarElement: {
+        prototype: HTMLUpdrawAvatarElement;
+        new (): HTMLUpdrawAvatarElement;
     };
-    interface HTMLKritzelBackToContentElementEventMap {
+    interface HTMLUpdrawBackToContentElementEventMap {
         "backToContent": void;
     }
-    interface HTMLKritzelBackToContentElement extends Components.KritzelBackToContent, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelBackToContentElementEventMap>(type: K, listener: (this: HTMLKritzelBackToContentElement, ev: KritzelBackToContentCustomEvent<HTMLKritzelBackToContentElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawBackToContentElement extends Components.UpdrawBackToContent, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawBackToContentElementEventMap>(type: K, listener: (this: HTMLUpdrawBackToContentElement, ev: UpdrawBackToContentCustomEvent<HTMLUpdrawBackToContentElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelBackToContentElementEventMap>(type: K, listener: (this: HTMLKritzelBackToContentElement, ev: KritzelBackToContentCustomEvent<HTMLKritzelBackToContentElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawBackToContentElementEventMap>(type: K, listener: (this: HTMLUpdrawBackToContentElement, ev: UpdrawBackToContentCustomEvent<HTMLUpdrawBackToContentElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelBackToContentElement: {
-        prototype: HTMLKritzelBackToContentElement;
-        new (): HTMLKritzelBackToContentElement;
+    var HTMLUpdrawBackToContentElement: {
+        prototype: HTMLUpdrawBackToContentElement;
+        new (): HTMLUpdrawBackToContentElement;
     };
-    interface HTMLKritzelBrushStyleElementEventMap {
+    interface HTMLUpdrawBrushStyleElementEventMap {
         "typeChange": 'pen' | 'highlighter';
     }
-    interface HTMLKritzelBrushStyleElement extends Components.KritzelBrushStyle, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelBrushStyleElementEventMap>(type: K, listener: (this: HTMLKritzelBrushStyleElement, ev: KritzelBrushStyleCustomEvent<HTMLKritzelBrushStyleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawBrushStyleElement extends Components.UpdrawBrushStyle, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawBrushStyleElementEventMap>(type: K, listener: (this: HTMLUpdrawBrushStyleElement, ev: UpdrawBrushStyleCustomEvent<HTMLUpdrawBrushStyleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelBrushStyleElementEventMap>(type: K, listener: (this: HTMLKritzelBrushStyleElement, ev: KritzelBrushStyleCustomEvent<HTMLKritzelBrushStyleElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawBrushStyleElementEventMap>(type: K, listener: (this: HTMLUpdrawBrushStyleElement, ev: UpdrawBrushStyleCustomEvent<HTMLUpdrawBrushStyleElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelBrushStyleElement: {
-        prototype: HTMLKritzelBrushStyleElement;
-        new (): HTMLKritzelBrushStyleElement;
+    var HTMLUpdrawBrushStyleElement: {
+        prototype: HTMLUpdrawBrushStyleElement;
+        new (): HTMLUpdrawBrushStyleElement;
     };
-    interface HTMLKritzelButtonElementEventMap {
+    interface HTMLUpdrawButtonElementEventMap {
         "buttonClick": void;
     }
-    interface HTMLKritzelButtonElement extends Components.KritzelButton, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelButtonElementEventMap>(type: K, listener: (this: HTMLKritzelButtonElement, ev: KritzelButtonCustomEvent<HTMLKritzelButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawButtonElement extends Components.UpdrawButton, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawButtonElementEventMap>(type: K, listener: (this: HTMLUpdrawButtonElement, ev: UpdrawButtonCustomEvent<HTMLUpdrawButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelButtonElementEventMap>(type: K, listener: (this: HTMLKritzelButtonElement, ev: KritzelButtonCustomEvent<HTMLKritzelButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawButtonElementEventMap>(type: K, listener: (this: HTMLUpdrawButtonElement, ev: UpdrawButtonCustomEvent<HTMLUpdrawButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelButtonElement: {
-        prototype: HTMLKritzelButtonElement;
-        new (): HTMLKritzelButtonElement;
+    var HTMLUpdrawButtonElement: {
+        prototype: HTMLUpdrawButtonElement;
+        new (): HTMLUpdrawButtonElement;
     };
-    interface HTMLKritzelChatBoxElementEventMap {
+    interface HTMLUpdrawChatBoxElementEventMap {
         "chatSubmit": string;
         "chatStop": void;
-        "modeChange": KritzelChatBoxMode;
-        "chatChipRemove": KritzelChatBoxChip;
+        "modeChange": UpdrawChatBoxMode;
+        "chatChipRemove": UpdrawChatBoxChip;
     }
-    interface HTMLKritzelChatBoxElement extends Components.KritzelChatBox, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelChatBoxElementEventMap>(type: K, listener: (this: HTMLKritzelChatBoxElement, ev: KritzelChatBoxCustomEvent<HTMLKritzelChatBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawChatBoxElement extends Components.UpdrawChatBox, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawChatBoxElementEventMap>(type: K, listener: (this: HTMLUpdrawChatBoxElement, ev: UpdrawChatBoxCustomEvent<HTMLUpdrawChatBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelChatBoxElementEventMap>(type: K, listener: (this: HTMLKritzelChatBoxElement, ev: KritzelChatBoxCustomEvent<HTMLKritzelChatBoxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawChatBoxElementEventMap>(type: K, listener: (this: HTMLUpdrawChatBoxElement, ev: UpdrawChatBoxCustomEvent<HTMLUpdrawChatBoxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelChatBoxElement: {
-        prototype: HTMLKritzelChatBoxElement;
-        new (): HTMLKritzelChatBoxElement;
+    var HTMLUpdrawChatBoxElement: {
+        prototype: HTMLUpdrawChatBoxElement;
+        new (): HTMLUpdrawChatBoxElement;
     };
-    interface HTMLKritzelColorElement extends Components.KritzelColor, HTMLStencilElement {
+    interface HTMLUpdrawColorElement extends Components.UpdrawColor, HTMLStencilElement {
     }
-    var HTMLKritzelColorElement: {
-        prototype: HTMLKritzelColorElement;
-        new (): HTMLKritzelColorElement;
+    var HTMLUpdrawColorElement: {
+        prototype: HTMLUpdrawColorElement;
+        new (): HTMLUpdrawColorElement;
     };
-    interface HTMLKritzelColorPaletteElementEventMap {
+    interface HTMLUpdrawColorPaletteElementEventMap {
         "colorChange": ThemeAwareColor;
     }
-    interface HTMLKritzelColorPaletteElement extends Components.KritzelColorPalette, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelColorPaletteElementEventMap>(type: K, listener: (this: HTMLKritzelColorPaletteElement, ev: KritzelColorPaletteCustomEvent<HTMLKritzelColorPaletteElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawColorPaletteElement extends Components.UpdrawColorPalette, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawColorPaletteElementEventMap>(type: K, listener: (this: HTMLUpdrawColorPaletteElement, ev: UpdrawColorPaletteCustomEvent<HTMLUpdrawColorPaletteElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelColorPaletteElementEventMap>(type: K, listener: (this: HTMLKritzelColorPaletteElement, ev: KritzelColorPaletteCustomEvent<HTMLKritzelColorPaletteElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawColorPaletteElementEventMap>(type: K, listener: (this: HTMLUpdrawColorPaletteElement, ev: UpdrawColorPaletteCustomEvent<HTMLUpdrawColorPaletteElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelColorPaletteElement: {
-        prototype: HTMLKritzelColorPaletteElement;
-        new (): HTMLKritzelColorPaletteElement;
+    var HTMLUpdrawColorPaletteElement: {
+        prototype: HTMLUpdrawColorPaletteElement;
+        new (): HTMLUpdrawColorPaletteElement;
     };
-    interface HTMLKritzelContextMenuElementEventMap {
+    interface HTMLUpdrawContextMenuElementEventMap {
         "actionSelected": ContextMenuItem;
         "close": void;
     }
-    interface HTMLKritzelContextMenuElement extends Components.KritzelContextMenu, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelContextMenuElementEventMap>(type: K, listener: (this: HTMLKritzelContextMenuElement, ev: KritzelContextMenuCustomEvent<HTMLKritzelContextMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawContextMenuElement extends Components.UpdrawContextMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawContextMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawContextMenuElement, ev: UpdrawContextMenuCustomEvent<HTMLUpdrawContextMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelContextMenuElementEventMap>(type: K, listener: (this: HTMLKritzelContextMenuElement, ev: KritzelContextMenuCustomEvent<HTMLKritzelContextMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawContextMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawContextMenuElement, ev: UpdrawContextMenuCustomEvent<HTMLUpdrawContextMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelContextMenuElement: {
-        prototype: HTMLKritzelContextMenuElement;
-        new (): HTMLKritzelContextMenuElement;
+    var HTMLUpdrawContextMenuElement: {
+        prototype: HTMLUpdrawContextMenuElement;
+        new (): HTMLUpdrawContextMenuElement;
     };
-    interface HTMLKritzelCurrentUserElement extends Components.KritzelCurrentUser, HTMLStencilElement {
+    interface HTMLUpdrawCurrentUserElement extends Components.UpdrawCurrentUser, HTMLStencilElement {
     }
-    var HTMLKritzelCurrentUserElement: {
-        prototype: HTMLKritzelCurrentUserElement;
-        new (): HTMLKritzelCurrentUserElement;
+    var HTMLUpdrawCurrentUserElement: {
+        prototype: HTMLUpdrawCurrentUserElement;
+        new (): HTMLUpdrawCurrentUserElement;
     };
-    interface HTMLKritzelCurrentUserDialogElementEventMap {
+    interface HTMLUpdrawCurrentUserDialogElementEventMap {
         "logoutRequest": void;
     }
-    interface HTMLKritzelCurrentUserDialogElement extends Components.KritzelCurrentUserDialog, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelCurrentUserDialogElementEventMap>(type: K, listener: (this: HTMLKritzelCurrentUserDialogElement, ev: KritzelCurrentUserDialogCustomEvent<HTMLKritzelCurrentUserDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawCurrentUserDialogElement extends Components.UpdrawCurrentUserDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawCurrentUserDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawCurrentUserDialogElement, ev: UpdrawCurrentUserDialogCustomEvent<HTMLUpdrawCurrentUserDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelCurrentUserDialogElementEventMap>(type: K, listener: (this: HTMLKritzelCurrentUserDialogElement, ev: KritzelCurrentUserDialogCustomEvent<HTMLKritzelCurrentUserDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawCurrentUserDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawCurrentUserDialogElement, ev: UpdrawCurrentUserDialogCustomEvent<HTMLUpdrawCurrentUserDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelCurrentUserDialogElement: {
-        prototype: HTMLKritzelCurrentUserDialogElement;
-        new (): HTMLKritzelCurrentUserDialogElement;
+    var HTMLUpdrawCurrentUserDialogElement: {
+        prototype: HTMLUpdrawCurrentUserDialogElement;
+        new (): HTMLUpdrawCurrentUserDialogElement;
     };
-    interface HTMLKritzelDialogElementEventMap {
+    interface HTMLUpdrawDialogElementEventMap {
         "dialogOpen": void;
-        "dialogClose": IKritzelDialogCloseEvent;
+        "dialogClose": IUpdrawDialogCloseEvent;
     }
-    interface HTMLKritzelDialogElement extends Components.KritzelDialog, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelDialogElementEventMap>(type: K, listener: (this: HTMLKritzelDialogElement, ev: KritzelDialogCustomEvent<HTMLKritzelDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawDialogElement extends Components.UpdrawDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawDialogElement, ev: UpdrawDialogCustomEvent<HTMLUpdrawDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelDialogElementEventMap>(type: K, listener: (this: HTMLKritzelDialogElement, ev: KritzelDialogCustomEvent<HTMLKritzelDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawDialogElement, ev: UpdrawDialogCustomEvent<HTMLUpdrawDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelDialogElement: {
-        prototype: HTMLKritzelDialogElement;
-        new (): HTMLKritzelDialogElement;
+    var HTMLUpdrawDialogElement: {
+        prototype: HTMLUpdrawDialogElement;
+        new (): HTMLUpdrawDialogElement;
     };
-    interface HTMLKritzelDropdownElementEventMap {
+    interface HTMLUpdrawDropdownElementEventMap {
         "valueChanged": string;
     }
-    interface HTMLKritzelDropdownElement extends Components.KritzelDropdown, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelDropdownElementEventMap>(type: K, listener: (this: HTMLKritzelDropdownElement, ev: KritzelDropdownCustomEvent<HTMLKritzelDropdownElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawDropdownElement extends Components.UpdrawDropdown, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawDropdownElementEventMap>(type: K, listener: (this: HTMLUpdrawDropdownElement, ev: UpdrawDropdownCustomEvent<HTMLUpdrawDropdownElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelDropdownElementEventMap>(type: K, listener: (this: HTMLKritzelDropdownElement, ev: KritzelDropdownCustomEvent<HTMLKritzelDropdownElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawDropdownElementEventMap>(type: K, listener: (this: HTMLUpdrawDropdownElement, ev: UpdrawDropdownCustomEvent<HTMLUpdrawDropdownElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelDropdownElement: {
-        prototype: HTMLKritzelDropdownElement;
-        new (): HTMLKritzelDropdownElement;
+    var HTMLUpdrawDropdownElement: {
+        prototype: HTMLUpdrawDropdownElement;
+        new (): HTMLUpdrawDropdownElement;
     };
-    interface HTMLKritzelEditorElementEventMap {
+    interface HTMLUpdrawEditorElementEventMap {
         "isReady": EditorIsReadyEvent;
         "activeWorkspaceChange": ActiveWorkspaceChangeEvent;
-        "objectsChange": KritzelBaseObject[];
+        "objectsChange": UpdrawBaseObject[];
         "objectsAdded": ObjectsAddedEvent;
         "objectsRemoved": ObjectsRemovedEvent;
         "objectsUpdated": ObjectsUpdatedEvent;
-        "objectsSelectionChange": KritzelBaseObject[];
-        "undoStateChange": KritzelUndoState;
+        "objectsSelectionChange": UpdrawBaseObject[];
+        "undoStateChange": UpdrawUndoState;
         "themeChange": ThemeName;
         "localeChange": LocaleCode;
-        "viewportChange": KritzelViewportState;
+        "viewportChange": UpdrawViewportState;
         "logout": void;
         "login": LoginEvent;
-        "isPublicChange": IKritzelIsPublicChangeEvent;
+        "isPublicChange": IUpdrawIsPublicChangeEvent;
         "awarenessChange": Map<number, Record<string, any>>;
         "chatSubmit": string;
         "chatStop": void;
-        "chatChipRemove": KritzelChatBoxChip;
-        "agentsChange": KritzelAgentsChangeEvent;
-        "objectTitlebarAction": KritzelObjectTitlebarActionEvent;
-        "objectElementHover": KritzelObjectElementHoverEvent;
-        "objectElementClick": KritzelObjectElementClickEvent;
-        "objectElementPick": KritzelObjectElementPickEvent;
+        "chatChipRemove": UpdrawChatBoxChip;
+        "agentsChange": UpdrawAgentsChangeEvent;
+        "objectTitlebarAction": UpdrawObjectTitlebarActionEvent;
+        "objectElementHover": UpdrawObjectElementHoverEvent;
+        "objectElementClick": UpdrawObjectElementClickEvent;
+        "objectElementPick": UpdrawObjectElementPickEvent;
     }
-    interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelEditorElementEventMap>(type: K, listener: (this: HTMLKritzelEditorElement, ev: KritzelEditorCustomEvent<HTMLKritzelEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawEditorElement extends Components.UpdrawEditor, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawEditorElementEventMap>(type: K, listener: (this: HTMLUpdrawEditorElement, ev: UpdrawEditorCustomEvent<HTMLUpdrawEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelEditorElementEventMap>(type: K, listener: (this: HTMLKritzelEditorElement, ev: KritzelEditorCustomEvent<HTMLKritzelEditorElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawEditorElementEventMap>(type: K, listener: (this: HTMLUpdrawEditorElement, ev: UpdrawEditorCustomEvent<HTMLUpdrawEditorElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelEditorElement: {
-        prototype: HTMLKritzelEditorElement;
-        new (): HTMLKritzelEditorElement;
+    var HTMLUpdrawEditorElement: {
+        prototype: HTMLUpdrawEditorElement;
+        new (): HTMLUpdrawEditorElement;
     };
-    interface HTMLKritzelExportElementEventMap {
+    interface HTMLUpdrawExportElementEventMap {
         "exportPng": void;
         "exportSvg": void;
         "exportJson": string;
     }
-    interface HTMLKritzelExportElement extends Components.KritzelExport, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelExportElementEventMap>(type: K, listener: (this: HTMLKritzelExportElement, ev: KritzelExportCustomEvent<HTMLKritzelExportElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawExportElement extends Components.UpdrawExport, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawExportElementEventMap>(type: K, listener: (this: HTMLUpdrawExportElement, ev: UpdrawExportCustomEvent<HTMLUpdrawExportElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelExportElementEventMap>(type: K, listener: (this: HTMLKritzelExportElement, ev: KritzelExportCustomEvent<HTMLKritzelExportElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawExportElementEventMap>(type: K, listener: (this: HTMLUpdrawExportElement, ev: UpdrawExportCustomEvent<HTMLUpdrawExportElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelExportElement: {
-        prototype: HTMLKritzelExportElement;
-        new (): HTMLKritzelExportElement;
+    var HTMLUpdrawExportElement: {
+        prototype: HTMLUpdrawExportElement;
+        new (): HTMLUpdrawExportElement;
     };
-    interface HTMLKritzelFontElement extends Components.KritzelFont, HTMLStencilElement {
+    interface HTMLUpdrawFontElement extends Components.UpdrawFont, HTMLStencilElement {
     }
-    var HTMLKritzelFontElement: {
-        prototype: HTMLKritzelFontElement;
-        new (): HTMLKritzelFontElement;
+    var HTMLUpdrawFontElement: {
+        prototype: HTMLUpdrawFontElement;
+        new (): HTMLUpdrawFontElement;
     };
-    interface HTMLKritzelFontFamilyElementEventMap {
+    interface HTMLUpdrawFontFamilyElementEventMap {
         "fontFamilyChange": string;
     }
-    interface HTMLKritzelFontFamilyElement extends Components.KritzelFontFamily, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelFontFamilyElementEventMap>(type: K, listener: (this: HTMLKritzelFontFamilyElement, ev: KritzelFontFamilyCustomEvent<HTMLKritzelFontFamilyElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawFontFamilyElement extends Components.UpdrawFontFamily, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawFontFamilyElementEventMap>(type: K, listener: (this: HTMLUpdrawFontFamilyElement, ev: UpdrawFontFamilyCustomEvent<HTMLUpdrawFontFamilyElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelFontFamilyElementEventMap>(type: K, listener: (this: HTMLKritzelFontFamilyElement, ev: KritzelFontFamilyCustomEvent<HTMLKritzelFontFamilyElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawFontFamilyElementEventMap>(type: K, listener: (this: HTMLUpdrawFontFamilyElement, ev: UpdrawFontFamilyCustomEvent<HTMLUpdrawFontFamilyElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelFontFamilyElement: {
-        prototype: HTMLKritzelFontFamilyElement;
-        new (): HTMLKritzelFontFamilyElement;
+    var HTMLUpdrawFontFamilyElement: {
+        prototype: HTMLUpdrawFontFamilyElement;
+        new (): HTMLUpdrawFontFamilyElement;
     };
-    interface HTMLKritzelFontSizeElementEventMap {
+    interface HTMLUpdrawFontSizeElementEventMap {
         "sizeChange": number;
     }
-    interface HTMLKritzelFontSizeElement extends Components.KritzelFontSize, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelFontSizeElementEventMap>(type: K, listener: (this: HTMLKritzelFontSizeElement, ev: KritzelFontSizeCustomEvent<HTMLKritzelFontSizeElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawFontSizeElement extends Components.UpdrawFontSize, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawFontSizeElementEventMap>(type: K, listener: (this: HTMLUpdrawFontSizeElement, ev: UpdrawFontSizeCustomEvent<HTMLUpdrawFontSizeElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelFontSizeElementEventMap>(type: K, listener: (this: HTMLKritzelFontSizeElement, ev: KritzelFontSizeCustomEvent<HTMLKritzelFontSizeElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawFontSizeElementEventMap>(type: K, listener: (this: HTMLUpdrawFontSizeElement, ev: UpdrawFontSizeCustomEvent<HTMLUpdrawFontSizeElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelFontSizeElement: {
-        prototype: HTMLKritzelFontSizeElement;
-        new (): HTMLKritzelFontSizeElement;
+    var HTMLUpdrawFontSizeElement: {
+        prototype: HTMLUpdrawFontSizeElement;
+        new (): HTMLUpdrawFontSizeElement;
     };
-    interface HTMLKritzelInputElementEventMap {
+    interface HTMLUpdrawInputElementEventMap {
         "valueChange": string;
     }
-    interface HTMLKritzelInputElement extends Components.KritzelInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelInputElementEventMap>(type: K, listener: (this: HTMLKritzelInputElement, ev: KritzelInputCustomEvent<HTMLKritzelInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawInputElement extends Components.UpdrawInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawInputElementEventMap>(type: K, listener: (this: HTMLUpdrawInputElement, ev: UpdrawInputCustomEvent<HTMLUpdrawInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelInputElementEventMap>(type: K, listener: (this: HTMLKritzelInputElement, ev: KritzelInputCustomEvent<HTMLKritzelInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawInputElementEventMap>(type: K, listener: (this: HTMLUpdrawInputElement, ev: UpdrawInputCustomEvent<HTMLUpdrawInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelInputElement: {
-        prototype: HTMLKritzelInputElement;
-        new (): HTMLKritzelInputElement;
+    var HTMLUpdrawInputElement: {
+        prototype: HTMLUpdrawInputElement;
+        new (): HTMLUpdrawInputElement;
     };
-    interface HTMLKritzelLineEndingsElementEventMap {
+    interface HTMLUpdrawLineEndingsElementEventMap {
         "valueChange": LineArrowConfig;
     }
-    interface HTMLKritzelLineEndingsElement extends Components.KritzelLineEndings, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelLineEndingsElementEventMap>(type: K, listener: (this: HTMLKritzelLineEndingsElement, ev: KritzelLineEndingsCustomEvent<HTMLKritzelLineEndingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawLineEndingsElement extends Components.UpdrawLineEndings, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawLineEndingsElementEventMap>(type: K, listener: (this: HTMLUpdrawLineEndingsElement, ev: UpdrawLineEndingsCustomEvent<HTMLUpdrawLineEndingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelLineEndingsElementEventMap>(type: K, listener: (this: HTMLKritzelLineEndingsElement, ev: KritzelLineEndingsCustomEvent<HTMLKritzelLineEndingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawLineEndingsElementEventMap>(type: K, listener: (this: HTMLUpdrawLineEndingsElement, ev: UpdrawLineEndingsCustomEvent<HTMLUpdrawLineEndingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelLineEndingsElement: {
-        prototype: HTMLKritzelLineEndingsElement;
-        new (): HTMLKritzelLineEndingsElement;
+    var HTMLUpdrawLineEndingsElement: {
+        prototype: HTMLUpdrawLineEndingsElement;
+        new (): HTMLUpdrawLineEndingsElement;
     };
-    interface HTMLKritzelLoginDialogElementEventMap {
+    interface HTMLUpdrawLoginDialogElementEventMap {
         "providerLogin": LoginEvent;
         "dialogClosed": void;
     }
     /**
      * Login dialog component for displaying authentication provider buttons.
      * This is a presentational component that emits events for all actions.
-     * The parent component (kritzel-editor) handles the actual authentication flow.
+     * The parent component (updraw-editor) handles the actual authentication flow.
      */
-    interface HTMLKritzelLoginDialogElement extends Components.KritzelLoginDialog, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelLoginDialogElementEventMap>(type: K, listener: (this: HTMLKritzelLoginDialogElement, ev: KritzelLoginDialogCustomEvent<HTMLKritzelLoginDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawLoginDialogElement extends Components.UpdrawLoginDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawLoginDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawLoginDialogElement, ev: UpdrawLoginDialogCustomEvent<HTMLUpdrawLoginDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelLoginDialogElementEventMap>(type: K, listener: (this: HTMLKritzelLoginDialogElement, ev: KritzelLoginDialogCustomEvent<HTMLKritzelLoginDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawLoginDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawLoginDialogElement, ev: UpdrawLoginDialogCustomEvent<HTMLUpdrawLoginDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelLoginDialogElement: {
-        prototype: HTMLKritzelLoginDialogElement;
-        new (): HTMLKritzelLoginDialogElement;
+    var HTMLUpdrawLoginDialogElement: {
+        prototype: HTMLUpdrawLoginDialogElement;
+        new (): HTMLUpdrawLoginDialogElement;
     };
-    interface HTMLKritzelMasterDetailElementEventMap {
-        "itemSelect": IKritzelMasterDetailSelectEvent;
+    interface HTMLUpdrawMasterDetailElementEventMap {
+        "itemSelect": IUpdrawMasterDetailSelectEvent;
     }
-    interface HTMLKritzelMasterDetailElement extends Components.KritzelMasterDetail, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelMasterDetailElementEventMap>(type: K, listener: (this: HTMLKritzelMasterDetailElement, ev: KritzelMasterDetailCustomEvent<HTMLKritzelMasterDetailElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawMasterDetailElement extends Components.UpdrawMasterDetail, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawMasterDetailElementEventMap>(type: K, listener: (this: HTMLUpdrawMasterDetailElement, ev: UpdrawMasterDetailCustomEvent<HTMLUpdrawMasterDetailElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelMasterDetailElementEventMap>(type: K, listener: (this: HTMLKritzelMasterDetailElement, ev: KritzelMasterDetailCustomEvent<HTMLKritzelMasterDetailElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawMasterDetailElementEventMap>(type: K, listener: (this: HTMLUpdrawMasterDetailElement, ev: UpdrawMasterDetailCustomEvent<HTMLUpdrawMasterDetailElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelMasterDetailElement: {
-        prototype: HTMLKritzelMasterDetailElement;
-        new (): HTMLKritzelMasterDetailElement;
+    var HTMLUpdrawMasterDetailElement: {
+        prototype: HTMLUpdrawMasterDetailElement;
+        new (): HTMLUpdrawMasterDetailElement;
     };
-    interface HTMLKritzelMenuElementEventMap {
-        "itemSelect": IKritzelMenuItemSelectEvent;
-        "itemSave": IKritzelMenuItem;
-        "itemCancel": IKritzelMenuItem;
-        "itemToggleChildMenu": IKritzelMenuItemToggleChildMenuEvent;
-        "itemCloseChildMenu": IKritzelMenuItem;
+    interface HTMLUpdrawMenuElementEventMap {
+        "itemSelect": IUpdrawMenuItemSelectEvent;
+        "itemSave": IUpdrawMenuItem;
+        "itemCancel": IUpdrawMenuItem;
+        "itemToggleChildMenu": IUpdrawMenuItemToggleChildMenuEvent;
+        "itemCloseChildMenu": IUpdrawMenuItem;
         "close": void;
     }
-    interface HTMLKritzelMenuElement extends Components.KritzelMenu, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMenuElement, ev: KritzelMenuCustomEvent<HTMLKritzelMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawMenuElement extends Components.UpdrawMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawMenuElement, ev: UpdrawMenuCustomEvent<HTMLUpdrawMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMenuElement, ev: KritzelMenuCustomEvent<HTMLKritzelMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawMenuElement, ev: UpdrawMenuCustomEvent<HTMLUpdrawMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelMenuElement: {
-        prototype: HTMLKritzelMenuElement;
-        new (): HTMLKritzelMenuElement;
+    var HTMLUpdrawMenuElement: {
+        prototype: HTMLUpdrawMenuElement;
+        new (): HTMLUpdrawMenuElement;
     };
-    interface HTMLKritzelMenuItemElementEventMap {
-        "itemSelect": IKritzelMenuItemSelectEvent;
-        "itemSave": IKritzelMenuItem;
-        "itemCancel": IKritzelMenuItem;
-        "itemToggleChildMenu": IKritzelMenuItemToggleChildMenuEvent;
-        "itemCloseChildMenu": IKritzelMenuItem;
+    interface HTMLUpdrawMenuItemElementEventMap {
+        "itemSelect": IUpdrawMenuItemSelectEvent;
+        "itemSave": IUpdrawMenuItem;
+        "itemCancel": IUpdrawMenuItem;
+        "itemToggleChildMenu": IUpdrawMenuItemToggleChildMenuEvent;
+        "itemCloseChildMenu": IUpdrawMenuItem;
     }
-    interface HTMLKritzelMenuItemElement extends Components.KritzelMenuItem, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelMenuItemElementEventMap>(type: K, listener: (this: HTMLKritzelMenuItemElement, ev: KritzelMenuItemCustomEvent<HTMLKritzelMenuItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawMenuItemElement extends Components.UpdrawMenuItem, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawMenuItemElementEventMap>(type: K, listener: (this: HTMLUpdrawMenuItemElement, ev: UpdrawMenuItemCustomEvent<HTMLUpdrawMenuItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelMenuItemElementEventMap>(type: K, listener: (this: HTMLKritzelMenuItemElement, ev: KritzelMenuItemCustomEvent<HTMLKritzelMenuItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawMenuItemElementEventMap>(type: K, listener: (this: HTMLUpdrawMenuItemElement, ev: UpdrawMenuItemCustomEvent<HTMLUpdrawMenuItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelMenuItemElement: {
-        prototype: HTMLKritzelMenuItemElement;
-        new (): HTMLKritzelMenuItemElement;
+    var HTMLUpdrawMenuItemElement: {
+        prototype: HTMLUpdrawMenuItemElement;
+        new (): HTMLUpdrawMenuItemElement;
     };
-    interface HTMLKritzelMoreMenuElementEventMap {
-        "itemSelect": { item: IKritzelMenuItem; parent: IKritzelMenuItem };
+    interface HTMLUpdrawMoreMenuElementEventMap {
+        "itemSelect": { item: IUpdrawMenuItem; parent: IUpdrawMenuItem };
     }
-    interface HTMLKritzelMoreMenuElement extends Components.KritzelMoreMenu, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelMoreMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMoreMenuElement, ev: KritzelMoreMenuCustomEvent<HTMLKritzelMoreMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawMoreMenuElement extends Components.UpdrawMoreMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawMoreMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawMoreMenuElement, ev: UpdrawMoreMenuCustomEvent<HTMLUpdrawMoreMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelMoreMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMoreMenuElement, ev: KritzelMoreMenuCustomEvent<HTMLKritzelMoreMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawMoreMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawMoreMenuElement, ev: UpdrawMoreMenuCustomEvent<HTMLUpdrawMoreMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelMoreMenuElement: {
-        prototype: HTMLKritzelMoreMenuElement;
-        new (): HTMLKritzelMoreMenuElement;
+    var HTMLUpdrawMoreMenuElement: {
+        prototype: HTMLUpdrawMoreMenuElement;
+        new (): HTMLUpdrawMoreMenuElement;
     };
-    interface HTMLKritzelNotificationCardElementEventMap {
+    interface HTMLUpdrawNotificationCardElementEventMap {
         "dismiss": void;
         "hoverChange": boolean;
     }
-    interface HTMLKritzelNotificationCardElement extends Components.KritzelNotificationCard, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelNotificationCardElementEventMap>(type: K, listener: (this: HTMLKritzelNotificationCardElement, ev: KritzelNotificationCardCustomEvent<HTMLKritzelNotificationCardElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawNotificationCardElement extends Components.UpdrawNotificationCard, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawNotificationCardElementEventMap>(type: K, listener: (this: HTMLUpdrawNotificationCardElement, ev: UpdrawNotificationCardCustomEvent<HTMLUpdrawNotificationCardElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelNotificationCardElementEventMap>(type: K, listener: (this: HTMLKritzelNotificationCardElement, ev: KritzelNotificationCardCustomEvent<HTMLKritzelNotificationCardElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawNotificationCardElementEventMap>(type: K, listener: (this: HTMLUpdrawNotificationCardElement, ev: UpdrawNotificationCardCustomEvent<HTMLUpdrawNotificationCardElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelNotificationCardElement: {
-        prototype: HTMLKritzelNotificationCardElement;
-        new (): HTMLKritzelNotificationCardElement;
+    var HTMLUpdrawNotificationCardElement: {
+        prototype: HTMLUpdrawNotificationCardElement;
+        new (): HTMLUpdrawNotificationCardElement;
     };
-    interface HTMLKritzelNumericInputElementEventMap {
+    interface HTMLUpdrawNumericInputElementEventMap {
         "valueChange": number | undefined;
     }
-    interface HTMLKritzelNumericInputElement extends Components.KritzelNumericInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelNumericInputElementEventMap>(type: K, listener: (this: HTMLKritzelNumericInputElement, ev: KritzelNumericInputCustomEvent<HTMLKritzelNumericInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawNumericInputElement extends Components.UpdrawNumericInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawNumericInputElementEventMap>(type: K, listener: (this: HTMLUpdrawNumericInputElement, ev: UpdrawNumericInputCustomEvent<HTMLUpdrawNumericInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelNumericInputElementEventMap>(type: K, listener: (this: HTMLKritzelNumericInputElement, ev: KritzelNumericInputCustomEvent<HTMLKritzelNumericInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawNumericInputElementEventMap>(type: K, listener: (this: HTMLUpdrawNumericInputElement, ev: UpdrawNumericInputCustomEvent<HTMLUpdrawNumericInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelNumericInputElement: {
-        prototype: HTMLKritzelNumericInputElement;
-        new (): HTMLKritzelNumericInputElement;
+    var HTMLUpdrawNumericInputElement: {
+        prototype: HTMLUpdrawNumericInputElement;
+        new (): HTMLUpdrawNumericInputElement;
     };
-    interface HTMLKritzelOpacitySliderElementEventMap {
+    interface HTMLUpdrawOpacitySliderElementEventMap {
         "valueChange": number;
     }
-    interface HTMLKritzelOpacitySliderElement extends Components.KritzelOpacitySlider, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelOpacitySliderElementEventMap>(type: K, listener: (this: HTMLKritzelOpacitySliderElement, ev: KritzelOpacitySliderCustomEvent<HTMLKritzelOpacitySliderElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawOpacitySliderElement extends Components.UpdrawOpacitySlider, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawOpacitySliderElementEventMap>(type: K, listener: (this: HTMLUpdrawOpacitySliderElement, ev: UpdrawOpacitySliderCustomEvent<HTMLUpdrawOpacitySliderElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelOpacitySliderElementEventMap>(type: K, listener: (this: HTMLKritzelOpacitySliderElement, ev: KritzelOpacitySliderCustomEvent<HTMLKritzelOpacitySliderElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawOpacitySliderElementEventMap>(type: K, listener: (this: HTMLUpdrawOpacitySliderElement, ev: UpdrawOpacitySliderCustomEvent<HTMLUpdrawOpacitySliderElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelOpacitySliderElement: {
-        prototype: HTMLKritzelOpacitySliderElement;
-        new (): HTMLKritzelOpacitySliderElement;
+    var HTMLUpdrawOpacitySliderElement: {
+        prototype: HTMLUpdrawOpacitySliderElement;
+        new (): HTMLUpdrawOpacitySliderElement;
     };
-    interface HTMLKritzelPillTabsElementEventMap {
+    interface HTMLUpdrawPillTabsElementEventMap {
         "valueChange": string;
     }
-    interface HTMLKritzelPillTabsElement extends Components.KritzelPillTabs, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelPillTabsElementEventMap>(type: K, listener: (this: HTMLKritzelPillTabsElement, ev: KritzelPillTabsCustomEvent<HTMLKritzelPillTabsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawPillTabsElement extends Components.UpdrawPillTabs, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawPillTabsElementEventMap>(type: K, listener: (this: HTMLUpdrawPillTabsElement, ev: UpdrawPillTabsCustomEvent<HTMLUpdrawPillTabsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelPillTabsElementEventMap>(type: K, listener: (this: HTMLKritzelPillTabsElement, ev: KritzelPillTabsCustomEvent<HTMLKritzelPillTabsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawPillTabsElementEventMap>(type: K, listener: (this: HTMLUpdrawPillTabsElement, ev: UpdrawPillTabsCustomEvent<HTMLUpdrawPillTabsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelPillTabsElement: {
-        prototype: HTMLKritzelPillTabsElement;
-        new (): HTMLKritzelPillTabsElement;
+    var HTMLUpdrawPillTabsElement: {
+        prototype: HTMLUpdrawPillTabsElement;
+        new (): HTMLUpdrawPillTabsElement;
     };
-    interface HTMLKritzelPortalElementEventMap {
+    interface HTMLUpdrawPortalElementEventMap {
         "close": void;
     }
-    interface HTMLKritzelPortalElement extends Components.KritzelPortal, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelPortalElementEventMap>(type: K, listener: (this: HTMLKritzelPortalElement, ev: KritzelPortalCustomEvent<HTMLKritzelPortalElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawPortalElement extends Components.UpdrawPortal, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawPortalElementEventMap>(type: K, listener: (this: HTMLUpdrawPortalElement, ev: UpdrawPortalCustomEvent<HTMLUpdrawPortalElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelPortalElementEventMap>(type: K, listener: (this: HTMLKritzelPortalElement, ev: KritzelPortalCustomEvent<HTMLKritzelPortalElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawPortalElementEventMap>(type: K, listener: (this: HTMLUpdrawPortalElement, ev: UpdrawPortalCustomEvent<HTMLUpdrawPortalElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelPortalElement: {
-        prototype: HTMLKritzelPortalElement;
-        new (): HTMLKritzelPortalElement;
+    var HTMLUpdrawPortalElement: {
+        prototype: HTMLUpdrawPortalElement;
+        new (): HTMLUpdrawPortalElement;
     };
-    interface HTMLKritzelSettingsElementEventMap {
-        "settingsChange": KritzelSettingsConfig;
+    interface HTMLUpdrawSettingsElementEventMap {
+        "settingsChange": UpdrawSettingsConfig;
     }
-    interface HTMLKritzelSettingsElement extends Components.KritzelSettings, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelSettingsElementEventMap>(type: K, listener: (this: HTMLKritzelSettingsElement, ev: KritzelSettingsCustomEvent<HTMLKritzelSettingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawSettingsElement extends Components.UpdrawSettings, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawSettingsElementEventMap>(type: K, listener: (this: HTMLUpdrawSettingsElement, ev: UpdrawSettingsCustomEvent<HTMLUpdrawSettingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelSettingsElementEventMap>(type: K, listener: (this: HTMLKritzelSettingsElement, ev: KritzelSettingsCustomEvent<HTMLKritzelSettingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawSettingsElementEventMap>(type: K, listener: (this: HTMLUpdrawSettingsElement, ev: UpdrawSettingsCustomEvent<HTMLUpdrawSettingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelSettingsElement: {
-        prototype: HTMLKritzelSettingsElement;
-        new (): HTMLKritzelSettingsElement;
+    var HTMLUpdrawSettingsElement: {
+        prototype: HTMLUpdrawSettingsElement;
+        new (): HTMLUpdrawSettingsElement;
     };
-    interface HTMLKritzelShapeFillElementEventMap {
+    interface HTMLUpdrawShapeFillElementEventMap {
         "valueChange": ShapeFillType;
     }
-    interface HTMLKritzelShapeFillElement extends Components.KritzelShapeFill, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelShapeFillElementEventMap>(type: K, listener: (this: HTMLKritzelShapeFillElement, ev: KritzelShapeFillCustomEvent<HTMLKritzelShapeFillElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawShapeFillElement extends Components.UpdrawShapeFill, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawShapeFillElementEventMap>(type: K, listener: (this: HTMLUpdrawShapeFillElement, ev: UpdrawShapeFillCustomEvent<HTMLUpdrawShapeFillElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelShapeFillElementEventMap>(type: K, listener: (this: HTMLKritzelShapeFillElement, ev: KritzelShapeFillCustomEvent<HTMLKritzelShapeFillElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawShapeFillElementEventMap>(type: K, listener: (this: HTMLUpdrawShapeFillElement, ev: UpdrawShapeFillCustomEvent<HTMLUpdrawShapeFillElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelShapeFillElement: {
-        prototype: HTMLKritzelShapeFillElement;
-        new (): HTMLKritzelShapeFillElement;
+    var HTMLUpdrawShapeFillElement: {
+        prototype: HTMLUpdrawShapeFillElement;
+        new (): HTMLUpdrawShapeFillElement;
     };
-    interface HTMLKritzelShareDialogElementEventMap {
+    interface HTMLUpdrawShareDialogElementEventMap {
         "toggleIsPublic": boolean;
         "dialogClosed": void;
     }
     /**
      * Share dialog component for managing workspace link sharing.
      * This is a presentational component that emits events for all actions.
-     * The parent component (kritzel-editor) handles the business logic.
+     * The parent component (updraw-editor) handles the business logic.
      */
-    interface HTMLKritzelShareDialogElement extends Components.KritzelShareDialog, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelShareDialogElementEventMap>(type: K, listener: (this: HTMLKritzelShareDialogElement, ev: KritzelShareDialogCustomEvent<HTMLKritzelShareDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawShareDialogElement extends Components.UpdrawShareDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawShareDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawShareDialogElement, ev: UpdrawShareDialogCustomEvent<HTMLUpdrawShareDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelShareDialogElementEventMap>(type: K, listener: (this: HTMLKritzelShareDialogElement, ev: KritzelShareDialogCustomEvent<HTMLKritzelShareDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawShareDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawShareDialogElement, ev: UpdrawShareDialogCustomEvent<HTMLUpdrawShareDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelShareDialogElement: {
-        prototype: HTMLKritzelShareDialogElement;
-        new (): HTMLKritzelShareDialogElement;
+    var HTMLUpdrawShareDialogElement: {
+        prototype: HTMLUpdrawShareDialogElement;
+        new (): HTMLUpdrawShareDialogElement;
     };
-    interface HTMLKritzelSlideToggleElementEventMap {
+    interface HTMLUpdrawSlideToggleElementEventMap {
         "checkedChange": boolean;
     }
-    interface HTMLKritzelSlideToggleElement extends Components.KritzelSlideToggle, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelSlideToggleElementEventMap>(type: K, listener: (this: HTMLKritzelSlideToggleElement, ev: KritzelSlideToggleCustomEvent<HTMLKritzelSlideToggleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawSlideToggleElement extends Components.UpdrawSlideToggle, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawSlideToggleElementEventMap>(type: K, listener: (this: HTMLUpdrawSlideToggleElement, ev: UpdrawSlideToggleCustomEvent<HTMLUpdrawSlideToggleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelSlideToggleElementEventMap>(type: K, listener: (this: HTMLKritzelSlideToggleElement, ev: KritzelSlideToggleCustomEvent<HTMLKritzelSlideToggleElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawSlideToggleElementEventMap>(type: K, listener: (this: HTMLUpdrawSlideToggleElement, ev: UpdrawSlideToggleCustomEvent<HTMLUpdrawSlideToggleElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelSlideToggleElement: {
-        prototype: HTMLKritzelSlideToggleElement;
-        new (): HTMLKritzelSlideToggleElement;
+    var HTMLUpdrawSlideToggleElement: {
+        prototype: HTMLUpdrawSlideToggleElement;
+        new (): HTMLUpdrawSlideToggleElement;
     };
-    interface HTMLKritzelSplitButtonElementEventMap {
+    interface HTMLUpdrawSplitButtonElementEventMap {
         "mainButtonClick": void;
-        "itemSelect": IKritzelMenuItemSelectEvent;
-        "itemSave": IKritzelMenuItem;
-        "itemCancel": IKritzelMenuItem;
-        "itemToggleChildMenu": IKritzelMenuItemToggleChildMenuEvent;
-        "itemCloseChildMenu": IKritzelMenuItem;
+        "itemSelect": IUpdrawMenuItemSelectEvent;
+        "itemSave": IUpdrawMenuItem;
+        "itemCancel": IUpdrawMenuItem;
+        "itemToggleChildMenu": IUpdrawMenuItemToggleChildMenuEvent;
+        "itemCloseChildMenu": IUpdrawMenuItem;
         "menuOpen": void;
         "menuClose": void;
     }
-    interface HTMLKritzelSplitButtonElement extends Components.KritzelSplitButton, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelSplitButtonElementEventMap>(type: K, listener: (this: HTMLKritzelSplitButtonElement, ev: KritzelSplitButtonCustomEvent<HTMLKritzelSplitButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawSplitButtonElement extends Components.UpdrawSplitButton, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawSplitButtonElementEventMap>(type: K, listener: (this: HTMLUpdrawSplitButtonElement, ev: UpdrawSplitButtonCustomEvent<HTMLUpdrawSplitButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelSplitButtonElementEventMap>(type: K, listener: (this: HTMLKritzelSplitButtonElement, ev: KritzelSplitButtonCustomEvent<HTMLKritzelSplitButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawSplitButtonElementEventMap>(type: K, listener: (this: HTMLUpdrawSplitButtonElement, ev: UpdrawSplitButtonCustomEvent<HTMLUpdrawSplitButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelSplitButtonElement: {
-        prototype: HTMLKritzelSplitButtonElement;
-        new (): HTMLKritzelSplitButtonElement;
+    var HTMLUpdrawSplitButtonElement: {
+        prototype: HTMLUpdrawSplitButtonElement;
+        new (): HTMLUpdrawSplitButtonElement;
     };
-    interface HTMLKritzelStrokeSizeElementEventMap {
+    interface HTMLUpdrawStrokeSizeElementEventMap {
         "sizeChange": number;
     }
-    interface HTMLKritzelStrokeSizeElement extends Components.KritzelStrokeSize, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelStrokeSizeElementEventMap>(type: K, listener: (this: HTMLKritzelStrokeSizeElement, ev: KritzelStrokeSizeCustomEvent<HTMLKritzelStrokeSizeElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawStrokeSizeElement extends Components.UpdrawStrokeSize, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawStrokeSizeElementEventMap>(type: K, listener: (this: HTMLUpdrawStrokeSizeElement, ev: UpdrawStrokeSizeCustomEvent<HTMLUpdrawStrokeSizeElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelStrokeSizeElementEventMap>(type: K, listener: (this: HTMLKritzelStrokeSizeElement, ev: KritzelStrokeSizeCustomEvent<HTMLKritzelStrokeSizeElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawStrokeSizeElementEventMap>(type: K, listener: (this: HTMLUpdrawStrokeSizeElement, ev: UpdrawStrokeSizeCustomEvent<HTMLUpdrawStrokeSizeElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelStrokeSizeElement: {
-        prototype: HTMLKritzelStrokeSizeElement;
-        new (): HTMLKritzelStrokeSizeElement;
+    var HTMLUpdrawStrokeSizeElement: {
+        prototype: HTMLUpdrawStrokeSizeElement;
+        new (): HTMLUpdrawStrokeSizeElement;
     };
-    interface HTMLKritzelTitlebarMenuElementEventMap {
+    interface HTMLUpdrawTitlebarMenuElementEventMap {
         "menuItemSelect": string;
     }
     /**
-     * The menu opened from a titlebar `menu` element: a compact `kritzel-menu` styled like the
-     * context menu through the `--kritzel-titlebar-menu-*` theme variables.
+     * The menu opened from a titlebar `menu` element: a compact `updraw-menu` styled like the
+     * context menu through the `--updraw-titlebar-menu-*` theme variables.
      */
-    interface HTMLKritzelTitlebarMenuElement extends Components.KritzelTitlebarMenu, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelTitlebarMenuElementEventMap>(type: K, listener: (this: HTMLKritzelTitlebarMenuElement, ev: KritzelTitlebarMenuCustomEvent<HTMLKritzelTitlebarMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawTitlebarMenuElement extends Components.UpdrawTitlebarMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawTitlebarMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawTitlebarMenuElement, ev: UpdrawTitlebarMenuCustomEvent<HTMLUpdrawTitlebarMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelTitlebarMenuElementEventMap>(type: K, listener: (this: HTMLKritzelTitlebarMenuElement, ev: KritzelTitlebarMenuCustomEvent<HTMLKritzelTitlebarMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawTitlebarMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawTitlebarMenuElement, ev: UpdrawTitlebarMenuCustomEvent<HTMLUpdrawTitlebarMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelTitlebarMenuElement: {
-        prototype: HTMLKritzelTitlebarMenuElement;
-        new (): HTMLKritzelTitlebarMenuElement;
+    var HTMLUpdrawTitlebarMenuElement: {
+        prototype: HTMLUpdrawTitlebarMenuElement;
+        new (): HTMLUpdrawTitlebarMenuElement;
     };
-    interface HTMLKritzelToolConfigElementEventMap {
+    interface HTMLUpdrawToolConfigElementEventMap {
         "toolChange": ConfigurableTool;
         "displayValuesChange": ToolDisplayValues;
     }
-    interface HTMLKritzelToolConfigElement extends Components.KritzelToolConfig, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelToolConfigElementEventMap>(type: K, listener: (this: HTMLKritzelToolConfigElement, ev: KritzelToolConfigCustomEvent<HTMLKritzelToolConfigElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawToolConfigElement extends Components.UpdrawToolConfig, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawToolConfigElementEventMap>(type: K, listener: (this: HTMLUpdrawToolConfigElement, ev: UpdrawToolConfigCustomEvent<HTMLUpdrawToolConfigElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelToolConfigElementEventMap>(type: K, listener: (this: HTMLKritzelToolConfigElement, ev: KritzelToolConfigCustomEvent<HTMLKritzelToolConfigElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawToolConfigElementEventMap>(type: K, listener: (this: HTMLUpdrawToolConfigElement, ev: UpdrawToolConfigCustomEvent<HTMLUpdrawToolConfigElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelToolConfigElement: {
-        prototype: HTMLKritzelToolConfigElement;
-        new (): HTMLKritzelToolConfigElement;
+    var HTMLUpdrawToolConfigElement: {
+        prototype: HTMLUpdrawToolConfigElement;
+        new (): HTMLUpdrawToolConfigElement;
     };
-    interface HTMLKritzelToolbarElementEventMap {
+    interface HTMLUpdrawToolbarElementEventMap {
         "isToolbarReady": void;
     }
-    interface HTMLKritzelToolbarElement extends Components.KritzelToolbar, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelToolbarElementEventMap>(type: K, listener: (this: HTMLKritzelToolbarElement, ev: KritzelToolbarCustomEvent<HTMLKritzelToolbarElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawToolbarElement extends Components.UpdrawToolbar, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawToolbarElementEventMap>(type: K, listener: (this: HTMLUpdrawToolbarElement, ev: UpdrawToolbarCustomEvent<HTMLUpdrawToolbarElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelToolbarElementEventMap>(type: K, listener: (this: HTMLKritzelToolbarElement, ev: KritzelToolbarCustomEvent<HTMLKritzelToolbarElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawToolbarElementEventMap>(type: K, listener: (this: HTMLUpdrawToolbarElement, ev: UpdrawToolbarCustomEvent<HTMLUpdrawToolbarElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelToolbarElement: {
-        prototype: HTMLKritzelToolbarElement;
-        new (): HTMLKritzelToolbarElement;
+    var HTMLUpdrawToolbarElement: {
+        prototype: HTMLUpdrawToolbarElement;
+        new (): HTMLUpdrawToolbarElement;
     };
-    interface HTMLKritzelTooltipElementEventMap {
+    interface HTMLUpdrawTooltipElementEventMap {
         "tooltipClosed": void;
         "tooltipOpened": void;
     }
-    interface HTMLKritzelTooltipElement extends Components.KritzelTooltip, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelTooltipElementEventMap>(type: K, listener: (this: HTMLKritzelTooltipElement, ev: KritzelTooltipCustomEvent<HTMLKritzelTooltipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawTooltipElement extends Components.UpdrawTooltip, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawTooltipElementEventMap>(type: K, listener: (this: HTMLUpdrawTooltipElement, ev: UpdrawTooltipCustomEvent<HTMLUpdrawTooltipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelTooltipElementEventMap>(type: K, listener: (this: HTMLKritzelTooltipElement, ev: KritzelTooltipCustomEvent<HTMLKritzelTooltipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawTooltipElementEventMap>(type: K, listener: (this: HTMLUpdrawTooltipElement, ev: UpdrawTooltipCustomEvent<HTMLUpdrawTooltipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelTooltipElement: {
-        prototype: HTMLKritzelTooltipElement;
-        new (): HTMLKritzelTooltipElement;
+    var HTMLUpdrawTooltipElement: {
+        prototype: HTMLUpdrawTooltipElement;
+        new (): HTMLUpdrawTooltipElement;
     };
-    interface HTMLKritzelUtilityPanelElementEventMap {
+    interface HTMLUpdrawUtilityPanelElementEventMap {
         "undo": void;
         "redo": void;
         "delete": void;
     }
-    interface HTMLKritzelUtilityPanelElement extends Components.KritzelUtilityPanel, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelUtilityPanelElementEventMap>(type: K, listener: (this: HTMLKritzelUtilityPanelElement, ev: KritzelUtilityPanelCustomEvent<HTMLKritzelUtilityPanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawUtilityPanelElement extends Components.UpdrawUtilityPanel, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawUtilityPanelElementEventMap>(type: K, listener: (this: HTMLUpdrawUtilityPanelElement, ev: UpdrawUtilityPanelCustomEvent<HTMLUpdrawUtilityPanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelUtilityPanelElementEventMap>(type: K, listener: (this: HTMLKritzelUtilityPanelElement, ev: KritzelUtilityPanelCustomEvent<HTMLKritzelUtilityPanelElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawUtilityPanelElementEventMap>(type: K, listener: (this: HTMLUpdrawUtilityPanelElement, ev: UpdrawUtilityPanelCustomEvent<HTMLUpdrawUtilityPanelElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelUtilityPanelElement: {
-        prototype: HTMLKritzelUtilityPanelElement;
-        new (): HTMLKritzelUtilityPanelElement;
+    var HTMLUpdrawUtilityPanelElement: {
+        prototype: HTMLUpdrawUtilityPanelElement;
+        new (): HTMLUpdrawUtilityPanelElement;
     };
-    interface HTMLKritzelWorkspaceManagerElementEventMap {
+    interface HTMLUpdrawWorkspaceManagerElementEventMap {
         "isWorkspaceManagerReady": void;
-        "workspaceChange": KritzelWorkspace;
+        "workspaceChange": UpdrawWorkspace;
     }
-    interface HTMLKritzelWorkspaceManagerElement extends Components.KritzelWorkspaceManager, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelWorkspaceManagerElementEventMap>(type: K, listener: (this: HTMLKritzelWorkspaceManagerElement, ev: KritzelWorkspaceManagerCustomEvent<HTMLKritzelWorkspaceManagerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawWorkspaceManagerElement extends Components.UpdrawWorkspaceManager, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawWorkspaceManagerElementEventMap>(type: K, listener: (this: HTMLUpdrawWorkspaceManagerElement, ev: UpdrawWorkspaceManagerCustomEvent<HTMLUpdrawWorkspaceManagerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelWorkspaceManagerElementEventMap>(type: K, listener: (this: HTMLKritzelWorkspaceManagerElement, ev: KritzelWorkspaceManagerCustomEvent<HTMLKritzelWorkspaceManagerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawWorkspaceManagerElementEventMap>(type: K, listener: (this: HTMLUpdrawWorkspaceManagerElement, ev: UpdrawWorkspaceManagerCustomEvent<HTMLUpdrawWorkspaceManagerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelWorkspaceManagerElement: {
-        prototype: HTMLKritzelWorkspaceManagerElement;
-        new (): HTMLKritzelWorkspaceManagerElement;
+    var HTMLUpdrawWorkspaceManagerElement: {
+        prototype: HTMLUpdrawWorkspaceManagerElement;
+        new (): HTMLUpdrawWorkspaceManagerElement;
     };
-    interface HTMLKritzelZoomPanelElementEventMap {
+    interface HTMLUpdrawZoomPanelElementEventMap {
         "zoomIn": void;
         "zoomOut": void;
     }
-    interface HTMLKritzelZoomPanelElement extends Components.KritzelZoomPanel, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelZoomPanelElementEventMap>(type: K, listener: (this: HTMLKritzelZoomPanelElement, ev: KritzelZoomPanelCustomEvent<HTMLKritzelZoomPanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpdrawZoomPanelElement extends Components.UpdrawZoomPanel, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpdrawZoomPanelElementEventMap>(type: K, listener: (this: HTMLUpdrawZoomPanelElement, ev: UpdrawZoomPanelCustomEvent<HTMLUpdrawZoomPanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelZoomPanelElementEventMap>(type: K, listener: (this: HTMLKritzelZoomPanelElement, ev: KritzelZoomPanelCustomEvent<HTMLKritzelZoomPanelElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpdrawZoomPanelElementEventMap>(type: K, listener: (this: HTMLUpdrawZoomPanelElement, ev: UpdrawZoomPanelCustomEvent<HTMLUpdrawZoomPanelElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLKritzelZoomPanelElement: {
-        prototype: HTMLKritzelZoomPanelElement;
-        new (): HTMLKritzelZoomPanelElement;
+    var HTMLUpdrawZoomPanelElement: {
+        prototype: HTMLUpdrawZoomPanelElement;
+        new (): HTMLUpdrawZoomPanelElement;
     };
     interface HTMLElementTagNameMap {
-        "kritzel-active-users": HTMLKritzelActiveUsersElement;
-        "kritzel-avatar": HTMLKritzelAvatarElement;
-        "kritzel-back-to-content": HTMLKritzelBackToContentElement;
-        "kritzel-brush-style": HTMLKritzelBrushStyleElement;
-        "kritzel-button": HTMLKritzelButtonElement;
-        "kritzel-chat-box": HTMLKritzelChatBoxElement;
-        "kritzel-color": HTMLKritzelColorElement;
-        "kritzel-color-palette": HTMLKritzelColorPaletteElement;
-        "kritzel-context-menu": HTMLKritzelContextMenuElement;
-        "kritzel-current-user": HTMLKritzelCurrentUserElement;
-        "kritzel-current-user-dialog": HTMLKritzelCurrentUserDialogElement;
-        "kritzel-dialog": HTMLKritzelDialogElement;
-        "kritzel-dropdown": HTMLKritzelDropdownElement;
-        "kritzel-editor": HTMLKritzelEditorElement;
-        "kritzel-export": HTMLKritzelExportElement;
-        "kritzel-font": HTMLKritzelFontElement;
-        "kritzel-font-family": HTMLKritzelFontFamilyElement;
-        "kritzel-font-size": HTMLKritzelFontSizeElement;
-        "kritzel-input": HTMLKritzelInputElement;
-        "kritzel-line-endings": HTMLKritzelLineEndingsElement;
-        "kritzel-login-dialog": HTMLKritzelLoginDialogElement;
-        "kritzel-master-detail": HTMLKritzelMasterDetailElement;
-        "kritzel-menu": HTMLKritzelMenuElement;
-        "kritzel-menu-item": HTMLKritzelMenuItemElement;
-        "kritzel-more-menu": HTMLKritzelMoreMenuElement;
-        "kritzel-notification-card": HTMLKritzelNotificationCardElement;
-        "kritzel-numeric-input": HTMLKritzelNumericInputElement;
-        "kritzel-opacity-slider": HTMLKritzelOpacitySliderElement;
-        "kritzel-pill-tabs": HTMLKritzelPillTabsElement;
-        "kritzel-portal": HTMLKritzelPortalElement;
-        "kritzel-settings": HTMLKritzelSettingsElement;
-        "kritzel-shape-fill": HTMLKritzelShapeFillElement;
-        "kritzel-share-dialog": HTMLKritzelShareDialogElement;
-        "kritzel-slide-toggle": HTMLKritzelSlideToggleElement;
-        "kritzel-split-button": HTMLKritzelSplitButtonElement;
-        "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
-        "kritzel-titlebar-menu": HTMLKritzelTitlebarMenuElement;
-        "kritzel-tool-config": HTMLKritzelToolConfigElement;
-        "kritzel-toolbar": HTMLKritzelToolbarElement;
-        "kritzel-tooltip": HTMLKritzelTooltipElement;
-        "kritzel-utility-panel": HTMLKritzelUtilityPanelElement;
-        "kritzel-workspace-manager": HTMLKritzelWorkspaceManagerElement;
-        "kritzel-zoom-panel": HTMLKritzelZoomPanelElement;
+        "updraw-active-users": HTMLUpdrawActiveUsersElement;
+        "updraw-avatar": HTMLUpdrawAvatarElement;
+        "updraw-back-to-content": HTMLUpdrawBackToContentElement;
+        "updraw-brush-style": HTMLUpdrawBrushStyleElement;
+        "updraw-button": HTMLUpdrawButtonElement;
+        "updraw-chat-box": HTMLUpdrawChatBoxElement;
+        "updraw-color": HTMLUpdrawColorElement;
+        "updraw-color-palette": HTMLUpdrawColorPaletteElement;
+        "updraw-context-menu": HTMLUpdrawContextMenuElement;
+        "updraw-current-user": HTMLUpdrawCurrentUserElement;
+        "updraw-current-user-dialog": HTMLUpdrawCurrentUserDialogElement;
+        "updraw-dialog": HTMLUpdrawDialogElement;
+        "updraw-dropdown": HTMLUpdrawDropdownElement;
+        "updraw-editor": HTMLUpdrawEditorElement;
+        "updraw-export": HTMLUpdrawExportElement;
+        "updraw-font": HTMLUpdrawFontElement;
+        "updraw-font-family": HTMLUpdrawFontFamilyElement;
+        "updraw-font-size": HTMLUpdrawFontSizeElement;
+        "updraw-input": HTMLUpdrawInputElement;
+        "updraw-line-endings": HTMLUpdrawLineEndingsElement;
+        "updraw-login-dialog": HTMLUpdrawLoginDialogElement;
+        "updraw-master-detail": HTMLUpdrawMasterDetailElement;
+        "updraw-menu": HTMLUpdrawMenuElement;
+        "updraw-menu-item": HTMLUpdrawMenuItemElement;
+        "updraw-more-menu": HTMLUpdrawMoreMenuElement;
+        "updraw-notification-card": HTMLUpdrawNotificationCardElement;
+        "updraw-numeric-input": HTMLUpdrawNumericInputElement;
+        "updraw-opacity-slider": HTMLUpdrawOpacitySliderElement;
+        "updraw-pill-tabs": HTMLUpdrawPillTabsElement;
+        "updraw-portal": HTMLUpdrawPortalElement;
+        "updraw-settings": HTMLUpdrawSettingsElement;
+        "updraw-shape-fill": HTMLUpdrawShapeFillElement;
+        "updraw-share-dialog": HTMLUpdrawShareDialogElement;
+        "updraw-slide-toggle": HTMLUpdrawSlideToggleElement;
+        "updraw-split-button": HTMLUpdrawSplitButtonElement;
+        "updraw-stroke-size": HTMLUpdrawStrokeSizeElement;
+        "updraw-titlebar-menu": HTMLUpdrawTitlebarMenuElement;
+        "updraw-tool-config": HTMLUpdrawToolConfigElement;
+        "updraw-toolbar": HTMLUpdrawToolbarElement;
+        "updraw-tooltip": HTMLUpdrawTooltipElement;
+        "updraw-utility-panel": HTMLUpdrawUtilityPanelElement;
+        "updraw-workspace-manager": HTMLUpdrawWorkspaceManagerElement;
+        "updraw-zoom-panel": HTMLUpdrawZoomPanelElement;
     }
 }
 declare namespace LocalJSX {
-    interface KritzelActiveUsers {
+    interface UpdrawActiveUsers {
         /**
           * Agents to display after the users: local agents and agents of collaborators. Shown with a bot badge, a ring while they work and their status in the tooltip.
           * @default []
          */
-        "agents"?: (KritzelAgentPresence | KritzelRemoteAgentPresence)[];
+        "agents"?: (UpdrawAgentPresence | UpdrawRemoteAgentPresence)[];
         /**
           * Avatar size in pixels
           * @default 40
@@ -2116,9 +2116,9 @@ declare namespace LocalJSX {
           * Array of active users to display
           * @default []
          */
-        "users"?: IKritzelUser[];
+        "users"?: IUpdrawUser[];
     }
-    interface KritzelAvatar {
+    interface UpdrawAvatar {
         /**
           * Background color for initials fallback
          */
@@ -2135,13 +2135,13 @@ declare namespace LocalJSX {
         /**
           * Full user object. If provided, individual props are ignored.
          */
-        "user"?: IKritzelUser;
+        "user"?: IUpdrawUser;
     }
-    interface KritzelBackToContent {
+    interface UpdrawBackToContent {
         /**
           * Emitted when the button is clicked
          */
-        "onBackToContent"?: (event: KritzelBackToContentCustomEvent<void>) => void;
+        "onBackToContent"?: (event: UpdrawBackToContentCustomEvent<void>) => void;
         /**
           * The text to display on the button
           * @default 'Back to content'
@@ -2153,18 +2153,18 @@ declare namespace LocalJSX {
          */
         "visible"?: boolean;
     }
-    interface KritzelBrushStyle {
+    interface UpdrawBrushStyle {
         /**
           * @default [     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]
          */
         "brushOptions"?: BrushStyleOption[];
-        "onTypeChange"?: (event: KritzelBrushStyleCustomEvent<'pen' | 'highlighter'>) => void;
+        "onTypeChange"?: (event: UpdrawBrushStyleCustomEvent<'pen' | 'highlighter'>) => void;
         /**
           * @default 'pen'
          */
         "type"?: 'pen' | 'highlighter';
     }
-    interface KritzelButton {
+    interface UpdrawButton {
         /**
           * Whether the button is disabled
           * @default false
@@ -2173,7 +2173,7 @@ declare namespace LocalJSX {
         /**
           * Emitted when the button is clicked
          */
-        "onButtonClick"?: (event: KritzelButtonCustomEvent<void>) => void;
+        "onButtonClick"?: (event: UpdrawButtonCustomEvent<void>) => void;
         /**
           * The type attribute for the native button element
           * @default 'button'
@@ -2185,12 +2185,12 @@ declare namespace LocalJSX {
          */
         "variant"?: 'primary' | 'secondary' | 'text';
     }
-    interface KritzelChatBox {
+    interface UpdrawChatBox {
         /**
           * Chips shown above the box, e.g. the object or element the next prompt refers to. The first three share one row as wide as the box; the rest are summarized as "+N more". The box never changes this array: pass a new array to add, change or remove chips. Each chip's remove button emits `chatChipRemove`.
           * @default []
          */
-        "chips"?: KritzelChatBoxChip[];
+        "chips"?: UpdrawChatBoxChip[];
         /**
           * Whether the chat box is disabled.
           * @default false
@@ -2205,23 +2205,23 @@ declare namespace LocalJSX {
           * Display mode. `collapsed` shows a single row and switches to `expanded` automatically while focused once the text no longer fits on one line, collapsing again when focus is lost.
           * @default 'collapsed'
          */
-        "mode"?: KritzelChatBoxMode;
+        "mode"?: UpdrawChatBoxMode;
         /**
           * Emitted with the chip whose remove button the user activated. The chip stays until `chips` no longer contains it.
          */
-        "onChatChipRemove"?: (event: KritzelChatBoxCustomEvent<KritzelChatBoxChip>) => void;
+        "onChatChipRemove"?: (event: UpdrawChatBoxCustomEvent<UpdrawChatBoxChip>) => void;
         /**
           * Emitted when the user stops the current response.
          */
-        "onChatStop"?: (event: KritzelChatBoxCustomEvent<void>) => void;
+        "onChatStop"?: (event: UpdrawChatBoxCustomEvent<void>) => void;
         /**
           * Emitted with the current text when the user submits the chat box.
          */
-        "onChatSubmit"?: (event: KritzelChatBoxCustomEvent<string>) => void;
+        "onChatSubmit"?: (event: UpdrawChatBoxCustomEvent<string>) => void;
         /**
           * Emitted when the mode changes, including automatic expansion.
          */
-        "onModeChange"?: (event: KritzelChatBoxCustomEvent<KritzelChatBoxMode>) => void;
+        "onModeChange"?: (event: UpdrawChatBoxCustomEvent<UpdrawChatBoxMode>) => void;
         /**
           * Placeholder text shown when the chat box is empty. Falls back to the localized term.
          */
@@ -2230,14 +2230,14 @@ declare namespace LocalJSX {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        "terms"?: Partial<Record<UpdrawTermKey, string>>;
         /**
           * Current text value of the chat box.
           * @default ''
          */
         "value"?: string;
     }
-    interface KritzelColor {
+    interface UpdrawColor {
         /**
           * @default 24
          */
@@ -2245,7 +2245,7 @@ declare namespace LocalJSX {
         "theme"?: ThemeName;
         "value"?: string | ThemeAwareColor;
     }
-    interface KritzelColorPalette {
+    interface UpdrawColorPalette {
         /**
           * @default []
          */
@@ -2258,7 +2258,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "isOpaque"?: boolean;
-        "onColorChange"?: (event: KritzelColorPaletteCustomEvent<ThemeAwareColor>) => void;
+        "onColorChange"?: (event: UpdrawColorPaletteCustomEvent<ThemeAwareColor>) => void;
         /**
           * @default 1
          */
@@ -2269,13 +2269,13 @@ declare namespace LocalJSX {
         "selectedColor"?: ThemeAwareColor | null;
         "theme"?: ThemeName;
     }
-    interface KritzelContextMenu {
+    interface UpdrawContextMenu {
         "items"?: ContextMenuItem[];
-        "objects"?: KritzelBaseObject[];
-        "onActionSelected"?: (event: KritzelContextMenuCustomEvent<ContextMenuItem>) => void;
-        "onClose"?: (event: KritzelContextMenuCustomEvent<void>) => void;
+        "objects"?: UpdrawBaseObject[];
+        "onActionSelected"?: (event: UpdrawContextMenuCustomEvent<ContextMenuItem>) => void;
+        "onClose"?: (event: UpdrawContextMenuCustomEvent<void>) => void;
     }
-    interface KritzelCurrentUser {
+    interface UpdrawCurrentUser {
         /**
           * Avatar size in pixels
           * @default 40
@@ -2285,25 +2285,25 @@ declare namespace LocalJSX {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        "terms"?: Partial<Record<UpdrawTermKey, string>>;
         /**
           * The current user to display
          */
-        "user"?: IKritzelUser;
+        "user"?: IUpdrawUser;
     }
-    interface KritzelCurrentUserDialog {
+    interface UpdrawCurrentUserDialog {
         /**
           * Emitted when the user clicks the logout action.
          */
-        "onLogoutRequest"?: (event: KritzelCurrentUserDialogCustomEvent<void>) => void;
+        "onLogoutRequest"?: (event: UpdrawCurrentUserDialogCustomEvent<void>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<KritzelTermKey, string>>;
-        "user"?: IKritzelUser;
+        "terms"?: Partial<Record<UpdrawTermKey, string>>;
+        "user"?: IUpdrawUser;
     }
-    interface KritzelDialog {
+    interface UpdrawDialog {
         /**
           * Whether to auto-focus the first focusable element when opened
           * @default true
@@ -2346,11 +2346,11 @@ declare namespace LocalJSX {
         /**
           * Emitted when the dialog closes
          */
-        "onDialogClose"?: (event: KritzelDialogCustomEvent<IKritzelDialogCloseEvent>) => void;
+        "onDialogClose"?: (event: UpdrawDialogCustomEvent<IUpdrawDialogCloseEvent>) => void;
         /**
           * Emitted when the dialog opens
          */
-        "onDialogOpen"?: (event: KritzelDialogCustomEvent<void>) => void;
+        "onDialogOpen"?: (event: UpdrawDialogCustomEvent<void>) => void;
         /**
           * Size of the dialog
           * @default 'medium'
@@ -2362,12 +2362,12 @@ declare namespace LocalJSX {
          */
         "trapFocus"?: boolean;
     }
-    interface KritzelDropdown {
+    interface UpdrawDropdown {
         /**
           * Force the dropdown to open in a specific direction instead of auto-detecting
          */
         "forceOpenDirection"?: 'down' | 'up';
-        "onValueChanged"?: (event: KritzelDropdownCustomEvent<string>) => void;
+        "onValueChanged"?: (event: UpdrawDropdownCustomEvent<string>) => void;
         /**
           * @default []
          */
@@ -2379,8 +2379,8 @@ declare namespace LocalJSX {
         "value"?: string;
         "width"?: string;
     }
-    interface KritzelEditor {
-        "activeUsers"?: IKritzelUser[];
+    interface UpdrawEditor {
+        "activeUsers"?: IUpdrawUser[];
         /**
           * Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID.
          */
@@ -2388,21 +2388,21 @@ declare namespace LocalJSX {
         /**
           * @default DEFAULT_ASSET_STORAGE_CONFIG
          */
-        "assetStorageConfig"?: KritzelAssetStorageConfig;
+        "assetStorageConfig"?: UpdrawAssetStorageConfig;
         /**
           * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Up to three share one row as wide as the box; the rest are summarized as "+N more". Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
           * @default []
          */
-        "chatBoxChips"?: KritzelChatBoxChip[];
+        "chatBoxChips"?: UpdrawChatBoxChip[];
         /**
           * Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row.
           * @default "collapsed"
          */
-        "chatBoxMode"?: KritzelChatBoxMode1;
+        "chatBoxMode"?: UpdrawChatBoxMode1;
         /**
           * A chat session the chat box sends its prompts to, with `chatBoxChips` as what they refer to. While it runs, the chat box shows its progress and the stop button stops it. Call `preventDefault()` on `chatSubmit` to send a prompt yourself.
          */
-        "chatSession"?: KritzelChatSession | null;
+        "chatSession"?: UpdrawChatSession | null;
         /**
           * The element to use as the target for the cursor. Defaults to the editor container if not set.
          */
@@ -2411,15 +2411,15 @@ declare namespace LocalJSX {
           * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts.
           * @default {}
          */
-        "customFonts"?: KritzelFontMap;
+        "customFonts"?: UpdrawFontMap;
         /**
           * @default {}
          */
-        "customSvgIcons"?: KritzelSvgIconMap;
+        "customSvgIcons"?: UpdrawSvgIconMap;
         /**
           * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,     showAssetResolverInfo: false,   }
          */
-        "debugInfo"?: KritzelDebugInfo;
+        "debugInfo"?: UpdrawDebugInfo;
         /**
           * Optional unique identifier for namespacing storage keys across multiple editor instances.
          */
@@ -2464,7 +2464,7 @@ declare namespace LocalJSX {
          */
         "isUtilityPanelVisible"?: boolean;
         /**
-          * Whether the "Powered by Kritzel" watermark is shown. Keeping it visible helps support the project.
+          * Whether the "Powered by Updraw" watermark is shown. Keeping it visible helps support the project.
           * @default true
          */
         "isWatermarkVisible"?: boolean;
@@ -2488,7 +2488,7 @@ declare namespace LocalJSX {
         /**
           * An array of available locale definitions (with optional partial term overrides).
          */
-        "locales"?: KritzelLocale[];
+        "locales"?: UpdrawLocale[];
         /**
           * @default true
          */
@@ -2496,79 +2496,79 @@ declare namespace LocalJSX {
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
          */
-        "loginConfig"?: KritzelLoginConfig;
+        "loginConfig"?: UpdrawLoginConfig;
         /**
           * @default [     {       id: "share",       label: "menu.share",       icon: "share",       isVisible: async () => hasRemoteSyncProvider(this.syncConfig),       action: () => {         if (!this.isLoggedIn && this.loginConfig) {           this.openLoginDialog();           return;         }         this.shareDialogRef.open();       },     },     {       id: "export",       label: "menu.export",       icon: "upload",       action: async () => {         const preview = await this.engineRef.getScreenshot("png");         this.exportRef.open(preview ?? undefined);       },     },     {       id: "import",       label: "menu.import",       icon: "download",       action: () => this.engineRef.importFromFile(),     },     {       id: "settings",       label: "menu.settings",       icon: "settings",       action: () => this.settingsRef.open(),     },   ]
          */
-        "moreMenuItems"?: IKritzelMenuItem[];
+        "moreMenuItems"?: IUpdrawMenuItem[];
         /**
           * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
          */
-        "objectConfig"?: KritzelObjectConfig;
+        "objectConfig"?: UpdrawObjectConfig;
         /**
-          * @default [     {       label: "menu.copy",       icon: "copy",       group: "clipboard",       action: () => this.engineRef.copy(),     },     {       label: "menu.cut",       icon: "cut",       group: "clipboard",       action: () => this.engineRef.cut(),     },     {       label: "menu.paste",       icon: "paste",       group: "clipboard",       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.export",       icon: "upload",       group: "clipboard",       isVisible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: "menu.order",       icon: "ordering",       group: "other",       children: [         {           label: "menu.bringToFront",           icon: "bringToFront",           action: () => this.engineRef.bringToFront(),         },         {           label: "menu.sendToBack",           icon: "sendToBack",           action: () => this.engineRef.sendToBack(),         },         {           label: "menu.moveUp",           icon: "arrowUpFromDot",           action: () => this.engineRef.bringForward(),         },         {           label: "menu.moveDown",           icon: "arrowDownFromDot",           action: () => this.engineRef.sendBackward(),         },       ],     },     {       label: "menu.align",       icon: "align",       group: "other",       children: [         {           label: "menu.alignLeft",           icon: "alignStartVertical",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.StartHorizontal),         },         {           label: "menu.alignCenterHorizontal",           icon: "alignCenterHorizontal",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal),         },         {           label: "menu.alignRight",           icon: "alignEndVertical",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.EndHorizontal),         },         {           label: "menu.alignTop",           icon: "alignStartHorizontal",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.StartVertical),         },         {           label: "menu.alignCenterVertical",           icon: "alignCenterVertical",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.CenterVertical),         },         {           label: "menu.alignBottom",           icon: "alignEndHorizontal",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.EndVertical),         },       ],     },     {       label: "menu.group",       icon: "group",       group: "other",       children: [         {           label: "menu.group",           icon: "group",           action: (_, objects) => this.engineRef.group(objects),         },         {           label: "menu.ungroup",           icon: "ungroup",           action: (_, objects) => {             const groups = objects.filter(               (object): object is KritzelGroup =>                 object.__class__ === "KritzelGroup",             );             this.engineRef.ungroup(groups);           },         },       ],     },     {       label: "menu.delete",       icon: "delete",       group: "edit",       action: () => this.engineRef.delete(),     },   ]
+          * @default [     {       label: "menu.copy",       icon: "copy",       group: "clipboard",       action: () => this.engineRef.copy(),     },     {       label: "menu.cut",       icon: "cut",       group: "clipboard",       action: () => this.engineRef.cut(),     },     {       label: "menu.paste",       icon: "paste",       group: "clipboard",       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.export",       icon: "upload",       group: "clipboard",       isVisible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: "menu.order",       icon: "ordering",       group: "other",       children: [         {           label: "menu.bringToFront",           icon: "bringToFront",           action: () => this.engineRef.bringToFront(),         },         {           label: "menu.sendToBack",           icon: "sendToBack",           action: () => this.engineRef.sendToBack(),         },         {           label: "menu.moveUp",           icon: "arrowUpFromDot",           action: () => this.engineRef.bringForward(),         },         {           label: "menu.moveDown",           icon: "arrowDownFromDot",           action: () => this.engineRef.sendBackward(),         },       ],     },     {       label: "menu.align",       icon: "align",       group: "other",       children: [         {           label: "menu.alignLeft",           icon: "alignStartVertical",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.StartHorizontal),         },         {           label: "menu.alignCenterHorizontal",           icon: "alignCenterHorizontal",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.CenterHorizontal),         },         {           label: "menu.alignRight",           icon: "alignEndVertical",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.EndHorizontal),         },         {           label: "menu.alignTop",           icon: "alignStartHorizontal",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.StartVertical),         },         {           label: "menu.alignCenterVertical",           icon: "alignCenterVertical",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.CenterVertical),         },         {           label: "menu.alignBottom",           icon: "alignEndHorizontal",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.EndVertical),         },       ],     },     {       label: "menu.group",       icon: "group",       group: "other",       children: [         {           label: "menu.group",           icon: "group",           action: (_, objects) => this.engineRef.group(objects),         },         {           label: "menu.ungroup",           icon: "ungroup",           action: (_, objects) => {             const groups = objects.filter(               (object): object is UpdrawGroup =>                 object.__class__ === "UpdrawGroup",             );             this.engineRef.ungroup(groups);           },         },       ],     },     {       label: "menu.delete",       icon: "delete",       group: "edit",       action: () => this.engineRef.delete(),     },   ]
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         /**
           * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
          */
-        "objectTitlebar"?: KritzelObjectTitlebarConfig;
-        "onActiveWorkspaceChange"?: (event: KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;
+        "objectTitlebar"?: UpdrawObjectTitlebarConfig;
+        "onActiveWorkspaceChange"?: (event: UpdrawEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;
         /**
           * Emitted when agents are added or removed, or when what the avatar stack shows of them changes (name, color, avatar, status, visibility, activity). Never emitted for plain cursor motion.
          */
-        "onAgentsChange"?: (event: KritzelEditorCustomEvent<KritzelAgentsChangeEvent>) => void;
-        "onAwarenessChange"?: (event: KritzelEditorCustomEvent<Map<number, Record<string, any>>>) => void;
+        "onAgentsChange"?: (event: UpdrawEditorCustomEvent<UpdrawAgentsChangeEvent>) => void;
+        "onAwarenessChange"?: (event: UpdrawEditorCustomEvent<Map<number, Record<string, any>>>) => void;
         /**
           * Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it.
          */
-        "onChatChipRemove"?: (event: KritzelEditorCustomEvent<KritzelChatBoxChip>) => void;
+        "onChatChipRemove"?: (event: UpdrawEditorCustomEvent<UpdrawChatBoxChip>) => void;
         /**
           * Emitted when the user stops the current chat response. A `chatSession` is stopped too.
          */
-        "onChatStop"?: (event: KritzelEditorCustomEvent<void>) => void;
+        "onChatStop"?: (event: UpdrawEditorCustomEvent<void>) => void;
         /**
           * Emitted with the chat box text when the user submits it. With a `chatSession`, the prompt is sent to it unless a listener calls `preventDefault()`.
          */
-        "onChatSubmit"?: (event: KritzelEditorCustomEvent<string>) => void;
-        "onIsPublicChange"?: (event: KritzelEditorCustomEvent<IKritzelIsPublicChangeEvent>) => void;
-        "onIsReady"?: (event: KritzelEditorCustomEvent<EditorIsReadyEvent>) => void;
-        "onLocaleChange"?: (event: KritzelEditorCustomEvent<LocaleCode>) => void;
-        "onLogin"?: (event: KritzelEditorCustomEvent<LoginEvent>) => void;
-        "onLogout"?: (event: KritzelEditorCustomEvent<void>) => void;
+        "onChatSubmit"?: (event: UpdrawEditorCustomEvent<string>) => void;
+        "onIsPublicChange"?: (event: UpdrawEditorCustomEvent<IUpdrawIsPublicChangeEvent>) => void;
+        "onIsReady"?: (event: UpdrawEditorCustomEvent<EditorIsReadyEvent>) => void;
+        "onLocaleChange"?: (event: UpdrawEditorCustomEvent<LocaleCode>) => void;
+        "onLogin"?: (event: UpdrawEditorCustomEvent<LoginEvent>) => void;
+        "onLogout"?: (event: UpdrawEditorCustomEvent<void>) => void;
         /**
           * Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual.
          */
-        "onObjectElementClick"?: (event: KritzelEditorCustomEvent<KritzelObjectElementClickEvent>) => void;
+        "onObjectElementClick"?: (event: UpdrawEditorCustomEvent<UpdrawObjectElementClickEvent>) => void;
         /**
           * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object, such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
          */
-        "onObjectElementHover"?: (event: KritzelEditorCustomEvent<KritzelObjectElementHoverEvent>) => void;
+        "onObjectElementHover"?: (event: UpdrawEditorCustomEvent<UpdrawObjectElementHoverEvent>) => void;
         /**
           * Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`.
          */
-        "onObjectElementPick"?: (event: KritzelEditorCustomEvent<KritzelObjectElementPickEvent>) => void;
+        "onObjectElementPick"?: (event: UpdrawEditorCustomEvent<UpdrawObjectElementPickEvent>) => void;
         /**
           * Emitted when a button or a menu item in an object titlebar is clicked.
          */
-        "onObjectTitlebarAction"?: (event: KritzelEditorCustomEvent<KritzelObjectTitlebarActionEvent>) => void;
+        "onObjectTitlebarAction"?: (event: UpdrawEditorCustomEvent<UpdrawObjectTitlebarActionEvent>) => void;
         /**
           * Emitted when objects are added. `source` is set when an agent made the change.
          */
-        "onObjectsAdded"?: (event: KritzelEditorCustomEvent<ObjectsAddedEvent>) => void;
-        "onObjectsChange"?: (event: KritzelEditorCustomEvent<KritzelBaseObject[]>) => void;
+        "onObjectsAdded"?: (event: UpdrawEditorCustomEvent<ObjectsAddedEvent>) => void;
+        "onObjectsChange"?: (event: UpdrawEditorCustomEvent<UpdrawBaseObject[]>) => void;
         /**
           * Emitted when objects are removed. `source` is set when an agent made the change.
          */
-        "onObjectsRemoved"?: (event: KritzelEditorCustomEvent<ObjectsRemovedEvent>) => void;
-        "onObjectsSelectionChange"?: (event: KritzelEditorCustomEvent<KritzelBaseObject[]>) => void;
+        "onObjectsRemoved"?: (event: UpdrawEditorCustomEvent<ObjectsRemovedEvent>) => void;
+        "onObjectsSelectionChange"?: (event: UpdrawEditorCustomEvent<UpdrawBaseObject[]>) => void;
         /**
           * Emitted when objects are updated. `source` is set when an agent made the change.
          */
-        "onObjectsUpdated"?: (event: KritzelEditorCustomEvent<ObjectsUpdatedEvent>) => void;
-        "onThemeChange"?: (event: KritzelEditorCustomEvent<ThemeName>) => void;
-        "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState>) => void;
-        "onViewportChange"?: (event: KritzelEditorCustomEvent<KritzelViewportState>) => void;
+        "onObjectsUpdated"?: (event: UpdrawEditorCustomEvent<ObjectsUpdatedEvent>) => void;
+        "onThemeChange"?: (event: UpdrawEditorCustomEvent<ThemeName>) => void;
+        "onUndoStateChange"?: (event: UpdrawEditorCustomEvent<UpdrawUndoState>) => void;
+        "onViewportChange"?: (event: UpdrawEditorCustomEvent<UpdrawViewportState>) => void;
         /**
           * @default 1000
          */
@@ -2580,17 +2580,17 @@ declare namespace LocalJSX {
         /**
           * @default DEFAULT_SYNC_CONFIG
          */
-        "syncConfig"?: KritzelSyncConfig;
+        "syncConfig"?: UpdrawSyncConfig;
         /**
           * @default "light"
          */
         "theme"?: ThemeName;
-        "themes"?: KritzelTheme[];
+        "themes"?: UpdrawTheme[];
         /**
-          * @default [     {       name: "selection",       type: "tool",       isDefault: true,       tool: KritzelSelectionTool,       icon: "cursor",     },     {       name: "brush",       type: "tool",       tool: KritzelBrushTool,       icon: "pen",       config: DEFAULT_BRUSH_CONFIG,     },     {       name: "eraser",       type: "tool",       tool: KritzelEraserTool,       icon: "eraser",     },     {       name: "line",       type: "tool",       tool: KritzelLineTool,       icon: "arrow",       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: "shape",       type: "tool",       tool: KritzelShapeTool,       icon: "shapeRectangle",       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         {           id: "rectangle",           icon: "shapeRectangle",           label: "Rectangle",           value: ShapeType.Rectangle,           toolProperty: "shapeType",         },         {           id: "ellipse",           icon: "shapeEllipse",           label: "Ellipse",           value: ShapeType.Ellipse,           toolProperty: "shapeType",         },         {           id: "triangle",           icon: "shapeTriangle",           label: "Triangle",           value: ShapeType.Triangle,           toolProperty: "shapeType",         },       ],     },     {       name: "text",       type: "tool",       tool: KritzelTextTool,       icon: "type",       config: DEFAULT_TEXT_CONFIG,     },     {       name: "image",       type: "tool",       tool: KritzelImageTool,       icon: "image",     },     {       name: "config",       type: "config",     },   ]
+          * @default [     {       name: "selection",       type: "tool",       isDefault: true,       tool: UpdrawSelectionTool,       icon: "cursor",     },     {       name: "brush",       type: "tool",       tool: UpdrawBrushTool,       icon: "pen",       config: DEFAULT_BRUSH_CONFIG,     },     {       name: "eraser",       type: "tool",       tool: UpdrawEraserTool,       icon: "eraser",     },     {       name: "line",       type: "tool",       tool: UpdrawLineTool,       icon: "arrow",       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: "shape",       type: "tool",       tool: UpdrawShapeTool,       icon: "shapeRectangle",       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         {           id: "rectangle",           icon: "shapeRectangle",           label: "Rectangle",           value: ShapeType.Rectangle,           toolProperty: "shapeType",         },         {           id: "ellipse",           icon: "shapeEllipse",           label: "Ellipse",           value: ShapeType.Ellipse,           toolProperty: "shapeType",         },         {           id: "triangle",           icon: "shapeTriangle",           label: "Triangle",           value: ShapeType.Triangle,           toolProperty: "shapeType",         },       ],     },     {       name: "text",       type: "tool",       tool: UpdrawTextTool,       icon: "type",       config: DEFAULT_TEXT_CONFIG,     },     {       name: "image",       type: "tool",       tool: UpdrawImageTool,       icon: "image",     },     {       name: "config",       type: "config",     },   ]
          */
-        "toolbarItems"?: KritzelToolbarItem[];
-        "user"?: IKritzelUser;
+        "toolbarItems"?: UpdrawToolbarItem[];
+        "user"?: IUpdrawUser;
         /**
           * @default Infinity
          */
@@ -2610,24 +2610,24 @@ declare namespace LocalJSX {
         /**
           * Authoritative workspace catalog for this editor instance. When provided, provider-only workspaces are hidden but not deleted.
          */
-        "workspaces"?: KritzelWorkspace[];
+        "workspaces"?: UpdrawWorkspace[];
     }
-    interface KritzelExport {
-        "onExportJson"?: (event: KritzelExportCustomEvent<string>) => void;
-        "onExportPng"?: (event: KritzelExportCustomEvent<void>) => void;
-        "onExportSvg"?: (event: KritzelExportCustomEvent<void>) => void;
+    interface UpdrawExport {
+        "onExportJson"?: (event: UpdrawExportCustomEvent<string>) => void;
+        "onExportPng"?: (event: UpdrawExportCustomEvent<void>) => void;
+        "onExportSvg"?: (event: UpdrawExportCustomEvent<void>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        "terms"?: Partial<Record<UpdrawTermKey, string>>;
         /**
           * The name of the current workspace, used as default filename
           * @default 'workspace'
          */
         "workspaceName"?: string;
     }
-    interface KritzelFont {
+    interface UpdrawFont {
         /**
           * @default '#000000'
          */
@@ -2641,20 +2641,20 @@ declare namespace LocalJSX {
          */
         "size"?: number;
     }
-    interface KritzelFontFamily {
+    interface UpdrawFontFamily {
         /**
           * @default []
          */
         "fontOptions"?: FontOption[];
-        "onFontFamilyChange"?: (event: KritzelFontFamilyCustomEvent<string>) => void;
+        "onFontFamilyChange"?: (event: UpdrawFontFamilyCustomEvent<string>) => void;
         "selectedFontFamily"?: string;
     }
-    interface KritzelFontSize {
+    interface UpdrawFontSize {
         /**
           * @default 'Arial'
          */
         "fontFamily"?: string;
-        "onSizeChange"?: (event: KritzelFontSizeCustomEvent<number>) => void;
+        "onSizeChange"?: (event: UpdrawFontSizeCustomEvent<number>) => void;
         /**
           * @default null
          */
@@ -2664,7 +2664,7 @@ declare namespace LocalJSX {
          */
         "sizes"?: number[];
     }
-    interface KritzelInput {
+    interface UpdrawInput {
         /**
           * Whether the input is disabled
           * @default false
@@ -2678,7 +2678,7 @@ declare namespace LocalJSX {
         /**
           * Emitted when the value changes
          */
-        "onValueChange"?: (event: KritzelInputCustomEvent<string>) => void;
+        "onValueChange"?: (event: UpdrawInputCustomEvent<string>) => void;
         /**
           * Placeholder text shown when input is empty
           * @default ''
@@ -2700,8 +2700,8 @@ declare namespace LocalJSX {
          */
         "value"?: string;
     }
-    interface KritzelLineEndings {
-        "onValueChange"?: (event: KritzelLineEndingsCustomEvent<LineArrowConfig>) => void;
+    interface UpdrawLineEndings {
+        "onValueChange"?: (event: UpdrawLineEndingsCustomEvent<LineArrowConfig>) => void;
         /**
           * Available ending styles
           * @default ['none', 'triangle']
@@ -2715,9 +2715,9 @@ declare namespace LocalJSX {
     /**
      * Login dialog component for displaying authentication provider buttons.
      * This is a presentational component that emits events for all actions.
-     * The parent component (kritzel-editor) handles the actual authentication flow.
+     * The parent component (updraw-editor) handles the actual authentication flow.
      */
-    interface KritzelLoginDialog {
+    interface UpdrawLoginDialog {
         /**
           * Dialog title
           * @default 'Sign in'
@@ -2726,62 +2726,62 @@ declare namespace LocalJSX {
         /**
           * Emitted when the dialog is closed
          */
-        "onDialogClosed"?: (event: KritzelLoginDialogCustomEvent<void>) => void;
+        "onDialogClosed"?: (event: UpdrawLoginDialogCustomEvent<void>) => void;
         /**
           * Emitted when a provider button is clicked
          */
-        "onProviderLogin"?: (event: KritzelLoginDialogCustomEvent<LoginEvent>) => void;
+        "onProviderLogin"?: (event: UpdrawLoginDialogCustomEvent<LoginEvent>) => void;
         /**
           * Array of authentication provider buttons to render
           * @default []
          */
-        "providers"?: KritzelLoginProvider[];
+        "providers"?: UpdrawLoginProvider[];
         /**
           * Optional subtitle text displayed below the title
          */
         "subtitle"?: string;
     }
-    interface KritzelMasterDetail {
+    interface UpdrawMasterDetail {
         /**
           * Array of menu items to display in the master (left) panel
           * @default []
          */
-        "items"?: IKritzelMasterDetailItem[];
+        "items"?: IUpdrawMasterDetailItem[];
         /**
           * Emitted when an item is selected
          */
-        "onItemSelect"?: (event: KritzelMasterDetailCustomEvent<IKritzelMasterDetailSelectEvent>) => void;
+        "onItemSelect"?: (event: UpdrawMasterDetailCustomEvent<IUpdrawMasterDetailSelectEvent>) => void;
         /**
           * ID of the currently selected item
          */
         "selectedItemId"?: string;
     }
-    interface KritzelMenu {
-        "items"?: IKritzelMenuItem[];
-        "onClose"?: (event: KritzelMenuCustomEvent<void>) => void;
-        "onItemCancel"?: (event: KritzelMenuCustomEvent<IKritzelMenuItem>) => void;
-        "onItemCloseChildMenu"?: (event: KritzelMenuCustomEvent<IKritzelMenuItem>) => void;
-        "onItemSave"?: (event: KritzelMenuCustomEvent<IKritzelMenuItem>) => void;
-        "onItemSelect"?: (event: KritzelMenuCustomEvent<IKritzelMenuItemSelectEvent>) => void;
-        "onItemToggleChildMenu"?: (event: KritzelMenuCustomEvent<IKritzelMenuItemToggleChildMenuEvent>) => void;
+    interface UpdrawMenu {
+        "items"?: IUpdrawMenuItem[];
+        "onClose"?: (event: UpdrawMenuCustomEvent<void>) => void;
+        "onItemCancel"?: (event: UpdrawMenuCustomEvent<IUpdrawMenuItem>) => void;
+        "onItemCloseChildMenu"?: (event: UpdrawMenuCustomEvent<IUpdrawMenuItem>) => void;
+        "onItemSave"?: (event: UpdrawMenuCustomEvent<IUpdrawMenuItem>) => void;
+        "onItemSelect"?: (event: UpdrawMenuCustomEvent<IUpdrawMenuItemSelectEvent>) => void;
+        "onItemToggleChildMenu"?: (event: UpdrawMenuCustomEvent<IUpdrawMenuItemToggleChildMenuEvent>) => void;
         /**
           * @default null
          */
-        "parent"?: IKritzelMenuItem;
+        "parent"?: IUpdrawMenuItem;
     }
-    interface KritzelMenuItem {
-        "item"?: IKritzelMenuItem;
-        "onItemCancel"?: (event: KritzelMenuItemCustomEvent<IKritzelMenuItem>) => void;
-        "onItemCloseChildMenu"?: (event: KritzelMenuItemCustomEvent<IKritzelMenuItem>) => void;
-        "onItemSave"?: (event: KritzelMenuItemCustomEvent<IKritzelMenuItem>) => void;
-        "onItemSelect"?: (event: KritzelMenuItemCustomEvent<IKritzelMenuItemSelectEvent>) => void;
-        "onItemToggleChildMenu"?: (event: KritzelMenuItemCustomEvent<IKritzelMenuItemToggleChildMenuEvent>) => void;
+    interface UpdrawMenuItem {
+        "item"?: IUpdrawMenuItem;
+        "onItemCancel"?: (event: UpdrawMenuItemCustomEvent<IUpdrawMenuItem>) => void;
+        "onItemCloseChildMenu"?: (event: UpdrawMenuItemCustomEvent<IUpdrawMenuItem>) => void;
+        "onItemSave"?: (event: UpdrawMenuItemCustomEvent<IUpdrawMenuItem>) => void;
+        "onItemSelect"?: (event: UpdrawMenuItemCustomEvent<IUpdrawMenuItemSelectEvent>) => void;
+        "onItemToggleChildMenu"?: (event: UpdrawMenuItemCustomEvent<IUpdrawMenuItemToggleChildMenuEvent>) => void;
         /**
           * @default null
          */
-        "parent"?: IKritzelMenuItem;
+        "parent"?: IUpdrawMenuItem;
     }
-    interface KritzelMoreMenu {
+    interface UpdrawMoreMenu {
         /**
           * The icon to display on the button
           * @default 'ellipsisVertical'
@@ -2796,7 +2796,7 @@ declare namespace LocalJSX {
           * The menu items to display in the dropdown. Items with `isVisible` set to `false` will be filtered out. Items with an `action` will have that action invoked on selection.
           * @default []
          */
-        "items"?: IKritzelMenuItem[];
+        "items"?: IUpdrawMenuItem[];
         /**
           * Offset Y for the portal positioning
           * @default 4
@@ -2805,19 +2805,19 @@ declare namespace LocalJSX {
         /**
           * Emitted when a menu item is selected
          */
-        "onItemSelect"?: (event: KritzelMoreMenuCustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => void;
+        "onItemSelect"?: (event: UpdrawMoreMenuCustomEvent<{ item: IUpdrawMenuItem; parent: IUpdrawMenuItem }>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        "terms"?: Partial<Record<UpdrawTermKey, string>>;
         /**
           * Whether the menu button is visible
           * @default false
          */
         "visible"?: boolean;
     }
-    interface KritzelNotificationCard {
+    interface UpdrawNotificationCard {
         /**
           * Locale used for formatting the timestamp.
          */
@@ -2825,22 +2825,22 @@ declare namespace LocalJSX {
         /**
           * Notification data rendered by this card.
          */
-        "notification"?: KritzelNotification;
+        "notification"?: UpdrawNotification;
         /**
           * Emitted when the notification should be dismissed manually.
          */
-        "onDismiss"?: (event: KritzelNotificationCardCustomEvent<void>) => void;
+        "onDismiss"?: (event: UpdrawNotificationCardCustomEvent<void>) => void;
         /**
           * Emitted when pointer hover state changes.
          */
-        "onHoverChange"?: (event: KritzelNotificationCardCustomEvent<boolean>) => void;
+        "onHoverChange"?: (event: UpdrawNotificationCardCustomEvent<boolean>) => void;
         /**
           * Whether a formatted timestamp should be displayed when available.
           * @default true
          */
         "showTimestamp"?: boolean;
     }
-    interface KritzelNumericInput {
+    interface UpdrawNumericInput {
         /**
           * Label text displayed above the input
           * @default ''
@@ -2859,7 +2859,7 @@ declare namespace LocalJSX {
         /**
           * Emitted when the value changes (after normalization)
          */
-        "onValueChange"?: (event: KritzelNumericInputCustomEvent<number | undefined>) => void;
+        "onValueChange"?: (event: UpdrawNumericInputCustomEvent<number | undefined>) => void;
         /**
           * Placeholder text shown when input is empty
           * @default ''
@@ -2875,7 +2875,7 @@ declare namespace LocalJSX {
          */
         "value"?: number;
     }
-    interface KritzelOpacitySlider {
+    interface UpdrawOpacitySlider {
         /**
           * Maximum opacity value
           * @default 1
@@ -2886,7 +2886,7 @@ declare namespace LocalJSX {
           * @default 0
          */
         "min"?: number;
-        "onValueChange"?: (event: KritzelOpacitySliderCustomEvent<number>) => void;
+        "onValueChange"?: (event: UpdrawOpacitySliderCustomEvent<number>) => void;
         /**
           * Color to display in the preview (optional)
           * @default '#000000'
@@ -2903,22 +2903,22 @@ declare namespace LocalJSX {
          */
         "value"?: number;
     }
-    interface KritzelPillTabs {
+    interface UpdrawPillTabs {
         /**
           * Emitted when the selected tab changes
          */
-        "onValueChange"?: (event: KritzelPillTabsCustomEvent<string>) => void;
+        "onValueChange"?: (event: UpdrawPillTabsCustomEvent<string>) => void;
         /**
           * Array of tab definitions to render
           * @default []
          */
-        "tabs"?: KritzelPillTab[];
+        "tabs"?: UpdrawPillTab[];
         /**
           * Currently selected tab ID
          */
         "value"?: string;
     }
-    interface KritzelPortal {
+    interface UpdrawPortal {
         "anchor"?: HTMLElement;
         /**
           * @default true
@@ -2926,9 +2926,9 @@ declare namespace LocalJSX {
         "autoFocus"?: boolean;
         "offsetX"?: number;
         "offsetY"?: number;
-        "onClose"?: (event: KritzelPortalCustomEvent<void>) => void;
+        "onClose"?: (event: UpdrawPortalCustomEvent<void>) => void;
     }
-    interface KritzelSettings {
+    interface UpdrawSettings {
         /**
           * Available locales as `{ code, label }` options for the language selector.
           * @default []
@@ -2942,23 +2942,23 @@ declare namespace LocalJSX {
         /**
           * Emitted when settings change
          */
-        "onSettingsChange"?: (event: KritzelSettingsCustomEvent<KritzelSettingsConfig>) => void;
+        "onSettingsChange"?: (event: UpdrawSettingsCustomEvent<UpdrawSettingsConfig>) => void;
         /**
           * Current settings values. Used to initialize and sync the component's internal state.
          */
-        "settings"?: Partial<KritzelSettingsConfig>;
+        "settings"?: Partial<UpdrawSettingsConfig>;
         /**
           * @default []
          */
-        "shortcuts"?: Omit<KritzelShortcut, 'action' | 'condition'>[];
+        "shortcuts"?: Omit<UpdrawShortcut, 'action' | 'condition'>[];
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        "terms"?: Partial<Record<UpdrawTermKey, string>>;
     }
-    interface KritzelShapeFill {
-        "onValueChange"?: (event: KritzelShapeFillCustomEvent<ShapeFillType>) => void;
+    interface UpdrawShapeFill {
+        "onValueChange"?: (event: UpdrawShapeFillCustomEvent<ShapeFillType>) => void;
         /**
           * Current fill type
           * @default 'transparent'
@@ -2968,9 +2968,9 @@ declare namespace LocalJSX {
     /**
      * Share dialog component for managing workspace link sharing.
      * This is a presentational component that emits events for all actions.
-     * The parent component (kritzel-editor) handles the business logic.
+     * The parent component (updraw-editor) handles the business logic.
      */
-    interface KritzelShareDialog {
+    interface UpdrawShareDialog {
         /**
           * Whether the workspace is currently public.
           * @default false
@@ -2979,23 +2979,23 @@ declare namespace LocalJSX {
         /**
           * Emitted when the dialog is closed.
          */
-        "onDialogClosed"?: (event: KritzelShareDialogCustomEvent<void>) => void;
+        "onDialogClosed"?: (event: UpdrawShareDialogCustomEvent<void>) => void;
         /**
           * Emitted when the user toggles the public sharing state.
          */
-        "onToggleIsPublic"?: (event: KritzelShareDialogCustomEvent<boolean>) => void;
+        "onToggleIsPublic"?: (event: UpdrawShareDialogCustomEvent<boolean>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        "terms"?: Partial<Record<UpdrawTermKey, string>>;
         /**
           * The ID of the workspace being shared. Used to build the share URL.
           * @default undefined
          */
         "workspaceId"?: string | undefined;
     }
-    interface KritzelSlideToggle {
+    interface UpdrawSlideToggle {
         /**
           * Whether the toggle is checked/on
           * @default false
@@ -3013,9 +3013,9 @@ declare namespace LocalJSX {
         /**
           * Emitted when the toggle state changes
          */
-        "onCheckedChange"?: (event: KritzelSlideToggleCustomEvent<boolean>) => void;
+        "onCheckedChange"?: (event: UpdrawSlideToggleCustomEvent<boolean>) => void;
     }
-    interface KritzelSplitButton {
+    interface UpdrawSplitButton {
         /**
           * @default 'plus'
          */
@@ -3027,7 +3027,7 @@ declare namespace LocalJSX {
         /**
           * @default []
          */
-        "items"?: IKritzelMenuItem[];
+        "items"?: IUpdrawMenuItem[];
         /**
           * @default false
          */
@@ -3036,17 +3036,17 @@ declare namespace LocalJSX {
           * @default false
          */
         "menuButtonDisabled"?: boolean;
-        "onItemCancel"?: (event: KritzelSplitButtonCustomEvent<IKritzelMenuItem>) => void;
-        "onItemCloseChildMenu"?: (event: KritzelSplitButtonCustomEvent<IKritzelMenuItem>) => void;
-        "onItemSave"?: (event: KritzelSplitButtonCustomEvent<IKritzelMenuItem>) => void;
-        "onItemSelect"?: (event: KritzelSplitButtonCustomEvent<IKritzelMenuItemSelectEvent>) => void;
-        "onItemToggleChildMenu"?: (event: KritzelSplitButtonCustomEvent<IKritzelMenuItemToggleChildMenuEvent>) => void;
-        "onMainButtonClick"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
-        "onMenuClose"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
-        "onMenuOpen"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
+        "onItemCancel"?: (event: UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>) => void;
+        "onItemCloseChildMenu"?: (event: UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>) => void;
+        "onItemSave"?: (event: UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>) => void;
+        "onItemSelect"?: (event: UpdrawSplitButtonCustomEvent<IUpdrawMenuItemSelectEvent>) => void;
+        "onItemToggleChildMenu"?: (event: UpdrawSplitButtonCustomEvent<IUpdrawMenuItemToggleChildMenuEvent>) => void;
+        "onMainButtonClick"?: (event: UpdrawSplitButtonCustomEvent<void>) => void;
+        "onMenuClose"?: (event: UpdrawSplitButtonCustomEvent<void>) => void;
+        "onMenuOpen"?: (event: UpdrawSplitButtonCustomEvent<void>) => void;
     }
-    interface KritzelStrokeSize {
-        "onSizeChange"?: (event: KritzelStrokeSizeCustomEvent<number>) => void;
+    interface UpdrawStrokeSize {
+        "onSizeChange"?: (event: UpdrawStrokeSizeCustomEvent<number>) => void;
         /**
           * @default null
          */
@@ -3057,51 +3057,51 @@ declare namespace LocalJSX {
         "sizes"?: number[];
     }
     /**
-     * The menu opened from a titlebar `menu` element: a compact `kritzel-menu` styled like the
-     * context menu through the `--kritzel-titlebar-menu-*` theme variables.
+     * The menu opened from a titlebar `menu` element: a compact `updraw-menu` styled like the
+     * context menu through the `--updraw-titlebar-menu-*` theme variables.
      */
-    interface KritzelTitlebarMenu {
+    interface UpdrawTitlebarMenu {
         /**
           * Menu items of the open titlebar menu, as resolved by the engine.
           * @default []
          */
-        "items"?: KritzelTitlebarMenuItem[];
+        "items"?: UpdrawTitlebarMenuItem[];
         /**
           * Emitted with the id of the selected menu item.
          */
-        "onMenuItemSelect"?: (event: KritzelTitlebarMenuCustomEvent<string>) => void;
+        "onMenuItemSelect"?: (event: UpdrawTitlebarMenuCustomEvent<string>) => void;
     }
-    interface KritzelToolConfig {
+    interface UpdrawToolConfig {
         "engine"?: HTMLElement;
         /**
           * @default false
          */
         "isExpanded"?: boolean;
-        "onDisplayValuesChange"?: (event: KritzelToolConfigCustomEvent<ToolDisplayValues>) => void;
-        "onToolChange"?: (event: KritzelToolConfigCustomEvent<ConfigurableTool>) => void;
+        "onDisplayValuesChange"?: (event: UpdrawToolConfigCustomEvent<ToolDisplayValues>) => void;
+        "onToolChange"?: (event: UpdrawToolConfigCustomEvent<ConfigurableTool>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        "terms"?: Partial<Record<UpdrawTermKey, string>>;
         "theme"?: ThemeName;
         "tool"?: ConfigurableTool;
     }
-    interface KritzelToolbar {
+    interface UpdrawToolbar {
         /**
           * @default null
          */
-        "activeControl"?: KritzelToolbarItem | null;
+        "activeControl"?: UpdrawToolbarItem | null;
         /**
           * @default true
          */
         "isUtilityPanelVisible"?: boolean;
-        "onIsToolbarReady"?: (event: KritzelToolbarCustomEvent<void>) => void;
+        "onIsToolbarReady"?: (event: UpdrawToolbarCustomEvent<void>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        "terms"?: Partial<Record<UpdrawTermKey, string>>;
         /**
           * @default 'light'
          */
@@ -3109,17 +3109,17 @@ declare namespace LocalJSX {
         /**
           * @default []
          */
-        "toolbarItems"?: KritzelToolbarItem[];
+        "toolbarItems"?: UpdrawToolbarItem[];
         /**
           * @default null
          */
-        "undoState"?: KritzelUndoState;
+        "undoState"?: UpdrawUndoState;
         /**
           * @default true
          */
         "visible"?: boolean;
     }
-    interface KritzelTooltip {
+    interface UpdrawTooltip {
         "anchorElement"?: HTMLElement;
         /**
           * @default false
@@ -3129,33 +3129,33 @@ declare namespace LocalJSX {
           * @default 24
          */
         "offsetY"?: number;
-        "onTooltipClosed"?: (event: KritzelTooltipCustomEvent<void>) => void;
-        "onTooltipOpened"?: (event: KritzelTooltipCustomEvent<void>) => void;
+        "onTooltipClosed"?: (event: UpdrawTooltipCustomEvent<void>) => void;
+        "onTooltipOpened"?: (event: UpdrawTooltipCustomEvent<void>) => void;
         "triggerElement"?: HTMLElement;
     }
-    interface KritzelUtilityPanel {
-        "onDelete"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
-        "onRedo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
-        "onUndo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
+    interface UpdrawUtilityPanel {
+        "onDelete"?: (event: UpdrawUtilityPanelCustomEvent<void>) => void;
+        "onRedo"?: (event: UpdrawUtilityPanelCustomEvent<void>) => void;
+        "onUndo"?: (event: UpdrawUtilityPanelCustomEvent<void>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        "terms"?: Partial<Record<UpdrawTermKey, string>>;
         /**
           * @default null
          */
-        "undoState"?: KritzelUndoState;
+        "undoState"?: UpdrawUndoState;
     }
-    interface KritzelWorkspaceManager {
-        "activeWorkspace"?: KritzelWorkspace;
-        "onIsWorkspaceManagerReady"?: (event: KritzelWorkspaceManagerCustomEvent<void>) => void;
-        "onWorkspaceChange"?: (event: KritzelWorkspaceManagerCustomEvent<KritzelWorkspace>) => void;
+    interface UpdrawWorkspaceManager {
+        "activeWorkspace"?: UpdrawWorkspace;
+        "onIsWorkspaceManagerReady"?: (event: UpdrawWorkspaceManagerCustomEvent<void>) => void;
+        "onWorkspaceChange"?: (event: UpdrawWorkspaceManagerCustomEvent<UpdrawWorkspace>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        "terms"?: Partial<Record<UpdrawTermKey, string>>;
         /**
           * Whether the workspace manager is visible
           * @default false
@@ -3164,9 +3164,9 @@ declare namespace LocalJSX {
         /**
           * @default []
          */
-        "workspaces"?: KritzelWorkspace[];
+        "workspaces"?: UpdrawWorkspace[];
     }
-    interface KritzelZoomPanel {
+    interface UpdrawZoomPanel {
         /**
           * Whether both zoom buttons are disabled.
           * @default false
@@ -3175,16 +3175,16 @@ declare namespace LocalJSX {
         /**
           * Emitted when the zoom-in button is clicked.
          */
-        "onZoomIn"?: (event: KritzelZoomPanelCustomEvent<void>) => void;
+        "onZoomIn"?: (event: UpdrawZoomPanelCustomEvent<void>) => void;
         /**
           * Emitted when the zoom-out button is clicked.
          */
-        "onZoomOut"?: (event: KritzelZoomPanelCustomEvent<void>) => void;
+        "onZoomOut"?: (event: UpdrawZoomPanelCustomEvent<void>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        "terms"?: Partial<Record<UpdrawTermKey, string>>;
         /**
           * Whether the zoom panel is visible.
           * @default true
@@ -3197,50 +3197,50 @@ declare namespace LocalJSX {
         "zoomPercent"?: number;
     }
 
-    interface KritzelActiveUsersAttributes {
+    interface UpdrawActiveUsersAttributes {
         "avatarSize": number;
         "maxVisible": number;
         "overlap": number;
     }
-    interface KritzelAvatarAttributes {
+    interface UpdrawAvatarAttributes {
         "name": string;
         "size": number;
         "color": string;
     }
-    interface KritzelBackToContentAttributes {
+    interface UpdrawBackToContentAttributes {
         "visible": boolean;
         "text": string;
     }
-    interface KritzelBrushStyleAttributes {
+    interface UpdrawBrushStyleAttributes {
         "type": 'pen' | 'highlighter';
     }
-    interface KritzelButtonAttributes {
+    interface UpdrawButtonAttributes {
         "variant": 'primary' | 'secondary' | 'text';
         "disabled": boolean;
         "type": 'button' | 'submit' | 'reset';
     }
-    interface KritzelChatBoxAttributes {
+    interface UpdrawChatBoxAttributes {
         "value": string;
-        "mode": KritzelChatBoxMode;
+        "mode": UpdrawChatBoxMode;
         "placeholder": string;
         "disabled": boolean;
         "loading": boolean;
     }
-    interface KritzelColorAttributes {
+    interface UpdrawColorAttributes {
         "value": string | ThemeAwareColor;
         "theme": ThemeName;
         "size": number;
     }
-    interface KritzelColorPaletteAttributes {
+    interface UpdrawColorPaletteAttributes {
         "isExpanded": boolean;
         "isOpaque": boolean;
         "opacity": number;
         "theme": ThemeName;
     }
-    interface KritzelCurrentUserAttributes {
+    interface UpdrawCurrentUserAttributes {
         "avatarSize": number;
     }
-    interface KritzelDialogAttributes {
+    interface UpdrawDialogAttributes {
         "isOpen": boolean;
         "dialogTitle": string;
         "closable": boolean;
@@ -3252,12 +3252,12 @@ declare namespace LocalJSX {
         "fullscreenOnMobile": boolean;
         "contained": boolean;
     }
-    interface KritzelDropdownAttributes {
+    interface UpdrawDropdownAttributes {
         "value": string;
         "width": string;
         "forceOpenDirection": 'down' | 'up';
     }
-    interface KritzelEditorAttributes {
+    interface UpdrawEditorAttributes {
         "scaleMax": number;
         "scaleMin": number;
         "lockDrawingScale": boolean;
@@ -3273,7 +3273,7 @@ declare namespace LocalJSX {
         "isZoomingEnabled": boolean;
         "isToolbarVisible": boolean;
         "isChatBoxVisible": boolean;
-        "chatBoxMode": KritzelChatBoxMode;
+        "chatBoxMode": UpdrawChatBoxMode;
         "isChatBoxLoading": boolean;
         "isUtilityPanelVisible": boolean;
         "isWorkspaceManagerVisible": boolean;
@@ -3283,22 +3283,22 @@ declare namespace LocalJSX {
         "editorId": string;
         "activeWorkspaceId": string;
     }
-    interface KritzelExportAttributes {
+    interface UpdrawExportAttributes {
         "workspaceName": string;
     }
-    interface KritzelFontAttributes {
+    interface UpdrawFontAttributes {
         "fontFamily": string;
         "size": number;
         "color": string;
     }
-    interface KritzelFontFamilyAttributes {
+    interface UpdrawFontFamilyAttributes {
         "selectedFontFamily": string;
     }
-    interface KritzelFontSizeAttributes {
+    interface UpdrawFontSizeAttributes {
         "selectedSize": number | null;
         "fontFamily": string;
     }
-    interface KritzelInputAttributes {
+    interface UpdrawInputAttributes {
         "value": string;
         "label": string;
         "placeholder": string;
@@ -3306,24 +3306,24 @@ declare namespace LocalJSX {
         "type": 'text' | 'email' | 'password' | 'url';
         "disabled": boolean;
     }
-    interface KritzelLoginDialogAttributes {
+    interface UpdrawLoginDialogAttributes {
         "dialogTitle": string;
         "subtitle": string;
     }
-    interface KritzelMasterDetailAttributes {
+    interface UpdrawMasterDetailAttributes {
         "selectedItemId": string;
     }
-    interface KritzelMoreMenuAttributes {
+    interface UpdrawMoreMenuAttributes {
         "visible": boolean;
         "icon": string;
         "iconSize": number;
         "offsetY": number;
     }
-    interface KritzelNotificationCardAttributes {
+    interface UpdrawNotificationCardAttributes {
         "showTimestamp": boolean;
         "locale": string;
     }
-    interface KritzelNumericInputAttributes {
+    interface UpdrawNumericInputAttributes {
         "value": number;
         "min": number;
         "max": number;
@@ -3331,171 +3331,171 @@ declare namespace LocalJSX {
         "label": string;
         "placeholder": string;
     }
-    interface KritzelOpacitySliderAttributes {
+    interface UpdrawOpacitySliderAttributes {
         "value": number;
         "min": number;
         "max": number;
         "step": number;
         "previewColor": string;
     }
-    interface KritzelPillTabsAttributes {
+    interface UpdrawPillTabsAttributes {
         "value": string;
     }
-    interface KritzelPortalAttributes {
+    interface UpdrawPortalAttributes {
         "offsetX": number;
         "offsetY": number;
         "autoFocus": boolean;
     }
-    interface KritzelShapeFillAttributes {
+    interface UpdrawShapeFillAttributes {
         "value": ShapeFillType;
     }
-    interface KritzelShareDialogAttributes {
+    interface UpdrawShareDialogAttributes {
         "isPublic": boolean;
         "workspaceId": string | undefined;
     }
-    interface KritzelSlideToggleAttributes {
+    interface UpdrawSlideToggleAttributes {
         "checked": boolean;
         "disabled": boolean;
         "label": string;
     }
-    interface KritzelSplitButtonAttributes {
+    interface UpdrawSplitButtonAttributes {
         "buttonIcon": string;
         "dropdownIcon": string;
         "mainButtonDisabled": boolean;
         "menuButtonDisabled": boolean;
     }
-    interface KritzelStrokeSizeAttributes {
+    interface UpdrawStrokeSizeAttributes {
         "selectedSize": number | null;
     }
-    interface KritzelToolConfigAttributes {
+    interface UpdrawToolConfigAttributes {
         "isExpanded": boolean;
         "theme": ThemeName;
     }
-    interface KritzelToolbarAttributes {
+    interface UpdrawToolbarAttributes {
         "visible": boolean;
         "isUtilityPanelVisible": boolean;
         "theme": ThemeName;
     }
-    interface KritzelTooltipAttributes {
+    interface UpdrawTooltipAttributes {
         "isVisible": boolean;
         "offsetY": number;
     }
-    interface KritzelWorkspaceManagerAttributes {
+    interface UpdrawWorkspaceManagerAttributes {
         "visible": boolean;
     }
-    interface KritzelZoomPanelAttributes {
+    interface UpdrawZoomPanelAttributes {
         "visible": boolean;
         "disabled": boolean;
         "zoomPercent": number;
     }
 
     interface IntrinsicElements {
-        "kritzel-active-users": Omit<KritzelActiveUsers, keyof KritzelActiveUsersAttributes> & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes]?: KritzelActiveUsers[K] } & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes as `attr:${K}`]?: KritzelActiveUsersAttributes[K] } & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes as `prop:${K}`]?: KritzelActiveUsers[K] };
-        "kritzel-avatar": Omit<KritzelAvatar, keyof KritzelAvatarAttributes> & { [K in keyof KritzelAvatar & keyof KritzelAvatarAttributes]?: KritzelAvatar[K] } & { [K in keyof KritzelAvatar & keyof KritzelAvatarAttributes as `attr:${K}`]?: KritzelAvatarAttributes[K] } & { [K in keyof KritzelAvatar & keyof KritzelAvatarAttributes as `prop:${K}`]?: KritzelAvatar[K] };
-        "kritzel-back-to-content": Omit<KritzelBackToContent, keyof KritzelBackToContentAttributes> & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes]?: KritzelBackToContent[K] } & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes as `attr:${K}`]?: KritzelBackToContentAttributes[K] } & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes as `prop:${K}`]?: KritzelBackToContent[K] };
-        "kritzel-brush-style": Omit<KritzelBrushStyle, keyof KritzelBrushStyleAttributes> & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes]?: KritzelBrushStyle[K] } & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes as `attr:${K}`]?: KritzelBrushStyleAttributes[K] } & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes as `prop:${K}`]?: KritzelBrushStyle[K] };
-        "kritzel-button": Omit<KritzelButton, keyof KritzelButtonAttributes> & { [K in keyof KritzelButton & keyof KritzelButtonAttributes]?: KritzelButton[K] } & { [K in keyof KritzelButton & keyof KritzelButtonAttributes as `attr:${K}`]?: KritzelButtonAttributes[K] } & { [K in keyof KritzelButton & keyof KritzelButtonAttributes as `prop:${K}`]?: KritzelButton[K] };
-        "kritzel-chat-box": Omit<KritzelChatBox, keyof KritzelChatBoxAttributes> & { [K in keyof KritzelChatBox & keyof KritzelChatBoxAttributes]?: KritzelChatBox[K] } & { [K in keyof KritzelChatBox & keyof KritzelChatBoxAttributes as `attr:${K}`]?: KritzelChatBoxAttributes[K] } & { [K in keyof KritzelChatBox & keyof KritzelChatBoxAttributes as `prop:${K}`]?: KritzelChatBox[K] };
-        "kritzel-color": Omit<KritzelColor, keyof KritzelColorAttributes> & { [K in keyof KritzelColor & keyof KritzelColorAttributes]?: KritzelColor[K] } & { [K in keyof KritzelColor & keyof KritzelColorAttributes as `attr:${K}`]?: KritzelColorAttributes[K] } & { [K in keyof KritzelColor & keyof KritzelColorAttributes as `prop:${K}`]?: KritzelColor[K] };
-        "kritzel-color-palette": Omit<KritzelColorPalette, keyof KritzelColorPaletteAttributes> & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes]?: KritzelColorPalette[K] } & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes as `attr:${K}`]?: KritzelColorPaletteAttributes[K] } & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes as `prop:${K}`]?: KritzelColorPalette[K] };
-        "kritzel-context-menu": KritzelContextMenu;
-        "kritzel-current-user": Omit<KritzelCurrentUser, keyof KritzelCurrentUserAttributes> & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes]?: KritzelCurrentUser[K] } & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes as `attr:${K}`]?: KritzelCurrentUserAttributes[K] } & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes as `prop:${K}`]?: KritzelCurrentUser[K] };
-        "kritzel-current-user-dialog": KritzelCurrentUserDialog;
-        "kritzel-dialog": Omit<KritzelDialog, keyof KritzelDialogAttributes> & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes]?: KritzelDialog[K] } & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes as `attr:${K}`]?: KritzelDialogAttributes[K] } & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes as `prop:${K}`]?: KritzelDialog[K] };
-        "kritzel-dropdown": Omit<KritzelDropdown, keyof KritzelDropdownAttributes> & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes]?: KritzelDropdown[K] } & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes as `attr:${K}`]?: KritzelDropdownAttributes[K] } & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes as `prop:${K}`]?: KritzelDropdown[K] };
-        "kritzel-editor": Omit<KritzelEditor, keyof KritzelEditorAttributes> & { [K in keyof KritzelEditor & keyof KritzelEditorAttributes]?: KritzelEditor[K] } & { [K in keyof KritzelEditor & keyof KritzelEditorAttributes as `attr:${K}`]?: KritzelEditorAttributes[K] } & { [K in keyof KritzelEditor & keyof KritzelEditorAttributes as `prop:${K}`]?: KritzelEditor[K] };
-        "kritzel-export": Omit<KritzelExport, keyof KritzelExportAttributes> & { [K in keyof KritzelExport & keyof KritzelExportAttributes]?: KritzelExport[K] } & { [K in keyof KritzelExport & keyof KritzelExportAttributes as `attr:${K}`]?: KritzelExportAttributes[K] } & { [K in keyof KritzelExport & keyof KritzelExportAttributes as `prop:${K}`]?: KritzelExport[K] };
-        "kritzel-font": Omit<KritzelFont, keyof KritzelFontAttributes> & { [K in keyof KritzelFont & keyof KritzelFontAttributes]?: KritzelFont[K] } & { [K in keyof KritzelFont & keyof KritzelFontAttributes as `attr:${K}`]?: KritzelFontAttributes[K] } & { [K in keyof KritzelFont & keyof KritzelFontAttributes as `prop:${K}`]?: KritzelFont[K] };
-        "kritzel-font-family": Omit<KritzelFontFamily, keyof KritzelFontFamilyAttributes> & { [K in keyof KritzelFontFamily & keyof KritzelFontFamilyAttributes]?: KritzelFontFamily[K] } & { [K in keyof KritzelFontFamily & keyof KritzelFontFamilyAttributes as `attr:${K}`]?: KritzelFontFamilyAttributes[K] } & { [K in keyof KritzelFontFamily & keyof KritzelFontFamilyAttributes as `prop:${K}`]?: KritzelFontFamily[K] };
-        "kritzel-font-size": Omit<KritzelFontSize, keyof KritzelFontSizeAttributes> & { [K in keyof KritzelFontSize & keyof KritzelFontSizeAttributes]?: KritzelFontSize[K] } & { [K in keyof KritzelFontSize & keyof KritzelFontSizeAttributes as `attr:${K}`]?: KritzelFontSizeAttributes[K] } & { [K in keyof KritzelFontSize & keyof KritzelFontSizeAttributes as `prop:${K}`]?: KritzelFontSize[K] };
-        "kritzel-input": Omit<KritzelInput, keyof KritzelInputAttributes> & { [K in keyof KritzelInput & keyof KritzelInputAttributes]?: KritzelInput[K] } & { [K in keyof KritzelInput & keyof KritzelInputAttributes as `attr:${K}`]?: KritzelInputAttributes[K] } & { [K in keyof KritzelInput & keyof KritzelInputAttributes as `prop:${K}`]?: KritzelInput[K] };
-        "kritzel-line-endings": KritzelLineEndings;
-        "kritzel-login-dialog": Omit<KritzelLoginDialog, keyof KritzelLoginDialogAttributes> & { [K in keyof KritzelLoginDialog & keyof KritzelLoginDialogAttributes]?: KritzelLoginDialog[K] } & { [K in keyof KritzelLoginDialog & keyof KritzelLoginDialogAttributes as `attr:${K}`]?: KritzelLoginDialogAttributes[K] } & { [K in keyof KritzelLoginDialog & keyof KritzelLoginDialogAttributes as `prop:${K}`]?: KritzelLoginDialog[K] };
-        "kritzel-master-detail": Omit<KritzelMasterDetail, keyof KritzelMasterDetailAttributes> & { [K in keyof KritzelMasterDetail & keyof KritzelMasterDetailAttributes]?: KritzelMasterDetail[K] } & { [K in keyof KritzelMasterDetail & keyof KritzelMasterDetailAttributes as `attr:${K}`]?: KritzelMasterDetailAttributes[K] } & { [K in keyof KritzelMasterDetail & keyof KritzelMasterDetailAttributes as `prop:${K}`]?: KritzelMasterDetail[K] };
-        "kritzel-menu": KritzelMenu;
-        "kritzel-menu-item": KritzelMenuItem;
-        "kritzel-more-menu": Omit<KritzelMoreMenu, keyof KritzelMoreMenuAttributes> & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes]?: KritzelMoreMenu[K] } & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes as `attr:${K}`]?: KritzelMoreMenuAttributes[K] } & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes as `prop:${K}`]?: KritzelMoreMenu[K] };
-        "kritzel-notification-card": Omit<KritzelNotificationCard, keyof KritzelNotificationCardAttributes> & { [K in keyof KritzelNotificationCard & keyof KritzelNotificationCardAttributes]?: KritzelNotificationCard[K] } & { [K in keyof KritzelNotificationCard & keyof KritzelNotificationCardAttributes as `attr:${K}`]?: KritzelNotificationCardAttributes[K] } & { [K in keyof KritzelNotificationCard & keyof KritzelNotificationCardAttributes as `prop:${K}`]?: KritzelNotificationCard[K] };
-        "kritzel-numeric-input": Omit<KritzelNumericInput, keyof KritzelNumericInputAttributes> & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes]?: KritzelNumericInput[K] } & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes as `attr:${K}`]?: KritzelNumericInputAttributes[K] } & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes as `prop:${K}`]?: KritzelNumericInput[K] };
-        "kritzel-opacity-slider": Omit<KritzelOpacitySlider, keyof KritzelOpacitySliderAttributes> & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes]?: KritzelOpacitySlider[K] } & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes as `attr:${K}`]?: KritzelOpacitySliderAttributes[K] } & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes as `prop:${K}`]?: KritzelOpacitySlider[K] };
-        "kritzel-pill-tabs": Omit<KritzelPillTabs, keyof KritzelPillTabsAttributes> & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes]?: KritzelPillTabs[K] } & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes as `attr:${K}`]?: KritzelPillTabsAttributes[K] } & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes as `prop:${K}`]?: KritzelPillTabs[K] };
-        "kritzel-portal": Omit<KritzelPortal, keyof KritzelPortalAttributes> & { [K in keyof KritzelPortal & keyof KritzelPortalAttributes]?: KritzelPortal[K] } & { [K in keyof KritzelPortal & keyof KritzelPortalAttributes as `attr:${K}`]?: KritzelPortalAttributes[K] } & { [K in keyof KritzelPortal & keyof KritzelPortalAttributes as `prop:${K}`]?: KritzelPortal[K] };
-        "kritzel-settings": KritzelSettings;
-        "kritzel-shape-fill": Omit<KritzelShapeFill, keyof KritzelShapeFillAttributes> & { [K in keyof KritzelShapeFill & keyof KritzelShapeFillAttributes]?: KritzelShapeFill[K] } & { [K in keyof KritzelShapeFill & keyof KritzelShapeFillAttributes as `attr:${K}`]?: KritzelShapeFillAttributes[K] } & { [K in keyof KritzelShapeFill & keyof KritzelShapeFillAttributes as `prop:${K}`]?: KritzelShapeFill[K] };
-        "kritzel-share-dialog": Omit<KritzelShareDialog, keyof KritzelShareDialogAttributes> & { [K in keyof KritzelShareDialog & keyof KritzelShareDialogAttributes]?: KritzelShareDialog[K] } & { [K in keyof KritzelShareDialog & keyof KritzelShareDialogAttributes as `attr:${K}`]?: KritzelShareDialogAttributes[K] } & { [K in keyof KritzelShareDialog & keyof KritzelShareDialogAttributes as `prop:${K}`]?: KritzelShareDialog[K] };
-        "kritzel-slide-toggle": Omit<KritzelSlideToggle, keyof KritzelSlideToggleAttributes> & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes]?: KritzelSlideToggle[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `attr:${K}`]?: KritzelSlideToggleAttributes[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `prop:${K}`]?: KritzelSlideToggle[K] };
-        "kritzel-split-button": Omit<KritzelSplitButton, keyof KritzelSplitButtonAttributes> & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes]?: KritzelSplitButton[K] } & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes as `attr:${K}`]?: KritzelSplitButtonAttributes[K] } & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes as `prop:${K}`]?: KritzelSplitButton[K] };
-        "kritzel-stroke-size": Omit<KritzelStrokeSize, keyof KritzelStrokeSizeAttributes> & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes]?: KritzelStrokeSize[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `attr:${K}`]?: KritzelStrokeSizeAttributes[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `prop:${K}`]?: KritzelStrokeSize[K] };
-        "kritzel-titlebar-menu": KritzelTitlebarMenu;
-        "kritzel-tool-config": Omit<KritzelToolConfig, keyof KritzelToolConfigAttributes> & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes]?: KritzelToolConfig[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `attr:${K}`]?: KritzelToolConfigAttributes[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `prop:${K}`]?: KritzelToolConfig[K] };
-        "kritzel-toolbar": Omit<KritzelToolbar, keyof KritzelToolbarAttributes> & { [K in keyof KritzelToolbar & keyof KritzelToolbarAttributes]?: KritzelToolbar[K] } & { [K in keyof KritzelToolbar & keyof KritzelToolbarAttributes as `attr:${K}`]?: KritzelToolbarAttributes[K] } & { [K in keyof KritzelToolbar & keyof KritzelToolbarAttributes as `prop:${K}`]?: KritzelToolbar[K] };
-        "kritzel-tooltip": Omit<KritzelTooltip, keyof KritzelTooltipAttributes> & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes]?: KritzelTooltip[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `attr:${K}`]?: KritzelTooltipAttributes[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `prop:${K}`]?: KritzelTooltip[K] };
-        "kritzel-utility-panel": KritzelUtilityPanel;
-        "kritzel-workspace-manager": Omit<KritzelWorkspaceManager, keyof KritzelWorkspaceManagerAttributes> & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes]?: KritzelWorkspaceManager[K] } & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes as `attr:${K}`]?: KritzelWorkspaceManagerAttributes[K] } & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes as `prop:${K}`]?: KritzelWorkspaceManager[K] };
-        "kritzel-zoom-panel": Omit<KritzelZoomPanel, keyof KritzelZoomPanelAttributes> & { [K in keyof KritzelZoomPanel & keyof KritzelZoomPanelAttributes]?: KritzelZoomPanel[K] } & { [K in keyof KritzelZoomPanel & keyof KritzelZoomPanelAttributes as `attr:${K}`]?: KritzelZoomPanelAttributes[K] } & { [K in keyof KritzelZoomPanel & keyof KritzelZoomPanelAttributes as `prop:${K}`]?: KritzelZoomPanel[K] };
+        "updraw-active-users": Omit<UpdrawActiveUsers, keyof UpdrawActiveUsersAttributes> & { [K in keyof UpdrawActiveUsers & keyof UpdrawActiveUsersAttributes]?: UpdrawActiveUsers[K] } & { [K in keyof UpdrawActiveUsers & keyof UpdrawActiveUsersAttributes as `attr:${K}`]?: UpdrawActiveUsersAttributes[K] } & { [K in keyof UpdrawActiveUsers & keyof UpdrawActiveUsersAttributes as `prop:${K}`]?: UpdrawActiveUsers[K] };
+        "updraw-avatar": Omit<UpdrawAvatar, keyof UpdrawAvatarAttributes> & { [K in keyof UpdrawAvatar & keyof UpdrawAvatarAttributes]?: UpdrawAvatar[K] } & { [K in keyof UpdrawAvatar & keyof UpdrawAvatarAttributes as `attr:${K}`]?: UpdrawAvatarAttributes[K] } & { [K in keyof UpdrawAvatar & keyof UpdrawAvatarAttributes as `prop:${K}`]?: UpdrawAvatar[K] };
+        "updraw-back-to-content": Omit<UpdrawBackToContent, keyof UpdrawBackToContentAttributes> & { [K in keyof UpdrawBackToContent & keyof UpdrawBackToContentAttributes]?: UpdrawBackToContent[K] } & { [K in keyof UpdrawBackToContent & keyof UpdrawBackToContentAttributes as `attr:${K}`]?: UpdrawBackToContentAttributes[K] } & { [K in keyof UpdrawBackToContent & keyof UpdrawBackToContentAttributes as `prop:${K}`]?: UpdrawBackToContent[K] };
+        "updraw-brush-style": Omit<UpdrawBrushStyle, keyof UpdrawBrushStyleAttributes> & { [K in keyof UpdrawBrushStyle & keyof UpdrawBrushStyleAttributes]?: UpdrawBrushStyle[K] } & { [K in keyof UpdrawBrushStyle & keyof UpdrawBrushStyleAttributes as `attr:${K}`]?: UpdrawBrushStyleAttributes[K] } & { [K in keyof UpdrawBrushStyle & keyof UpdrawBrushStyleAttributes as `prop:${K}`]?: UpdrawBrushStyle[K] };
+        "updraw-button": Omit<UpdrawButton, keyof UpdrawButtonAttributes> & { [K in keyof UpdrawButton & keyof UpdrawButtonAttributes]?: UpdrawButton[K] } & { [K in keyof UpdrawButton & keyof UpdrawButtonAttributes as `attr:${K}`]?: UpdrawButtonAttributes[K] } & { [K in keyof UpdrawButton & keyof UpdrawButtonAttributes as `prop:${K}`]?: UpdrawButton[K] };
+        "updraw-chat-box": Omit<UpdrawChatBox, keyof UpdrawChatBoxAttributes> & { [K in keyof UpdrawChatBox & keyof UpdrawChatBoxAttributes]?: UpdrawChatBox[K] } & { [K in keyof UpdrawChatBox & keyof UpdrawChatBoxAttributes as `attr:${K}`]?: UpdrawChatBoxAttributes[K] } & { [K in keyof UpdrawChatBox & keyof UpdrawChatBoxAttributes as `prop:${K}`]?: UpdrawChatBox[K] };
+        "updraw-color": Omit<UpdrawColor, keyof UpdrawColorAttributes> & { [K in keyof UpdrawColor & keyof UpdrawColorAttributes]?: UpdrawColor[K] } & { [K in keyof UpdrawColor & keyof UpdrawColorAttributes as `attr:${K}`]?: UpdrawColorAttributes[K] } & { [K in keyof UpdrawColor & keyof UpdrawColorAttributes as `prop:${K}`]?: UpdrawColor[K] };
+        "updraw-color-palette": Omit<UpdrawColorPalette, keyof UpdrawColorPaletteAttributes> & { [K in keyof UpdrawColorPalette & keyof UpdrawColorPaletteAttributes]?: UpdrawColorPalette[K] } & { [K in keyof UpdrawColorPalette & keyof UpdrawColorPaletteAttributes as `attr:${K}`]?: UpdrawColorPaletteAttributes[K] } & { [K in keyof UpdrawColorPalette & keyof UpdrawColorPaletteAttributes as `prop:${K}`]?: UpdrawColorPalette[K] };
+        "updraw-context-menu": UpdrawContextMenu;
+        "updraw-current-user": Omit<UpdrawCurrentUser, keyof UpdrawCurrentUserAttributes> & { [K in keyof UpdrawCurrentUser & keyof UpdrawCurrentUserAttributes]?: UpdrawCurrentUser[K] } & { [K in keyof UpdrawCurrentUser & keyof UpdrawCurrentUserAttributes as `attr:${K}`]?: UpdrawCurrentUserAttributes[K] } & { [K in keyof UpdrawCurrentUser & keyof UpdrawCurrentUserAttributes as `prop:${K}`]?: UpdrawCurrentUser[K] };
+        "updraw-current-user-dialog": UpdrawCurrentUserDialog;
+        "updraw-dialog": Omit<UpdrawDialog, keyof UpdrawDialogAttributes> & { [K in keyof UpdrawDialog & keyof UpdrawDialogAttributes]?: UpdrawDialog[K] } & { [K in keyof UpdrawDialog & keyof UpdrawDialogAttributes as `attr:${K}`]?: UpdrawDialogAttributes[K] } & { [K in keyof UpdrawDialog & keyof UpdrawDialogAttributes as `prop:${K}`]?: UpdrawDialog[K] };
+        "updraw-dropdown": Omit<UpdrawDropdown, keyof UpdrawDropdownAttributes> & { [K in keyof UpdrawDropdown & keyof UpdrawDropdownAttributes]?: UpdrawDropdown[K] } & { [K in keyof UpdrawDropdown & keyof UpdrawDropdownAttributes as `attr:${K}`]?: UpdrawDropdownAttributes[K] } & { [K in keyof UpdrawDropdown & keyof UpdrawDropdownAttributes as `prop:${K}`]?: UpdrawDropdown[K] };
+        "updraw-editor": Omit<UpdrawEditor, keyof UpdrawEditorAttributes> & { [K in keyof UpdrawEditor & keyof UpdrawEditorAttributes]?: UpdrawEditor[K] } & { [K in keyof UpdrawEditor & keyof UpdrawEditorAttributes as `attr:${K}`]?: UpdrawEditorAttributes[K] } & { [K in keyof UpdrawEditor & keyof UpdrawEditorAttributes as `prop:${K}`]?: UpdrawEditor[K] };
+        "updraw-export": Omit<UpdrawExport, keyof UpdrawExportAttributes> & { [K in keyof UpdrawExport & keyof UpdrawExportAttributes]?: UpdrawExport[K] } & { [K in keyof UpdrawExport & keyof UpdrawExportAttributes as `attr:${K}`]?: UpdrawExportAttributes[K] } & { [K in keyof UpdrawExport & keyof UpdrawExportAttributes as `prop:${K}`]?: UpdrawExport[K] };
+        "updraw-font": Omit<UpdrawFont, keyof UpdrawFontAttributes> & { [K in keyof UpdrawFont & keyof UpdrawFontAttributes]?: UpdrawFont[K] } & { [K in keyof UpdrawFont & keyof UpdrawFontAttributes as `attr:${K}`]?: UpdrawFontAttributes[K] } & { [K in keyof UpdrawFont & keyof UpdrawFontAttributes as `prop:${K}`]?: UpdrawFont[K] };
+        "updraw-font-family": Omit<UpdrawFontFamily, keyof UpdrawFontFamilyAttributes> & { [K in keyof UpdrawFontFamily & keyof UpdrawFontFamilyAttributes]?: UpdrawFontFamily[K] } & { [K in keyof UpdrawFontFamily & keyof UpdrawFontFamilyAttributes as `attr:${K}`]?: UpdrawFontFamilyAttributes[K] } & { [K in keyof UpdrawFontFamily & keyof UpdrawFontFamilyAttributes as `prop:${K}`]?: UpdrawFontFamily[K] };
+        "updraw-font-size": Omit<UpdrawFontSize, keyof UpdrawFontSizeAttributes> & { [K in keyof UpdrawFontSize & keyof UpdrawFontSizeAttributes]?: UpdrawFontSize[K] } & { [K in keyof UpdrawFontSize & keyof UpdrawFontSizeAttributes as `attr:${K}`]?: UpdrawFontSizeAttributes[K] } & { [K in keyof UpdrawFontSize & keyof UpdrawFontSizeAttributes as `prop:${K}`]?: UpdrawFontSize[K] };
+        "updraw-input": Omit<UpdrawInput, keyof UpdrawInputAttributes> & { [K in keyof UpdrawInput & keyof UpdrawInputAttributes]?: UpdrawInput[K] } & { [K in keyof UpdrawInput & keyof UpdrawInputAttributes as `attr:${K}`]?: UpdrawInputAttributes[K] } & { [K in keyof UpdrawInput & keyof UpdrawInputAttributes as `prop:${K}`]?: UpdrawInput[K] };
+        "updraw-line-endings": UpdrawLineEndings;
+        "updraw-login-dialog": Omit<UpdrawLoginDialog, keyof UpdrawLoginDialogAttributes> & { [K in keyof UpdrawLoginDialog & keyof UpdrawLoginDialogAttributes]?: UpdrawLoginDialog[K] } & { [K in keyof UpdrawLoginDialog & keyof UpdrawLoginDialogAttributes as `attr:${K}`]?: UpdrawLoginDialogAttributes[K] } & { [K in keyof UpdrawLoginDialog & keyof UpdrawLoginDialogAttributes as `prop:${K}`]?: UpdrawLoginDialog[K] };
+        "updraw-master-detail": Omit<UpdrawMasterDetail, keyof UpdrawMasterDetailAttributes> & { [K in keyof UpdrawMasterDetail & keyof UpdrawMasterDetailAttributes]?: UpdrawMasterDetail[K] } & { [K in keyof UpdrawMasterDetail & keyof UpdrawMasterDetailAttributes as `attr:${K}`]?: UpdrawMasterDetailAttributes[K] } & { [K in keyof UpdrawMasterDetail & keyof UpdrawMasterDetailAttributes as `prop:${K}`]?: UpdrawMasterDetail[K] };
+        "updraw-menu": UpdrawMenu;
+        "updraw-menu-item": UpdrawMenuItem;
+        "updraw-more-menu": Omit<UpdrawMoreMenu, keyof UpdrawMoreMenuAttributes> & { [K in keyof UpdrawMoreMenu & keyof UpdrawMoreMenuAttributes]?: UpdrawMoreMenu[K] } & { [K in keyof UpdrawMoreMenu & keyof UpdrawMoreMenuAttributes as `attr:${K}`]?: UpdrawMoreMenuAttributes[K] } & { [K in keyof UpdrawMoreMenu & keyof UpdrawMoreMenuAttributes as `prop:${K}`]?: UpdrawMoreMenu[K] };
+        "updraw-notification-card": Omit<UpdrawNotificationCard, keyof UpdrawNotificationCardAttributes> & { [K in keyof UpdrawNotificationCard & keyof UpdrawNotificationCardAttributes]?: UpdrawNotificationCard[K] } & { [K in keyof UpdrawNotificationCard & keyof UpdrawNotificationCardAttributes as `attr:${K}`]?: UpdrawNotificationCardAttributes[K] } & { [K in keyof UpdrawNotificationCard & keyof UpdrawNotificationCardAttributes as `prop:${K}`]?: UpdrawNotificationCard[K] };
+        "updraw-numeric-input": Omit<UpdrawNumericInput, keyof UpdrawNumericInputAttributes> & { [K in keyof UpdrawNumericInput & keyof UpdrawNumericInputAttributes]?: UpdrawNumericInput[K] } & { [K in keyof UpdrawNumericInput & keyof UpdrawNumericInputAttributes as `attr:${K}`]?: UpdrawNumericInputAttributes[K] } & { [K in keyof UpdrawNumericInput & keyof UpdrawNumericInputAttributes as `prop:${K}`]?: UpdrawNumericInput[K] };
+        "updraw-opacity-slider": Omit<UpdrawOpacitySlider, keyof UpdrawOpacitySliderAttributes> & { [K in keyof UpdrawOpacitySlider & keyof UpdrawOpacitySliderAttributes]?: UpdrawOpacitySlider[K] } & { [K in keyof UpdrawOpacitySlider & keyof UpdrawOpacitySliderAttributes as `attr:${K}`]?: UpdrawOpacitySliderAttributes[K] } & { [K in keyof UpdrawOpacitySlider & keyof UpdrawOpacitySliderAttributes as `prop:${K}`]?: UpdrawOpacitySlider[K] };
+        "updraw-pill-tabs": Omit<UpdrawPillTabs, keyof UpdrawPillTabsAttributes> & { [K in keyof UpdrawPillTabs & keyof UpdrawPillTabsAttributes]?: UpdrawPillTabs[K] } & { [K in keyof UpdrawPillTabs & keyof UpdrawPillTabsAttributes as `attr:${K}`]?: UpdrawPillTabsAttributes[K] } & { [K in keyof UpdrawPillTabs & keyof UpdrawPillTabsAttributes as `prop:${K}`]?: UpdrawPillTabs[K] };
+        "updraw-portal": Omit<UpdrawPortal, keyof UpdrawPortalAttributes> & { [K in keyof UpdrawPortal & keyof UpdrawPortalAttributes]?: UpdrawPortal[K] } & { [K in keyof UpdrawPortal & keyof UpdrawPortalAttributes as `attr:${K}`]?: UpdrawPortalAttributes[K] } & { [K in keyof UpdrawPortal & keyof UpdrawPortalAttributes as `prop:${K}`]?: UpdrawPortal[K] };
+        "updraw-settings": UpdrawSettings;
+        "updraw-shape-fill": Omit<UpdrawShapeFill, keyof UpdrawShapeFillAttributes> & { [K in keyof UpdrawShapeFill & keyof UpdrawShapeFillAttributes]?: UpdrawShapeFill[K] } & { [K in keyof UpdrawShapeFill & keyof UpdrawShapeFillAttributes as `attr:${K}`]?: UpdrawShapeFillAttributes[K] } & { [K in keyof UpdrawShapeFill & keyof UpdrawShapeFillAttributes as `prop:${K}`]?: UpdrawShapeFill[K] };
+        "updraw-share-dialog": Omit<UpdrawShareDialog, keyof UpdrawShareDialogAttributes> & { [K in keyof UpdrawShareDialog & keyof UpdrawShareDialogAttributes]?: UpdrawShareDialog[K] } & { [K in keyof UpdrawShareDialog & keyof UpdrawShareDialogAttributes as `attr:${K}`]?: UpdrawShareDialogAttributes[K] } & { [K in keyof UpdrawShareDialog & keyof UpdrawShareDialogAttributes as `prop:${K}`]?: UpdrawShareDialog[K] };
+        "updraw-slide-toggle": Omit<UpdrawSlideToggle, keyof UpdrawSlideToggleAttributes> & { [K in keyof UpdrawSlideToggle & keyof UpdrawSlideToggleAttributes]?: UpdrawSlideToggle[K] } & { [K in keyof UpdrawSlideToggle & keyof UpdrawSlideToggleAttributes as `attr:${K}`]?: UpdrawSlideToggleAttributes[K] } & { [K in keyof UpdrawSlideToggle & keyof UpdrawSlideToggleAttributes as `prop:${K}`]?: UpdrawSlideToggle[K] };
+        "updraw-split-button": Omit<UpdrawSplitButton, keyof UpdrawSplitButtonAttributes> & { [K in keyof UpdrawSplitButton & keyof UpdrawSplitButtonAttributes]?: UpdrawSplitButton[K] } & { [K in keyof UpdrawSplitButton & keyof UpdrawSplitButtonAttributes as `attr:${K}`]?: UpdrawSplitButtonAttributes[K] } & { [K in keyof UpdrawSplitButton & keyof UpdrawSplitButtonAttributes as `prop:${K}`]?: UpdrawSplitButton[K] };
+        "updraw-stroke-size": Omit<UpdrawStrokeSize, keyof UpdrawStrokeSizeAttributes> & { [K in keyof UpdrawStrokeSize & keyof UpdrawStrokeSizeAttributes]?: UpdrawStrokeSize[K] } & { [K in keyof UpdrawStrokeSize & keyof UpdrawStrokeSizeAttributes as `attr:${K}`]?: UpdrawStrokeSizeAttributes[K] } & { [K in keyof UpdrawStrokeSize & keyof UpdrawStrokeSizeAttributes as `prop:${K}`]?: UpdrawStrokeSize[K] };
+        "updraw-titlebar-menu": UpdrawTitlebarMenu;
+        "updraw-tool-config": Omit<UpdrawToolConfig, keyof UpdrawToolConfigAttributes> & { [K in keyof UpdrawToolConfig & keyof UpdrawToolConfigAttributes]?: UpdrawToolConfig[K] } & { [K in keyof UpdrawToolConfig & keyof UpdrawToolConfigAttributes as `attr:${K}`]?: UpdrawToolConfigAttributes[K] } & { [K in keyof UpdrawToolConfig & keyof UpdrawToolConfigAttributes as `prop:${K}`]?: UpdrawToolConfig[K] };
+        "updraw-toolbar": Omit<UpdrawToolbar, keyof UpdrawToolbarAttributes> & { [K in keyof UpdrawToolbar & keyof UpdrawToolbarAttributes]?: UpdrawToolbar[K] } & { [K in keyof UpdrawToolbar & keyof UpdrawToolbarAttributes as `attr:${K}`]?: UpdrawToolbarAttributes[K] } & { [K in keyof UpdrawToolbar & keyof UpdrawToolbarAttributes as `prop:${K}`]?: UpdrawToolbar[K] };
+        "updraw-tooltip": Omit<UpdrawTooltip, keyof UpdrawTooltipAttributes> & { [K in keyof UpdrawTooltip & keyof UpdrawTooltipAttributes]?: UpdrawTooltip[K] } & { [K in keyof UpdrawTooltip & keyof UpdrawTooltipAttributes as `attr:${K}`]?: UpdrawTooltipAttributes[K] } & { [K in keyof UpdrawTooltip & keyof UpdrawTooltipAttributes as `prop:${K}`]?: UpdrawTooltip[K] };
+        "updraw-utility-panel": UpdrawUtilityPanel;
+        "updraw-workspace-manager": Omit<UpdrawWorkspaceManager, keyof UpdrawWorkspaceManagerAttributes> & { [K in keyof UpdrawWorkspaceManager & keyof UpdrawWorkspaceManagerAttributes]?: UpdrawWorkspaceManager[K] } & { [K in keyof UpdrawWorkspaceManager & keyof UpdrawWorkspaceManagerAttributes as `attr:${K}`]?: UpdrawWorkspaceManagerAttributes[K] } & { [K in keyof UpdrawWorkspaceManager & keyof UpdrawWorkspaceManagerAttributes as `prop:${K}`]?: UpdrawWorkspaceManager[K] };
+        "updraw-zoom-panel": Omit<UpdrawZoomPanel, keyof UpdrawZoomPanelAttributes> & { [K in keyof UpdrawZoomPanel & keyof UpdrawZoomPanelAttributes]?: UpdrawZoomPanel[K] } & { [K in keyof UpdrawZoomPanel & keyof UpdrawZoomPanelAttributes as `attr:${K}`]?: UpdrawZoomPanelAttributes[K] } & { [K in keyof UpdrawZoomPanel & keyof UpdrawZoomPanelAttributes as `prop:${K}`]?: UpdrawZoomPanel[K] };
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "kritzel-active-users": LocalJSX.IntrinsicElements["kritzel-active-users"] & JSXBase.HTMLAttributes<HTMLKritzelActiveUsersElement>;
-            "kritzel-avatar": LocalJSX.IntrinsicElements["kritzel-avatar"] & JSXBase.HTMLAttributes<HTMLKritzelAvatarElement>;
-            "kritzel-back-to-content": LocalJSX.IntrinsicElements["kritzel-back-to-content"] & JSXBase.HTMLAttributes<HTMLKritzelBackToContentElement>;
-            "kritzel-brush-style": LocalJSX.IntrinsicElements["kritzel-brush-style"] & JSXBase.HTMLAttributes<HTMLKritzelBrushStyleElement>;
-            "kritzel-button": LocalJSX.IntrinsicElements["kritzel-button"] & JSXBase.HTMLAttributes<HTMLKritzelButtonElement>;
-            "kritzel-chat-box": LocalJSX.IntrinsicElements["kritzel-chat-box"] & JSXBase.HTMLAttributes<HTMLKritzelChatBoxElement>;
-            "kritzel-color": LocalJSX.IntrinsicElements["kritzel-color"] & JSXBase.HTMLAttributes<HTMLKritzelColorElement>;
-            "kritzel-color-palette": LocalJSX.IntrinsicElements["kritzel-color-palette"] & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
-            "kritzel-context-menu": LocalJSX.IntrinsicElements["kritzel-context-menu"] & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
-            "kritzel-current-user": LocalJSX.IntrinsicElements["kritzel-current-user"] & JSXBase.HTMLAttributes<HTMLKritzelCurrentUserElement>;
-            "kritzel-current-user-dialog": LocalJSX.IntrinsicElements["kritzel-current-user-dialog"] & JSXBase.HTMLAttributes<HTMLKritzelCurrentUserDialogElement>;
-            "kritzel-dialog": LocalJSX.IntrinsicElements["kritzel-dialog"] & JSXBase.HTMLAttributes<HTMLKritzelDialogElement>;
-            "kritzel-dropdown": LocalJSX.IntrinsicElements["kritzel-dropdown"] & JSXBase.HTMLAttributes<HTMLKritzelDropdownElement>;
-            "kritzel-editor": LocalJSX.IntrinsicElements["kritzel-editor"] & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
-            "kritzel-export": LocalJSX.IntrinsicElements["kritzel-export"] & JSXBase.HTMLAttributes<HTMLKritzelExportElement>;
-            "kritzel-font": LocalJSX.IntrinsicElements["kritzel-font"] & JSXBase.HTMLAttributes<HTMLKritzelFontElement>;
-            "kritzel-font-family": LocalJSX.IntrinsicElements["kritzel-font-family"] & JSXBase.HTMLAttributes<HTMLKritzelFontFamilyElement>;
-            "kritzel-font-size": LocalJSX.IntrinsicElements["kritzel-font-size"] & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
-            "kritzel-input": LocalJSX.IntrinsicElements["kritzel-input"] & JSXBase.HTMLAttributes<HTMLKritzelInputElement>;
-            "kritzel-line-endings": LocalJSX.IntrinsicElements["kritzel-line-endings"] & JSXBase.HTMLAttributes<HTMLKritzelLineEndingsElement>;
+            "updraw-active-users": LocalJSX.IntrinsicElements["updraw-active-users"] & JSXBase.HTMLAttributes<HTMLUpdrawActiveUsersElement>;
+            "updraw-avatar": LocalJSX.IntrinsicElements["updraw-avatar"] & JSXBase.HTMLAttributes<HTMLUpdrawAvatarElement>;
+            "updraw-back-to-content": LocalJSX.IntrinsicElements["updraw-back-to-content"] & JSXBase.HTMLAttributes<HTMLUpdrawBackToContentElement>;
+            "updraw-brush-style": LocalJSX.IntrinsicElements["updraw-brush-style"] & JSXBase.HTMLAttributes<HTMLUpdrawBrushStyleElement>;
+            "updraw-button": LocalJSX.IntrinsicElements["updraw-button"] & JSXBase.HTMLAttributes<HTMLUpdrawButtonElement>;
+            "updraw-chat-box": LocalJSX.IntrinsicElements["updraw-chat-box"] & JSXBase.HTMLAttributes<HTMLUpdrawChatBoxElement>;
+            "updraw-color": LocalJSX.IntrinsicElements["updraw-color"] & JSXBase.HTMLAttributes<HTMLUpdrawColorElement>;
+            "updraw-color-palette": LocalJSX.IntrinsicElements["updraw-color-palette"] & JSXBase.HTMLAttributes<HTMLUpdrawColorPaletteElement>;
+            "updraw-context-menu": LocalJSX.IntrinsicElements["updraw-context-menu"] & JSXBase.HTMLAttributes<HTMLUpdrawContextMenuElement>;
+            "updraw-current-user": LocalJSX.IntrinsicElements["updraw-current-user"] & JSXBase.HTMLAttributes<HTMLUpdrawCurrentUserElement>;
+            "updraw-current-user-dialog": LocalJSX.IntrinsicElements["updraw-current-user-dialog"] & JSXBase.HTMLAttributes<HTMLUpdrawCurrentUserDialogElement>;
+            "updraw-dialog": LocalJSX.IntrinsicElements["updraw-dialog"] & JSXBase.HTMLAttributes<HTMLUpdrawDialogElement>;
+            "updraw-dropdown": LocalJSX.IntrinsicElements["updraw-dropdown"] & JSXBase.HTMLAttributes<HTMLUpdrawDropdownElement>;
+            "updraw-editor": LocalJSX.IntrinsicElements["updraw-editor"] & JSXBase.HTMLAttributes<HTMLUpdrawEditorElement>;
+            "updraw-export": LocalJSX.IntrinsicElements["updraw-export"] & JSXBase.HTMLAttributes<HTMLUpdrawExportElement>;
+            "updraw-font": LocalJSX.IntrinsicElements["updraw-font"] & JSXBase.HTMLAttributes<HTMLUpdrawFontElement>;
+            "updraw-font-family": LocalJSX.IntrinsicElements["updraw-font-family"] & JSXBase.HTMLAttributes<HTMLUpdrawFontFamilyElement>;
+            "updraw-font-size": LocalJSX.IntrinsicElements["updraw-font-size"] & JSXBase.HTMLAttributes<HTMLUpdrawFontSizeElement>;
+            "updraw-input": LocalJSX.IntrinsicElements["updraw-input"] & JSXBase.HTMLAttributes<HTMLUpdrawInputElement>;
+            "updraw-line-endings": LocalJSX.IntrinsicElements["updraw-line-endings"] & JSXBase.HTMLAttributes<HTMLUpdrawLineEndingsElement>;
             /**
              * Login dialog component for displaying authentication provider buttons.
              * This is a presentational component that emits events for all actions.
-             * The parent component (kritzel-editor) handles the actual authentication flow.
+             * The parent component (updraw-editor) handles the actual authentication flow.
              */
-            "kritzel-login-dialog": LocalJSX.IntrinsicElements["kritzel-login-dialog"] & JSXBase.HTMLAttributes<HTMLKritzelLoginDialogElement>;
-            "kritzel-master-detail": LocalJSX.IntrinsicElements["kritzel-master-detail"] & JSXBase.HTMLAttributes<HTMLKritzelMasterDetailElement>;
-            "kritzel-menu": LocalJSX.IntrinsicElements["kritzel-menu"] & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
-            "kritzel-menu-item": LocalJSX.IntrinsicElements["kritzel-menu-item"] & JSXBase.HTMLAttributes<HTMLKritzelMenuItemElement>;
-            "kritzel-more-menu": LocalJSX.IntrinsicElements["kritzel-more-menu"] & JSXBase.HTMLAttributes<HTMLKritzelMoreMenuElement>;
-            "kritzel-notification-card": LocalJSX.IntrinsicElements["kritzel-notification-card"] & JSXBase.HTMLAttributes<HTMLKritzelNotificationCardElement>;
-            "kritzel-numeric-input": LocalJSX.IntrinsicElements["kritzel-numeric-input"] & JSXBase.HTMLAttributes<HTMLKritzelNumericInputElement>;
-            "kritzel-opacity-slider": LocalJSX.IntrinsicElements["kritzel-opacity-slider"] & JSXBase.HTMLAttributes<HTMLKritzelOpacitySliderElement>;
-            "kritzel-pill-tabs": LocalJSX.IntrinsicElements["kritzel-pill-tabs"] & JSXBase.HTMLAttributes<HTMLKritzelPillTabsElement>;
-            "kritzel-portal": LocalJSX.IntrinsicElements["kritzel-portal"] & JSXBase.HTMLAttributes<HTMLKritzelPortalElement>;
-            "kritzel-settings": LocalJSX.IntrinsicElements["kritzel-settings"] & JSXBase.HTMLAttributes<HTMLKritzelSettingsElement>;
-            "kritzel-shape-fill": LocalJSX.IntrinsicElements["kritzel-shape-fill"] & JSXBase.HTMLAttributes<HTMLKritzelShapeFillElement>;
+            "updraw-login-dialog": LocalJSX.IntrinsicElements["updraw-login-dialog"] & JSXBase.HTMLAttributes<HTMLUpdrawLoginDialogElement>;
+            "updraw-master-detail": LocalJSX.IntrinsicElements["updraw-master-detail"] & JSXBase.HTMLAttributes<HTMLUpdrawMasterDetailElement>;
+            "updraw-menu": LocalJSX.IntrinsicElements["updraw-menu"] & JSXBase.HTMLAttributes<HTMLUpdrawMenuElement>;
+            "updraw-menu-item": LocalJSX.IntrinsicElements["updraw-menu-item"] & JSXBase.HTMLAttributes<HTMLUpdrawMenuItemElement>;
+            "updraw-more-menu": LocalJSX.IntrinsicElements["updraw-more-menu"] & JSXBase.HTMLAttributes<HTMLUpdrawMoreMenuElement>;
+            "updraw-notification-card": LocalJSX.IntrinsicElements["updraw-notification-card"] & JSXBase.HTMLAttributes<HTMLUpdrawNotificationCardElement>;
+            "updraw-numeric-input": LocalJSX.IntrinsicElements["updraw-numeric-input"] & JSXBase.HTMLAttributes<HTMLUpdrawNumericInputElement>;
+            "updraw-opacity-slider": LocalJSX.IntrinsicElements["updraw-opacity-slider"] & JSXBase.HTMLAttributes<HTMLUpdrawOpacitySliderElement>;
+            "updraw-pill-tabs": LocalJSX.IntrinsicElements["updraw-pill-tabs"] & JSXBase.HTMLAttributes<HTMLUpdrawPillTabsElement>;
+            "updraw-portal": LocalJSX.IntrinsicElements["updraw-portal"] & JSXBase.HTMLAttributes<HTMLUpdrawPortalElement>;
+            "updraw-settings": LocalJSX.IntrinsicElements["updraw-settings"] & JSXBase.HTMLAttributes<HTMLUpdrawSettingsElement>;
+            "updraw-shape-fill": LocalJSX.IntrinsicElements["updraw-shape-fill"] & JSXBase.HTMLAttributes<HTMLUpdrawShapeFillElement>;
             /**
              * Share dialog component for managing workspace link sharing.
              * This is a presentational component that emits events for all actions.
-             * The parent component (kritzel-editor) handles the business logic.
+             * The parent component (updraw-editor) handles the business logic.
              */
-            "kritzel-share-dialog": LocalJSX.IntrinsicElements["kritzel-share-dialog"] & JSXBase.HTMLAttributes<HTMLKritzelShareDialogElement>;
-            "kritzel-slide-toggle": LocalJSX.IntrinsicElements["kritzel-slide-toggle"] & JSXBase.HTMLAttributes<HTMLKritzelSlideToggleElement>;
-            "kritzel-split-button": LocalJSX.IntrinsicElements["kritzel-split-button"] & JSXBase.HTMLAttributes<HTMLKritzelSplitButtonElement>;
-            "kritzel-stroke-size": LocalJSX.IntrinsicElements["kritzel-stroke-size"] & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
+            "updraw-share-dialog": LocalJSX.IntrinsicElements["updraw-share-dialog"] & JSXBase.HTMLAttributes<HTMLUpdrawShareDialogElement>;
+            "updraw-slide-toggle": LocalJSX.IntrinsicElements["updraw-slide-toggle"] & JSXBase.HTMLAttributes<HTMLUpdrawSlideToggleElement>;
+            "updraw-split-button": LocalJSX.IntrinsicElements["updraw-split-button"] & JSXBase.HTMLAttributes<HTMLUpdrawSplitButtonElement>;
+            "updraw-stroke-size": LocalJSX.IntrinsicElements["updraw-stroke-size"] & JSXBase.HTMLAttributes<HTMLUpdrawStrokeSizeElement>;
             /**
-             * The menu opened from a titlebar `menu` element: a compact `kritzel-menu` styled like the
-             * context menu through the `--kritzel-titlebar-menu-*` theme variables.
+             * The menu opened from a titlebar `menu` element: a compact `updraw-menu` styled like the
+             * context menu through the `--updraw-titlebar-menu-*` theme variables.
              */
-            "kritzel-titlebar-menu": LocalJSX.IntrinsicElements["kritzel-titlebar-menu"] & JSXBase.HTMLAttributes<HTMLKritzelTitlebarMenuElement>;
-            "kritzel-tool-config": LocalJSX.IntrinsicElements["kritzel-tool-config"] & JSXBase.HTMLAttributes<HTMLKritzelToolConfigElement>;
-            "kritzel-toolbar": LocalJSX.IntrinsicElements["kritzel-toolbar"] & JSXBase.HTMLAttributes<HTMLKritzelToolbarElement>;
-            "kritzel-tooltip": LocalJSX.IntrinsicElements["kritzel-tooltip"] & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;
-            "kritzel-utility-panel": LocalJSX.IntrinsicElements["kritzel-utility-panel"] & JSXBase.HTMLAttributes<HTMLKritzelUtilityPanelElement>;
-            "kritzel-workspace-manager": LocalJSX.IntrinsicElements["kritzel-workspace-manager"] & JSXBase.HTMLAttributes<HTMLKritzelWorkspaceManagerElement>;
-            "kritzel-zoom-panel": LocalJSX.IntrinsicElements["kritzel-zoom-panel"] & JSXBase.HTMLAttributes<HTMLKritzelZoomPanelElement>;
+            "updraw-titlebar-menu": LocalJSX.IntrinsicElements["updraw-titlebar-menu"] & JSXBase.HTMLAttributes<HTMLUpdrawTitlebarMenuElement>;
+            "updraw-tool-config": LocalJSX.IntrinsicElements["updraw-tool-config"] & JSXBase.HTMLAttributes<HTMLUpdrawToolConfigElement>;
+            "updraw-toolbar": LocalJSX.IntrinsicElements["updraw-toolbar"] & JSXBase.HTMLAttributes<HTMLUpdrawToolbarElement>;
+            "updraw-tooltip": LocalJSX.IntrinsicElements["updraw-tooltip"] & JSXBase.HTMLAttributes<HTMLUpdrawTooltipElement>;
+            "updraw-utility-panel": LocalJSX.IntrinsicElements["updraw-utility-panel"] & JSXBase.HTMLAttributes<HTMLUpdrawUtilityPanelElement>;
+            "updraw-workspace-manager": LocalJSX.IntrinsicElements["updraw-workspace-manager"] & JSXBase.HTMLAttributes<HTMLUpdrawWorkspaceManagerElement>;
+            "updraw-zoom-panel": LocalJSX.IntrinsicElements["updraw-zoom-panel"] & JSXBase.HTMLAttributes<HTMLUpdrawZoomPanelElement>;
         }
     }
 }

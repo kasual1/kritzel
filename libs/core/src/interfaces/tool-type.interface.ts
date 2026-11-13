@@ -1,1 +1,1 @@
-export type KritzelToolType = 'brush' | 'line' | 'shape' | 'text' | 'selection' | 'eraser' | 'image' | 'base';
+export type UpdrawToolType = 'brush' | 'line' | 'shape' | 'text' | 'selection' | 'eraser' | 'image' | 'base';

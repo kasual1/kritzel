@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import {
-  KritzelDynamicObject,
-  KritzelEditor,
-  KritzelWorkspace,
-} from "@kritzel/react-editor";
-import { KritzelDynamicObjectRendererRegistry } from "@kritzel/react-editor";
+  UpdrawDynamicObject,
+  UpdrawEditor,
+  UpdrawWorkspace,
+} from "@updraw/react-editor";
+import { UpdrawDynamicObjectRendererRegistry } from "@updraw/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { CalculatorWidget } from "./CalculatorWidget";
@@ -18,21 +18,21 @@ type MountedCalculatorRenderer = {
   latestState: CalculatorState;
 };
 
-function createCalculatorObject(): KritzelDynamicObject {
+function createCalculatorObject(): UpdrawDynamicObject {
   const placeholder = document.createElement("div");
   placeholder.textContent = "Loading Calculator...";
-  const object = new KritzelDynamicObject({ element: placeholder, rendererKey: CALCULATOR_RENDERER_KEY, rendererData: createCalculatorInitialState(), translateX: -130, translateY: -190, width: 260, height: 320, borderRadius: 12 });
+  const object = new UpdrawDynamicObject({ element: placeholder, rendererKey: CALCULATOR_RENDERER_KEY, rendererData: createCalculatorInitialState(), translateX: -130, translateY: -190, width: 260, height: 320, borderRadius: 12 });
   object.isRotatable = false;
   return object;
 }
 
 export function DynamicObjectsComponentPage() {
   const mountedRenderers = useRef<Map<string, MountedCalculatorRenderer>>(new Map());
-  const workspaces = useMemo(() => [new KritzelWorkspace({ objects: [createCalculatorObject()] })], []);
+  const workspaces = useMemo(() => [new UpdrawWorkspace({ objects: [createCalculatorObject()] })], []);
 
   useEffect(() => {
     const renderers = mountedRenderers.current;
-    KritzelDynamicObjectRendererRegistry.register(CALCULATOR_RENDERER_KEY, {
+    UpdrawDynamicObjectRendererRegistry.register(CALCULATOR_RENDERER_KEY, {
       onMount: ({ object, container, data }) => {
         if (!container) {
           return;
@@ -83,13 +83,13 @@ export function DynamicObjectsComponentPage() {
         renderer.root.unmount();
       });
       renderers.clear();
-      KritzelDynamicObjectRendererRegistry.unregister(CALCULATOR_RENDERER_KEY);
+      UpdrawDynamicObjectRendererRegistry.unregister(CALCULATOR_RENDERER_KEY);
     };
   }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <KritzelEditor
+      <UpdrawEditor
         editorId="dynamic-objects-component"
         theme="light"
         themes={[reactThemeLight, reactThemeDark]}

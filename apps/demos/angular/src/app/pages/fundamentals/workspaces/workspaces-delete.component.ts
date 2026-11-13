@@ -7,10 +7,10 @@ import {
 import {
   ActiveWorkspaceChangeEvent,
   InMemorySyncProvider,
-  KritzelEditor,
-  KritzelSyncConfig,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawEditor,
+  UpdrawSyncConfig,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { LucideX } from '@lucide/angular';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -19,7 +19,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-workspaces-delete',
-  imports: [KritzelEditor, LucideX, ToolbarComponent],
+  imports: [UpdrawEditor, LucideX, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -43,7 +43,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         </div>
       }
     </app-toolbar>
-    <kritzel-editor
+    <updraw-editor
       editorId="workspaces-delete"
       [theme]="'light'"
       [themes]="themes"
@@ -55,7 +55,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [
     `
@@ -65,7 +65,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         height: 100%;
         font-family: Roboto, sans-serif;
       }
-      kritzel-editor {
+      updraw-editor {
         flex: 1;
       }
       .workspace-tab {
@@ -106,17 +106,17 @@ import { createSeedObjects } from '../../../const/seed-objects';
   ],
 })
 export class WorkspacesDeleteComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-  syncConfig: KritzelSyncConfig = {
+  syncConfig: UpdrawSyncConfig = {
     providers: [InMemorySyncProvider],
   };
-  workspaces = signal<KritzelWorkspace[]>(
+  workspaces = signal<UpdrawWorkspace[]>(
     Array.from(
       { length: 6 },
       (_, index) =>
-        new KritzelWorkspace({
+        new UpdrawWorkspace({
           id: `board-${index + 1}`,
           name: `Board ${index + 1}`,
           objects: createSeedObjects(),
@@ -129,11 +129,11 @@ export class WorkspacesDeleteComponent {
     this.activeWorkspaceId.set(event.detail.id);
   }
 
-  async switchTo(workspace: KritzelWorkspace) {
+  async switchTo(workspace: UpdrawWorkspace) {
     await this.editor.setActiveWorkspace(workspace.id);
   }
 
-  async deleteWorkspace(workspace: KritzelWorkspace, event: MouseEvent) {
+  async deleteWorkspace(workspace: UpdrawWorkspace, event: MouseEvent) {
     event.stopPropagation();
     const currentWorkspaces = this.workspaces();
     if (currentWorkspaces.length <= 1) return;

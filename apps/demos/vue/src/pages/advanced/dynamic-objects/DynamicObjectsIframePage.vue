@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { KritzelEditor, KritzelIframeObject, KritzelWorkspace } from '@kritzel/vue-editor'
+import { UpdrawEditor, UpdrawIframeObject, UpdrawWorkspace } from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { mockChatPrompts, mockComponentDefinitions } from './iframe-calculator-definitions'
 
-function createRuntimeObject(): KritzelIframeObject {
+function createRuntimeObject(): UpdrawIframeObject {
   const definition = mockComponentDefinitions[0]
-  const object = new KritzelIframeObject({
+  const object = new UpdrawIframeObject({
     content: definition.content,
     state: definition.initialState,
     title: definition.name,
@@ -24,7 +24,7 @@ function createRuntimeObject(): KritzelIframeObject {
 
 const runtimeObject = createRuntimeObject()
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: [runtimeObject] })]
+const workspaces = [new UpdrawWorkspace({ objects: [runtimeObject] })]
 const promptIndex = ref(0)
 const promptText = ref(mockChatPrompts[0])
 const queryLabel = computed(() => `${promptIndex.value + 1} of ${mockChatPrompts.length}`)
@@ -60,7 +60,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="page">
-    <KritzelEditor
+    <UpdrawEditor
       editorId="dynamic-objects-iframe"
       theme="light"
       :themes="themes"

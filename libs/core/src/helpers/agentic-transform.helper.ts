@@ -1,15 +1,15 @@
-import type { KritzelCore } from '../classes/core/core.class';
-import type { KritzelPoint } from '../interfaces/point.interface';
-import type { KritzelAgenticResizeHandle } from '../interfaces/agentic-action.interface';
-import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
+import type { UpdrawCore } from '../classes/core/core.class';
+import type { UpdrawPoint } from '../interfaces/point.interface';
+import type { UpdrawAgenticResizeHandle } from '../interfaces/agentic-action.interface';
+import { UpdrawSelectionGroup } from '../classes/objects/selection-group.class';
 
 /**
  * Creates a selection group over objects for agent transforms. It is never inserted into
  * the object map (so it is never synced, persisted or rendered), never touches the objects'
  * shared `isSelected` flags and is invisible to the user's tools.
  */
-export function createTransientSelectionGroup(core: KritzelCore, objectIds: string[]): KritzelSelectionGroup {
-  const group = KritzelSelectionGroup.create(core);
+export function createTransientSelectionGroup(core: UpdrawCore, objectIds: string[]): UpdrawSelectionGroup {
+  const group = UpdrawSelectionGroup.create(core);
   group.objectIds = [...objectIds];
   const children = group.objects;
   if (children.length === 1) {
@@ -21,14 +21,14 @@ export function createTransientSelectionGroup(core: KritzelCore, objectIds: stri
 }
 
 /** Rotates a vector by `angle` radians. */
-export function rotateVector(x: number, y: number, angle: number): KritzelPoint {
+export function rotateVector(x: number, y: number, angle: number): UpdrawPoint {
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
   return { x: cos * x - sin * y, y: sin * x + cos * y };
 }
 
 /** Direction of a resize handle: +1 towards right/bottom, -1 towards left/top. */
-export function handleSigns(handle: KritzelAgenticResizeHandle): { sx: number; sy: number } {
+export function handleSigns(handle: UpdrawAgenticResizeHandle): { sx: number; sy: number } {
   return {
     sx: handle.endsWith('right') ? 1 : -1,
     sy: handle.startsWith('bottom') ? 1 : -1,
@@ -36,7 +36,7 @@ export function handleSigns(handle: KritzelAgenticResizeHandle): { sx: number; s
 }
 
 /** Geometry of a selection group needed to resize it around a fixed corner. */
-export interface KritzelAnchoredResizeFrame {
+export interface UpdrawAnchoredResizeFrame {
   /** Translate X/Y of the unrotated group box (world). */
   translateX: number;
   translateY: number;
@@ -48,18 +48,18 @@ export interface KritzelAnchoredResizeFrame {
   rotation: number;
 }
 
-/** Result of `computeAnchoredResize`: the arguments for `KritzelSelectionGroup.resize` and the dragged corner. */
-export interface KritzelAnchoredResizeStep {
+/** Result of `computeAnchoredResize`: the arguments for `UpdrawSelectionGroup.resize` and the dragged corner. */
+export interface UpdrawAnchoredResizeStep {
   x: number;
   y: number;
   width: number;
   height: number;
   /** World position of the dragged corner. */
-  handle: KritzelPoint;
+  handle: UpdrawPoint;
 }
 
 /** World position of the corner opposite to `handle`, which stays in place while resizing. */
-export function fixedCorner(frame: KritzelAnchoredResizeFrame, handle: KritzelAgenticResizeHandle): KritzelPoint {
+export function fixedCorner(frame: UpdrawAnchoredResizeFrame, handle: UpdrawAgenticResizeHandle): UpdrawPoint {
   const { sx, sy } = handleSigns(handle);
   const k = frame.scale || 1;
   const totalWidth = frame.width + frame.padding * 2;
@@ -71,15 +71,15 @@ export function fixedCorner(frame: KritzelAnchoredResizeFrame, handle: KritzelAg
 
 /**
  * Computes where a group of the given size must be placed so that the corner opposite to `handle`
- * stays at `fixed`, following the rotated box. Matches the center-based math of `KritzelSelectionGroup.resize`.
+ * stays at `fixed`, following the rotated box. Matches the center-based math of `UpdrawSelectionGroup.resize`.
  */
 export function computeAnchoredResize(
-  frame: KritzelAnchoredResizeFrame,
-  handle: KritzelAgenticResizeHandle,
-  fixed: KritzelPoint,
+  frame: UpdrawAnchoredResizeFrame,
+  handle: UpdrawAgenticResizeHandle,
+  fixed: UpdrawPoint,
   width: number,
   height: number,
-): KritzelAnchoredResizeStep {
+): UpdrawAnchoredResizeStep {
   const { sx, sy } = handleSigns(handle);
   const k = frame.scale || 1;
   const totalWidth = width + frame.padding * 2;

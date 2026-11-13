@@ -1,34 +1,34 @@
 <script setup lang="ts">
 import {
-  KritzelBrushTool,
-  KritzelEditor,
-  KritzelLineTool,
-  KritzelSelectionTool,
-  KritzelShapeTool,
-  KritzelTextTool,
-  KritzelWorkspace,
+  UpdrawBrushTool,
+  UpdrawEditor,
+  UpdrawLineTool,
+  UpdrawSelectionTool,
+  UpdrawShapeTool,
+  UpdrawTextTool,
+  UpdrawWorkspace,
   ShapeType,
-  type KritzelToolbarItem,
-} from '@kritzel/vue-editor'
+  type UpdrawToolbarItem,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 
-const toolbarItems: KritzelToolbarItem[] = [
+const toolbarItems: UpdrawToolbarItem[] = [
   {
     name: 'selection',
     type: 'tool',
-    tool: KritzelSelectionTool,
+    tool: UpdrawSelectionTool,
     icon: 'cursor',
   },
   {
     name: 'brush',
     type: 'tool',
-    tool: KritzelBrushTool,
+    tool: UpdrawBrushTool,
     icon: 'pen',
     isDefault: true,
     config: {
@@ -46,7 +46,7 @@ const toolbarItems: KritzelToolbarItem[] = [
   {
     name: 'line',
     type: 'tool',
-    tool: KritzelLineTool,
+    tool: UpdrawLineTool,
     icon: 'arrow',
     config: {
       color: { light: '#0284c7', dark: '#38bdf8', label: 'Sky' },
@@ -66,7 +66,7 @@ const toolbarItems: KritzelToolbarItem[] = [
   {
     name: 'shape',
     type: 'tool',
-    tool: KritzelShapeTool,
+    tool: UpdrawShapeTool,
     icon: 'shapeEllipse',
     config: {
       shapeType: ShapeType.Ellipse,
@@ -92,7 +92,7 @@ const toolbarItems: KritzelToolbarItem[] = [
   {
     name: 'text',
     type: 'tool',
-    tool: KritzelTextTool,
+    tool: UpdrawTextTool,
     icon: 'type',
     config: {
       color: { light: '#1f2937', dark: '#f3f4f6', label: 'Ink' },
@@ -115,7 +115,7 @@ const toolbarItems: KritzelToolbarItem[] = [
 
 <template>
   <div :style="hostStyle">
-    <KritzelEditor
+    <UpdrawEditor
       editorId="tools-config"
       theme="light"
       :themes="themes"

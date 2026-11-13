@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-import { KritzelEditor } from '@kritzel/angular-editor';
+import { UpdrawEditor } from '@updraw/angular-editor';
 import { angularThemeLight } from '../const/angular-theme-light';
 import { angularThemeDark } from '../const/angular-theme-dark';
 
 @Component({
   selector: 'app-editor-page',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<kritzel-editor [theme]="'light'" [themes]="themes"></kritzel-editor>`,
+  template: `<updraw-editor [theme]="'light'" [themes]="themes"></updraw-editor>`,
 })
 export class EditorPageComponent {
   themes = [angularThemeLight, angularThemeDark];

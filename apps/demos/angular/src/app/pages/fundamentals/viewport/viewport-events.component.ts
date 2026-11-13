@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { KritzelEditor, KritzelViewportState, KritzelWorkspace } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawViewportState, UpdrawWorkspace } from '@updraw/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -8,7 +8,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-viewport-events',
-  imports: [KritzelEditor, DecimalPipe, ToolbarComponent],
+  imports: [UpdrawEditor, DecimalPipe, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -23,7 +23,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       <span class="status">Scale: {{ viewport()?.scale ?? 1 | number:'1.0-2' }}</span>
     </app-toolbar>
 
-    <kritzel-editor
+    <updraw-editor
       editorId="viewport-events"
       [theme]="'light'"
       [themes]="themes"
@@ -33,22 +33,22 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (viewportChange)="onViewportChange($event)"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    kritzel-editor { flex: 1; }
+    updraw-editor { flex: 1; }
   `],
 })
 export class ViewportEventsComponent {
   private readonly panStep = 100;
   private readonly zoomFactor = 1.1;
 
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
-  viewport = signal<KritzelViewportState | null>(null);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  viewport = signal<UpdrawViewportState | null>(null);
 
   async panUp() {
     await this.panBy(0, -this.panStep);
@@ -85,7 +85,7 @@ export class ViewportEventsComponent {
     );
   }
 
-  onViewportChange(event: CustomEvent<KritzelViewportState>) {
+  onViewportChange(event: CustomEvent<UpdrawViewportState>) {
     this.viewport.set(event.detail);
   }
 

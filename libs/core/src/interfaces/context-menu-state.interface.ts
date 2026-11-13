@@ -1,11 +1,11 @@
-import { KritzelBaseObject } from '../classes/objects/base-object.class';
+import { UpdrawBaseObject } from '../classes/objects/base-object.class';
 import { ContextMenuItem } from './context-menu-item.interface';
 
-export interface KritzelContextMenuState {
+export interface UpdrawContextMenuState {
   isVisible: boolean;
   isObjectMenu: boolean;
   items: ContextMenuItem[];
-  objects: KritzelBaseObject[];
+  objects: UpdrawBaseObject[];
   position: {
     x: number;
     y: number;

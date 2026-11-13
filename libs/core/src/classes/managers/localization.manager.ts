@@ -1,4 +1,4 @@
-import { KritzelCore } from '../core/core.class';
+import { UpdrawCore } from '../core/core.class';
 import { LocalizationHelper } from '../../helpers/localization.helper';
 import { EN_LOCALE } from '../../locales/en-locale';
 import { DE_LOCALE } from '../../locales/de-locale';
@@ -8,18 +8,18 @@ import { ES_LOCALE } from '../../locales/es-locale';
 import { PL_LOCALE } from '../../locales/pl-locale';
 import { NL_LOCALE } from '../../locales/nl-locale';
 import { IT_LOCALE } from '../../locales/it-locale';
-import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from '../../interfaces/localization.interface';
+import { UpdrawLocale, UpdrawTermKey, UpdrawTermVars, LocaleCode } from '../../interfaces/localization.interface';
 
 /** Key used to store the settings object in localStorage. */
-const SETTINGS_STORAGE_KEY = 'kritzel-settings';
+const SETTINGS_STORAGE_KEY = 'updraw-settings';
 
 /** Default locale used when no stored preference exists. */
 const DEFAULT_LOCALE: LocaleCode = 'en';
 
 /**
- * Manages localization state and term resolution across the Kritzel editor.
+ * Manages localization state and term resolution across the Updraw editor.
  *
- * The manager is owned per {@link KritzelCore} instance (like the theme manager)
+ * The manager is owned per {@link UpdrawCore} instance (like the theme manager)
  * so that multiple editors on the same page can use different languages in
  * isolation.
  *
@@ -30,17 +30,17 @@ const DEFAULT_LOCALE: LocaleCode = 'en';
  * 4. fallback locale's built-in terms
  * 5. the key itself (last resort)
  *
- * Persistence of the selected locale is handled by the KritzelSettings
+ * Persistence of the selected locale is handled by the UpdrawSettings
  * component; this manager only reads the stored value.
  */
-export class KritzelLocalizationManager {
-  private readonly _core: KritzelCore;
+export class UpdrawLocalizationManager {
+  private readonly _core: UpdrawCore;
   private readonly _storageKey: string;
 
   /** Built-in locale definitions, keyed by locale code. */
-  private readonly _builtinLocales = new Map<string, KritzelLocale>();
+  private readonly _builtinLocales = new Map<string, UpdrawLocale>();
   /** Consumer-registered locale definitions, keyed by locale code. */
-  private readonly _customLocales = new Map<string, KritzelLocale>();
+  private readonly _customLocales = new Map<string, UpdrawLocale>();
 
   private _currentLocale: LocaleCode = DEFAULT_LOCALE;
   private _fallbackLocale: LocaleCode = DEFAULT_LOCALE;
@@ -48,13 +48,13 @@ export class KritzelLocalizationManager {
   private _explicitLocales = false;
 
   /**
-   * Creates a new KritzelLocalizationManager instance.
+   * Creates a new UpdrawLocalizationManager instance.
    * Seeds the built-in locales and initializes the current locale from the
    * settings object in localStorage (or the default locale).
    *
-   * @param core - The KritzelCore instance this manager belongs to
+   * @param core - The UpdrawCore instance this manager belongs to
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     this._core = core;
     this._storageKey = core.editorId ? `${SETTINGS_STORAGE_KEY}-${core.editorId}` : SETTINGS_STORAGE_KEY;
 
@@ -101,7 +101,7 @@ export class KritzelLocalizationManager {
    *
    * @param locales - The locale definitions to register
    */
-  registerLocales(locales: KritzelLocale[]): void {
+  registerLocales(locales: UpdrawLocale[]): void {
     for (const locale of locales) {
       this._customLocales.set(locale.code, locale);
     }
@@ -118,7 +118,7 @@ export class KritzelLocalizationManager {
    *
    * @param locales - The full locale catalog, or `undefined` to use built-ins
    */
-  configureLocales(locales?: KritzelLocale[]): void {
+  configureLocales(locales?: UpdrawLocale[]): void {
     this._customLocales.clear();
     this._explicitLocales = locales !== undefined;
     if (locales) {
@@ -191,7 +191,7 @@ export class KritzelLocalizationManager {
    * manager.translate('menu.copy'); // 'Copy'
    * manager.translate('share.expires', { date: '5/1' }); // 'Expires 5/1'
    */
-  translate(key: KritzelTermKey, vars?: KritzelTermVars): string {
+  translate(key: UpdrawTermKey, vars?: UpdrawTermVars): string {
     const resolved =
       this._customLocales.get(this._currentLocale)?.terms[key] ??
       this._builtinLocales.get(this._currentLocale)?.terms[key] ??
@@ -212,15 +212,15 @@ export class KritzelLocalizationManager {
    *
    * @returns A map of every term key to its resolved string for the active locale
    */
-  getAllTerms(): Partial<Record<KritzelTermKey, string>> {
-    const keys = new Set<KritzelTermKey>();
+  getAllTerms(): Partial<Record<UpdrawTermKey, string>> {
+    const keys = new Set<UpdrawTermKey>();
     for (const locale of [...this._builtinLocales.values(), ...this._customLocales.values()]) {
-      for (const key of Object.keys(locale.terms) as KritzelTermKey[]) {
+      for (const key of Object.keys(locale.terms) as UpdrawTermKey[]) {
         keys.add(key);
       }
     }
 
-    const result: Partial<Record<KritzelTermKey, string>> = {};
+    const result: Partial<Record<UpdrawTermKey, string>> = {};
     for (const key of keys) {
       result[key] = this.translate(key);
     }

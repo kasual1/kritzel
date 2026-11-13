@@ -8,6 +8,9 @@ loader/
 .env.*
 !.env.example
 
+.agents/skills/updraw/
+.claude/skills/updraw/
+# Copies synced before the rename; `npm run skill:sync` removes generated ones.
 .agents/skills/kritzel/
 .claude/skills/kritzel/
 

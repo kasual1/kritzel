@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { KritzelEditor, KritzelWorkspace, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
+import { UpdrawEditor, UpdrawWorkspace, type HTMLUpdrawEditorElement } from '@updraw/react-editor';
 import { createRecorderWidget, playRecordTrackScene } from './record-track-scene';
 
 const WORKSPACE_ID = 'agentic-canvas-cursors';
@@ -15,12 +15,12 @@ const hostStyle: CSSProperties = {
  * editor is ready; reload the page to play it again.
  */
 export function AgenticCanvasCursorsInfographic() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const [isWorking, setIsWorking] = useState(false);
   const [widget] = useState(createRecorderWidget);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ id: WORKSPACE_ID, name: 'Agentic canvas', objects: [widget] }),
+    new UpdrawWorkspace({ id: WORKSPACE_ID, name: 'Agentic canvas', objects: [widget] }),
   ]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
@@ -41,7 +41,7 @@ export function AgenticCanvasCursorsInfographic() {
 
   return (
     <div style={hostStyle}>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="infographic-agentic-canvas-cursors"
         workspaces={workspaces}

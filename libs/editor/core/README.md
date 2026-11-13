@@ -1,14 +1,14 @@
-# Kritzel Editor
+# Updraw Editor
 
-This package contains the core editor that powers Kritzel's framework-specific variants.
+This package contains the core editor that powers Updraw's framework-specific variants.
 
 It is not intended as the primary entry point for application integration. Instead, use the framework wrapper that matches your stack:
 
-- [@kritzel/angular-editor](https://www.npmjs.com/package/@kritzel/angular-editor)
-- [@kritzel/react-editor](https://www.npmjs.com/package/@kritzel/react-editor)
-- [@kritzel/vue-editor](https://www.npmjs.com/package/@kritzel/vue-editor)
+- [@updraw/angular-editor](https://www.npmjs.com/package/@updraw/angular-editor)
+- [@updraw/react-editor](https://www.npmjs.com/package/@updraw/react-editor)
+- [@updraw/vue-editor](https://www.npmjs.com/package/@updraw/vue-editor)
 
 
-Visit [kritzel.io](https://kritzel.io) for documentation and examples.
+Visit [updraw.io](https://updraw.io) for documentation and examples.
 
 

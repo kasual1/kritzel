@@ -1,9 +1,9 @@
-import { KritzelEasing } from './easing.interface';
-import { KritzelPoint } from './point.interface';
-import type { KritzelAgenticActionType } from './agentic-action.interface';
+import { UpdrawEasing } from './easing.interface';
+import { UpdrawPoint } from './point.interface';
+import type { UpdrawAgenticActionType } from './agentic-action.interface';
 
 /** A point on an object, e.g. where an agent's cursor sticks. The anchor rotates with the object. */
-export type KritzelAgenticAnchor =
+export type UpdrawAgenticAnchor =
   | 'center'
   | 'top-left'
   | 'top'
@@ -15,53 +15,53 @@ export type KritzelAgenticAnchor =
   | 'left';
 
 /** A free position on the canvas, in world coordinates. */
-export interface KritzelAgenticPointTarget {
+export interface UpdrawAgenticPointTarget {
   x: number;
   y: number;
 }
 
 /** A canvas object to move to (and, by default, stick to). */
-export interface KritzelAgenticObjectTarget {
+export interface UpdrawAgenticObjectTarget {
   /** ID of the canvas object. */
   objectId: string;
   /** Anchor point on the object. Defaults to `'center'`. */
-  anchor?: KritzelAgenticAnchor;
+  anchor?: UpdrawAgenticAnchor;
   /** Offset from the anchor in world units, in the object's local (unrotated) space. */
-  offset?: KritzelPoint;
+  offset?: UpdrawPoint;
 }
 
 /**
  * An element inside an object's content to move to (and, by default, stick to), e.g. a button in the page of a
- * `KritzelIframeObject`. The object must support elements (see `KritzelElementAwareObject`) and be mounted, and the
+ * `UpdrawIframeObject`. The object must support elements (see `UpdrawElementAwareObject`) and be mounted, and the
  * element must be visible, when the agent's cursor starts moving. While attached, the cursor follows the element when
  * it moves inside the content. If the element disappears or is scrolled out of view, e.g. while the content is
  * regenerated, the cursor stays at the element's last visible position and returns to the element once it reappears.
  */
-export interface KritzelAgenticElementTarget {
+export interface UpdrawAgenticElementTarget {
   /** ID of the canvas object. */
   objectId: string;
   /** CSS selector of the element. The first match is used. */
   selector: string;
   /** Anchor point on the element. Defaults to `'center'`. */
-  anchor?: KritzelAgenticAnchor;
+  anchor?: UpdrawAgenticAnchor;
   /** Offset from the anchor in world units, in the object's local (unrotated) space. */
-  offset?: KritzelPoint;
+  offset?: UpdrawPoint;
 }
 
-export type KritzelAgenticTarget = KritzelAgenticPointTarget | KritzelAgenticObjectTarget | KritzelAgenticElementTarget;
+export type UpdrawAgenticTarget = UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget | UpdrawAgenticElementTarget;
 
 /** Options for creating the cursor of an agent. @internal */
-export interface KritzelAgenticCursorOptions {
+export interface UpdrawAgenticCursorOptions {
   /** The ID of the agent the cursor belongs to. */
   id: string;
   /** How the cursor looks. Read for every snapshot, so the agent is the only place that stores it. */
-  appearance: KritzelAgenticCursorAppearance;
+  appearance: UpdrawAgenticCursorAppearance;
   /** Initial position. Defaults to the center of the viewport. An object or element target attaches the cursor immediately. */
-  position?: KritzelAgenticTarget;
+  position?: UpdrawAgenticTarget;
 }
 
 /** How an agent's cursor looks: its label, color, status and visibility. @internal */
-export interface KritzelAgenticCursorAppearance {
+export interface UpdrawAgenticCursorAppearance {
   readonly name: string;
   /** Any CSS color. */
   readonly color: string;
@@ -71,11 +71,11 @@ export interface KritzelAgenticCursorAppearance {
 }
 
 /** Options for `agent.moveTo()`. */
-export interface KritzelAgenticMoveOptions {
+export interface UpdrawAgenticMoveOptions {
   /** Fixed animation duration in milliseconds. When omitted, the duration is derived from the distance and `speed`. */
   duration?: number;
   /** Easing curve. Defaults to `'ease-in-out'`. */
-  easing?: KritzelEasing;
+  easing?: UpdrawEasing;
   /** Movement speed in screen pixels per second, used when `duration` is omitted. Defaults to 1200. */
   speed?: number;
   /** Whether the cursor sticks to the object or element after arriving. Only applies to object and element targets. Defaults to `true`. */
@@ -83,39 +83,39 @@ export interface KritzelAgenticMoveOptions {
 }
 
 /** Result of a move. */
-export interface KritzelAgenticMoveResult {
+export interface UpdrawAgenticMoveResult {
   /** `false` when the move was interrupted (by another move, removal, or the target object being deleted). */
   completed: boolean;
 }
 
 /** The object, or the element inside an object, an agent's cursor sticks to. */
-export interface KritzelAgenticAttachment {
+export interface UpdrawAgenticAttachment {
   objectId: string;
   /** Selector of the element inside the object, when attached to an element. */
   selector?: string;
-  anchor: KritzelAgenticAnchor;
-  offset: KritzelPoint;
+  anchor: UpdrawAgenticAnchor;
+  offset: UpdrawPoint;
 }
 
 /** World points of an object's rotation handle as agents show and grab it. It turns with the object. */
-export interface KritzelAgenticRotationHandle {
+export interface UpdrawAgenticRotationHandle {
   /** Middle of the object's top edge, where the handle's stem starts. */
-  base: KritzelPoint;
+  base: UpdrawPoint;
   /** Center of the handle. */
-  handle: KritzelPoint;
+  handle: UpdrawPoint;
 }
 
 /** Snapshot of an agent's cursor, used by the cursor overlay. @internal */
-export interface KritzelAgenticCursor {
+export interface UpdrawAgenticCursor {
   id: string;
   name?: string;
   color: string;
   status?: string;
   visible: boolean;
   /** Current position in world coordinates. */
-  position: KritzelPoint;
+  position: UpdrawPoint;
   /** The object the cursor sticks to, or `null` when it is free. */
-  attachedTo: KritzelAgenticAttachment | null;
+  attachedTo: UpdrawAgenticAttachment | null;
   /** Whether the cursor is currently animating. */
   isMoving: boolean;
   /**
@@ -128,7 +128,7 @@ export interface KritzelAgenticCursor {
   /** Increases on every press. */
   pressCount: number;
   /** Type of the running action, or `null` when idle. */
-  activeAction: KritzelAgenticActionType | null;
+  activeAction: UpdrawAgenticActionType | null;
   /** Number of actions waiting behind the running one. */
   queueLength: number;
   /** Whether `{ type: 'undo' }` has a step to undo. */
@@ -138,7 +138,7 @@ export interface KritzelAgenticCursor {
 }
 
 /** Emitted when an agent's cursor is detached from an object. @internal */
-export interface KritzelAgenticCursorDetachedEvent {
+export interface UpdrawAgenticCursorDetachedEvent {
   id: string;
   objectId: string;
   /** `'object-removed'` when the object was deleted, `'manual'` when detached through the API. */

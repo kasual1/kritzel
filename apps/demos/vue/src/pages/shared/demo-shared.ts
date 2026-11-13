@@ -1,6 +1,6 @@
 import { type CSSProperties } from 'vue'
-import type { KritzelBaseObject } from '@kritzel/vue-editor'
-import { getEditorRef } from '@kritzel/vue-editor'
+import type { UpdrawBaseObject } from '@updraw/vue-editor'
+import { getEditorRef } from '@updraw/vue-editor'
 import { createSeedObjects } from '../getting-started/seed-objects'
 
 export { getEditorRef }
@@ -55,9 +55,9 @@ export function buttonStyle(active = false): CSSProperties {
 }
 
 export async function seedEditor(editor: {
-  addObject: (object: KritzelBaseObject<HTMLElement | SVGElement>) => Promise<unknown>
+  addObject: (object: UpdrawBaseObject<HTMLElement | SVGElement>) => Promise<unknown>
 }) {
   for (const obj of createSeedObjects()) {
-    await editor.addObject(obj as KritzelBaseObject<HTMLElement | SVGElement>)
+    await editor.addObject(obj as UpdrawBaseObject<HTMLElement | SVGElement>)
   }
 }

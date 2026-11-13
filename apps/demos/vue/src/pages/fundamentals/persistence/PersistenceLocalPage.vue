@@ -2,9 +2,9 @@
 import {
   getEditorRef,
   IndexedDBSyncProvider,
-  KritzelEditor,
-  type KritzelSyncConfig,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  type UpdrawSyncConfig,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -16,7 +16,7 @@ import {
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
 
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [IndexedDBSyncProvider],
   appStateId: 'persistence-local',
 }
@@ -39,7 +39,7 @@ async function onReady() {
       background: 'linear-gradient(180deg, #f3fbf8 0%, #ffffff 100%)',
     }"
   >
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="persistence-local"
       theme="light"

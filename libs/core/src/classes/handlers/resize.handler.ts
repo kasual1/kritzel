@@ -1,14 +1,14 @@
-import { KritzelHandleType } from '../../enums/handle-type.enum';
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelCore } from '../core/core.class';
-import { KritzelBaseHandler } from './base.handler';
+import { UpdrawHandleType } from '../../enums/handle-type.enum';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawBaseHandler } from './base.handler';
 
 /**
  * Handler class responsible for managing resize operations on selected objects.
  * Supports mouse, touch, and pen input types, with rotation-aware resizing
  * and optional aspect ratio locking via Shift key (mouse only).
  */
-export class KritzelResizeHandler extends KritzelBaseHandler {
+export class UpdrawResizeHandler extends UpdrawBaseHandler {
   /** Initial mouse/pointer X coordinate when resize started */
   initialMouseX: number = 0;
   /** Initial mouse/pointer Y coordinate when resize started */
@@ -24,10 +24,10 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   hasResized: boolean = false;
 
   /**
-   * Creates a new KritzelResizeHandler instance.
-   * @param core - The KritzelCore instance providing access to store, engine, and other core functionalities
+   * Creates a new UpdrawResizeHandler instance.
+   * @param core - The UpdrawCore instance providing access to store, engine, and other core functionalities
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     super(core);
   }
 
@@ -78,7 +78,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
    */
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      if (KritzelEventHelper.isLeftClick(event)) {
+      if (UpdrawEventHelper.isLeftClick(event)) {
         const selectionGroup = this._core.store.selectionGroup;
         if (selectionGroup && this._core.store.state.isResizeHandleSelected && this._core.objectConfigManager.isResizable(selectionGroup)) {
           selectionGroup.beginTransform();
@@ -188,19 +188,19 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         const newCenterY = initialCenterY + dy / currentScale / 2;
 
         switch (this._core.store.state.resizeHandleType) {
-          case KritzelHandleType.TopLeft:
+          case UpdrawHandleType.TopLeft:
             this.newSize.width = this.initialSize.width - localDx * objectScale;
             this.newSize.height = this.initialSize.height - localDy * objectScale;
             break;
-          case KritzelHandleType.TopRight:
+          case UpdrawHandleType.TopRight:
             this.newSize.width = this.initialSize.width + localDx * objectScale;
             this.newSize.height = this.initialSize.height - localDy * objectScale;
             break;
-          case KritzelHandleType.BottomLeft:
+          case UpdrawHandleType.BottomLeft:
             this.newSize.width = this.initialSize.width - localDx * objectScale;
             this.newSize.height = this.initialSize.height + localDy * objectScale;
             break;
-          case KritzelHandleType.BottomRight:
+          case UpdrawHandleType.BottomRight:
             this.newSize.width = this.initialSize.width + localDx * objectScale;
             this.newSize.height = this.initialSize.height + localDy * objectScale;
             break;
@@ -278,19 +278,19 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         const newCenterY = initialCenterY + dy / currentScale / 2;
 
         switch (this._core.store.state.resizeHandleType) {
-          case KritzelHandleType.TopLeft:
+          case UpdrawHandleType.TopLeft:
             this.newSize.width = this.initialSize.width - localDx * objectScale;
             this.newSize.height = this.initialSize.height - localDy * objectScale;
             break;
-          case KritzelHandleType.TopRight:
+          case UpdrawHandleType.TopRight:
             this.newSize.width = this.initialSize.width + localDx * objectScale;
             this.newSize.height = this.initialSize.height - localDy * objectScale;
             break;
-          case KritzelHandleType.BottomLeft:
+          case UpdrawHandleType.BottomLeft:
             this.newSize.width = this.initialSize.width - localDx * objectScale;
             this.newSize.height = this.initialSize.height + localDy * objectScale;
             break;
-          case KritzelHandleType.BottomRight:
+          case UpdrawHandleType.BottomRight:
             this.newSize.width = this.initialSize.width + localDx * objectScale;
             this.newSize.height = this.initialSize.height + localDy * objectScale;
             break;

@@ -17,7 +17,7 @@ function checkSharedVersions() {
       errors.push(`${pkg.name}: expected ${version}, received ${pkg.version}`);
     }
     for (const field of ['dependencies', 'peerDependencies', 'devDependencies']) {
-      for (const name of ['@kritzel/core', '@kritzel/engine', '@kritzel/editor']) {
+      for (const name of ['@updraw/core', '@updraw/engine', '@updraw/editor']) {
         const range = pkg[field]?.[name];
         if (range && range !== `^${version}` && range !== version) {
           errors.push(`${pkg.name} ${field}.${name}: expected ^${version} or ${version}, received ${range}`);
@@ -26,9 +26,9 @@ function checkSharedVersions() {
     }
   }
 
-  const constant = fs.readFileSync(paths.version, 'utf8').match(/KRITZEL_VERSION\s*=\s*['"]([^'"]+)['"]/);
+  const constant = fs.readFileSync(paths.version, 'utf8').match(/UPDRAW_VERSION\s*=\s*['"]([^'"]+)['"]/);
   if (constant?.[1] !== version) {
-    errors.push(`KRITZEL_VERSION: expected ${version}, received ${constant?.[1] ?? 'missing'}`);
+    errors.push(`UPDRAW_VERSION: expected ${version}, received ${constant?.[1] ?? 'missing'}`);
   }
   if (errors.length) {
     throw new Error(`Shared version consistency check failed:\n${errors.join('\n')}`);
@@ -38,7 +38,7 @@ function checkSharedVersions() {
 
 if (require.main === module) {
   try {
-    console.log(`All nine publishable packages and KRITZEL_VERSION match ${checkSharedVersions()}`);
+    console.log(`All nine publishable packages and UPDRAW_VERSION match ${checkSharedVersions()}`);
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

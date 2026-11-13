@@ -1,39 +1,40 @@
-import { KritzelTheme, ThemeName } from '../../interfaces/theme.interface';
+import { UpdrawTheme, ThemeName } from '../../interfaces/theme.interface';
 import { lightTheme } from '../../themes/light-theme';
 import { darkTheme } from '../../themes/dark-theme';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawCore } from '../core/core.class';
 import { ThemeHelper } from '../../helpers/theme.helper';
+import { migrateLegacyStorageKeys } from '../../migrations/legacy-brand';
 
 /** Key used to store the settings object in localStorage. */
-const SETTINGS_STORAGE_KEY = 'kritzel-settings';
+const SETTINGS_STORAGE_KEY = 'updraw-settings';
 
 /** Default theme used when no stored preference exists. */
 const DEFAULT_THEME: ThemeName = 'light';
 
 /**
- * Manages theme state and application across the Kritzel editor.
+ * Manages theme state and application across the Updraw editor.
  * Reads the persisted theme from the settings object in localStorage but does not write to it.
- * Persistence is handled exclusively by the KritzelSettings component.
+ * Persistence is handled exclusively by the UpdrawSettings component.
  *
  * The theme manager is responsible for:
  * - Reading the stored theme preference from the settings object
  * - Applying CSS custom properties to target elements
  * - Switching between light and dark themes at runtime
  */
-export class KritzelThemeManager {
-  private readonly _core: KritzelCore;
+export class UpdrawThemeManager {
+  private readonly _core: UpdrawCore;
   private _currentTheme: ThemeName = DEFAULT_THEME;
   private _targetElement: HTMLElement | null = null;
   private readonly _storageKey: string;
-  private _themeRegistry = new Map<string, KritzelTheme>();
+  private _themeRegistry = new Map<string, UpdrawTheme>();
 
   /**
-   * Creates a new KritzelThemeManager instance.
+   * Creates a new UpdrawThemeManager instance.
    * Initializes the current theme from the settings object in localStorage or uses the default theme.
    *
-   * @param core - The KritzelCore instance this manager belongs to
+   * @param core - The UpdrawCore instance this manager belongs to
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     this._core = core;
     this._storageKey = core.editorId ? `${SETTINGS_STORAGE_KEY}-${core.editorId}` : SETTINGS_STORAGE_KEY;
     
@@ -81,9 +82,9 @@ export class KritzelThemeManager {
    * Falls back to the first registered theme if the requested name is not found.
    *
    * @param themeName - The name of the theme to retrieve
-   * @returns The KritzelTheme object containing all theme CSS variable values
+   * @returns The UpdrawTheme object containing all theme CSS variable values
    */
-  getThemeByName(themeName: ThemeName): KritzelTheme {
+  getThemeByName(themeName: ThemeName): UpdrawTheme {
     return this._themeRegistry.get(themeName) ?? this._themeRegistry.values().next().value!;
   }
 
@@ -92,9 +93,9 @@ export class KritzelThemeManager {
    *
    * @param themes - The complete list of themes to make available
    */
-  registerThemes(themes: KritzelTheme[]): void {
+  registerThemes(themes: UpdrawTheme[]): void {
     if (themes.length === 0) {
-      console.warn('[KritzelThemeManager] registerThemes called with an empty array. The theme registry will be empty.');
+      console.warn('[UpdrawThemeManager] registerThemes called with an empty array. The theme registry will be empty.');
     }
     this._themeRegistry.clear();
     for (const theme of themes) {
@@ -125,7 +126,7 @@ export class KritzelThemeManager {
    *
    * @returns An array of all registered theme objects
    */
-  getAllThemes(): KritzelTheme[] {
+  getAllThemes(): UpdrawTheme[] {
     return Array.from(this._themeRegistry.values());
   }
 
@@ -163,6 +164,7 @@ export class KritzelThemeManager {
     if (typeof localStorage === 'undefined') {
       return DEFAULT_THEME;
     }
+    migrateLegacyStorageKeys();
     const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (!stored) {
       return DEFAULT_THEME;
@@ -180,7 +182,7 @@ export class KritzelThemeManager {
 
   /**
    * Sets the current theme and applies it to the target element.
-   * Does not persist the theme — persistence is handled by the KritzelSettings component.
+   * Does not persist the theme — persistence is handled by the UpdrawSettings component.
    *
    * @param themeName - The theme name to set ('light' or 'dark')
    */

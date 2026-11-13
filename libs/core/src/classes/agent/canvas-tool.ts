@@ -1,92 +1,92 @@
 import type {
-  KritzelAgenticAction,
-  KritzelAgenticActionFailureReason,
-  KritzelAgenticActionOptions,
-  KritzelAgenticActionResult,
-  KritzelAgenticFill,
+  UpdrawAgenticAction,
+  UpdrawAgenticActionFailureReason,
+  UpdrawAgenticActionOptions,
+  UpdrawAgenticActionResult,
+  UpdrawAgenticFill,
 } from '../../interfaces/agentic-action.interface';
 import type {
-  KritzelAgentTool,
-  KritzelAgentToolCall,
-  KritzelAgentToolContext,
-  KritzelAgentToolResult,
-  KritzelAgentToolSchema,
-  KritzelAgentToolsOptions,
-  KritzelCanvasObject,
-  KritzelCanvasSnapshot,
-  KritzelObserveOptions,
+  UpdrawAgentTool,
+  UpdrawAgentToolCall,
+  UpdrawAgentToolContext,
+  UpdrawAgentToolResult,
+  UpdrawAgentToolSchema,
+  UpdrawAgentToolsOptions,
+  UpdrawCanvasObject,
+  UpdrawCanvasSnapshot,
+  UpdrawObserveOptions,
 } from '../../interfaces/agent.interface';
-import { KritzelAgentActionError } from './agent-action-error.class';
-import { toCanvasElement, type KritzelInspectElementsOptions } from './agent-elements';
-import type { KritzelJsonSchemaNode } from './agent-tool-schemas';
-import type { KritzelBaseObject } from '../objects/base-object.class';
+import { UpdrawAgentActionError } from './agent-action-error.class';
+import { toCanvasElement, type UpdrawInspectElementsOptions } from './agent-elements';
+import type { UpdrawJsonSchemaNode } from './agent-tool-schemas';
+import type { UpdrawBaseObject } from '../objects/base-object.class';
 import { parsePartialJson } from '../../helpers/partial-json.helper';
-import type { KritzelCore } from '../core/core.class';
+import type { UpdrawCore } from '../core/core.class';
 
 /**
- * The machinery behind every canvas tool: one definition per tool (`KritzelCanvasToolDefinition`) and one
- * binder (`bindCanvasTool`) that turns a definition into a provider-neutral `KritzelAgentTool` for an actor.
+ * The machinery behind every canvas tool: one definition per tool (`UpdrawCanvasToolDefinition`) and one
+ * binder (`bindCanvasTool`) that turns a definition into a provider-neutral `UpdrawAgentTool` for an actor.
  * All rules a tool needs live on its definition; everything every tool shares lives here.
  */
 
 /**
- * Whoever the tools act for: a `KritzelAgent` (kind `'agent'`, with a cursor) or an actor working as the local
+ * Whoever the tools act for: an `UpdrawAgent` (kind `'agent'`, with a cursor) or an actor working as the local
  * user (kind `'user'`). @internal
  */
-export interface KritzelToolActor {
+export interface UpdrawToolActor {
   readonly kind: 'agent' | 'user';
   readonly isAdded: boolean;
-  perform(action: KritzelAgenticAction, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>;
-  observe(options?: KritzelObserveOptions): Promise<KritzelCanvasSnapshot>;
+  perform(action: UpdrawAgenticAction, options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>;
+  observe(options?: UpdrawObserveOptions): Promise<UpdrawCanvasSnapshot>;
   _whenIdle(): Promise<void>;
-  _describeObjects(objectIds: string[]): KritzelCanvasObject[];
+  _describeObjects(objectIds: string[]): UpdrawCanvasObject[];
   /** The core the actor is added to, for tools that act on the editor itself (e.g. the viewport). */
-  readonly _owner?: KritzelCore | null;
+  readonly _owner?: UpdrawCore | null;
   /** The elements inside an object's content, for `inspect_elements`. Never rejects. */
-  _inspectElements(objectId: string, options: KritzelInspectElementsOptions): Promise<KritzelAgentToolResult>;
+  _inspectElements(objectId: string, options: UpdrawInspectElementsOptions): Promise<UpdrawAgentToolResult>;
 }
 
-export type KritzelToolActorKind = 'agent' | 'user';
+export type UpdrawToolActorKind = 'agent' | 'user';
 
 /** Where a definition is bound: for which kind of actor, with which tool options. */
-export interface KritzelCanvasToolEnv {
-  readonly kind: KritzelToolActorKind;
-  readonly options: Readonly<KritzelAgentToolsOptions>;
+export interface UpdrawCanvasToolEnv {
+  readonly kind: UpdrawToolActorKind;
+  readonly options: Readonly<UpdrawAgentToolsOptions>;
 }
 
 /** A text that may read differently for an agent and for an actor working as the user. */
-export type KritzelCanvasToolText = string | { agent: string; user: string } | ((env: KritzelCanvasToolEnv) => string);
+export type UpdrawCanvasToolText = string | { agent: string; user: string } | ((env: UpdrawCanvasToolEnv) => string);
 
 /** What `prepare` gets: the environment, and a way to reject the input. */
-export interface KritzelCanvasToolInputContext extends KritzelCanvasToolEnv {
+export interface UpdrawCanvasToolInputContext extends UpdrawCanvasToolEnv {
   /** Rejects the input: the model gets `{ completed: false, reason: 'invalid-input', message }`. */
   invalid(message: string): never;
 }
 
 /** What `execute` gets. */
-export interface KritzelCanvasToolContext extends KritzelCanvasToolInputContext {
+export interface UpdrawCanvasToolContext extends UpdrawCanvasToolInputContext {
   /** The tool runner's abort signal, if it gave one. */
   readonly signal: AbortSignal | null | undefined;
   readonly instant: boolean;
   /** Whether the actor is still on the canvas (read live). */
   readonly isAdded: boolean;
   /** The core the actor is added to (read live), or `null`. */
-  readonly core: KritzelCore | null;
+  readonly core: UpdrawCore | null;
   /**
    * Performs an action and answers like every canvas tool: the removed check, the signal and instant option,
    * refusals thrown inside `agent.task()`, snapshots of the changed objects (unless `describeObjects` is
    * `false`) and the reason hints.
    */
-  perform(action: KritzelAgenticAction, options?: { describeObjects?: boolean }): Promise<string>;
-  observe(options: KritzelObserveOptions): Promise<KritzelCanvasSnapshot>;
+  perform(action: UpdrawAgenticAction, options?: { describeObjects?: boolean }): Promise<string>;
+  observe(options: UpdrawObserveOptions): Promise<UpdrawCanvasSnapshot>;
   /** Lists the elements inside an object's content, as `inspect_elements` answers. */
-  inspectElements(objectId: string, options: KritzelInspectElementsOptions): Promise<KritzelAgentToolResult>;
+  inspectElements(objectId: string, options: UpdrawInspectElementsOptions): Promise<UpdrawAgentToolResult>;
   /** Resolves when the actor's queued actions have finished. */
   whenIdle(): Promise<void>;
   /** The answer for a removed actor. */
   removedResult(): string;
   /** The answer for a refusal, with the hint for this kind of actor. */
-  refusalResult(reason: KritzelAgenticActionFailureReason, objectIds?: string[]): string;
+  refusalResult(reason: UpdrawAgenticActionFailureReason, objectIds?: string[]): string;
   /** The answer for an error: input errors and an unavailable canvas become results, other errors are rethrown. */
   errorResult(error: unknown): string;
 }
@@ -96,15 +96,15 @@ export interface KritzelCanvasToolContext extends KritzelCanvasToolInputContext 
  * checked, enums checked), then the `textFields` caps, then `prepare`, then `execute`. Input errors become
  * `invalid-input` results; other errors are rethrown.
  */
-export interface KritzelCanvasToolDefinition<I = any, P = any> {
+export interface UpdrawCanvasToolDefinition<I = any, P = any> {
   /** Unprefixed snake_case name, unique among all tools. */
   readonly name: string;
-  readonly description: KritzelCanvasToolText;
-  readonly inputSchema: KritzelAgentToolSchema | ((env: KritzelCanvasToolEnv) => KritzelAgentToolSchema);
+  readonly description: UpdrawCanvasToolText;
+  readonly inputSchema: UpdrawAgentToolSchema | ((env: UpdrawCanvasToolEnv) => UpdrawAgentToolSchema);
   /** The kinds of actor that get the tool. Defaults to both. */
-  readonly actors?: readonly KritzelToolActorKind[];
+  readonly actors?: readonly UpdrawToolActorKind[];
   /** Whether the tool is offered with these options. Defaults to always. */
-  readonly enabled?: (options: Readonly<KritzelAgentToolsOptions>) => boolean;
+  readonly enabled?: (options: Readonly<UpdrawAgentToolsOptions>) => boolean;
   /** Top-level string fields capped by `maxTextLength`. */
   readonly textFields?: readonly string[];
   /** A removed actor beats input errors (otherwise the model first learns about its mistake). */
@@ -115,54 +115,54 @@ export interface KritzelCanvasToolDefinition<I = any, P = any> {
    * Turns the parsed input into what `execute` needs, or rejects it with `ctx.invalid()`. Synchronous, so a
    * tool's action starts in the same tick as its call and parallel calls keep their order.
    */
-  prepare?(input: I, ctx: KritzelCanvasToolInputContext): P;
+  prepare?(input: I, ctx: UpdrawCanvasToolInputContext): P;
   /** Acts and answers. `ctx.invalid()` still gives an invalid-input answer here. */
-  execute(payload: P, ctx: KritzelCanvasToolContext): Promise<string>;
+  execute(payload: P, ctx: UpdrawCanvasToolContext): Promise<string>;
   /** Turns any other error of `execute` into an answer; `undefined` rethrows it. */
-  onError?(error: unknown, ctx: KritzelCanvasToolContext): string | undefined;
+  onError?(error: unknown, ctx: UpdrawCanvasToolContext): string | undefined;
   /**
    * A loading placeholder for the object the tool adds, placed while the model still writes the input (the tool
    * gets `begin`). The object `execute` adds with the addObject action then fills the placeholder in instead.
    */
-  readonly placeholder?: KritzelCanvasToolPlaceholder<I>;
+  readonly placeholder?: UpdrawCanvasToolPlaceholder<I>;
   /**
    * Shows the object the tool changes as loading while the model still writes the input (the tool gets
    * `begin`). The action `execute` performs then fills in the loading action instead.
    */
-  readonly loading?: KritzelCanvasToolLoading<I>;
+  readonly loading?: UpdrawCanvasToolLoading<I>;
 }
 
-/** How a tool that changes an object shows it loading while the model writes the change (`KritzelCanvasToolDefinition.loading`). */
-export interface KritzelCanvasToolLoading<I = any> {
+/** How a tool that changes an object shows it loading while the model writes the change (`UpdrawCanvasToolDefinition.loading`). */
+export interface UpdrawCanvasToolLoading<I = any> {
   /**
    * The ID of the object the call changes, from the input written so far, or `null` while the input does not
    * name one the tool can change yet. Called as the input streams in, until it returns an ID.
    */
-  target(input: Partial<I>, core: KritzelCore): string | null;
+  target(input: Partial<I>, core: UpdrawCore): string | null;
   /** The action that shows the object loading until `fill` resolves with the call's own action. */
-  action(objectId: string, fill: () => Promise<KritzelAgenticAction>): KritzelAgenticAction;
+  action(objectId: string, fill: () => Promise<UpdrawAgenticAction>): UpdrawAgenticAction;
   /** Whether an action the call performs is the one that fills in the loading action. */
-  fills(action: KritzelAgenticAction, objectId: string): boolean;
+  fills(action: UpdrawAgenticAction, objectId: string): boolean;
 }
 
-/** How a tool that adds an object shows it while the model writes it (`KritzelCanvasToolDefinition.placeholder`). */
-export interface KritzelCanvasToolPlaceholder<I = any> {
+/** How a tool that adds an object shows it while the model writes it (`UpdrawCanvasToolDefinition.placeholder`). */
+export interface UpdrawCanvasToolPlaceholder<I = any> {
   /**
    * Builds the placeholder from the input written so far, or `null` while that is not enough (e.g. its position
    * and size are not known yet). Called as the input streams in, until it returns an object.
    */
-  create(input: Partial<I>, ctx: KritzelCanvasToolInputContext): KritzelBaseObject<any> | null;
+  create(input: Partial<I>, ctx: UpdrawCanvasToolInputContext): UpdrawBaseObject<any> | null;
   /** Copies the object `execute` adds onto the placeholder, e.g. a widget's code. Runs inside the action. */
-  fill(placeholder: KritzelBaseObject<any>, content: KritzelBaseObject<any>): void;
+  fill(placeholder: UpdrawBaseObject<any>, content: UpdrawBaseObject<any>): void;
 }
 
 /** Freezes a definition. */
-export function defineCanvasTool<I, P = I>(definition: KritzelCanvasToolDefinition<I, P>): KritzelCanvasToolDefinition<I, P> {
+export function defineCanvasTool<I, P = I>(definition: UpdrawCanvasToolDefinition<I, P>): UpdrawCanvasToolDefinition<I, P> {
   return Object.freeze({ ...definition });
 }
 
 /** What a model should do about a refusal. */
-export const AGENT_TOOL_REASON_HINTS: Record<KritzelAgenticActionFailureReason | 'invalid-input', string> = {
+export const AGENT_TOOL_REASON_HINTS: Record<UpdrawAgenticActionFailureReason | 'invalid-input', string> = {
   'invalid-input': 'Fix the input as the message says and try again.',
   aborted: 'The action was stopped on request. Do not retry unless asked.',
   'agent-moved': 'Your cursor was moved by the app while acting. Try again if it still makes sense.',
@@ -185,7 +185,7 @@ export const AGENT_TOOL_REASON_HINTS: Record<KritzelAgenticActionFailureReason |
 };
 
 /** Hints that read differently for an actor working as the user. */
-const USER_REASON_HINTS: Partial<Record<KritzelAgenticActionFailureReason, string>> = {
+const USER_REASON_HINTS: Partial<Record<UpdrawAgenticActionFailureReason, string>> = {
   'agent-removed': 'The chat session ended. Stop working.',
   'user-selected': 'The user is working on these objects right now. Leave them alone or ask the user.',
   'not-allowed': 'This is not possible when working as the user.',
@@ -197,30 +197,30 @@ const MAX_RESULT_OBJECTS = 10;
 const MAX_PLACEHOLDER_INPUT_LENGTH = 4096;
 
 /** Formats a tool result as the JSON string a tool returns. Use it in app-defined tools to answer the same way. */
-export function formatAgentToolResult(result: KritzelAgentToolResult): string {
+export function formatAgentToolResult(result: UpdrawAgentToolResult): string {
   return JSON.stringify(result);
 }
 
 /** Thrown for input a model got wrong; becomes `reason: 'invalid-input'`. */
-export class KritzelToolInputError extends Error {}
+export class UpdrawToolInputError extends Error {}
 
-function hintFor(kind: KritzelToolActorKind, reason: KritzelAgenticActionFailureReason | 'invalid-input'): string {
+function hintFor(kind: UpdrawToolActorKind, reason: UpdrawAgenticActionFailureReason | 'invalid-input'): string {
   return (kind === 'user' && reason !== 'invalid-input' ? USER_REASON_HINTS[reason] : undefined) ?? AGENT_TOOL_REASON_HINTS[reason];
 }
 
-function kindOf(actor: KritzelToolActor): KritzelToolActorKind {
+function kindOf(actor: UpdrawToolActor): UpdrawToolActorKind {
   return actor.kind === 'user' ? 'user' : 'agent';
 }
 
-function removedResult(kind: KritzelToolActorKind): string {
+function removedResult(kind: UpdrawToolActorKind): string {
   return formatAgentToolResult({ completed: false, reason: 'agent-removed', hint: hintFor(kind, 'agent-removed') });
 }
 
 function refusalResult(
-  kind: KritzelToolActorKind,
-  reason: KritzelAgenticActionFailureReason,
+  kind: UpdrawToolActorKind,
+  reason: UpdrawAgenticActionFailureReason,
   objectIds?: string[],
-  details: Pick<KritzelAgentToolResult, 'message' | 'element'> = {},
+  details: Pick<UpdrawAgentToolResult, 'message' | 'element'> = {},
 ): string {
   return formatAgentToolResult({
     completed: false,
@@ -232,8 +232,8 @@ function refusalResult(
   });
 }
 
-function errorResult(kind: KritzelToolActorKind, error: unknown): string {
-  if (error instanceof KritzelToolInputError) {
+function errorResult(kind: UpdrawToolActorKind, error: unknown): string {
+  if (error instanceof UpdrawToolInputError) {
     return formatAgentToolResult({ completed: false, reason: 'invalid-input', message: error.message, hint: hintFor(kind, 'invalid-input') });
   }
   if (error instanceof Error && /not ready/.test(error.message)) {
@@ -243,7 +243,7 @@ function errorResult(kind: KritzelToolActorKind, error: unknown): string {
 }
 
 /** Resolves a text for an environment. */
-export function canvasToolText(text: KritzelCanvasToolText, env: KritzelCanvasToolEnv): string {
+export function canvasToolText(text: UpdrawCanvasToolText, env: UpdrawCanvasToolEnv): string {
   if (typeof text === 'function') {
     return text(env);
   }
@@ -251,12 +251,12 @@ export function canvasToolText(text: KritzelCanvasToolText, env: KritzelCanvasTo
 }
 
 /** Resolves a definition's input schema for an environment. */
-export function canvasToolSchema(definition: KritzelCanvasToolDefinition, env: KritzelCanvasToolEnv): KritzelAgentToolSchema {
+export function canvasToolSchema(definition: UpdrawCanvasToolDefinition, env: UpdrawCanvasToolEnv): UpdrawAgentToolSchema {
   return typeof definition.inputSchema === 'function' ? definition.inputSchema(env) : definition.inputSchema;
 }
 
 /** Whether a definition is offered to this actor with these options (before `only`). */
-export function isCanvasToolOffered(definition: KritzelCanvasToolDefinition, env: KritzelCanvasToolEnv): boolean {
+export function isCanvasToolOffered(definition: UpdrawCanvasToolDefinition, env: UpdrawCanvasToolEnv): boolean {
   return (!definition.actors || definition.actors.includes(env.kind)) && (definition.enabled?.(env.options) ?? true);
 }
 
@@ -264,17 +264,17 @@ export function isCanvasToolOffered(definition: KritzelCanvasToolDefinition, env
  * Turns a definition into a tool of an actor. The tool is a self-contained object (its `run` works when
  * copied, as tool runners do) and never throws for mistakes of the model.
  */
-export function bindCanvasTool(actor: KritzelToolActor, definition: KritzelCanvasToolDefinition, options: KritzelAgentToolsOptions = {}): KritzelAgentTool {
+export function bindCanvasTool(actor: UpdrawToolActor, definition: UpdrawCanvasToolDefinition, options: UpdrawAgentToolsOptions = {}): UpdrawAgentTool {
   const kind = kindOf(actor);
-  const env: KritzelCanvasToolEnv = { kind, options };
+  const env: UpdrawCanvasToolEnv = { kind, options };
   const inputSchema = canvasToolSchema(definition, env);
-  const schemaNode = inputSchema as unknown as KritzelJsonSchemaNode;
+  const schemaNode = inputSchema as unknown as UpdrawJsonSchemaNode;
   const maxTextLength = options.maxTextLength ?? DEFAULT_MAX_TEXT_LENGTH;
   const instant = !!options.instant;
   const invalid = (message: string): never => {
-    throw new KritzelToolInputError(message);
+    throw new UpdrawToolInputError(message);
   };
-  const inputContext: KritzelCanvasToolInputContext = { kind, options, invalid };
+  const inputContext: UpdrawCanvasToolInputContext = { kind, options, invalid };
 
   const performDirectly: ToolPerform = (action, performOptions, context) =>
     performAsTool(actor, kind, action, context, instant, performOptions?.describeObjects ?? true);
@@ -298,7 +298,7 @@ export function bindCanvasTool(actor: KritzelToolActor, definition: KritzelCanva
       return errorResult(kind, error);
     }
 
-    const ctx: KritzelCanvasToolContext = {
+    const ctx: UpdrawCanvasToolContext = {
       ...inputContext,
       signal: context?.signal,
       instant,
@@ -320,7 +320,7 @@ export function bindCanvasTool(actor: KritzelToolActor, definition: KritzelCanva
       // Called before the first await, so the tool's action starts in the same tick as the call.
       return await definition.execute(payload, ctx);
     } catch (error) {
-      if (error instanceof KritzelToolInputError) {
+      if (error instanceof UpdrawToolInputError) {
         return errorResult(kind, error);
       }
       const answer = definition.onError?.(error, ctx);
@@ -331,11 +331,11 @@ export function bindCanvasTool(actor: KritzelToolActor, definition: KritzelCanva
     }
   };
 
-  const tool: KritzelAgentTool = {
+  const tool: UpdrawAgentTool = {
     name: `${options.prefix ?? ''}${definition.name}`,
     description: canvasToolText(definition.description, env),
     inputSchema,
-    run: (input: unknown, context?: KritzelAgentToolContext) => runTool(input, context),
+    run: (input: unknown, context?: UpdrawAgentToolContext) => runTool(input, context),
   };
   const placeholder = definition.placeholder;
   if (placeholder) {
@@ -349,30 +349,30 @@ export function bindCanvasTool(actor: KritzelToolActor, definition: KritzelCanva
 }
 
 /** Performs an action for a call of a tool, with that call's context. */
-type ToolPerform = (action: KritzelAgenticAction, options: { describeObjects?: boolean } | undefined, context: KritzelAgentToolContext | undefined) => Promise<string>;
+type ToolPerform = (action: UpdrawAgenticAction, options: { describeObjects?: boolean } | undefined, context: UpdrawAgentToolContext | undefined) => Promise<string>;
 
 /** Runs one call of a tool; `perform` and `whenIdle` can stand in for the actor's. */
-type ToolRun = (input: unknown, context: KritzelAgentToolContext | undefined, perform?: ToolPerform, whenIdle?: () => Promise<void>) => Promise<string>;
+type ToolRun = (input: unknown, context: UpdrawAgentToolContext | undefined, perform?: ToolPerform, whenIdle?: () => Promise<void>) => Promise<string>;
 
 /**
  * A call that shows the object it changes as loading once its input names it, and applies the change when it
  * finishes: the action `execute` performs fills in the loading action, so loading and changing are one action.
  */
 function beginWithLoading(
-  loading: KritzelCanvasToolLoading,
-  context: KritzelAgentToolContext,
+  loading: UpdrawCanvasToolLoading,
+  context: UpdrawAgentToolContext,
   runTool: ToolRun,
   perform: ToolPerform,
-  core: () => KritzelCore | null,
-): KritzelAgentToolCall {
+  core: () => UpdrawCore | null,
+): UpdrawAgentToolCall {
   let ended = false;
   let gaveUp = false;
   let objectId: string | null = null;
   /** The loading action, once started: its answer is the call's answer. */
   let placing: Promise<string> | null = null;
-  let resolveFill!: (action: KritzelAgenticAction) => void;
+  let resolveFill!: (action: UpdrawAgenticAction) => void;
   let rejectFill!: (reason: unknown) => void;
-  const fill = new Promise<KritzelAgenticAction>((resolve, reject) => {
+  const fill = new Promise<UpdrawAgenticAction>((resolve, reject) => {
     resolveFill = resolve;
     rejectFill = reject;
   });
@@ -458,20 +458,20 @@ function beginWithLoading(
  * the object `execute` adds becomes the placeholder's fill, so placing and filling are one action.
  */
 function beginWithPlaceholder(
-  placeholder: KritzelCanvasToolPlaceholder,
-  context: KritzelAgentToolContext,
+  placeholder: UpdrawCanvasToolPlaceholder,
+  context: UpdrawAgentToolContext,
   runTool: ToolRun,
   perform: ToolPerform,
-  inputContext: KritzelCanvasToolInputContext,
+  inputContext: UpdrawCanvasToolInputContext,
   isAdded: () => boolean,
-): KritzelAgentToolCall {
+): UpdrawAgentToolCall {
   let ended = false;
   let gaveUp = false;
   /** The addObject action of the placeholder, once placed: its answer is the call's answer. */
   let placing: Promise<string> | null = null;
-  let resolveFill!: (fill: KritzelAgenticFill) => void;
+  let resolveFill!: (fill: UpdrawAgenticFill) => void;
   let rejectFill!: (reason: unknown) => void;
-  const fill = new Promise<KritzelAgenticFill>((resolve, reject) => {
+  const fill = new Promise<UpdrawAgenticFill>((resolve, reject) => {
     resolveFill = resolve;
     rejectFill = reject;
   });
@@ -487,7 +487,7 @@ function beginWithPlaceholder(
       // What a placeholder needs comes first in the input: only its beginning is read, so a call that begins late,
       // with much of its input written, still gets its placeholder.
       const long = inputText.length > MAX_PLACEHOLDER_INPUT_LENGTH;
-      let object: KritzelBaseObject<any> | null = null;
+      let object: UpdrawBaseObject<any> | null = null;
       try {
         const input = parsePartialJson(long ? inputText.slice(0, MAX_PLACEHOLDER_INPUT_LENGTH) : inputText);
         if (typeof input === 'object' && input !== null && !Array.isArray(input)) {
@@ -544,24 +544,24 @@ function beginWithPlaceholder(
 
 /** Performs a tool's action and reports the result as the tool's JSON answer. */
 async function performAsTool(
-  actor: KritzelToolActor,
-  kind: KritzelToolActorKind,
-  action: KritzelAgenticAction,
-  context: KritzelAgentToolContext | undefined,
+  actor: UpdrawToolActor,
+  kind: UpdrawToolActorKind,
+  action: UpdrawAgenticAction,
+  context: UpdrawAgentToolContext | undefined,
   instant: boolean,
   describeObjects: boolean,
 ): Promise<string> {
   if (!actor.isAdded) {
     return removedResult(kind);
   }
-  const options: KritzelAgenticActionOptions = {};
+  const options: UpdrawAgenticActionOptions = {};
   if (context?.signal) options.signal = context.signal;
   if (instant) options.instant = true;
   let result;
   try {
     result = await actor.perform(action, options);
   } catch (error) {
-    if (error instanceof KritzelAgentActionError) {
+    if (error instanceof UpdrawAgentActionError) {
       // Inside agent.task(), refusals throw; a tool reports them like everywhere else.
       result = error.result;
     } else {
@@ -583,7 +583,7 @@ async function performAsTool(
 }
 
 /** Snapshots of the objects a completed action created or changed, so the model needs no extra observe call. */
-function describeResultObjects(actor: KritzelToolActor, objectIds: string[]): KritzelCanvasObject[] {
+function describeResultObjects(actor: UpdrawToolActor, objectIds: string[]): UpdrawCanvasObject[] {
   if (objectIds.length === 0) {
     return [];
   }
@@ -598,20 +598,20 @@ function describeResultObjects(actor: KritzelToolActor, objectIds: string[]): Kr
 export const toolInput = {
   finite(value: unknown, field: string): number {
     if (typeof value !== 'number' || !Number.isFinite(value)) {
-      throw new KritzelToolInputError(`"${field}" must be a number.`);
+      throw new UpdrawToolInputError(`"${field}" must be a number.`);
     }
     return value;
   },
   positive(value: unknown, field: string): number {
     const number = toolInput.finite(value, field);
     if (number <= 0) {
-      throw new KritzelToolInputError(`"${field}" must be greater than 0.`);
+      throw new UpdrawToolInputError(`"${field}" must be greater than 0.`);
     }
     return number;
   },
   string(value: unknown, field: string): string {
     if (typeof value !== 'string') {
-      throw new KritzelToolInputError(`"${field}" must be a string.`);
+      throw new UpdrawToolInputError(`"${field}" must be a string.`);
     }
     return value;
   },
@@ -622,13 +622,13 @@ export const toolInput = {
  * `null` counts as absent (strict modes send it for optional fields), unknown fields are rejected with their
  * path, and the result is a fresh plain object built from the known fields only.
  */
-function parseInput(input: unknown, schema: KritzelJsonSchemaNode): Record<string, unknown> {
+function parseInput(input: unknown, schema: UpdrawJsonSchemaNode): Record<string, unknown> {
   let value = input;
   if (typeof value === 'string') {
     try {
       value = value.trim() === '' ? {} : JSON.parse(value);
     } catch {
-      throw new KritzelToolInputError('Input is not valid JSON.');
+      throw new UpdrawToolInputError('Input is not valid JSON.');
     }
   }
   if (value === undefined || value === null) {
@@ -638,20 +638,20 @@ function parseInput(input: unknown, schema: KritzelJsonSchemaNode): Record<strin
   return (result ?? {}) as Record<string, unknown>;
 }
 
-function pick(value: unknown, schema: KritzelJsonSchemaNode, path: string): unknown {
+function pick(value: unknown, schema: UpdrawJsonSchemaNode, path: string): unknown {
   if (value === null || value === undefined) {
     return undefined;
   }
   if (schema.type === 'object' && schema.properties) {
     if (typeof value !== 'object' || Array.isArray(value)) {
-      throw new KritzelToolInputError(path ? `"${path}" must be an object.` : 'Input must be an object.');
+      throw new UpdrawToolInputError(path ? `"${path}" must be an object.` : 'Input must be an object.');
     }
     const result: Record<string, unknown> = {};
     for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
       const childPath = path ? `${path}.${key}` : key;
       const childSchema = Object.prototype.hasOwnProperty.call(schema.properties, key) ? schema.properties[key] : undefined;
       if (!childSchema) {
-        throw new KritzelToolInputError(`Unknown property "${childPath}". Use ${Object.keys(schema.properties).join(', ') || 'no properties'}.`);
+        throw new UpdrawToolInputError(`Unknown property "${childPath}". Use ${Object.keys(schema.properties).join(', ') || 'no properties'}.`);
       }
       const picked = pick(child, childSchema, childPath);
       if (picked !== undefined) {
@@ -660,19 +660,19 @@ function pick(value: unknown, schema: KritzelJsonSchemaNode, path: string): unkn
     }
     for (const key of schema.required ?? []) {
       if (result[key] === undefined) {
-        throw new KritzelToolInputError(`"${path ? `${path}.${key}` : key}" is required.`);
+        throw new UpdrawToolInputError(`"${path ? `${path}.${key}` : key}" is required.`);
       }
     }
     return result;
   }
   if (schema.type === 'array' && schema.items) {
     if (!Array.isArray(value)) {
-      throw new KritzelToolInputError(`"${path}" must be an array.`);
+      throw new UpdrawToolInputError(`"${path}" must be an array.`);
     }
     return value.map((item, index) => pick(item, schema.items!, `${path}[${index}]`));
   }
   if (schema.enum && !schema.enum.includes(value as string)) {
-    throw new KritzelToolInputError(`"${path}" must be one of ${schema.enum.join(', ')}.`);
+    throw new UpdrawToolInputError(`"${path}" must be one of ${schema.enum.join(', ')}.`);
   }
   // Scalars: type checks with the right messages happen in the tool's own checks.
   return value;

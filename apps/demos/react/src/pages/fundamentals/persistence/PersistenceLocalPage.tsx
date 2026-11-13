@@ -1,10 +1,10 @@
 import { useRef } from "react";
 import {
   IndexedDBSyncProvider,
-  KritzelEditor,
-  type HTMLKritzelEditorElement,
-  type KritzelSyncConfig,
-} from "@kritzel/react-editor";
+  UpdrawEditor,
+  type HTMLUpdrawEditorElement,
+  type UpdrawSyncConfig,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -14,13 +14,13 @@ import {
 } from "../../shared/demo-shared";
 
 const themes = [reactThemeLight, reactThemeDark];
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [IndexedDBSyncProvider],
   appStateId: "persistence-local",
 };
 
 export function PersistenceLocalPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
 
   async function onReady() {
     const editor = editorRef.current;
@@ -34,7 +34,7 @@ export function PersistenceLocalPage() {
 
   return (
     <div style={{ ...hostStyle, background: "linear-gradient(180deg, #f3fbff 0%, #ffffff 100%)" }}>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="persistence-local"
         syncConfig={syncConfig}

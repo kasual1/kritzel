@@ -2,21 +2,21 @@
 import { ref } from 'vue'
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelWorkspace,
-  type IKritzelUser,
-  type KritzelLoginConfig,
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type IUpdrawUser,
+  type UpdrawLoginConfig,
   type LoginEvent,
-} from '@kritzel/vue-editor'
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
-const user = ref<IKritzelUser>()
-const loginConfig: KritzelLoginConfig = {
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const user = ref<IUpdrawUser>()
+const loginConfig: UpdrawLoginConfig = {
   title: 'Sign in',
   providers: [
     { name: 'google', icon: 'google', label: 'Continue with Google' },
@@ -46,7 +46,7 @@ function onLogout(): void {
 </script>
 
 <template>
-  <KritzelEditor
+  <UpdrawEditor
     ref="editor"
     editorId="user-management-login"
     :loginConfig="loginConfig"

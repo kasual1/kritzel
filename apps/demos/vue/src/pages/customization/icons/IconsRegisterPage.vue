@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { KritzelEditor, KritzelWorkspace } from '@kritzel/vue-editor'
-import type { KritzelSvgIconMap } from '@kritzel/editor'
+import { UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
+import type { UpdrawSvgIconMap } from '@updraw/editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
-const customSvgIcons: KritzelSvgIconMap = {
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const customSvgIcons: UpdrawSvgIconMap = {
   cursor: '<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960"><path d="M516-120 402-402 120-516v-56l720-268-268 720zm26-148 162-436-436 162 196 78zm-78-196"/></svg>',
   pen: '<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960"><path d="m490-527 37 37 217-217-37-37zM200-200h37l233-233-37-37-233 233zm355-205L405-555l167-167-29-29-219 219-56-56 218-219q24-24 56.5-24t56.5 24l29 29 50-50q12-12 28.5-12t28.5 12l93 93q12 12 12 28.5T828-678zM270-120H120v-150l285-285 150 150z"/></svg>',
   arrow: '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m216-160-56-56 464-464H360v-80h400v400h-80v-264L216-160Z"/></svg>',
@@ -71,7 +71,7 @@ const customSvgIcons: KritzelSvgIconMap = {
 
 <template>
   <div :style="hostStyle">
-    <KritzelEditor
+    <UpdrawEditor
       editorId="icons-register"
       :customSvgIcons="customSvgIcons"
       :workspaces="workspaces"

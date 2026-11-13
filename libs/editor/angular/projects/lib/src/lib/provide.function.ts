@@ -3,12 +3,12 @@ import {
   EnvironmentProviders,
   makeEnvironmentProviders,
 } from '@angular/core';
-import { defineCustomElements } from '@kritzel/engine/loader';
+import { defineCustomElements } from '@updraw/engine/loader';
 
-export function provideKritzel(): EnvironmentProviders {
+export function provideUpdraw(): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideAppInitializer(() => {
-      console.info('Initializing Kritzel custom elements');
+      console.info('Initializing Updraw custom elements');
       return defineCustomElements(window);
     }),
   ]);

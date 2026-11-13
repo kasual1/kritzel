@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { KritzelEditor, KritzelLocale, KritzelWorkspace, LocaleCode } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawLocale, UpdrawWorkspace, LocaleCode } from '@updraw/angular-editor';
 import { createSeedObjects } from '../../../const/seed-objects';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 
-const spanishLocale: KritzelLocale = {
+const spanishLocale: UpdrawLocale = {
   code: 'es',
   label: 'Español',
   terms: {
@@ -31,14 +31,14 @@ const spanishLocale: KritzelLocale = {
 
 @Component({
   selector: 'app-localization-custom',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
       <button [class.active]="activeLocale() === 'es'" (click)="setLocale('es')">Español</button>
     </app-toolbar>
     <div class="editor-wrap">
-      <kritzel-editor
+      <updraw-editor
         editorId="localization-custom"
         [locales]="customLocales"
         [locale]="activeLocale()"
@@ -49,7 +49,7 @@ const spanishLocale: KritzelLocale = {
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="true"
         [isWorkspaceManagerVisible]="true"
-      ></kritzel-editor>
+      ></updraw-editor>
     </div>
   `,
   styles: [`
@@ -61,9 +61,9 @@ const spanishLocale: KritzelLocale = {
 export class LocalizationCustomComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
   
-  customLocales: KritzelLocale[] = [spanishLocale];
+  customLocales: UpdrawLocale[] = [spanishLocale];
   
   activeLocale = signal<LocaleCode>('es');
 

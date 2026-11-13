@@ -1,13 +1,13 @@
 import { useRef, useState } from "react";
 import {
-  HTMLKritzelEditorElement,
-  KritzelEditor,
-  KritzelPath,
-  KritzelShape,
-  KritzelWorkspace,
+  HTMLUpdrawEditorElement,
+  UpdrawEditor,
+  UpdrawPath,
+  UpdrawShape,
+  UpdrawWorkspace,
   ShapeType,
-  type KritzelBaseObject,
-} from "@kritzel/react-editor";
+  type UpdrawBaseObject,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -21,10 +21,10 @@ function randomOffset() {
 }
 
 export function ObjectsAddPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const [objects, setObjects] = useState<KritzelBaseObject[]>([]);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const [objects, setObjects] = useState<UpdrawBaseObject[]>([]);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ objects: createSeedObjects() }),
+    new UpdrawWorkspace({ objects: createSeedObjects() }),
   ]);
 
   async function refreshObjects() {
@@ -36,7 +36,7 @@ export function ObjectsAddPage() {
   async function addRectangle() {
     const editor = editorRef.current;
     if (!editor) return;
-    await editor.addObject(new KritzelShape({
+    await editor.addObject(new UpdrawShape({
       translateX: randomOffset(),
       translateY: randomOffset(),
       width: 120,
@@ -52,7 +52,7 @@ export function ObjectsAddPage() {
   async function addEllipse() {
     const editor = editorRef.current;
     if (!editor) return;
-    await editor.addObject(new KritzelShape({
+    await editor.addObject(new UpdrawShape({
       translateX: randomOffset(),
       translateY: randomOffset(),
       width: 100,
@@ -68,7 +68,7 @@ export function ObjectsAddPage() {
   async function addPath() {
     const editor = editorRef.current;
     if (!editor) return;
-    await editor.addObject(new KritzelPath({
+    await editor.addObject(new UpdrawPath({
       points: [
         [0, 0, 0.5],
         [20, -15, 0.5],
@@ -94,7 +94,7 @@ export function ObjectsAddPage() {
         <button onClick={() => void addPath()}>Add Path</button>
         <span className="status" style={{ marginLeft: "auto" }}>Objects: {objects.length}</span>
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="objects-add"
         theme="light"

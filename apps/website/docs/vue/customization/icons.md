@@ -1,8 +1,8 @@
 ---
 sidebar_label: Icons
 displayed_sidebar: tutorialSidebar
-title: "Custom Icons Concept | Kritzel for Vue"
-description: "Understand how to register and use custom SVG icons in Kritzel."
+title: "Custom Icons Concept | Updraw for Vue"
+description: "Understand how to register and use custom SVG icons in Updraw."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,13 +11,13 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel comes with a dedicated system for managing all icons used in the editor's user interface. You can replace built-in icons or add new ones for your own tools and components.
+Updraw comes with a dedicated system for managing all icons used in the editor's user interface. You can replace built-in icons or add new ones for your own tools and components.
 
 See the [Icons API reference](../api-reference/icons.md) for the full list of default icon names.
 
 ## Overriding Existing Icons
 
-Override built-in icon names with your own SVG markup and pass the resulting `KritzelSvgIconMap` to the `customSvgIcons` prop on `<KritzelEditor>`.
+Override built-in icon names with your own SVG markup and pass the resulting `UpdrawSvgIconMap` to the `customSvgIcons` prop on `<UpdrawEditor>`.
 
 <LiveDemo
 repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
@@ -27,7 +27,7 @@ repoFiles={['src/pages/customization/icons/IconsRegisterPage.vue']}
 
 ## Registering New Icons
 
-You can also register entirely new icons that are specific to your application and reference them in components with icon support, such as `KritzelToolbarItem` or `ContextMenuItem`.
+You can also register entirely new icons that are specific to your application and reference them in components with icon support, such as `UpdrawToolbarItem` or `ContextMenuItem`.
 
 <LiveDemo
 repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"

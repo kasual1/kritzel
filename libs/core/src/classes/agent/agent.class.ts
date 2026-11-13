@@ -1,78 +1,78 @@
-import type { KritzelCore } from '../core/core.class';
-import type { IKritzelUser } from '../../interfaces/user.interface';
-import type { KritzelPoint } from '../../interfaces/point.interface';
+import type { UpdrawCore } from '../core/core.class';
+import type { IUpdrawUser } from '../../interfaces/user.interface';
+import type { UpdrawPoint } from '../../interfaces/point.interface';
 import type {
-  KritzelAgenticAnchor,
-  KritzelAgenticElementTarget,
-  KritzelAgenticMoveOptions,
-  KritzelAgenticMoveResult,
-  KritzelAgenticObjectTarget,
-  KritzelAgenticPointTarget,
-  KritzelAgenticTarget,
+  UpdrawAgenticAnchor,
+  UpdrawAgenticElementTarget,
+  UpdrawAgenticMoveOptions,
+  UpdrawAgenticMoveResult,
+  UpdrawAgenticObjectTarget,
+  UpdrawAgenticPointTarget,
+  UpdrawAgenticTarget,
 } from '../../interfaces/agentic-cursor.interface';
 import type {
-  KritzelAgenticAction,
-  KritzelAgenticActionFailureReason,
-  KritzelAgenticActionOptions,
-  KritzelAgenticActionResult,
-  KritzelAgenticCreateShapeAction,
-  KritzelAgenticOrder,
-  KritzelAgenticCreateTextAction,
-  KritzelAgenticDrawLineAction,
-  KritzelAgenticEditLineAction,
-  KritzelAgenticUpdateIframeAction,
-  KritzelAgenticLineStyle,
-  KritzelAgenticObjectStyle,
-  KritzelAgenticResizeObjectAction,
-  KritzelAgenticStrokeStyle,
+  UpdrawAgenticAction,
+  UpdrawAgenticActionFailureReason,
+  UpdrawAgenticActionOptions,
+  UpdrawAgenticActionResult,
+  UpdrawAgenticCreateShapeAction,
+  UpdrawAgenticOrder,
+  UpdrawAgenticCreateTextAction,
+  UpdrawAgenticDrawLineAction,
+  UpdrawAgenticEditLineAction,
+  UpdrawAgenticUpdateIframeAction,
+  UpdrawAgenticLineStyle,
+  UpdrawAgenticObjectStyle,
+  UpdrawAgenticResizeObjectAction,
+  UpdrawAgenticStrokeStyle,
 } from '../../interfaces/agentic-action.interface';
-import type { KritzelBaseObject } from '../objects/base-object.class';
+import type { UpdrawBaseObject } from '../objects/base-object.class';
 import type {
-  KritzelAgentEventMap,
-  KritzelAgentOptions,
-  KritzelAgentPresence,
-  KritzelAgentState,
-  KritzelAgentTool,
-  KritzelAgentToolResult,
-  KritzelAgentToolsOptions,
-  KritzelCanvasObject,
-  KritzelCanvasSnapshot,
-  KritzelObserveOptions,
+  UpdrawAgentEventMap,
+  UpdrawAgentOptions,
+  UpdrawAgentPresence,
+  UpdrawAgentState,
+  UpdrawAgentTool,
+  UpdrawAgentToolResult,
+  UpdrawAgentToolsOptions,
+  UpdrawCanvasObject,
+  UpdrawCanvasSnapshot,
+  UpdrawObserveOptions,
 } from '../../interfaces/agent.interface';
-import type { KritzelObjectElementInteraction } from '../../interfaces/object-element.interface';
-import { KritzelUserColorHelper } from '../../helpers/user-color.helper';
+import type { UpdrawObjectElementInteraction } from '../../interfaces/object-element.interface';
+import { UpdrawUserColorHelper } from '../../helpers/user-color.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelAgentActionError } from './agent-action-error.class';
+import { UpdrawAgentActionError } from './agent-action-error.class';
 import { createAgentTools } from './agent-tools';
 import { buildCanvasSnapshot, describeObject } from './agent-snapshot';
-import { inspectObjectElements, type KritzelInspectElementsOptions } from './agent-elements';
-import { KritzelEventHelper } from '../../helpers/event.helper';
+import { inspectObjectElements, type UpdrawInspectElementsOptions } from './agent-elements';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
 import { isElementTarget } from '../../helpers/agentic-geometry.helper';
 
-/** Brand that identifies agents across copies of `@kritzel/core`. */
-export const KRITZEL_AGENT_BRAND = Symbol.for('kritzel.agent');
+/** Brand that identifies agents across copies of `@updraw/core`. */
+export const UPDRAW_AGENT_BRAND = Symbol.for('updraw.agent');
 
 /** Reasons that mean someone else took over the objects of a running action. */
-const INTERRUPTING_REASONS: ReadonlySet<KritzelAgenticActionFailureReason> = new Set([
+const INTERRUPTING_REASONS: ReadonlySet<UpdrawAgenticActionFailureReason> = new Set([
   'user-selected',
   'user-interaction',
   'collaborator-editing',
   'conflict',
 ]);
 
-type AgentListener<K extends keyof KritzelAgentEventMap> = (payload: KritzelAgentEventMap[K]) => void;
+type AgentListener<K extends keyof UpdrawAgentEventMap> = (payload: UpdrawAgentEventMap[K]) => void;
 
 /** Whether the cursor can start at a position: any point or object target, or an element target the object can resolve. */
-function canStartAt(core: KritzelCore, target: KritzelAgenticTarget): boolean {
+function canStartAt(core: UpdrawCore, target: UpdrawAgenticTarget): boolean {
   if (!isElementTarget(target)) {
     return true;
   }
-  return target.selector.trim() !== '' && ObjectHelper.isKritzelElementAwareObject(core.store.objects?.findById(target.objectId));
+  return target.selector.trim() !== '' && ObjectHelper.isUpdrawElementAwareObject(core.store.objects?.findById(target.objectId));
 }
 
-/** Whether a value is a `KritzelAgent`, also when it comes from another copy of `@kritzel/core`. */
-export function isKritzelAgent(value: unknown): value is KritzelAgent {
-  return !!value && typeof value === 'object' && (value as Record<symbol, unknown>)[KRITZEL_AGENT_BRAND] === true;
+/** Whether a value is an `UpdrawAgent`, also when it comes from another copy of `@updraw/core`. */
+export function isUpdrawAgent(value: unknown): value is UpdrawAgent {
+  return !!value && typeof value === 'object' && (value as Record<symbol, unknown>)[UPDRAW_AGENT_BRAND] === true;
 }
 
 /**
@@ -83,7 +83,7 @@ export function isKritzelAgent(value: unknown): value is KritzelAgent {
  * `editor.addAgent(agent)`, then let it act:
  *
  * ```ts
- * const agent = new KritzelAgent({ name: 'Planner', color: '#7C3AED' });
+ * const agent = new UpdrawAgent({ name: 'Planner', color: '#7C3AED' });
  * await editor.addAgent(agent);
  * await agent.createShape({ x: 0, y: 0, width: 160, height: 80, text: 'Idea' });
  * ```
@@ -91,9 +91,9 @@ export function isKritzelAgent(value: unknown): value is KritzelAgent {
  * Agents never take objects away from people: an action whose objects the user has selected or is
  * editing is refused or stopped, and the reason is reported in its result.
  */
-export class KritzelAgent implements IKritzelUser {
+export class UpdrawAgent implements IUpdrawUser {
   /** @internal */
-  readonly [KRITZEL_AGENT_BRAND] = true;
+  readonly [UPDRAW_AGENT_BRAND] = true;
   /** Keeps Vue from wrapping the agent in a reactive proxy. @internal */
   readonly __v_skip = true;
   /** Always `'agent'`. */
@@ -108,20 +108,20 @@ export class KritzelAgent implements IKritzelUser {
   private _broadcast: boolean;
   private _status: string | null;
   private _visible: boolean;
-  private _initialPosition?: KritzelAgenticTarget;
-  private _core: KritzelCore | null = null;
+  private _initialPosition?: UpdrawAgenticTarget;
+  private _core: UpdrawCore | null = null;
   private _subscriptions: (() => void)[] = [];
-  private readonly _listeners = new Map<keyof KritzelAgentEventMap, Set<(payload: unknown) => void>>();
+  private readonly _listeners = new Map<keyof UpdrawAgentEventMap, Set<(payload: unknown) => void>>();
   private _task: { cancelled: boolean } | null = null;
   private _lastStateKey: string | null = null;
 
-  constructor(options: KritzelAgentOptions) {
+  constructor(options: UpdrawAgentOptions) {
     if (!options || typeof options.name !== 'string' || options.name.trim() === '') {
-      throw new TypeError('A KritzelAgent needs a non-empty "name".');
+      throw new TypeError('An UpdrawAgent needs a non-empty "name".');
     }
     this.id = options.id ?? `agent-${ObjectHelper.generateUUID(12)}`;
     this._name = options.name;
-    this._color = options.color || KritzelUserColorHelper.generateColorFromName(options.name);
+    this._color = options.color || UpdrawUserColorHelper.generateColorFromName(options.name);
     this._avatarUrl = options.avatarUrl;
     this._speed = options.speed;
     this._broadcast = options.broadcast ?? true;
@@ -143,7 +143,7 @@ export class KritzelAgent implements IKritzelUser {
     this.notifyChange();
   }
 
-  /** Same as `name` (`IKritzelUser`). */
+  /** Same as `name` (`IUpdrawUser`). */
   get displayName(): string {
     return this._name;
   }
@@ -169,7 +169,7 @@ export class KritzelAgent implements IKritzelUser {
     this.notifyChange();
   }
 
-  /** Same as `avatarUrl` (`IKritzelUser`). */
+  /** Same as `avatarUrl` (`IUpdrawUser`). */
   get profileImageUrl(): string | undefined {
     return this._avatarUrl;
   }
@@ -199,7 +199,7 @@ export class KritzelAgent implements IKritzelUser {
   }
 
   /** A snapshot of the agent's state. */
-  get state(): KritzelAgentState {
+  get state(): UpdrawAgentState {
     const core = this._core;
     const cursor = core?.agenticCursorManager.get(this.id);
     if (!core || !cursor) {
@@ -253,7 +253,7 @@ export class KritzelAgent implements IKritzelUser {
 
   /**
    * Moves the cursor to a world point, to an anchor on an object, or to an element inside an object
-   * (`{ objectId, selector }`, e.g. a button in the page of a `KritzelIframeObject`), where it sticks by default.
+   * (`{ objectId, selector }`, e.g. a button in the page of an `UpdrawIframeObject`), where it sticks by default.
    * Resolves when it arrives; `completed: false` when another move, an action or the agent's removal interrupted it.
    * A running action of the agent stops with `'agent-moved'`.
    *
@@ -261,7 +261,7 @@ export class KritzelAgent implements IKritzelUser {
    * elements, isn't mounted or has no visible element that matches the selector, and until then the cursor keeps
    * its current move and attachment. While stuck to the element, the cursor follows it inside the content.
    */
-  async moveTo(target: KritzelAgenticTarget, options: KritzelAgenticMoveOptions = {}): Promise<KritzelAgenticMoveResult> {
+  async moveTo(target: UpdrawAgenticTarget, options: UpdrawAgenticMoveOptions = {}): Promise<UpdrawAgenticMoveResult> {
     const core = this.requireCore();
     return core.agenticCursorManager.move(this.id, target, { ...options, speed: options.speed ?? this._speed });
   }
@@ -279,10 +279,10 @@ export class KritzelAgent implements IKritzelUser {
    * Performs an action: the cursor flies to the target, presses and animates the change. Actions of one
    * agent run one after another, in call order. Resolves when the action ends; `completed: false` with a
    * `reason` when it was refused or stopped. An action started while a `task()` runs belongs to that task:
-   * such a result throws `KritzelAgentActionError` if the task is still running when the action ends.
+   * such a result throws `UpdrawAgentActionError` if the task is still running when the action ends.
    * Rejects for invalid actions and when the agent is not added to an editor.
    */
-  async perform(action: KritzelAgenticAction, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  async perform(action: UpdrawAgenticAction, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     const core = this.requireCore();
     // Decided when the action starts: an action started before a task, or by a task that has ended, never throws.
     const task = this._task;
@@ -299,9 +299,9 @@ export class KritzelAgent implements IKritzelUser {
    * `interactWithElement(target, { type: 'click' })`.
    */
   click(
-    target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget | KritzelAgenticElementTarget,
-    options: { count?: 1 | 2 } & KritzelAgenticActionOptions = {},
-  ): Promise<KritzelAgenticActionResult> {
+    target: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget | UpdrawAgenticElementTarget,
+    options: { count?: 1 | 2 } & UpdrawAgenticActionOptions = {},
+  ): Promise<UpdrawAgenticActionResult> {
     const { count, ...actionOptions } = options;
     return this.perform({ type: 'click', target, ...(count ? { count } : {}) }, actionOptions);
   }
@@ -309,34 +309,34 @@ export class KritzelAgent implements IKritzelUser {
   /**
    * Interacts with an element inside an object's content, e.g. clicks a button or fills a field of an iframe
    * widget: the cursor flies to the element and the interaction is performed as a user would (see
-   * `KritzelObjectElementInteraction`). `element` holds the element afterwards; when the element refuses, the
+   * `UpdrawObjectElementInteraction`). `element` holds the element afterwards; when the element refuses, the
    * result has `reason: 'element-interaction-failed'` with `elementReason` and `message`.
    */
   interactWithElement(
-    target: KritzelAgenticElementTarget,
-    interaction: KritzelObjectElementInteraction,
-    options: KritzelAgenticActionOptions = {},
-  ): Promise<KritzelAgenticActionResult> {
+    target: UpdrawAgenticElementTarget,
+    interaction: UpdrawObjectElementInteraction,
+    options: UpdrawAgenticActionOptions = {},
+  ): Promise<UpdrawAgenticActionResult> {
     return this.perform({ type: 'interactWithElement', target, interaction }, options);
   }
 
   /** Selects top-level objects for the agent. Never changes the user's selection. */
-  select(objectIds: string[], options: { additive?: boolean } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  select(objectIds: string[], options: { additive?: boolean } & UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     const { additive, ...actionOptions } = options;
     return this.perform({ type: 'select', objectIds, ...(additive !== undefined ? { additive } : {}) }, actionOptions);
   }
 
   /** Clears the agent's selection. */
-  clearSelection(options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  clearSelection(options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     return this.perform({ type: 'clearSelection' }, options);
   }
 
   /** Drags an object so that its `align` point (default `'center'`) lands on `to`. */
   moveObject(
     objectId: string,
-    to: KritzelAgenticPointTarget | KritzelAgenticObjectTarget,
-    options: { align?: KritzelAgenticAnchor } & KritzelAgenticActionOptions = {},
-  ): Promise<KritzelAgenticActionResult> {
+    to: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget,
+    options: { align?: UpdrawAgenticAnchor } & UpdrawAgenticActionOptions = {},
+  ): Promise<UpdrawAgenticActionResult> {
     const { align, ...actionOptions } = options;
     return this.perform({ type: 'moveObject', objectId, to, ...(align ? { align } : {}) }, actionOptions);
   }
@@ -344,14 +344,14 @@ export class KritzelAgent implements IKritzelUser {
   /** Resizes an object by dragging a corner handle. */
   resizeObject(
     objectId: string,
-    size: Omit<KritzelAgenticResizeObjectAction, 'type' | 'objectId'>,
-    options: KritzelAgenticActionOptions = {},
-  ): Promise<KritzelAgenticActionResult> {
+    size: Omit<UpdrawAgenticResizeObjectAction, 'type' | 'objectId'>,
+    options: UpdrawAgenticActionOptions = {},
+  ): Promise<UpdrawAgenticActionResult> {
     return this.perform({ ...size, type: 'resizeObject', objectId }, options);
   }
 
   /** Rotates an object to `angle` degrees clockwise, or by `angle` with `relative: true`. */
-  rotateObject(objectId: string, angle: number, options: { relative?: boolean } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  rotateObject(objectId: string, angle: number, options: { relative?: boolean } & UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     const { relative, ...actionOptions } = options;
     return this.perform({ type: 'rotateObject', objectId, angle, ...(relative !== undefined ? { relative } : {}) }, actionOptions);
   }
@@ -362,34 +362,34 @@ export class KritzelAgent implements IKritzelUser {
    */
   copyObjects(
     objectIds: string[],
-    options: { to?: KritzelAgenticPointTarget | KritzelAgenticObjectTarget } & KritzelAgenticActionOptions = {},
-  ): Promise<KritzelAgenticActionResult> {
+    options: { to?: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget } & UpdrawAgenticActionOptions = {},
+  ): Promise<UpdrawAgenticActionResult> {
     const { to, ...actionOptions } = options;
     return this.perform({ type: 'copyObjects', objectIds, ...(to ? { to } : {}) }, actionOptions);
   }
 
   /** Groups at least two objects. `objectIds` holds the group's ID. */
-  groupObjects(objectIds: string[], options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  groupObjects(objectIds: string[], options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     return this.perform({ type: 'groupObjects', objectIds }, options);
   }
 
   /** Dissolves groups. `objectIds` holds their children's IDs. */
-  ungroupObjects(objectIds: string[], options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  ungroupObjects(objectIds: string[], options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     return this.perform({ type: 'ungroupObjects', objectIds }, options);
   }
 
   /** Moves objects to the front or back of the stacking order, or one layer forward or backward. */
-  orderObjects(objectIds: string[], order: KritzelAgenticOrder, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  orderObjects(objectIds: string[], order: UpdrawAgenticOrder, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     return this.perform({ type: 'orderObjects', objectIds, order }, options);
   }
 
   /** Drags out a new shape. `objectIds` holds its ID. */
-  createShape(shape: Omit<KritzelAgenticCreateShapeAction, 'type'>, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  createShape(shape: Omit<UpdrawAgenticCreateShapeAction, 'type'>, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     return this.perform({ ...shape, type: 'createShape' }, options);
   }
 
   /** Creates a text object and types into it. `objectIds` holds its ID. */
-  createText(text: Omit<KritzelAgenticCreateTextAction, 'type'>, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  createText(text: Omit<UpdrawAgenticCreateTextAction, 'type'>, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     return this.perform({ ...text, type: 'createText' }, options);
   }
 
@@ -397,20 +397,20 @@ export class KritzelAgent implements IKritzelUser {
   typeText(
     objectId: string,
     text: string,
-    options: { mode?: 'append' | 'replace' } & KritzelAgenticActionOptions = {},
-  ): Promise<KritzelAgenticActionResult> {
+    options: { mode?: 'append' | 'replace' } & UpdrawAgenticActionOptions = {},
+  ): Promise<UpdrawAgenticActionResult> {
     const { mode, ...actionOptions } = options;
     return this.perform({ type: 'typeText', objectId, text, ...(mode ? { mode } : {}) }, actionOptions);
   }
 
   /** Draws a freehand stroke through the world points. */
-  drawPath(points: KritzelPoint[], options: { style?: KritzelAgenticStrokeStyle } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  drawPath(points: UpdrawPoint[], options: { style?: UpdrawAgenticStrokeStyle } & UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     const { style, ...actionOptions } = options;
     return this.perform({ type: 'drawPath', points, ...(style ? { style } : {}) }, actionOptions);
   }
 
   /** Draws a line from one object to another and anchors both ends, so it follows them. */
-  connect(from: string, to: string, options: { style?: KritzelAgenticLineStyle } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  connect(from: string, to: string, options: { style?: UpdrawAgenticLineStyle } & UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     const { style, ...actionOptions } = options;
     return this.perform({ type: 'connect', from, to, ...(style ? { style } : {}) }, actionOptions);
   }
@@ -419,12 +419,12 @@ export class KritzelAgent implements IKritzelUser {
    * Draws a line like the line tool: each end is a free point or an object (the end then follows it), and
    * `through` curves the line through a point halfway along it.
    */
-  drawLine(line: Omit<KritzelAgenticDrawLineAction, 'type'>, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  drawLine(line: Omit<UpdrawAgenticDrawLineAction, 'type'>, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     return this.perform({ type: 'drawLine', ...line }, options);
   }
 
   /** Changes a line with its handles: moves or attaches its ends, and curves or straightens it. */
-  editLine(lineId: string, changes: Omit<KritzelAgenticEditLineAction, 'type' | 'lineId'>, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  editLine(lineId: string, changes: Omit<UpdrawAgenticEditLineAction, 'type' | 'lineId'>, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     return this.perform({ type: 'editLine', lineId, ...changes }, options);
   }
 
@@ -434,38 +434,38 @@ export class KritzelAgent implements IKritzelUser {
    */
   updateIframe(
     objectId: string,
-    changes: Omit<KritzelAgenticUpdateIframeAction, 'type' | 'objectId'>,
-    options: KritzelAgenticActionOptions = {},
-  ): Promise<KritzelAgenticActionResult> {
+    changes: Omit<UpdrawAgenticUpdateIframeAction, 'type' | 'objectId'>,
+    options: UpdrawAgenticActionOptions = {},
+  ): Promise<UpdrawAgenticActionResult> {
     return this.perform({ type: 'updateIframe', objectId, ...changes }, options);
   }
 
   /** Restyles top-level objects; groups style their children. Fields that don't apply to an object are ignored. */
-  setStyle(objectIds: string[], style: KritzelAgenticObjectStyle, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  setStyle(objectIds: string[], style: UpdrawAgenticObjectStyle, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     return this.perform({ type: 'setStyle', objectIds, style }, options);
   }
 
   /**
-   * Places an object the app built, e.g. `new KritzelIframeObject({ ... })`, as the agent's change: the
+   * Places an object the app built, e.g. `new UpdrawIframeObject({ ... })`, as the agent's change: the
    * cursor hops there and the object appears. The object gets a fresh ID (also in `objectIds`).
    * Unlike `editor.addObject()`, the user's selection and undo history stay untouched.
    */
-  addObject(object: KritzelBaseObject<any>, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  addObject(object: UpdrawBaseObject<any>, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     return this.perform({ type: 'addObject', object }, options);
   }
 
   /** Deletes top-level objects. */
-  deleteObjects(objectIds: string[], options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  deleteObjects(objectIds: string[], options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     return this.perform({ type: 'deleteObjects', objectIds }, options);
   }
 
   /** Undoes the agent's last action. Never touches the user's or other agents' history. */
-  undo(options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  undo(options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     return this.perform({ type: 'undo' }, options);
   }
 
   /** Redoes the agent's last undone action. */
-  redo(options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  redo(options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
     return this.perform({ type: 'redo' }, options);
   }
 
@@ -483,7 +483,7 @@ export class KritzelAgent implements IKritzelUser {
 
   /**
    * Runs a script of actions as one task: `label` is shown as the status while it runs, and the first
-   * action that does not complete throws a `KritzelAgentActionError` out of `fn`. `cancel()` stops the
+   * action that does not complete throws an `UpdrawAgentActionError` out of `fn`. `cancel()` stops the
    * task. Every action of the agent started while the task runs belongs to it, also one started outside `fn`.
    * An agent runs one task at a time.
    */
@@ -514,7 +514,7 @@ export class KritzelAgent implements IKritzelUser {
    * call `run(input, { signal })` with its input; the result is JSON for the model. `only` limits what the
    * model may do.
    */
-  tools(options: KritzelAgentToolsOptions = {}): KritzelAgentTool[] {
+  tools(options: UpdrawAgentToolsOptions = {}): UpdrawAgentTool[] {
     return createAgentTools(this, options);
   }
 
@@ -522,7 +522,7 @@ export class KritzelAgent implements IKritzelUser {
    * What the agent sees of the canvas: the viewport, the user's selection, its own cursor and selection, and
    * the objects with their geometry, text, connections and style. Rejects while the agent is not added.
    */
-  async observe(options: KritzelObserveOptions = {}): Promise<KritzelCanvasSnapshot> {
+  async observe(options: UpdrawObserveOptions = {}): Promise<UpdrawCanvasSnapshot> {
     return buildCanvasSnapshot(this.requireCore(), this.id, options);
   }
 
@@ -532,7 +532,7 @@ export class KritzelAgent implements IKritzelUser {
   }
 
   /** The elements inside an object's content, for `inspect_elements`. @internal */
-  _inspectElements(objectId: string, options: KritzelInspectElementsOptions = {}): Promise<KritzelAgentToolResult> {
+  _inspectElements(objectId: string, options: UpdrawInspectElementsOptions = {}): Promise<UpdrawAgentToolResult> {
     if (!this._core) {
       return Promise.resolve({ completed: false, reason: 'agent-removed' });
     }
@@ -540,7 +540,7 @@ export class KritzelAgent implements IKritzelUser {
   }
 
   /** Snapshot entries of objects, for tool results. @internal */
-  _describeObjects(objectIds: string[]): KritzelCanvasObject[] {
+  _describeObjects(objectIds: string[]): UpdrawCanvasObject[] {
     const core = this.requireCore();
     const theme = core.themeManager?.currentTheme ?? 'light';
     return objectIds
@@ -552,7 +552,7 @@ export class KritzelAgent implements IKritzelUser {
   // ─── Events ─────────────────────────────────────────────────────────────────
 
   /** Subscribes to an event; returns a function that unsubscribes. */
-  on<K extends keyof KritzelAgentEventMap>(event: K, listener: AgentListener<K>): () => void {
+  on<K extends keyof UpdrawAgentEventMap>(event: K, listener: AgentListener<K>): () => void {
     let listeners = this._listeners.get(event);
     if (!listeners) {
       listeners = new Set();
@@ -563,7 +563,7 @@ export class KritzelAgent implements IKritzelUser {
   }
 
   /** How the agent is shown in avatar stacks and `agentsChange`. */
-  toPresence(): KritzelAgentPresence {
+  toPresence(): UpdrawAgentPresence {
     const state = this.state;
     return {
       id: this.id,
@@ -583,12 +583,12 @@ export class KritzelAgent implements IKritzelUser {
   // ─── Lifecycle (called by the editor's agent manager) ───────────────────────
 
   /** The core the agent is added to. @internal */
-  get _owner(): KritzelCore | null {
+  get _owner(): UpdrawCore | null {
     return this._core;
   }
 
   /** Creates the cursor in `core` and starts listening. Throws if the cursor can't be created. @internal */
-  _attach(core: KritzelCore): void {
+  _attach(core: UpdrawCore): void {
     // The start position may name an object that is gone, that this editor's document never had (an agent added
     // again, or moved from a removed editor), that has no position, or that can't point at elements for an element
     // target: the cursor then starts at the viewport center.
@@ -680,7 +680,7 @@ export class KritzelAgent implements IKritzelUser {
     this.notifyChange();
   }
 
-  private requireCore(): KritzelCore {
+  private requireCore(): UpdrawCore {
     if (!this._core) {
       throw new Error(`Agent "${this.id}" is not added to an editor. Call editor.addAgent(agent) first.`);
     }
@@ -688,12 +688,12 @@ export class KritzelAgent implements IKritzelUser {
   }
 
   private settle(
-    action: KritzelAgenticAction,
-    result: KritzelAgenticActionResult,
+    action: UpdrawAgenticAction,
+    result: UpdrawAgenticActionResult,
     task: { cancelled: boolean } | null,
-  ): KritzelAgenticActionResult {
+  ): UpdrawAgenticActionResult {
     if (task && task === this._task && !result.completed) {
-      throw new KritzelAgentActionError(action, result);
+      throw new UpdrawAgentActionError(action, result);
     }
     return result;
   }
@@ -714,7 +714,7 @@ export class KritzelAgent implements IKritzelUser {
     this.emit('change', state);
   }
 
-  private emit<K extends keyof KritzelAgentEventMap>(event: K, payload: KritzelAgentEventMap[K]): void {
-    this._listeners.get(event)?.forEach(listener => KritzelEventHelper.callListener(() => listener(payload), `Agent "${event}" listener`));
+  private emit<K extends keyof UpdrawAgentEventMap>(event: K, payload: UpdrawAgentEventMap[K]): void {
+    this._listeners.get(event)?.forEach(listener => UpdrawEventHelper.callListener(() => listener(payload), `Agent "${event}" listener`));
   }
 }

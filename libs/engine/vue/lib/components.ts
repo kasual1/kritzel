@@ -3,12 +3,12 @@
 /* auto-generated vue proxies */
 import { defineContainer, type StencilVueComponent } from '@stencil/vue-output-target/runtime';
 
-import type { JSX } from '@kritzel/engine/dist/components';
+import type { JSX } from '@updraw/engine/dist/components';
 
-import { defineCustomElement as defineKritzelEngine } from '@kritzel/engine/dist/components/kritzel-engine.js';
+import { defineCustomElement as defineUpdrawEngine } from '@updraw/engine/dist/components/updraw-engine.js';
 
 
-export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__*/ defineContainer<JSX.KritzelEngine>('kritzel-engine', defineKritzelEngine, [
+export const UpdrawEngine: StencilVueComponent<JSX.UpdrawEngine> = /*@__PURE__*/ defineContainer<JSX.UpdrawEngine>('updraw-engine', defineUpdrawEngine, [
   'workspaces',
   'editorId',
   'activeWorkspaceId',

@@ -8,7 +8,7 @@ const AGENT_ID = 'agent';
 
 type ActionResult = { completed: boolean; reason?: string; objectIds?: string[] };
 
-/** The parts of `KritzelAgent` the tests use. Agents live in the page; only their state is returned. */
+/** The parts of `UpdrawAgent` the tests use. Agents live in the page; only their state is returned. */
 type Agent = {
   id: string;
   state: { isAdded: boolean; activeAction: string | null; selection: string[]; canUndo: boolean };
@@ -36,7 +36,7 @@ const openActionsPage = async (page: Page) => {
   await expect
     .poll(() =>
       page.evaluate(async ({ ids, agentId }) => {
-        const editor = document.querySelector('kritzel-editor') as EditorElement;
+        const editor = document.querySelector('updraw-editor') as EditorElement;
         const found = await editor.findObjects(obj => ids.includes(obj.id));
         return found.length === ids.length && (await editor.getAgent(agentId)) !== null;
       }, { ids: [RECTANGLE_ID, ELLIPSE_ID], agentId: AGENT_ID }),
@@ -47,7 +47,7 @@ const openActionsPage = async (page: Page) => {
 
 const translateXOf = (page: Page, id: string) =>
   page.evaluate(async objectId => {
-    const editor = document.querySelector('kritzel-editor') as EditorElement;
+    const editor = document.querySelector('updraw-editor') as EditorElement;
     const [object] = await editor.findObjects(obj => obj.id === objectId);
     return object?.translateX as number;
   }, id);
@@ -55,7 +55,7 @@ const translateXOf = (page: Page, id: string) =>
 test.describe('Agent Actions', () => {
   test('runs the demo script, outlines targets while running and undoes agent steps', async ({ page }) => {
     await openActionsPage(page);
-    const overlay = page.locator('kritzel-agentic-cursors');
+    const overlay = page.locator('updraw-agentic-cursors');
 
     await page.getByRole('button', { name: 'Run Script' }).click();
     // While an action runs, its target is outlined in the agent's color (local only).
@@ -64,32 +64,32 @@ test.describe('Agent Actions', () => {
     await expect(overlay.locator('.agentic-selection')).toHaveCount(0);
 
     const counts = await page.evaluate(async () => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const objects = await editor.findObjects(() => true);
       return {
-        shapes: objects.filter(o => o.__class__ === 'KritzelShape').length,
-        lines: objects.filter(o => o.__class__ === 'KritzelLine').length,
-        paths: objects.filter(o => o.__class__ === 'KritzelPath').length,
+        shapes: objects.filter(o => o.__class__ === 'UpdrawShape').length,
+        lines: objects.filter(o => o.__class__ === 'UpdrawLine').length,
+        paths: objects.filter(o => o.__class__ === 'UpdrawPath').length,
         // The note, its connector and the underline are attributed to the agent.
         byAgent: objects.filter(o => o.userId === 'agent').map(o => o.__class__).sort(),
       };
     });
-    expect(counts).toEqual({ shapes: 3, lines: 1, paths: 1, byAgent: ['KritzelLine', 'KritzelPath', 'KritzelShape'] });
+    expect(counts).toEqual({ shapes: 3, lines: 1, paths: 1, byAgent: ['UpdrawLine', 'UpdrawPath', 'UpdrawShape'] });
 
     const undo = page.getByRole('button', { name: 'Undo Agent' });
     await expect(undo).toBeEnabled();
     await undo.click();
     await expect(page.getByText('Agent undo done.')).toBeVisible();
-    await expect.poll(() => page.evaluate(async () => (await (document.querySelector('kritzel-editor') as EditorElement).findObjects(o => o.__class__ === 'KritzelPath')).length)).toBe(0);
+    await expect.poll(() => page.evaluate(async () => (await (document.querySelector('updraw-editor') as EditorElement).findObjects(o => o.__class__ === 'UpdrawPath')).length)).toBe(0);
   });
 
   test('refuses to change an object the user has selected', async ({ page }) => {
     await openActionsPage(page);
     const result = await page.evaluate(async id => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
-      // Tests can't import KritzelAgent: build one with the constructor of the page's agent.
-      const KritzelAgent = (await editor.getAgents())[0].constructor as AgentConstructor;
-      const probe = await editor.addAgent(new KritzelAgent({ id: 'probe', name: 'Probe' }));
+      const editor = document.querySelector('updraw-editor') as EditorElement;
+      // Tests can't import UpdrawAgent: build one with the constructor of the page's agent.
+      const UpdrawAgent = (await editor.getAgents())[0].constructor as AgentConstructor;
+      const probe = await editor.addAgent(new UpdrawAgent({ id: 'probe', name: 'Probe' }));
       const [rectangle] = await editor.findObjects(obj => obj.id === id);
       await editor.selectObjects([rectangle]);
       return probe.moveObject(id, { x: 400, y: 0 }, { instant: true });
@@ -108,11 +108,11 @@ test.describe('Agent Actions', () => {
 
       const result = await page.evaluate(
         async ({ agentId, privateId, id }) => {
-          const editor = document.querySelector('kritzel-editor') as EditorElement;
-          const KritzelAgent = (await editor.getAgents())[0].constructor as AgentConstructor;
+          const editor = document.querySelector('updraw-editor') as EditorElement;
+          const UpdrawAgent = (await editor.getAgents())[0].constructor as AgentConstructor;
           // broadcast: false keeps an agent in this tab only.
-          await editor.addAgent(new KritzelAgent({ id: privateId, name: 'Private', broadcast: false }));
-          const agent = await editor.addAgent(new KritzelAgent({ id: agentId, name: 'Agent A' }));
+          await editor.addAgent(new UpdrawAgent({ id: privateId, name: 'Private', broadcast: false }));
+          const agent = await editor.addAgent(new UpdrawAgent({ id: agentId, name: 'Agent A' }));
           await agent.select([id], { instant: true });
           return agent.moveObject(id, { x: 300, y: -60 }, { instant: true });
         },
@@ -124,17 +124,17 @@ test.describe('Agent Actions', () => {
 
       // Tab B receives the change, the agent's cursor, its selection outline and its avatar...
       await expect.poll(() => translateXOf(pageB, RECTANGLE_ID)).toBeCloseTo(after, 5);
-      const overlayB = pageB.locator('kritzel-agentic-cursors');
+      const overlayB = pageB.locator('updraw-agentic-cursors');
       await expect(overlayB.locator(`.agentic-cursor.is-remote[data-cursor-id="${agentId}"]`)).toHaveCount(1);
       await expect(overlayB.locator(`.agentic-selection.is-remote[data-cursor-id="${agentId}"]`)).toHaveCount(1);
-      await expect(pageB.locator(`kritzel-active-users .avatar-wrapper.is-agent.is-remote[data-agent-id="${agentId}"]`)).toHaveCount(1);
+      await expect(pageB.locator(`updraw-active-users .avatar-wrapper.is-agent.is-remote[data-agent-id="${agentId}"]`)).toHaveCount(1);
       // ...never the private agent, and nothing as objects: the agent is not added in tab B.
       await expect(overlayB.locator(`[data-cursor-id="${privateId}"]`)).toHaveCount(0);
-      await expect(pageB.locator(`kritzel-active-users [data-agent-id="${privateId}"]`)).toHaveCount(0);
+      await expect(pageB.locator(`updraw-active-users [data-agent-id="${privateId}"]`)).toHaveCount(0);
       const inB = await pageB.evaluate(
         async ({ agentId, privateId }) => {
-          const editor = document.querySelector('kritzel-editor') as EditorElement;
-          const groups = (await editor.getAllObjects()).filter(o => o.__class__ === 'KritzelSelectionGroup');
+          const editor = document.querySelector('updraw-editor') as EditorElement;
+          const groups = (await editor.getAllObjects()).filter(o => o.__class__ === 'UpdrawSelectionGroup');
           const remote = await editor.getRemoteAgents();
           return {
             added: (await editor.getAgent(agentId)) !== null,
@@ -148,11 +148,11 @@ test.describe('Agent Actions', () => {
 
       // Removing the agent in tab A removes it from tab B.
       await page.evaluate(async id => {
-        const editor = document.querySelector('kritzel-editor') as EditorElement;
+        const editor = document.querySelector('updraw-editor') as EditorElement;
         await editor.removeAgent(id);
       }, agentId);
       await expect(overlayB.locator(`[data-cursor-id="${agentId}"]`)).toHaveCount(0);
-      await expect(pageB.locator(`kritzel-active-users [data-agent-id="${agentId}"]`)).toHaveCount(0);
+      await expect(pageB.locator(`updraw-active-users [data-agent-id="${agentId}"]`)).toHaveCount(0);
       await pageB.close();
     });
 
@@ -164,19 +164,19 @@ test.describe('Agent Actions', () => {
 
       await pageB.evaluate(
         async ({ agentId, id }) => {
-          const editor = document.querySelector('kritzel-editor') as EditorElement;
-          const KritzelAgent = (await editor.getAgents())[0].constructor as AgentConstructor;
-          const agent = await editor.addAgent(new KritzelAgent({ id: agentId, name: 'Agent B' }));
+          const editor = document.querySelector('updraw-editor') as EditorElement;
+          const UpdrawAgent = (await editor.getAgents())[0].constructor as AgentConstructor;
+          const agent = await editor.addAgent(new UpdrawAgent({ id: agentId, name: 'Agent B' }));
           await agent.select([id], { instant: true });
         },
         { agentId, id: ELLIPSE_ID },
       );
       // Wait until tab A sees tab B's agent selection.
-      await expect(page.locator(`kritzel-agentic-cursors .agentic-selection.is-remote[data-cursor-id="${agentId}"]`)).toHaveCount(1);
+      await expect(page.locator(`updraw-agentic-cursors .agentic-selection.is-remote[data-cursor-id="${agentId}"]`)).toHaveCount(1);
 
       const before = await translateXOf(page, ELLIPSE_ID);
       const result = await page.evaluate(async id => {
-        const editor = document.querySelector('kritzel-editor') as EditorElement;
+        const editor = document.querySelector('updraw-editor') as EditorElement;
         const agent = (await editor.getAgents())[0];
         return agent.moveObject(id, { x: 300, y: 300 }, { instant: true });
       }, ELLIPSE_ID);
@@ -192,7 +192,7 @@ test.describe('Agent Actions', () => {
       await openActionsPage(pageB);
 
       await pageB.evaluate(async id => {
-        const editor = document.querySelector('kritzel-editor') as EditorElement;
+        const editor = document.querySelector('updraw-editor') as EditorElement;
         const [ellipse] = await editor.findObjects(obj => obj.id === id);
         await editor.selectObjects([ellipse]);
       }, ELLIPSE_ID);
@@ -200,8 +200,8 @@ test.describe('Agent Actions', () => {
       await expect
         .poll(() =>
           page.evaluate(async id => {
-            const editor = document.querySelector('kritzel-editor') as EditorElement;
-            const groups = (await editor.getAllObjects()).filter(o => o.__class__ === 'KritzelSelectionGroup');
+            const editor = document.querySelector('updraw-editor') as EditorElement;
+            const groups = (await editor.getAllObjects()).filter(o => o.__class__ === 'UpdrawSelectionGroup');
             return groups.some(group => group.objectIds?.includes(id));
           }, ELLIPSE_ID),
         )
@@ -209,9 +209,9 @@ test.describe('Agent Actions', () => {
 
       const before = await translateXOf(page, ELLIPSE_ID);
       const result = await page.evaluate(async id => {
-        const editor = document.querySelector('kritzel-editor') as EditorElement;
-        const KritzelAgent = (await editor.getAgents())[0].constructor as AgentConstructor;
-        const agent = await editor.addAgent(new KritzelAgent({ id: 'agent-collab', name: 'Agent' }));
+        const editor = document.querySelector('updraw-editor') as EditorElement;
+        const UpdrawAgent = (await editor.getAgents())[0].constructor as AgentConstructor;
+        const agent = await editor.addAgent(new UpdrawAgent({ id: 'agent-collab', name: 'Agent' }));
         return agent.moveObject(id, { x: 300, y: 300 }, { instant: true });
       }, ELLIPSE_ID);
 

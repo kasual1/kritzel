@@ -1,6 +1,6 @@
-import { KritzelDevicesHelper } from './devices.helper';
+import { UpdrawDevicesHelper } from './devices.helper';
 
-export class KritzelKeyboardHelper {
+export class UpdrawKeyboardHelper {
   static forceHideKeyboard(): void {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
@@ -59,15 +59,15 @@ export class KritzelKeyboardHelper {
     }
     const key = Math.round(visualViewport.width);
     const height = Math.max(visualViewport.height * visualViewport.scale, window.innerHeight);
-    const baseline = KritzelKeyboardHelper.viewportBaselineHeights.get(key) ?? 0;
+    const baseline = UpdrawKeyboardHelper.viewportBaselineHeights.get(key) ?? 0;
     if (height > baseline) {
-      KritzelKeyboardHelper.viewportBaselineHeights.set(key, height);
+      UpdrawKeyboardHelper.viewportBaselineHeights.set(key, height);
     }
   }
 
   /** Clears the recorded viewport baselines. */
   static resetViewportBaseline(): void {
-    KritzelKeyboardHelper.viewportBaselineHeights.clear();
+    UpdrawKeyboardHelper.viewportBaselineHeights.clear();
   }
 
   /**
@@ -77,21 +77,21 @@ export class KritzelKeyboardHelper {
    * so it works in both portrait and landscape.
    */
   static isKeyboardOpen(visualViewport: VisualViewport | null | undefined = window.visualViewport): boolean {
-    if (!visualViewport || !KritzelDevicesHelper.isMobile()) {
+    if (!visualViewport || !UpdrawDevicesHelper.isMobile()) {
       return false;
     }
-    KritzelKeyboardHelper.recordViewportBaseline(visualViewport);
-    const baseline = KritzelKeyboardHelper.viewportBaselineHeights.get(Math.round(visualViewport.width));
+    UpdrawKeyboardHelper.recordViewportBaseline(visualViewport);
+    const baseline = UpdrawKeyboardHelper.viewportBaselineHeights.get(Math.round(visualViewport.width));
     if (!baseline) {
       return false;
     }
-    return (visualViewport.height * visualViewport.scale) / baseline < KritzelKeyboardHelper.KEYBOARD_OPEN_HEIGHT_RATIO;
+    return (visualViewport.height * visualViewport.scale) / baseline < UpdrawKeyboardHelper.KEYBOARD_OPEN_HEIGHT_RATIO;
   }
 
   static onKeyboardVisibleChanged(callback: (isOpen: boolean) => void): () => void {
     if ('visualViewport' in window) {
       const onResize = (event: Event) => {
-        callback(KritzelKeyboardHelper.isKeyboardOpen(event.target as VisualViewport));
+        callback(UpdrawKeyboardHelper.isKeyboardOpen(event.target as VisualViewport));
       };
 
       window.visualViewport?.addEventListener('resize', onResize);

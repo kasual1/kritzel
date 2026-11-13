@@ -7,12 +7,12 @@ import {
   HttpAssetProvider,
   IndexedDBAssetProvider,
   IndexedDBSyncProvider,
-  KritzelAssetStorageConfig,
-  KritzelDynamicObject,
-  KritzelEditor,
-  KritzelSyncConfig,
+  UpdrawAssetStorageConfig,
+  UpdrawDynamicObject,
+  UpdrawEditor,
+  UpdrawSyncConfig,
   LoginEvent
-} from '@kritzel/angular-editor';
+} from '@updraw/angular-editor';
 import { UserData } from '../resolvers/user.resolver';
 import { AuthService } from '../services/auth.service';
 import { ConfigService } from '../services/config.service';
@@ -22,9 +22,9 @@ import { animateWelcomeObject, createWelcomeObject, getWelcomeBoundsUpdate } fro
 
 @Component({
   selector: 'app-editor',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   template: `
-      <kritzel-editor
+      <updraw-editor
         [user]="user"
         [activeUsers]="activeUsers"
         [syncConfig]="syncConfig"
@@ -36,15 +36,15 @@ import { animateWelcomeObject, createWelcomeObject, getWelcomeBoundsUpdate } fro
         (logout)="onLogout()"
         (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
         (awarenessChange)="onAwarenessChange($event)"
-      ></kritzel-editor>
+      ></updraw-editor>
   `,
   styles: [`
     :host { display: block; width: 100%; height: 100dvh; }
-    kritzel-editor { display: block; width: 100%; height: 100%; }
+    updraw-editor { display: block; width: 100%; height: 100%; }
   `],
 })
 export class Editor {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   private readonly route = inject(ActivatedRoute);
   private readonly auth = inject(AuthService);
@@ -62,15 +62,15 @@ export class Editor {
 
   activeUsers: IUser[] = [];
 
-  syncConfig!: KritzelSyncConfig;
+  syncConfig!: UpdrawSyncConfig;
 
-  assetStorageConfig!: KritzelAssetStorageConfig;
+  assetStorageConfig!: UpdrawAssetStorageConfig;
 
   loginConfig = {
     providers: [
       { name: 'google', label: 'Sign in with Google', icon: 'google' }
     ],
-    title: 'Welcome to Kritzel',
+    title: 'Welcome to Updraw',
   };
 
   async ngOnInit(): Promise<void> {
@@ -134,7 +134,7 @@ export class Editor {
       throw new Error('Cannot initialize the starter workspace without a user.');
     }
 
-    const key = `kritzel_welcome_initialized:${this.user.id}`;
+    const key = `updraw_welcome_initialized:${this.user.id}`;
     if (localStorage.getItem(key)) {
       return;
     }
@@ -174,14 +174,14 @@ export class Editor {
   private async animateWorkspaceWelcome(): Promise<void> {
     const objects = await this.editor.getAllObjects();
     for (const object of objects) {
-      if (object instanceof KritzelDynamicObject) {
+      if (object instanceof UpdrawDynamicObject) {
         const update = getWelcomeBoundsUpdate(object);
         if (update && !await this.editor.updateObject(object, update)) {
           throw new Error('Cannot update the saved Welcome object bounds.');
         }
       }
       if (
-        object.__class__ === 'KritzelDynamicObject' &&
+        object.__class__ === 'UpdrawDynamicObject' &&
         'element' in object &&
         object.element instanceof HTMLElement &&
         object.element.querySelector('svg[aria-label="Welcome"]') &&

@@ -21,27 +21,27 @@ jobs:
         with:
           node-version: "24.18.0"
 
-      # Locally the client uses the kritzel libs from this repo (a file: dep on @kritzel/angular-editor,
-      # plus overrides pointing its @kritzel/editor, @kritzel/engine and @kritzel/core deps at libs/). Production uses
+      # Locally the client uses the updraw libs from this repo (a file: dep on @updraw/angular-editor,
+      # plus overrides pointing its @updraw/editor, @updraw/engine and @updraw/core deps at libs/). Production uses
       # the published npm packages matching the version currently declared in libs/.
-      - name: Switch client to published kritzel packages
+      - name: Switch client to published updraw packages
         run: |
           set -eu
           VERSION=$(jq -r .version libs/editor/core/package.json)
           for pkg in angular-editor editor engine core; do
-            if [ -z "$(npm view "@kritzel/$pkg@$VERSION" version 2>/dev/null)" ]; then
-              echo "::error::@kritzel/$pkg@$VERSION is not published on npm. Publish the libraries first."
+            if [ -z "$(npm view "@updraw/$pkg@$VERSION" version 2>/dev/null)" ]; then
+              echo "::error::@updraw/$pkg@$VERSION is not published on npm. Publish the libraries first."
               exit 1
             fi
           done
           cd apps/app/client
           jq --arg v "$VERSION" '
-            .dependencies["@kritzel/angular-editor"] = $v
-            | del(.overrides["@kritzel/editor"], .overrides["@kritzel/engine"], .overrides["@kritzel/core"])
+            .dependencies["@updraw/angular-editor"] = $v
+            | del(.overrides["@updraw/editor"], .overrides["@updraw/engine"], .overrides["@updraw/core"])
           ' package.json > package.json.tmp
           mv package.json.tmp package.json
           # Drop the file: lock entries, otherwise npm keeps them (same version) instead of resolving from the registry.
-          jq '.packages |= with_entries(select(.key | startswith("node_modules/@kritzel/") | not))' \
+          jq '.packages |= with_entries(select(.key | startswith("node_modules/@updraw/") | not))' \
             package-lock.json > package-lock.json.tmp
           mv package-lock.json.tmp package-lock.json
           npm install --package-lock-only --no-audit --no-fund
@@ -49,7 +49,21 @@ jobs:
             echo "::error::package-lock.json still references local file: packages."
             exit 1
           fi
-          echo "Using @kritzel/*@$VERSION"
+          echo "Using @updraw/*@$VERSION"
+
+      # robots.txt and sitemap.xml name the app's public origin. The repository variable APP_URL deploys the app
+      # under another domain (e.g. the previous one during the domain move, see apps/app/docs/rebrand-cutover.md).
+      - name: Set the app's public URL
+        if: ${{ vars.APP_URL != '' }}
+        working-directory: apps/app/client/public
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+        run: |
+          set -eu
+          node -e "const u=new URL(process.env.APP_URL); if (u.origin !== process.env.APP_URL.replace(/\/$/, '')) process.exit(1)" \
+            || { echo "::error::APP_URL must be an origin such as https://app.updraw.io"; exit 1; }
+          sed -i "s#https://app.updraw.io#${APP_URL%/}#g" robots.txt sitemap.xml
+          grep -H "${APP_URL%/}" robots.txt sitemap.xml
 
       # The client is built here rather than on the Lightsail instance: the Angular production build is too
       # slow/memory-hungry for the small server. client/Dockerfile.prod only packages dist/client/browser.
@@ -73,10 +87,15 @@ jobs:
           host: ${{ vars.LIGHTSAIL_HOST }}
           username: ${{ vars.LIGHTSAIL_USER }}
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
-          script: rm -rf ~/kritzel-app/client/dist
+          script: |
+            set -eu
+            # The one-time move from the pre-rename directory must have happened (it carries .env and the data).
+            test -f ~/updraw-app/.env || { echo "~/updraw-app/.env is missing: run step 3 of apps/app/docs/rebrand-cutover.md first."; exit 1; }
+            rm -rf ~/updraw-app/client/dist
 
-      # strip_components drops the "apps/app" prefix so the server keeps its existing
-      # ~/kritzel-app layout (compose project name, .env and pgdata volume stay the same).
+      # strip_components drops the "apps/app" prefix so the files land directly in ~/updraw-app, next to the
+      # server's .env. The compose project (and its pgdata volume) is named by docker-compose.prod.yml.
+      # ~/updraw-app must already exist: apps/app/docs/rebrand-cutover.md moves it once from ~/kritzel-app.
       - name: Copy files to Lightsail
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -84,7 +103,7 @@ jobs:
           username: ${{ vars.LIGHTSAIL_USER }}
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           source: "apps/app"
-          target: ~/kritzel-app
+          target: ~/updraw-app
           strip_components: 2
           overwrite: true
 
@@ -96,7 +115,7 @@ jobs:
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: |
             set -eu
-            cd ~/kritzel-app
+            cd ~/updraw-app
             docker compose -f docker-compose.prod.yml build
             docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
             docker image prune -f

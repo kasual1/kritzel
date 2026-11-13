@@ -1,23 +1,23 @@
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelBaseTool } from './base-tool.class';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpdrawBaseTool } from './base-tool.class';
+import { UpdrawCore } from '../core/core.class';
 
 /**
  * Eraser tool for removing objects from the canvas.
  * Objects touched by the eraser during a drag gesture are marked for removal
  * and deleted when the gesture completes. Supports mouse, touch, and pen input.
  */
-export class KritzelEraserTool extends KritzelBaseTool {
+export class UpdrawEraserTool extends UpdrawBaseTool {
   override toolType = 'eraser' as const;
 
   /** Timeout handle for delayed touch start activation to prevent accidental erasing */
   touchStartTimeout: any = null;
 
   /**
-   * Creates a new instance of KritzelEraserTool.
-   * @param core - The KritzelCore instance that provides access to application state and functionality
+   * Creates a new instance of UpdrawEraserTool.
+   * @param core - The UpdrawCore instance that provides access to application state and functionality
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     super(core);
   }
 
@@ -29,7 +29,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
    */
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      if (KritzelEventHelper.isLeftClick(event)) {
+      if (UpdrawEventHelper.isLeftClick(event)) {
         this._core.store.state.isErasing = true;
       }
     }

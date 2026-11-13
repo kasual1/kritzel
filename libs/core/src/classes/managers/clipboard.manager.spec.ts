@@ -1,9 +1,9 @@
-import { KritzelClipboardManager } from './clipboard.manager';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelReviver } from '../core/reviver.class';
-import { KritzelImage } from '../objects/image.class';
+import { UpdrawClipboardManager } from './clipboard.manager';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawReviver } from '../core/reviver.class';
+import { UpdrawImage } from '../objects/image.class';
 import imageCompression from 'browser-image-compression';
 
 jest.mock('browser-image-compression', () => ({
@@ -12,7 +12,7 @@ jest.mock('browser-image-compression', () => ({
 }));
 
 jest.mock('../objects/selection-group.class', () => ({
-  KritzelSelectionGroup: {
+  UpdrawSelectionGroup: {
     create: jest.fn(),
   },
 }));
@@ -22,12 +22,12 @@ const withPrototype = (cls: { prototype: object }, fields: Record<string, any>):
 
 /** Prototypes for fake revived objects, keyed by their `__class__`. */
 const PROTOTYPES_BY_CLASS: Record<string, { prototype: object }> = {
-  KritzelGroup,
-  KritzelLine,
+  UpdrawGroup,
+  UpdrawLine,
 };
 
-describe('KritzelClipboardManager', () => {
-  let manager: KritzelClipboardManager;
+describe('UpdrawClipboardManager', () => {
+  let manager: UpdrawClipboardManager;
   let mockCore: any;
 
   beforeEach(() => {
@@ -73,7 +73,7 @@ describe('KritzelClipboardManager', () => {
       },
     };
 
-    manager = new KritzelClipboardManager(mockCore);
+    manager = new UpdrawClipboardManager(mockCore);
   });
 
   afterEach(() => {
@@ -81,11 +81,11 @@ describe('KritzelClipboardManager', () => {
   });
 
   describe('copy', () => {
-    const PAYLOAD_PREFIX = 'kritzel-clipboard/v1:';
+    const PAYLOAD_PREFIX = 'updraw-clipboard/v1:';
 
-    it('writes a kritzel clipboard payload to the DOM clipboard event, sorted by zIndex', () => {
-      const objA = { id: 'a', zIndex: 5, serialize: jest.fn().mockReturnValue({ id: 'a', __class__: 'KritzelShape' }) } as any;
-      const objB = { id: 'b', zIndex: 1, serialize: jest.fn().mockReturnValue({ id: 'b', __class__: 'KritzelShape' }) } as any;
+    it('writes an updraw clipboard payload to the DOM clipboard event, sorted by zIndex', () => {
+      const objA = { id: 'a', zIndex: 5, serialize: jest.fn().mockReturnValue({ id: 'a', __class__: 'UpdrawShape' }) } as any;
+      const objB = { id: 'b', zIndex: 1, serialize: jest.fn().mockReturnValue({ id: 'b', __class__: 'UpdrawShape' }) } as any;
       const setData = jest.fn();
 
       mockCore.store.selectionGroup = { objects: [objA, objB] };
@@ -103,13 +103,13 @@ describe('KritzelClipboardManager', () => {
     });
 
     it('embeds group children under __children__', () => {
-      const child = { id: 'child', zIndex: 0, serialize: jest.fn().mockReturnValue({ id: 'child', __class__: 'KritzelShape' }) } as any;
+      const child = { id: 'child', zIndex: 0, serialize: jest.fn().mockReturnValue({ id: 'child', __class__: 'UpdrawShape' }) } as any;
       // Without a core, a group's children are its pending children.
-      const group = withPrototype(KritzelGroup, {
+      const group = withPrototype(UpdrawGroup, {
         id: 'group',
         zIndex: 1,
         _pendingChildren: [child],
-        serialize: jest.fn().mockReturnValue({ id: 'group', __class__: 'KritzelGroup' }),
+        serialize: jest.fn().mockReturnValue({ id: 'group', __class__: 'UpdrawGroup' }),
       });
       const setData = jest.fn();
 
@@ -133,7 +133,7 @@ describe('KritzelClipboardManager', () => {
     });
 
     it('mirrors the copied payload into the in-memory session buffer', () => {
-      const obj = { id: 'a', zIndex: 1, serialize: jest.fn().mockReturnValue({ id: 'a', __class__: 'KritzelShape' }) } as any;
+      const obj = { id: 'a', zIndex: 1, serialize: jest.fn().mockReturnValue({ id: 'a', __class__: 'UpdrawShape' }) } as any;
       mockCore.store.selectionGroup = { objects: [obj] };
 
       manager.copy({ clipboardData: { setData: jest.fn() } } as any);
@@ -154,7 +154,7 @@ describe('KritzelClipboardManager', () => {
 
     it('copies then deletes selected objects', () => {
       const setData = jest.fn();
-      const obj = { id: 'obj-1', zIndex: 2, serialize: jest.fn().mockReturnValue({ id: 'obj-1', __class__: 'KritzelShape' }) } as any;
+      const obj = { id: 'obj-1', zIndex: 2, serialize: jest.fn().mockReturnValue({ id: 'obj-1', __class__: 'UpdrawShape' }) } as any;
       mockCore.store.selectionGroup = { objects: [obj] };
 
       manager.cut({ clipboardData: { setData } } as any);
@@ -165,7 +165,7 @@ describe('KritzelClipboardManager', () => {
   });
 
   describe('paste', () => {
-    const PAYLOAD_PREFIX = 'kritzel-clipboard/v1:';
+    const PAYLOAD_PREFIX = 'updraw-clipboard/v1:';
 
     /** Fake revived object; gets the prototype of the class named by `__class__` (if any) so `instanceof` checks match. */
     const makeRevived = (overrides: Record<string, any> = {}): any => {
@@ -222,7 +222,7 @@ describe('KritzelClipboardManager', () => {
 
     it('is a no-op when there is no active workspace', async () => {
       mockCore.store.state.activeWorkspace = null;
-      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(makeRevived());
+      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(makeRevived());
 
       await manager.paste(undefined, undefined);
 
@@ -233,12 +233,12 @@ describe('KritzelClipboardManager', () => {
 
     it('revives, regenerates ids and inserts objects from a DOM clipboard payload', async () => {
       const revived = makeRevived();
-      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(revived);
+      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(revived);
 
       const selectionGroup = makeSelectionGroup();
-      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
+      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
 
-      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`);
+      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpdrawShape' }] })}`);
 
       await manager.paste(undefined, undefined);
 
@@ -259,19 +259,32 @@ describe('KritzelClipboardManager', () => {
       expect(mockCore.store.state.isSelecting).toBe(false);
     });
 
+    it('pastes payloads copied before the rename', async () => {
+      const revived = makeRevived();
+      const revive = jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(revived);
+      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+
+      setClipboardText(`kritzel-clipboard/v1:${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`);
+
+      await manager.paste(undefined, undefined);
+
+      expect(revive).toHaveBeenCalledWith(expect.objectContaining({ id: 'x', __class__: 'KritzelShape' }));
+      expect(mockCore.addObject).toHaveBeenCalledWith(revived);
+    });
+
     it('drops anchors to external objects when pasting a line-only clipboard payload', async () => {
       const revivedLine = makeRevived({
-        __class__: 'KritzelLine',
+        __class__: 'UpdrawLine',
         id: 'line-1',
         startAnchor: { objectId: 'external-shape' },
         endAnchor: { objectId: 'external-shape-2' },
         generateId: jest.fn().mockReturnValue('fresh-line-1'),
       });
 
-      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(revivedLine);
-      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(revivedLine);
+      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
-      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'line-1', __class__: 'KritzelLine' }] })}`);
+      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'line-1', __class__: 'UpdrawLine' }] })}`);
 
       await manager.paste(undefined, undefined);
 
@@ -281,22 +294,22 @@ describe('KritzelClipboardManager', () => {
 
     it('remaps anchors between copied lines when pasting a line-only clipboard payload', async () => {
       const firstLine = makeRevived({
-        __class__: 'KritzelLine',
+        __class__: 'UpdrawLine',
         id: 'line-1',
         endAnchor: { objectId: 'line-2' },
         generateId: jest.fn().mockReturnValue('fresh-line-1'),
       });
       const secondLine = makeRevived({
-        __class__: 'KritzelLine',
+        __class__: 'UpdrawLine',
         id: 'line-2',
         generateId: jest.fn().mockReturnValue('fresh-line-2'),
       });
 
-      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValueOnce(firstLine).mockReturnValueOnce(secondLine);
-      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValueOnce(firstLine).mockReturnValueOnce(secondLine);
+      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
       setClipboardText(
-        `${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'line-1', __class__: 'KritzelLine' }, { id: 'line-2', __class__: 'KritzelLine' }] })}`,
+        `${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'line-1', __class__: 'UpdrawLine' }, { id: 'line-2', __class__: 'UpdrawLine' }] })}`,
       );
 
       await manager.paste(undefined, undefined);
@@ -306,13 +319,13 @@ describe('KritzelClipboardManager', () => {
 
     it('reads the async Clipboard API when no DOM event is provided', async () => {
       const revived = makeRevived();
-      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(revived);
-      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(revived);
+      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
       Object.defineProperty(navigator, 'clipboard', {
         value: {
           read: jest.fn().mockResolvedValue([]),
-          readText: jest.fn().mockResolvedValue(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`),
+          readText: jest.fn().mockResolvedValue(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpdrawShape' }] })}`),
         },
         configurable: true,
       });
@@ -327,8 +340,8 @@ describe('KritzelClipboardManager', () => {
 
     it('requests clipboard-read permission when the current state is not yet granted', async () => {
       const revived = makeRevived();
-      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(revived);
-      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(revived);
+      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
       mockCore.permissionManager.checkPermission.mockResolvedValueOnce('prompt');
       mockCore.permissionManager.requestPermission.mockResolvedValueOnce('granted');
@@ -336,7 +349,7 @@ describe('KritzelClipboardManager', () => {
       Object.defineProperty(navigator, 'clipboard', {
         value: {
           read: jest.fn().mockResolvedValue([]),
-          readText: jest.fn().mockResolvedValue(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`),
+          readText: jest.fn().mockResolvedValue(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpdrawShape' }] })}`),
         },
         configurable: true,
       });
@@ -354,8 +367,8 @@ describe('KritzelClipboardManager', () => {
       const imageObject = makeRevived();
 
       (imageCompression as unknown as jest.Mock).mockResolvedValue(compressedFile);
-      jest.spyOn(KritzelImage, 'fromBlob').mockResolvedValue(imageObject);
-      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      jest.spyOn(UpdrawImage, 'fromBlob').mockResolvedValue(imageObject);
+      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
       await manager.paste(undefined, undefined, {
         clipboardData: {
@@ -366,7 +379,7 @@ describe('KritzelClipboardManager', () => {
       } as any);
 
       expect(imageCompression).toHaveBeenCalledWith(imageFile, { maxWidthOrHeight: 1200 });
-      expect(KritzelImage.fromBlob).toHaveBeenCalledWith(mockCore, compressedFile, { translateX: 0, translateY: 0 });
+      expect(UpdrawImage.fromBlob).toHaveBeenCalledWith(mockCore, compressedFile, { translateX: 0, translateY: 0 });
       expect(mockCore.permissionManager.checkPermission).not.toHaveBeenCalled();
       expect(mockCore.addObject).toHaveBeenCalledWith(imageObject);
     });
@@ -375,8 +388,8 @@ describe('KritzelClipboardManager', () => {
       const gifFile = new File(['gif-data'], 'animated.gif', { type: 'image/gif' });
       const imageObject = makeRevived();
 
-      jest.spyOn(KritzelImage, 'fromBlob').mockResolvedValue(imageObject);
-      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      jest.spyOn(UpdrawImage, 'fromBlob').mockResolvedValue(imageObject);
+      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
       await manager.paste(undefined, undefined, {
         clipboardData: {
@@ -387,17 +400,17 @@ describe('KritzelClipboardManager', () => {
       } as any);
 
       expect(imageCompression).not.toHaveBeenCalled();
-      expect(KritzelImage.fromBlob).toHaveBeenCalledWith(mockCore, gifFile, { translateX: 0, translateY: 0 });
+      expect(UpdrawImage.fromBlob).toHaveBeenCalledWith(mockCore, gifFile, { translateX: 0, translateY: 0 });
       expect(mockCore.addObject).toHaveBeenCalledWith(imageObject);
     });
 
     it('keeps an explicit paste position', async () => {
       const revived = makeRevived();
-      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(revived);
+      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(revived);
       const selectionGroup = makeSelectionGroup();
-      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
+      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
 
-      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`);
+      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpdrawShape' }] })}`);
 
       await manager.paste(300, 400);
 
@@ -406,13 +419,13 @@ describe('KritzelClipboardManager', () => {
     });
 
     it('cascades successive same-content pastes', async () => {
-      (KritzelSelectionGroup.create as jest.Mock).mockImplementation(() => makeSelectionGroup());
+      (UpdrawSelectionGroup.create as jest.Mock).mockImplementation(() => makeSelectionGroup());
 
       const first = makeRevived();
       const second = makeRevived();
-      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValueOnce(first).mockReturnValueOnce(second);
+      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValueOnce(first).mockReturnValueOnce(second);
 
-      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`);
+      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpdrawShape' }] })}`);
 
       await manager.paste(undefined, undefined);
       await manager.paste(undefined, undefined);
@@ -431,14 +444,14 @@ describe('KritzelClipboardManager', () => {
       beforeEach(() => {
         inserted = {};
         mockCore.addObject.mockImplementation((object: any) => (inserted[object.id] = object.zIndex));
-          (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+          (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
       });
 
       /** Puts the entries on the clipboard and lets the reviver return a matching object (keeping its id) per entry. */
       const setClipboardObjects = (entries: PasteEntry[]): void => {
         const revivedById: Record<string, any> = {};
         const serialize = (entry: PasteEntry): Record<string, any> => {
-          const __class__ = entry.children ? 'KritzelGroup' : 'KritzelShape';
+          const __class__ = entry.children ? 'UpdrawGroup' : 'UpdrawShape';
           revivedById[entry.id] = makeRevived({
             __class__,
             id: entry.id,
@@ -450,7 +463,7 @@ describe('KritzelClipboardManager', () => {
         };
         const objects = entries.map(serialize);
 
-        jest.spyOn(KritzelReviver.prototype, 'revive').mockImplementation((data: any) => revivedById[data.id]);
+        jest.spyOn(UpdrawReviver.prototype, 'revive').mockImplementation((data: any) => revivedById[data.id]);
         setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects })}`);
       };
 
@@ -511,7 +524,7 @@ describe('KritzelClipboardManager', () => {
           [first, makeRevived({ id: 'img-1', zIndex: 10 })],
           [second, makeRevived({ id: 'img-2', zIndex: 10 })],
         ]);
-        jest.spyOn(KritzelImage, 'fromBlob').mockImplementation(async (_core: any, file: any) => images.get(file));
+        jest.spyOn(UpdrawImage, 'fromBlob').mockImplementation(async (_core: any, file: any) => images.get(file));
 
         await manager.paste(undefined, undefined, {
           clipboardData: {

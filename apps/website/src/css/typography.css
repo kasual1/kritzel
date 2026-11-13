@@ -3,7 +3,7 @@
 @import "@fontsource-variable/jetbrains-mono";
 @import "@fontsource-variable/caveat";
 
-*:not(kritzel-button) {
+*:not(updraw-button) {
   font-family: "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif !important;
 }
 

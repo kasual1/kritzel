@@ -2,26 +2,26 @@
 import { ref } from 'vue'
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelShape,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawShape,
+  UpdrawWorkspace,
   ShapeType,
-  type KritzelObjectConfig,
-  type KritzelObjectTitlebarActionEvent,
-  type KritzelObjectTitlebarConfig,
-} from '@kritzel/vue-editor'
+  type UpdrawObjectConfig,
+  type UpdrawObjectTitlebarActionEvent,
+  type UpdrawObjectTitlebarConfig,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle, statusBarStyle } from '../../shared/demo-shared'
 
-const objectConfig: KritzelObjectConfig = {
+const objectConfig: UpdrawObjectConfig = {
   // Only named frames get a titlebar.
   hasTitlebar: object => !!object.name,
   isRotatable: false,
   isResizable: false,
 }
 
-const objectTitlebar: KritzelObjectTitlebarConfig = {
+const objectTitlebar: UpdrawObjectTitlebarConfig = {
   left: [
     { type: 'button', id: 'preview', icon: 'play', variant: 'filled', tooltip: 'Preview' },
     { type: 'title', id: 'title' },
@@ -47,11 +47,11 @@ const frameConfig = {
 }
 
 const workspaces = [
-  new KritzelWorkspace({
+  new UpdrawWorkspace({
     objects: [
-      new KritzelShape({ ...frameConfig, name: 'Desktop', translateX: -268, translateY: -130, width: 1200, height: 800 }),
-      new KritzelShape({ ...frameConfig, name: 'Tablet', translateX: 4, translateY: -130, width: 768, height: 1024 }),
-      new KritzelShape({ ...frameConfig, name: 'Phone', translateX: 190, translateY: -130, width: 390, height: 844 }),
+      new UpdrawShape({ ...frameConfig, name: 'Desktop', translateX: -268, translateY: -130, width: 1200, height: 800 }),
+      new UpdrawShape({ ...frameConfig, name: 'Tablet', translateX: 4, translateY: -130, width: 768, height: 1024 }),
+      new UpdrawShape({ ...frameConfig, name: 'Phone', translateX: 190, translateY: -130, width: 390, height: 844 }),
     ],
   }),
 ]
@@ -59,7 +59,7 @@ const workspaces = [
 const editor = getEditorRef('editor')
 const lastAction = ref('Click a titlebar button')
 
-async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEvent>) {
+async function onTitlebarAction(event: CustomEvent<UpdrawObjectTitlebarActionEvent>) {
   const { elementId, objectId, objectType } = event.detail
   const object = await editor.value?.getObjectById(objectId)
   lastAction.value = `${actionLabels[elementId] ?? elementId} · ${object?.name ?? objectType}`
@@ -68,7 +68,7 @@ async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEv
 
 <template>
   <div :style="hostStyle">
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="titlebar-configuration"
       theme="light"

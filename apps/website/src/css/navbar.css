@@ -1,19 +1,19 @@
 :root {
   --ifm-navbar-height: 3rem;
-  --kritzel-nav-max-width: 1240px;
-  --ifm-container-width-xl: var(--kritzel-nav-max-width);
-  --kritzel-nav-bg: rgba(255, 255, 255, 0.82);
-  --kritzel-nav-border: rgba(0, 0, 0, 0.08);
-  --kritzel-nav-shadow: 0 14px 32px rgba(8, 12, 18, 0.12);
+  --updraw-nav-max-width: 1240px;
+  --ifm-container-width-xl: var(--updraw-nav-max-width);
+  --updraw-nav-bg: rgba(255, 255, 255, 0.82);
+  --updraw-nav-border: rgba(0, 0, 0, 0.08);
+  --updraw-nav-shadow: 0 14px 32px rgba(8, 12, 18, 0.12);
 }
 
 .navbar {
-  width: min(var(--kritzel-nav-max-width), calc(100% - 1.75rem));
+  width: min(var(--updraw-nav-max-width), calc(100% - 1.75rem));
   margin: 0.75rem auto 0;
-  border: 1px solid var(--kritzel-nav-border);
+  border: 1px solid var(--updraw-nav-border);
   border-radius: 1rem;
   background: transparent;
-  box-shadow: var(--kritzel-nav-shadow);
+  box-shadow: var(--updraw-nav-shadow);
   padding: 0.3rem 1rem;
 }
 
@@ -254,7 +254,7 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
   inset: 0;
   z-index: 0;
   border-radius: inherit;
-  background: var(--kritzel-nav-bg);
+  background: var(--updraw-nav-bg);
   -webkit-backdrop-filter: blur(28px);
   backdrop-filter: blur(28px);
   content: "";

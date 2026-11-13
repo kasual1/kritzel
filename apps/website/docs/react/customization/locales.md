@@ -1,8 +1,8 @@
 ---
 sidebar_label: Locales
 displayed_sidebar: tutorialSidebar
-title: "Locales | Kritzel for React"
-description: "Understand how to customize Kritzel with locales."
+title: "Locales | Updraw for React"
+description: "Understand how to customize Updraw with locales."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,13 +11,13 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel includes support for multiple languages and lets you extend or override its translations with custom locales.
+Updraw includes support for multiple languages and lets you extend or override its translations with custom locales.
 
 See [Localization Terms](../api-reference/localization-terms.md) for all available keys.
 
 ## Switching the Locale
 
-Set the `locale` prop on `<KritzelEditor>` or call the asynchronous `setLocale()` method through a typed editor ref. The editor updates all UI controls and context menus without a reload.
+Set the `locale` prop on `<UpdrawEditor>` or call the asynchronous `setLocale()` method through a typed editor ref. The editor updates all UI controls and context menus without a reload.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
@@ -27,7 +27,7 @@ Set the `locale` prop on `<KritzelEditor>` or call the asynchronous `setLocale()
 
 ## Listening for Locale Changes
 
-Use `onLocaleChange` to synchronize React state, persist the selected language, or update custom controls when Kritzel changes locale. The new `LocaleCode` is available as `event.detail`.
+Use `onLocaleChange` to synchronize React state, persist the selected language, or update custom controls when Updraw changes locale. The new `LocaleCode` is available as `event.detail`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
@@ -37,7 +37,7 @@ Use `onLocaleChange` to synchronize React state, persist the selected language, 
 
 ## Registering Custom Locales
 
-Add languages such as Spanish or override individual keys such as `menu.copy` and `settings.dialogTitle` with a `KritzelLocale`. Pass custom definitions through the `locales` prop or register them dynamically with `registerLocales()`.
+Add languages such as Spanish or override individual keys such as `menu.copy` and `settings.dialogTitle` with an `UpdrawLocale`. Pass custom definitions through the `locales` prop or register them dynamically with `registerLocales()`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"

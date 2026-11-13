@@ -1,4 +1,4 @@
-export interface IKritzelUser {
+export interface IUpdrawUser {
   /** Unique user identifier */
   id: string;
 
@@ -29,6 +29,6 @@ export interface IKritzelUser {
   /** Whether the user is a guest (not authenticated) */
   isGuest?: boolean;
 
-  /** `'agent'` for a `KritzelAgent`; people leave it unset. */
+  /** `'agent'` for an `UpdrawAgent`; people leave it unset. */
   kind?: 'user' | 'agent';
 }

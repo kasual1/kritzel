@@ -1,22 +1,22 @@
 import { useMemo, useRef, useState, type ComponentProps } from "react";
 import {
-  HTMLKritzelEditorElement,
-  KritzelEditor,
-  KritzelWorkspace,
-} from "@kritzel/react-editor";
+  HTMLUpdrawEditorElement,
+  UpdrawEditor,
+  UpdrawWorkspace,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 import { editorStyle, hostStyle, toolbarStyle } from "../../shared/demo-shared";
 
 const themes = [reactThemeLight, reactThemeDark];
-type MoreMenuItems = NonNullable<ComponentProps<typeof KritzelEditor>["moreMenuItems"]>;
+type MoreMenuItems = NonNullable<ComponentProps<typeof UpdrawEditor>["moreMenuItems"]>;
 
 export function MoreMenuOpenPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [isMoreMenuVisible, setIsMoreMenuVisible] = useState(true);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ objects: createSeedObjects() }),
+    new UpdrawWorkspace({ objects: createSeedObjects() }),
   ]);
   const moreMenuItems = useMemo<MoreMenuItems>(
     () => [
@@ -59,7 +59,7 @@ export function MoreMenuOpenPage() {
           <span>More menu</span>
         </label>
       </div>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="more-menu-open"
         theme="light"

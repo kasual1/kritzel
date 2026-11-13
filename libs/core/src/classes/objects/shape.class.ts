@@ -1,10 +1,10 @@
-import { KritzelBaseObject } from './base-object.class';
-import { KritzelCore } from '../core/core.class';
-import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import { KritzelDevicesHelper } from '../../helpers/devices.helper';
-import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
+import { UpdrawBaseObject } from './base-object.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawKeyboardHelper } from '../../helpers/keyboard.helper';
+import { UpdrawDevicesHelper } from '../../helpers/devices.helper';
+import { UpdrawGeometryHelper } from '../../helpers/geometry.helper';
 import { ShapeType } from '../../enums/shape-type.enum';
-import { KritzelPoint } from '../../interfaces/point.interface';
+import { UpdrawPoint } from '../../interfaces/point.interface';
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
@@ -13,17 +13,17 @@ import { addListNodes } from 'prosemirror-schema-list';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
-import { KritzelColorHelper } from '../../helpers/color.helper';
-import { KritzelMathHelper } from '../../helpers/math.helper';
-import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../interfaces/object-export.interface';
+import { UpdrawColorHelper } from '../../helpers/color.helper';
+import { UpdrawMathHelper } from '../../helpers/math.helper';
+import { UpdrawObjectExportContext, UpdrawObjectExportFormat } from '../../interfaces/object-export.interface';
 
 /**
- * Configuration options for creating a KritzelShape instance.
+ * Configuration options for creating an UpdrawShape instance.
  */
-export interface KritzelShapeConfig {
+export interface UpdrawShapeConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
-  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
+  /** Whether the engine's loading placeholder is drawn over the object, see `UpdrawBaseObject.setLoading()`. */
   isLoading?: boolean;
   x?: number;
   y?: number;
@@ -44,8 +44,8 @@ export interface KritzelShapeConfig {
   scaleY?: number;
 }
 
-export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
-  override __class__: string = 'KritzelShape';
+export class UpdrawShape extends UpdrawBaseObject<HTMLDivElement> {
+  override __class__: string = 'UpdrawShape';
 
   shapeType: ShapeType = ShapeType.Rectangle;
   fillColor: ThemeAwareColor = { light: 'transparent', dark: 'transparent' };
@@ -76,18 +76,18 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     marks: schema.spec.marks,
   });
 
-  uneditedObject: KritzelShape | null = null;
+  uneditedObject: UpdrawShape | null = null;
 
   /**
    * Returns the viewBox for the shape's SVG, using screen-space coordinates.
-   * This follows the same pattern as KritzelPath.viewBox.
+   * This follows the same pattern as UpdrawPath.viewBox.
    */
   get viewBox(): string {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;
   }
 
   /**
-   * Creates a new KritzelShape instance with optional configuration.
+   * Creates a new UpdrawShape instance with optional configuration.
    * This constructor initializes the shape with default values that can be
    * overridden by the provided configuration object.
    *
@@ -109,7 +109,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * @param config.scaleX - Horizontal scale factor for transformations
    * @param config.scaleY - Vertical scale factor for transformations
    */
-  constructor(config?: KritzelShapeConfig) {
+  constructor(config?: UpdrawShapeConfig) {
     super();
     this.name = config?.name;
     this.isLoading = config?.isLoading ?? false;
@@ -122,7 +122,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       this.y = config.y ?? 0;
       this.translateX = config.translateX ?? 0;
       this.translateY = config.translateY ?? 0;
-      this.rotation = KritzelMathHelper.degreesToRadians(config.rotation ?? 0);
+      this.rotation = UpdrawMathHelper.degreesToRadians(config.rotation ?? 0);
       this.width = config.width ?? 100;
       this.height = config.height ?? 100;
       this.shapeType = config.shapeType ?? ShapeType.Rectangle;
@@ -131,22 +131,22 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       this.strokeWidth = config.strokeWidth ?? 4;
       this.fontSize = config.fontSize ?? 16;
       this.fontFamily = config.fontFamily ?? 'Arial';
-      this.fontColor = config.fontColor ?? KritzelColorHelper.determineTextColor(this.fillColor);
+      this.fontColor = config.fontColor ?? UpdrawColorHelper.determineTextColor(this.fillColor);
       this.scale = config.scale ?? 1;
       this.scaleFactor = config.scaleX ?? 1;
     }
   }
 
   /**
-   * Creates a new KritzelShape with screen-space coordinates.
-   * Following the same pattern as KritzelPath.create():
+   * Creates a new UpdrawShape with screen-space coordinates.
+   * Following the same pattern as UpdrawPath.create():
    * - x, y are screen-space coordinates of the shape's top-left corner
    * - translateX, translateY should be set to -viewportTranslateX, -viewportTranslateY
    * - width, height are in screen-space
    * - scale is the viewport scale at creation time
    */
   static override create(
-    core: KritzelCore,
+    core: UpdrawCore,
     config?: {
       x?: number;
       y?: number;
@@ -165,8 +165,8 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       fontColor?: ThemeAwareColor;
       scale?: number;
     }
-  ): KritzelShape {
-    const object = new KritzelShape();
+  ): UpdrawShape {
+    const object = new UpdrawShape();
 
     object._core = core;
     object.id = object.generateId();
@@ -176,7 +176,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     object.y = config?.y ?? 0;
     object.translateX = config?.translateX ?? 0;
     object.translateY = config?.translateY ?? 0;
-    object.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
+    object.rotation = UpdrawMathHelper.degreesToRadians(config?.rotation ?? 0);
     object.width = config?.width ?? 100;
     object.height = config?.height ?? 100;
     object.shapeType = config?.shapeType ?? ShapeType.Rectangle;
@@ -186,14 +186,14 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     object.opacity = config?.opacity ?? 1;
     object.fontSize = config?.fontSize ?? 16;
     object.fontFamily = config?.fontFamily ?? 'Arial';
-    object.fontColor = config?.fontColor ?? KritzelColorHelper.determineTextColor(object.fillColor);
+    object.fontColor = config?.fontColor ?? UpdrawColorHelper.determineTextColor(object.fillColor);
     object.backgroundColor = { light: 'transparent', dark: 'transparent' };
     object.scaleFactor = 1;
     object.scale = config?.scale ?? core.store.state.scale;
     object.zIndex = core.store.currentZIndex;
 
     // Compute world-space translateX/Y from screen-space coordinates
-    // This follows the same pattern as KritzelPath.updateDimensions()
+    // This follows the same pattern as UpdrawPath.updateDimensions()
     object.updateDimensions();
 
     return object;
@@ -201,7 +201,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
   /**
    * Updates the translateX/Y to world coordinates based on screen-space x, y.
-   * This follows the same pattern as KritzelPath.updateDimensions().
+   * This follows the same pattern as UpdrawPath.updateDimensions().
    * 
    * The formula: translateX = (x + initialTranslateX) / scale
    * where initialTranslateX was -viewportTranslateX
@@ -251,7 +251,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
     element.style.fontFamily = this.fontFamily;
     element.style.fontSize = `${this.fontSize}pt`;
-    element.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
+    element.style.color = UpdrawColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
     element.style.whiteSpace = 'pre-wrap';
     element.style.wordWrap = 'break-word';
 
@@ -366,7 +366,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
         this.editor!.dispatch(this.editor!.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
         this.editor!.focus();
 
-        if (KritzelDevicesHelper.isIOS()) {
+        if (UpdrawDevicesHelper.isIOS()) {
           this.scrollIntoViewOnIOS();
         }
         return;
@@ -377,7 +377,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     this.editor!.dispatch(this.editor!.state.tr.setSelection(TextSelection.create(doc, end)));
     this.editor!.focus();
 
-    if (KritzelDevicesHelper.isIOS()) {
+    if (UpdrawDevicesHelper.isIOS()) {
       this.scrollIntoViewOnIOS();
     }
   }
@@ -418,9 +418,9 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    KritzelKeyboardHelper.disableInteractiveWidget();
+    UpdrawKeyboardHelper.disableInteractiveWidget();
 
-    this.uneditedObject = this.clone() as KritzelShape;
+    this.uneditedObject = this.clone() as UpdrawShape;
     const hasPointerCoordinates = typeof event?.clientX === 'number' && typeof event?.clientY === 'number';
     const focusCoordinates = hasPointerCoordinates ? { x: event!.clientX, y: event!.clientY } : undefined;
 
@@ -438,7 +438,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
     // iOS can drop initial focus when edit mode toggles and the DOM re-renders.
     // Retry focus in the next frame while still in the same interaction sequence.
-    if (KritzelDevicesHelper.isIOS() && focusCoordinates) {
+    if (UpdrawDevicesHelper.isIOS() && focusCoordinates) {
       requestAnimationFrame(() => {
         if (this.isEditing) {
           this.focus(focusCoordinates);
@@ -446,7 +446,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       });
     }
 
-    KritzelKeyboardHelper.enableInteractiveWidget();
+    UpdrawKeyboardHelper.enableInteractiveWidget();
   }
 
   /**
@@ -563,10 +563,10 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * ProseMirror editor for the copied shape and restoring the text
    * content from the original.
    *
-   * @returns A new KritzelShape instance with copied properties and content
+   * @returns A new UpdrawShape instance with copied properties and content
    */
-  override copy(): KritzelShape {
-    const copiedObject = super.copy() as KritzelShape;
+  override copy(): UpdrawShape {
+    const copiedObject = super.copy() as UpdrawShape;
     copiedObject.editor = copiedObject.createEditor();
 
     if (this.content) {
@@ -601,16 +601,16 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * This method extends the base deserialization by additionally restoring
    * the text editor content from the serialized data.
    *
-   * @template KritzelShape - The type parameter for return type consistency
+   * @template UpdrawShape - The type parameter for return type consistency
    * @param object - The serialized shape data to restore from
    * @returns The deserialized shape instance (this)
    */
-  override deserialize<KritzelShape>(object: any): KritzelShape {
-    super.deserialize<KritzelShape>(object);
+  override deserialize<UpdrawShape>(object: any): UpdrawShape {
+    super.deserialize<UpdrawShape>(object);
     if (object.content) {
       this.setContent(object.content);
     }
-    return this as unknown as KritzelShape;
+    return this as unknown as UpdrawShape;
   }
 
   /**
@@ -624,15 +624,15 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    */
   override onAfterUpdate(changedProperties: string[]): void {
     if (changedProperties.includes('fillColor')) {
-      this.fontColor = KritzelColorHelper.determineTextColor(this.fillColor);
+      this.fontColor = UpdrawColorHelper.determineTextColor(this.fillColor);
       // Update the editor's text color immediately
       if (this.editor!?.dom?.parentElement) {
-        this.editor!.dom.parentElement.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
+        this.editor!.dom.parentElement.style.color = UpdrawColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
       }
     } else if (changedProperties.includes('fontColor')) {
       // Also update editor when fontColor changes directly
       if (this.editor!?.dom?.parentElement) {
-        this.editor!.dom.parentElement.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
+        this.editor!.dom.parentElement.style.color = UpdrawColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
       }
     }
   }
@@ -650,10 +650,10 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * - Triangle: Returns the 3 corner points, expanded outward by stroke padding
    * - Rectangle: Returns null to use the default rotatedPolygon from base class
    *
-   * @returns An array of KritzelPoint objects defining the clipping polygon,
+   * @returns An array of UpdrawPoint objects defining the clipping polygon,
    *          or null for rectangles (which use the default implementation)
    */
-  getClipPolygon(): KritzelPoint[] | null {
+  getClipPolygon(): UpdrawPoint[] | null {
     // Calculate world-space center and dimensions
     const worldWidth = this.totalWidth / this.scale;
     const worldHeight = this.totalHeight / this.scale;
@@ -667,7 +667,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       case ShapeType.Ellipse:
         // Return a 32-segment polygon approximation of the ellipse
         // Add stroke padding to radii
-        return KritzelGeometryHelper.getEllipsePolygonApproximation(
+        return UpdrawGeometryHelper.getEllipsePolygonApproximation(
           centerX,
           centerY,
           worldWidth / 2 + strokePadding,
@@ -707,7 +707,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
         if (this.rotation !== 0) {
           const cos = Math.cos(this.rotation);
           const sin = Math.sin(this.rotation);
-          const rotate = (p: KritzelPoint) => {
+          const rotate = (p: UpdrawPoint) => {
             const dx = p.x - centerX;
             const dy = p.y - centerY;
             return {
@@ -772,11 +772,11 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     }
   }
 
-  getSupportedExportFormats(): KritzelObjectExportFormat[] {
+  getSupportedExportFormats(): UpdrawObjectExportFormat[] {
     return ['svg'];
   }
 
-  async exportAs(format: KritzelObjectExportFormat, context: KritzelObjectExportContext): Promise<string | null> {
+  async exportAs(format: UpdrawObjectExportFormat, context: UpdrawObjectExportContext): Promise<string | null> {
     if (format !== 'svg') {
       return null;
     }

@@ -19,8 +19,8 @@ const openGenerativeUi = async (page: Page) => {
 /** The UIs on the canvas, in the order they were added. */
 const uis = (page: Page) =>
   page.evaluate(async () => {
-    const editor = document.querySelector('kritzel-editor') as EditorElement;
-    const iframes = await editor.findObjects(obj => obj.__class__ === 'KritzelIframeObject');
+    const editor = document.querySelector('updraw-editor') as EditorElement;
+    const iframes = await editor.findObjects(obj => obj.__class__ === 'UpdrawIframeObject');
     return iframes.map(ui => ({
       id: ui.id as string,
       name: ui.name as string,
@@ -72,8 +72,8 @@ test.describe('Generative UI', () => {
     await editorPage.waitForChatIdle();
 
     await page.evaluate(async () => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
-      await editor.selectObjects(await editor.findObjects(obj => obj.__class__ === 'KritzelIframeObject'));
+      const editor = document.querySelector('updraw-editor') as EditorElement;
+      await editor.selectObjects(await editor.findObjects(obj => obj.__class__ === 'UpdrawIframeObject'));
     });
     await expect(editorPage.chatChips).toHaveCount(1);
     await expect(editorPage.chatChips).toContainText('Pomodoro Timer');

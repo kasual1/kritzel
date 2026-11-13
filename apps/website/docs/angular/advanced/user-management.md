@@ -1,8 +1,8 @@
 ---
 sidebar_label: User Management
 displayed_sidebar: tutorialSidebar
-title: "User Management Concept | Kritzel for Angular"
-description: "Understand how to configure Kritzel's user management and login dialog with authentication providers."
+title: "User Management Concept | Updraw for Angular"
+description: "Understand how to configure Updraw's user management and login dialog with authentication providers."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,11 +11,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel comes with a whole set of user management features, such as configurable login dialogs and user profile handling. While the editor provides the UI and event hooks, your application is responsible for performing the actual authentication and managing user state.
+Updraw comes with a whole set of user management features, such as configurable login dialogs and user profile handling. While the editor provides the UI and event hooks, your application is responsible for performing the actual authentication and managing user state.
 
 ## Configuring Providers
 
-To enable Kritzel's user management features, you need to provide a `loginConfig` with at least one authentication provider. This will render the login button at the top right of the editor and display the login dialog with a button of the corresponding provider.
+To enable Updraw's user management features, you need to provide a `loginConfig` with at least one authentication provider. This will render the login button at the top right of the editor and display the login dialog with a button of the corresponding provider.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"

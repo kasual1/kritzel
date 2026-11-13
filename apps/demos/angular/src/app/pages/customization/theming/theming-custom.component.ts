@@ -1,10 +1,10 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import {
-  KritzelEditor,
-  KritzelTheme,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawTheme,
+  UpdrawWorkspace,
   lightTheme,
-} from '@kritzel/angular-editor';
+} from '@updraw/angular-editor';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 const brandPurple = '#7c3aed';
@@ -254,14 +254,14 @@ const brandedPurpleFlatTheme = {
     buttonHoverBackgroundColor: brandPurpleMedium,
     separatorColor: '#e1d2ff',
   },
-} as KritzelTheme;
+} as UpdrawTheme;
 
 @Component({
   selector: 'app-theming-custom',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="theming-custom"
       theme="branded-purple-flat"
       [themes]="themes"
@@ -270,7 +270,7 @@ const brandedPurpleFlatTheme = {
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="true"
       [isWorkspaceManagerVisible]="true"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [
     `
@@ -280,7 +280,7 @@ const brandedPurpleFlatTheme = {
         background: linear-gradient(180deg, #fbf8ff 0%, #f3ebff 100%);
       }
 
-      kritzel-editor {
+      updraw-editor {
         display: block;
         height: 100%;
         background: linear-gradient(180deg, #ffffff 0%, #f8f2ff 100%);
@@ -292,7 +292,7 @@ const brandedPurpleFlatTheme = {
   ],
 })
 export class ThemingCustomComponent {
-  themes: KritzelTheme[] = [brandedPurpleFlatTheme];
+  themes: UpdrawTheme[] = [brandedPurpleFlatTheme];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 }

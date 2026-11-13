@@ -1,24 +1,24 @@
-import { KritzelCore } from '../core/core.class';
-import { KritzelBaseObject } from './base-object.class';
-import { KritzelPolygon } from '../../interfaces/polygon.interface';
-import { KritzelMathHelper } from '../../helpers/math.helper';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawBaseObject } from './base-object.class';
+import { UpdrawPolygon } from '../../interfaces/polygon.interface';
+import { UpdrawMathHelper } from '../../helpers/math.helper';
 
 /**
- * Configuration options for creating a KritzelGroup instance.
+ * Configuration options for creating an UpdrawGroup instance.
  */
-export interface KritzelGroupConfig {
+export interface UpdrawGroupConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
-  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
+  /** Whether the engine's loading placeholder is drawn over the object, see `UpdrawBaseObject.setLoading()`. */
   isLoading?: boolean;
   rotation?: number;
 }
 
 /**
- * KritzelGroup represents a permanent grouping of objects that act as a single unit.
+ * UpdrawGroup represents a permanent grouping of objects that act as a single unit.
  * 
- * Unlike KritzelSelectionGroup (which is ephemeral and used for temporary multi-selection),
- * KritzelGroup is persisted and saved with the workspace. Grouped objects move, resize,
+ * Unlike UpdrawSelectionGroup (which is ephemeral and used for temporary multi-selection),
+ * UpdrawGroup is persisted and saved with the workspace. Grouped objects move, resize,
  * rotate, copy, and delete together as one unit.
  * 
  * Key features:
@@ -26,8 +26,8 @@ export interface KritzelGroupConfig {
  * - Clicking any child selects the entire group
  * - Can be ungrouped to restore children to top-level objects
  */
-export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
-    override __class__: string = 'KritzelGroup';
+export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
+    override __class__: string = 'UpdrawGroup';
 
     /**
      * Groups being resized by an agentic action. Like the user's interactive resize
@@ -35,18 +35,18 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      * Never serialized.
      * @internal
      */
-    static readonly transformLocks = new WeakSet<KritzelGroup>();
+    static readonly transformLocks = new WeakSet<UpdrawGroup>();
 
-    constructor(config?: KritzelGroupConfig) {
+    constructor(config?: UpdrawGroupConfig) {
         super();
         this.name = config?.name;
         this.isLoading = config?.isLoading ?? false;
-        this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
+        this.rotation = UpdrawMathHelper.degreesToRadians(config?.rotation ?? 0);
     }
 
     /**
      * IDs of child objects within this group.
-     * Children can be any KritzelBaseObject, including other KritzelGroups for nesting.
+     * Children can be any UpdrawBaseObject, including other UpdrawGroups for nesting.
      */
     childIds: string[] = [];
 
@@ -55,11 +55,11 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      * is added to the engine. Once the group is added (and _core is set),
      * these are flushed into the store and this array is cleared.
      */
-    _pendingChildren: KritzelBaseObject<any>[] = [];
+    _pendingChildren: UpdrawBaseObject<any>[] = [];
 
     /**
      * Snapshots of child states for transformation operations (resize, rotate).
-     * Similar pattern to KritzelSelectionGroup.
+     * Similar pattern to UpdrawSelectionGroup.
      */
     private unchangedChildSnapshots: Map<string, ChildSnapshot> = new Map();
     private snapshotRotation: number = 0;
@@ -73,9 +73,9 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     /**
      * Retrieves the actual child objects from the store by their IDs.
      * Filters out any IDs that no longer exist in the store.
-     * @returns An array of KritzelBaseObject instances representing the group's children.
+     * @returns An array of UpdrawBaseObject instances representing the group's children.
      */
-    get children(): KritzelBaseObject<any>[] {
+    get children(): UpdrawBaseObject<any>[] {
         if (!this._core) {
             return this._pendingChildren;
         }
@@ -85,7 +85,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
                 const found = this._core.store.objects.filter(obj => obj.id === id);
                 return found.length > 0 ? found[0] : null;
             })
-            .filter((obj): obj is KritzelBaseObject<any> => obj !== null);
+            .filter((obj): obj is UpdrawBaseObject<any> => obj !== null);
     }
 
     /**
@@ -97,13 +97,13 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     /**
-     * Factory method to create a new empty KritzelGroup with core integration.
+     * Factory method to create a new empty UpdrawGroup with core integration.
      * Initializes the group with default values and links it to the core store.
-     * @param core - The KritzelCore instance providing access to store and state management.
-     * @returns A new KritzelGroup instance configured with the core context.
+     * @param core - The UpdrawCore instance providing access to store and state management.
+     * @returns A new UpdrawGroup instance configured with the core context.
      */
-    static override create(core: KritzelCore, config?: { rotation?: number }): KritzelGroup {
-        const group = new KritzelGroup(config);
+    static override create(core: UpdrawCore, config?: { rotation?: number }): UpdrawGroup {
+        const group = new UpdrawGroup(config);
 
         group._core = core;
         group.id = group.generateId();
@@ -116,15 +116,15 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     /**
-     * Creates a KritzelGroup from an array of existing objects.
+     * Creates an UpdrawGroup from an array of existing objects.
      * The objects are added as children and the group's bounding box is calculated
      * to encompass all children. Child snapshots are captured for transformation operations.
-     * @param core - The KritzelCore instance providing access to store and state management.
-     * @param objects - An array of KritzelBaseObject instances to group together.
-     * @returns A new KritzelGroup containing the specified objects as children.
+     * @param core - The UpdrawCore instance providing access to store and state management.
+     * @param objects - An array of UpdrawBaseObject instances to group together.
+     * @returns A new UpdrawGroup containing the specified objects as children.
      */
-    static createFromObjects(core: KritzelCore, objects: KritzelBaseObject<any>[]): KritzelGroup {
-        const group = KritzelGroup.create(core);
+    static createFromObjects(core: UpdrawCore, objects: UpdrawBaseObject<any>[]): UpdrawGroup {
+        const group = UpdrawGroup.create(core);
 
         // Add all objects as children
         objects.forEach(obj => {
@@ -139,15 +139,15 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     /**
-     * Finds the parent KritzelGroup that contains the given object as a direct child.
+     * Finds the parent UpdrawGroup that contains the given object as a direct child.
      * Searches through all groups in the store to find one containing the specified object ID.
-     * @param core - The KritzelCore instance providing access to the object store.
+     * @param core - The UpdrawCore instance providing access to the object store.
      * @param objectId - The unique identifier of the object to find the parent group for.
-     * @returns The parent KritzelGroup if found, or null if the object is not a child of any group.
+     * @returns The parent UpdrawGroup if found, or null if the object is not a child of any group.
      */
-    static findParentGroup(core: KritzelCore, objectId: string): KritzelGroup | null {
+    static findParentGroup(core: UpdrawCore, objectId: string): UpdrawGroup | null {
         const allGroups = core.store.objects
-            .filter(obj => obj.__class__ === 'KritzelGroup') as KritzelGroup[];
+            .filter(obj => obj.__class__ === 'UpdrawGroup') as UpdrawGroup[];
 
         for (const group of allGroups) {
             if (group.childIds.includes(objectId)) {
@@ -166,11 +166,11 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      * @param group - The group whose descendants should be collected.
      * @param out - A set that will be populated with all descendant object IDs.
      */
-    static collectDescendantIds(group: KritzelGroup, out: Set<string> = new Set()): Set<string> {
+    static collectDescendantIds(group: UpdrawGroup, out: Set<string> = new Set()): Set<string> {
         for (const child of group.children) {
             out.add(child.id);
-            if (child instanceof KritzelGroup) {
-                KritzelGroup.collectDescendantIds(child, out);
+            if (child instanceof UpdrawGroup) {
+                UpdrawGroup.collectDescendantIds(child, out);
             }
         }
         return out;
@@ -180,9 +180,9 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      * Adds a child object to this group.
      * If the object is already a child, no action is taken.
      * Automatically refreshes the bounding box and captures child snapshots.
-     * @param object - The KritzelBaseObject instance to add as a child.
+     * @param object - The UpdrawBaseObject instance to add as a child.
      */
-    addChild(object: KritzelBaseObject<any>): void {
+    addChild(object: UpdrawBaseObject<any>): void {
         if (!this.childIds.includes(object.id)) {
             this.childIds.push(object.id);
 
@@ -216,7 +216,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      * The group itself should be removed from the store after calling this method.
      * @returns An array of all child objects that were part of this group.
      */
-    ungroup(): KritzelBaseObject<any>[] {
+    ungroup(): UpdrawBaseObject<any>[] {
         return this.children;
     }
 
@@ -233,7 +233,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      */
     finalize(): void {
         for (const child of this.children) {
-            if (child instanceof KritzelGroup) {
+            if (child instanceof UpdrawGroup) {
                 child.finalize();
             }
         }
@@ -421,7 +421,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      */
     override resize(x: number, y: number, width: number, height: number): void {
         // Use snapshot dimensions (stable across the gesture) instead of `this.*`,
-        // which mutates each frame and gets distorted by descendants like KritzelText
+        // which mutates each frame and gets distorted by descendants like UpdrawText
         // that clamp to a uniform scale, causing the cascade factor to drift.
         const baseWidth = this.snapshotTotalWidth > 0
             ? this.snapshotTotalWidth - this.padding * 2
@@ -522,7 +522,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
             // recapturing each frame would defeat the purpose of using stable snapshots
             // and re-introduce the compounding distortion described above. Snapshots are
             // refreshed at the start of the next gesture via beginTransform/finalize.
-            if (!this._core.store.state.isResizing && !KritzelGroup.transformLocks.has(this)) {
+            if (!this._core.store.state.isResizing && !UpdrawGroup.transformLocks.has(this)) {
                 this.captureChildSnapshots();
             }
 
@@ -615,7 +615,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      * @param polygon - The polygon to test intersection against.
      * @returns True if the polygon intersects any child, false otherwise.
      */
-    override hitTestPolygon(polygon: KritzelPolygon): boolean {
+    override hitTestPolygon(polygon: UpdrawPolygon): boolean {
         // Check if polygon intersects with any child
         return this.children.some(child => child.hitTestPolygon(polygon));
     }
@@ -628,19 +628,19 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      * Creates a deep copy of this group and all its children.
      * Children are copied but not added to the store; they are stored
      * in a temporary _pendingChildren property for paste() to handle.
-     * @returns A new KritzelGroup with copied children and properties.
+     * @returns A new UpdrawGroup with copied children and properties.
      */
-    override copy(): KritzelGroup {
-        const copiedGroup = KritzelGroup.create(this._core);
+    override copy(): UpdrawGroup {
+        const copiedGroup = UpdrawGroup.create(this._core);
 
         // Deep copy all children but DON'T add to store yet
         // Store the copied children temporarily for paste() to handle
-        const copiedChildren: KritzelBaseObject<any>[] = [];
+        const copiedChildren: UpdrawBaseObject<any>[] = [];
 
         this.children
             .sort((a, b) => a.zIndex - b.zIndex)
             .forEach(child => {
-                const copiedChild = child.copy() as KritzelBaseObject<any>;
+                const copiedChild = child.copy() as UpdrawBaseObject<any>;
                 copiedChildren.push(copiedChild);
                 copiedGroup.childIds.push(copiedChild.id);
             });
@@ -677,7 +677,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     /**
-     * Deserializes a plain object back into this KritzelGroup instance.
+     * Deserializes a plain object back into this UpdrawGroup instance.
      * Restores the unchangedChildSnapshots Map from the serialized object format.
      * @param object - The serialized plain object containing group data.
      * @returns This group instance after deserialization, cast to type T.
@@ -711,7 +711,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         this.children.forEach(child => {
             child.workspaceId = workspaceId;
             // Recursively update nested groups
-            if (child instanceof KritzelGroup) {
+            if (child instanceof UpdrawGroup) {
                 child.updateWorkspaceId(workspaceId);
             }
         });

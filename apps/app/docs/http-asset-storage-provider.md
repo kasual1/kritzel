@@ -1,9 +1,9 @@
 # Configure `assetStorage` for an External HTTP Asset Service
 
-Use Kritzel's asset storage provider configuration to store images and other binary assets outside the Yjs document. For an external HTTP service, configure `assetStorage.providers` with `HttpAssetProvider.with(...)`.
+Use Updraw's asset storage provider configuration to store images and other binary assets outside the Yjs document. For an external HTTP service, configure `assetStorage.providers` with `HttpAssetProvider.with(...)`.
 
 ```ts
-import { HttpAssetProvider, IndexedDBAssetProvider } from '@kritzel/angular-editor';
+import { HttpAssetProvider, IndexedDBAssetProvider } from '@updraw/angular-editor';
 
 const assetStorage = {
   providers: [
@@ -24,9 +24,9 @@ Expected HTTP service behavior:
 
 - `uploadUrl` should point to an endpoint that accepts a `POST` request with `multipart/form-data`.
 - The request body contains a `file` field with the uploaded blob and a `metadata` field containing JSON metadata such as the asset id, mime type, width, height, and original filename.
-- The endpoint may return JSON with an optional `id` and `url`. If no `id` is returned, Kritzel uses the generated metadata id.
-- `resolveUrl` must return a stable public or authenticated URL that Kritzel can use directly as the image source.
+- The endpoint may return JSON with an optional `id` and `url`. If no `id` is returned, Updraw uses the generated metadata id.
+- `resolveUrl` must return a stable public or authenticated URL that Updraw can use directly as the image source.
 - `headers` is optional and should be used to attach fresh auth headers for each request.
-- `deleteUrl` is optional. If provided, Kritzel sends `DELETE` requests when an asset should be removed.
+- `deleteUrl` is optional. If provided, Updraw sends `DELETE` requests when an asset should be removed.
 
 Keep `IndexedDBAssetProvider` first so the browser can cache assets locally, while the HTTP provider replicates them across devices.

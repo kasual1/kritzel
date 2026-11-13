@@ -1,13 +1,13 @@
-import { KritzelResizeHandler } from './resize.handler';
-import { KritzelCore } from '../core/core.class';
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelHandleType } from '../../enums/handle-type.enum';
+import { UpdrawResizeHandler } from './resize.handler';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpdrawHandleType } from '../../enums/handle-type.enum';
 
 jest.mock('../../helpers/event.helper');
 
-describe('KritzelResizeHandler', () => {
-  let resizeHandler: KritzelResizeHandler;
-  let mockCore: jest.Mocked<KritzelCore>;
+describe('UpdrawResizeHandler', () => {
+  let resizeHandler: UpdrawResizeHandler;
+  let mockCore: jest.Mocked<UpdrawCore>;
   let mockSelectionGroup: {
     width: number;
     height: number;
@@ -23,7 +23,7 @@ describe('KritzelResizeHandler', () => {
   let mockState: {
     isResizing: boolean;
     isResizeHandleSelected: boolean;
-    resizeHandleType: KritzelHandleType | null;
+    resizeHandleType: UpdrawHandleType | null;
     scale: number;
     pointers: Map<number, { clientX: number; clientY: number }>;
     longTouchTimeout: ReturnType<typeof setTimeout> | undefined;
@@ -52,7 +52,7 @@ describe('KritzelResizeHandler', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockSelectionGroup = null;
     mockState = {
@@ -86,9 +86,9 @@ describe('KritzelResizeHandler', () => {
         emitObjectsRemoved: jest.fn(),
         emitObjectsUpdated: jest.fn(),
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    resizeHandler = new KritzelResizeHandler(mockCore);
+    resizeHandler = new UpdrawResizeHandler(mockCore);
   });
 
   describe('handlePointerDown', () => {
@@ -125,7 +125,7 @@ describe('KritzelResizeHandler', () => {
       });
 
       it('should not start resize on non-left click', () => {
-        (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+        (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
         mockSelectionGroup = {
           width: 100,
           height: 50,
@@ -427,7 +427,7 @@ describe('KritzelResizeHandler', () => {
       });
 
       it('should resize when above threshold', () => {
-        mockState.resizeHandleType = KritzelHandleType.BottomRight;
+        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
 
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'mouse',
@@ -459,7 +459,7 @@ describe('KritzelResizeHandler', () => {
         });
 
         it('should resize correctly with BottomRight handle', () => {
-          mockState.resizeHandleType = KritzelHandleType.BottomRight;
+          mockState.resizeHandleType = UpdrawHandleType.BottomRight;
 
           const moveEvent = createPointerEvent('pointermove', {
             pointerType: 'mouse',
@@ -474,7 +474,7 @@ describe('KritzelResizeHandler', () => {
         });
 
         it('should resize correctly with TopLeft handle', () => {
-          mockState.resizeHandleType = KritzelHandleType.TopLeft;
+          mockState.resizeHandleType = UpdrawHandleType.TopLeft;
 
           const moveEvent = createPointerEvent('pointermove', {
             pointerType: 'mouse',
@@ -489,7 +489,7 @@ describe('KritzelResizeHandler', () => {
         });
 
         it('should resize correctly with TopRight handle', () => {
-          mockState.resizeHandleType = KritzelHandleType.TopRight;
+          mockState.resizeHandleType = UpdrawHandleType.TopRight;
 
           const moveEvent = createPointerEvent('pointermove', {
             pointerType: 'mouse',
@@ -504,7 +504,7 @@ describe('KritzelResizeHandler', () => {
         });
 
         it('should resize correctly with BottomLeft handle', () => {
-          mockState.resizeHandleType = KritzelHandleType.BottomLeft;
+          mockState.resizeHandleType = UpdrawHandleType.BottomLeft;
 
           const moveEvent = createPointerEvent('pointermove', {
             pointerType: 'mouse',
@@ -520,7 +520,7 @@ describe('KritzelResizeHandler', () => {
       });
 
       it('should consider current scale when calculating resize', () => {
-        mockState.resizeHandleType = KritzelHandleType.BottomRight;
+        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
         mockState.scale = 2;
 
         const downEvent = createPointerEvent('pointerdown', {
@@ -544,7 +544,7 @@ describe('KritzelResizeHandler', () => {
 
       it('should handle rotated selection group', () => {
         mockSelectionGroup!.rotation = Math.PI / 2; // 90 degrees
-        mockState.resizeHandleType = KritzelHandleType.BottomRight;
+        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
 
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'mouse',
@@ -565,7 +565,7 @@ describe('KritzelResizeHandler', () => {
       });
 
       it('should rebase resize baseline when external anchored lines reshape the group', () => {
-        mockState.resizeHandleType = KritzelHandleType.BottomRight;
+        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
         mockSelectionGroup!.hasExternalAnchoredLineConnections = jest.fn().mockReturnValue(true);
 
         const downEvent = createPointerEvent('pointerdown', {
@@ -617,7 +617,7 @@ describe('KritzelResizeHandler', () => {
       });
 
       it('should resize on touch move above threshold', () => {
-        mockState.resizeHandleType = KritzelHandleType.BottomRight;
+        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'touch',
@@ -641,7 +641,7 @@ describe('KritzelResizeHandler', () => {
         mockState.longTouchTimeout = setTimeout(() => { }, 1000);
         const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
-        mockState.resizeHandleType = KritzelHandleType.BottomRight;
+        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'touch',
@@ -694,7 +694,7 @@ describe('KritzelResizeHandler', () => {
       });
 
       it('should end resize and reset state', () => {
-        mockState.resizeHandleType = KritzelHandleType.BottomRight;
+        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
 
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'mouse',
@@ -715,7 +715,7 @@ describe('KritzelResizeHandler', () => {
       });
 
       it('should update selection and emit changes when resized', () => {
-        mockState.resizeHandleType = KritzelHandleType.BottomRight;
+        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
 
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'mouse',
@@ -788,7 +788,7 @@ describe('KritzelResizeHandler', () => {
       });
 
       it('should end resize on touch up', () => {
-        mockState.resizeHandleType = KritzelHandleType.BottomRight;
+        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'touch',
@@ -806,7 +806,7 @@ describe('KritzelResizeHandler', () => {
       });
 
       it('should update selection and emit changes when resized with touch', () => {
-        mockState.resizeHandleType = KritzelHandleType.BottomRight;
+        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'touch',
@@ -837,7 +837,7 @@ describe('KritzelResizeHandler', () => {
         mockState.longTouchTimeout = setTimeout(() => { }, 1000);
         const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
-        mockState.resizeHandleType = KritzelHandleType.BottomRight;
+        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'touch',
@@ -870,7 +870,7 @@ describe('KritzelResizeHandler', () => {
           beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
-        mockState.resizeHandleType = KritzelHandleType.BottomRight;
+        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
 
         const downEvent = createPointerEvent('pointerdown', {
@@ -905,7 +905,7 @@ describe('KritzelResizeHandler', () => {
         beginTransform: jest.fn(),
       };
       mockState.isResizeHandleSelected = true;
-      mockState.resizeHandleType = KritzelHandleType.BottomRight;
+      mockState.resizeHandleType = UpdrawHandleType.BottomRight;
     });
 
     it('should continue resizing after initial threshold is met', () => {

@@ -1,30 +1,30 @@
-import { KritzelCore } from '../core/core.class';
-import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelObjectConfig } from '../../interfaces/object-config.interface';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawObjectConfig } from '../../interfaces/object-config.interface';
 
-type KritzelObjectConfigKey = keyof KritzelObjectConfig;
+type UpdrawObjectConfigKey = keyof UpdrawObjectConfig;
 
 /**
  * Resolves the engine's `objectConfig` prop for individual objects. The configuration is read
  * live from the engine, so late prop updates from framework wrappers always apply.
  */
-export class KritzelObjectConfigManager {
-  private readonly _core: KritzelCore;
-  private readonly _warnedKeys = new Set<KritzelObjectConfigKey>();
+export class UpdrawObjectConfigManager {
+  private readonly _core: UpdrawCore;
+  private readonly _warnedKeys = new Set<UpdrawObjectConfigKey>();
 
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     this._core = core;
   }
 
   /** The current object configuration, or `undefined` when none is set. */
-  get config(): KritzelObjectConfig | undefined {
+  get config(): UpdrawObjectConfig | undefined {
     return this._core.engine?.objectConfig ?? undefined;
   }
 
   /** Whether the configuration sets the given option. */
-  isConfigured(key: KritzelObjectConfigKey): boolean {
+  isConfigured(key: UpdrawObjectConfigKey): boolean {
     return this.config?.[key] !== undefined;
   }
 
@@ -34,7 +34,7 @@ export class KritzelObjectConfigManager {
   }
 
   /** Whether the object gets a titlebar. Defaults to `false`. */
-  hasTitlebar(object: KritzelBaseObject<any>): boolean {
+  hasTitlebar(object: UpdrawBaseObject<any>): boolean {
     return this.evaluate('hasTitlebar', object, false);
   }
 
@@ -42,7 +42,7 @@ export class KritzelObjectConfigManager {
    * Whether the object can be rotated: its own flag and the configuration must both allow it.
    * Selection groups and groups require every object inside them to be rotatable.
    */
-  isRotatable(object: KritzelBaseObject<any>): boolean {
+  isRotatable(object: UpdrawBaseObject<any>): boolean {
     return this.allowsAll(object, unit => unit.isRotatable !== false && this.evaluate('isRotatable', unit, true));
   }
 
@@ -50,13 +50,13 @@ export class KritzelObjectConfigManager {
    * Whether the object can be resized: its own flag and the configuration must both allow it.
    * Selection groups and groups require every object inside them to be resizable.
    */
-  isResizable(object: KritzelBaseObject<any>): boolean {
+  isResizable(object: UpdrawBaseObject<any>): boolean {
     return this.allowsAll(object, unit => unit.isResizable !== false && this.evaluate('isResizable', unit, true));
   }
 
   /** Applies a check to an object and everything a transform of it also transforms. */
-  private allowsAll(object: KritzelBaseObject<any>, check: (object: KritzelBaseObject<any>) => boolean): boolean {
-    if (object instanceof KritzelSelectionGroup) {
+  private allowsAll(object: UpdrawBaseObject<any>, check: (object: UpdrawBaseObject<any>) => boolean): boolean {
+    if (object instanceof UpdrawSelectionGroup) {
       return object.objects.every(selected => this.allowsAll(selected, check));
     }
 
@@ -64,7 +64,7 @@ export class KritzelObjectConfigManager {
       return false;
     }
 
-    if (object instanceof KritzelGroup) {
+    if (object instanceof UpdrawGroup) {
       return object.childIds.every(childId => {
         const child = this._core.store.objects.findById(childId);
         return !child || this.allowsAll(child, check);
@@ -75,7 +75,7 @@ export class KritzelObjectConfigManager {
   }
 
   /** Resolves one option for one object. Only a synchronous boolean counts; failures are reported once. */
-  private evaluate(key: KritzelObjectConfigKey, object: KritzelBaseObject<any>, fallback: boolean): boolean {
+  private evaluate(key: UpdrawObjectConfigKey, object: UpdrawBaseObject<any>, fallback: boolean): boolean {
     const value = this.config?.[key];
     if (value === undefined) {
       return fallback;
@@ -97,11 +97,11 @@ export class KritzelObjectConfigManager {
     }
   }
 
-  private warnOnce(key: KritzelObjectConfigKey, error: unknown): void {
+  private warnOnce(key: UpdrawObjectConfigKey, error: unknown): void {
     if (this._warnedKeys.has(key)) {
       return;
     }
     this._warnedKeys.add(key);
-    console.warn(`[KritzelObjectConfig] \`${key}\` failed; using its default for the affected objects:`, error);
+    console.warn(`[UpdrawObjectConfig] \`${key}\` failed; using its default for the affected objects:`, error);
   }
 }

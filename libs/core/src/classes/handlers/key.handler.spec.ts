@@ -1,11 +1,11 @@
-import { KritzelKeyHandler } from './key.handler';
-import { KritzelCore } from '../core/core.class';
-import { KritzelBaseTool } from '../tools/base-tool.class';
+import { UpdrawKeyHandler } from './key.handler';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawBaseTool } from '../tools/base-tool.class';
 
-describe('KritzelKeyHandler', () => {
-  let keyHandler: KritzelKeyHandler;
-  let mockCore: jest.Mocked<KritzelCore>;
-  let mockTool: jest.Mocked<KritzelBaseTool>;
+describe('UpdrawKeyHandler', () => {
+  let keyHandler: UpdrawKeyHandler;
+  let mockCore: jest.Mocked<UpdrawCore>;
+  let mockTool: jest.Mocked<UpdrawBaseTool>;
   let mockSelectionGroup: { objects: unknown[] } | null;
   let mockActiveText: unknown | null;
   let mockActiveInteractiveDynamicObject: unknown | null;
@@ -17,7 +17,7 @@ describe('KritzelKeyHandler', () => {
     mockTool = {
       onActivate: jest.fn(),
       name: 'mockTool',
-    } as unknown as jest.Mocked<KritzelBaseTool>;
+    } as unknown as jest.Mocked<UpdrawBaseTool>;
 
     mockSelectionGroup = null;
     mockActiveText = null;
@@ -35,7 +35,7 @@ describe('KritzelKeyHandler', () => {
           return mockSelectionGroup;
         },
         get selectedGroups() {
-          return (mockSelectionGroup?.objects ?? []).filter((obj: any) => obj.__class__ === 'KritzelGroup');
+          return (mockSelectionGroup?.objects ?? []).filter((obj: any) => obj.__class__ === 'UpdrawGroup');
         },
         get activeText() {
           return mockActiveText;
@@ -66,9 +66,9 @@ describe('KritzelKeyHandler', () => {
         getTool: jest.fn().mockReturnValue(mockTool),
         getToolByIndex: jest.fn(),
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    keyHandler = new KritzelKeyHandler(mockCore);
+    keyHandler = new UpdrawKeyHandler(mockCore);
   });
 
   afterEach(() => {
@@ -300,8 +300,8 @@ describe('KritzelKeyHandler', () => {
       });
 
       it('should ungroup the selected groups when Ctrl+Shift+G is pressed with selection', () => {
-        const group = { __class__: 'KritzelGroup' };
-        mockSelectionGroup = { objects: [group, { __class__: 'KritzelPath' }] };
+        const group = { __class__: 'UpdrawGroup' };
+        mockSelectionGroup = { objects: [group, { __class__: 'UpdrawPath' }] };
         const event = new KeyboardEvent('keydown', { key: 'G', ctrlKey: true, shiftKey: true });
         const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 
@@ -393,7 +393,7 @@ describe('KritzelKeyHandler', () => {
 
     describe('Interactive dynamic object selection', () => {
       it('should not execute Select All shortcut when focused input-like content exists in a selected dynamic object', () => {
-        mockActiveInteractiveDynamicObject = { __class__: 'KritzelDynamicObject', isInteractive: true };
+        mockActiveInteractiveDynamicObject = { __class__: 'UpdrawDynamicObject', isInteractive: true };
         const event = new KeyboardEvent('keydown', { key: 'a', ctrlKey: true });
         const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 
@@ -405,7 +405,7 @@ describe('KritzelKeyHandler', () => {
 
       it('should still execute Escape shortcut when focused input-like content exists in a selected dynamic object', () => {
         mockSelectionGroup = { objects: [] };
-        mockActiveInteractiveDynamicObject = { __class__: 'KritzelDynamicObject', isInteractive: true };
+        mockActiveInteractiveDynamicObject = { __class__: 'UpdrawDynamicObject', isInteractive: true };
         const event = new KeyboardEvent('keydown', { key: 'Escape' });
         const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 

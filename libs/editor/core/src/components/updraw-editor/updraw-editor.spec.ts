@@ -1,0 +1,966 @@
+﻿import { UpdrawEditor } from './updraw-editor';
+import { UpdrawBaseObject } from '@updraw/core';
+import { UpdrawWorkspace } from '@updraw/core';
+import { UpdrawFontRegistry } from '@updraw/core';
+import { UpdrawIconRegistry } from '@updraw/core';
+import { UpdrawKeyboardHelper } from '@updraw/core';
+import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '@updraw/core';
+
+// Simple mock for decorators
+jest.mock('@stencil/core', () => ({
+  ...jest.requireActual('@stencil/core/internal/testing'),
+  Component: () => (cls: any) => cls,
+  Prop: () => () => {},
+  State: () => () => {},
+  Watch: () => () => {},
+  Event: () => () => {},
+  Method: () => () => {},
+  Listen: () => () => {},
+  Element: () => () => {},
+}));
+
+describe('UpdrawEditor', () => {
+  let component: UpdrawEditor;
+  let mockEngine: any;
+
+  beforeEach(() => {
+    component = new UpdrawEditor();
+    component.host = {
+      style: {
+        setProperty: jest.fn(),
+      },
+    } as any;
+    
+    // Mock the engine ref
+    mockEngine = {
+      getObjectById: jest.fn().mockResolvedValue(null),
+      addObject: jest.fn().mockResolvedValue(null),
+      updateObject: jest.fn().mockResolvedValue(null),
+      removeObject: jest.fn().mockResolvedValue(null),
+      getSelectedObjects: jest.fn().mockResolvedValue([]),
+      selectObjects: jest.fn().mockResolvedValue(undefined),
+      selectAllObjectsInViewport: jest.fn().mockResolvedValue(undefined),
+      clearSelection: jest.fn().mockReturnValue(undefined),
+      centerObjectInViewport: jest.fn().mockResolvedValue(undefined),
+      centerObjects: jest.fn().mockResolvedValue(true),
+      backToContent: jest.fn().mockResolvedValue(true),
+      centerAllObjects: jest.fn().mockResolvedValue(true),
+      setViewport: jest.fn().mockResolvedValue(undefined),
+      panTo: jest.fn().mockResolvedValue(undefined),
+      zoomTo: jest.fn().mockResolvedValue(undefined),
+      getViewport: jest.fn().mockResolvedValue({ x: 0, y: 0, scale: 1 }),
+      screenToWorld: jest.fn().mockResolvedValue({ x: 0, y: 0 }),
+      worldToScreen: jest.fn().mockResolvedValue({ x: 0, y: 0 }),
+      setActiveWorkspace: jest.fn().mockResolvedValue(undefined),
+      createWorkspace: jest.fn().mockResolvedValue(null),
+      updateWorkspace: jest.fn().mockResolvedValue(undefined),
+      deleteWorkspace: jest.fn().mockResolvedValue(undefined),
+      getWorkspaces: jest.fn().mockResolvedValue([]),
+      getActiveWorkspace: jest.fn().mockResolvedValue({ id: '1', name: 'Test' }),
+      loadSharedWorkspace: jest.fn().mockResolvedValue(undefined),
+      reinitSync: jest.fn().mockResolvedValue(undefined),
+      registerTool: jest.fn().mockResolvedValue(null),
+      setActiveTool: jest.fn().mockResolvedValue(undefined),
+      disable: jest.fn().mockResolvedValue(undefined),
+      enable: jest.fn().mockResolvedValue(undefined),
+      copy: jest.fn().mockResolvedValue(undefined),
+      cut: jest.fn().mockResolvedValue(undefined),
+      paste: jest.fn().mockResolvedValue(undefined),
+      delete: jest.fn().mockResolvedValue(undefined),
+      bringForward: jest.fn().mockResolvedValue(undefined),
+      sendBackward: jest.fn().mockResolvedValue(undefined),
+      bringToFront: jest.fn().mockResolvedValue(undefined),
+      sendToBack: jest.fn().mockResolvedValue(undefined),
+      alignObjects: jest.fn().mockResolvedValue(undefined),
+      group: jest.fn().mockResolvedValue(undefined),
+      ungroup: jest.fn().mockResolvedValue(undefined),
+      undo: jest.fn().mockResolvedValue(undefined),
+      redo: jest.fn().mockResolvedValue(undefined),
+      getScreenshot: jest.fn().mockResolvedValue(null),
+      exportViewportAsPng: jest.fn().mockResolvedValue(undefined),
+      exportViewportAsSvg: jest.fn().mockResolvedValue(undefined),
+      getSelectedObjectSupportedExportFormats: jest.fn().mockResolvedValue([]),
+      canExportSelectedObjectAs: jest.fn().mockResolvedValue(false),
+      exportSelectedObject: jest.fn().mockResolvedValue(undefined),
+      downloadAsJson: jest.fn().mockResolvedValue(undefined),
+      importFromFile: jest.fn().mockResolvedValue(undefined),
+      loadObjectsFromJson: jest.fn().mockResolvedValue(0),
+      getObjectsTotalCount: jest.fn().mockResolvedValue(0),
+      getAllObjects: jest.fn().mockResolvedValue([]),
+      findObjects: jest.fn().mockResolvedValue([]),
+      getObjectsInViewport: jest.fn().mockResolvedValue([]),
+      hideContextMenu: jest.fn().mockResolvedValue(undefined),
+      triggerSelectionChange: jest.fn().mockResolvedValue(undefined),
+      beginSceneBootstrap: jest.fn().mockResolvedValue(undefined),
+      endSceneBootstrap: jest.fn().mockResolvedValue(undefined),
+      getDisplayableShortcuts: jest.fn().mockResolvedValue([]),
+      getIsPublic: jest.fn().mockResolvedValue(false),
+      getLocale: jest.fn().mockResolvedValue('en'),
+      setLocale: jest.fn().mockResolvedValue(undefined),
+      configureLocales: jest.fn().mockResolvedValue(undefined),
+      getResolvedTerms: jest.fn().mockResolvedValue({}),
+      getAvailableLocaleOptions: jest.fn().mockResolvedValue([{ code: 'en', label: 'English' }]),
+      saveSettings: jest.fn().mockResolvedValue(undefined),
+      addAgent: jest.fn((agent: any) => Promise.resolve(agent)),
+      removeAgent: jest.fn().mockResolvedValue(true),
+      getAgent: jest.fn().mockResolvedValue(null),
+      getAgents: jest.fn().mockResolvedValue([]),
+    };
+
+    component.engineRef = mockEngine as any;
+  });
+
+  describe('Agents', () => {
+    it('forwards the agent methods to the engine', async () => {
+      const agent = { id: 'planner' } as any;
+
+      await expect(component.addAgent(agent)).resolves.toBe(agent);
+      await expect(component.removeAgent('planner')).resolves.toBe(true);
+      await component.getAgent('planner');
+      await component.getAgents();
+
+      expect(mockEngine.addAgent).toHaveBeenCalledWith(agent);
+      expect(mockEngine.removeAgent).toHaveBeenCalledWith('planner');
+      expect(mockEngine.getAgent).toHaveBeenCalledWith('planner');
+      expect(mockEngine.getAgents).toHaveBeenCalled();
+    });
+
+    it('re-emits agentsChange from the engine without letting it bubble', () => {
+      component.agentsChange = { emit: jest.fn() } as any;
+      const detail = { agents: [] };
+      const event = { detail, stopPropagation: jest.fn() } as any;
+
+      component.handleAgentsChange(event);
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(component.agentsChange.emit).toHaveBeenCalledWith(detail);
+    });
+  });
+
+  describe('Component Initialization', () => {
+    it('should be created correctly', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('should emit logout when the current user dialog requests it', () => {
+      component.logout = { emit: jest.fn() } as any;
+
+      (component as unknown as { handleCurrentUserLogout: () => void }).handleCurrentUserLogout();
+
+      expect(component.logout.emit).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Chat Box', () => {
+    it('re-emits chat chip removals once, stopping the chat box event', () => {
+      const emit = jest.fn();
+      (component as any).chatChipRemove = { emit };
+      const detail = { id: 'a', label: 'Page' };
+      const event = { detail, stopPropagation: jest.fn() } as any;
+
+      component.handleChatChipRemove(event);
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(emit).toHaveBeenCalledTimes(1);
+      expect(emit).toHaveBeenCalledWith(detail);
+    });
+
+    describe('with a chat session', () => {
+      const createSession = () => {
+        const listeners = new Set<() => void>();
+        const session: any = {
+          [Symbol.for('updraw.chatSession')]: true,
+          running: false,
+          send: jest.fn(() => {
+            session.running = true;
+            listeners.forEach(listener => listener());
+            return Promise.resolve({ status: 'completed' });
+          }),
+          stop: jest.fn(),
+          on: jest.fn((_event: string, listener: () => void) => {
+            listeners.add(listener);
+            return () => listeners.delete(listener);
+          }),
+          finish: () => {
+            session.running = false;
+            listeners.forEach(listener => listener());
+          },
+          listenerCount: () => listeners.size,
+        };
+        return session;
+      };
+
+      it('sends the prompt with the chips, tracks running and stops the session', () => {
+        const session = createSession();
+        const chips = [{ id: 'a', label: 'Page', objectId: 'obj-1' }];
+        component.chatBoxChips = chips;
+        component.chatSession = session;
+        component.onChatSessionChange();
+        (component as any).chatSubmit = { emit: jest.fn(() => ({ defaultPrevented: false })) };
+        (component as any).chatStop = { emit: jest.fn() };
+
+        (component as any).handleChatSubmit('Make it red');
+        expect(session.send).toHaveBeenCalledWith({ text: 'Make it red', chips });
+        expect(component.isChatSessionRunning).toBe(true);
+
+        (component as any).handleChatStop();
+        expect((component as any).chatStop.emit).toHaveBeenCalled();
+        expect(session.stop).toHaveBeenCalled();
+
+        session.finish();
+        expect(component.isChatSessionRunning).toBe(false);
+      });
+
+      it('picks up a session set while @Watch handlers are not active yet, before the next render', () => {
+        const session = createSession();
+        component.componentWillLoad();
+        // Set without the watcher, as Angular does while the element loads.
+        component.chatSession = session;
+        component.componentWillRender();
+        expect(session.on).toHaveBeenCalledTimes(1);
+        component.componentWillRender();
+        expect(session.on).toHaveBeenCalledTimes(1);
+      });
+
+      it('lets a chatSubmit listener opt out with preventDefault', () => {
+        const session = createSession();
+        component.chatSession = session;
+        component.onChatSessionChange();
+        (component as any).chatSubmit = { emit: jest.fn(() => ({ defaultPrevented: true })) };
+
+        (component as any).handleChatSubmit('Mine');
+        expect(session.send).not.toHaveBeenCalled();
+      });
+
+      it('subscribes once per session and unsubscribes on swap and disconnect', () => {
+        const first = createSession();
+        component.chatSession = first;
+        component.onChatSessionChange();
+        component.onChatSessionChange();
+        expect(first.on).toHaveBeenCalledTimes(1);
+
+        const second = createSession();
+        component.chatSession = second;
+        component.onChatSessionChange();
+        expect(first.listenerCount()).toBe(0);
+        expect(second.listenerCount()).toBe(1);
+
+        component.disconnectedCallback();
+        expect(second.listenerCount()).toBe(0);
+      });
+    });
+  });
+
+  describe('Object Titlebar', () => {
+    it('re-emits titlebar actions once, stopping the engine event', () => {
+      const emit = jest.fn();
+      (component as any).objectTitlebarAction = { emit };
+      const detail = { elementId: 'play', section: 'left', objectId: 'a', objectType: 'UpdrawShape', workspaceId: 'w', anchorRect: {} };
+      const event = { detail, stopPropagation: jest.fn() } as any;
+
+      component.handleObjectTitlebarAction(event);
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(emit).toHaveBeenCalledTimes(1);
+      expect(emit).toHaveBeenCalledWith(detail);
+    });
+
+    it('re-emits object element hovers, clicks and picks, stopping the engine events', () => {
+      const element = { selector: '#run', tagName: 'button', classList: [], attributes: {}, rect: { x: 0, y: 0, width: 1, height: 1 } };
+      const modifiers = { shiftKey: false, ctrlKey: false, altKey: false, metaKey: false };
+      const cases = [
+        { field: 'objectElementHover', handler: 'handleObjectElementHover', detail: { objectId: 'a', element, isPicking: true } },
+        { field: 'objectElementClick', handler: 'handleObjectElementClick', detail: { objectId: 'a', element, ...modifiers } },
+        { field: 'objectElementPick', handler: 'handleObjectElementPick', detail: { objectId: 'a', element, ...modifiers } },
+      ];
+
+      for (const { field, handler, detail } of cases) {
+        const emit = jest.fn();
+        (component as any)[field] = { emit };
+        const event = { detail, stopPropagation: jest.fn() } as any;
+
+        (component as any)[handler](event);
+
+        expect(event.stopPropagation).toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith(detail);
+      }
+    });
+
+    it('forwards the object element methods to the engine', async () => {
+      const engineRef = {
+        setObjectElementPicking: jest.fn().mockResolvedValue(undefined),
+        highlightObjectElements: jest.fn().mockResolvedValue(undefined),
+        clearObjectElementHighlights: jest.fn().mockResolvedValue(undefined),
+        queryObjectElements: jest.fn().mockResolvedValue([]),
+      };
+      (component as any).engineRef = engineRef;
+
+      await component.setObjectElementPicking('a', true, { selector: 'button' });
+      await component.highlightObjectElements('a', [{ selector: 'p' }]);
+      await component.clearObjectElementHighlights();
+      await component.queryObjectElements('a', 'p', 2);
+
+      expect(engineRef.setObjectElementPicking).toHaveBeenCalledWith('a', true, { selector: 'button' });
+      expect(engineRef.highlightObjectElements).toHaveBeenCalledWith('a', [{ selector: 'p' }]);
+      expect(engineRef.clearObjectElementHighlights).toHaveBeenCalledWith(undefined);
+      expect(engineRef.queryObjectElements).toHaveBeenCalledWith('a', 'p', 2);
+    });
+
+    it('tracks the open titlebar menu', () => {
+      const open = { isVisible: true, objectId: 'a', elementId: 'more', section: 'right', anchor: {} as HTMLElement, items: [{ id: 'copy', label: 'Copy' }] };
+      const event = (detail: any) => ({ detail, stopPropagation: jest.fn() }) as any;
+
+      const openEvent = event(open);
+      component.handleObjectTitlebarMenuStateChange(openEvent);
+
+      expect(openEvent.stopPropagation).toHaveBeenCalled();
+      expect(component.objectTitlebarMenuState).toBe(open);
+
+      component.handleObjectTitlebarMenuStateChange(event({ isVisible: false, items: [] }));
+
+      expect(component.objectTitlebarMenuState).toBeUndefined();
+    });
+  });
+
+  describe('Custom Icons', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('registers initial icons before child components render', () => {
+      const svg = '<svg viewBox="0 0 24 24"><path d="M2 2L22 22"/></svg>';
+      component.customSvgIcons = { 'editor-initial-icon': svg };
+
+      component.componentWillLoad();
+
+      expect(UpdrawIconRegistry.get('editor-initial-icon')).toBe(svg);
+    });
+
+    it('registers and replaces icons supplied after initialization', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+      component.componentWillLoad();
+      component.onCustomSvgIconsChange({ 'editor-late-icon': '<svg/>' });
+      expect(UpdrawIconRegistry.get('editor-late-icon')).toBe('<svg/>');
+
+      const replacement = '<svg><path d="M1 1L2 2"/></svg>';
+      component.onCustomSvgIconsChange({ 'editor-late-icon': replacement });
+      expect(UpdrawIconRegistry.get('editor-late-icon')).toBe(replacement);
+    });
+
+    it('accepts undefined custom icons without removing existing registry entries', () => {
+      component.onCustomSvgIconsChange({ 'editor-retained-icon': '<svg/>' });
+
+      expect(() => component.onCustomSvgIconsChange(undefined)).not.toThrow();
+      expect(UpdrawIconRegistry.get('editor-retained-icon')).toBe('<svg/>');
+    });
+
+    it('registers upgrade-time inputs before rendering even when the watcher did not run', () => {
+      component.componentWillLoad();
+      const register = jest.spyOn(UpdrawIconRegistry, 'registerIcons');
+      component.customSvgIcons = { 'editor-upgrade-icon': '<svg/>' };
+
+      component.componentWillRender();
+      component.componentWillRender();
+
+      expect(UpdrawIconRegistry.get('editor-upgrade-icon')).toBe('<svg/>');
+      expect(register).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Object Manipulation Methods', () => {
+    it('should call getObjectById on engine', async () => {
+      await component.getObjectById('123');
+      expect(mockEngine.getObjectById).toHaveBeenCalledWith('123');
+    });
+
+    it('should call beginSceneBootstrap on engine', async () => {
+      await component.beginSceneBootstrap();
+      expect(mockEngine.beginSceneBootstrap).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call endSceneBootstrap on engine', async () => {
+      await component.endSceneBootstrap();
+      expect(mockEngine.endSceneBootstrap).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call addObject on engine', async () => {
+      const obj = { id: '1' } as any;
+      await component.addObject(obj);
+      expect(mockEngine.addObject).toHaveBeenCalledWith(obj);
+    });
+
+    it('should call updateObject on engine', async () => {
+      const obj = { id: '1' } as any;
+      await component.updateObject(obj, { name: 'test' });
+      expect(mockEngine.updateObject).toHaveBeenCalledWith(obj, { name: 'test' });
+    });
+
+    it('should call removeObject on engine', async () => {
+      const obj = { id: '1' } as any;
+      await component.removeObject(obj);
+      expect(mockEngine.removeObject).toHaveBeenCalledWith(obj);
+    });
+  });
+
+  describe('Workspace Methods', () => {
+    it('should store provided workspaces separately from activeWorkspace', () => {
+      const workspace = new UpdrawWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
+      component.workspaces = [workspace];
+
+      expect(component.workspaces).toEqual([workspace]);
+      expect(component.activeWorkspace).toBeUndefined();
+    });
+
+    it('should keep public workspaces separate from availableWorkspaces state', () => {
+      const providedWorkspace = new UpdrawWorkspace({ id: 'provided-workspace', name: 'Provided Workspace' });
+      const availableWorkspace = new UpdrawWorkspace({ id: 'available-workspace', name: 'Available Workspace' });
+      const activeWorkspace = new UpdrawWorkspace({ id: 'active-workspace', name: 'Active Workspace' });
+      component.workspaces = [providedWorkspace];
+      component.availableWorkspaces = [availableWorkspace];
+      component.activeWorkspace = activeWorkspace;
+
+      expect(component.workspaces).toEqual([providedWorkspace]);
+      expect(component.availableWorkspaces).toEqual([availableWorkspace]);
+      expect(component.activeWorkspace).toBe(activeWorkspace);
+    });
+
+    it('should call setActiveWorkspace on engine', async () => {
+      await component.setActiveWorkspace('ws-1');
+      expect(mockEngine.setActiveWorkspace).toHaveBeenCalledWith('ws-1');
+    });
+
+    it('should switch the engine when workspace manager selects a workspace', async () => {
+      const workspace = new UpdrawWorkspace({ id: 'ws-selected', name: 'Selected Workspace' });
+      const event = { stopPropagation: jest.fn(), detail: workspace } as any;
+
+      await component.handleWorkspaceManagerChange(event);
+
+      expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+      expect(component.activeWorkspace).toBe(workspace);
+      expect(mockEngine.setActiveWorkspace).toHaveBeenCalledWith(workspace.id);
+    });
+
+    it('should clear the active workspace when workspace manager emits no workspace', async () => {
+      component.activeWorkspace = new UpdrawWorkspace({ id: 'ws-active', name: 'Active Workspace' });
+      const event = { stopPropagation: jest.fn(), detail: null } as any;
+
+      await component.handleWorkspaceManagerChange(event);
+
+      expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+      expect(component.activeWorkspace).toBeUndefined();
+      expect(mockEngine.setActiveWorkspace).not.toHaveBeenCalled();
+    });
+
+    it('should call createWorkspace on engine', async () => {
+      const ws = { id: '1', name: 'ws' } as any;
+      await component.createWorkspace(ws);
+      expect(mockEngine.createWorkspace).toHaveBeenCalledWith(ws);
+    });
+
+    it('should pass configured workspace seed objects to the engine', async () => {
+      const object = { id: 'seed-object' } as UpdrawBaseObject<any>;
+      const workspace = new UpdrawWorkspace({ id: 'seeded-workspace', name: 'Seeded Workspace', objects: [object] });
+
+      await component.createWorkspace(workspace);
+
+      expect(mockEngine.createWorkspace).toHaveBeenCalledWith(workspace);
+      expect(workspace.objects).toEqual([object]);
+    });
+
+    it('should call updateWorkspace on engine', async () => {
+      const ws = { id: '1' } as any;
+      await component.updateWorkspace(ws);
+      expect(mockEngine.updateWorkspace).toHaveBeenCalledWith(ws);
+    });
+
+    it('should call deleteWorkspace on engine', async () => {
+      const ws = { id: '1' } as any;
+      await component.deleteWorkspace(ws);
+      expect(mockEngine.deleteWorkspace).toHaveBeenCalledWith(ws);
+    });
+
+    it('should call getWorkspaces on engine', async () => {
+      await component.getWorkspaces();
+      expect(mockEngine.getWorkspaces).toHaveBeenCalled();
+    });
+
+    it('should open the workspace manager menu when visible', async () => {
+      const open = jest.fn().mockResolvedValue(undefined);
+      component.isWorkspaceManagerVisible = true;
+      component.workspaceManagerRef = { open } as any;
+
+      await component.openWorkspaceManagerMenu();
+
+      expect(open).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not open the workspace manager menu when hidden', async () => {
+      const open = jest.fn().mockResolvedValue(undefined);
+      component.isWorkspaceManagerVisible = false;
+      component.workspaceManagerRef = { open } as any;
+
+      await component.openWorkspaceManagerMenu();
+
+      expect(open).not.toHaveBeenCalled();
+    });
+
+    it('should close the workspace manager menu', async () => {
+      const close = jest.fn().mockResolvedValue(undefined);
+      component.workspaceManagerRef = { close } as any;
+
+      await component.closeWorkspaceManagerMenu();
+
+      expect(close).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('More Menu Methods', () => {
+    it('should open the more menu when visible', async () => {
+      const open = jest.fn().mockResolvedValue(undefined);
+      component.isMoreMenuVisible = true;
+      component.moreMenuRef = { open } as any;
+
+      await component.openMoreMenu();
+
+      expect(open).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not open the more menu when hidden', async () => {
+      const open = jest.fn().mockResolvedValue(undefined);
+      component.isMoreMenuVisible = false;
+      component.moreMenuRef = { open } as any;
+
+      await component.openMoreMenu();
+
+      expect(open).not.toHaveBeenCalled();
+    });
+
+    it('should close the more menu', async () => {
+      const close = jest.fn().mockResolvedValue(undefined);
+      component.moreMenuRef = { close } as any;
+
+      await component.closeMoreMenu();
+
+      expect(close).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Toolbar/Clipboard Methods', () => {
+    it('should call copy on engine', async () => {
+      await component.copy();
+      expect(mockEngine.copy).toHaveBeenCalled();
+    });
+
+    it('should call cut on engine', async () => {
+      await component.cut();
+      expect(mockEngine.cut).toHaveBeenCalled();
+    });
+
+    it('should call paste on engine', async () => {
+      await component.paste(10, 20);
+      expect(mockEngine.paste).toHaveBeenCalledWith(10, 20);
+    });
+
+    it('should call delete on engine', async () => {
+      await component.delete();
+      expect(mockEngine.delete).toHaveBeenCalled();
+    });
+
+    it('should call undo and redo on engine', async () => {
+      await component.undo();
+      expect(mockEngine.undo).toHaveBeenCalled();
+
+      await component.redo();
+      expect(mockEngine.redo).toHaveBeenCalled();
+    });
+  });
+
+  describe('Viewport and Settings Methods', () => {
+    it('should call setViewport on engine', async () => {
+      await component.setViewport(0, 0, 2);
+      expect(mockEngine.setViewport).toHaveBeenCalledWith(0, 0, 2);
+    });
+
+    it('should call getViewport on engine', async () => {
+      await component.getViewport();
+      expect(mockEngine.getViewport).toHaveBeenCalled();
+    });
+    
+    it('should call panTo on engine', async () => {
+      await component.panTo(10, 10);
+      expect(mockEngine.panTo).toHaveBeenCalledWith(10, 10);
+    });
+
+    it('should call zoomTo on engine', async () => {
+      await component.zoomTo(2, 50, 50);
+      expect(mockEngine.zoomTo).toHaveBeenCalledWith(2, 50, 50);
+    });
+
+    it('should call centerObjects on engine', async () => {
+      const objects = [{ id: 'obj-1' }] as unknown as UpdrawBaseObject[];
+      await component.centerObjects(objects, false);
+      expect(mockEngine.centerObjects).toHaveBeenCalledWith(objects, false);
+    });
+
+    it('should call getSelectedObjectSupportedExportFormats on engine', async () => {
+      await component.getSelectedObjectSupportedExportFormats();
+      expect(mockEngine.getSelectedObjectSupportedExportFormats).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call canExportSelectedObjectAs on engine', async () => {
+      await component.canExportSelectedObjectAs('png');
+      expect(mockEngine.canExportSelectedObjectAs).toHaveBeenCalledWith('png');
+    });
+
+    it('should call exportSelectedObject on engine', async () => {
+      await component.exportSelectedObject('svg');
+      expect(mockEngine.exportSelectedObject).toHaveBeenCalledWith('svg');
+    });
+  });
+
+  describe('Notification Methods', () => {
+    afterEach(() => {
+      component.disconnectedCallback();
+    });
+
+    it('should trigger notification with provided type', async () => {
+      await component.triggerNotification({
+        type: 'warning',
+        message: 'Heads up',
+      });
+
+      expect(component.activeNotification).toEqual(
+        expect.objectContaining({
+          type: 'warning',
+          message: 'Heads up',
+        }),
+      );
+      expect(component.activeNotification?.id).toBeTruthy();
+      expect(component.activeNotification?.timestamp).toBeInstanceOf(Date);
+    });
+
+    it('should preserve provided id and timestamp when triggering notification', async () => {
+      const timestamp = new Date('2026-01-01T00:00:00.000Z');
+
+      await component.triggerNotification({
+        id: 'custom-id',
+        type: 'error',
+        message: 'Something failed',
+        timestamp,
+      });
+
+      expect(component.activeNotification).toEqual({
+        id: 'custom-id',
+        type: 'error',
+        message: 'Something failed',
+        timestamp,
+      });
+    });
+
+    it('should trigger notification of type info', async () => {
+      await component.triggerNotification({
+        type: 'info',
+        message: 'Everything is up to date.',
+      });
+
+      expect(component.activeNotification).toEqual(
+        expect.objectContaining({
+          type: 'info',
+          message: 'Everything is up to date.',
+        }),
+      );
+    });
+  });
+
+  describe('Context Menu State Handling', () => {
+    it('stores context menu state when menu is visible', () => {
+      const event = {
+        stopPropagation: jest.fn(),
+        detail: {
+          isVisible: true,
+          isObjectMenu: false,
+          items: [{ label: 'menu.copy', action: jest.fn() }],
+          objects: [],
+          position: { x: 10, y: 20 },
+          worldPosition: { x: 100, y: 200 },
+        },
+      } as any;
+
+      component.handleContextMenuStateChange(event);
+
+      expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+      expect(component.contextMenuState).toEqual(event.detail);
+    });
+
+    it('clears context menu state when menu is hidden', () => {
+      (component as any).contextMenuState = {
+        isVisible: true,
+        isObjectMenu: false,
+        items: [],
+        objects: [],
+        position: { x: 10, y: 20 },
+        worldPosition: { x: 100, y: 200 },
+      };
+
+      const event = {
+        stopPropagation: jest.fn(),
+        detail: {
+          isVisible: false,
+          isObjectMenu: false,
+          items: [],
+          objects: [],
+          position: { x: 0, y: 0 },
+          worldPosition: { x: 0, y: 0 },
+        },
+      } as any;
+
+      component.handleContextMenuStateChange(event);
+
+      expect(component.contextMenuState).toBeUndefined();
+    });
+
+    it('executes context menu item action with emitted world coordinates and objects', async () => {
+      const action = jest.fn();
+      const objects = [{ id: 'obj-1' }] as any;
+      (component as any).contextMenuState = {
+        isVisible: true,
+        isObjectMenu: true,
+        items: [{ label: 'menu.delete', action }],
+        objects,
+        position: { x: 8, y: 12 },
+        worldPosition: { x: 80, y: 120 },
+      };
+
+      const hideSpy = jest.spyOn(component, 'hideContextMenu').mockResolvedValue(undefined);
+
+      (component as any).handleContextMenuActionSelected({
+        detail: {
+          label: 'menu.delete',
+          action,
+        },
+      } as any);
+
+      expect(action).toHaveBeenCalledWith({ x: 80, y: 120 }, objects);
+      expect(hideSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Watchers', () => {
+    it('should update currentIsPublic when activeWorkspace changes', () => {
+      component.isPublicChange = { emit: jest.fn() } as any;
+      
+      component.activeWorkspace = { id: '1', name: 'ws', isPublic: true } as any;
+      
+      // Simulate the watcher
+      component.onActiveWorkspaceChange();
+      
+      expect(component.currentIsPublic).toBe(true);
+      expect(component.isPublicChange.emit).toHaveBeenCalledWith({ isPublic: true, workspaceId: '1' });
+    });
+
+    it('should register custom fonts when the customFonts prop changes', () => {
+      const spy = jest.spyOn(UpdrawFontRegistry, 'registerFonts').mockImplementation();
+      const customFonts = {
+        'editor-lora': {
+          family: 'Lora',
+          cssFontFamily: "'Lora', serif",
+        },
+      };
+
+      component.onCustomFontsChange(customFonts);
+
+      expect(spy).toHaveBeenCalledWith(customFonts);
+    });
+
+    it('should register custom fonts in componentDidLoad', () => {
+      const spy = jest.spyOn(UpdrawFontRegistry, 'registerFonts').mockImplementation();
+      const keyboardSpy = jest.spyOn(UpdrawKeyboardHelper, 'onKeyboardVisibleChanged').mockReturnValue(() => {});
+      component.customFonts = {
+        'editor-inter': {
+          family: 'Inter',
+          cssFontFamily: "'Inter', sans-serif",
+        },
+      };
+
+      component.componentDidLoad();
+
+      expect(spy).toHaveBeenCalledWith(component.customFonts);
+      keyboardSpy.mockRestore();
+    });
+
+    it('should register custom fonts through the public method', async () => {
+      const spy = jest.spyOn(UpdrawFontRegistry, 'registerFonts').mockImplementation();
+      const runtimeFonts = {
+        'editor-space-grotesk': {
+          family: 'Space Grotesk',
+          cssFontFamily: "'Space Grotesk', sans-serif",
+        },
+      };
+
+      await component.registerFonts(runtimeFonts);
+
+      expect(spy).toHaveBeenCalledWith(runtimeFonts);
+    });
+
+    it('should normalize toolbar entries with default text fonts when availableFonts is missing', () => {
+      component.toolbarItems = [
+        {
+          name: 'text',
+          type: 'tool',
+          config: {
+            color: { light: '#000', dark: '#fff' },
+            size: 16,
+            fontFamily: 'Arial',
+            palette: [],
+          } as any,
+        } as any,
+      ];
+
+      const normalizedToolbar = (component as any).normalizeToolbar(component.toolbarItems);
+
+      const normalizedConfig = normalizedToolbar[0].config;
+      expect(normalizedConfig.availableFonts).toEqual(DEFAULT_TEXT_TOOL_AVAILABLE_FONTS);
+    });
+
+    it('should preserve explicitly configured text fonts in toolbar entries', () => {
+      component.toolbarItems = [
+        {
+          name: 'text',
+          type: 'tool',
+          config: {
+            color: { light: '#000', dark: '#fff' },
+            size: 16,
+            fontFamily: 'Lora',
+            availableFonts: [
+              {
+                family: 'Lora',
+                cssFontFamily: "'Lora', serif",
+              },
+            ],
+            palette: [],
+          } as any,
+        } as any,
+      ];
+
+      const normalizedToolbar = (component as any).normalizeToolbar(component.toolbarItems);
+
+      const normalizedConfig = normalizedToolbar[0].config;
+      expect(normalizedConfig.availableFonts).toEqual([
+        {
+          family: 'Lora',
+          cssFontFamily: "'Lora', serif",
+        },
+      ]);
+    });
+
+    it('should wait for custom fonts before emitting isReady', async () => {
+      const deferred = (() => {
+        let resolve!: () => void;
+        const promise = new Promise<void>(res => {
+          resolve = res;
+        });
+        return { promise, resolve };
+      })();
+
+      const customElementsSpy = jest.spyOn(customElements, 'whenDefined').mockResolvedValue(undefined as any);
+      const waitForFontsSpy = jest.spyOn(UpdrawFontRegistry, 'waitForFonts').mockReturnValue(deferred.promise);
+      const keyboardSpy = jest.spyOn(UpdrawKeyboardHelper, 'onKeyboardVisibleChanged').mockReturnValue(() => {});
+      component.isReady = { emit: jest.fn() } as any;
+      component.customFonts = {
+        'editor-racing': {
+          family: 'Racing Sans One',
+          cssFontFamily: "'Racing Sans One', sans-serif",
+        },
+      };
+      component.isEngineReady = true;
+      component.isToolbarReady = true;
+      component.isWorkspaceManagerReady = true;
+      component.activeWorkspace = { id: 'workspace-1', name: 'Workspace 1', isPublic: false } as any;
+
+      component.componentDidLoad();
+
+      const readyPromise = component.checkIsReady();
+
+      expect(waitForFontsSpy).toHaveBeenCalledWith(component.customFonts);
+      expect(component.isReady.emit).not.toHaveBeenCalled();
+
+      deferred.resolve();
+      await readyPromise;
+
+      expect(component.isEditorVisible).toBe(true);
+      expect(component.isReady.emit).toHaveBeenCalled();
+
+      customElementsSpy.mockRestore();
+      waitForFontsSpy.mockRestore();
+      keyboardSpy.mockRestore();
+    });
+
+    it('should reconfigure locales on the engine and refresh state when the locales prop changes after init', async () => {
+      component.locale = 'en';
+      component.localeChange = { emit: jest.fn() } as any;
+      mockEngine.getLocale.mockResolvedValue('es');
+      mockEngine.getAvailableLocaleOptions.mockResolvedValue([{ code: 'es', label: 'EspaÃ±ol' }]);
+
+      const spanishLocale = { code: 'es', label: 'EspaÃ±ol', terms: {} };
+      component.onLocalesChange([spanishLocale]);
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockEngine.configureLocales).toHaveBeenCalledWith([spanishLocale]);
+      // Auto-selected because 'en' is no longer available once locales replaces the built-ins.
+      expect(component.locale).toBe('es');
+      expect(component.localeChange.emit).toHaveBeenCalledWith('es');
+      expect(component.availableLocaleOptions).toEqual([{ code: 'es', label: 'EspaÃ±ol' }]);
+    });
+  });
+
+  describe('moreMenuItems share item visibility', () => {
+    it('should hide the share item when syncConfig has no providers', async () => {
+      component.syncConfig = { providers: [] };
+      (component as any).onSyncConfigChange();
+      const shareItem = (component as any).resolvedMoreMenuItems.find((item: any) => item.id === 'share');
+      expect(typeof shareItem.isVisible).toBe('function');
+      await expect(shareItem.isVisible()).resolves.toBe(false);
+    });
+
+    it('should hide the share item when syncConfig is undefined', async () => {
+      component.syncConfig = undefined;
+      (component as any).onSyncConfigChange();
+      const shareItem = (component as any).resolvedMoreMenuItems.find((item: any) => item.id === 'share');
+      expect(typeof shareItem.isVisible).toBe('function');
+      await expect(shareItem.isVisible()).resolves.toBe(false);
+    });
+
+    it('should hide the share item when only local providers are configured', async () => {
+      const localFactory = {
+        type: 'local' as const,
+        create: jest.fn(),
+      };
+      component.syncConfig = { providers: [localFactory] };
+      (component as any).onSyncConfigChange();
+      const shareItem = (component as any).resolvedMoreMenuItems.find((item: any) => item.id === 'share');
+      expect(typeof shareItem.isVisible).toBe('function');
+      await expect(shareItem.isVisible()).resolves.toBe(false);
+    });
+
+    it('should show the share item when a network provider factory is configured', async () => {
+      const networkFactory = {
+        type: 'network' as const,
+        create: jest.fn(),
+      };
+      component.syncConfig = { providers: [networkFactory] };
+      (component as any).onSyncConfigChange();
+      const shareItem = (component as any).resolvedMoreMenuItems.find((item: any) => item.id === 'share');
+      expect(typeof shareItem.isVisible).toBe('function');
+      await expect(shareItem.isVisible()).resolves.toBe(true);
+    });
+
+    it('should use custom moreMenuItems when provided', () => {
+      const customItems = [{ id: 'custom', label: 'Custom' }];
+      component.moreMenuItems = customItems as any;
+
+      (component as any).onMoreMenuItemsChange();
+
+      expect((component as any).resolvedMoreMenuItems).toStrictEqual(customItems);
+    });
+  });
+});

@@ -1,19 +1,19 @@
 ---
 sidebar_label: Chat Session
 displayed_sidebar: tutorialSidebar
-title: "Chat Session API Reference | Kritzel for Angular"
-description: "API reference for KritzelChatSession: options, properties, methods, events, the chat protocol types, createHttpTransport, and createScriptedTransport."
+title: "Chat Session API Reference | Updraw for Angular"
+description: "API reference for UpdrawChatSession: options, properties, methods, events, the chat protocol types, createHttpTransport, and createScriptedTransport."
 toc_max_heading_level: 2
 ---
 
 # Chat Session
 
-`KritzelChatSession` connects the chat box to an LLM through your server. It runs the tool loop in the browser: it sends the conversation through a transport, runs the tool calls of the answer on the canvas, and sends the results back until the model is done. Bind it to the editor with the `chatSession` prop:
+`UpdrawChatSession` connects the chat box to an LLM through your server. It runs the tool loop in the browser: it sends the conversation through a transport, runs the tool calls of the answer on the canvas, and sends the results back until the model is done. Bind it to the editor with the `chatSession` prop:
 
 ```ts
-import { createHttpTransport, KritzelChatSession } from '@kritzel/angular-editor';
+import { createHttpTransport, UpdrawChatSession } from '@updraw/angular-editor';
 
-const session = new KritzelChatSession({ transport: createHttpTransport('/api/chat') });
+const session = new UpdrawChatSession({ transport: createHttpTransport('/api/chat') });
 ```
 
 For a guided introduction, see [Agents](../advanced/agents.md). The `chatSession` prop is listed in the [Editor API Reference](./editor.md#ui-elements).
@@ -21,21 +21,21 @@ For a guided introduction, see [Agents](../advanced/agents.md). The `chatSession
 ## Constructor
 
 ```ts
-new KritzelChatSession(options: KritzelChatSessionOptions)
+new UpdrawChatSession(options: UpdrawChatSessionOptions)
 ```
 
 Throws a `TypeError` when `transport` is not a function or `maxSteps` is not a positive integer.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| transport | KritzelChatTransport | — | Required. Sends one step of the conversation to your server. See [KritzelChatTransport](#kritzelchattransport). |
-| agent | KritzelAgent | — | The agent the model acts as. Without one, the model works as the user. The editor adds the agent when the session is bound. |
+| transport | UpdrawChatTransport | — | Required. Sends one step of the conversation to your server. See [UpdrawChatTransport](#updrawchattransport). |
+| agent | UpdrawAgent | — | The agent the model acts as. Without one, the model works as the user. The editor adds the agent when the session is bound. |
 | canvasTools | `{ images?: boolean \| { urls?: boolean }; iframes?: boolean; viewport?: boolean }` | — | Which optional canvas tools the model gets. `images` (default `true`, SVG only) offers `create_image`, which places images drawn as SVG markup by the model; `{ urls: true }` also loads images from URLs that the model chooses, fetched by the user's browser. `iframes` (default `false`) offers `create_iframe`, `read_iframe`, and `update_iframe`, which place, read, and change widgets of model-written code. `viewport` (default `true`) offers `set_viewport` and `fit_viewport`, which pan and zoom the local user's view. See [`tools()`](./agent.md#tools). |
 | system | string | — | Instructions sent with every request. |
 | context | `Record<string, unknown> \| () => Record<string, unknown> \| undefined` | — | App data sent with every request. A function is called for each request. |
-| tools | KritzelChatTool[] | `[]` | Your own tools, added to the canvas tools. A name that clashes with a canvas tool ends the prompt with `status: 'error'`. `run()` gets the `toolCallId` of the call and the session's `actor` in its context, and an optional `begin()` lets a tool act while the model still writes the call. See [KritzelChatTool](#kritzelchattool). |
+| tools | UpdrawChatTool[] | `[]` | Your own tools, added to the canvas tools. A name that clashes with a canvas tool ends the prompt with `status: 'error'`. `run()` gets the `toolCallId` of the call and the session's `actor` in its context, and an optional `begin()` lets a tool act while the model still writes the call. See [UpdrawChatTool](#updrawchattool). |
 | maxSteps | number | `25` | Most model steps per prompt. |
-| messages | KritzelChatMessage[] | `[]` | A conversation to continue. Tool calls without a result get an `'aborted'` result. |
+| messages | UpdrawChatMessage[] | `[]` | A conversation to continue. Tool calls without a result get an `'aborted'` result. |
 | instant | boolean | `false` | Agent mode: skips the cursor animation. Working as the user is always instant. |
 | thinkingStatus | string \| false | `'Thinking…'` | Agent mode: the agent's status while the model thinks. `false` keeps the status. |
 | eagerToolCalls | boolean | `true` | Streamed answers: runs each tool call as soon as its part arrives and the calls started before it have run, while the model still writes the rest of the answer. `false` runs the calls once the answer has ended, like those of answers that are not streamed, for example for a server whose model can take back calls it already sent. See [Streaming](../advanced/agents.md#streaming). |
@@ -44,12 +44,12 @@ Throws a `TypeError` when `transport` is not a function or `maxSteps` is not a p
 
 | Property | Type | Description |
 |----------|------|-------------|
-| messages | readonly KritzelChatMessage[] | The conversation so far. A new array after every change. |
+| messages | readonly UpdrawChatMessage[] | The conversation so far. A new array after every change. |
 | running | boolean | Whether a prompt is running. |
 | mode | 'agent' \| 'user' | `'agent'` with an agent, otherwise `'user'`. |
-| agent | KritzelAgent \| null | The agent the model acts as. |
+| agent | UpdrawAgent \| null | The agent the model acts as. |
 | isAttached | boolean | Whether the session is bound to an editor. |
-| tools | KritzelAgentTool[] | The tools the model gets: the canvas tools of the mode plus your own. |
+| tools | UpdrawAgentTool[] | The tools the model gets: the canvas tools of the mode plus your own. |
 
 ## Methods
 
@@ -58,7 +58,7 @@ Throws a `TypeError` when `transport` is not a function or `maxSteps` is not a p
 Sends a prompt and runs the tool loop until the model answers without tool calls. Never rejects; the result tells how the prompt ended. Throws a `TypeError` for an empty prompt.
 
 ```ts
-send(input: KritzelChatInput): Promise<KritzelChatSendResult>
+send(input: UpdrawChatInput): Promise<UpdrawChatSendResult>
 ```
 
 Working as the user, all changes of one prompt become one step of the user's history.
@@ -76,7 +76,7 @@ stop(): void
 Subscribes to an event. Returns a function that unsubscribes.
 
 ```ts
-on<K extends keyof KritzelChatSessionEventMap>(event: K, listener: (payload: KritzelChatSessionEventMap[K]) => void): () => void
+on<K extends keyof UpdrawChatSessionEventMap>(event: K, listener: (payload: UpdrawChatSessionEventMap[K]) => void): () => void
 ```
 
 ### whenIdle
@@ -92,9 +92,9 @@ whenIdle(): Promise<void>
 | Event | Payload | Description |
 |-------|---------|-------------|
 | change | void | `messages` or `running` changed. |
-| message | KritzelChatMessage | A message was added. |
-| tool-call | KritzelChatToolCallUpdate | A tool call of a streamed answer made progress: once per input delta while the model writes it. Calls are written and ready before the answer is in `messages`. They run and end before it with eager tool calls, or after it with `eagerToolCalls: false` and for calls that a `message` event added. Throttle what you render from it. See [KritzelChatToolCallUpdate](#kritzelchattoolcallupdate). |
-| end | KritzelChatSendResult | A prompt ended. |
+| message | UpdrawChatMessage | A message was added. |
+| tool-call | UpdrawChatToolCallUpdate | A tool call of a streamed answer made progress: once per input delta while the model writes it. Calls are written and ready before the answer is in `messages`. They run and end before it with eager tool calls, or after it with `eagerToolCalls: false` and for calls that a `message` event added. Throttle what you render from it. See [UpdrawChatToolCallUpdate](#updrawchattoolcallupdate). |
+| end | UpdrawChatSendResult | A prompt ended. |
 
 ## Binding
 
@@ -112,7 +112,7 @@ The editor binds the session given in `chatSession` and unbinds it when the edit
 Returns a transport that posts each request as JSON to your server and reads its answer. Takes the URL of your endpoint, or options:
 
 ```ts
-createHttpTransport(urlOrOptions: string | URL | KritzelHttpTransportOptions): KritzelChatTransport
+createHttpTransport(urlOrOptions: string | URL | UpdrawHttpTransportOptions): UpdrawChatTransport
 ```
 
 Throws a `TypeError` without a URL.
@@ -120,7 +120,7 @@ Throws a `TypeError` without a URL.
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | url | string \| URL | — | Required. The endpoint of your server, for example `'/api/chat'`. |
-| headers | `HeadersInit \| (request: KritzelChatRequest) => HeadersInit \| Promise<HeadersInit>` | — | Headers sent with every request, for example `Authorization`. A function is called for each request. |
+| headers | `HeadersInit \| (request: UpdrawChatRequest) => HeadersInit \| Promise<HeadersInit>` | — | Headers sent with every request, for example `Authorization`. A function is called for each request. |
 | credentials | RequestCredentials | — | Whether cookies are sent, as in `fetch()`. |
 | fetch | typeof fetch | global `fetch` | The `fetch` to use, for example in tests. |
 
@@ -128,11 +128,11 @@ The request has the headers `Content-Type: application/json` and `Accept: applic
 
 | Content-Type | Answer |
 |--------------|--------|
-| `application/x-ndjson` (or another type containing `ndjson` or `jsonl`) | One `KritzelChatStreamEvent` as JSON per line. Blank lines are skipped. |
-| `text/event-stream` | Server-sent events. The `data` of each event without an `event` field, or with `event: message`, is one `KritzelChatStreamEvent` as JSON. Other events, comments, and `data: [DONE]` are skipped. |
-| anything else | One `KritzelChatResponse` as JSON. |
+| `application/x-ndjson` (or another type containing `ndjson` or `jsonl`) | One `UpdrawChatStreamEvent` as JSON per line. Blank lines are skipped. |
+| `text/event-stream` | Server-sent events. The `data` of each event without an `event` field, or with `event: message`, is one `UpdrawChatStreamEvent` as JSON. Other events, comments, and `data: [DONE]` are skipped. |
+| anything else | One `UpdrawChatResponse` as JSON. |
 
-An answer with an error status throws a [`KritzelChatHttpError`](#kritzelchathttperror). Invalid JSON throws an `Error`. Both end the prompt with `status: 'error'`. Stopping the session aborts the request.
+An answer with an error status throws a [`UpdrawChatHttpError`](#updrawchathttperror). Invalid JSON throws an `Error`. Both end the prompt with `status: 'error'`. Stopping the session aborts the request.
 
 ### createScriptedTransport
 
@@ -140,9 +140,9 @@ Returns a transport that answers from a script instead of a model, for demos and
 
 ```ts
 createScriptedTransport(
-  steps: KritzelScriptedStep[] | ((request: KritzelChatRequest, index: number) => string | KritzelScriptedAnswer),
-  options?: KritzelScriptedTransportOptions,
-): KritzelChatTransport
+  steps: UpdrawScriptedStep[] | ((request: UpdrawChatRequest, index: number) => string | UpdrawScriptedAnswer),
+  options?: UpdrawScriptedTransportOptions,
+): UpdrawChatTransport
 ```
 
 | Option | Type | Default | Description |
@@ -152,30 +152,30 @@ createScriptedTransport(
 
 | Type | Description |
 |------|-------------|
-| KritzelScriptedStep | `string` (a text answer), `KritzelScriptedAnswer`, or `(request, index) => string \| KritzelScriptedAnswer`. |
-| KritzelScriptedAnswer | `{ text?: string; toolCalls?: { tool: string; input?: object; id?: string }[]; parts?: KritzelChatPart[]; delayMs?: number }` |
+| UpdrawScriptedStep | `string` (a text answer), `UpdrawScriptedAnswer`, or `(request, index) => string \| UpdrawScriptedAnswer`. |
+| UpdrawScriptedAnswer | `{ text?: string; toolCalls?: { tool: string; input?: object; id?: string }[]; parts?: UpdrawChatPart[]; delayMs?: number }` |
 
-### isKritzelChatSession
+### isUpdrawChatSession
 
-Returns whether a value is a `KritzelChatSession`, also one from another copy of the library.
+Returns whether a value is an `UpdrawChatSession`, also one from another copy of the library.
 
 ```ts
-isKritzelChatSession(value: unknown): value is KritzelChatSession
+isUpdrawChatSession(value: unknown): value is UpdrawChatSession
 ```
 
 ## Types
 
-### KritzelChatInput
+### UpdrawChatInput
 
 ```ts
-type KritzelChatInput =
+type UpdrawChatInput =
   | string
-  | { text: string; chips?: KritzelChatBoxChip[]; images?: { mediaType: string; data?: string; url?: string }[] };
+  | { text: string; chips?: UpdrawChatBoxChip[]; images?: { mediaType: string; data?: string; url?: string }[] };
 ```
 
 Chips are sent as a text part after the prompt that names their labels, `objectId`, and `selector`. Images are sent as `image` parts.
 
-### KritzelChatSendResult
+### UpdrawChatSendResult
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -191,45 +191,45 @@ Chips are sent as a text part after the prompt that names their labels, `objectI
 | `'busy'` | Another prompt of this session, its agent, or (working as the user) the editor was running. |
 | `'detached'` | The session is not bound to an editor, or its agent was removed or the workspace changed while it ran. |
 
-### KritzelChatTool
+### UpdrawChatTool
 
-A tool of your app, passed in the `tools` option. Like [`KritzelAgentTool`](./agent.md#kritzelagenttool), but `run()` and `begin()` get the session's `actor` to act on the canvas with. See [Adding Your Own Tools](../advanced/agents.md#adding-your-own-tools).
+A tool of your app, passed in the `tools` option. Like [`UpdrawAgentTool`](./agent.md#updrawagenttool), but `run()` and `begin()` get the session's `actor` to act on the canvas with. See [Adding Your Own Tools](../advanced/agents.md#adding-your-own-tools).
 
 ```ts
-interface KritzelChatTool {
+interface UpdrawChatTool {
   name: string;
   description: string;
-  inputSchema: KritzelAgentToolSchema;
+  inputSchema: UpdrawAgentToolSchema;
   /** Runs the tool with the model's input and resolves with a JSON result, e.g. from formatAgentToolResult(). */
-  run: (input: unknown, context: KritzelChatToolContext) => Promise<string>;
+  run: (input: unknown, context: UpdrawChatToolContext) => Promise<string>;
   /** Optional: begins a call while the model is still writing its input. */
-  begin?: (context: KritzelChatToolContext) => KritzelAgentToolCall;
+  begin?: (context: UpdrawChatToolContext) => UpdrawAgentToolCall;
 }
 
-interface KritzelChatToolContext {
+interface UpdrawChatToolContext {
   /** Aborted when the user stops the response. */
   signal: AbortSignal;
   /** The ID of the call, as in its tool-call part, its result, and the tool-call events. */
   toolCallId?: string;
   /** Acts on the canvas as the session: its agent, or the user. */
-  actor: KritzelChatActor;
+  actor: UpdrawChatActor;
 }
 
-interface KritzelChatActor {
+interface UpdrawChatActor {
   /** 'agent' with an agent, otherwise 'user'. */
   readonly kind: 'agent' | 'user';
   /** Performs an action with the call's signal and, in agent mode, the session's instant option. */
-  perform(action: KritzelAgenticAction, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>;
+  perform(action: UpdrawAgenticAction, options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>;
   /** What the actor sees of the canvas, as observe_canvas returns it. */
-  observe(options?: KritzelObserveOptions): Promise<KritzelCanvasSnapshot>;
+  observe(options?: UpdrawObserveOptions): Promise<UpdrawCanvasSnapshot>;
 }
 ```
 
 Changes made through `actor` behave like those of the canvas tools: working as the user, they are part of the prompt's undo step, the stop button rolls them back, and with an agent they are the agent's changes.
 
-With `begin()`, the session begins a call of a streamed answer when the model starts writing it, once every call started before it has ended. It passes the input written so far to the `update()` of the returned [`KritzelAgentToolCall`](./agent.md#kritzelagenttool) after each `tool-call-delta`, and then calls `finish()` instead of `run()` when the call runs, or `cancel()` when it won't run: its part never arrived, a `message` event left it out, or the prompt was stopped or ended early. The prompt goes on only once a promise that `cancel()` returns has resolved. With `eagerToolCalls: false`, the first call of an answer runs only once the answer has ended, so only that call is begun while the model writes. Calls of answers that are not streamed only get `run()`.
+With `begin()`, the session begins a call of a streamed answer when the model starts writing it, once every call started before it has ended. It passes the input written so far to the `update()` of the returned [`UpdrawAgentToolCall`](./agent.md#updrawagenttool) after each `tool-call-delta`, and then calls `finish()` instead of `run()` when the call runs, or `cancel()` when it won't run: its part never arrived, a `message` event left it out, or the prompt was stopped or ended early. The prompt goes on only once a promise that `cancel()` returns has resolved. With `eagerToolCalls: false`, the first call of an answer runs only once the answer has ended, so only that call is begun while the model writes. Calls of answers that are not streamed only get `run()`.
 
-### KritzelChatToolCallUpdate
+### UpdrawChatToolCallUpdate
 
 The payload of the `tool-call` event: the progress of a tool call of a streamed answer. Calls of answers that are not streamed are not reported. While the model writes `create_iframe`, or `create_image` with a size, the canvas already shows the object as a loading placeholder.
 
@@ -237,14 +237,14 @@ The payload of the `tool-call` event: the progress of a tool call of a streamed 
 |----------|------|-------------|
 | id | string | The ID of the call, as in its `tool-call` part and its result. |
 | name | string | The name of the tool. |
-| state | KritzelChatToolCallState | Where the call is. See [KritzelChatToolCallState](#kritzelchattoolcallstate). |
+| state | UpdrawChatToolCallState | Where the call is. See [UpdrawChatToolCallState](#updrawchattoolcallstate). |
 | inputText | string | The input streamed so far as JSON text: the joined deltas. Usually incomplete before `'ready'`. |
 | inputDelta | string | With `'input'`: the text that just arrived. |
 | input | unknown | From `'ready'` on: the input of the `tool-call` part, an object or a JSON string. |
-| result | KritzelChatToolResultPart | With `'done'`: the result the model gets. |
+| result | UpdrawChatToolResultPart | With `'done'`: the result the model gets. |
 | ran | boolean | With `'done'`: whether the tool ran. `false` when the prompt ended first or there is no such tool. |
 
-### KritzelChatToolCallState
+### UpdrawChatToolCallState
 
 Where a tool call of a streamed answer is. Each call ends exactly once, with `'done'` or `'discarded'`, and an ID that ended is not reported again.
 
@@ -257,15 +257,15 @@ Where a tool call of a streamed answer is. Each call ends exactly once, with `'d
 | `'done'` | The call has its result. |
 | `'discarded'` | The call is not part of the conversation and never ran: its part never arrived, a `message` event left it out, or the answer was stopped or failed before any of its calls ran. |
 
-### KritzelChatMessage
+### UpdrawChatMessage
 
 | Property | Type | Description |
 |----------|------|-------------|
 | role | 'user' \| 'assistant' \| 'tool' | `user`: the prompt. `assistant`: the model's text and tool calls. `tool`: the results of the tool calls of the assistant message before. |
-| parts | KritzelChatPart[] | The content. |
+| parts | UpdrawChatPart[] | The content. |
 | providerData | `Record<string, unknown>` | Data of your server, sent back unchanged. |
 
-### KritzelChatPart
+### UpdrawChatPart
 
 | Part | Properties |
 |------|------------|
@@ -276,31 +276,31 @@ Where a tool call of a streamed answer is. Each call ends exactly once, with `'d
 
 Every part can have `providerData`. A `tool-call` without an `id` gets one.
 
-### KritzelChatRequest
+### UpdrawChatRequest
 
 | Property | Type | Description |
 |----------|------|-------------|
-| version | 1 | `KRITZEL_CHAT_PROTOCOL_VERSION`. |
+| version | 1 | `UPDRAW_CHAT_PROTOCOL_VERSION`. |
 | system | string | The `system` option. |
-| messages | KritzelChatMessage[] | The whole conversation. |
-| tools | KritzelChatToolDefinition[] | `name`, `description`, and `inputSchema` (JSON Schema) of each tool. |
+| messages | UpdrawChatMessage[] | The whole conversation. |
+| tools | UpdrawChatToolDefinition[] | `name`, `description`, and `inputSchema` (JSON Schema) of each tool. |
 | mode | 'agent' \| 'user' | Whether the tools act as an agent or as the user. |
 | context | `Record<string, unknown>` | The `context` option. |
 
-### KritzelChatResponse
+### UpdrawChatResponse
 
 | Property | Type | Description |
 |----------|------|-------------|
-| message | KritzelChatMessage | The model's answer. Its `role` is set to `'assistant'`. |
+| message | UpdrawChatMessage | The model's answer. Its `role` is set to `'assistant'`. |
 | stopReason | 'end' \| 'tool-calls' \| 'max-tokens' \| 'refusal' \| 'other' | Why the model stopped. Informational: the session runs the tool calls it finds. |
 | version | 1 | Optional. |
 
-### KritzelChatStreamEvent
+### UpdrawChatStreamEvent
 
 | Event | Description |
 |-------|-------------|
 | `{ type: 'text-delta', text }` | Appended to the last text part, or starts one. |
-| `{ type: 'tool-call-start', id, name }` | Optional. The model began a tool call. The session reports it as a `tool-call` event and, when its tool has `begin()`, begins it once the calls started before it have ended (see [KritzelChatTool](#kritzelchattool)). A call never runs from it alone. |
+| `{ type: 'tool-call-start', id, name }` | Optional. The model began a tool call. The session reports it as a `tool-call` event and, when its tool has `begin()`, begins it once the calls started before it have ended (see [UpdrawChatTool](#updrawchattool)). A call never runs from it alone. |
 | `{ type: 'tool-call-delta', id, inputDelta }` | Optional. More of the call's input as JSON text. The deltas joined are the input as written so far, which a begun call gets in `update()`. |
 | `{ type: 'part', part }` | Adds a complete part, for example a tool call. A tool call with the ID of a started call completes that call; its `name` and `input` win over the start and the deltas. The call can run right away (see `eagerToolCalls`). |
 | `{ type: 'message', message }` | Replaces everything streamed so far. Complete calls it leaves out are dropped unless they already started running; calls still being written wait for their part; calls it adds run once the answer has ended. |
@@ -316,20 +316,20 @@ Your server follows these rules:
 - Events without an `id`, and events of other types, are ignored.
 - `stopReason` is informational, as in a response.
 
-### KritzelChatTransport
+### UpdrawChatTransport
 
 ```ts
-type KritzelChatTransport = (
-  request: KritzelChatRequest,
+type UpdrawChatTransport = (
+  request: UpdrawChatRequest,
   options: { signal: AbortSignal },
-) => Promise<KritzelChatResponse | AsyncIterable<KritzelChatStreamEvent>> | AsyncIterable<KritzelChatStreamEvent>;
+) => Promise<UpdrawChatResponse | AsyncIterable<UpdrawChatStreamEvent>> | AsyncIterable<UpdrawChatStreamEvent>;
 ```
 
 Throw to end the prompt with `status: 'error'`. The tool calls of a whole answer run once it is in. Each tool call of a streamed answer runs as soon as its part arrives, while the stream goes on (see `eagerToolCalls`), one call at a time in the order the calls started: a call whose part arrives before that of a call started earlier waits for it. A call without `tool-call-start` starts when its part arrives. When a streamed answer fails or is stopped after one of its calls ran, the answer read so far is kept with the results of its calls, so the conversation matches the canvas. Calls that did not start get an `'aborted'` result.
 
-### KritzelChatHttpError
+### UpdrawChatHttpError
 
-Thrown by [`createHttpTransport()`](#createhttptransport) when your server answers with an error status. Extends `Error`. A prompt that ends with it has it in the `error` of its [`KritzelChatSendResult`](#kritzelchatsendresult).
+Thrown by [`createHttpTransport()`](#createhttptransport) when your server answers with an error status. Extends `Error`. A prompt that ends with it has it in the `error` of its [`UpdrawChatSendResult`](#updrawchatsendresult).
 
 | Property | Type | Description |
 |----------|------|-------------|

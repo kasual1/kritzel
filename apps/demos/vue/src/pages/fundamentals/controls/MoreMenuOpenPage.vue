@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getEditorRef, KritzelEditor, KritzelWorkspace } from '@kritzel/vue-editor'
+import { getEditorRef, UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -9,7 +9,7 @@ import { editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
 const editor = getEditorRef('editor')
 const isMoreMenuVisible = ref(true)
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 const moreMenuItems = [
   {
     id: 'notify',
@@ -49,7 +49,7 @@ function setMoreMenuVisible(event: Event) {
         <span>More menu</span>
       </label>
     </div>
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="more-menu-open"
       theme="light"

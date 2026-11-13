@@ -1,8 +1,8 @@
-import { KritzelSyncConfig } from '../interfaces/sync-config.interface';
+import { UpdrawSyncConfig } from '../interfaces/sync-config.interface';
 
 /**
  * Default sync configuration - None
  */
-export const DEFAULT_SYNC_CONFIG: KritzelSyncConfig = {
+export const DEFAULT_SYNC_CONFIG: UpdrawSyncConfig = {
   providers: [],
 };

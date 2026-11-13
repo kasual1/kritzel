@@ -1,0 +1,6 @@
+<updraw-editor
+  [editorId]="editorId"
+  (isReady)="onReady()"
+  aria-label="Updraw canvas"
+></updraw-editor>
+<p role="status">{{ isReady ? 'Updraw is ready.' : 'Loading Updraw…' }}</p>

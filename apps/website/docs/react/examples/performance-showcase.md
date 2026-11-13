@@ -1,7 +1,7 @@
 ---
 sidebar_label: Performance Showcase
 displayed_sidebar: tutorialSidebar
-title: "Performance Showcase Example | Kritzel for React"
+title: "Performance Showcase Example | Updraw for React"
 description: "Fill an infinite canvas with thousands of interactive GitHub Star buttons built as dynamic objects, and pan and zoom across them smoothly."
 ---
 
@@ -9,11 +9,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 # Performance Showcase
 
-This example fills a board with thousands of GitHub "Star" buttons. Every button is a real DOM element mounted as a dynamic object, so it can be selected, moved and resized like any other object, and clicking it opens the Kritzel repository. Kritzel only mounts the objects inside the viewport, so panning and zooming stay smooth even with 5,000 buttons on the board.
+This example fills a board with thousands of GitHub "Star" buttons. Every button is a real DOM element mounted as a dynamic object, so it can be selected, moved and resized like any other object, and clicking it opens the Updraw repository. Updraw only mounts the objects inside the viewport, so panning and zooming stay smooth even with 5,000 buttons on the board.
 
 ## Prerequisites
 
-Complete the [Quick Start](../getting-started/quick-start.md) guide to have a working `<KritzelEditor>` rendered in your React app. This example builds on that setup.
+Complete the [Quick Start](../getting-started/quick-start.md) guide to have a working `<UpdrawEditor>` rendered in your React app. This example builds on that setup.
 
 ---
 
@@ -53,7 +53,7 @@ useEffect(() => {
     buttons.delete(objectId);
     if (container) container.innerHTML = "";
   };
-  KritzelDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
+  UpdrawDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
     onMount: ({ object, container, data }) => {
       if (!container) return;
       destroy(object.id, container);
@@ -69,7 +69,7 @@ useEffect(() => {
   return () => {
     buttons.forEach((instance) => instance.destroy());
     buttons.clear();
-    KritzelDynamicObjectRendererRegistry.unregister(GITHUB_STAR_RENDERER_KEY);
+    UpdrawDynamicObjectRendererRegistry.unregister(GITHUB_STAR_RENDERER_KEY);
   };
 }, []);
 ```
@@ -81,10 +81,10 @@ useEffect(() => {
 The object factory places the buttons on a grid with a 10px gap on every side, centered on the world origin, which is the center of the initial viewport. The layout is computed from the count alone, so every load shows the same board. Each object carries only the renderer key and a label in `rendererData`. Dynamic objects are drawn as cards, clipped to the theme's rounded corners and with its shadow, so each object takes the button's own 6px corners and no shadow instead.
 
 ```tsx
-export function createGithubStarObject(x: number, y: number): KritzelDynamicObject {
+export function createGithubStarObject(x: number, y: number): UpdrawDynamicObject {
   const placeholder = document.createElement("div");
   placeholder.textContent = "Star";
-  const object = new KritzelDynamicObject({
+  const object = new UpdrawDynamicObject({
     element: placeholder,
     rendererKey: GITHUB_STAR_RENDERER_KEY,
     rendererData: { label: "Star" } satisfies GithubStarButtonData,

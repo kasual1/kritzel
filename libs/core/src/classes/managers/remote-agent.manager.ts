@@ -1,15 +1,15 @@
-import type { KritzelCore } from '../core/core.class';
-import type { KritzelPoint } from '../../interfaces/point.interface';
-import type { KritzelAgenticAttachment, KritzelAgenticCursor } from '../../interfaces/agentic-cursor.interface';
-import type { KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
-import type { KritzelAwarenessAgent, KritzelRemoteAgentPresence } from '../../interfaces/agent.interface';
+import type { UpdrawCore } from '../core/core.class';
+import type { UpdrawPoint } from '../../interfaces/point.interface';
+import type { UpdrawAgenticAttachment, UpdrawAgenticCursor } from '../../interfaces/agentic-cursor.interface';
+import type { UpdrawAgenticActionType } from '../../interfaces/agentic-action.interface';
+import type { UpdrawAwarenessAgent, UpdrawRemoteAgentPresence } from '../../interfaces/agent.interface';
 import { AGENT_BROADCAST_INTERVAL_MS, AGENT_BROADCAST_MAX_IDS, AGENT_BROADCAST_MAX_STATUS_LENGTH } from './agent-broadcast.manager';
 import { isAgenticAnchor } from '../../helpers/agentic-geometry.helper';
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelMathHelper } from '../../helpers/math.helper';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpdrawMathHelper } from '../../helpers/math.helper';
 
 /** A collaborator's agent as the cursor overlay draws it. */
-export interface KritzelRemoteAgentCursor extends KritzelAgenticCursor {
+export interface UpdrawRemoteAgentCursor extends UpdrawAgenticCursor {
   /** Unique across clients: `r:<clientId>:<agentId>`. */
   key: string;
   clientId: number;
@@ -20,12 +20,12 @@ export interface KritzelRemoteAgentCursor extends KritzelAgenticCursor {
 interface RemoteAgentEntry {
   key: string;
   clientId: number;
-  agent: KritzelAwarenessAgent;
+  agent: UpdrawAwarenessAgent;
   hostUser?: { id: string; displayName?: string; color?: string };
   /** Where the cursor is drawn. */
-  rendered: KritzelPoint;
-  from: KritzelPoint;
-  to: KritzelPoint;
+  rendered: UpdrawPoint;
+  from: UpdrawPoint;
+  to: UpdrawPoint;
   startedAt: number;
 }
 
@@ -36,8 +36,8 @@ const MAX_NAME_LENGTH = 100;
  * cursor to its latest position (updates arrive at most every 100 ms) and keeps attached cursors on
  * their objects locally, so they stick exactly while the objects move.
  */
-export class KritzelRemoteAgentManager {
-  private readonly _core: KritzelCore;
+export class UpdrawRemoteAgentManager {
+  private readonly _core: UpdrawCore;
   private readonly _entries = new Map<string, RemoteAgentEntry>();
   private readonly _changeListeners = new Set<() => void>();
   private readonly _frameListeners = new Set<() => void>();
@@ -46,7 +46,7 @@ export class KritzelRemoteAgentManager {
   private _claimed = new Set<string>();
   private _selected = new Set<string>();
 
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     this._core = core;
   }
 
@@ -100,7 +100,7 @@ export class KritzelRemoteAgentManager {
   }
 
   /** Remote agents as the cursor overlay draws them. */
-  getAll(): KritzelRemoteAgentCursor[] {
+  getAll(): UpdrawRemoteAgentCursor[] {
     return Array.from(this._entries.values()).map(entry => ({
       key: entry.key,
       clientId: entry.clientId,
@@ -117,7 +117,7 @@ export class KritzelRemoteAgentManager {
       selectedObjectIds: [...entry.agent.selectedObjectIds],
       isPressed: entry.agent.isPressed,
       pressCount: entry.agent.pressCount,
-      activeAction: entry.agent.activeAction as KritzelAgenticActionType | null,
+      activeAction: entry.agent.activeAction as UpdrawAgenticActionType | null,
       queueLength: entry.agent.queueLength,
       canUndo: false,
       canRedo: false,
@@ -125,7 +125,7 @@ export class KritzelRemoteAgentManager {
   }
 
   /** Remote agents as shown in avatar stacks. */
-  getPresences(): KritzelRemoteAgentPresence[] {
+  getPresences(): UpdrawRemoteAgentPresence[] {
     return Array.from(this._entries.values()).map(entry => ({
       id: entry.agent.id,
       kind: 'agent' as const,
@@ -135,7 +135,7 @@ export class KritzelRemoteAgentManager {
       ...(entry.agent.avatarUrl ? { avatarUrl: entry.agent.avatarUrl, profileImageUrl: entry.agent.avatarUrl } : {}),
       status: entry.agent.status,
       visible: entry.agent.visible,
-      activeAction: entry.agent.activeAction as KritzelAgenticActionType | null,
+      activeAction: entry.agent.activeAction as UpdrawAgenticActionType | null,
       queueLength: entry.agent.queueLength,
       isRemote: true as const,
       clientId: entry.clientId,
@@ -169,7 +169,7 @@ export class KritzelRemoteAgentManager {
   tick(now: number = performance.now()): void {
     this._entries.forEach(entry => {
       // One entry that fails (it comes from another client) must not stop the others or the frame listeners.
-      KritzelEventHelper.callListener(() => {
+      UpdrawEventHelper.callListener(() => {
         const attached = entry.agent.attachedTo ? this._core.agenticCursorManager?.resolveTarget(entry.agent.attachedTo) : null;
         if (attached && !this.isGliding(entry, now)) {
           entry.rendered = attached;
@@ -182,7 +182,7 @@ export class KritzelRemoteAgentManager {
         };
       }, 'Remote agent listener');
     });
-    this._frameListeners.forEach(listener => KritzelEventHelper.callListener(listener, 'Remote agent listener'));
+    this._frameListeners.forEach(listener => UpdrawEventHelper.callListener(listener, 'Remote agent listener'));
   }
 
   /** Forgets all remote agents, e.g. on a workspace switch. */
@@ -220,7 +220,7 @@ export class KritzelRemoteAgentManager {
       return;
     }
     this._structureKey = key;
-    this._changeListeners.forEach(listener => KritzelEventHelper.callListener(listener, 'Remote agent listener'));
+    this._changeListeners.forEach(listener => UpdrawEventHelper.callListener(listener, 'Remote agent listener'));
   }
 
   private ensureLoop(): void {
@@ -249,7 +249,7 @@ export class KritzelRemoteAgentManager {
 }
 
 /** Awareness comes from other clients: accept only well-formed agents, with bounded strings and lists. */
-function parseAgent(raw: unknown): KritzelAwarenessAgent | null {
+function parseAgent(raw: unknown): UpdrawAwarenessAgent | null {
   if (!raw || typeof raw !== 'object') {
     return null;
   }
@@ -261,8 +261,8 @@ function parseAgent(raw: unknown): KritzelAwarenessAgent | null {
     typeof value['name'] !== 'string' ||
     typeof value['color'] !== 'string' ||
     !position ||
-    !KritzelMathHelper.isFiniteNumber(position['x']) ||
-    !KritzelMathHelper.isFiniteNumber(position['y'])
+    !UpdrawMathHelper.isFiniteNumber(position['x']) ||
+    !UpdrawMathHelper.isFiniteNumber(position['y'])
   ) {
     return null;
   }
@@ -274,17 +274,17 @@ function parseAgent(raw: unknown): KritzelAwarenessAgent | null {
     status: typeof value['status'] === 'string' && value['status'] ? value['status'].slice(0, AGENT_BROADCAST_MAX_STATUS_LENGTH) : null,
     visible: value['visible'] !== false,
     activeAction: typeof value['activeAction'] === 'string' ? value['activeAction'] : null,
-    queueLength: KritzelMathHelper.isFiniteNumber(value['queueLength']) ? Math.max(0, Math.floor(value['queueLength'])) : 0,
+    queueLength: UpdrawMathHelper.isFiniteNumber(value['queueLength']) ? Math.max(0, Math.floor(value['queueLength'])) : 0,
     position: { x: position['x'] as number, y: position['y'] as number },
     attachedTo: parseAttachment(value['attachedTo']),
     isPressed: value['isPressed'] === true,
-    pressCount: KritzelMathHelper.isFiniteNumber(value['pressCount']) ? Math.max(0, Math.floor(value['pressCount'])) : 0,
+    pressCount: UpdrawMathHelper.isFiniteNumber(value['pressCount']) ? Math.max(0, Math.floor(value['pressCount'])) : 0,
     selectedObjectIds: parseIds(value['selectedObjectIds']),
     claimedObjectIds: parseIds(value['claimedObjectIds']),
   };
 }
 
-function parseAttachment(raw: unknown): KritzelAgenticAttachment | null {
+function parseAttachment(raw: unknown): UpdrawAgenticAttachment | null {
   if (!raw || typeof raw !== 'object') {
     return null;
   }
@@ -302,7 +302,7 @@ function parseAttachment(raw: unknown): KritzelAgenticAttachment | null {
     objectId: value['objectId'],
     // Known anchors only: an inherited key such as "toString" would break the anchor lookup.
     anchor: isAgenticAnchor(value['anchor']) ? value['anchor'] : 'center',
-    offset: { x: KritzelMathHelper.isFiniteNumber(offset?.['x']) ? (offset!['x'] as number) : 0, y: KritzelMathHelper.isFiniteNumber(offset?.['y']) ? (offset!['y'] as number) : 0 },
+    offset: { x: UpdrawMathHelper.isFiniteNumber(offset?.['x']) ? (offset!['x'] as number) : 0, y: UpdrawMathHelper.isFiniteNumber(offset?.['y']) ? (offset!['y'] as number) : 0 },
   };
 }
 

@@ -63,8 +63,8 @@ This will compile your project and store the build artifacts in the `dist/` dire
 
 ## Production deployment and stale versions
 
-The editor integration imports from `@kritzel/angular-editor`, including
-`provideKritzel` in the application configuration. After upgrading, commit both
+The editor integration imports from `@updraw/angular-editor`, including
+`provideUpdraw` in the application configuration. After upgrading, commit both
 `package.json` and `package-lock.json`. The client is built in CI (the deploy
 workflow runs `npm ci` and `npm run build -- --configuration=production`), and
 `Dockerfile.prod` only packages `dist/client/browser` into nginx. The Angular
@@ -84,7 +84,7 @@ docker compose -f docker-compose.prod.yml build
 docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
 ```
 
-Run these commands from `~/kritzel-app` on the server.
+Run these commands from `~/updraw-app` on the server.
 
 After a successful deployment, check the app in a fresh private browser session
 to distinguish an old server image from an old service-worker-controlled tab.

@@ -1,30 +1,30 @@
-import type { KritzelCore } from '../core/core.class';
-import type { KritzelAgent } from '../agent/agent.class';
-import type { KritzelAgentTool, KritzelAgentToolCall } from '../../interfaces/agent.interface';
-import type { KritzelChatBoxChip } from '../../interfaces/chat-box.interface';
-import type { KritzelObjectMap } from '../structures/object-map.structure';
+import type { UpdrawCore } from '../core/core.class';
+import type { UpdrawAgent } from '../agent/agent.class';
+import type { UpdrawAgentTool, UpdrawAgentToolCall } from '../../interfaces/agent.interface';
+import type { UpdrawChatBoxChip } from '../../interfaces/chat-box.interface';
+import type { UpdrawObjectMap } from '../structures/object-map.structure';
 import {
-  KRITZEL_CHAT_PROTOCOL_VERSION,
-  type KritzelChatInput,
-  type KritzelChatMessage,
-  type KritzelChatPart,
-  type KritzelChatRequest,
-  type KritzelChatResponse,
-  type KritzelChatSendResult,
-  type KritzelChatSessionEventMap,
-  type KritzelChatSessionOptions,
-  type KritzelChatStreamEvent,
-  type KritzelChatActor,
-  type KritzelChatTool,
-  type KritzelChatToolCallPart,
-  type KritzelChatToolResultPart,
+  UPDRAW_CHAT_PROTOCOL_VERSION,
+  type UpdrawChatInput,
+  type UpdrawChatMessage,
+  type UpdrawChatPart,
+  type UpdrawChatRequest,
+  type UpdrawChatResponse,
+  type UpdrawChatSendResult,
+  type UpdrawChatSessionEventMap,
+  type UpdrawChatSessionOptions,
+  type UpdrawChatStreamEvent,
+  type UpdrawChatActor,
+  type UpdrawChatTool,
+  type UpdrawChatToolCallPart,
+  type UpdrawChatToolResultPart,
 } from '../../interfaces/chat-session.interface';
-import { KritzelUserActor } from '../agent/user-actor.class';
-import { KritzelEventHelper } from '../../helpers/event.helper';
+import { UpdrawUserActor } from '../agent/user-actor.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
 import { ChatAnswer, isToolCallPart, normalizePart, type ChatAnswerRunOutcome } from './chat-answer';
 
-/** Brand of `KritzelChatSession`, also across bundle copies. */
-export const KRITZEL_CHAT_SESSION_BRAND = Symbol.for('kritzel.chatSession');
+/** Brand of `UpdrawChatSession`, also across bundle copies. */
+export const UPDRAW_CHAT_SESSION_BRAND = Symbol.for('updraw.chatSession');
 
 const DEFAULT_MAX_STEPS = 25;
 const DEFAULT_THINKING_STATUS = 'Thinking…';
@@ -35,16 +35,16 @@ const INTERRUPTED_OUTPUT = JSON.stringify({ completed: false, reason: 'aborted',
 const busyAgents = new WeakSet<object>();
 const busyCores = new WeakSet<object>();
 
-/** Whether a value is a `KritzelChatSession`, also from another bundle copy. */
-export function isKritzelChatSession(value: unknown): value is KritzelChatSession {
-  return typeof value === 'object' && value !== null && (value as Record<symbol, unknown>)[KRITZEL_CHAT_SESSION_BRAND] === true;
+/** Whether a value is an `UpdrawChatSession`, also from another bundle copy. */
+export function isUpdrawChatSession(value: unknown): value is UpdrawChatSession {
+  return typeof value === 'object' && value !== null && (value as Record<symbol, unknown>)[UPDRAW_CHAT_SESSION_BRAND] === true;
 }
 
-type SessionListener<K extends keyof KritzelChatSessionEventMap> = (payload: KritzelChatSessionEventMap[K]) => void;
+type SessionListener<K extends keyof UpdrawChatSessionEventMap> = (payload: UpdrawChatSessionEventMap[K]) => void;
 
 /** Thrown inside a run to end it with a status. */
 class RunEnd {
-  constructor(readonly result: KritzelChatSendResult) {}
+  constructor(readonly result: UpdrawChatSendResult) {}
 }
 
 /**
@@ -62,19 +62,19 @@ class RunEnd {
  *
  * Bind it to an editor with the `chatSession` property; the chat box then sends its prompts to it.
  */
-export class KritzelChatSession {
-  readonly [KRITZEL_CHAT_SESSION_BRAND] = true;
+export class UpdrawChatSession {
+  readonly [UPDRAW_CHAT_SESSION_BRAND] = true;
   /** Keeps Vue from making the session reactive. */
   readonly __v_skip = true;
 
-  private readonly _options: KritzelChatSessionOptions;
+  private readonly _options: UpdrawChatSessionOptions;
   private readonly _maxSteps: number;
   private readonly _eagerToolCalls: boolean;
   /** Agent mode: the agent's status from before the thinking status. */
   private _statusBeforeThinking: string | null = null;
-  private _messages: KritzelChatMessage[];
-  private _core: KritzelCore | null = null;
-  private _userActor: KritzelUserActor | null = null;
+  private _messages: UpdrawChatMessage[];
+  private _core: UpdrawCore | null = null;
+  private _userActor: UpdrawUserActor | null = null;
   private _running = false;
   private _abort: AbortController | null = null;
   private _promptCount = 0;
@@ -82,9 +82,9 @@ export class KritzelChatSession {
   private _pendingDetach = false;
   /** Why the running prompt was ended from outside. */
   private _endReason: 'stopped' | 'detached' | null = null;
-  private readonly _listeners = new Map<keyof KritzelChatSessionEventMap, Set<SessionListener<any>>>();
+  private readonly _listeners = new Map<keyof UpdrawChatSessionEventMap, Set<SessionListener<any>>>();
 
-  constructor(options: KritzelChatSessionOptions) {
+  constructor(options: UpdrawChatSessionOptions) {
     if (!options || typeof options.transport !== 'function') {
       throw new TypeError('A chat session needs a transport function.');
     }
@@ -99,7 +99,7 @@ export class KritzelChatSession {
   }
 
   /** The conversation so far. Store it to restore the conversation later (`messages` option). */
-  get messages(): readonly KritzelChatMessage[] {
+  get messages(): readonly UpdrawChatMessage[] {
     return this._messages;
   }
 
@@ -109,7 +109,7 @@ export class KritzelChatSession {
   }
 
   /** The agent the model acts as, or `null` when it works as the user. */
-  get agent(): KritzelAgent | null {
+  get agent(): UpdrawAgent | null {
     return this._options.agent ?? null;
   }
 
@@ -124,7 +124,7 @@ export class KritzelChatSession {
   }
 
   /** The tools the model gets: the canvas tools of the agent or of the user, plus the app's tools. */
-  get tools(): KritzelAgentTool[] {
+  get tools(): UpdrawAgentTool[] {
     return this.buildTools();
   }
 
@@ -132,7 +132,7 @@ export class KritzelChatSession {
    * Sends a prompt and runs the tool loop until the model answers without tool calls. Never rejects: the
    * result tells how it ended.
    */
-  async send(input: KritzelChatInput): Promise<KritzelChatSendResult> {
+  async send(input: UpdrawChatInput): Promise<UpdrawChatSendResult> {
     const core = this._core;
     if (!core) {
       return { status: 'detached' };
@@ -162,7 +162,7 @@ export class KritzelChatSession {
     const unsubscribe = this.watchRun(core);
     this.pushMessage(userMessage);
 
-    let result: KritzelChatSendResult;
+    let result: UpdrawChatSendResult;
     try {
       result = await this.runLoop(abort.signal);
     } catch (error) {
@@ -192,7 +192,7 @@ export class KritzelChatSession {
   }
 
   /** Subscribes to an event; returns a function that unsubscribes. */
-  on<K extends keyof KritzelChatSessionEventMap>(event: K, listener: SessionListener<K>): () => void {
+  on<K extends keyof UpdrawChatSessionEventMap>(event: K, listener: SessionListener<K>): () => void {
     let listeners = this._listeners.get(event);
     if (!listeners) {
       listeners = new Set();
@@ -213,12 +213,12 @@ export class KritzelChatSession {
   // ─── Binding ────────────────────────────────────────────────────────────────
 
   /** The editor core the session is bound to. @internal */
-  get _owner(): KritzelCore | null {
+  get _owner(): UpdrawCore | null {
     return this._core;
   }
 
   /** Binds the session to an editor core. Working as the user, it registers its actor there. @internal */
-  _attach(core: KritzelCore): void {
+  _attach(core: UpdrawCore): void {
     this._pendingDetach = false;
     if (this._core === core) {
       return;
@@ -226,7 +226,7 @@ export class KritzelChatSession {
     this._detach();
     this._core = core;
     if (!this._options.agent) {
-      this._userActor = new KritzelUserActor();
+      this._userActor = new UpdrawUserActor();
       this._userActor._attach(core);
     }
   }
@@ -263,9 +263,9 @@ export class KritzelChatSession {
   }
 
   /** Ends the run when the workspace goes away or the agent is removed. */
-  private watchRun(core: KritzelCore): () => void {
+  private watchRun(core: UpdrawCore): () => void {
     const unsubscribers: (() => void)[] = [];
-    const map = core.store?.objects as KritzelObjectMap<any> | undefined;
+    const map = core.store?.objects as UpdrawObjectMap<any> | undefined;
     if (map && typeof map.onBeforeDestroy === 'function') {
       unsubscribers.push(map.onBeforeDestroy(() => this.endRun('detached')));
     }
@@ -276,15 +276,15 @@ export class KritzelChatSession {
     return () => unsubscribers.forEach(unsubscribe => unsubscribe());
   }
 
-  private async runLoop(signal: AbortSignal): Promise<KritzelChatSendResult> {
+  private async runLoop(signal: AbortSignal): Promise<UpdrawChatSendResult> {
     const tools = this.buildTools();
     const byName = new Map(tools.map(tool => [tool.name, tool]));
     const definitions = tools.map(tool => ({ name: tool.name, description: tool.description, inputSchema: tool.inputSchema }));
 
     for (let step = 0; step < this._maxSteps; step++) {
       this.throwIfEnded(signal);
-      const request: KritzelChatRequest = {
-        version: KRITZEL_CHAT_PROTOCOL_VERSION,
+      const request: UpdrawChatRequest = {
+        version: UPDRAW_CHAT_PROTOCOL_VERSION,
         ...(this._options.system ? { system: this._options.system } : {}),
         messages: this._messages.map(cloneMessage),
         tools: definitions,
@@ -304,7 +304,7 @@ export class KritzelChatSession {
           return tool?.begin ? tool.begin({ signal, toolCallId: call.id }) : null;
         },
       });
-      let assistant: KritzelChatMessage;
+      let assistant: UpdrawChatMessage;
       try {
         const message = await this.withThinkingStatus(() => this.callTransport(request, signal, answer));
         this.throwIfEnded(signal);
@@ -337,8 +337,8 @@ export class KritzelChatSession {
     }
   }
 
-  private async callTransport(request: KritzelChatRequest, signal: AbortSignal, answer: ChatAnswer): Promise<KritzelChatMessage> {
-    let response: KritzelChatResponse | AsyncIterable<KritzelChatStreamEvent>;
+  private async callTransport(request: UpdrawChatRequest, signal: AbortSignal, answer: ChatAnswer): Promise<UpdrawChatMessage> {
+    let response: UpdrawChatResponse | AsyncIterable<UpdrawChatStreamEvent>;
     try {
       response = await this._options.transport(request, { signal });
       if (isAsyncIterable(response)) {
@@ -370,7 +370,7 @@ export class KritzelChatSession {
         return;
       }
       const partial = answer.partial();
-      const assistant: KritzelChatMessage = { ...partial, role: 'assistant', parts: partial.parts.map(normalizePart) };
+      const assistant: UpdrawChatMessage = { ...partial, role: 'assistant', parts: partial.parts.map(normalizePart) };
       const results = answer.runRest(assistant.parts.filter(isToolCallPart));
       this.pushMessage(assistant);
       this.pushMessage({ role: 'tool', parts: await results });
@@ -382,18 +382,18 @@ export class KritzelChatSession {
 
   /** Runs one tool call. Never rejects: failures become error results the model reads. */
   private async runCall(
-    call: KritzelChatToolCallPart,
-    byName: Map<string, KritzelAgentTool>,
+    call: UpdrawChatToolCallPart,
+    byName: Map<string, UpdrawAgentTool>,
     signal: AbortSignal,
     onRunning: () => void,
-    handle: KritzelAgentToolCall | null,
+    handle: UpdrawAgentToolCall | null,
   ): Promise<ChatAnswerRunOutcome> {
     const tool = byName.get(call.name);
     if (!tool) {
       try {
         await handle?.cancel();
       } catch (error) {
-        console.error(`[Kritzel] Cancelling tool call "${call.id}" (${call.name}) failed:`, error);
+        console.error(`[Updraw] Cancelling tool call "${call.id}" (${call.name}) failed:`, error);
       }
       return {
         result: {
@@ -416,7 +416,7 @@ export class KritzelChatSession {
       };
     } catch (error) {
       if (!(error instanceof Error && error.name === 'AbortError')) {
-        console.error(`[Kritzel] Chat tool "${call.name}" failed:`, error);
+        console.error(`[Updraw] Chat tool "${call.name}" failed:`, error);
       }
       return {
         result: {
@@ -459,7 +459,7 @@ export class KritzelChatSession {
     }
   }
 
-  private buildTools(): KritzelAgentTool[] {
+  private buildTools(): UpdrawAgentTool[] {
     const instant = !!this._options.instant;
     const { images, iframes, viewport } = this._options.canvasTools ?? {};
     const optional = {
@@ -471,7 +471,7 @@ export class KritzelChatSession {
       ? this._options.agent.tools({ ...optional, instant })
       : this._userActor
         ? this._userActor.tools(optional)
-        : new KritzelUserActor('unbound').tools(optional);
+        : new UpdrawUserActor('unbound').tools(optional);
     const canvasNames = new Set(canvas.map(tool => tool.name));
     const appNames = new Set<string>();
     for (const tool of this._options.tools ?? []) {
@@ -487,7 +487,7 @@ export class KritzelChatSession {
   }
 
   /** An app tool as a plain agent tool: its `run` gets the session's actor, resolved when it runs. */
-  private bindAppTool(tool: KritzelChatTool): KritzelAgentTool {
+  private bindAppTool(tool: UpdrawChatTool): UpdrawAgentTool {
     return {
       name: tool.name,
       description: tool.description,
@@ -510,7 +510,7 @@ export class KritzelChatSession {
   }
 
   /** What app tools act through: the agent or the user actor, with the tool call's signal and the session's options. */
-  private toolActor(signal: AbortSignal): KritzelChatActor {
+  private toolActor(signal: AbortSignal): UpdrawChatActor {
     const agent = this._options.agent;
     const actor = agent ?? this._userActor;
     if (!actor) {
@@ -530,7 +530,7 @@ export class KritzelChatSession {
     return context ? { context } : {};
   }
 
-  private pushMessage(message: KritzelChatMessage): void {
+  private pushMessage(message: UpdrawChatMessage): void {
     this._messages = [...this._messages, message];
     this.emit('message', message);
     this.emit('change', undefined);
@@ -545,17 +545,17 @@ export class KritzelChatSession {
     }
   }
 
-  private emit<K extends keyof KritzelChatSessionEventMap>(event: K, payload: KritzelChatSessionEventMap[K]): void {
-    this._listeners.get(event)?.forEach(listener => KritzelEventHelper.callListener(() => listener(payload), 'Chat session listener'));
+  private emit<K extends keyof UpdrawChatSessionEventMap>(event: K, payload: UpdrawChatSessionEventMap[K]): void {
+    this._listeners.get(event)?.forEach(listener => UpdrawEventHelper.callListener(() => listener(payload), 'Chat session listener'));
   }
 }
 
-function toUserMessage(input: KritzelChatInput): KritzelChatMessage | null {
+function toUserMessage(input: UpdrawChatInput): UpdrawChatMessage | null {
   const text = typeof input === 'string' ? input : input?.text;
   if (typeof text !== 'string' || text.trim() === '') {
     return null;
   }
-  const parts: KritzelChatPart[] = [{ type: 'text', text }];
+  const parts: UpdrawChatPart[] = [{ type: 'text', text }];
   if (typeof input !== 'string') {
     const chips = describeChips(input.chips ?? []);
     if (chips) {
@@ -569,7 +569,7 @@ function toUserMessage(input: KritzelChatInput): KritzelChatMessage | null {
 }
 
 /** Tells the model what the prompt refers to. */
-function describeChips(chips: KritzelChatBoxChip[]): string | null {
+function describeChips(chips: UpdrawChatBoxChip[]): string | null {
   const lines = chips.map(chip => {
     const name = chip.detail ? `${chip.label} › ${chip.detail}` : chip.label;
     const refs = [chip.objectId ? `objectId: ${chip.objectId}` : null, chip.selector ? `element: ${chip.selector}` : null].filter(Boolean);
@@ -579,25 +579,25 @@ function describeChips(chips: KritzelChatBoxChip[]): string | null {
 }
 
 /** Gives every tool call without a result an error result, so a restored conversation is valid. */
-function closeOpenToolCalls(messages: KritzelChatMessage[]): KritzelChatMessage[] {
-  const result: KritzelChatMessage[] = [];
+function closeOpenToolCalls(messages: UpdrawChatMessage[]): UpdrawChatMessage[] {
+  const result: UpdrawChatMessage[] = [];
   for (let i = 0; i < messages.length; i++) {
     const message = cloneMessage(messages[i]);
     result.push(message);
     if (message.role !== 'assistant') {
       continue;
     }
-    const calls = message.parts.filter((part): part is KritzelChatToolCallPart => part.type === 'tool-call');
+    const calls = message.parts.filter((part): part is UpdrawChatToolCallPart => part.type === 'tool-call');
     if (calls.length === 0) {
       continue;
     }
     const next = messages[i + 1];
     const answered = new Set(
-      next?.role === 'tool' ? next.parts.filter((part): part is KritzelChatToolResultPart => part.type === 'tool-result').map(part => part.toolCallId) : [],
+      next?.role === 'tool' ? next.parts.filter((part): part is UpdrawChatToolResultPart => part.type === 'tool-result').map(part => part.toolCallId) : [],
     );
     const missing = calls
       .filter(call => !answered.has(call.id))
-      .map<KritzelChatToolResultPart>(call => ({ type: 'tool-result', toolCallId: call.id, name: call.name, output: INTERRUPTED_OUTPUT, isError: true }));
+      .map<UpdrawChatToolResultPart>(call => ({ type: 'tool-result', toolCallId: call.id, name: call.name, output: INTERRUPTED_OUTPUT, isError: true }));
     if (missing.length === 0) {
       continue;
     }
@@ -611,10 +611,10 @@ function closeOpenToolCalls(messages: KritzelChatMessage[]): KritzelChatMessage[
   return result;
 }
 
-function cloneMessage(message: KritzelChatMessage): KritzelChatMessage {
+function cloneMessage(message: UpdrawChatMessage): UpdrawChatMessage {
   return { ...message, parts: (message.parts ?? []).map(part => ({ ...part })) };
 }
 
-function isAsyncIterable(value: unknown): value is AsyncIterable<KritzelChatStreamEvent> {
+function isAsyncIterable(value: unknown): value is AsyncIterable<UpdrawChatStreamEvent> {
   return typeof value === 'object' && value !== null && typeof (value as AsyncIterable<unknown>)[Symbol.asyncIterator] === 'function';
 }

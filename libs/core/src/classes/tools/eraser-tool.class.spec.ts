@@ -1,12 +1,12 @@
-import { KritzelEraserTool } from './eraser-tool.class';
-import { KritzelCore } from '../core/core.class';
-import { KritzelEventHelper } from '../../helpers/event.helper';
+import { UpdrawEraserTool } from './eraser-tool.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
 
 jest.mock('../core/core.class');
 jest.mock('../../helpers/event.helper');
 
-describe('KritzelEraserTool', () => {
-  let tool: KritzelEraserTool;
+describe('UpdrawEraserTool', () => {
+  let tool: UpdrawEraserTool;
   let mockCore: any;
   let mockState: any;
 
@@ -75,11 +75,11 @@ describe('KritzelEraserTool', () => {
         emitObjectsRemoved: jest.fn(),
         emitObjectsUpdated: jest.fn(),
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
-    tool = new KritzelEraserTool(mockCore);
+    tool = new UpdrawEraserTool(mockCore);
   });
 
   afterEach(() => {
@@ -99,7 +99,7 @@ describe('KritzelEraserTool', () => {
     });
 
     it('should not set isErasing on non-left click', () => {
-      (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+      (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
 
       tool.handlePointerDown(createMouseEvent({ button: 2 }));
 

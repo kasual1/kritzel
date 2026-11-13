@@ -1,39 +1,39 @@
-import { KritzelBaseTool } from '../classes/tools/base-tool.class';
-import { KritzelIconName } from '../classes/registries/icon-registry.class';
+import { UpdrawBaseTool } from '../classes/tools/base-tool.class';
+import { UpdrawIconName } from '../classes/registries/icon-registry.class';
 import { ShapeType } from '../enums/shape-type.enum';
 import { ThemeAwareColor } from '../constants/color-palette.constants';
-import { KritzelFontRegistration } from './font.interface';
+import { UpdrawFontRegistration } from './font.interface';
 
-export interface KritzelToolbarSubOption {
+export interface UpdrawToolbarSubOption {
   id: string;
-  icon: KritzelIconName;
+  icon: UpdrawIconName;
   label: string;
   value: any;
   toolProperty: string;
 }
 
-export interface KritzelToolbarItem {
+export interface UpdrawToolbarItem {
   type: 'tool' | 'config' | 'separator';
-  tool?: (new (...args: any[]) => KritzelBaseTool) | KritzelBaseTool;
-  icon?: KritzelIconName;
+  tool?: (new (...args: any[]) => UpdrawBaseTool) | UpdrawBaseTool;
+  icon?: UpdrawIconName;
   isDefault?: boolean;
   isDisabled?: boolean | (() => boolean | Promise<boolean>);
   name: string;
-  config?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig;
-  subOptions?: KritzelToolbarSubOption[];
+  config?: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig;
+  subOptions?: UpdrawToolbarSubOption[];
 }
 
-export interface KritzelTextToolConfig {
+export interface UpdrawTextToolConfig {
   color: ThemeAwareColor;
   size: number;
   opacity?: number;
   fontFamily: string;
-  availableFonts?: KritzelFontRegistration[];
+  availableFonts?: UpdrawFontRegistration[];
   palette: ThemeAwareColor[];
   sizes?: number[];
 }
 
-export interface KritzelBrushToolConfig {
+export interface UpdrawBrushToolConfig {
   color: ThemeAwareColor;
   size: number;
   opacity?: number;
@@ -41,7 +41,7 @@ export interface KritzelBrushToolConfig {
   sizes?: number[];
 }
 
-export interface KritzelLineToolConfig {
+export interface UpdrawLineToolConfig {
   color: ThemeAwareColor;
   size: number;
   opacity?: number;
@@ -53,7 +53,7 @@ export interface KritzelLineToolConfig {
   };
 }
 
-export interface KritzelShapeToolConfig {
+export interface UpdrawShapeToolConfig {
   shapeType: ShapeType;
   fillColor: ThemeAwareColor;
   strokeColor: ThemeAwareColor;

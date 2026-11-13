@@ -1,30 +1,30 @@
 ---
 sidebar_label: Theming
-title: "Theming | Kritzel for React"
-description: "Customize the look and feel of the Kritzel editor with CSS variables and theme tokens."
+title: "Theming | Updraw for React"
+description: "Customize the look and feel of the Updraw editor with CSS variables and theme tokens."
 ---
 # Theming
 
-Kritzel includes built-in light and dark themes. Themes are applied via CSS variables, making every visual aspect customizable.
+Updraw includes built-in light and dark themes. Themes are applied via CSS variables, making every visual aspect customizable.
 
 ## Setting the Theme
 
-### On `<KritzelEngine>`
+### On `<UpdrawEngine>`
 
 ```tsx
-import { KritzelEngine } from '@kritzel/react-editor';
+import { UpdrawEngine } from '@updraw/react-editor';
 
 export function DarkCanvas() {
-  return <KritzelEngine theme="dark" />;
+  return <UpdrawEngine theme="dark" />;
 }
 ```
 
-### On `<KritzelEditor>`
+### On `<UpdrawEditor>`
 
 The editor manages the theme internally and emits a `themeChange` event when it changes. The user can toggle the theme through the settings panel.
 
 ```tsx
-<KritzelEditor
+<UpdrawEditor
   onThemeChange={(event) => {
     console.log('Theme changed to:', event.detail);
   }}
@@ -81,12 +81,12 @@ const color: ThemeAwareColor = {
 
 When the theme switches, all objects and tools automatically resolve to the appropriate color value.
 
-## KritzelTheme Interface
+## UpdrawTheme Interface
 
-The `KritzelTheme` interface defines CSS variables for every component section. You can import and customize the built-in themes:
+The `UpdrawTheme` interface defines CSS variables for every component section. You can import and customize the built-in themes:
 
 ```ts
-import { lightTheme, darkTheme } from '@kritzel/engine';
+import { lightTheme, darkTheme } from '@updraw/engine';
 ```
 
 Theme sections include: `global`, `engine`, `toolbar`, `selection`, `dialog`, `contextMenu`, `utilityPanel`, `tooltip`, `menu`, `dropdown`, `portal`, `settings`, `splitButton`, `moreMenu`, `titlebar`, and more.

@@ -1,8 +1,8 @@
 {
-  "name": "@kritzel/editor",
+  "name": "@updraw/editor",
   "version": "0.6.2",
-  "description": "Core editor package for Kritzel UI components.",
-  "homepage": "https://kritzel.io/",
+  "description": "Core editor package for Updraw UI components.",
+  "homepage": "https://updraw.io/",
   "keywords": [
     "infinite canvas",
     "collaboration",
@@ -16,7 +16,7 @@
   "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
-  "unpkg": "dist/kritzel-editor/kritzel-editor.esm.js",
+  "unpkg": "dist/updraw-editor/updraw-editor.esm.js",
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
@@ -62,11 +62,11 @@
     "release": "npm publish"
   },
   "dependencies": {
-    "@kritzel/core": "^0.6.2",
+    "@updraw/core": "^0.6.2",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
-    "@kritzel/engine": "^0.6.2",
+    "@updraw/engine": "^0.6.2",
     "@stencil/angular-output-target": "^1.3.0",
     "@stencil/core": "^4.43.3",
     "@stencil/react-output-target": "^1.2.0",
@@ -80,7 +80,7 @@
     "ts-jest": "^29.4.4"
   },
   "peerDependencies": {
-    "@kritzel/engine": "^0.6.2",
+    "@updraw/engine": "^0.6.2",
     "lib0": "^0.2.98",
     "y-indexeddb": "^9.0.12",
     "y-websocket": "^3.0.0",

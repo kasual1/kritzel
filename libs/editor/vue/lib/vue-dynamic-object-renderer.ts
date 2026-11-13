@@ -1,17 +1,17 @@
 import { defineCustomElement, type DefineComponent } from 'vue';
 import {
-  KritzelDynamicObjectRendererRegistry,
-  type KritzelDynamicObjectRenderContext,
-  type KritzelDynamicObjectRenderer,
-} from '@kritzel/engine';
+  UpdrawDynamicObjectRendererRegistry,
+  type UpdrawDynamicObjectRenderContext,
+  type UpdrawDynamicObjectRenderer,
+} from '@updraw/engine';
 
 export interface VueDynamicObjectRendererOptions<TState = unknown> {
   tagName: string;
   component: DefineComponent<any, any, any, any, any, any, any, any>;
   createInitialState?: () => TState;
-  getInitialState?: (data: unknown, context: KritzelDynamicObjectRenderContext) => TState;
-  mapProps?: (state: TState | undefined, context: KritzelDynamicObjectRenderContext) => Record<string, unknown>;
-  normalizeState?: (state: unknown, context: KritzelDynamicObjectRenderContext) => TState;
+  getInitialState?: (data: unknown, context: UpdrawDynamicObjectRenderContext) => TState;
+  mapProps?: (state: TState | undefined, context: UpdrawDynamicObjectRenderContext) => Record<string, unknown>;
+  normalizeState?: (state: unknown, context: UpdrawDynamicObjectRenderContext) => TState;
   onStateChangeProp?: string | null;
   styles?: string;
 }
@@ -29,7 +29,7 @@ function setHostProps(host: HTMLElement, props: Record<string, unknown>): void {
 
 export function createVueDynamicObjectRenderer<TState = unknown>(
   options: VueDynamicObjectRendererOptions<TState>,
-): KritzelDynamicObjectRenderer {
+): UpdrawDynamicObjectRenderer {
   const mountedElements = new Map<string, MountedVueCustomElement<TState>>();
 
   const ensureCustomElementDefined = () => {
@@ -112,9 +112,9 @@ export function registerVueDynamicObjectRenderer<TState = unknown>(
   options: VueDynamicObjectRendererOptions<TState>,
 ): () => void {
   const renderer = createVueDynamicObjectRenderer(options);
-  KritzelDynamicObjectRendererRegistry.register(rendererKey, renderer);
+  UpdrawDynamicObjectRendererRegistry.register(rendererKey, renderer);
 
   return () => {
-    KritzelDynamicObjectRendererRegistry.unregister(rendererKey);
+    UpdrawDynamicObjectRendererRegistry.unregister(rendererKey);
   };
 }

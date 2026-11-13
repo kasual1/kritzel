@@ -1,11 +1,11 @@
-import { KritzelCore } from '..';
+import { UpdrawCore } from '..';
 
-export interface KritzelShortcut {
+export interface UpdrawShortcut {
   key: string;
   ctrl?: boolean;
   shift?: boolean;
   label: string;
   category: string;
-  condition?: (core: KritzelCore) => boolean;
-  action: (core: KritzelCore) => void;
+  condition?: (core: UpdrawCore) => boolean;
+  action: (core: UpdrawCore) => void;
 }

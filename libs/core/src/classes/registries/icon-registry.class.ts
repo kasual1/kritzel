@@ -1,30 +1,30 @@
-type KritzelIconRegistryStore = {
+type UpdrawIconRegistryStore = {
   icons: Map<string, string>;
   listeners: Set<(name: string) => void>;
 };
 
-const KRITZEL_ICON_REGISTRY_KEY = '__kritzelIconRegistry__';
+const UPDRAW_ICON_REGISTRY_KEY = '__updrawIconRegistry__';
 
-const getGlobalRegistryStore = (): KritzelIconRegistryStore => {
+const getGlobalRegistryStore = (): UpdrawIconRegistryStore => {
   const globalScope = globalThis as unknown as Record<string, unknown>;
-  const existing = globalScope[KRITZEL_ICON_REGISTRY_KEY] as KritzelIconRegistryStore | undefined;
+  const existing = globalScope[UPDRAW_ICON_REGISTRY_KEY] as UpdrawIconRegistryStore | undefined;
   if (existing) {
     return existing;
   }
 
-  const created: KritzelIconRegistryStore = {
+  const created: UpdrawIconRegistryStore = {
     icons: new Map<string, string>(),
     listeners: new Set<(name: string) => void>(),
   };
-  globalScope[KRITZEL_ICON_REGISTRY_KEY] = created;
+  globalScope[UPDRAW_ICON_REGISTRY_KEY] = created;
   return created;
 };
 
 /**
- * A static registry for managing SVG icons throughout the Kritzel library.
+ * A static registry for managing SVG icons throughout the Updraw library.
  * Icons are stored as name-to-SVG-content mappings and can be retrieved by name.
  */
-export class KritzelIconRegistry {
+export class UpdrawIconRegistry {
   /** Internal storage for registered icons, mapping icon names to their SVG content. */
   private static get registry(): Map<string, string> {
     return getGlobalRegistryStore().icons;
@@ -64,7 +64,7 @@ export class KritzelIconRegistry {
    * @param name - The unique identifier of the icon to retrieve.
    * @returns The SVG markup string if the icon exists, or `undefined` if not found.
    */
-  public static get(name: KritzelIconName): string | undefined {
+  public static get(name: UpdrawIconName): string | undefined {
     return this.registry.get(name);
   }
 
@@ -74,7 +74,7 @@ export class KritzelIconRegistry {
    *
    * @param icons - An object where keys are icon names and values are SVG markup strings.
    */
-  public static registerIcons(icons: KritzelSvgIconMap): void {
+  public static registerIcons(icons: UpdrawSvgIconMap): void {
     for (const name in icons) {
       if (Object.prototype.hasOwnProperty.call(icons, name)) {
         this.register(name, icons[name]);
@@ -88,7 +88,7 @@ export class KritzelIconRegistry {
    * @param name - The unique identifier of the icon to check.
    * @returns `true` if the icon exists in the registry, `false` otherwise.
    */
-  public static has(name: KritzelIconName): boolean {
+  public static has(name: UpdrawIconName): boolean {
     return this.registry.has(name);
   }
 }
@@ -164,11 +164,11 @@ export const defaultIcons = {
 } satisfies Record<string, string>;
 
 for (const [name, svg] of Object.entries(defaultIcons)) {
-  if (!KritzelIconRegistry.has(name)) {
-    KritzelIconRegistry.register(name, svg);
+  if (!UpdrawIconRegistry.has(name)) {
+    UpdrawIconRegistry.register(name, svg);
   }
 }
 
-export type KritzelDefaultIconName = keyof typeof defaultIcons;
-export type KritzelIconName = KritzelDefaultIconName | (string & NonNullable<unknown>);
-export type KritzelSvgIconMap = Partial<Record<KritzelDefaultIconName, string>> & Record<string, string>;
+export type UpdrawDefaultIconName = keyof typeof defaultIcons;
+export type UpdrawIconName = UpdrawDefaultIconName | (string & NonNullable<unknown>);
+export type UpdrawSvgIconMap = Partial<Record<UpdrawDefaultIconName, string>> & Record<string, string>;

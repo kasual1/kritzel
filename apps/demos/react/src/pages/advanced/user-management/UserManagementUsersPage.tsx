@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { KritzelEditor } from "@kritzel/react-editor";
+import { UpdrawEditor } from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { collaborators, createUserManagementWorkspaces, currentUser } from "./user-management-shared";
@@ -8,7 +8,7 @@ export function UserManagementUsersPage() {
   const workspaces = useMemo(() => createUserManagementWorkspaces(), []);
 
   return (
-    <KritzelEditor
+    <UpdrawEditor
       editorId="user-management-users"
       user={currentUser}
       activeUsers={collaborators}

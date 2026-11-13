@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { KritzelEditor, KritzelWorkspace } from '@kritzel/vue-editor'
+import { UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import { createSeedObjects } from './seed-objects'
 
 const themes = [vueThemeLight]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 </script>
 
 <template>
     <div class="host">
-        <KritzelEditor
+        <UpdrawEditor
             editorId="quickstart"
             theme="light"
             :themes="themes"

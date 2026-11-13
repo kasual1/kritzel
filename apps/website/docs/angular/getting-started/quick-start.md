@@ -1,11 +1,11 @@
 ---
 sidebar_label: Quick Start
-title: "Quick Start | Kritzel for Angular"
-description: "Install and integrate the Kritzel infinite canvas into your Angular application in minutes."
+title: "Quick Start | Updraw for Angular"
+description: "Install and integrate the Updraw infinite canvas into your Angular application in minutes."
 keywords:
   - angular whiteboard
   - angular infinite canvas
-  - kritzel
+  - updraw
 toc_max_heading_level: 2
 ---
 
@@ -14,19 +14,19 @@ import SkillInstallation from '@site/src/components/SkillInstallation';
 
 # Quick Start
 
-The following guide gets you a full Kritzel editor setup in under five minutes.
+The following guide gets you a full Updraw editor setup in under five minutes.
 
 ## Installation
 
-Run the following command to install the Kritzel editor in your project.
+Run the following command to install the Updraw editor in your project.
 
 ```bash
-npm install @kritzel/angular-editor
+npm install @updraw/angular-editor
 ```
 
 <SkillInstallation>
 
-Install the related Kritzel skill for coding assistance:
+Install the related Updraw skill for coding assistance:
 
 ```bash
 npx skills add kasual1/kritzel
@@ -36,31 +36,31 @@ npx skills add kasual1/kritzel
 
 ## Setup
 
-Register Kritzel in your application config:
+Register Updraw in your application config:
 
 ```ts title="app.config.ts"
 import { ApplicationConfig } from '@angular/core';
-import { provideKritzel } from '@kritzel/angular-editor';
+import { provideUpdraw } from '@updraw/angular-editor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     // ... other providers
-    provideKritzel(),
+    provideUpdraw(),
   ],
 };
 ```
 
-Then use the `<kritzel-editor>` component in your template:
+Then use the `<updraw-editor>` component in your template:
 
 ```ts title="editor.component.ts"
 import { Component } from '@angular/core';
-import { KritzelEditor } from '@kritzel/angular-editor';
+import { UpdrawEditor } from '@updraw/angular-editor';
 
 @Component({
   selector: 'app-editor',
-  imports: [KritzelEditor],
-  template: `<kritzel-editor></kritzel-editor>`,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
+  imports: [UpdrawEditor],
+  template: `<updraw-editor></updraw-editor>`,
+  styles: [`updraw-editor { display: block; width: 100%; height: 100vh; }`],
 })
 export class EditorComponent {}
 ```
@@ -83,16 +83,16 @@ For provider behavior details and persistence guidance, take a look at [Persiste
 
 ```ts title="editor.component.ts"
 import { Component } from '@angular/core';
-import { IndexedDBSyncProvider, KritzelEditor, KritzelSyncConfig } from '@kritzel/angular-editor';
+import { IndexedDBSyncProvider, UpdrawEditor, UpdrawSyncConfig } from '@updraw/angular-editor';
 
 @Component({
   selector: 'app-editor',
-  imports: [KritzelEditor],
-  template: `<kritzel-editor [syncConfig]="syncConfig"></kritzel-editor>`,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
+  imports: [UpdrawEditor],
+  template: `<updraw-editor [syncConfig]="syncConfig"></updraw-editor>`,
+  styles: [`updraw-editor { display: block; width: 100%; height: 100vh; }`],
 })
 export class EditorComponent {
-  readonly syncConfig: KritzelSyncConfig = {
+  readonly syncConfig: UpdrawSyncConfig = {
     providers: [IndexedDBSyncProvider],
   };
 }
@@ -100,7 +100,7 @@ export class EditorComponent {
 
 ### Full Viewport Styling
 
-To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g., `styles.css`):
+To ensure the Updraw editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g., `styles.css`):
 
 ```css
 html,

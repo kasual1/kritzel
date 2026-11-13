@@ -1,15 +1,15 @@
-import { KritzelTextTool } from './text-tool.class';
-import { KritzelCore } from '../core/core.class';
-import { KritzelText } from '../objects/text.class';
-import { KritzelEventHelper } from '../../helpers/event.helper';
+import { UpdrawTextTool } from './text-tool.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawText } from '../objects/text.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 jest.mock('../core/core.class');
 jest.mock('../objects/text.class');
 jest.mock('../../helpers/event.helper');
 
-describe('KritzelTextTool', () => {
-  let tool: KritzelTextTool;
+describe('UpdrawTextTool', () => {
+  let tool: UpdrawTextTool;
   let mockCore: any;
   let mockObjectsMap: any;
   let mockState: any;
@@ -87,8 +87,8 @@ describe('KritzelTextTool', () => {
       edit: jest.fn(),
     };
 
-    (KritzelText.create as jest.Mock).mockReturnValue(mockCreatedText);
-    (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpdrawText.create as jest.Mock).mockReturnValue(mockCreatedText);
+    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockCore = {
       objectTitlebarManager: {
@@ -111,9 +111,9 @@ describe('KritzelTextTool', () => {
       resetActiveText: jest.fn(),
       updateObject: jest.fn(),
       toolRegistry: { getTool: jest.fn().mockReturnValue(mockSelectionTool) },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    tool = new KritzelTextTool(mockCore);
+    tool = new UpdrawTextTool(mockCore);
   });
 
   afterEach(() => {
@@ -172,7 +172,7 @@ describe('KritzelTextTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
+      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
       expect(mockCreatedText.fontColor).toEqual(tool.fontColor);
       expect(mockCreatedText.opacity).toBe(tool.opacity);
       expect(mockCreatedText.zIndex).toBe(5);
@@ -182,12 +182,12 @@ describe('KritzelTextTool', () => {
     });
 
     it('should not create a text object on non-left click', () => {
-      (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+      (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
       const event = createMouseEvent({ button: 2 });
 
       tool.handlePointerDown(event);
 
-      expect(KritzelText.create).not.toHaveBeenCalled();
+      expect(UpdrawText.create).not.toHaveBeenCalled();
     });
 
     it('should position text using viewport offset', () => {
@@ -223,7 +223,7 @@ describe('KritzelTextTool', () => {
 
       tool.handlePointerDown(createMouseEvent());
 
-      expect(KritzelText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
+      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
     });
 
     it('should pass viewportScale when lockDrawingScale is false', () => {
@@ -232,7 +232,7 @@ describe('KritzelTextTool', () => {
 
       tool.handlePointerDown(createMouseEvent());
 
-      expect(KritzelText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 2);
+      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 2);
     });
 
     it('should use custom fontSize and fontFamily', () => {
@@ -241,7 +241,7 @@ describe('KritzelTextTool', () => {
 
       tool.handlePointerDown(createMouseEvent());
 
-      expect(KritzelText.create).toHaveBeenCalledWith(mockCore, 24, 'Courier', 1);
+      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 24, 'Courier', 1);
     });
 
     it('should use custom fontColor and opacity', () => {
@@ -256,7 +256,7 @@ describe('KritzelTextTool', () => {
     });
 
     it('should edit existing text when clicking on it with no active text', () => {
-      const existingText = Object.create(KritzelText.prototype);
+      const existingText = Object.create(UpdrawText.prototype);
       existingText.edit = jest.fn();
       existingText.id = 'existing-text';
 
@@ -270,15 +270,15 @@ describe('KritzelTextTool', () => {
       tool.handlePointerDown(event);
 
       expect(existingText.edit).toHaveBeenCalledWith(event);
-      expect(KritzelText.create).not.toHaveBeenCalled();
+      expect(UpdrawText.create).not.toHaveBeenCalled();
     });
 
     it('should save active text and edit new one when clicking on different text', () => {
-      const activeText = Object.create(KritzelText.prototype);
+      const activeText = Object.create(UpdrawText.prototype);
       activeText.save = jest.fn();
       mockCore.store.activeText = activeText;
 
-      const clickedText = Object.create(KritzelText.prototype);
+      const clickedText = Object.create(UpdrawText.prototype);
       clickedText.edit = jest.fn();
       clickedText.id = 'clicked-text';
 
@@ -292,11 +292,11 @@ describe('KritzelTextTool', () => {
 
       expect(activeText.save).toHaveBeenCalled();
       expect(clickedText.edit).toHaveBeenCalledWith(event);
-      expect(KritzelText.create).not.toHaveBeenCalled();
+      expect(UpdrawText.create).not.toHaveBeenCalled();
     });
 
     it('should reset active text and switch to selection when clicking on non-text', () => {
-      const activeText = Object.create(KritzelText.prototype);
+      const activeText = Object.create(UpdrawText.prototype);
       activeText.save = jest.fn();
       mockCore.store.activeText = activeText;
 
@@ -304,7 +304,7 @@ describe('KritzelTextTool', () => {
 
       expect(mockCore.resetActiveText).toHaveBeenCalled();
       expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockSelectionTool);
-      expect(KritzelText.create).not.toHaveBeenCalled();
+      expect(UpdrawText.create).not.toHaveBeenCalled();
     });
   });
 
@@ -319,7 +319,7 @@ describe('KritzelTextTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
+      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
       expect(mockObjectsMap.insert).toHaveBeenCalledWith(mockCreatedText);
       expect(mockCore.rerender).toHaveBeenCalled();
       expect(mockCreatedText.edit).toHaveBeenCalledWith(event);
@@ -331,7 +331,7 @@ describe('KritzelTextTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelText.create).toHaveBeenCalled();
+      expect(UpdrawText.create).toHaveBeenCalled();
       expect(mockCreatedText.edit).toHaveBeenCalledWith(event);
     });
 
@@ -342,7 +342,7 @@ describe('KritzelTextTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelText.create).not.toHaveBeenCalled();
+      expect(UpdrawText.create).not.toHaveBeenCalled();
     });
 
     it('should round coordinates for touch input', () => {
@@ -379,7 +379,7 @@ describe('KritzelTextTool', () => {
 
       tool.handlePointerDown(createTouchEvent());
 
-      expect(KritzelText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
+      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
     });
 
     it('should pass viewportScale when lockDrawingScale is false (touch)', () => {
@@ -389,11 +389,11 @@ describe('KritzelTextTool', () => {
 
       tool.handlePointerDown(createTouchEvent());
 
-      expect(KritzelText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 2);
+      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 2);
     });
 
     it('should edit existing text on touch (no active text)', () => {
-      const existingText = Object.create(KritzelText.prototype);
+      const existingText = Object.create(UpdrawText.prototype);
       existingText.edit = jest.fn();
       existingText.id = 'existing-text';
 
@@ -408,15 +408,15 @@ describe('KritzelTextTool', () => {
       tool.handlePointerDown(event);
 
       expect(existingText.edit).toHaveBeenCalledWith(event);
-      expect(KritzelText.create).not.toHaveBeenCalled();
+      expect(UpdrawText.create).not.toHaveBeenCalled();
     });
 
     it('should save active text and edit new one on touch', () => {
-      const activeText = Object.create(KritzelText.prototype);
+      const activeText = Object.create(UpdrawText.prototype);
       activeText.save = jest.fn();
       mockCore.store.activeText = activeText;
 
-      const clickedText = Object.create(KritzelText.prototype);
+      const clickedText = Object.create(UpdrawText.prototype);
       clickedText.edit = jest.fn();
       clickedText.id = 'clicked-text';
 
@@ -434,7 +434,7 @@ describe('KritzelTextTool', () => {
     });
 
     it('should reset active text and switch to selection on touch when clicking non-text', () => {
-      const activeText = Object.create(KritzelText.prototype);
+      const activeText = Object.create(UpdrawText.prototype);
       activeText.save = jest.fn();
       mockCore.store.activeText = activeText;
       mockState.pointers.set(1, { clientX: 100, clientY: 200 });
@@ -533,7 +533,7 @@ describe('KritzelTextTool', () => {
     let activeText: any;
 
     beforeEach(() => {
-      activeText = Object.create(KritzelText.prototype);
+      activeText = Object.create(UpdrawText.prototype);
       activeText.id = 'active-text';
       mockCore.store.activeText = activeText;
     });
@@ -600,7 +600,7 @@ describe('KritzelTextTool', () => {
 
   describe('object titlebar', () => {
     const startEditing = () => {
-      const activeText = Object.create(KritzelText.prototype);
+      const activeText = Object.create(UpdrawText.prototype);
       activeText.save = jest.fn();
       mockCore.store.activeText = activeText;
       // setState is mocked, so install the selection tool the way the real store would

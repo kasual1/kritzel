@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef } from "react";
-import { KritzelDynamicObjectRendererRegistry, KritzelEditor, KritzelWorkspace } from "@kritzel/react-editor";
+import { UpdrawDynamicObjectRendererRegistry, UpdrawEditor, UpdrawWorkspace } from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createHtmlCalculator, createHtmlCalculatorObject, HTML_CALCULATOR_RENDERER_KEY, normalizeCalculatorState, type HtmlCalculatorInstance } from "./html-calculator";
 
 export function DynamicObjectsHtmlPage() {
   const mountedCalculators = useRef(new Map<string, HtmlCalculatorInstance>());
-  const workspaces = useMemo(() => [new KritzelWorkspace({ objects: [createHtmlCalculatorObject()] })], []);
+  const workspaces = useMemo(() => [new UpdrawWorkspace({ objects: [createHtmlCalculatorObject()] })], []);
 
   useEffect(() => {
     const calculators = mountedCalculators.current;
@@ -15,7 +15,7 @@ export function DynamicObjectsHtmlPage() {
       calculators.delete(objectId);
       if (container) container.innerHTML = "";
     };
-    KritzelDynamicObjectRendererRegistry.register(HTML_CALCULATOR_RENDERER_KEY, {
+    UpdrawDynamicObjectRendererRegistry.register(HTML_CALCULATOR_RENDERER_KEY, {
       onMount: ({ object, container, data }) => {
         if (!container) return;
         destroy(object.id, container);
@@ -34,13 +34,13 @@ export function DynamicObjectsHtmlPage() {
     return () => {
       calculators.forEach((instance) => instance.destroy());
       calculators.clear();
-      KritzelDynamicObjectRendererRegistry.unregister(HTML_CALCULATOR_RENDERER_KEY);
+      UpdrawDynamicObjectRendererRegistry.unregister(HTML_CALCULATOR_RENDERER_KEY);
     };
   }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <KritzelEditor
+      <UpdrawEditor
         editorId="dynamic-objects-html"
         theme="light"
         themes={[reactThemeLight, reactThemeDark]}

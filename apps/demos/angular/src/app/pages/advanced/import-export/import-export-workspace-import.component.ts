@@ -1,14 +1,14 @@
 import { Component, ChangeDetectionStrategy, signal, viewChild } from '@angular/core';
-import { EditorIsReadyEvent, KritzelBaseObject, KritzelEditor, KritzelLine, KritzelPath, KritzelShape, KritzelWorkspace, ShapeType } from '@kritzel/angular-editor';
+import { EditorIsReadyEvent, UpdrawBaseObject, UpdrawEditor, UpdrawLine, UpdrawPath, UpdrawShape, UpdrawWorkspace, ShapeType } from '@updraw/angular-editor';
 import { InfoPanelComponent } from '../../../components/info-panel.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 
-function createImportedWorkspaceObjects(): KritzelBaseObject[] {
+function createImportedWorkspaceObjects(): UpdrawBaseObject[] {
   return [
-    new KritzelShape({
+    new UpdrawShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -18,7 +18,7 @@ function createImportedWorkspaceObjects(): KritzelBaseObject[] {
       strokeColor: { light: '#1565c0', dark: '#1565c0' },
       strokeWidth: 3,
     }),
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -28,7 +28,7 @@ function createImportedWorkspaceObjects(): KritzelBaseObject[] {
       strokeColor: { light: '#00bcd4', dark: '#00bcd4' },
       strokeWidth: 3,
     }),
-    new KritzelLine({
+    new UpdrawLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -36,7 +36,7 @@ function createImportedWorkspaceObjects(): KritzelBaseObject[] {
       stroke: { light: '#00bcd4', dark: '#00bcd4' },
       strokeWidth: 3,
     }),
-    new KritzelPath({
+    new UpdrawPath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -57,7 +57,7 @@ function createImportedWorkspaceObjects(): KritzelBaseObject[] {
 }
 
 function createImportedWorkspaceJson(): string {
-  const workspace = new KritzelWorkspace({
+  const workspace = new UpdrawWorkspace({
     name: 'Imported Workspace',
     objects: createImportedWorkspaceObjects(),
   });
@@ -74,7 +74,7 @@ function createImportedWorkspaceJson(): string {
 
 @Component({
   selector: 'app-import-export-workspace-import',
-  imports: [InfoPanelComponent, KritzelEditor, ToolbarComponent],
+  imports: [InfoPanelComponent, UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -83,7 +83,7 @@ function createImportedWorkspaceJson(): string {
     </app-toolbar>
     <div class="content">
       <div class="editor-wrap">
-        <kritzel-editor
+        <updraw-editor
           editorId="import-export-workspace-import"
           [theme]="'light'"
           [themes]="themes"
@@ -93,7 +93,7 @@ function createImportedWorkspaceJson(): string {
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"
           (isReady)="onReady($event)"
-        ></kritzel-editor>
+        ></updraw-editor>
       </div>
       <app-info-panel>
         <h3>Workspace to Import</h3>
@@ -118,7 +118,7 @@ function createImportedWorkspaceJson(): string {
         flex: 1 1 60%;
         position: relative;
       }
-      kritzel-editor {
+      updraw-editor {
         display: block;
         height: 100%;
       }
@@ -137,13 +137,13 @@ function createImportedWorkspaceJson(): string {
   ],
 })
 export class ImportExportWorkspaceImportComponent {
-  editor = viewChild(KritzelEditor);
+  editor = viewChild(UpdrawEditor);
 
   jsonInput = signal('');
   activeWorkspaceName = signal('');
   themes = [angularThemeLight, angularThemeDark];
-  workspaces = signal<KritzelWorkspace[]>([
-    new KritzelWorkspace({
+  workspaces = signal<UpdrawWorkspace[]>([
+    new UpdrawWorkspace({
       id: 'workspace-import-initial',
       name: 'Initial Workspace',
       objects: createSeedObjects(),
