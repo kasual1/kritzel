@@ -170,7 +170,7 @@ docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql 
 ```
 
 ```bash
-docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d updraw_yjs -c "\\dt"
+docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d updraw -c "\\dt"
 ```
 
 ## WebSocket migrations (TypeORM)
@@ -196,7 +196,7 @@ docker compose --env-file .env.dev -f docker-compose.dev.yml exec websocket sh -
 Show applied migration history in the DB:
 
 ```bash
-docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d updraw_yjs -c "SELECT id, timestamp, name FROM migrations ORDER BY id"
+docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d updraw -c "SELECT id, timestamp, name FROM migrations ORDER BY id"
 ```
 
 Auto-apply pending migrations by restarting websocket (startup runs migrations first):

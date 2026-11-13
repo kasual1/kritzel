@@ -75,8 +75,9 @@ jobs:
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: rm -rf ~/updraw-app/client/dist
 
-      # strip_components drops the "apps/app" prefix so the server keeps its existing
-      # ~/updraw-app layout (compose project name, .env and pgdata volume stay the same).
+      # strip_components drops the "apps/app" prefix so the files land directly in ~/updraw-app, next to the
+      # server's .env. The compose project (and its pgdata volume) is named by docker-compose.prod.yml.
+      # ~/updraw-app must already exist: apps/app/docs/rebrand-cutover.md moves it once from ~/kritzel-app.
       - name: Copy files to Lightsail
         uses: appleboy/scp-action@v0.1.7
         with:

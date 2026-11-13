@@ -1,6 +1,7 @@
 import type { Extension } from "@hocuspocus/server";
 import type { Pool } from "pg";
 import * as Y from "yjs";
+import { assertCurrentDocumentName } from "../legacy-brand";
 
 interface DocumentPayload {
   documentName: string;
@@ -12,6 +13,9 @@ export class PersistenceExtension implements Extension {
   constructor(private readonly pool: Pool) {}
 
   async onLoadDocument({ documentName, document, context }: DocumentPayload) {
+    // Throwing here makes Hocuspocus close the connection without creating the document.
+    assertCurrentDocumentName(documentName);
+
     const { rows } = await this.pool.query(
       `SELECT data, "public", user_id FROM documents WHERE id = $1`,
       [documentName],
@@ -35,6 +39,8 @@ export class PersistenceExtension implements Extension {
   }
 
   async onStoreDocument({ documentName, document, context }: DocumentPayload) {
+    assertCurrentDocumentName(documentName);
+
     const state = Buffer.from(Y.encodeStateAsUpdate(document));
     const isPublic = document.getMap("metadata").get("isPublic") === true;
     const type = (document.getMap("metadata").get("type") as string) || "unknown";
