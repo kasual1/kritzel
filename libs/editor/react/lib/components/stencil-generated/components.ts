@@ -7,25 +7,24 @@
 
 /* eslint-disable */
 
-import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
-import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-
-import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IUpdrawIsPublicChangeEvent, type IUpdrawMenuItem, type IUpdrawMenuItemSelectEvent, type IUpdrawMenuItemToggleChildMenuEvent, type LocaleCode, type LoginEvent, type ObjectsAddedEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ShapeFillType, type ThemeName, type UpdrawAgentsChangeEvent, type UpdrawBaseObject, type UpdrawChatBoxChip, type UpdrawChatBoxCustomEvent, type UpdrawChatBoxMode, type UpdrawEditorCustomEvent, type UpdrawObjectElementClickEvent, type UpdrawObjectElementHoverEvent, type UpdrawObjectElementPickEvent, type UpdrawObjectTitlebarActionEvent, type UpdrawSettingsConfig, type UpdrawSettingsCustomEvent, type UpdrawShapeFillCustomEvent, type UpdrawShareDialogCustomEvent, type UpdrawSplitButtonCustomEvent, type UpdrawStrokeSizeCustomEvent, type UpdrawUndoState, type UpdrawViewportState } from "@updraw/editor";
-import type { Components } from "@updraw/editor/dist/components";
-import { UpdrawChatBox as UpdrawChatBoxElement, defineCustomElement as defineUpdrawChatBox } from "@updraw/editor/dist/components/updraw-chat-box.js";
-import { UpdrawEditor as UpdrawEditorElement, defineCustomElement as defineUpdrawEditor } from "@updraw/editor/dist/components/updraw-editor.js";
-import { UpdrawSettings as UpdrawSettingsElement, defineCustomElement as defineUpdrawSettings } from "@updraw/editor/dist/components/updraw-settings.js";
-import { UpdrawShapeFill as UpdrawShapeFillElement, defineCustomElement as defineUpdrawShapeFill } from "@updraw/editor/dist/components/updraw-shape-fill.js";
-import { UpdrawShareDialog as UpdrawShareDialogElement, defineCustomElement as defineUpdrawShareDialog } from "@updraw/editor/dist/components/updraw-share-dialog.js";
-import { UpdrawSplitButton as UpdrawSplitButtonElement, defineCustomElement as defineUpdrawSplitButton } from "@updraw/editor/dist/components/updraw-split-button.js";
-import { UpdrawStrokeSize as UpdrawStrokeSizeElement, defineCustomElement as defineUpdrawStrokeSize } from "@updraw/editor/dist/components/updraw-stroke-size.js";
+import { createComponent } from '@stencil/react-output-target/runtime';
+import type { Components } from '@updraw/editor/dist/components';
+import { UpdrawChatBox as UpdrawChatBoxElement, defineCustomElement as defineUpdrawChatBox } from '@updraw/editor/dist/components/updraw-chat-box.js';
+import { UpdrawEditor as UpdrawEditorElement, defineCustomElement as defineUpdrawEditor } from '@updraw/editor/dist/components/updraw-editor.js';
+import { UpdrawSettings as UpdrawSettingsElement, defineCustomElement as defineUpdrawSettings } from '@updraw/editor/dist/components/updraw-settings.js';
+import { UpdrawShapeFill as UpdrawShapeFillElement, defineCustomElement as defineUpdrawShapeFill } from '@updraw/editor/dist/components/updraw-shape-fill.js';
+import { UpdrawShareDialog as UpdrawShareDialogElement, defineCustomElement as defineUpdrawShareDialog } from '@updraw/editor/dist/components/updraw-share-dialog.js';
+import { UpdrawSplitButton as UpdrawSplitButtonElement, defineCustomElement as defineUpdrawSplitButton } from '@updraw/editor/dist/components/updraw-split-button.js';
+import { UpdrawStrokeSize as UpdrawStrokeSizeElement, defineCustomElement as defineUpdrawStrokeSize } from '@updraw/editor/dist/components/updraw-stroke-size.js';
+import type { UpdrawChatBoxMode, UpdrawChatBoxChip, UpdrawChatBoxCustomEvent, EditorIsReadyEvent, ActiveWorkspaceChangeEvent, UpdrawBaseObject, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, UpdrawUndoState, ThemeName, LocaleCode, UpdrawViewportState, LoginEvent, IUpdrawIsPublicChangeEvent, UpdrawAgentsChangeEvent, UpdrawObjectTitlebarActionEvent, UpdrawObjectElementHoverEvent, UpdrawObjectElementClickEvent, UpdrawObjectElementPickEvent, UpdrawEditorCustomEvent, UpdrawSettingsConfig, UpdrawSettingsCustomEvent, ShapeFillType, UpdrawShapeFillCustomEvent, UpdrawShareDialogCustomEvent, IUpdrawMenuItemSelectEvent, IUpdrawMenuItem, IUpdrawMenuItemToggleChildMenuEvent, UpdrawSplitButtonCustomEvent, UpdrawStrokeSizeCustomEvent } from '@updraw/editor';
+import type { StencilReactComponent, EventName } from '@stencil/react-output-target/runtime';
 
 export type UpdrawChatBoxEvents = {
-    onChatSubmit: EventName<UpdrawChatBoxCustomEvent<string>>,
-    onChatStop: EventName<UpdrawChatBoxCustomEvent<void>>,
-    onModeChange: EventName<UpdrawChatBoxCustomEvent<UpdrawChatBoxMode>>,
-    onChatChipRemove: EventName<UpdrawChatBoxCustomEvent<UpdrawChatBoxChip>>
+  onChatSubmit: EventName<UpdrawChatBoxCustomEvent<string>>,
+  onChatStop: EventName<UpdrawChatBoxCustomEvent<void>>,
+  onModeChange: EventName<UpdrawChatBoxCustomEvent<UpdrawChatBoxMode>>,
+  onChatChipRemove: EventName<UpdrawChatBoxCustomEvent<UpdrawChatBoxChip>>
 };
 
 export const UpdrawChatBox: StencilReactComponent<UpdrawChatBoxElement, UpdrawChatBoxEvents, Components.UpdrawChatBox> = /*@__PURE__*/ createComponent<UpdrawChatBoxElement, UpdrawChatBoxEvents, Components.UpdrawChatBox>({
@@ -34,38 +33,38 @@ export const UpdrawChatBox: StencilReactComponent<UpdrawChatBoxElement, UpdrawCh
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
-        onChatSubmit: 'chatSubmit',
-        onChatStop: 'chatStop',
-        onModeChange: 'modeChange',
-        onChatChipRemove: 'chatChipRemove'
+      onChatSubmit: 'chatSubmit',
+      onChatStop: 'chatStop',
+      onModeChange: 'modeChange',
+      onChatChipRemove: 'chatChipRemove'
     } as UpdrawChatBoxEvents,
-    defineCustomElement: defineUpdrawChatBox
+    defineCustomElement: defineUpdrawChatBox,
 });
 
 export type UpdrawEditorEvents = {
-    onIsReady: EventName<UpdrawEditorCustomEvent<EditorIsReadyEvent>>,
-    onActiveWorkspaceChange: EventName<UpdrawEditorCustomEvent<ActiveWorkspaceChangeEvent>>,
-    onObjectsChange: EventName<UpdrawEditorCustomEvent<UpdrawBaseObject[]>>,
-    onObjectsAdded: EventName<UpdrawEditorCustomEvent<ObjectsAddedEvent>>,
-    onObjectsRemoved: EventName<UpdrawEditorCustomEvent<ObjectsRemovedEvent>>,
-    onObjectsUpdated: EventName<UpdrawEditorCustomEvent<ObjectsUpdatedEvent>>,
-    onObjectsSelectionChange: EventName<UpdrawEditorCustomEvent<UpdrawBaseObject[]>>,
-    onUndoStateChange: EventName<UpdrawEditorCustomEvent<UpdrawUndoState>>,
-    onThemeChange: EventName<UpdrawEditorCustomEvent<ThemeName>>,
-    onLocaleChange: EventName<UpdrawEditorCustomEvent<LocaleCode>>,
-    onViewportChange: EventName<UpdrawEditorCustomEvent<UpdrawViewportState>>,
-    onLogout: EventName<UpdrawEditorCustomEvent<void>>,
-    onLogin: EventName<UpdrawEditorCustomEvent<LoginEvent>>,
-    onIsPublicChange: EventName<UpdrawEditorCustomEvent<IUpdrawIsPublicChangeEvent>>,
-    onAwarenessChange: EventName<UpdrawEditorCustomEvent<Map<number, Record<string, any>>>>,
-    onChatSubmit: EventName<UpdrawEditorCustomEvent<string>>,
-    onChatStop: EventName<UpdrawEditorCustomEvent<void>>,
-    onChatChipRemove: EventName<UpdrawEditorCustomEvent<UpdrawChatBoxChip>>,
-    onAgentsChange: EventName<UpdrawEditorCustomEvent<UpdrawAgentsChangeEvent>>,
-    onObjectTitlebarAction: EventName<UpdrawEditorCustomEvent<UpdrawObjectTitlebarActionEvent>>,
-    onObjectElementHover: EventName<UpdrawEditorCustomEvent<UpdrawObjectElementHoverEvent>>,
-    onObjectElementClick: EventName<UpdrawEditorCustomEvent<UpdrawObjectElementClickEvent>>,
-    onObjectElementPick: EventName<UpdrawEditorCustomEvent<UpdrawObjectElementPickEvent>>
+  onIsReady: EventName<UpdrawEditorCustomEvent<EditorIsReadyEvent>>,
+  onActiveWorkspaceChange: EventName<UpdrawEditorCustomEvent<ActiveWorkspaceChangeEvent>>,
+  onObjectsChange: EventName<UpdrawEditorCustomEvent<UpdrawBaseObject[]>>,
+  onObjectsAdded: EventName<UpdrawEditorCustomEvent<ObjectsAddedEvent>>,
+  onObjectsRemoved: EventName<UpdrawEditorCustomEvent<ObjectsRemovedEvent>>,
+  onObjectsUpdated: EventName<UpdrawEditorCustomEvent<ObjectsUpdatedEvent>>,
+  onObjectsSelectionChange: EventName<UpdrawEditorCustomEvent<UpdrawBaseObject[]>>,
+  onUndoStateChange: EventName<UpdrawEditorCustomEvent<UpdrawUndoState>>,
+  onThemeChange: EventName<UpdrawEditorCustomEvent<ThemeName>>,
+  onLocaleChange: EventName<UpdrawEditorCustomEvent<LocaleCode>>,
+  onViewportChange: EventName<UpdrawEditorCustomEvent<UpdrawViewportState>>,
+  onLogout: EventName<UpdrawEditorCustomEvent<void>>,
+  onLogin: EventName<UpdrawEditorCustomEvent<LoginEvent>>,
+  onIsPublicChange: EventName<UpdrawEditorCustomEvent<IUpdrawIsPublicChangeEvent>>,
+  onAwarenessChange: EventName<UpdrawEditorCustomEvent<Map<number, Record<string, any>>>>,
+  onChatSubmit: EventName<UpdrawEditorCustomEvent<string>>,
+  onChatStop: EventName<UpdrawEditorCustomEvent<void>>,
+  onChatChipRemove: EventName<UpdrawEditorCustomEvent<UpdrawChatBoxChip>>,
+  onAgentsChange: EventName<UpdrawEditorCustomEvent<UpdrawAgentsChangeEvent>>,
+  onObjectTitlebarAction: EventName<UpdrawEditorCustomEvent<UpdrawObjectTitlebarActionEvent>>,
+  onObjectElementHover: EventName<UpdrawEditorCustomEvent<UpdrawObjectElementHoverEvent>>,
+  onObjectElementClick: EventName<UpdrawEditorCustomEvent<UpdrawObjectElementClickEvent>>,
+  onObjectElementPick: EventName<UpdrawEditorCustomEvent<UpdrawObjectElementPickEvent>>
 };
 
 export const UpdrawEditor: StencilReactComponent<UpdrawEditorElement, UpdrawEditorEvents, Components.UpdrawEditor> = /*@__PURE__*/ createComponent<UpdrawEditorElement, UpdrawEditorEvents, Components.UpdrawEditor>({
@@ -74,58 +73,66 @@ export const UpdrawEditor: StencilReactComponent<UpdrawEditorElement, UpdrawEdit
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
-        onIsReady: 'isReady',
-        onActiveWorkspaceChange: 'activeWorkspaceChange',
-        onObjectsChange: 'objectsChange',
-        onObjectsAdded: 'objectsAdded',
-        onObjectsRemoved: 'objectsRemoved',
-        onObjectsUpdated: 'objectsUpdated',
-        onObjectsSelectionChange: 'objectsSelectionChange',
-        onUndoStateChange: 'undoStateChange',
-        onThemeChange: 'themeChange',
-        onLocaleChange: 'localeChange',
-        onViewportChange: 'viewportChange',
-        onLogout: 'logout',
-        onLogin: 'login',
-        onIsPublicChange: 'isPublicChange',
-        onAwarenessChange: 'awarenessChange',
-        onChatSubmit: 'chatSubmit',
-        onChatStop: 'chatStop',
-        onChatChipRemove: 'chatChipRemove',
-        onAgentsChange: 'agentsChange',
-        onObjectTitlebarAction: 'objectTitlebarAction',
-        onObjectElementHover: 'objectElementHover',
-        onObjectElementClick: 'objectElementClick',
-        onObjectElementPick: 'objectElementPick'
+      onIsReady: 'isReady',
+      onActiveWorkspaceChange: 'activeWorkspaceChange',
+      onObjectsChange: 'objectsChange',
+      onObjectsAdded: 'objectsAdded',
+      onObjectsRemoved: 'objectsRemoved',
+      onObjectsUpdated: 'objectsUpdated',
+      onObjectsSelectionChange: 'objectsSelectionChange',
+      onUndoStateChange: 'undoStateChange',
+      onThemeChange: 'themeChange',
+      onLocaleChange: 'localeChange',
+      onViewportChange: 'viewportChange',
+      onLogout: 'logout',
+      onLogin: 'login',
+      onIsPublicChange: 'isPublicChange',
+      onAwarenessChange: 'awarenessChange',
+      onChatSubmit: 'chatSubmit',
+      onChatStop: 'chatStop',
+      onChatChipRemove: 'chatChipRemove',
+      onAgentsChange: 'agentsChange',
+      onObjectTitlebarAction: 'objectTitlebarAction',
+      onObjectElementHover: 'objectElementHover',
+      onObjectElementClick: 'objectElementClick',
+      onObjectElementPick: 'objectElementPick'
     } as UpdrawEditorEvents,
-    defineCustomElement: defineUpdrawEditor
+    defineCustomElement: defineUpdrawEditor,
 });
 
-export type UpdrawSettingsEvents = { onSettingsChange: EventName<UpdrawSettingsCustomEvent<UpdrawSettingsConfig>> };
+export type UpdrawSettingsEvents = {
+  onSettingsChange: EventName<UpdrawSettingsCustomEvent<UpdrawSettingsConfig>>
+};
 
 export const UpdrawSettings: StencilReactComponent<UpdrawSettingsElement, UpdrawSettingsEvents, Components.UpdrawSettings> = /*@__PURE__*/ createComponent<UpdrawSettingsElement, UpdrawSettingsEvents, Components.UpdrawSettings>({
     tagName: 'updraw-settings',
     elementClass: UpdrawSettingsElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: { onSettingsChange: 'settingsChange' } as UpdrawSettingsEvents,
-    defineCustomElement: defineUpdrawSettings
+    events: {
+      onSettingsChange: 'settingsChange'
+    } as UpdrawSettingsEvents,
+    defineCustomElement: defineUpdrawSettings,
 });
 
-export type UpdrawShapeFillEvents = { onValueChange: EventName<UpdrawShapeFillCustomEvent<ShapeFillType>> };
+export type UpdrawShapeFillEvents = {
+  onValueChange: EventName<UpdrawShapeFillCustomEvent<ShapeFillType>>
+};
 
 export const UpdrawShapeFill: StencilReactComponent<UpdrawShapeFillElement, UpdrawShapeFillEvents, Components.UpdrawShapeFill> = /*@__PURE__*/ createComponent<UpdrawShapeFillElement, UpdrawShapeFillEvents, Components.UpdrawShapeFill>({
     tagName: 'updraw-shape-fill',
     elementClass: UpdrawShapeFillElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: { onValueChange: 'valueChange' } as UpdrawShapeFillEvents,
-    defineCustomElement: defineUpdrawShapeFill
+    events: {
+      onValueChange: 'valueChange'
+    } as UpdrawShapeFillEvents,
+    defineCustomElement: defineUpdrawShapeFill,
 });
 
 export type UpdrawShareDialogEvents = {
-    onToggleIsPublic: EventName<UpdrawShareDialogCustomEvent<boolean>>,
-    onDialogClosed: EventName<UpdrawShareDialogCustomEvent<void>>
+  onToggleIsPublic: EventName<UpdrawShareDialogCustomEvent<boolean>>,
+  onDialogClosed: EventName<UpdrawShareDialogCustomEvent<void>>
 };
 
 export const UpdrawShareDialog: StencilReactComponent<UpdrawShareDialogElement, UpdrawShareDialogEvents, Components.UpdrawShareDialog> = /*@__PURE__*/ createComponent<UpdrawShareDialogElement, UpdrawShareDialogEvents, Components.UpdrawShareDialog>({
@@ -134,21 +141,21 @@ export const UpdrawShareDialog: StencilReactComponent<UpdrawShareDialogElement, 
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
-        onToggleIsPublic: 'toggleIsPublic',
-        onDialogClosed: 'dialogClosed'
+      onToggleIsPublic: 'toggleIsPublic',
+      onDialogClosed: 'dialogClosed'
     } as UpdrawShareDialogEvents,
-    defineCustomElement: defineUpdrawShareDialog
+    defineCustomElement: defineUpdrawShareDialog,
 });
 
 export type UpdrawSplitButtonEvents = {
-    onMainButtonClick: EventName<UpdrawSplitButtonCustomEvent<void>>,
-    onItemSelect: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItemSelectEvent>>,
-    onItemSave: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>>,
-    onItemCancel: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>>,
-    onItemToggleChildMenu: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItemToggleChildMenuEvent>>,
-    onItemCloseChildMenu: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>>,
-    onMenuOpen: EventName<UpdrawSplitButtonCustomEvent<void>>,
-    onMenuClose: EventName<UpdrawSplitButtonCustomEvent<void>>
+  onMainButtonClick: EventName<UpdrawSplitButtonCustomEvent<void>>,
+  onItemSelect: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItemSelectEvent>>,
+  onItemSave: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>>,
+  onItemCancel: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>>,
+  onItemToggleChildMenu: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItemToggleChildMenuEvent>>,
+  onItemCloseChildMenu: EventName<UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>>,
+  onMenuOpen: EventName<UpdrawSplitButtonCustomEvent<void>>,
+  onMenuClose: EventName<UpdrawSplitButtonCustomEvent<void>>
 };
 
 export const UpdrawSplitButton: StencilReactComponent<UpdrawSplitButtonElement, UpdrawSplitButtonEvents, Components.UpdrawSplitButton> = /*@__PURE__*/ createComponent<UpdrawSplitButtonElement, UpdrawSplitButtonEvents, Components.UpdrawSplitButton>({
@@ -157,25 +164,29 @@ export const UpdrawSplitButton: StencilReactComponent<UpdrawSplitButtonElement, 
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
-        onMainButtonClick: 'mainButtonClick',
-        onItemSelect: 'itemSelect',
-        onItemSave: 'itemSave',
-        onItemCancel: 'itemCancel',
-        onItemToggleChildMenu: 'itemToggleChildMenu',
-        onItemCloseChildMenu: 'itemCloseChildMenu',
-        onMenuOpen: 'menuOpen',
-        onMenuClose: 'menuClose'
+      onMainButtonClick: 'mainButtonClick',
+      onItemSelect: 'itemSelect',
+      onItemSave: 'itemSave',
+      onItemCancel: 'itemCancel',
+      onItemToggleChildMenu: 'itemToggleChildMenu',
+      onItemCloseChildMenu: 'itemCloseChildMenu',
+      onMenuOpen: 'menuOpen',
+      onMenuClose: 'menuClose'
     } as UpdrawSplitButtonEvents,
-    defineCustomElement: defineUpdrawSplitButton
+    defineCustomElement: defineUpdrawSplitButton,
 });
 
-export type UpdrawStrokeSizeEvents = { onSizeChange: EventName<UpdrawStrokeSizeCustomEvent<number>> };
+export type UpdrawStrokeSizeEvents = {
+  onSizeChange: EventName<UpdrawStrokeSizeCustomEvent<number>>
+};
 
 export const UpdrawStrokeSize: StencilReactComponent<UpdrawStrokeSizeElement, UpdrawStrokeSizeEvents, Components.UpdrawStrokeSize> = /*@__PURE__*/ createComponent<UpdrawStrokeSizeElement, UpdrawStrokeSizeEvents, Components.UpdrawStrokeSize>({
     tagName: 'updraw-stroke-size',
     elementClass: UpdrawStrokeSizeElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: { onSizeChange: 'sizeChange' } as UpdrawStrokeSizeEvents,
-    defineCustomElement: defineUpdrawStrokeSize
+    events: {
+      onSizeChange: 'sizeChange'
+    } as UpdrawStrokeSizeEvents,
+    defineCustomElement: defineUpdrawStrokeSize,
 });

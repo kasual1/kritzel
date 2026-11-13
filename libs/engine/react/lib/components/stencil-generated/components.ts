@@ -7,38 +7,37 @@
 
 /* eslint-disable */
 
-import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
-import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-
-import { type ObjectsAddedEvent, type ObjectsInViewportChangeEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type UpdrawAgentsChangeEvent, type UpdrawBaseObject, type UpdrawBaseTool, type UpdrawContextMenuState, type UpdrawEngineCustomEvent, type UpdrawEngineState, type UpdrawNotification, type UpdrawObjectElementClickEvent, type UpdrawObjectElementHoverEvent, type UpdrawObjectElementPickEvent, type UpdrawObjectTitlebarActionEvent, type UpdrawObjectTitlebarMenuState, type UpdrawUndoState, type UpdrawViewportState, type UpdrawWorkspace } from "@updraw/engine";
-import type { Components } from "@updraw/engine/dist/components";
-import { UpdrawEngine as UpdrawEngineElement, defineCustomElement as defineUpdrawEngine } from "@updraw/engine/dist/components/updraw-engine.js";
+import { createComponent } from '@stencil/react-output-target/runtime';
+import type { Components } from '@updraw/engine/dist/components';
+import { UpdrawEngine as UpdrawEngineElement, defineCustomElement as defineUpdrawEngine } from '@updraw/engine/dist/components/updraw-engine.js';
+import type { UpdrawEngineState, UpdrawBaseTool, UpdrawWorkspace, UpdrawBaseObject, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, UpdrawUndoState, ObjectsInViewportChangeEvent, UpdrawViewportState, UpdrawNotification, UpdrawContextMenuState, UpdrawAgentsChangeEvent, UpdrawObjectTitlebarActionEvent, UpdrawObjectTitlebarMenuState, UpdrawObjectElementHoverEvent, UpdrawObjectElementClickEvent, UpdrawObjectElementPickEvent, UpdrawEngineCustomEvent } from '@updraw/engine';
+import type { StencilReactComponent, EventName } from '@stencil/react-output-target/runtime';
 
 export type UpdrawEngineEvents = {
-    onIsEngineReady: EventName<UpdrawEngineCustomEvent<UpdrawEngineState>>,
-    onActiveToolChange: EventName<UpdrawEngineCustomEvent<UpdrawBaseTool>>,
-    onWorkspacesChange: EventName<UpdrawEngineCustomEvent<UpdrawWorkspace[]>>,
-    onActiveWorkspaceChange: EventName<UpdrawEngineCustomEvent<UpdrawWorkspace>>,
-    onLongpress: EventName<UpdrawEngineCustomEvent<PointerEvent>>,
-    onObjectsChange: EventName<UpdrawEngineCustomEvent<UpdrawBaseObject[]>>,
-    onObjectsAdded: EventName<UpdrawEngineCustomEvent<ObjectsAddedEvent>>,
-    onObjectsRemoved: EventName<UpdrawEngineCustomEvent<ObjectsRemovedEvent>>,
-    onObjectsUpdated: EventName<UpdrawEngineCustomEvent<ObjectsUpdatedEvent>>,
-    onObjectsSelectionChange: EventName<UpdrawEngineCustomEvent<UpdrawBaseObject[]>>,
-    onUndoStateChange: EventName<UpdrawEngineCustomEvent<UpdrawUndoState>>,
-    onObjectsInViewportChange: EventName<UpdrawEngineCustomEvent<ObjectsInViewportChangeEvent>>,
-    onViewportChange: EventName<UpdrawEngineCustomEvent<UpdrawViewportState>>,
-    onAwarenessChange: EventName<UpdrawEngineCustomEvent<Map<number, Record<string, any>>>>,
-    onNotificationsChange: EventName<UpdrawEngineCustomEvent<UpdrawNotification>>,
-    onContextMenuStateChange: EventName<UpdrawEngineCustomEvent<UpdrawContextMenuState>>,
-    onIsLoadingChange: EventName<UpdrawEngineCustomEvent<boolean>>,
-    onAgentsChange: EventName<UpdrawEngineCustomEvent<UpdrawAgentsChangeEvent>>,
-    onObjectTitlebarAction: EventName<UpdrawEngineCustomEvent<UpdrawObjectTitlebarActionEvent>>,
-    onObjectTitlebarMenuStateChange: EventName<UpdrawEngineCustomEvent<UpdrawObjectTitlebarMenuState>>,
-    onObjectElementHover: EventName<UpdrawEngineCustomEvent<UpdrawObjectElementHoverEvent>>,
-    onObjectElementClick: EventName<UpdrawEngineCustomEvent<UpdrawObjectElementClickEvent>>,
-    onObjectElementPick: EventName<UpdrawEngineCustomEvent<UpdrawObjectElementPickEvent>>
+  onIsEngineReady: EventName<UpdrawEngineCustomEvent<UpdrawEngineState>>,
+  onActiveToolChange: EventName<UpdrawEngineCustomEvent<UpdrawBaseTool>>,
+  onWorkspacesChange: EventName<UpdrawEngineCustomEvent<UpdrawWorkspace[]>>,
+  onActiveWorkspaceChange: EventName<UpdrawEngineCustomEvent<UpdrawWorkspace>>,
+  onLongpress: EventName<UpdrawEngineCustomEvent<PointerEvent>>,
+  onObjectsChange: EventName<UpdrawEngineCustomEvent<UpdrawBaseObject[]>>,
+  onObjectsAdded: EventName<UpdrawEngineCustomEvent<ObjectsAddedEvent>>,
+  onObjectsRemoved: EventName<UpdrawEngineCustomEvent<ObjectsRemovedEvent>>,
+  onObjectsUpdated: EventName<UpdrawEngineCustomEvent<ObjectsUpdatedEvent>>,
+  onObjectsSelectionChange: EventName<UpdrawEngineCustomEvent<UpdrawBaseObject[]>>,
+  onUndoStateChange: EventName<UpdrawEngineCustomEvent<UpdrawUndoState>>,
+  onObjectsInViewportChange: EventName<UpdrawEngineCustomEvent<ObjectsInViewportChangeEvent>>,
+  onViewportChange: EventName<UpdrawEngineCustomEvent<UpdrawViewportState>>,
+  onAwarenessChange: EventName<UpdrawEngineCustomEvent<Map<number, Record<string, any>>>>,
+  onNotificationsChange: EventName<UpdrawEngineCustomEvent<UpdrawNotification>>,
+  onContextMenuStateChange: EventName<UpdrawEngineCustomEvent<UpdrawContextMenuState>>,
+  onIsLoadingChange: EventName<UpdrawEngineCustomEvent<boolean>>,
+  onAgentsChange: EventName<UpdrawEngineCustomEvent<UpdrawAgentsChangeEvent>>,
+  onObjectTitlebarAction: EventName<UpdrawEngineCustomEvent<UpdrawObjectTitlebarActionEvent>>,
+  onObjectTitlebarMenuStateChange: EventName<UpdrawEngineCustomEvent<UpdrawObjectTitlebarMenuState>>,
+  onObjectElementHover: EventName<UpdrawEngineCustomEvent<UpdrawObjectElementHoverEvent>>,
+  onObjectElementClick: EventName<UpdrawEngineCustomEvent<UpdrawObjectElementClickEvent>>,
+  onObjectElementPick: EventName<UpdrawEngineCustomEvent<UpdrawObjectElementPickEvent>>
 };
 
 export const UpdrawEngine: StencilReactComponent<UpdrawEngineElement, UpdrawEngineEvents, Components.UpdrawEngine> = /*@__PURE__*/ createComponent<UpdrawEngineElement, UpdrawEngineEvents, Components.UpdrawEngine>({
@@ -47,29 +46,29 @@ export const UpdrawEngine: StencilReactComponent<UpdrawEngineElement, UpdrawEngi
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
-        onIsEngineReady: 'isEngineReady',
-        onActiveToolChange: 'activeToolChange',
-        onWorkspacesChange: 'workspacesChange',
-        onActiveWorkspaceChange: 'activeWorkspaceChange',
-        onLongpress: 'longpress',
-        onObjectsChange: 'objectsChange',
-        onObjectsAdded: 'objectsAdded',
-        onObjectsRemoved: 'objectsRemoved',
-        onObjectsUpdated: 'objectsUpdated',
-        onObjectsSelectionChange: 'objectsSelectionChange',
-        onUndoStateChange: 'undoStateChange',
-        onObjectsInViewportChange: 'objectsInViewportChange',
-        onViewportChange: 'viewportChange',
-        onAwarenessChange: 'awarenessChange',
-        onNotificationsChange: 'notificationsChange',
-        onContextMenuStateChange: 'contextMenuStateChange',
-        onIsLoadingChange: 'isLoadingChange',
-        onAgentsChange: 'agentsChange',
-        onObjectTitlebarAction: 'objectTitlebarAction',
-        onObjectTitlebarMenuStateChange: 'objectTitlebarMenuStateChange',
-        onObjectElementHover: 'objectElementHover',
-        onObjectElementClick: 'objectElementClick',
-        onObjectElementPick: 'objectElementPick'
+      onIsEngineReady: 'isEngineReady',
+      onActiveToolChange: 'activeToolChange',
+      onWorkspacesChange: 'workspacesChange',
+      onActiveWorkspaceChange: 'activeWorkspaceChange',
+      onLongpress: 'longpress',
+      onObjectsChange: 'objectsChange',
+      onObjectsAdded: 'objectsAdded',
+      onObjectsRemoved: 'objectsRemoved',
+      onObjectsUpdated: 'objectsUpdated',
+      onObjectsSelectionChange: 'objectsSelectionChange',
+      onUndoStateChange: 'undoStateChange',
+      onObjectsInViewportChange: 'objectsInViewportChange',
+      onViewportChange: 'viewportChange',
+      onAwarenessChange: 'awarenessChange',
+      onNotificationsChange: 'notificationsChange',
+      onContextMenuStateChange: 'contextMenuStateChange',
+      onIsLoadingChange: 'isLoadingChange',
+      onAgentsChange: 'agentsChange',
+      onObjectTitlebarAction: 'objectTitlebarAction',
+      onObjectTitlebarMenuStateChange: 'objectTitlebarMenuStateChange',
+      onObjectElementHover: 'objectElementHover',
+      onObjectElementClick: 'objectElementClick',
+      onObjectElementPick: 'objectElementPick'
     } as UpdrawEngineEvents,
-    defineCustomElement: defineUpdrawEngine
+    defineCustomElement: defineUpdrawEngine,
 });
