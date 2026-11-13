@@ -8,6 +8,8 @@ export const DEFAULT_STAR_COUNT = 1000;
 
 const STAR_WIDTH = 96;
 const STAR_HEIGHT = 30;
+// The object's corners match the button's own, so the object doesn't clip them.
+const STAR_BORDER_RADIUS = 6;
 // Every button is separated from its neighbors by the same gap, horizontally and vertically.
 const STAR_GAP = 10;
 const CELL_WIDTH = STAR_WIDTH + STAR_GAP;
@@ -38,7 +40,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 // The cursor is only resolved on :hover: the engine's pointer cursor is a large data URL,
 // and resolving it for thousands of mounted buttons makes zooming out noticeably slower.
 const STYLES = `
-  .github-star-button { display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; height: 100%; box-sizing: border-box; border: 1px solid #d0d7de; border-radius: 6px; background: #f6f8fa; color: #24292f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 600; line-height: 1; white-space: nowrap; user-select: none; }
+  .github-star-button { display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; height: 100%; box-sizing: border-box; border: 1px solid #d0d7de; border-radius: ${STAR_BORDER_RADIUS}px; background: #f6f8fa; color: #24292f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 600; line-height: 1; white-space: nowrap; user-select: none; }
   .github-star-button svg { width: 1.1em; height: 1.1em; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   [data-github-star]:hover { cursor: var(--kritzel-global-pointer-cursor, pointer); }
   [data-github-star]:hover > .github-star-button { border-color: #afb8c1; background: #eaeef2; }
@@ -135,6 +137,9 @@ export function createGithubStarObject(x: number, y: number): KritzelDynamicObje
     translateY: y,
     width: STAR_WIDTH,
     height: STAR_HEIGHT,
+    borderRadius: STAR_BORDER_RADIUS,
+    // Like a GitHub button, without the card shadow of the theme, which also keeps thousands of buttons cheap to paint.
+    boxShadow: 'none',
   });
   object.isRotatable = false;
   return object;

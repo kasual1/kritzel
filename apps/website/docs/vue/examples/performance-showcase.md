@@ -74,7 +74,7 @@ onBeforeUnmount(() => {
 
 ### Creating the objects
 
-The object factory places the buttons on a grid with a 10px gap on every side, centered on the world origin, which is the center of the initial viewport. The layout is computed from the count alone, so every load shows the same board. Each object carries only the renderer key and a label in `rendererData`.
+The object factory places the buttons on a grid with a 10px gap on every side, centered on the world origin, which is the center of the initial viewport. The layout is computed from the count alone, so every load shows the same board. Each object carries only the renderer key and a label in `rendererData`. Dynamic objects are drawn as cards, clipped to the theme's rounded corners and with its shadow, so each object takes the button's own 6px corners and no shadow instead.
 
 ```typescript
 export function createGithubStarObject(x: number, y: number): KritzelDynamicObject {
@@ -88,6 +88,8 @@ export function createGithubStarObject(x: number, y: number): KritzelDynamicObje
     translateY: y,
     width: STAR_WIDTH,
     height: STAR_HEIGHT,
+    borderRadius: STAR_BORDER_RADIUS,
+    boxShadow: 'none',
   })
   object.isRotatable = false
   return object
