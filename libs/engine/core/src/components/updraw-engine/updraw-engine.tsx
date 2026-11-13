@@ -92,6 +92,8 @@ import {
   UpdrawObjectAppearTiming,
   UpdrawObjectAppearResolution,
   UpdrawResolvedTitlebar,
+  normalizeLegacyClassName,
+  migrateLegacyStorageKeys,
 } from '@updraw/core';
 import throttle from 'lodash/throttle';
 import { toPng, toSvg } from 'html-to-image';
@@ -1851,7 +1853,8 @@ export class UpdrawEngine implements UpdrawEngineHost {
     const data = JSON.parse(json) as WorkspaceJsonExportPayload;
 
     // Validate the import data
-    if (!data.__class__ || data.__class__ !== 'UpdrawWorkspace') {
+    // Exports made before the rename use the legacy class name `KritzelWorkspace`.
+    if (!data.__class__ || normalizeLegacyClassName(data.__class__) !== 'UpdrawWorkspace') {
       throw new Error('Invalid workspace data: missing or incorrect __class__ identifier');
     }
 
@@ -1915,7 +1918,8 @@ export class UpdrawEngine implements UpdrawEngineHost {
     const data = JSON.parse(json) as WorkspaceJsonExportPayload;
 
     // Validate the import data
-    if (!data.__class__ || data.__class__ !== 'UpdrawWorkspace') {
+    // Exports made before the rename use the legacy class name `KritzelWorkspace`.
+    if (!data.__class__ || normalizeLegacyClassName(data.__class__) !== 'UpdrawWorkspace') {
       throw new Error('Invalid workspace data: missing or incorrect __class__ identifier');
     }
 
@@ -1984,7 +1988,8 @@ export class UpdrawEngine implements UpdrawEngineHost {
       }
 
       const maybeImage = serializedObject as { __class__?: string; assetId?: unknown };
-      if (maybeImage.__class__ === 'UpdrawImage' && typeof maybeImage.assetId === 'string' && maybeImage.assetId.length > 0) {
+      const className = typeof maybeImage.__class__ === 'string' ? normalizeLegacyClassName(maybeImage.__class__) : undefined;
+      if (className === 'UpdrawImage' && typeof maybeImage.assetId === 'string' && maybeImage.assetId.length > 0) {
         assetIds.add(maybeImage.assetId);
       }
     }
@@ -2809,6 +2814,8 @@ export class UpdrawEngine implements UpdrawEngineHost {
   }
 
   componentWillLoad() {
+    // Settings saved before the rename live under legacy localStorage keys.
+    migrateLegacyStorageKeys();
     this.bindChatSession();
     this._toolsRevision++;
     void this.registerConfiguredTools();

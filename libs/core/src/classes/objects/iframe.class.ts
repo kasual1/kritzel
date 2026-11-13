@@ -16,7 +16,12 @@ import { UpdrawCore } from '../core/core.class';
 import { UpdrawBaseObject } from './base-object.class';
 import { UpdrawIframeElementBridge, UpdrawIframeElementBridgeOwner } from './iframe-element-bridge.class';
 import { createIframeElementBridgeScript, IFRAME_ELEMENT_PICKING_CSS } from './iframe-element-bridge.script';
+import { LEGACY_CONTENT_CSS_VARIABLES, LEGACY_IFRAME_GLOBAL, LEGACY_IFRAME_STATE_EVENT } from '../../migrations/legacy-brand';
 
+/** Legacy CSS custom properties that content saved before the rename may use, mapped to the current ones. */
+const LEGACY_IFRAME_CSS_VARIABLES = Object.entries(LEGACY_CONTENT_CSS_VARIABLES)
+  .map(([legacyName, name]) => `${legacyName}: var(${name});`)
+  .join(' ');
 const IFRAME_STATE_MESSAGE = 'updraw-iframe-state';
 const IFRAME_PARENT_STATE_MESSAGE = 'updraw-iframe-parent-state';
 const IFRAME_POINTER_MESSAGE = 'updraw-iframe-pointer';
@@ -529,6 +534,7 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
       :root {
         --updraw-iframe-default-cursor: ${defaultCursor};
         --updraw-iframe-pointer-cursor: ${pointerCursor};
+        ${LEGACY_IFRAME_CSS_VARIABLES}
       }
       html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; cursor: var(--updraw-iframe-default-cursor); }
       button, button *, a, a *, input, textarea, select { cursor: var(--updraw-iframe-pointer-cursor) !important; }
@@ -547,10 +553,13 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
           parent.postMessage({ type: '${IFRAME_STATE_MESSAGE}', state: nextState }, '*');
         },
       };
+      // Deprecated alias for content written before the rename.
+      globalThis.${LEGACY_IFRAME_GLOBAL} = updraw;
       globalThis.addEventListener('message', event => {
         if (event.data?.type === '${IFRAME_PARENT_STATE_MESSAGE}' && event.data.state && typeof event.data.state === 'object') {
           updraw.state = event.data.state;
           globalThis.dispatchEvent(new CustomEvent('updrawstatechange', { detail: updraw.state }));
+          globalThis.dispatchEvent(new CustomEvent('${LEGACY_IFRAME_STATE_EVENT}', { detail: updraw.state }));
         }
       });
       let bridgedPointerId = null;

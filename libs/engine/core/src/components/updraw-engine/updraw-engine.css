@@ -101,6 +101,13 @@ p, h1, h2, h3, h4, h5, h6, blockquote, pre {
   --updraw-content-border-radius: var(--updraw-image-border-radius, 0);
 }
 
+/* Deprecated alias for content saved before the rename, which may still use the old variable name. */
+.object--iframe,
+.object--dynamic-object,
+.object--image {
+  --kritzel-content-border-radius: var(--updraw-content-border-radius);
+}
+
 .updraw-iframe-object,
 .updraw-dynamic-object,
 .updraw-image-object,

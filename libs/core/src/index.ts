@@ -139,6 +139,7 @@ export * from './interfaces/migration.interface';
 export * from './helpers/migration.helper';
 export * from './migrations/app-state.migrations';
 export * from './migrations/workspace.migrations';
+export * from './migrations/legacy-brand';
 
 export * from './constants/schema.constants';
 export * from './constants/color-palette.constants';

@@ -114,7 +114,10 @@ export class UpdrawBaseTool implements UpdrawTool, UpdrawSerializable {
    * @returns This tool instance with restored properties
    */
   deserialize(object: any): UpdrawSerializable {
-    Object.assign(this, object);
+    // The class defines its own `__class__`; a serialized value (possibly a legacy name) must not override it.
+    const data = { ...object };
+    delete data.__class__;
+    Object.assign(this, data);
     return this;
   }
 }

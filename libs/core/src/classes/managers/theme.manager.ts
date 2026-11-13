@@ -3,6 +3,7 @@ import { lightTheme } from '../../themes/light-theme';
 import { darkTheme } from '../../themes/dark-theme';
 import { UpdrawCore } from '../core/core.class';
 import { ThemeHelper } from '../../helpers/theme.helper';
+import { migrateLegacyStorageKeys } from '../../migrations/legacy-brand';
 
 /** Key used to store the settings object in localStorage. */
 const SETTINGS_STORAGE_KEY = 'updraw-settings';
@@ -163,6 +164,7 @@ export class UpdrawThemeManager {
     if (typeof localStorage === 'undefined') {
       return DEFAULT_THEME;
     }
+    migrateLegacyStorageKeys();
     const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (!stored) {
       return DEFAULT_THEME;

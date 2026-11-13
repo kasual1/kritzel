@@ -16,6 +16,7 @@ import { UpdrawDynamicObject } from "../objects/dynamic-object.class";
 import { UpdrawIframeObject } from "../objects/iframe.class";
 import type { UpdrawCore } from "./core.class";
 import { UpdrawWorkspace } from "./workspace.class";
+import { normalizeLegacyClassName } from "../../migrations/legacy-brand";
 
 /**
  * Handles deserialization/revival of Updraw objects from plain JavaScript objects.
@@ -55,45 +56,49 @@ export class UpdrawReviver {
     if (obj && typeof obj === 'object') {
       if (obj.__class__) {
         let revivedObj;
+        // Objects saved before the rename carry legacy class names (e.g. `KritzelPath`).
+        // Revive them from a copy with the current name; never mutate the stored object.
+        const className = normalizeLegacyClassName(obj.__class__);
+        const data = className === obj.__class__ ? obj : { ...obj, __class__: className };
 
-        switch (obj.__class__) {
+        switch (className) {
           case 'UpdrawPath':
-            revivedObj = UpdrawPath.create(this._core).deserialize(obj);
+            revivedObj = UpdrawPath.create(this._core).deserialize(data);
             break;
           case 'UpdrawLine':
-            revivedObj = UpdrawLine.create(this._core).deserialize(obj);
+            revivedObj = UpdrawLine.create(this._core).deserialize(data);
             break;
           case 'UpdrawText':
-            revivedObj = UpdrawText.create(this._core, obj.fontSize, obj.fontFamily).deserialize(obj);
+            revivedObj = UpdrawText.create(this._core, data.fontSize, data.fontFamily).deserialize(data);
             break;
           case 'UpdrawShape':
             revivedObj = UpdrawShape.create(this._core, {
-              shapeType: obj.shapeType,
-              fillColor: obj.fillColor,
-              strokeColor: obj.strokeColor,
-              strokeWidth: obj.strokeWidth,
-              fontSize: obj.fontSize,
-              fontFamily: obj.fontFamily,
-              fontColor: obj.fontColor,
-            }).deserialize(obj);
+              shapeType: data.shapeType,
+              fillColor: data.fillColor,
+              strokeColor: data.strokeColor,
+              strokeWidth: data.strokeWidth,
+              fontSize: data.fontSize,
+              fontFamily: data.fontFamily,
+              fontColor: data.fontColor,
+            }).deserialize(data);
             break;
           case 'UpdrawImage':
-            revivedObj = UpdrawImage.create(this._core).deserialize(obj);
+            revivedObj = UpdrawImage.create(this._core).deserialize(data);
             break;
           case 'UpdrawDynamicObject':
-            revivedObj = UpdrawDynamicObject.create(this._core).deserialize(obj);
+            revivedObj = UpdrawDynamicObject.create(this._core).deserialize(data);
             break;
           case 'UpdrawIframeObject':
-            revivedObj = UpdrawIframeObject.create(this._core).deserialize(obj);
+            revivedObj = UpdrawIframeObject.create(this._core).deserialize(data);
             break;
           case 'UpdrawSelectionGroup':
-            revivedObj = UpdrawSelectionGroup.create(this._core).deserialize(obj);
+            revivedObj = UpdrawSelectionGroup.create(this._core).deserialize(data);
             break;
           case 'UpdrawGroup':
-            revivedObj = UpdrawGroup.create(this._core).deserialize(obj);
+            revivedObj = UpdrawGroup.create(this._core).deserialize(data);
             break;
           case 'UpdrawWorkspace':
-            revivedObj = UpdrawWorkspace.create(this._core, obj).deserialize(obj);
+            revivedObj = UpdrawWorkspace.create(this._core, data).deserialize(data);
             break;
           case 'UpdrawBrushTool':
             revivedObj = new UpdrawBrushTool(this._core);

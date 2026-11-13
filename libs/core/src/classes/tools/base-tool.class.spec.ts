@@ -101,11 +101,19 @@ describe('UpdrawBaseTool', () => {
 
   describe('deserialize', () => {
     it('should assign properties from the input object', () => {
-      const data = { __class__: 'RestoredTool', name: 'restored' };
+      const data = { name: 'restored' };
 
       tool.deserialize(data);
 
-      expect(tool.__class__).toBe('RestoredTool');
+      expect(tool.name).toBe('restored');
+    });
+
+    it('should keep its own class name instead of the serialized one', () => {
+      const ownClass = tool.__class__;
+
+      tool.deserialize({ __class__: 'KritzelBrushTool', name: 'restored' });
+
+      expect(tool.__class__).toBe(ownClass);
       expect(tool.name).toBe('restored');
     });
 

@@ -34,6 +34,7 @@ import { UpdrawZOrderHelper, UpdrawZOrderItem, UpdrawZOrderOperation } from '../
 import { IUpdrawUser } from '../../interfaces/user.interface';
 import { UpdrawText } from '../objects/text.class';
 import { UpdrawImage } from '../objects/image.class';
+import { migrateLegacyStorageKeys, toLegacyDocumentName } from '../../migrations/legacy-brand';
 
 interface InitializeWorkspaceOptions {
   /**
@@ -277,6 +278,8 @@ export class UpdrawCore {
    * @param editorId - Optional unique identifier for namespacing storage keys
    */
   constructor(updrawEngine: UpdrawEngineHost, editorId?: string) {
+    // Before any manager reads settings: copy values saved under the legacy (pre-rename) localStorage keys.
+    migrateLegacyStorageKeys();
     this._updrawEngine = updrawEngine;
     this._editorId = editorId;
     this._store = new UpdrawStore(DEFAULT_ENGINE_CONFIG);
@@ -924,11 +927,15 @@ export class UpdrawCore {
     this.deleteWorkspaceFromAppState(workspace.id);
     this._store.state.workspaces = this.loadWorkspacesFromAppState();
 
-    // Also delete the workspace's IndexedDB database
+    // Also delete the workspace's IndexedDB database, and the one it had before the rename.
     const dbName = this._editorId
       ? `updraw-workspace-${this._editorId}-${workspace.id}`
       : `updraw-workspace-${workspace.id}`;
     window.indexedDB.deleteDatabase(dbName);
+    const legacyDbName = toLegacyDocumentName(dbName);
+    if (legacyDbName) {
+      window.indexedDB.deleteDatabase(legacyDbName);
+    }
   }
 
   /**

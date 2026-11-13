@@ -259,6 +259,19 @@ describe('UpdrawClipboardManager', () => {
       expect(mockCore.store.state.isSelecting).toBe(false);
     });
 
+    it('pastes payloads copied before the rename', async () => {
+      const revived = makeRevived();
+      const revive = jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(revived);
+      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+
+      setClipboardText(`kritzel-clipboard/v1:${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`);
+
+      await manager.paste(undefined, undefined);
+
+      expect(revive).toHaveBeenCalledWith(expect.objectContaining({ id: 'x', __class__: 'KritzelShape' }));
+      expect(mockCore.addObject).toHaveBeenCalledWith(revived);
+    });
+
     it('drops anchors to external objects when pasting a line-only clipboard payload', async () => {
       const revivedLine = makeRevived({
         __class__: 'UpdrawLine',

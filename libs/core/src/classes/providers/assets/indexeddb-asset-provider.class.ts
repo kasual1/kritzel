@@ -1,5 +1,7 @@
 import { UpdrawAsset } from '../../../interfaces/asset.interface';
 import { IAssetStorageProvider, UpdrawAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
+import { LEGACY_ASSET_DB_NAME } from '../../../migrations/legacy-brand';
+import { indexedDbExists, isLegacyDatabaseImported, markLegacyDatabaseImported } from '../../../migrations/legacy-indexeddb';
 
 /** Default database name used by IndexedDBAssetProvider. */
 const DEFAULT_DB_NAME = 'updraw-assets';
@@ -14,7 +16,10 @@ const DB_VERSION = 1;
  * Options for {@link IndexedDBAssetProvider}.
  */
 export interface IndexedDBAssetProviderOptions {
-  /** Custom database name. Defaults to `updraw-assets`. */
+  /**
+   * Custom database name. Defaults to `updraw-assets`. With the default name, assets saved before
+   * the rename are copied over on first use.
+   */
   dbName?: string;
 
   /**
@@ -59,6 +64,9 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
   async init(): Promise<void> {
     if (this._db) return;
     this._db = await this.openDatabase();
+    if (this._dbName === DEFAULT_DB_NAME) {
+      await this.importLegacyAssets(this._db);
+    }
     // Warm up the known-ids cache so canResolve can answer synchronously.
     await this.loadKnownIds();
   }
@@ -239,6 +247,73 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
       };
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(req.error);
+    });
+  }
+
+  /**
+   * Copies assets stored in the default database used before the rename into this database, one
+   * record at a time and only when missing here. The legacy database is left untouched, so older
+   * versions on the same origin keep working; if copying stops part-way (e.g. storage quota), the
+   * next start continues where it stopped.
+   */
+  private async importLegacyAssets(db: IDBDatabase): Promise<void> {
+    if (isLegacyDatabaseImported(LEGACY_ASSET_DB_NAME)) return;
+
+    let legacyDb: IDBDatabase | null = null;
+    try {
+      if (!(await indexedDbExists(LEGACY_ASSET_DB_NAME))) return;
+      legacyDb = await new Promise<IDBDatabase>((resolve, reject) => {
+        const req = indexedDB.open(LEGACY_ASSET_DB_NAME);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+      if (!legacyDb.objectStoreNames.contains(BLOB_STORE) || !legacyDb.objectStoreNames.contains(META_STORE)) {
+        markLegacyDatabaseImported(LEGACY_ASSET_DB_NAME);
+        return;
+      }
+
+      const legacyIds = await this.getAllKeys(legacyDb);
+      const existingIds = new Set(await this.getAllKeys(db));
+      for (const id of legacyIds) {
+        if (existingIds.has(id)) continue;
+        const record = await this.readRecord(legacyDb, id);
+        if (!record) continue;
+        await new Promise<void>((resolve, reject) => {
+          const tx = db.transaction([BLOB_STORE, META_STORE], 'readwrite');
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+          tx.onabort = () => reject(tx.error);
+          tx.objectStore(BLOB_STORE).put(record.blob, id);
+          tx.objectStore(META_STORE).put(record.metadata, id);
+        });
+      }
+      markLegacyDatabaseImported(LEGACY_ASSET_DB_NAME);
+    } catch (error) {
+      console.warn(`[IndexedDBAssetProvider] Could not import assets from legacy database "${LEGACY_ASSET_DB_NAME}":`, error);
+    } finally {
+      legacyDb?.close();
+    }
+  }
+
+  private getAllKeys(db: IDBDatabase): Promise<IDBValidKey[]> {
+    return new Promise<IDBValidKey[]>((resolve, reject) => {
+      const req = db.transaction(META_STORE, 'readonly').objectStore(META_STORE).getAllKeys();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  private readRecord(db: IDBDatabase, id: IDBValidKey): Promise<{ blob: Blob; metadata: UpdrawAsset } | null> {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction([BLOB_STORE, META_STORE], 'readonly');
+      const blobReq = tx.objectStore(BLOB_STORE).get(id);
+      const metaReq = tx.objectStore(META_STORE).get(id);
+      tx.oncomplete = () => {
+        const blob = blobReq.result as Blob | undefined;
+        const metadata = metaReq.result as UpdrawAsset | undefined;
+        resolve(blob && metadata ? { blob, metadata } : null);
+      };
+      tx.onerror = () => reject(tx.error);
     });
   }
 

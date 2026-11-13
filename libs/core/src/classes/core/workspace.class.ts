@@ -145,7 +145,10 @@ export class UpdrawWorkspace implements UpdrawSerializable {
    * @returns This workspace instance with updated properties
    */
   deserialize(object: any): UpdrawSerializable {
-    Object.assign(this, object);
+    // The class defines its own `__class__`; a serialized value (possibly a legacy name) must not override it.
+    const data = { ...object };
+    delete data.__class__;
+    Object.assign(this, data);
     this.createdAt = new Date(object.createdAt);
     this.updatedAt = new Date(object.updatedAt);
     return this;

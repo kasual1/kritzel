@@ -1,0 +1,247 @@
+{
+  "__class__": "KritzelWorkspace",
+  "version": "1.0.0",
+  "id": "u0h5sz1jf",
+  "name": "New Workspace",
+  "createdAt": "2026-03-02T11:14:23.001Z",
+  "updatedAt": "2026-03-02T18:41:38.220Z",
+  "viewport": {
+    "translateX": 376.8080599904651,
+    "translateY": 254.2704543185223,
+    "scale": 0.5629789495514562
+  },
+  "objects": [
+    {
+      "__class__": "KritzelPath",
+      "id": "txdd70sf4",
+      "workspaceId": "u0h5sz1jf",
+      "x": 268,
+      "y": 629,
+      "translateX": 290.61779953033613,
+      "translateY": 707.0005663588537,
+      "height": 14.5,
+      "width": 10.5,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1.3748043703385102,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 82,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": false,
+      "isMounted": true,
+      "isEditable": false,
+      "isInteractive": false,
+      "isDebugInfoVisible": true,
+      "points": [
+        [
+          271,
+          632
+        ],
+        [
+          271,
+          633
+        ],
+        [
+          272,
+          633
+        ],
+        [
+          273,
+          638
+        ],
+        [
+          274,
+          639
+        ],
+        [
+          274,
+          640
+        ],
+        [
+          275,
+          640
+        ]
+      ],
+      "d": "M273.18,631.07 Q274.89,635.10 275.85,636.72 T277.04,638.67",
+      "stroke": {
+        "light": "none",
+        "dark": "none"
+      },
+      "strokeWidth": 6,
+      "lineSlack": 0.5,
+      "fill": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "options": {
+        "points": [
+          [
+            271,
+            632
+          ],
+          [
+            271,
+            633
+          ],
+          [
+            272,
+            633
+          ],
+          [
+            273,
+            638
+          ],
+          [
+            274,
+            639
+          ],
+          [
+            274,
+            640
+          ],
+          [
+            275,
+            640
+          ]
+        ],
+        "translateX": 131.54262089246714,
+        "translateY": 342.987468461954,
+        "scale": 1.3748043703385102,
+        "fill": {
+          "light": "#000000",
+          "dark": "#ffffff",
+          "label": "Primary"
+        },
+        "strokeWidth": 6,
+        "opacity": 1
+      },
+      "isCompleted": true,
+      "_adjustedPoints": null
+    },
+    {
+      "__class__": "KritzelPath",
+      "id": "t0gzm4xjs",
+      "workspaceId": "u0h5sz1jf",
+      "x": 726,
+      "y": 567,
+      "translateX": 681.9462034890254,
+      "translateY": 661.9032409955847,
+      "height": 18.5,
+      "width": 10.5,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1.3748043703385102,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 101,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": false,
+      "isMounted": true,
+      "isEditable": false,
+      "isInteractive": false,
+      "isDebugInfoVisible": true,
+      "points": [
+        [
+          729,
+          570
+        ],
+        [
+          729,
+          571
+        ],
+        [
+          730,
+          572
+        ],
+        [
+          730,
+          575
+        ],
+        [
+          731,
+          576
+        ],
+        [
+          732,
+          580
+        ],
+        [
+          732,
+          582
+        ],
+        [
+          733,
+          582
+        ]
+      ],
+      "d": "M731.29,569.24 Q732.48,572.67 733.04,574.61 T734.37,578.57",
+      "stroke": {
+        "light": "none",
+        "dark": "none"
+      },
+      "strokeWidth": 6,
+      "lineSlack": 0.5,
+      "fill": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "options": {
+        "points": [
+          [
+            729,
+            570
+          ],
+          [
+            729,
+            571
+          ],
+          [
+            730,
+            572
+          ],
+          [
+            730,
+            575
+          ],
+          [
+            731,
+            576
+          ],
+          [
+            732,
+            580
+          ],
+          [
+            732,
+            582
+          ],
+          [
+            733,
+            582
+          ]
+        ],
+        "translateX": 211.54262089246714,
+        "translateY": 342.987468461954,
+        "scale": 1.3748043703385102,
+        "fill": {
+          "light": "#000000",
+          "dark": "#ffffff",
+          "label": "Primary"
+        },
+        "strokeWidth": 6,
+        "opacity": 1
+      },
+      "isCompleted": true,
+      "_adjustedPoints": null
+    }
+  ]
+}

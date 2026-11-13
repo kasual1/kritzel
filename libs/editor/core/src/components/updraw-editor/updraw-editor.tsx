@@ -22,7 +22,7 @@ import {
   UpdrawRemoteAgentPresence,
   UpdrawIconRegistry,
 } from "@updraw/core";
-import { UpdrawToolbarItem } from "@updraw/core";
+import { UpdrawToolbarItem, migrateLegacyStorageKeys } from "@updraw/core";
 import { UpdrawToolDefinition } from "@updraw/core";
 import { ShapeType } from "@updraw/core";
 import { UpdrawAlignment } from "@updraw/core";
@@ -1416,6 +1416,8 @@ export class UpdrawEditor {
     this.subscribeChatSession();
     this.registerCustomSvgIcons(this.customSvgIcons);
     this.recomputeMoreMenuItems();
+    // Settings saved before the rename live under legacy localStorage keys.
+    migrateLegacyStorageKeys();
     this.loadSettingsFromStorage();
     this.applyTheme();
   }

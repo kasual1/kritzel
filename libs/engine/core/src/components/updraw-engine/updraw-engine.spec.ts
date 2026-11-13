@@ -2384,6 +2384,42 @@ describe('UpdrawEngine', () => {
     });
   });
 
+  describe('importing exports made before the rename', () => {
+    it('accepts a legacy workspace export and restores its assets', async () => {
+      const payload = {
+        __class__: 'KritzelWorkspace',
+        name: 'Legacy Workspace',
+        viewport: { centerWorldX: 0, centerWorldY: 0, scale: 1 },
+        objects: [],
+        assets: { 'asset-1': 'data:image/png;base64,AA==' },
+      };
+      jest.spyOn(engine as any, 'dataUrlToBlob').mockResolvedValue(new Blob(['png-bytes'], { type: 'image/png' }));
+
+      await engine.importFromJson(JSON.stringify(payload));
+
+      expect(core.assetResolver.put).toHaveBeenCalledWith(expect.any(Blob), expect.objectContaining({ id: 'asset-1' }));
+    });
+
+    it('loads objects from a legacy workspace export into the current workspace', async () => {
+      core.store.state.activeWorkspace = { id: 'w1' } as UpdrawWorkspace;
+
+      await expect(engine.loadObjectsFromJson(JSON.stringify({ __class__: 'KritzelWorkspace' }))).resolves.toBe(0);
+    });
+
+    it('embeds the assets of legacy images in portable exports', async () => {
+      core.assetResolver.fetchBlob = jest.fn().mockResolvedValue(new Blob(['png-bytes'], { type: 'image/png' }));
+      jest.spyOn(engine as any, 'blobToDataUrl').mockResolvedValue('data:image/png;base64,AA==');
+
+      const assets = await (engine as any).collectPortableAssets([
+        { __class__: 'KritzelImage', assetId: 'legacy-asset' },
+        { __class__: 'UpdrawImage', assetId: 'current-asset' },
+        { __class__: 'KritzelPath', assetId: 'not-an-image' },
+      ]);
+
+      expect(Object.keys(assets).sort()).toEqual(['current-asset', 'legacy-asset']);
+    });
+  });
+
   describe('loadObjectsFromJson validation', () => {
     it('throws when no workspace is currently loaded', async () => {
       core.store.state.activeWorkspace = null;

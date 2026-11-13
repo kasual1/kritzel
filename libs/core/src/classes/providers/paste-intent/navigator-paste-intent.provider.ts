@@ -1,4 +1,4 @@
-import { UpdrawClipboardPayload, CLIPBOARD_PAYLOAD_PREFIX, PasteIntent } from '../../managers/clipboard.types';
+import { UpdrawClipboardPayload, getClipboardPayloadJson, PasteIntent } from '../../managers/clipboard.types';
 import { UpdrawPasteIntentProvider, UpdrawPasteIntentProviderContext } from '../../../interfaces/paste-intent-provider.interface';
 
 type BrowserClipboardItems = ClipboardItem[];
@@ -78,12 +78,13 @@ export class UpdrawNavigatorPasteIntentProvider implements UpdrawPasteIntentProv
   }
 
   private parseClipboardPayload(text: string | null | undefined): UpdrawClipboardPayload | null {
-    if (!text || !text.startsWith(CLIPBOARD_PAYLOAD_PREFIX)) {
+    const json = getClipboardPayloadJson(text);
+    if (json === null) {
       return null;
     }
 
     try {
-      const parsed = JSON.parse(text.slice(CLIPBOARD_PAYLOAD_PREFIX.length)) as UpdrawClipboardPayload;
+      const parsed = JSON.parse(json) as UpdrawClipboardPayload;
       if (parsed?.version !== 1 || !Array.isArray(parsed.objects)) {
         return null;
       }

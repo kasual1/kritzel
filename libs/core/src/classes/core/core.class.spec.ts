@@ -632,6 +632,8 @@ describe('UpdrawCore', () => {
       core.deleteWorkspace(ws);
 
       expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('updraw-workspace-ws-db');
+      // The database the workspace had before the rename, which is only imported once the workspace is opened.
+      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('kritzel-workspace-ws-db');
     });
 
     it('should use editorId-namespaced database name when editorId is set', () => {
@@ -644,6 +646,7 @@ describe('UpdrawCore', () => {
       coreWithId.deleteWorkspace(ws);
 
       expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('updraw-workspace-homepage-ws-db');
+      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('kritzel-workspace-homepage-ws-db');
     });
   });
 

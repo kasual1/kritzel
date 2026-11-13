@@ -1,3 +1,5 @@
+import { LEGACY_ELEMENT_ID_ATTRIBUTE } from '../../migrations/legacy-brand';
+
 /**
  * Message types of the element bridge between an `UpdrawIframeObject` and its page.
  * Page → host: ready, hover, click, pick, rects, query result, interaction result. Host → page: sync, query, interaction.
@@ -17,6 +19,9 @@ export const IFRAME_ELEMENT_MESSAGES = {
 
 /** Tag of the element that holds the highlight layer inside the page. Its shadow root keeps page CSS out. */
 export const IFRAME_ELEMENT_OVERLAY_TAG = 'updraw-element-overlay';
+
+/** Attributes that give elements a stable id for agents, in order of precedence (current, then pre-rename). */
+export const IFRAME_ELEMENT_ID_ATTRIBUTES: readonly string[] = ['data-updraw-id', LEGACY_ELEMENT_ID_ATTRIBUTE];
 
 /** Attribute set on the page's root element while picking, used to show the default cursor everywhere. */
 export const IFRAME_ELEMENT_PICKING_ATTRIBUTE = 'data-updraw-picking';
@@ -50,6 +55,15 @@ export function createIframeElementBridgeScript(documentToken: number): string {
   const DOCUMENT = ${Number(documentToken) || 0};
   const OVERLAY_TAG = '${IFRAME_ELEMENT_OVERLAY_TAG}';
   const PICKING_ATTRIBUTE = '${IFRAME_ELEMENT_PICKING_ATTRIBUTE}';
+  // Stable element ids for agents. Content saved before the rename uses the legacy attribute.
+  const ID_ATTRIBUTES = ${JSON.stringify(IFRAME_ELEMENT_ID_ATTRIBUTES)};
+  const idOf = element => {
+    for (const attribute of ID_ATTRIBUTES) {
+      const value = element.getAttribute(attribute);
+      if (value) return { attribute, value };
+    }
+    return null;
+  };
   const MAX_TEXT = 200;
   const MAX_ATTRIBUTE = 200;
   const MAX_ATTRIBUTES = 40;
@@ -126,9 +140,9 @@ export function createIframeElementBridgeScript(documentToken: number): string {
     return !!matches && matches.length === 1 && matches[0] === element;
   };
   const uniqueAnchor = element => {
-    const updrawId = element.getAttribute('data-updraw-id');
-    if (updrawId) {
-      const selector = '[data-updraw-id="' + escape(updrawId) + '"]';
+    const elementId = idOf(element);
+    if (elementId) {
+      const selector = '[' + elementId.attribute + '="' + escape(elementId.value) + '"]';
       if (matchesExactly(selector, element)) return selector;
     }
     if (element.id) {
@@ -292,8 +306,8 @@ export function createIframeElementBridgeScript(documentToken: number): string {
     };
     const visibleRect = visibleRectOf(element, null);
     if (visibleRect) info.visibleRect = toRect(visibleRect);
-    const updrawId = element.getAttribute('data-updraw-id');
-    if (updrawId) info.updrawId = clip(updrawId, MAX_ATTRIBUTE);
+    const elementId = idOf(element);
+    if (elementId) info.updrawId = clip(elementId.value, MAX_ATTRIBUTE);
     if (element.id) info.id = clip(element.id, MAX_ATTRIBUTE);
     const text = textOf(element);
     if (text) info.text = text;
@@ -306,8 +320,8 @@ export function createIframeElementBridgeScript(documentToken: number): string {
     return info;
   };
   const shortName = element => {
-    const updrawId = element.getAttribute('data-updraw-id');
-    if (updrawId) return clip(updrawId, 60);
+    const elementId = idOf(element);
+    if (elementId) return clip(elementId.value, 60);
     let name = element.localName;
     if (element.id) return clip(name + '#' + element.id, 60);
     const classes = Array.from(element.classList).slice(0, 2);

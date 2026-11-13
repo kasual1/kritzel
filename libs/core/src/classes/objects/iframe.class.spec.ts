@@ -87,6 +87,22 @@ describe('UpdrawIframeObject', () => {
     getComputedStyle.mockRestore();
   });
 
+  it('keeps the runtime API of content saved before the rename working', () => {
+    const object = new UpdrawIframeObject({ html: '<button data-kritzel-id="run">Run</button>' });
+    const iframe = document.createElement('iframe');
+
+    object.mount(iframe);
+
+    // Deprecated aliases: the global, the state event and the cursor variables.
+    expect(iframe.srcdoc).toContain('globalThis.kritzel = updraw;');
+    expect(iframe.srcdoc).toContain("new CustomEvent('updrawstatechange'");
+    expect(iframe.srcdoc).toContain("new CustomEvent('kritzelstatechange'");
+    expect(iframe.srcdoc).toContain('--kritzel-iframe-default-cursor: var(--updraw-iframe-default-cursor);');
+    expect(iframe.srcdoc).toContain('--kritzel-iframe-pointer-cursor: var(--updraw-iframe-pointer-cursor);');
+    // Stable element ids: the current attribute first, then the legacy one.
+    expect(iframe.srcdoc).toContain('const ID_ATTRIBUTES = ["data-updraw-id","data-kritzel-id"];');
+  });
+
   it('reloads srcdoc when content changes', () => {
     const object = UpdrawIframeObject.create(createCore(), { html: '<p>Before</p>' });
     const iframe = document.createElement('iframe');

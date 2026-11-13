@@ -10,6 +10,7 @@ import { CURRENT_APP_STATE_SCHEMA_VERSION } from '../../constants/schema.constan
 import { ObjectHelper } from '../../helpers/object.helper';
 import { runMigrations } from '../../helpers/migration.helper';
 import { APP_STATE_MIGRATIONS } from '../../migrations/app-state.migrations';
+import { migrateLegacyStorageKeys } from '../../migrations/legacy-brand';
 
 /**
  * Manages the application state for workspaces with Yjs-based synchronization support.
@@ -180,6 +181,8 @@ export class UpdrawAppStateMap {
       throw new Error('[UpdrawAppStateMap] localStorage is unavailable. Cannot persist app-state document identity.');
     }
 
+    // An instance id saved before the rename lives under the legacy key; losing it would orphan the user's workspace list.
+    migrateLegacyStorageKeys(storage);
     const storageKey = core.getStorageKey(APP_STATE_INSTANCE_ID_STORAGE_KEY);
 
     let instanceId: string | null;

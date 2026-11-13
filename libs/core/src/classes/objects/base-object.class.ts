@@ -484,7 +484,10 @@ export class UpdrawBaseObject<T extends Element = HTMLElement | SVGElement> impl
    * @returns This instance cast to type T
    */
   deserialize<T>(object: any): T {
-    Object.assign(this, object);
+    // The class defines its own `__class__`; a serialized value (possibly a legacy name) must not override it.
+    const data = { ...object };
+    delete data.__class__;
+    Object.assign(this, data);
     // Selection/interactivity state is transient UI state and must not survive revival.
     this.isSelected = false;
     this.isHovered = false;
