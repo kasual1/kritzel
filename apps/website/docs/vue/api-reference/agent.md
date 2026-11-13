@@ -411,6 +411,7 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 | prefix | string | `''` | Put in front of every tool name, for example `'kritzel_'`, to avoid clashes with other tools. |
 | maxTextLength | number | `2000` | Longest `text` that `create_shape`, `create_text`, or `type_text` may type. Longer input is rejected with `'invalid-input'`. |
 | instant | boolean | `false` | Skips all animation in the actions of these tools: the changes appear at once. Placed objects still play the theme's appear animation. |
+| images | `boolean \| { urls?: boolean }` | `true` | Offers `create_image`, which places images drawn as SVG markup by the model. `{ urls: true }` also loads images from URLs that the model chooses, fetched by the user's browser. |
 | iframes | boolean | `false` | Offers `create_iframe`, `read_iframe`, and `update_iframe`, which place, read, and change widgets of model-written code. |
 | viewport | boolean | `true` | Offers `set_viewport` and `fit_viewport`, which pan and zoom the local user's view. |
 
@@ -438,12 +439,14 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 | delete_objects | [`deleteObjects()`](#deleteobjects) | `objectIds` |
 | undo | [`undo()`](#undo) | — |
 | redo | [`redo()`](#redo) | — |
+| create_image | [`addObject()`](#addobject) with a `KritzelImage` of the SVG markup or, with `images: { urls: true }`, of the URL | `name?`, `x`, `y`, `width?`, `height?` (together; the image's own size, fitted into 300×300, when left out), `svg` (with `urls`, exactly one of `svg?` and `url?`) |
+| create_iframe | [`addObject()`](#addobject) with a `KritzelIframeObject` sandboxed to scripts only, with `MODEL_IFRAME_CONTENT_SECURITY_POLICY`, which blocks network access | `name`, `x`, `y`, `width`, `height`, `html`, `css?`, `script?` |
 | read_iframe | — | `objectId` |
 | update_iframe | [`updateIframe()`](#updateiframe) | `objectId`, `name?`, `html?`, `css?`, `script?`, `edits?` |
 | set_viewport | The engine's viewport | `x?`, `y?` (together), `zoom?` or `zoomBy?` |
 | fit_viewport | The engine's viewport | `objectIds?` (all objects when left out), `maxZoom?` (default `1`) |
 
-`addObject()` has no tool, because it needs an object that the app builds. A target (`target`, `to`) is one object in the schema: a point `{ x, y }` or a point on an object `{ objectId, anchor?, offset? }`, where `objectId` wins. The `click` tool clicks on the canvas only; models use widgets with `interact_with_element`, whose `interaction` is one object in the schema with a `type` and the fields of that type. Colors are CSS color strings.
+`addObject()` has no tool of its own, because it needs an object that the app builds; `create_image` and `create_iframe` place the objects they build with it. A target (`target`, `to`) is one object in the schema: a point `{ x, y }` or a point on an object `{ objectId, anchor?, offset? }`, where `objectId` wins. The `click` tool clicks on the canvas only; models use widgets with `interact_with_element`, whose `interaction` is one object in the schema with a `type` and the fields of that type. Colors are CSS color strings.
 
 `inspect_elements` lists the elements inside a widget (an object whose content has elements, such as an iframe object), so the model can find the selectors to use with `interact_with_element`. Without a `selector`, it lists the elements a user can interact with: buttons, links, form fields, elements with an interactive ARIA role, and elements that show a pointer cursor. It resolves with the `elements` as [`KritzelCanvasElement`](#kritzelcanvaselement) objects, at most `limit` (default 50, at most 200), and `truncated: true` when more matched. Both tools are offered to agents and to chat sessions that work as the user.
 

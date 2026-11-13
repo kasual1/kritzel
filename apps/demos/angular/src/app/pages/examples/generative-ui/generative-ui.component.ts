@@ -1,22 +1,34 @@
-import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, signal, ViewChild } from '@angular/core';
 import {
   KritzelBaseObject,
+  KritzelChatBoxChip,
+  KritzelChatSession,
   KritzelEditor,
   KritzelObjectTitlebarActionEvent,
   KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
-import { createUiDocument, GenerativeUi, getUiTitle, isUi, objectConfig, objectTitlebar } from './generative-ui';
-import { complete, type CompletionRequest, type Credentials } from './llm-providers';
-import { MockChatBoxComponent } from './mock-chat-box.component';
-import { completeWithMock, type MockUi, type RequestMode } from './mock-uis';
+import { createBrowserTransport, type Credentials } from './browser-transport';
+import {
+  createGenerativeUiSession,
+  createUiDocument,
+  getErrorMessage,
+  getUiChips,
+  getUiTitle,
+  isUi,
+  objectConfig,
+  objectTitlebar,
+  withUiFrames,
+  type RequestMode,
+} from './generative-ui';
+import { createMockTransport } from './mock-transport';
 import { UiPreviewComponent } from './ui-preview.component';
 import { WelcomePanelComponent } from './welcome-panel.component';
 
 @Component({
   selector: 'app-generative-ui',
-  imports: [KritzelEditor, MockChatBoxComponent, UiPreviewComponent, WelcomePanelComponent],
+  imports: [KritzelEditor, UiPreviewComponent, WelcomePanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   // The welcome guide takes its accent from the theme, like the editor's own controls.
   host: {
@@ -31,14 +43,14 @@ import { WelcomePanelComponent } from './welcome-panel.component';
       [workspaces]="workspaces"
       [objectConfig]="objectConfig"
       [objectTitlebar]="objectTitlebar"
-      [isChatBoxVisible]="mode() === 'live'"
-      [isChatBoxLoading]="isWorking()"
+      [chatSession]="session()"
+      [chatBoxChips]="chips()"
+      [isChatBoxVisible]="mode() === 'mock' || credentials() !== null"
       [isToolbarVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady()"
-      (chatSubmit)="generate($event.detail)"
-      (chatStop)="stop()"
       (objectsChange)="onObjectsChange($event)"
+      (objectsSelectionChange)="onSelectionChange($event)"
+      (chatChipRemove)="onChipRemove($event)"
       (objectTitlebarAction)="onTitlebarAction($event)"
     ></kritzel-editor>
 
@@ -49,13 +61,9 @@ import { WelcomePanelComponent } from './welcome-panel.component';
       [error]="keyError()"
       (modeChange)="changeMode($event)"
       (connected)="connect($event)"
-      (disconnect)="credentials.set(null)"
-      (example)="generate($event)"
+      (disconnect)="disconnect()"
+      (example)="sendExample($event)"
     />
-
-    @if (mode() === 'mock') {
-      <app-mock-chat-box [isWorking]="isWorking()" (send)="generateMock($event)" />
-    }
 
     @if (preview(); as current) {
       <app-ui-preview [title]="current.title" [document]="current.document" (closed)="preview.set(null)" />
@@ -81,71 +89,70 @@ import { WelcomePanelComponent } from './welcome-panel.component';
 export class GenerativeUiComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
-  readonly themes = [angularThemeLight, angularThemeDark];
+  readonly themes = [withUiFrames(angularThemeLight), withUiFrames(angularThemeDark)];
   readonly accentColor = angularThemeLight.global?.primaryColor;
   readonly accentHoverColor = angularThemeLight.global?.primaryHoverColor;
   readonly workspaces = [new KritzelWorkspace({ name: 'Generative UI', objects: [] })];
   readonly objectConfig = objectConfig;
   readonly objectTitlebar = objectTitlebar;
 
-  readonly mode = signal<RequestMode | null>(null);
   // The key only lives in this component's memory: it is gone when the page reloads.
   readonly credentials = signal<Credentials | null>(null);
+  // One session per mode, created once: choosing a mode binds its session to the editor.
+  private readonly browser = createBrowserTransport();
+  private readonly sessions: Record<RequestMode, KritzelChatSession> = {
+    live: createGenerativeUiSession(this.browser.transport),
+    mock: createGenerativeUiSession(createMockTransport()),
+  };
+  readonly mode = signal<RequestMode | null>(null);
   readonly keyError = signal('');
-  readonly isWorking = signal(false);
   readonly hasUis = signal(false);
+  readonly chips = signal<KritzelChatBoxChip[]>([]);
   readonly preview = signal<{ title: string; document: string } | null>(null);
+  readonly session = computed(() => {
+    const mode = this.mode();
+    return mode ? this.sessions[mode] : null;
+  });
+  readonly isWorking = signal(false);
 
-  private generator: GenerativeUi | null = null;
-  private abort: AbortController | null = null;
-
-  onReady() {
-    this.generator = new GenerativeUi(this.editor);
+  constructor() {
+    // Follows the bound session. The chat box shows the progress of a prompt, but not why it failed.
+    effect(onCleanup => {
+      const session = this.session();
+      this.isWorking.set(session?.running ?? false);
+      if (!session) {
+        return;
+      }
+      const offChange = session.on('change', () => this.isWorking.set(session.running));
+      const offEnd = session.on('end', result => {
+        if (result.status === 'error') {
+          void this.editor?.triggerNotification({ type: 'error', message: getErrorMessage(result.error) });
+        }
+      });
+      onCleanup(() => {
+        offChange();
+        offEnd();
+      });
+    });
   }
 
-  generate(prompt: string) {
-    const credentials = this.credentials();
-    if (!credentials) {
+  sendExample(prompt: string) {
+    if (this.mode() === 'live' && !this.credentials()) {
       this.keyError.set('Add an API key to start generating UIs.');
       return;
     }
-    void this.run(prompt, request => complete(credentials, request));
-  }
-
-  /** A mocked prompt always adds a new UI, because its answer is not a change of the selected one. */
-  async generateMock(ui: MockUi) {
-    await this.editor.clearSelection();
-    await this.run(ui.prompt, () => completeWithMock(ui));
-  }
-
-  private async run(prompt: string, completion: (request: CompletionRequest) => Promise<string>) {
-    if (!this.generator || this.abort || !prompt.trim()) {
-      return;
-    }
-
-    const abort = new AbortController();
-    this.abort = abort;
-    this.isWorking.set(true);
-    try {
-      await this.generator.generate(prompt, completion, abort.signal);
-    } catch (error) {
-      if (!abort.signal.aborted) {
-        const message = error instanceof Error ? error.message : String(error);
-        await this.editor.triggerNotification({ type: 'error', message });
-      }
-    } finally {
-      this.abort = null;
-      this.isWorking.set(false);
-    }
-  }
-
-  stop() {
-    this.abort?.abort();
+    void this.session()?.send(prompt);
   }
 
   connect(credentials: Credentials) {
+    this.browser.setCredentials(credentials);
     this.credentials.set(credentials);
     this.keyError.set('');
+  }
+
+  disconnect() {
+    this.browser.setCredentials(null);
+    this.credentials.set(null);
   }
 
   changeMode(mode: RequestMode | null) {
@@ -155,6 +162,14 @@ export class GenerativeUiComponent {
 
   onObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
     this.hasUis.set(event.detail.some(isUi));
+  }
+
+  onSelectionChange(event: CustomEvent<KritzelBaseObject[]>) {
+    this.chips.set(getUiChips(event.detail));
+  }
+
+  onChipRemove(event: CustomEvent<KritzelChatBoxChip>) {
+    this.chips.update(chips => chips.filter(chip => chip.id !== event.detail.id));
   }
 
   async onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEvent>) {

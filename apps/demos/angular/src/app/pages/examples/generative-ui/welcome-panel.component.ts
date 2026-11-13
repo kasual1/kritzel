@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
-import { detectProvider, getProvider, PROVIDERS, type Credentials, type ProviderId } from './llm-providers';
-import type { RequestMode } from './mock-uis';
+import { detectProvider, getProvider, PROVIDERS, type Credentials, type ProviderId } from './browser-transport';
+import type { RequestMode } from './generative-ui';
+import { MOCK_UIS } from './mock-transport';
+
+/** The prompts of the canned UIs, so that every example also works with mocked requests. */
+const EXAMPLE_PROMPTS = MOCK_UIS.map(ui => ui.prompt);
 
 /** The empty-canvas guide, centered on the canvas until the first UI is added. It asks how to answer prompts and takes the API key. */
 @Component({
@@ -25,79 +29,80 @@ import type { RequestMode } from './mock-uis';
           </button>
           <button type="button" class="welcome__choice" (click)="modeChange.emit('mock')">
             <strong>Mock the requests</strong>
-            <span>Send prefilled prompts with canned answers. No key needed.</span>
+            <span>Get canned UIs for the example prompts. No key needed.</span>
           </button>
         </div>
-      } @else if (mode() === 'mock') {
-        <p class="welcome__hint">Send the prefilled prompts from the chat box below. The UIs are canned, so no model is involved.</p>
-        <div class="welcome__connected">
-          <span>Mocked requests</span>
-          <button type="button" class="welcome__change" (click)="modeChange.emit(null)">Change</button>
-        </div>
-        <p class="welcome__footer">Press <kbd>▶</kbd> in a titlebar to open a UI in fullscreen.</p>
       } @else {
-      <p class="welcome__hint">
-        @if (credentials()) {
-          Type into the chat box below. The model builds a working UI on the canvas while you watch. Select a UI to
-          change it.
+        @if (mode() === 'mock') {
+          <p class="welcome__hint">Pick an example or type into the chat box below. The UIs are canned, so no model is involved.</p>
+          <div class="welcome__connected">
+            <span>Mocked requests</span>
+            <button type="button" class="welcome__change" (click)="modeChange.emit(null)">Change</button>
+          </div>
         } @else {
-          Add your Anthropic, OpenAI or Gemini API key, then type into the chat box below.
-        }
-      </p>
-
-      @if (credentials()) {
-        <div class="welcome__connected">
-          <span>Connected to {{ provider().name }} · {{ provider().model }}</span>
-          <button type="button" class="welcome__change" (click)="disconnect.emit()">Change key</button>
-        </div>
-      } @else {
-        <form (submit)="connect($event)">
-          <label class="welcome__label" for="generative-ui-key">API key</label>
-          <div class="welcome__providers" role="group" aria-label="Provider">
-            @for (option of providers; track option.id) {
-              <button
-                type="button"
-                class="welcome__provider"
-                [attr.aria-pressed]="option.id === providerId()"
-                (click)="providerId.set(option.id)"
-              >
-                {{ option.name }}
-              </button>
+          <p class="welcome__hint">
+            @if (credentials()) {
+              Type into the chat box below. The model builds a working UI on the canvas while you watch. Select a UI to
+              ask for a change.
+            } @else {
+              Add your Anthropic, OpenAI or Gemini API key, then type into the chat box below.
             }
-          </div>
-          <div class="welcome__key-row">
-            <input
-              #keyInput
-              id="generative-ui-key"
-              class="welcome__key"
-              type="password"
-              autocomplete="off"
-              spellcheck="false"
-              [placeholder]="provider().keyPlaceholder"
-              [value]="apiKey()"
-              (input)="updateKey(keyInput.value)"
-            />
-            <button type="submit" class="welcome__connect">Connect</button>
-          </div>
-          <p class="welcome__note">
-            Kept in this tab's memory only and sent straight to {{ provider().name }}.
-            <a [href]="provider().keyUrl" target="_blank" rel="noreferrer">Get a key</a>
           </p>
-          <button type="button" class="welcome__change welcome__back" (click)="modeChange.emit(null)">Back to the options</button>
-        </form>
-      }
-      @if (error()) {
-        <p class="welcome__error" role="alert">{{ error() }}</p>
-      }
 
-      <ul class="welcome__examples" aria-label="Example prompts">
-        @for (prompt of examplePrompts; track prompt) {
-          <li>
-            <button type="button" class="welcome__example" (click)="example.emit(prompt)">“{{ prompt }}”</button>
-          </li>
+          @if (credentials()) {
+            <div class="welcome__connected">
+              <span>Connected to {{ provider().name }} · {{ provider().model }}</span>
+              <button type="button" class="welcome__change" (click)="disconnect.emit()">Change key</button>
+            </div>
+          } @else {
+            <form (submit)="connect($event)">
+              <label class="welcome__label" for="generative-ui-key">API key</label>
+              <div class="welcome__providers" role="group" aria-label="Provider">
+                @for (option of providers; track option.id) {
+                  <button
+                    type="button"
+                    class="welcome__provider"
+                    [attr.aria-pressed]="option.id === providerId()"
+                    (click)="providerId.set(option.id)"
+                  >
+                    {{ option.name }}
+                  </button>
+                }
+              </div>
+              <div class="welcome__key-row">
+                <input
+                  #keyInput
+                  id="generative-ui-key"
+                  class="welcome__key"
+                  type="password"
+                  autocomplete="off"
+                  spellcheck="false"
+                  [placeholder]="provider().keyPlaceholder"
+                  [value]="apiKey()"
+                  (input)="updateKey(keyInput.value)"
+                />
+                <button type="submit" class="welcome__connect">Connect</button>
+              </div>
+              <p class="welcome__note">
+                Kept in this tab's memory only and sent straight to {{ provider().name }}.
+                <a [href]="provider().keyUrl" target="_blank" rel="noreferrer">Get a key</a>
+              </p>
+              <button type="button" class="welcome__change welcome__back" (click)="modeChange.emit(null)">Back to the options</button>
+            </form>
+          }
+          @if (error()) {
+            <p class="welcome__error" role="alert">{{ error() }}</p>
+          }
         }
-      </ul>
-      <p class="welcome__footer">Press <kbd>▶</kbd> in a titlebar to open a UI in fullscreen.</p>
+
+        <ul class="welcome__examples" aria-label="Example prompts">
+          @for (prompt of examplePrompts; track prompt) {
+            <li>
+              <button type="button" class="welcome__example" (click)="example.emit(prompt)">“{{ prompt }}”</button>
+            </li>
+          }
+        </ul>
+        <p class="welcome__footer">Press <kbd>▶</kbd> in a titlebar to open a UI in fullscreen.</p>
       }
     </div>
   `,
@@ -379,11 +384,7 @@ export class WelcomePanelComponent {
   readonly example = output<string>();
 
   readonly providers = PROVIDERS;
-  readonly examplePrompts = [
-    'A pomodoro timer with a circular progress ring',
-    'A weather card for Lisbon with a 5-day forecast',
-    'A kanban board for a product launch, with drag and drop',
-  ];
+  readonly examplePrompts = EXAMPLE_PROMPTS;
 
   readonly providerId = signal<ProviderId>('anthropic');
   readonly apiKey = signal('');

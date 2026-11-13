@@ -1,12 +1,10 @@
 import { useState, type FormEvent } from "react";
-import { detectProvider, getProvider, PROVIDERS, type Credentials, type ProviderId } from "./llm-providers";
-import type { RequestMode } from "./mock-uis";
+import { detectProvider, getProvider, PROVIDERS, type Credentials, type ProviderId } from "./browser-transport";
+import type { RequestMode } from "./generative-ui";
+import { MOCK_UIS } from "./mock-transport";
 
-const EXAMPLE_PROMPTS = [
-  "A pomodoro timer with a circular progress ring",
-  "A weather card for Lisbon with a 5-day forecast",
-  "A kanban board for a product launch, with drag and drop",
-];
+/** The prompts of the canned UIs, so that every example also works with mocked requests. */
+const EXAMPLE_PROMPTS = MOCK_UIS.map((ui) => ui.prompt);
 
 export interface WelcomePanelProps {
   isVisible: boolean;
@@ -41,6 +39,18 @@ export function WelcomePanel({ isVisible, mode, credentials, error, onModeChange
     }
   }
 
+  const examples = (
+    <ul className="welcome__examples" aria-label="Example prompts">
+      {EXAMPLE_PROMPTS.map((prompt) => (
+        <li key={prompt}>
+          <button type="button" className="welcome__example" onClick={() => onExample(prompt)}>
+            {`“${prompt}”`}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+
   const heading = (
     <>
       <p className="welcome__eyebrow">Generative UI</p>
@@ -65,7 +75,7 @@ export function WelcomePanel({ isVisible, mode, credentials, error, onModeChange
             </button>
             <button type="button" className="welcome__choice" onClick={() => onModeChange("mock")}>
               <strong>Mock the requests</strong>
-              <span>Send prefilled prompts with canned answers. No key needed.</span>
+              <span>Get canned UIs for the example prompts. No key needed.</span>
             </button>
           </div>
         </div>
@@ -78,13 +88,14 @@ export function WelcomePanel({ isVisible, mode, credentials, error, onModeChange
       <div className={`welcome${isVisible ? "" : " welcome--hidden"}`} aria-hidden={!isVisible}>
         <div className="welcome__content">
           {heading}
-          <p className="welcome__hint">Send the prefilled prompts from the chat box below. The UIs are canned, so no model is involved.</p>
+          <p className="welcome__hint">Pick an example or type into the chat box below. The UIs are canned, so no model is involved.</p>
           <div className="welcome__connected">
             <span>Mocked requests</span>
             <button type="button" className="welcome__change" onClick={() => onModeChange(null)}>
               Change
             </button>
           </div>
+          {examples}
           <p className="welcome__footer">
             Press <kbd>▶</kbd> in a titlebar to open a UI in fullscreen.
           </p>
@@ -99,7 +110,7 @@ export function WelcomePanel({ isVisible, mode, credentials, error, onModeChange
         {heading}
         <p className="welcome__hint">
           {credentials
-            ? "Type into the chat box below. The model builds a working UI on the canvas while you watch. Select a UI to change it."
+            ? "Type into the chat box below. The model builds a working UI on the canvas while you watch. Select a UI to ask for a change."
             : "Add your Anthropic, OpenAI or Gemini API key, then type into the chat box below."}
         </p>
 
@@ -160,15 +171,7 @@ export function WelcomePanel({ isVisible, mode, credentials, error, onModeChange
           </p>
         )}
 
-        <ul className="welcome__examples" aria-label="Example prompts">
-          {EXAMPLE_PROMPTS.map((prompt) => (
-            <li key={prompt}>
-              <button type="button" className="welcome__example" onClick={() => onExample(prompt)}>
-                {`“${prompt}”`}
-              </button>
-            </li>
-          ))}
-        </ul>
+        {examples}
         <p className="welcome__footer">
           Press <kbd>▶</kbd> in a titlebar to open a UI in fullscreen.
         </p>
