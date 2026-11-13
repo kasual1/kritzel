@@ -92,9 +92,11 @@ function createQueryRunner(rows: FakeDocumentRow[]) {
     if (statement === 'SELECT "id" FROM "documents" ORDER BY "id"') {
       return sortedIds().map((id) => ({ id }));
     }
-    if (statement === 'SELECT "data" FROM "documents" WHERE "id" = $1') {
+    if (
+      statement === 'SELECT "data", "user_id" FROM "documents" WHERE "id" = $1'
+    ) {
       const found = documents.get(String(params[0]));
-      return found ? [{ data: found.data }] : [];
+      return found ? [{ data: found.data, user_id: found.user_id }] : [];
     }
     if (statement === 'SELECT 1 FROM "documents" WHERE "id" = $1') {
       return documents.has(String(params[0])) ? [{ '?column?': 1 }] : [];
@@ -275,21 +277,21 @@ describe('RenameLegacyBrandDocumentIds migration', () => {
     });
   });
 
-  it('merges a legacy document into an existing target and deletes it', async () => {
+  it('merges a target of the same owner into the original document, keeping its metadata', async () => {
     const { queryRunner, documents } = createQueryRunner([
       row(
         LEGACY_WORKSPACE_ID,
         createWorkspaceDocument({
           'path-1': { __class__: LEGACY_PATH, id: 'path-1' },
         }),
-        { user_id: 'legacy-owner', public: false },
+        { user_id: 'owner', public: true },
       ),
       row(
         'updraw-workspace-1',
         createWorkspaceDocument({
           'path-2': { __class__: 'UpdrawPath', id: 'path-2' },
         }),
-        { user_id: 'owner', public: true, type: 'state' },
+        { user_id: 'owner', public: false, type: 'state' },
       ),
     ]);
 
@@ -300,12 +302,51 @@ describe('RenameLegacyBrandDocumentIds migration', () => {
     expect(merged).toMatchObject({
       user_id: 'owner',
       public: true,
-      type: 'state',
+      type: 'workspace',
     });
     expect(decodeDocument(merged.data!).objects).toEqual({
       'path-1': { __class__: 'UpdrawPath', id: 'path-1' },
       'path-2': { __class__: 'UpdrawPath', id: 'path-2' },
     });
+  });
+
+  it('sets a target created by another user aside instead of merging it', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const squatted = createWorkspaceDocument({
+      'path-2': { __class__: 'UpdrawPath', id: 'path-2' },
+    });
+    const { queryRunner, documents } = createQueryRunner([
+      row(
+        LEGACY_WORKSPACE_ID,
+        createWorkspaceDocument({
+          'path-1': { __class__: LEGACY_PATH, id: 'path-1' },
+        }),
+        { user_id: 'owner', public: true },
+      ),
+      row('updraw-workspace-1', squatted, { user_id: 'someone-else' }),
+      row('rename-conflict-updraw-workspace-1', null, { user_id: 'x' }),
+    ]);
+
+    await migration.up(queryRunner);
+
+    expect([...documents.keys()].sort()).toEqual([
+      'rename-conflict-2-updraw-workspace-1',
+      'rename-conflict-updraw-workspace-1',
+      'updraw-workspace-1',
+    ]);
+    const original = documents.get('updraw-workspace-1')!;
+    expect(original).toMatchObject({ user_id: 'owner', public: true });
+    expect(decodeDocument(original.data!).objects).toEqual({
+      'path-1': { __class__: 'UpdrawPath', id: 'path-1' },
+    });
+    expect(documents.get('rename-conflict-2-updraw-workspace-1')).toMatchObject(
+      {
+        user_id: 'someone-else',
+        data: squatted,
+      },
+    );
+    expect(warn).toHaveBeenCalledTimes(1);
+    warn.mockRestore();
   });
 
   it('handles documents without data', async () => {
@@ -322,9 +363,10 @@ describe('RenameLegacyBrandDocumentIds migration', () => {
       'updraw-app-state-user-1',
       'updraw-workspace-1',
     ]);
-    expect(documents.get('updraw-workspace-1')!.data).toBe(target);
+    // The original (legacy) row is kept and receives the target's state.
+    expect(documents.get('updraw-workspace-1')!.data).toEqual(target);
     expect(documents.get('updraw-app-state-user-1')!.data).toBeNull();
-    expect(dataUpdates()).toBe(0);
+    expect(dataUpdates()).toBe(1);
   });
 
   it('only rewrites documents that contain legacy classes', async () => {

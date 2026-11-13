@@ -102,8 +102,10 @@ cd ~/kritzel-app
 docker compose -f docker-compose.prod.yml exec -T postgres pg_dumpall -U postgres > ~/pre-updraw.sql
 docker compose -f docker-compose.prod.yml exec -T postgres psql -U postgres -l   # confirm the real DB name
 docker compose -f docker-compose.prod.yml down          # no -v
+test ! -e ~/updraw-app                                   # must not exist, or mv would nest the directory
 mv ~/kritzel-app ~/updraw-app && cd ~/updraw-app
 docker compose -f docker-compose.prod.yml create postgres
+docker volume inspect kritzel-app_pgdata_prod > /dev/null   # fails if the old volume has another name
 docker run --rm -v kritzel-app_pgdata_prod:/from:ro -v updraw-app_pgdata_prod:/to alpine sh -c 'cp -a /from/. /to/'
 docker compose -f docker-compose.prod.yml up -d postgres
 docker compose -f docker-compose.prod.yml exec -T postgres psql -U postgres -d postgres -c 'ALTER DATABASE kritzel RENAME TO updraw'
@@ -112,6 +114,7 @@ docker compose -f docker-compose.prod.yml exec -T postgres psql -U postgres -d p
 - If `psql -l` shows another database name than `kritzel` (compare `DATABASE_URL` in `.env`), use that name in `ALTER DATABASE`.
 - Run `down` **before** `mv`. The server's compose file has no `name:` yet, so the project name comes from the directory; after the move, compose no longer finds the running `kritzel-app` containers.
 - Never use `down -v`: it deletes the database volume.
+- If `test ! -e ~/updraw-app` fails, `deploy-app` already ran and created the directory: move it aside (`mv ~/updraw-app ~/updraw-app.early`) and continue. If `docker volume inspect` fails, look up the real volume name with `docker volume ls` and use it in the copy; `docker run -v` would otherwise create an empty volume and copy nothing.
 - `create postgres` creates the empty `updraw-app_pgdata_prod` volume without starting Postgres, so `init.sql` never runs on it. The old `kritzel-app_pgdata_prod` volume is only read, and stays as the rollback copy.
 
 Check the result:
@@ -150,7 +153,8 @@ What happens on the server:
 - `docker-compose.prod.yml` now sets `name: updraw-app`, so the stack keeps using `updraw-app_pgdata_prod` whatever the directory is called.
 - On startup the api runs the TypeORM migration `RenameLegacyBrandDocumentIds`, in one transaction:
   - every `kritzel-*` document id becomes `updraw-*`;
-  - if both ids exist, the Yjs states are merged into the `updraw-*` row (its owner, visibility and type are kept) and the legacy row is deleted;
+  - if both ids exist and belong to the same user (e.g. a fallback document a new client created), the Yjs states are merged into one row that keeps the original (legacy) row's owner, visibility and type;
+  - if both ids exist but the `updraw-*` row belongs to someone else (document ids appear in share links), that row is set aside as `rename-conflict-updraw-*` and the original document takes the id; the api log names every such row;
   - legacy `Kritzel*` class names inside the documents are renamed to `Updraw*`.
 - The websocket service waits until the api's healthcheck passes, so no client connects while the migration runs. If the migration fails, the api never gets healthy and the deploy fails before websocket starts.
 - The websocket server rejects legacy `kritzel-*` document names from stale clients, so they can't create rows under the old names.
@@ -254,6 +258,8 @@ Then redeploy the old ref, which deploys to `~/kritzel-app` with the old compose
 ```bash
 gh workflow run deploy-app.yml --ref pre-updraw
 ```
+
+If the `app-prod` environment only allows deployments from `main`, allow the `pre-updraw` tag in its deployment branch and tag rules first (repository settings, Environments). Note that the migration's `down()` only renames the ids back; the class names stay `Updraw*`, which the old app cannot read, so roll back from the old volume as above, never with `migration:revert`.
 
 Finally, disable the redirect rules and the `ngsw.json` Worker from step 5. Last resort if a volume is damaged: restore `~/pre-updraw.sql` into a fresh volume with `psql -U postgres -d postgres < ~/pre-updraw.sql`.
 

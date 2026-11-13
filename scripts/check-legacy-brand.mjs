@@ -31,13 +31,13 @@ const ALLOWED = [
   { file: 'libs/engine/core/src/components/updraw-engine/updraw-engine.css', line: /--kritzel-content-border-radius/ },
 
   // Server: renames documents saved under the old names and rejects stale clients.
-  { file: /^apps\/app\/server\/api\/src\/migrations\/\d+-RenameLegacyBrandDocumentIds(\.spec)?\.ts$/ },
-  { file: /^apps\/app\/server\/websocket\/src\/legacy-brand(\.spec)?\.ts$/ },
+  { file: /^apps\/app\/server\/(api|websocket)\/src\/legacy-brand(\.spec)?\.ts$/ },
 
   // Migration documentation: the cutover runbook and the migration guides.
   { file: 'apps/app/docs/rebrand-cutover.md' },
   { file: /^apps\/website\/docs\/(angular|react|vue)\/getting-started\/migrating-to-updraw\.md$/ },
   { file: '.github/workflows/deploy-app.yml', line: /kritzel-app/ },
+  { file: 'apps/app/DOCKER_DEV_COMMANDS.md', line: /kritzel-app|ALTER DATABASE kritzel RENAME/ },
 
   // Old public URLs that redirect to the new ones, and the test that checks them.
   { file: 'apps/website/static/_redirects', line: /^\/\S*kritzel\S*\s/i },

@@ -73,7 +73,11 @@ jobs:
           host: ${{ vars.LIGHTSAIL_HOST }}
           username: ${{ vars.LIGHTSAIL_USER }}
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
-          script: rm -rf ~/updraw-app/client/dist
+          script: |
+            set -eu
+            # The one-time move from the pre-rename directory must have happened (it carries .env and the data).
+            test -f ~/updraw-app/.env || { echo "~/updraw-app/.env is missing: run step 3 of apps/app/docs/rebrand-cutover.md first."; exit 1; }
+            rm -rf ~/updraw-app/client/dist
 
       # strip_components drops the "apps/app" prefix so the files land directly in ~/updraw-app, next to the
       # server's .env. The compose project (and its pgdata volume) is named by docker-compose.prod.yml.
