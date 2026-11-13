@@ -301,12 +301,12 @@ export function CustomizationSection() {
   );
 }
 
-const UPDRAW_ASCII =`██╗  ██╗██████╗ ██╗████████╗███████╗███████╗██╗
-██║ ██╔╝██╔══██╗██║╚══██╔══╝╚══███╔╝██╔════╝██║
-█████╔╝ ██████╔╝██║   ██║     ███╔╝ █████╗  ██║
-██╔═██╗ ██╔══██╗██║   ██║    ███╔╝  ██╔══╝  ██║
-██║  ██╗██║  ██║██║   ██║   ███████╗███████╗███████╗
-╚═╝  ╚═╝╚═╝  ╚═╝╚═╝   ╚═╝   ╚══════╝╚══════╝╚══════╝`;
+const UPDRAW_ASCII =`██╗   ██╗██████╗ ██████╗ ██████╗  █████╗ ██╗    ██╗
+██║   ██║██╔══██╗██╔══██╗██╔══██╗██╔══██╗██║    ██║
+██║   ██║██████╔╝██║  ██║██████╔╝███████║██║ █╗ ██║
+██║   ██║██╔═══╝ ██║  ██║██╔══██╗██╔══██║██║███╗██║
+╚██████╔╝██║     ██████╔╝██║  ██║██║  ██║╚███╔███╔╝
+ ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚══╝╚══╝`;
 
 const SKILL_SESSION = {
   command: "npx skills add kasual1/kritzel",
@@ -997,7 +997,7 @@ export function Faq({ variant = "default" }: { variant?: "default" | "agentic" }
 export function Wordmark() {
   return (
     <section aria-label="Updraw" className={styles.wordmark}>
-      <svg viewBox="-0.3 -0.3 51.6 10.6" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Updraw" className={styles.wordmarkSvg}>
+      <svg viewBox="-0.3 -0.3 50.6 10.6" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Updraw" className={styles.wordmarkSvg}>
         <g fill="none" stroke="#0a0a0a" strokeWidth="1.5" strokeLinecap="square">
           {WORDMARK_LETTERS.map((letter) => (
             <g key={letter.x} className={styles.wordmarkLetter}>

@@ -23,17 +23,57 @@ function readRedirects(): Redirect[] {
     });
 }
 
-// Resolves a site route to the source file Docusaurus builds it from, if any.
+// Resolves a site route to the file it is built or served from, if any: a doc, a blog post
+// (blog/YYYY/MM/DD/<slug> comes from blog/YYYY-MM-DD-<slug>.md(x) or its <...>/index.md(x)),
+// a static image or video, or a page.
 function routeSource(route: string): string | undefined {
   const trimmed = route.replace(/^\/|\/$/g, '');
-  const candidates = trimmed.startsWith('docs/')
-    ? [`${trimmed}.md`, `${trimmed}.mdx`]
-    : ['tsx', 'md'].flatMap((ext) => [
-        `src/pages/${trimmed || 'index'}.${ext}`,
-        `src/pages/${trimmed}/index.${ext}`,
-      ]);
+  const blogPost = trimmed.match(/^blog\/(\d{4})\/(\d{2})\/(\d{2})\/([^/]+)$/);
+  let candidates: string[];
+  if (trimmed.startsWith('docs/')) {
+    candidates = [`${trimmed}.md`, `${trimmed}.mdx`];
+  } else if (blogPost) {
+    const [, year, month, day, slug] = blogPost;
+    const base = `blog/${year}-${month}-${day}-${slug}`;
+    candidates = ['md', 'mdx'].flatMap((ext) => [`${base}.${ext}`, `${base}/index.${ext}`]);
+  } else if (/^(img|videos)\//.test(trimmed)) {
+    candidates = [`static/${trimmed}`];
+  } else {
+    candidates = ['tsx', 'md'].flatMap((ext) => [
+      `src/pages/${trimmed || 'index'}.${ext}`,
+      `src/pages/${trimmed}/index.${ext}`,
+    ]);
+  }
   return candidates.find((candidate) => fs.existsSync(path.join(websiteRoot, candidate)));
 }
+
+describe('routeSource', () => {
+  test('resolves docs and pages', () => {
+    expect(routeSource('/docs/react/getting-started/quick-start/')).toBe('docs/react/getting-started/quick-start.md');
+    expect(routeSource('/license/')).toBe('src/pages/license.md');
+    expect(routeSource('/')).toBe('src/pages/index.tsx');
+  });
+
+  test('resolves blog post routes to their markdown file', () => {
+    expect(routeSource('/blog/2026/10/22/updraw-is-now-open-source/')).toBe(
+      'blog/2026-10-22-updraw-is-now-open-source.md',
+    );
+    expect(routeSource('/blog/2026/08/02/introducing-updraw')).toBe('blog/2026-08-02-introducing-updraw.md');
+    expect(routeSource('/blog/2026/10/23/updraw-is-now-open-source/')).toBeUndefined();
+    expect(routeSource('/blog/2026/10/22/no-such-post/')).toBeUndefined();
+  });
+
+  test('resolves images and videos to static files', () => {
+    expect(routeSource('/img/blog/updraw-is-now-open-source.png')).toBe(
+      'static/img/blog/updraw-is-now-open-source.png',
+    );
+    expect(routeSource('/videos/2026_10_22_Updraw_Open_Source.mp4')).toBe(
+      'static/videos/2026_10_22_Updraw_Open_Source.mp4',
+    );
+    expect(routeSource('/img/blog/no-such-image.png')).toBeUndefined();
+    expect(routeSource('/videos/no-such-video.mp4')).toBeUndefined();
+  });
+});
 
 describe('static/_redirects', () => {
   const redirects = readRedirects();
