@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { detectProvider, getProvider, PROVIDERS, type Credentials, type ProviderId } from './llm-providers'
-import type { RequestMode } from './mock-uis'
+import { detectProvider, getProvider, PROVIDERS, type Credentials, type ProviderId } from './browser-transport'
+import type { RequestMode } from './generative-ui'
+import { MOCK_UIS } from './mock-transport'
 
-const EXAMPLE_PROMPTS = [
-  'A pomodoro timer with a circular progress ring',
-  'A weather card for Lisbon with a 5-day forecast',
-  'A kanban board for a product launch, with drag and drop',
-]
+/** The prompts of the canned UIs, so that every example also works with mocked requests. */
+const EXAMPLE_PROMPTS = MOCK_UIS.map(ui => ui.prompt)
 
 const props = defineProps<{
   isVisible: boolean
@@ -46,89 +44,93 @@ function connect() {
 <!-- The empty-canvas guide, centered on the canvas until the first UI is added. It asks how to answer prompts and takes the API key. -->
 <template>
   <div class="welcome" :class="{ 'welcome--hidden': !isVisible }" :aria-hidden="!isVisible">
-    <div v-if="mode === null" class="welcome__content">
+    <div class="welcome__content">
       <p class="welcome__eyebrow">Generative UI</p>
       <h1 class="welcome__title">Describe an interface.<br />Watch it come to life.</h1>
-      <p class="welcome__hint">Generate UIs with a real model, or try the demo with mocked requests.</p>
-      <div class="welcome__choices">
-        <button type="button" class="welcome__choice welcome__choice--primary" @click="emit('modeChange', 'live')">
-          <strong>Use a real API key</strong>
-          <span>Describe any UI, with your own Anthropic, OpenAI or Gemini key.</span>
-        </button>
-        <button type="button" class="welcome__choice" @click="emit('modeChange', 'mock')">
-          <strong>Mock the requests</strong>
-          <span>Send prefilled prompts with canned answers. No key needed.</span>
-        </button>
-      </div>
-    </div>
 
-    <div v-else-if="mode === 'mock'" class="welcome__content">
-      <p class="welcome__eyebrow">Generative UI</p>
-      <h1 class="welcome__title">Describe an interface.<br />Watch it come to life.</h1>
-      <p class="welcome__hint">Send the prefilled prompts from the chat box below. The UIs are canned, so no model is involved.</p>
-      <div class="welcome__connected">
-        <span>Mocked requests</span>
-        <button type="button" class="welcome__change" @click="emit('modeChange', null)">Change</button>
-      </div>
-      <p class="welcome__footer">Press <kbd>▶</kbd> in a titlebar to open a UI in fullscreen.</p>
-    </div>
-
-    <div v-else class="welcome__content">
-      <p class="welcome__eyebrow">Generative UI</p>
-      <h1 class="welcome__title">Describe an interface.<br />Watch it come to life.</h1>
-      <p class="welcome__hint">
-        {{
-          credentials
-            ? 'Type into the chat box below. The model builds a working UI on the canvas while you watch. Select a UI to change it.'
-            : 'Add your Anthropic, OpenAI or Gemini API key, then type into the chat box below.'
-        }}
-      </p>
-
-      <div v-if="credentials" class="welcome__connected">
-        <span>Connected to {{ provider.name }} · {{ provider.model }}</span>
-        <button type="button" class="welcome__change" @click="emit('disconnect')">Change key</button>
-      </div>
-      <form v-else @submit.prevent="connect">
-        <label class="welcome__label" for="generative-ui-key">API key</label>
-        <div class="welcome__providers" role="group" aria-label="Provider">
-          <button
-            v-for="option in PROVIDERS"
-            :key="option.id"
-            type="button"
-            class="welcome__provider"
-            :aria-pressed="option.id === providerId"
-            @click="providerId = option.id"
-          >
-            {{ option.name }}
+      <template v-if="mode === null">
+        <p class="welcome__hint">Generate UIs with a real model, or try the demo with mocked requests.</p>
+        <div class="welcome__choices">
+          <button type="button" class="welcome__choice welcome__choice--primary" @click="emit('modeChange', 'live')">
+            <strong>Use a real API key</strong>
+            <span>Describe any UI, with your own Anthropic, OpenAI or Gemini key.</span>
+          </button>
+          <button type="button" class="welcome__choice" @click="emit('modeChange', 'mock')">
+            <strong>Mock the requests</strong>
+            <span>Get canned UIs for the example prompts. No key needed.</span>
           </button>
         </div>
-        <div class="welcome__key-row">
-          <input
-            id="generative-ui-key"
-            class="welcome__key"
-            type="password"
-            :placeholder="provider.keyPlaceholder"
-            autocomplete="off"
-            spellcheck="false"
-            :value="apiKey"
-            @input="updateKey(($event.target as HTMLInputElement).value)"
-          />
-          <button type="submit" class="welcome__connect">Connect</button>
-        </div>
-        <p class="welcome__note">
-          Kept in this tab's memory only and sent straight to {{ provider.name }}.
-          <a :href="provider.keyUrl" target="_blank" rel="noreferrer">Get a key</a>
-        </p>
-        <button type="button" class="welcome__change welcome__back" @click="emit('modeChange', null)">Back to the options</button>
-      </form>
-      <p v-if="error" class="welcome__error" role="alert">{{ error }}</p>
+      </template>
 
-      <ul class="welcome__examples" aria-label="Example prompts">
-        <li v-for="prompt in EXAMPLE_PROMPTS" :key="prompt">
-          <button type="button" class="welcome__example" @click="emit('example', prompt)">“{{ prompt }}”</button>
-        </li>
-      </ul>
-      <p class="welcome__footer">Press <kbd>▶</kbd> in a titlebar to open a UI in fullscreen.</p>
+      <template v-else>
+        <template v-if="mode === 'mock'">
+          <p class="welcome__hint">
+            Pick an example or type into the chat box below. The UIs are canned, so no model is involved.
+          </p>
+          <div class="welcome__connected">
+            <span>Mocked requests</span>
+            <button type="button" class="welcome__change" @click="emit('modeChange', null)">Change</button>
+          </div>
+        </template>
+
+        <template v-else>
+          <p class="welcome__hint">
+            {{
+              credentials
+                ? 'Type into the chat box below. The model builds a working UI on the canvas while you watch. Select a UI to ask for a change.'
+                : 'Add your Anthropic, OpenAI or Gemini API key, then type into the chat box below.'
+            }}
+          </p>
+
+          <div v-if="credentials" class="welcome__connected">
+            <span>Connected to {{ provider.name }} · {{ provider.model }}</span>
+            <button type="button" class="welcome__change" @click="emit('disconnect')">Change key</button>
+          </div>
+          <form v-else @submit.prevent="connect">
+            <label class="welcome__label" for="generative-ui-key">API key</label>
+            <div class="welcome__providers" role="group" aria-label="Provider">
+              <button
+                v-for="option in PROVIDERS"
+                :key="option.id"
+                type="button"
+                class="welcome__provider"
+                :aria-pressed="option.id === providerId"
+                @click="providerId = option.id"
+              >
+                {{ option.name }}
+              </button>
+            </div>
+            <div class="welcome__key-row">
+              <input
+                id="generative-ui-key"
+                class="welcome__key"
+                type="password"
+                :placeholder="provider.keyPlaceholder"
+                autocomplete="off"
+                spellcheck="false"
+                :value="apiKey"
+                @input="updateKey(($event.target as HTMLInputElement).value)"
+              />
+              <button type="submit" class="welcome__connect">Connect</button>
+            </div>
+            <p class="welcome__note">
+              Kept in this tab's memory only and sent straight to {{ provider.name }}.
+              <a :href="provider.keyUrl" target="_blank" rel="noreferrer">Get a key</a>
+            </p>
+            <button type="button" class="welcome__change welcome__back" @click="emit('modeChange', null)">
+              Back to the options
+            </button>
+          </form>
+          <p v-if="error" class="welcome__error" role="alert">{{ error }}</p>
+        </template>
+
+        <ul class="welcome__examples" aria-label="Example prompts">
+          <li v-for="prompt in EXAMPLE_PROMPTS" :key="prompt">
+            <button type="button" class="welcome__example" @click="emit('example', prompt)">“{{ prompt }}”</button>
+          </li>
+        </ul>
+        <p class="welcome__footer">Press <kbd>▶</kbd> in a titlebar to open a UI in fullscreen.</p>
+      </template>
     </div>
   </div>
 </template>

@@ -1,22 +1,34 @@
 <script setup lang="ts">
-import { ref, shallowRef } from 'vue'
+import { computed, ref, shallowRef, watch } from 'vue'
 import {
   getEditorRef,
   KritzelEditor,
   KritzelWorkspace,
   type KritzelBaseObject,
+  type KritzelChatBoxChip,
+  type KritzelChatSession,
   type KritzelObjectTitlebarActionEvent,
 } from '@kritzel/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
-import { createUiDocument, GenerativeUi, getUiTitle, isUi, objectConfig, objectTitlebar } from './generative-ui'
-import { complete, type CompletionRequest, type Credentials } from './llm-providers'
-import MockChatBox from './MockChatBox.vue'
-import { completeWithMock, type MockUi, type RequestMode } from './mock-uis'
+import { createBrowserTransport, type Credentials } from './browser-transport'
+import {
+  createGenerativeUiSession,
+  createUiDocument,
+  getErrorMessage,
+  getUiChips,
+  getUiTitle,
+  isUi,
+  objectConfig,
+  objectTitlebar,
+  withUiFrames,
+  type RequestMode,
+} from './generative-ui'
+import { createMockTransport } from './mock-transport'
 import UiPreview from './UiPreview.vue'
 import WelcomePanel from './WelcomePanel.vue'
 
-const themes = [vueThemeLight, vueThemeDark]
+const themes = [withUiFrames(vueThemeLight), withUiFrames(vueThemeDark)]
 
 /** The welcome guide takes its accent from the theme, like the editor's own controls. */
 const accentStyle = {
@@ -26,71 +38,65 @@ const accentStyle = {
 
 const workspaces = [new KritzelWorkspace({ name: 'Generative UI', objects: [] })]
 
-const editor = getEditorRef('editor')
-let generator: GenerativeUi | null = null
-let abort: AbortController | null = null
+// One session per mode, created once per page instance: choosing a mode binds its session to the editor.
+// Kept as plain consts so Vue never wraps them in reactive proxies.
+const browser = createBrowserTransport()
+const sessions: Record<RequestMode, KritzelChatSession> = {
+  live: createGenerativeUiSession(browser.transport),
+  mock: createGenerativeUiSession(createMockTransport()),
+}
 
+const editor = getEditorRef('editor')
 const mode = ref<RequestMode | null>(null)
 // The key only lives in this component's memory: it is gone when the page reloads.
 const credentials = shallowRef<Credentials | null>(null)
 const keyError = ref('')
 const isWorking = ref(false)
 const hasUis = ref(false)
+const chips = ref<KritzelChatBoxChip[]>([])
 const preview = shallowRef<{ title: string; document: string } | null>(null)
+const session = computed(() => (mode.value ? sessions[mode.value] : null))
 
-function onReady() {
-  if (editor.value) {
-    generator = new GenerativeUi(editor.value)
-  }
-}
+// Mirrors whether the bound session runs. The chat box shows the progress of a prompt, but not why it failed.
+watch(
+  session,
+  (current, _previous, onCleanup) => {
+    isWorking.value = current?.running ?? false
+    if (!current) {
+      return
+    }
+    const unsubscribers = [
+      current.on('change', () => {
+        isWorking.value = current.running
+      }),
+      current.on('end', result => {
+        if (result.status === 'error') {
+          void editor.value?.triggerNotification({ type: 'error', message: getErrorMessage(result.error) })
+        }
+      }),
+    ]
+    onCleanup(() => unsubscribers.forEach(unsubscribe => unsubscribe()))
+  },
+  { immediate: true },
+)
 
-function generate(prompt: string) {
-  const current = credentials.value
-  if (!current) {
+function sendExample(prompt: string) {
+  if (mode.value === 'live' && !credentials.value) {
     keyError.value = 'Add an API key to start generating UIs.'
     return
   }
-  void run(prompt, request => complete(current, request))
-}
-
-/** A mocked prompt always adds a new UI, because its answer is not a change of the selected one. */
-async function generateMock(ui: MockUi) {
-  await editor.value?.clearSelection()
-  await run(ui.prompt, () => completeWithMock(ui))
-}
-
-async function run(prompt: string, completion: (request: CompletionRequest) => Promise<string>) {
-  if (!generator || abort || !prompt.trim()) {
-    return
-  }
-
-  const controller = new AbortController()
-  abort = controller
-  isWorking.value = true
-  try {
-    await generator.generate(prompt, completion, controller.signal)
-  } catch (error) {
-    if (!controller.signal.aborted) {
-      const message = error instanceof Error ? error.message : String(error)
-      await editor.value?.triggerNotification({ type: 'error', message })
-    }
-  } finally {
-    abort = null
-    isWorking.value = false
-  }
-}
-
-function onChatSubmit(event: CustomEvent<string>) {
-  generate(event.detail)
-}
-
-function stop() {
-  abort?.abort()
+  void session.value?.send(prompt)
 }
 
 function connect(next: Credentials) {
+  browser.setCredentials(next)
   credentials.value = next
   keyError.value = ''
+}
+
+function disconnect() {
+  browser.setCredentials(null)
+  credentials.value = null
 }
 
 function changeMode(next: RequestMode | null) {
@@ -100,6 +106,14 @@ function changeMode(next: RequestMode | null) {
 
 function onObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
   hasUis.value = event.detail.some(isUi)
+}
+
+function onSelectionChange(event: CustomEvent<KritzelBaseObject[]>) {
+  chips.value = getUiChips(event.detail)
+}
+
+function onChipRemove(event: CustomEvent<KritzelChatBoxChip>) {
+  chips.value = chips.value.filter(chip => chip.id !== event.detail.id)
 }
 
 async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEvent>) {
@@ -122,14 +136,14 @@ async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEv
       :workspaces="workspaces"
       :objectConfig="objectConfig"
       :objectTitlebar="objectTitlebar"
-      :isChatBoxVisible="mode === 'live'"
-      :isChatBoxLoading="isWorking"
+      :chatSession="session"
+      :chatBoxChips="chips"
+      :isChatBoxVisible="mode === 'mock' || credentials !== null"
       :isToolbarVisible="false"
       :isWorkspaceManagerVisible="false"
-      @isReady="onReady"
-      @chatSubmit="onChatSubmit"
-      @chatStop="stop"
       @objectsChange="onObjectsChange"
+      @objectsSelectionChange="onSelectionChange"
+      @chatChipRemove="onChipRemove"
       @objectTitlebarAction="onTitlebarAction"
     />
     <WelcomePanel
@@ -139,10 +153,9 @@ async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEv
       :error="keyError"
       @modeChange="changeMode"
       @connect="connect"
-      @disconnect="credentials = null"
-      @example="generate"
+      @disconnect="disconnect"
+      @example="sendExample"
     />
-    <MockChatBox v-if="mode === 'mock'" :isWorking="isWorking" @send="generateMock" />
     <UiPreview v-if="preview" :title="preview.title" :document="preview.document" @close="preview = null" />
   </div>
 </template>

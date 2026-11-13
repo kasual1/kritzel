@@ -2,18 +2,18 @@
 sidebar_label: Generative UI
 displayed_sidebar: tutorialSidebar
 title: "Generative UI Example | Kritzel for Vue"
-description: "Connect a language model to the Kritzel chat box and let it build working, sandboxed user interfaces right on the infinite canvas."
+description: "Bind a chat session with the iframe canvas tools to the chat box and let a language model build working, sandboxed user interfaces on the infinite canvas."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
 
 # Generative UI
 
-This example connects a language model to the editor's built-in chat box. Describe an interface and the model writes a complete HTML document, which lands on the canvas as a working UI in a sandboxed iframe. Every UI is a regular canvas object, so it can be moved, resized and renamed, and selecting one lets you ask the model to change it.
+This example lets a language model build user interfaces on the canvas. Describe an interface in the chat box, and the model places it with the `create_iframe` canvas tool: a widget of HTML, CSS, and JavaScript that runs in a sandboxed iframe without network access. Select a widget to ask for a change, and the model reads and edits its code with `read_iframe` and `update_iframe`.
 
 ## Prerequisites
 
-Complete the [Quick Start](../getting-started/quick-start.md) guide to have a working `<KritzelEditor>` rendered in your Vue app. This example builds on that setup. To generate UIs with a model you need an API key from Anthropic, OpenAI or Google Gemini.
+Complete the [Quick Start](../getting-started/quick-start.md) guide to have a working `<KritzelEditor>` rendered in your Vue app. This example builds on that setup. To generate UIs with a model, you need an API key from Anthropic, OpenAI, or Google Gemini. Without one, the demo answers the example prompts with canned UIs.
 
 ---
 
@@ -21,18 +21,17 @@ Complete the [Quick Start](../getting-started/quick-start.md) guide to have a wo
 
 This example makes use of the following core concepts. Click on the links below to go into the details:
 
-- [Rendering iFrames](/docs/vue/advanced/dynamic-objects#rendering-iframes) — running generated HTML, CSS and JavaScript in a sandbox with `KritzelIframeObject`
-- [Object Titlebar](/docs/vue/fundamentals/controls#object-titlebar) — giving each UI an editable title, its size and a fullscreen button
-- [Objects](/docs/vue/fundamentals/objects) — adding, updating and removing UIs through the editor's methods
-- [Viewport](/docs/vue/fundamentals/viewport) — moving the viewport so that every new UI is in view
+- [Agents](/docs/vue/advanced/agents) — connecting the chat box to a model with `KritzelChatSession`, its canvas tools, and transports
+- [Rendering iFrames](/docs/vue/advanced/dynamic-objects#rendering-iframes) — how iframe objects run generated HTML, CSS, and JavaScript in a sandbox
+- [Object Titlebar](/docs/vue/fundamentals/controls#object-titlebar) — giving each UI an editable title, its size, and a fullscreen button
 
 ---
 
 ## Prompting UIs onto the Canvas
 
-Add an API key in the welcome panel, then type into the chat box or pick one of the example prompts. A new UI appears right away with an animated placeholder, and the real interface replaces the placeholder once the model has answered. The answer arrives in one piece, not streamed. To change a UI, select it and send another prompt; with nothing selected, the next prompt adds a new UI to the right of the others. The ▶ button in a titlebar opens the UI in fullscreen.
+Choose whether to use your own API key or mocked requests, then type into the chat box or pick one of the example prompts. The UI appears as a placeholder as soon as the model has written its position and size, and its interface replaces the placeholder once the model has written the code. To change a UI, select it: it shows as a chip above the chat box, and the next prompt is about it. The ▶ button in a titlebar opens the UI in fullscreen.
 
-**Keep API keys off the client in production.** The demo sends requests straight from the browser with a key that only lives in the component's memory. That is fine for trying things out with your own key, but anyone can read a key in a web page. A real app should send these requests through its own backend. All of the provider code sits behind `complete()` in `llm-providers.ts`, so that function is the one to replace.
+**Keep API keys off the client in production.** With your own key, the demo calls the provider straight from the browser, and the key only lives in the component's memory. That is fine for trying things out, but anyone can read a key in a web page. A real app sends the requests through [its own server](../advanced/agents.md#your-server) with `createHttpTransport()` instead, and only the transport changes.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
@@ -40,84 +39,131 @@ Add an API key in the welcome panel, then type into the chat box or pick one of 
   repoFiles={[
     'src/pages/examples/generative-ui/GenerativeUiPage.vue',
     'src/pages/examples/generative-ui/generative-ui.ts',
-    'src/pages/examples/generative-ui/llm-providers.ts',
+    'src/pages/examples/generative-ui/browser-transport.ts',
+    'src/pages/examples/generative-ui/mock-transport.ts',
     'src/pages/examples/generative-ui/WelcomePanel.vue',
     'src/pages/examples/generative-ui/UiPreview.vue',
   ]}
 />
 
+### Creating the session
+
+The session runs the tool loop: it sends the conversation through its transport, runs the tool calls of the answer on the canvas, and sends the results back until the model is done. `canvasTools: { iframes: true }` adds `create_iframe`, `read_iframe`, and `update_iframe` to the canvas tools. The system prompt tells the model where to place new UIs, how to build them, and to change an existing UI instead of adding a new one.
+
+```ts
+export function createGenerativeUiSession(transport: KritzelChatTransport): KritzelChatSession {
+  return new KritzelChatSession({ transport, system: SYSTEM_PROMPT, canvasTools: { iframes: true } })
+}
+```
+
+The page creates one session per mode, once, as plain constants that Vue never wraps in reactive proxies, and binds the one of the chosen mode:
+
+```ts
+const browser = createBrowserTransport()
+const sessions: Record<RequestMode, KritzelChatSession> = {
+  live: createGenerativeUiSession(browser.transport),
+  mock: createGenerativeUiSession(createMockTransport()),
+}
+const session = computed(() => (mode.value ? sessions[mode.value] : null))
+```
+
 ### Connecting the chat box
 
-The `isChatBoxVisible` prop shows the chat box and `isChatBoxLoading` switches it to its busy state. The `chatSubmit` event delivers the prompt in `event.detail`, and `chatStop` fires when the user stops a running request, which the page forwards to an `AbortController`.
+The `chatSession` prop binds the session to the chat box: the chat box sends its prompts to the session, shows its progress, and its stop button stops it. `chatBoxChips` shows the selected UIs as chips, and the session tells the model which objects they refer to.
 
 ```html
 <KritzelEditor
   ref="editor"
   editorId="generative-ui"
+  :themes="themes"
   :workspaces="workspaces"
   :objectConfig="objectConfig"
   :objectTitlebar="objectTitlebar"
-  :isChatBoxVisible="true"
-  :isChatBoxLoading="isWorking"
-  @isReady="onReady"
-  @chatSubmit="onChatSubmit"
-  @chatStop="stop"
-  @objectsChange="onObjectsChange"
+  :chatSession="session"
+  :chatBoxChips="chips"
+  :isChatBoxVisible="mode === 'mock' || credentials !== null"
+  @objectsSelectionChange="onSelectionChange"
+  @chatChipRemove="onChipRemove"
   @objectTitlebarAction="onTitlebarAction"
 />
 ```
 
-The generator itself is plain TypeScript. `onReady` hands it the editor from `getEditorRef()`, and it only uses the editor's public methods.
+The chat box shows that a prompt is running, but not why it failed, for example because the provider rejected the key. A `watch` follows the bound session: it mirrors whether the session runs, and shows an error as a notification when the session's `end` event reports one.
 
-### Adding a UI
-
-A new UI is a `KritzelIframeObject` that starts out with `isLoading: true`, so the engine draws its [loading placeholder](../api-reference/theming.md#loading-placeholder) over the frame until the model answers. The `allow-scripts` sandbox lets the generated JavaScript run while keeping it away from the host page. The page is laid out at 800 × 600 CSS pixels and drawn slightly smaller through `scale`, like a frame in a design tool.
-
-```typescript
-const ui = await this.editor.addObject(
-  new KritzelIframeObject({
-    name,
-    title: name,
-    isLoading: true,
-    sandbox: ['allow-scripts'],
-    translateX: x,
-    translateY: y,
-    width: UI_WIDTH,
-    height: UI_HEIGHT,
-    scale: UI_SCALE,
-    borderRadius: 12,
-  }),
+```ts
+watch(
+  session,
+  (current, _previous, onCleanup) => {
+    isWorking.value = current?.running ?? false
+    if (!current) {
+      return
+    }
+    const unsubscribers = [
+      current.on('change', () => {
+        isWorking.value = current.running
+      }),
+      current.on('end', result => {
+        if (result.status === 'error') {
+          void editor.value?.triggerNotification({ type: 'error', message: getErrorMessage(result.error) })
+        }
+      }),
+    ]
+    onCleanup(() => unsubscribers.forEach(unsubscribe => unsubscribe()))
+  },
+  { immediate: true },
 )
 ```
 
-### Applying the answer
+### Calling the model from the browser
 
-The system prompt asks the model for one self-contained HTML document, and tells it about the frame's size and sandbox limits. `parseUiDocument()` splits the answer into the `html` and `css` of the iframe's content and takes the frame's title from the document's `<title>`.
+A transport is a function that takes the request of one model step and returns the answer. With your own key, `createBrowserTransport()` returns one that calls Anthropic, OpenAI, or Gemini straight from the browser. For each step, it translates Kritzel's chat protocol into the provider's API, and translates the provider's stream back into [stream events](../api-reference/chat-session.md#kritzelchatstreamevent), so that the session runs each tool call as soon as the model has written it.
 
-```typescript
-const answer = await complete({ system: SYSTEM_PROMPT, prompt: request, signal })
-const { title, content } = parseUiDocument(answer, getUiTitle(ui))
-// Look the UI up again: the instance in the store can be replaced in the meantime, e.g. by undo.
-const current = await this.getUi(ui.id)
-if (!current) {
-  return
-}
-current.setContent(content)
-current.setLoading(false)
-if (!existing) {
-  await this.editor.updateObject(current, { name: title, title })
-}
+```ts
+transport: (request, { signal }) => {
+  if (!credentials) {
+    throw new Error('Add an API key to start generating UIs.')
+  }
+  const provider = getProvider(credentials.provider)
+  switch (provider.id) {
+    case 'anthropic':
+      return streamAnthropic(provider, credentials.apiKey, request, signal)
+    case 'openai':
+      return streamOpenAi(provider, credentials.apiKey, request, signal)
+    case 'gemini':
+      return streamGemini(provider, credentials.apiKey, request, signal)
+  }
+},
 ```
 
-When exactly one UI is selected, the request includes its current document and the model returns a full replacement, so the same code handles both new UIs and changes. If a request fails or is stopped, a new UI is removed from the canvas again, while an existing UI keeps its content.
+Anthropic and Gemini need parts of their answers back on the next request, such as Claude's thinking blocks and Gemini's thought signatures. The transport puts them in the `providerData` of the `finish` event, and the session sends them back unchanged.
+
+### Trying it without a key
+
+Without a key, the demo uses `createScriptedTransport()`, which answers from a script instead of a model. Every prompt is answered with a `create_iframe` call for one of the canned UIs, followed by `fit_viewport`. With `stream`, the answer streams like a model writes it, so the UI shows as a placeholder until its code is written.
+
+```ts
+return createScriptedTransport(
+  (request): string | KritzelScriptedAnswer => {
+    // ...
+    return {
+      text: `Building the ${name}.`,
+      toolCalls: [
+        { tool: 'create_iframe', input: { name, x, y, width: MOCK_WIDTH, height: MOCK_HEIGHT, html, css, script } },
+        { tool: 'fit_viewport', input: {} },
+      ],
+    }
+  },
+  { delayMs: 400, stream: { chunkSize: 40, chunkDelayMs: 12 } },
+)
+```
 
 ### Titlebars and fullscreen
 
-`objectConfig` gives only the UIs a titlebar and keeps them from rotating. `objectTitlebar` describes its contents: an editable title and the current size on the left, and a play button on the right.
+`objectConfig` gives only the UIs a titlebar and keeps them from rotating. `objectTitlebar` describes its contents: an editable title and the current size on the left, and a play button on the right. The themes give the UIs rounded corners and a soft shadow through their [`iframe`](../api-reference/theming.md#iframe) variables.
 
-```typescript
+```ts
 export const objectConfig: KritzelObjectConfig = {
-  hasTitlebar: (object) => isUi(object),
+  hasTitlebar: object => isUi(object),
   isRotatable: false,
 }
 
@@ -136,9 +182,9 @@ export const objectTitlebar: KritzelObjectTitlebarConfig = {
 }
 ```
 
-Pressing the button fires `objectTitlebarAction` with the button's `elementId` and the `objectId`. The page rebuilds a standalone document from the UI's content with `createUiDocument()` and shows it in the fullscreen preview.
+Pressing the button fires `objectTitlebarAction` with the button's `elementId` and the `objectId`. The page builds a standalone document from the UI's content with `createUiDocument()`, which keeps the content security policy of model-written code, and shows it in the fullscreen preview.
 
-```typescript
+```ts
 async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEvent>) {
   const { elementId, objectId } = event.detail
   const ui = await editor.value?.getObjectById(objectId)
