@@ -4,8 +4,9 @@ import nodePath from "node:path";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 import type { PluginOptions as LlmsPluginOptions } from "docusaurus-plugin-llms";
+// The origins come from the environment (see site-urls.mjs), so the site can be built for another domain.
+import { APP_URL, SITE_URL } from "./site-urls.mjs";
 
-const SITE_URL = "https://updraw.io";
 const SITE_BASE_URL = process.env.Docusaurus_BASE_URL || "/";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const USE_RSPACK = IS_PRODUCTION || process.platform !== "win32";
@@ -102,6 +103,7 @@ const config: Config = {
   },
   customFields: {
     demoBaseUrls: DEMO_BASE_URLS,
+    appUrl: APP_URL,
   },
   clientModules: [require.resolve("./src/clientModules/pageTransition.ts")],
   themes: ["@docusaurus/theme-mermaid"],
@@ -213,6 +215,18 @@ const config: Config = {
           return {
             devtool: "source-map",
           };
+        },
+      };
+    },
+    function robotsTxt() {
+      // Generated instead of static, so its sitemap URL follows SITE_URL.
+      return {
+        name: "robots-txt",
+        async postBuild({ outDir, baseUrl }) {
+          fs.writeFileSync(
+            nodePath.join(outDir, "robots.txt"),
+            `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}${baseUrl}sitemap.xml\n`,
+          );
         },
       };
     },

@@ -16,6 +16,35 @@ Do the steps in order. `gh` commands run from a clone of the repository; `docker
 > [!WARNING]
 > After the merge, `deploy-app` deploys to `~/updraw-app`. Don't run it before step 3 has created that directory: it would start a second, unconfigured stack next to the running one.
 
+## Moving in two phases (optional)
+
+The rename and the domain move can be split: first deploy Updraw on the old domains, and switch to updraw.io later. The website and the app read their public origins from two repository variables (Settings → Secrets and variables → Actions → Variables). When they are unset, the defaults are updraw.io and app.updraw.io.
+
+| Variable | Phase 1 | Phase 2 |
+|----------|---------|---------|
+| `WEBSITE_URL` | `https://kritzel.io` | delete |
+| `APP_URL` | `https://app.kritzel.io` | delete |
+
+`deploy-website` uses them for canonical URLs, the sitemap, `robots.txt`, `llms.txt` and the links to the app; `deploy-app` uses `APP_URL` for the client's `robots.txt` and `sitemap.xml`. The app itself works on any domain.
+
+**Phase 1: Updraw on kritzel.io**
+
+1. Set both variables as in the table.
+2. Step 1: do only [npm](#npm) and the [rollback tag](#rollback-tag). Skip DNS and TLS, Cloudflare Pages, Google OAuth and R2.
+3. Steps 2 to 4 as described, with one difference in step 3: in `.env`, change only `DATABASE_URL`. `CLIENT_URL` and `GOOGLE_CALLBACK_URL` stay on app.kritzel.io.
+4. Skip step 5.
+5. Make updraw.io resolve, because the "Powered by Updraw" watermark in the published packages and the documentation link to `https://updraw.io`. In the updraw.io zone, add a proxied DNS record for the apex (e.g. `A @ 192.0.2.1`, proxied; Cloudflare answers before the address is used) and a redirect rule `(http.host in {"updraw.io" "www.updraw.io"})` → `concat("https://kritzel.io", http.request.uri.path)` with status **302** and "Preserve query string" on. Use 302, not 301: browsers cache 301 redirects, and this one is reversed in phase 2.
+
+While the app stays on app.kritzel.io, the libraries move each browser's local data (settings, local workspaces, also those of guests) to the new names on the same origin.
+
+**Phase 2: switch to updraw.io**
+
+1. Delete the phase 1 redirect rule on updraw.io.
+2. Step 1: do [DNS and TLS](#dns-and-tls-cloudflare), [Cloudflare Pages](#cloudflare-pages), [Google OAuth](#google-oauth-google-cloud-console-apis--services) and [R2](#cloudflare-r2).
+3. Delete the variables `WEBSITE_URL` and `APP_URL`.
+4. On the server, back up `.env` and set `CLIENT_URL` and `GOOGLE_CALLBACK_URL` to app.updraw.io as in step 3, then run `deploy-app` and `deploy-website`. No maintenance window is needed: the database and the documents were already moved in phase 1.
+5. Steps 5 and 6. The [accepted data losses](#accepted-data-losses) of the domain move apply here.
+
 ## 1. Before merging
 
 ### npm

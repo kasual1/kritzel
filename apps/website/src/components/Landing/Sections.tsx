@@ -11,13 +11,15 @@ import { WORDMARK_LETTERS } from "./paths";
 import styles from "./styles.module.css";
 import { InstallCommand } from "./InstallCommand";
 import { docsPath, getPreferredFramework, usePreferredFramework } from "@site/src/utils/frameworkPreference";
+import { useAppUrl, useSiteHost } from "@site/src/utils/siteUrls";
 
 export function CallToActionBar({ docsPath }: { docsPath: string }) {
+  const appUrl = useAppUrl();
   return (
     <div className={styles.ctaAnchor}>
       <InstallCommand />
       <div className={styles.ctaBar}>
-        <Link href="https://app.updraw.io" target="_blank" rel="noopener noreferrer" className={styles.ctaPrimary}>
+        <Link href={appUrl} target="_blank" rel="noopener noreferrer" className={styles.ctaPrimary}>
           Demo <ArrowIcon />
         </Link>
         <Link to={docsPath} className={styles.ctaSecondary}>
@@ -775,6 +777,7 @@ function CodeWindow() {
 
 /** The terminal replaying `npx skills add`, with the agent's bot hopping in the corner. */
 function SkillTerminal() {
+  const siteHost = useSiteHost();
   const terminalRef = useRef<HTMLDivElement | null>(null);
   const state = useTerminalSession(terminalRef, SKILL_SESSION.command);
 
@@ -796,7 +799,7 @@ function SkillTerminal() {
               {UPDRAW_ASCII}
             </div>
             <div className={styles.terminalWelcome}>
-              Welcome to <span className={styles.terminalStrong}>updraw.io</span>
+              Welcome to <span className={styles.terminalStrong}>{siteHost}</span>
             </div>
           </div>
         )}

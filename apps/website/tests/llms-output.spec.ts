@@ -6,6 +6,7 @@ import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
 import { load } from 'cheerio';
 import { describe, expect, test } from 'vitest';
+import { SITE_URL } from '../site-urls.mjs';
 
 interface MarkdownNode {
   type: string;
@@ -26,7 +27,7 @@ interface DocumentMetadata {
 
 const websiteRoot = fileURLToPath(new URL('../', import.meta.url));
 const buildRoot = path.join(websiteRoot, 'build');
-const siteOrigin = 'https://updraw.io';
+const siteOrigin = SITE_URL;
 const baseUrl = `/${(process.env.Docusaurus_BASE_URL || '/').split('/').filter(Boolean).join('/')}/`.replace('//', '/');
 const frameworks = ['angular', 'react', 'vue'] as const;
 const parser = unified().use(remarkParse).use(remarkGfm);

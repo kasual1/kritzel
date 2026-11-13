@@ -10,6 +10,7 @@ import MenuButton from "./MenuButton";
 import { HELLO_DOT, HELLO_EXCLAMATION, HELLO_STROKES, UPDRAW_LOGO_PATH } from "./paths";
 import { TOOLS } from "./tools";
 import styles from "./styles.module.css";
+import { useAppUrl } from "@site/src/utils/siteUrls";
 
 function DraggableCanvasItem({
   children,
@@ -113,6 +114,7 @@ function DraggableCanvasItem({
 }
 
 function MockToolbar() {
+  const appUrl = useAppUrl();
   const [showNotification, setShowNotification] = useState(false);
   const notificationTimer = useRef<number | undefined>(undefined);
 
@@ -138,7 +140,7 @@ function MockToolbar() {
           aria-hidden={!showNotification}
           inert={!showNotification}
         >
-          <span>Go to <Link href="https://app.updraw.io" target="_blank" rel="noopener noreferrer">full demo</Link></span>
+          <span>Go to <Link href={appUrl} target="_blank" rel="noopener noreferrer">full demo</Link></span>
           <button type="button" aria-label="Dismiss notification" onClick={dismissNotification}>
             <Icon size={16}><path d="m6 6 12 12M18 6 6 18" /></Icon>
           </button>
