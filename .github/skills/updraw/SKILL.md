@@ -2,7 +2,7 @@
 name: updraw
 description: 'Integrate the Updraw infinite canvas (updraw-editor or updraw-engine) in Angular, React, or Vue. Use when installing @updraw/angular-editor, @updraw/react-editor, or @updraw/vue-editor; adding a whiteboard or drawing canvas; creating objects; configuring object behavior with objectConfig (titlebars, rotation, resizing); controlling the viewport; registering tools; configuring themes, object titlebars, workspaces, persistence, or collaboration; adding agents (UpdrawAgent) that code or an LLM drives; connecting the chat box to an LLM with UpdrawChatSession.'
 metadata:
-  updraw-version: '0.6.1'
+  updraw-version: '0.6.2'
 ---
 
 # Updraw
