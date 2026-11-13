@@ -21,9 +21,9 @@ Complete the [Quick Start](../getting-started/quick-start.md) guide to have a wo
 
 This example makes use of the following core concepts. Click on the links below to go into the details:
 
-- [Dynamic Objects](/docs/angular/advanced/dynamic-objects) — mounting custom HTML through a registered renderer
-- [Objects](/docs/angular/fundamentals/objects) — replacing the whole board with `removeObjects()` and `addObjects()`
-- [Viewport](/docs/angular/fundamentals/viewport) — panning and zooming across a large, crowded board
+- [Dynamic Objects](/docs/angular/advanced/dynamic-objects) - mounting custom HTML through a registered renderer
+- [Objects](/docs/angular/fundamentals/objects) - replacing the whole board with `removeObjects()` and `addObjects()`
+- [Viewport](/docs/angular/fundamentals/viewport) - panning and zooming across a large, crowded board
 
 ---
 

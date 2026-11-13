@@ -21,9 +21,9 @@ Complete the [Quick Start](../getting-started/quick-start.md) guide to have a wo
 
 This example makes use of the following core concepts. Click on the links below to go into the details:
 
-- [Agents](/docs/angular/advanced/agents) — connecting the chat box to a model with `KritzelChatSession`, its canvas tools, and transports
-- [Rendering iFrames](/docs/angular/advanced/dynamic-objects#rendering-iframes) — how iframe objects run generated HTML, CSS, and JavaScript in a sandbox
-- [Object Titlebar](/docs/angular/fundamentals/controls#object-titlebar) — giving each UI an editable title, its size, and a fullscreen button
+- [Agents](/docs/angular/advanced/agents) - connecting the chat box to a model with `KritzelChatSession`, its canvas tools, and transports
+- [Rendering iFrames](/docs/angular/advanced/dynamic-objects#rendering-iframes) - how iframe objects run generated HTML, CSS, and JavaScript in a sandbox
+- [Object Titlebar](/docs/angular/fundamentals/controls#object-titlebar) - giving each UI an editable title, its size, and a fullscreen button
 
 ---
 
