@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "22"
+          node-version: "24.18.0"
 
       # Locally the client uses the kritzel libs from this repo (a file: dep on @kritzel/angular-editor,
       # plus overrides pointing its @kritzel/editor, @kritzel/engine and @kritzel/core deps at libs/). Production uses
@@ -94,8 +94,6 @@ jobs:
           host: ${{ vars.LIGHTSAIL_HOST }}
           username: ${{ vars.LIGHTSAIL_USER }}
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
-          # The default is 10m; the api/websocket image builds (npm install) can take a while on the instance.
-          command_timeout: 30m
           script: |
             set -eu
             cd ~/kritzel-app
