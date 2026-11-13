@@ -1,16 +1,16 @@
-import { KritzelToolRegistry } from './tool.registry';
+import { UpdrawToolRegistry } from './tool.registry';
 
 jest.mock('../core/core.class');
 jest.mock('../tools/base-tool.class');
 
-describe('KritzelToolRegistry', () => {
+describe('UpdrawToolRegistry', () => {
   let mockCore: any;
-  let registry: KritzelToolRegistry;
+  let registry: UpdrawToolRegistry;
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockCore = {};
-    registry = new KritzelToolRegistry(mockCore);
+    registry = new UpdrawToolRegistry(mockCore);
   });
 
   describe('registerTool', () => {
@@ -129,8 +129,8 @@ describe('KritzelToolRegistry', () => {
     it('should not share registered tools between two registry instances', () => {
       const coreA: any = { id: 'A' };
       const coreB: any = { id: 'B' };
-      const registryA = new KritzelToolRegistry(coreA);
-      const registryB = new KritzelToolRegistry(coreB);
+      const registryA = new UpdrawToolRegistry(coreA);
+      const registryB = new UpdrawToolRegistry(coreB);
 
       const brushA = { name: '' };
       const BrushTool = jest.fn(() => brushA) as any;
@@ -144,8 +144,8 @@ describe('KritzelToolRegistry', () => {
     it('should create distinct tool instances bound to each registry\'s core', () => {
       const coreA: any = { id: 'A' };
       const coreB: any = { id: 'B' };
-      const registryA = new KritzelToolRegistry(coreA);
-      const registryB = new KritzelToolRegistry(coreB);
+      const registryA = new UpdrawToolRegistry(coreA);
+      const registryB = new UpdrawToolRegistry(coreB);
 
       const instances: Array<{ name: string; core: any }> = [];
       const BrushTool = jest.fn(function (this: any, core: any) {

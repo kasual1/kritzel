@@ -1,8 +1,8 @@
-import type { KritzelIframeContent } from '@kritzel/vue-editor'
+import type { UpdrawIframeContent } from '@updraw/vue-editor'
 
 export interface RuntimeIframeDefinition {
   name: string
-  content: KritzelIframeContent
+  content: UpdrawIframeContent
   initialState: Record<string, unknown>
 }
 
@@ -24,7 +24,7 @@ const calculatorCss = `
   .keypad { display: grid; gap: 6px; min-height: 0; }
   .simple-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); }
   .scientific-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); }
-  button { min-width: 0; min-height: 0; border: 1px solid #dadce0; border-radius: 7px; background: #ffffff; color: #202124; cursor: var(--kritzel-iframe-pointer-cursor, pointer); font: inherit; font-size: 14px; font-weight: 700; line-height: 1; }
+  button { min-width: 0; min-height: 0; border: 1px solid #dadce0; border-radius: 7px; background: #ffffff; color: #202124; cursor: var(--updraw-iframe-pointer-cursor, pointer); font: inherit; font-size: 14px; font-weight: 700; line-height: 1; }
   button:hover { background: #f3f4f6; }
   .operator { border-color: #42b883; color: #167a55; }
   .muted { color: #5f6368; }
@@ -47,15 +47,15 @@ const calculatorScript = `
   const operatorLabels = { add: '+', subtract: '-', multiply: 'x', divide: '/' };
 
   const getState = () => ({
-    displayValue: String(kritzel.state.displayValue ?? '0'),
-    storedValue: typeof kritzel.state.storedValue === 'number' ? kritzel.state.storedValue : null,
-    pendingOperator: kritzel.state.pendingOperator ?? null,
-    shouldReplaceDisplay: typeof kritzel.state.shouldReplaceDisplay === 'boolean' ? kritzel.state.shouldReplaceDisplay : true,
-    mode: kritzel.state.mode === 'scientific' ? 'scientific' : 'simple',
+    displayValue: String(updraw.state.displayValue ?? '0'),
+    storedValue: typeof updraw.state.storedValue === 'number' ? updraw.state.storedValue : null,
+    pendingOperator: updraw.state.pendingOperator ?? null,
+    shouldReplaceDisplay: typeof updraw.state.shouldReplaceDisplay === 'boolean' ? updraw.state.shouldReplaceDisplay : true,
+    mode: updraw.state.mode === 'scientific' ? 'scientific' : 'simple',
   });
 
   const setState = (nextState) => {
-    kritzel.setState({ ...getState(), ...nextState });
+    updraw.setState({ ...getState(), ...nextState });
     render();
   };
 
@@ -133,7 +133,7 @@ const calculatorScript = `
   document.querySelectorAll('[data-operator]').forEach((button) => button.addEventListener('click', () => chooseOperator(button.dataset.operator)));
   document.querySelectorAll('[data-action]').forEach((button) => button.addEventListener('click', () => button.dataset.action === 'equals' ? calculate() : applyFunction(button.dataset.action)));
   toggleButtons.forEach((button) => button.addEventListener('click', () => setState({ mode: button.dataset.mode })));
-  addEventListener('kritzelstatechange', render);
+  addEventListener('updrawstatechange', render);
   render();
 `
 

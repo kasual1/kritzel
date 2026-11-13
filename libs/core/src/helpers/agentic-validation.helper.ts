@@ -1,22 +1,22 @@
 import type {
-  KritzelAgenticAnchor,
-  KritzelAgenticElementTarget,
-  KritzelAgenticObjectTarget,
-  KritzelAgenticPointTarget,
+  UpdrawAgenticAnchor,
+  UpdrawAgenticElementTarget,
+  UpdrawAgenticObjectTarget,
+  UpdrawAgenticPointTarget,
 } from '../interfaces/agentic-cursor.interface';
-import type { KritzelAgenticOrder, KritzelAgenticResizeHandle } from '../interfaces/agentic-action.interface';
+import type { UpdrawAgenticOrder, UpdrawAgenticResizeHandle } from '../interfaces/agentic-action.interface';
 import type { ArrowHeadStyle } from '../interfaces/arrow-head.interface';
 import { ShapeType } from '../enums/shape-type.enum';
 import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor } from './agentic-geometry.helper';
-import { KritzelMathHelper } from './math.helper';
+import { UpdrawMathHelper } from './math.helper';
 import { isValidElementSelector } from '../classes/objects/iframe-element-bridge.class';
 
 /** Every anchor on an object. */
-export const AGENTIC_ANCHORS = Object.keys(AGENTIC_ANCHOR_FACTORS) as KritzelAgenticAnchor[];
+export const AGENTIC_ANCHORS = Object.keys(AGENTIC_ANCHOR_FACTORS) as UpdrawAgenticAnchor[];
 /** Every shape type an agent can create. */
 export const AGENTIC_SHAPE_TYPES = Object.values(ShapeType) as `${ShapeType}`[];
 /** The corner handles of `resizeObject`. */
-export const AGENTIC_RESIZE_HANDLES: readonly KritzelAgenticResizeHandle[] = ['top-left', 'top-right', 'bottom-right', 'bottom-left'];
+export const AGENTIC_RESIZE_HANDLES: readonly UpdrawAgenticResizeHandle[] = ['top-left', 'top-right', 'bottom-right', 'bottom-left'];
 /** Every arrow head style. */
 export const AGENTIC_ARROW_HEAD_STYLES: readonly ArrowHeadStyle[] = ['triangle', 'open', 'diamond', 'circle'];
 
@@ -44,7 +44,7 @@ export function assertObjectId(id: unknown, field: string): asserts id is string
 }
 
 /** Throws a `TypeError` unless `anchor` is undefined or a known anchor. */
-export function assertAnchor(anchor: unknown, field: string): asserts anchor is KritzelAgenticAnchor | undefined {
+export function assertAnchor(anchor: unknown, field: string): asserts anchor is UpdrawAgenticAnchor | undefined {
   if (anchor !== undefined && !isAgenticAnchor(anchor)) {
     throw new TypeError(`"${field}" must be one of ${AGENTIC_ANCHORS.join(', ')}.`);
   }
@@ -90,12 +90,12 @@ export function assertStyle(style: unknown, field: string, keys: readonly string
         break;
       case 'strokeWidth':
       case 'fontSize':
-        if (!KritzelMathHelper.isFiniteNumber(value) || value <= 0) {
+        if (!UpdrawMathHelper.isFiniteNumber(value) || value <= 0) {
           throw new TypeError(`"${path}" must be a number greater than 0.`);
         }
         break;
       case 'opacity':
-        if (!KritzelMathHelper.isFiniteNumber(value) || value < 0 || value > 1) {
+        if (!UpdrawMathHelper.isFiniteNumber(value) || value < 0 || value > 1) {
           throw new TypeError(`"${path}" must be a number from 0 to 1.`);
         }
         break;
@@ -139,7 +139,7 @@ export function assertArrows(arrows: unknown, field: string): void {
           throw new TypeError(`"${path}.style" must be one of ${AGENTIC_ARROW_HEAD_STYLES.join(', ')}.`);
         }
       } else if (key === 'size') {
-        if (!KritzelMathHelper.isFiniteNumber(value) || value <= 0) {
+        if (!UpdrawMathHelper.isFiniteNumber(value) || value <= 0) {
           throw new TypeError(`"${path}.size" must be a number greater than 0.`);
         }
       } else if (key === 'fill') {
@@ -158,7 +158,7 @@ export function assertArrows(arrows: unknown, field: string): void {
  * (`{ objectId, selector }`) are refused: actions resolve their targets synchronously, while an element's position
  * has to be asked from the object's content first. Only `agent.moveTo()` points at elements.
  */
-export function assertTarget(target: unknown, field: string): asserts target is KritzelAgenticPointTarget | KritzelAgenticObjectTarget {
+export function assertTarget(target: unknown, field: string): asserts target is UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget {
   if (!target || typeof target !== 'object') {
     throw new TypeError(`"${field}" must be { x, y } or { objectId }.`);
   }
@@ -169,12 +169,12 @@ export function assertTarget(target: unknown, field: string): asserts target is 
   if (candidate.objectId !== undefined) {
     assertObjectId(candidate.objectId, `${field}.objectId`);
     assertAnchor(candidate.anchor, `${field}.anchor`);
-    if (candidate.offset !== undefined && (!KritzelMathHelper.isFiniteNumber(candidate.offset?.x) || !KritzelMathHelper.isFiniteNumber(candidate.offset?.y))) {
+    if (candidate.offset !== undefined && (!UpdrawMathHelper.isFiniteNumber(candidate.offset?.x) || !UpdrawMathHelper.isFiniteNumber(candidate.offset?.y))) {
       throw new TypeError(`"${field}.offset" must be { x, y }.`);
     }
     return;
   }
-  if (!KritzelMathHelper.isFiniteNumber(candidate.x) || !KritzelMathHelper.isFiniteNumber(candidate.y)) {
+  if (!UpdrawMathHelper.isFiniteNumber(candidate.x) || !UpdrawMathHelper.isFiniteNumber(candidate.y)) {
     throw new TypeError(`"${field}" must be { x, y } or { objectId }.`);
   }
 }
@@ -183,7 +183,7 @@ export function assertTarget(target: unknown, field: string): asserts target is 
  * Throws a `TypeError` unless `target` is an element target `{ objectId, selector, anchor?, offset? }` with a
  * selector the browser can parse.
  */
-export function assertElementTarget(target: unknown, field: string): asserts target is KritzelAgenticElementTarget {
+export function assertElementTarget(target: unknown, field: string): asserts target is UpdrawAgenticElementTarget {
   if (!target || typeof target !== 'object') {
     throw new TypeError(`"${field}" must be { objectId, selector }.`);
   }
@@ -196,13 +196,13 @@ export function assertElementTarget(target: unknown, field: string): asserts tar
     throw new TypeError(`"${field}.selector" is not a valid CSS selector: ${candidate.selector}`);
   }
   assertAnchor(candidate.anchor, `${field}.anchor`);
-  if (candidate.offset !== undefined && (!KritzelMathHelper.isFiniteNumber(candidate.offset?.x) || !KritzelMathHelper.isFiniteNumber(candidate.offset?.y))) {
+  if (candidate.offset !== undefined && (!UpdrawMathHelper.isFiniteNumber(candidate.offset?.x) || !UpdrawMathHelper.isFiniteNumber(candidate.offset?.y))) {
     throw new TypeError(`"${field}.offset" must be { x, y }.`);
   }
 }
 
 /** Where `orderObjects` can move objects. */
-export const AGENTIC_ORDERS: readonly KritzelAgenticOrder[] = ['front', 'back', 'forward', 'backward'];
+export const AGENTIC_ORDERS: readonly UpdrawAgenticOrder[] = ['front', 'back', 'forward', 'backward'];
 
 /** Removes duplicates while keeping the order. */
 export function uniqueIds(ids: string[]): string[] {

@@ -1,13 +1,13 @@
-import type { KritzelAgenticMoveObjectAction } from '../../interfaces/agentic-action.interface';
-import { KritzelLine } from '../objects/line.class';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpdrawAgenticMoveObjectAction } from '../../interfaces/agentic-action.interface';
+import { UpdrawLine } from '../objects/line.class';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
 import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { prepareTopLevelTargets } from './select.executor';
 import { assertAnchor, assertObjectId, assertTarget } from '../../helpers/agentic-validation.helper';
 import { isObjectTarget } from '../../helpers/agentic-geometry.helper';
 
 /** `moveObject`: grabs the object, drags it so its `align` point lands on `to`, and releases it. */
-export const moveObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticMoveObjectAction> = {
+export const moveObjectExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticMoveObjectAction> = {
   mutates: true,
 
   validate(action) {
@@ -53,7 +53,7 @@ export const moveObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticMove
 
     // Dragging a whole anchored line detaches it, like the move handler does.
     const object = map.findById(id);
-    if (object instanceof KritzelLine && (object.startAnchor || object.endAnchor)) {
+    if (object instanceof UpdrawLine && (object.startAnchor || object.endAnchor)) {
       const line = object;
       run.mutate(() => {
         if (line.startAnchor) core.anchorManager.removeAnchor(id, 'start');

@@ -10,15 +10,15 @@ import {
 import { CommonModule } from '@angular/common';
 import {
   EditorIsReadyEvent,
-  KritzelBaseObject,
-  KritzelEditor,
-  KritzelSyncConfig,
-  KritzelWorkspace,
+  UpdrawBaseObject,
+  UpdrawEditor,
+  UpdrawSyncConfig,
+  UpdrawWorkspace,
   ShapeType,
   ObjectsAddedEvent,
   ObjectsRemovedEvent,
   ObjectsUpdatedEvent,
-} from '@kritzel/angular-editor';
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
@@ -26,12 +26,12 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
 
 @Component({
   selector: 'app-object-explorer',
-  imports: [CommonModule, KritzelEditor, InfoPanelComponent],
+  imports: [CommonModule, UpdrawEditor, InfoPanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="content-shell">
       <div class="editor-container">
-        <kritzel-editor
+        <updraw-editor
           editorId="object-explorer"
           [theme]="'light'"
           [themes]="themes"
@@ -45,7 +45,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
           (objectsAdded)="onObjectsAdded($event)"
           (objectsRemoved)="onObjectsRemoved($event)"
           (objectsUpdated)="onObjectsUpdated($event)"
-        ></kritzel-editor>
+        ></updraw-editor>
       </div>
 
       <app-info-panel [showOnMobile]="true">
@@ -72,7 +72,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
                 (click)="toggleTypeFilter(type)"
                 class="filter-chip"
               >
-                {{ type.replace('Kritzel', '') }}
+                {{ type.replace('Updraw', '') }}
               </button>
             }
           </div>
@@ -102,7 +102,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
               [class.hidden-obj]="!obj.isVisible"
             >
               <span class="node-arrow" (click)="toggleExpand($event, obj)">
-                @if (obj.__class__ === 'KritzelGroup') {
+                @if (obj.__class__ === 'UpdrawGroup') {
                   {{ isExpanded(obj.id) ? '▼' : '▶' }}
                 } @else {
                   •
@@ -125,7 +125,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
               </div>
             </div>
 
-            @if (obj.__class__ === 'KritzelGroup' && isExpanded(obj.id)) {
+            @if (obj.__class__ === 'UpdrawGroup' && isExpanded(obj.id)) {
               @for (child of getGroupChildren(obj); track child.id) {
                 <ng-container
                   *ngTemplateOutlet="nodeTemplate; context: { obj: child, depth: depth + 1 }"
@@ -142,7 +142,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
             (pointerup)="restoreInspectorSelection()"
             (pointercancel)="restoreInspectorSelection()"
           >
-            <h4>Inspector: {{ selObj.__class__.replace('Kritzel', '') }}</h4>
+            <h4>Inspector: {{ selObj.__class__.replace('Updraw', '') }}</h4>
 
             <div class="inspector-field">
               <label>ID</label>
@@ -165,7 +165,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
               </div>
             </div>
 
-            @if (selObj.__class__ === 'KritzelText') {
+            @if (selObj.__class__ === 'UpdrawText') {
               <div class="inspector-field">
                 <label>Text Content</label>
                 <input
@@ -176,7 +176,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
               </div>
             }
 
-            @if (selObj.__class__ === 'KritzelShape') {
+            @if (selObj.__class__ === 'UpdrawShape') {
               <div class="inspector-field">
                 <label>Size W / H</label>
                 <div class="coords-row">
@@ -203,7 +203,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
               </div>
             }
 
-            @if (selObj.__class__ === 'KritzelPath') {
+            @if (selObj.__class__ === 'UpdrawPath') {
               <div class="inspector-field">
                 <label>Fill Color</label>
                 <input
@@ -261,7 +261,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
       min-width: 0;
     }
 
-    kritzel-editor {
+    updraw-editor {
       display: block;
       width: 100%;
       height: 100%;
@@ -587,25 +587,25 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
   `,
 })
 export class ObjectExplorerComponent implements OnDestroy {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-  @ViewChild(KritzelEditor, { read: ElementRef }) editorHostRef!: ElementRef<HTMLElement>;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpdrawEditor, { read: ElementRef }) editorHostRef!: ElementRef<HTMLElement>;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
-  syncConfig: KritzelSyncConfig = {
+  syncConfig: UpdrawSyncConfig = {
     providers: [],
   };
 
-  allObjects = signal<KritzelBaseObject[]>([]);
+  allObjects = signal<UpdrawBaseObject[]>([]);
   expandedGroups = signal<Set<string>>(new Set<string>());
-  selectedObject = signal<KritzelBaseObject | null>(null);
-  private inspectorInteractionObject: KritzelBaseObject | null = null;
+  selectedObject = signal<UpdrawBaseObject | null>(null);
+  private inspectorInteractionObject: UpdrawBaseObject | null = null;
 
   searchQuery = signal<string>('');
-  availableTypes = ['KritzelShape', 'KritzelText', 'KritzelLine', 'KritzelPath'];
-  selectedTypes = signal<Set<string>>(new Set([...this.availableTypes, 'KritzelGroup']));
+  availableTypes = ['UpdrawShape', 'UpdrawText', 'UpdrawLine', 'UpdrawPath'];
+  selectedTypes = signal<Set<string>>(new Set([...this.availableTypes, 'UpdrawGroup']));
 
   private selectionListenerAttached = false;
   private readonly handleSelectionChangeBound = () => {
@@ -615,7 +615,7 @@ export class ObjectExplorerComponent implements OnDestroy {
   childIds = computed(() => {
     const ids = new Set<string>();
     this.allObjects().forEach((obj) => {
-      if (obj.__class__ === 'KritzelGroup') {
+      if (obj.__class__ === 'UpdrawGroup') {
         const group = obj as any;
         if (group.childIds) {
           group.childIds.forEach((id: string) => ids.add(id));
@@ -709,9 +709,9 @@ export class ObjectExplorerComponent implements OnDestroy {
     return this.expandedGroups().has(groupId);
   }
 
-  toggleExpand(event: Event, obj: KritzelBaseObject) {
+  toggleExpand(event: Event, obj: UpdrawBaseObject) {
     event.stopPropagation();
-    if (obj.__class__ !== 'KritzelGroup') {
+    if (obj.__class__ !== 'UpdrawGroup') {
       return;
     }
     this.expandedGroups.update((groups) => {
@@ -725,7 +725,7 @@ export class ObjectExplorerComponent implements OnDestroy {
     });
   }
 
-  getGroupChildren(groupObj: KritzelBaseObject): KritzelBaseObject[] {
+  getGroupChildren(groupObj: UpdrawBaseObject): UpdrawBaseObject[] {
     const group = groupObj as any;
     if (!group.childIds) {
       return [];
@@ -733,11 +733,11 @@ export class ObjectExplorerComponent implements OnDestroy {
     return this.allObjects().filter((o) => group.childIds.includes(o.id));
   }
 
-  isNodeVisible(obj: KritzelBaseObject): boolean {
-    return this.matchesFilter(obj) || (obj.__class__ === 'KritzelGroup' && this.hasMatchingDescendant(obj));
+  isNodeVisible(obj: UpdrawBaseObject): boolean {
+    return this.matchesFilter(obj) || (obj.__class__ === 'UpdrawGroup' && this.hasMatchingDescendant(obj));
   }
 
-  matchesFilter(obj: KritzelBaseObject): boolean {
+  matchesFilter(obj: UpdrawBaseObject): boolean {
     const types = this.selectedTypes();
     if (!types.has(obj.__class__)) {
       return false;
@@ -755,14 +755,14 @@ export class ObjectExplorerComponent implements OnDestroy {
       return true;
     }
 
-    if (obj.__class__ === 'KritzelText') {
+    if (obj.__class__ === 'UpdrawText') {
       const txt = (obj as any).text || '';
       if (txt.toLowerCase().includes(query)) {
         return true;
       }
     }
 
-    if (obj.__class__ === 'KritzelShape') {
+    if (obj.__class__ === 'UpdrawShape') {
       const shapeType = (obj as any).shapeType || '';
       if (shapeType.toLowerCase().includes(query)) {
         return true;
@@ -772,70 +772,70 @@ export class ObjectExplorerComponent implements OnDestroy {
     return false;
   }
 
-  hasMatchingDescendant(groupObj: KritzelBaseObject): boolean {
+  hasMatchingDescendant(groupObj: UpdrawBaseObject): boolean {
     const children = this.getGroupChildren(groupObj);
     for (const child of children) {
       if (this.matchesFilter(child)) {
         return true;
       }
-      if (child.__class__ === 'KritzelGroup' && this.hasMatchingDescendant(child)) {
+      if (child.__class__ === 'UpdrawGroup' && this.hasMatchingDescendant(child)) {
         return true;
       }
     }
     return false;
   }
 
-  getDisplayName(obj: KritzelBaseObject): string {
+  getDisplayName(obj: UpdrawBaseObject): string {
     switch (obj.__class__) {
-      case 'KritzelGroup': {
+      case 'UpdrawGroup': {
         const count = (obj as any).childIds?.length ?? 0;
         return `Group (${count} items)`;
       }
-      case 'KritzelShape': {
+      case 'UpdrawShape': {
         const shape = obj as any;
         return shape.shapeType === ShapeType.Ellipse ? 'Ellipse' : 'Rectangle';
       }
-      case 'KritzelText': {
+      case 'UpdrawText': {
         const txt = (obj as any).text || 'Blank Text';
         return `Text "${txt.length > 15 ? `${txt.slice(0, 15)}...` : txt}"`;
       }
-      case 'KritzelLine':
+      case 'UpdrawLine':
         return 'Line';
-      case 'KritzelPath':
+      case 'UpdrawPath':
         return 'Brush Path';
       default:
-        return obj.__class__.replace('Kritzel', '');
+        return obj.__class__.replace('Updraw', '');
     }
   }
 
-  async selectTreeObject(obj: KritzelBaseObject) {
+  async selectTreeObject(obj: UpdrawBaseObject) {
     this.selectedObject.set(obj);
     await this.editor.panToObject(obj);
     await this.editor.selectObjects([obj]);
   }
 
-  async deleteTreeObject(event: Event, obj: KritzelBaseObject) {
+  async deleteTreeObject(event: Event, obj: UpdrawBaseObject) {
     event.stopPropagation();
     await this.editor.removeObject(obj);
   }
 
-  getTextContent(obj: KritzelBaseObject): string {
+  getTextContent(obj: UpdrawBaseObject): string {
     return (obj as any).text ?? '';
   }
 
-  getShapeFillColor(obj: KritzelBaseObject): string {
+  getShapeFillColor(obj: UpdrawBaseObject): string {
     return this.resolveThemeColor((obj as any).fillColor, '#ffffff');
   }
 
-  getPathFillColor(obj: KritzelBaseObject): string {
+  getPathFillColor(obj: UpdrawBaseObject): string {
     return this.resolveThemeColor((obj as any).fill, '#000000');
   }
 
-  getPathStrokeColor(obj: KritzelBaseObject): string {
+  getPathStrokeColor(obj: UpdrawBaseObject): string {
     return this.resolveThemeColor((obj as any).stroke, '#000000');
   }
 
-  getOpacityPercent(obj: KritzelBaseObject): number {
+  getOpacityPercent(obj: UpdrawBaseObject): number {
     return Math.round((obj.opacity ?? 1) * 100);
   }
 

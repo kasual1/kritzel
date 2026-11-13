@@ -5,13 +5,13 @@
 A workspace is a complete document: its objects, view state, and metadata. The editor always has one active workspace (one is created automatically on first run).
 
 ```ts
-import { KritzelWorkspace } from '@kritzel/angular-editor';
+import { UpdrawWorkspace } from '@updraw/angular-editor';
 
 const workspaces = await editor.getWorkspaces();
 const active = await editor.getActiveWorkspace();
 
 // Create — constructor takes (id, name)
-const ws = new KritzelWorkspace(crypto.randomUUID(), 'Board 2');
+const ws = new UpdrawWorkspace(crypto.randomUUID(), 'Board 2');
 await editor.createWorkspace(ws);
 
 await editor.updateWorkspace(ws);        // rename etc. (mutate metadata, then update)
@@ -23,10 +23,10 @@ await editor.deleteWorkspace(ws);
 Drive the active workspace via the `[activeWorkspaceId]` input and mirror changes back from the event:
 
 ```html
-<kritzel-editor
+<updraw-editor
   [activeWorkspaceId]="activeWorkspaceId()"
   (activeWorkspaceChange)="onActiveWorkspaceChange($event)">
-</kritzel-editor>
+</updraw-editor>
 ```
 
 ```ts
@@ -41,21 +41,21 @@ The built-in workspace manager UI handles all of this; hide it with `[isWorkspac
 
 ## Persistence & sync providers
 
-Kritzel state lives in a Yjs document; sync providers decide where it goes. **Default is `{ providers: [] }` — nothing persists across reloads.**
+Updraw state lives in a Yjs document; sync providers decide where it goes. **Default is `{ providers: [] }` — nothing persists across reloads.**
 
 ```ts
-import { IndexedDBSyncProvider, KritzelSyncConfig } from '@kritzel/angular-editor';
+import { IndexedDBSyncProvider, UpdrawSyncConfig } from '@updraw/angular-editor';
 
-readonly syncConfig: KritzelSyncConfig = {
+readonly syncConfig: UpdrawSyncConfig = {
   providers: [IndexedDBSyncProvider],   // local persistence, restored on reload
 };
 ```
 
 ```html
-<kritzel-editor [syncConfig]="syncConfig"></kritzel-editor>
+<updraw-editor [syncConfig]="syncConfig"></updraw-editor>
 ```
 
-Available providers (all exported from `@kritzel/angular-editor`):
+Available providers (all exported from `@updraw/angular-editor`):
 
 | Provider | Persists/Syncs to | Use |
 |---|---|---|
@@ -68,7 +68,7 @@ Available providers (all exported from `@kritzel/angular-editor`):
 Providers are additive — combine for offline + realtime:
 
 ```ts
-readonly syncConfig: KritzelSyncConfig = {
+readonly syncConfig: UpdrawSyncConfig = {
   providers: [
     IndexedDBSyncProvider,
     HocuspocusSyncProvider.with({ url: 'wss://collab.example.com', token: () => this.auth.getToken() }),
@@ -80,10 +80,10 @@ If you change `syncConfig` after init (e.g. after login), call `await editor.rei
 
 ## Collaboration extras
 
-- Pass the current user for presence: `[user]="currentUser"` with `IKritzelUser` shape `{ id, displayName?, firstName?, lastName?, email?, profileImageUrl?, color?, isGuest? }`; show others via `[activeUsers]`. The editor treats `isGuest: true` (or no user) as logged out.
+- Pass the current user for presence: `[user]="currentUser"` with `IUpdrawUser` shape `{ id, displayName?, firstName?, lastName?, email?, profileImageUrl?, color?, isGuest? }`; show others via `[activeUsers]`. The editor treats `isGuest: true` (or no user) as logged out.
 - Live remote cursors/presence arrive on `(awarenessChange)` → `Map<number, Record<string, any>>`.
 - Shared/public workspaces: `await editor.loadSharedWorkspace(token)`; observe `(isPublicChange)`.
-- Image/file binaries are stored via `[assetStorageConfig]` (`KritzelAssetStorageConfig`); default is IndexedDB-backed. HTTP/presigned-URL providers exist for server storage.
+- Image/file binaries are stored via `[assetStorageConfig]` (`UpdrawAssetStorageConfig`); default is IndexedDB-backed. HTTP/presigned-URL providers exist for server storage.
 
 ## Import / Export
 

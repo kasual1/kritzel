@@ -1,7 +1,7 @@
-import { KritzelKeyboardHelper } from './keyboard.helper';
-import { KritzelDevicesHelper } from './devices.helper';
+import { UpdrawKeyboardHelper } from './keyboard.helper';
+import { UpdrawDevicesHelper } from './devices.helper';
 
-describe('KritzelKeyboardHelper', () => {
+describe('UpdrawKeyboardHelper', () => {
   // Set up and tear down for meta tags
   let viewportMeta: HTMLMetaElement | null;
 
@@ -21,7 +21,7 @@ describe('KritzelKeyboardHelper', () => {
 
       requestAnimationFrame(() => {
         const blurSpy = jest.spyOn(input, 'blur');
-        KritzelKeyboardHelper.forceHideKeyboard();
+        UpdrawKeyboardHelper.forceHideKeyboard();
 
         expect(blurSpy).toHaveBeenCalledTimes(1);
         expect(document.activeElement).not.toBe(input);
@@ -39,7 +39,7 @@ describe('KritzelKeyboardHelper', () => {
       }
 
       const activeElementBefore = document.activeElement;
-      KritzelKeyboardHelper.forceHideKeyboard();
+      UpdrawKeyboardHelper.forceHideKeyboard();
       expect(document.activeElement).toBe(activeElementBefore);
     });
   });
@@ -53,7 +53,7 @@ describe('KritzelKeyboardHelper', () => {
       document.head.appendChild(viewportMeta);
 
       requestAnimationFrame(() => {
-        KritzelKeyboardHelper.enableInteractiveWidget();
+        UpdrawKeyboardHelper.enableInteractiveWidget();
         expect(viewportMeta!.content).toContain('interactive-widget=resizes-content');
       });
     });
@@ -65,12 +65,12 @@ describe('KritzelKeyboardHelper', () => {
       viewportMeta.content = initialContent;
       document.head.appendChild(viewportMeta);
 
-      KritzelKeyboardHelper.enableInteractiveWidget();
+      UpdrawKeyboardHelper.enableInteractiveWidget();
       expect(viewportMeta.content).toBe(initialContent);
     });
 
     it('should do nothing if no viewport meta tag is found', () => {
-      KritzelKeyboardHelper.enableInteractiveWidget();
+      UpdrawKeyboardHelper.enableInteractiveWidget();
       const meta = document.querySelector('meta[name="viewport"]');
       expect(meta).toBeNull();
     });
@@ -84,7 +84,7 @@ describe('KritzelKeyboardHelper', () => {
       viewportMeta.setAttribute('content', 'width=device-width, interactive-widget=resizes-content, initial-scale=1.0');
       document.head.appendChild(viewportMeta);
 
-      KritzelKeyboardHelper.disableInteractiveWidget();
+      UpdrawKeyboardHelper.disableInteractiveWidget();
       expect(viewportMeta.getAttribute('content')).not.toContain('interactive-widget=resizes-content');
       expect(viewportMeta.getAttribute('content')).toBe('width=device-width, initial-scale=1.0');
     });
@@ -95,7 +95,7 @@ describe('KritzelKeyboardHelper', () => {
       viewportMeta.setAttribute('content', 'interactive-widget=resizes-content, width=device-width');
       document.head.appendChild(viewportMeta);
 
-      KritzelKeyboardHelper.disableInteractiveWidget();
+      UpdrawKeyboardHelper.disableInteractiveWidget();
       expect(viewportMeta.getAttribute('content')).toBe('width=device-width');
     });
 
@@ -106,7 +106,7 @@ describe('KritzelKeyboardHelper', () => {
       viewportMeta.content = initialContent;
       document.head.appendChild(viewportMeta);
 
-      KritzelKeyboardHelper.disableInteractiveWidget();
+      UpdrawKeyboardHelper.disableInteractiveWidget();
       expect(viewportMeta.content).toBe(initialContent);
     });
 
@@ -116,7 +116,7 @@ describe('KritzelKeyboardHelper', () => {
       viewportMeta.setAttribute('content', 'interactive-widget=resizes-content');
       document.head.appendChild(viewportMeta);
 
-      KritzelKeyboardHelper.disableInteractiveWidget();
+      UpdrawKeyboardHelper.disableInteractiveWidget();
       expect(viewportMeta.getAttribute('content')).toBe('');
     });
   });
@@ -130,8 +130,8 @@ describe('KritzelKeyboardHelper', () => {
     };
 
     beforeEach(() => {
-      KritzelKeyboardHelper.resetViewportBaseline();
-      jest.spyOn(KritzelDevicesHelper, 'isMobile').mockReturnValue(true);
+      UpdrawKeyboardHelper.resetViewportBaseline();
+      jest.spyOn(UpdrawDevicesHelper, 'isMobile').mockReturnValue(true);
     });
 
     afterEach(() => {
@@ -141,48 +141,48 @@ describe('KritzelKeyboardHelper', () => {
 
     it('should return false when the viewport is at its full height', () => {
       setInnerHeight(800);
-      expect(KritzelKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 800))).toBe(false);
+      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 800))).toBe(false);
     });
 
     it('should detect the keyboard when the layout viewport does not resize (iOS)', () => {
       setInnerHeight(800);
-      expect(KritzelKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 450))).toBe(true);
+      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 450))).toBe(true);
     });
 
     it('should detect the keyboard when the layout viewport resizes too (Android resizes-content)', () => {
       setInnerHeight(800);
-      KritzelKeyboardHelper.recordViewportBaseline(createVisualViewport(400, 800));
+      UpdrawKeyboardHelper.recordViewportBaseline(createVisualViewport(400, 800));
 
       setInnerHeight(450);
-      expect(KritzelKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 450))).toBe(true);
+      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 450))).toBe(true);
     });
 
     it('should detect the keyboard in landscape using a separate baseline', () => {
       setInnerHeight(800);
-      KritzelKeyboardHelper.recordViewportBaseline(createVisualViewport(400, 800));
+      UpdrawKeyboardHelper.recordViewportBaseline(createVisualViewport(400, 800));
 
       setInnerHeight(380);
-      expect(KritzelKeyboardHelper.isKeyboardOpen(createVisualViewport(850, 380))).toBe(false);
+      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(850, 380))).toBe(false);
 
       setInnerHeight(380);
-      expect(KritzelKeyboardHelper.isKeyboardOpen(createVisualViewport(850, 180))).toBe(true);
+      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(850, 180))).toBe(true);
     });
 
     it('should not treat a minor height change (e.g. browser toolbar) as a keyboard', () => {
       setInnerHeight(800);
-      expect(KritzelKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 720))).toBe(false);
+      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 720))).toBe(false);
     });
 
     it('should always return false on non-mobile devices, even with a small viewport', () => {
-      (KritzelDevicesHelper.isMobile as jest.Mock).mockReturnValue(false);
+      (UpdrawDevicesHelper.isMobile as jest.Mock).mockReturnValue(false);
       setInnerHeight(800);
-      KritzelKeyboardHelper.recordViewportBaseline(createVisualViewport(400, 800));
+      UpdrawKeyboardHelper.recordViewportBaseline(createVisualViewport(400, 800));
 
-      expect(KritzelKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 200))).toBe(false);
+      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 200))).toBe(false);
     });
 
     it('should return false without a visual viewport', () => {
-      expect(KritzelKeyboardHelper.isKeyboardOpen(null)).toBe(false);
+      expect(UpdrawKeyboardHelper.isKeyboardOpen(null)).toBe(false);
     });
   });
 });

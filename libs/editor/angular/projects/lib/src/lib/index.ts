@@ -2,11 +2,11 @@
 import * as d from './proxy';
 
 export const DIRECTIVES = [
-  d.KritzelChatBox,
-  d.KritzelEditor,
-  d.KritzelSettings,
-  d.KritzelShapeFill,
-  d.KritzelShareDialog,
-  d.KritzelSplitButton,
-  d.KritzelStrokeSize
+  d.UpdrawChatBox,
+  d.UpdrawEditor,
+  d.UpdrawSettings,
+  d.UpdrawShapeFill,
+  d.UpdrawShareDialog,
+  d.UpdrawSplitButton,
+  d.UpdrawStrokeSize
 ];

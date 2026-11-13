@@ -1,23 +1,23 @@
-import { KritzelDynamicObjectRenderer } from "../../interfaces/dynamic-object-renderer.interface";
+import { UpdrawDynamicObjectRenderer } from "../../interfaces/dynamic-object-renderer.interface";
 
-type KritzelRendererRegistryStore = {
-  renderers: Map<string, KritzelDynamicObjectRenderer>;
+type UpdrawRendererRegistryStore = {
+  renderers: Map<string, UpdrawDynamicObjectRenderer>;
 };
 
-const KRITZEL_RENDERER_REGISTRY_KEY = '__kritzelDynamicObjectRendererRegistry__';
+const UPDRAW_RENDERER_REGISTRY_KEY = '__updrawDynamicObjectRendererRegistry__';
 
-const getGlobalRegistryStore = (): KritzelRendererRegistryStore => {
+const getGlobalRegistryStore = (): UpdrawRendererRegistryStore => {
   const globalScope = globalThis as unknown as Record<string, unknown>;
-  const existing = globalScope[KRITZEL_RENDERER_REGISTRY_KEY] as KritzelRendererRegistryStore | undefined;
+  const existing = globalScope[UPDRAW_RENDERER_REGISTRY_KEY] as UpdrawRendererRegistryStore | undefined;
 
   if (existing) {
     return existing;
   }
 
-  const created: KritzelRendererRegistryStore = {
-    renderers: new Map<string, KritzelDynamicObjectRenderer>(),
+  const created: UpdrawRendererRegistryStore = {
+    renderers: new Map<string, UpdrawDynamicObjectRenderer>(),
   };
-  globalScope[KRITZEL_RENDERER_REGISTRY_KEY] = created;
+  globalScope[UPDRAW_RENDERER_REGISTRY_KEY] = created;
   return created;
 };
 
@@ -31,8 +31,8 @@ const getGlobalRegistryStore = (): KritzelRendererRegistryStore => {
  * When a dynamic object is deserialized with a rendererKey, the registry is consulted to
  * resolve the renderer and mount with the persisted rendererData.
  */
-export class KritzelDynamicObjectRendererRegistry {
-  private static get _renderers(): Map<string, KritzelDynamicObjectRenderer> {
+export class UpdrawDynamicObjectRendererRegistry {
+  private static get _renderers(): Map<string, UpdrawDynamicObjectRenderer> {
     return getGlobalRegistryStore().renderers;
   }
 
@@ -41,7 +41,7 @@ export class KritzelDynamicObjectRendererRegistry {
    * @param key - Stable identifier for this renderer (e.g., 'angular-my-component')
    * @param renderer - Renderer implementation with mount/unmount/update handlers
    */
-  static register(key: string, renderer: KritzelDynamicObjectRenderer): void {
+  static register(key: string, renderer: UpdrawDynamicObjectRenderer): void {
     this._renderers.set(key, renderer);
   }
 
@@ -50,7 +50,7 @@ export class KritzelDynamicObjectRendererRegistry {
    * @param key - Renderer identifier
    * @returns The registered renderer, or undefined if not found
    */
-  static get(key: string): KritzelDynamicObjectRenderer | undefined {
+  static get(key: string): UpdrawDynamicObjectRenderer | undefined {
     return this._renderers.get(key);
   }
 

@@ -1,11 +1,11 @@
-import { KritzelLine } from './line.class';
-import { KritzelCore } from '../core/core.class';
-import { KritzelPolygon } from '../../interfaces/polygon.interface';
+import { UpdrawLine } from './line.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawPolygon } from '../../interfaces/polygon.interface';
 import { ArrowHeadStyle } from '../../interfaces/arrow-head.interface';
 
 // Mock geometry helper
 jest.mock('../../helpers/geometry.helper', () => ({
-  KritzelGeometryHelper: {
+  UpdrawGeometryHelper: {
     isPointInPolygon: jest.fn((point, polygon) => {
       // Simple implementation for testing
       const minX = Math.min(...polygon.map((p: { x: number }) => p.x));
@@ -18,12 +18,12 @@ jest.mock('../../helpers/geometry.helper', () => ({
   },
 }));
 
-describe('KritzelLine', () => {
-  let line: KritzelLine;
-  let mockCore: jest.Mocked<KritzelCore>;
+describe('UpdrawLine', () => {
+  let line: UpdrawLine;
+  let mockCore: jest.Mocked<UpdrawCore>;
   let mockObjectsUpdate: jest.Mock;
 
-  const createMockCore = (): jest.Mocked<KritzelCore> => {
+  const createMockCore = (): jest.Mocked<UpdrawCore> => {
     const objectsUpdate = jest.fn();
     mockObjectsUpdate = objectsUpdate;
 
@@ -56,12 +56,12 @@ describe('KritzelLine', () => {
         emitObjectsRemoved: jest.fn(),
         emitObjectsUpdated: jest.fn(),
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
   };
 
   beforeEach(() => {
     mockCore = createMockCore();
-    line = KritzelLine.create(mockCore, {
+    line = UpdrawLine.create(mockCore, {
       startX: 0,
       startY: 0,
       endX: 100,
@@ -77,7 +77,7 @@ describe('KritzelLine', () => {
 
   describe('constructor', () => {
     it('should create a line with default values when no config provided', () => {
-      const defaultLine = new KritzelLine();
+      const defaultLine = new UpdrawLine();
 
       expect(defaultLine.startX).toBe(0);
       expect(defaultLine.startY).toBe(0);
@@ -89,11 +89,11 @@ describe('KritzelLine', () => {
       // Note: translateX/Y are adjusted by updateDimensions() which accounts for bounding box
       expect(defaultLine.translateX).toBeDefined();
       expect(defaultLine.translateY).toBeDefined();
-      expect(defaultLine.__class__).toBe('KritzelLine');
+      expect(defaultLine.__class__).toBe('UpdrawLine');
     });
 
     it('should create a line with provided config values', () => {
-      const configuredLine = new KritzelLine({
+      const configuredLine = new UpdrawLine({
         startX: 10,
         startY: 20,
         endX: 110,
@@ -115,7 +115,7 @@ describe('KritzelLine', () => {
     });
 
     it('should convert constructor rotation from degrees to radians', () => {
-      const configuredLine = new KritzelLine({
+      const configuredLine = new UpdrawLine({
         startX: 10,
         startY: 20,
         endX: 110,
@@ -127,7 +127,7 @@ describe('KritzelLine', () => {
     });
 
     it('should create a curved line with control point', () => {
-      const curvedLine = new KritzelLine({
+      const curvedLine = new UpdrawLine({
         startX: 0,
         startY: 0,
         endX: 100,
@@ -149,7 +149,7 @@ describe('KritzelLine', () => {
     });
 
     it('should create a line with arrow configuration', () => {
-      const lineWithArrows = new KritzelLine({
+      const lineWithArrows = new UpdrawLine({
         startX: 0,
         startY: 0,
         endX: 100,
@@ -171,7 +171,7 @@ describe('KritzelLine', () => {
 
   describe('static create', () => {
     it('should create a line with core reference and workspace id', () => {
-      const createdLine = KritzelLine.create(mockCore, {
+      const createdLine = UpdrawLine.create(mockCore, {
         startX: 0,
         startY: 0,
         endX: 100,
@@ -184,8 +184,8 @@ describe('KritzelLine', () => {
     });
 
     it('should generate a unique id', () => {
-      const line1 = KritzelLine.create(mockCore, { startX: 0, startY: 0, endX: 100, endY: 100 });
-      const line2 = KritzelLine.create(mockCore, { startX: 0, startY: 0, endX: 100, endY: 100 });
+      const line1 = UpdrawLine.create(mockCore, { startX: 0, startY: 0, endX: 100, endY: 100 });
+      const line2 = UpdrawLine.create(mockCore, { startX: 0, startY: 0, endX: 100, endY: 100 });
 
       expect(line1.id).toBeDefined();
       expect(line2.id).toBeDefined();
@@ -193,7 +193,7 @@ describe('KritzelLine', () => {
     });
 
     it('should use default values when not provided', () => {
-      const createdLine = KritzelLine.create(mockCore);
+      const createdLine = UpdrawLine.create(mockCore);
 
       expect(createdLine.startX).toBe(0);
       expect(createdLine.startY).toBe(0);
@@ -204,7 +204,7 @@ describe('KritzelLine', () => {
     });
 
     it('should convert create rotation from degrees to radians', () => {
-      const createdLine = KritzelLine.create(mockCore, {
+      const createdLine = UpdrawLine.create(mockCore, {
         startX: 0,
         startY: 0,
         endX: 100,
@@ -222,7 +222,7 @@ describe('KritzelLine', () => {
     });
 
     it('should return quadratic bezier path when control point is set', () => {
-      const curvedLine = KritzelLine.create(mockCore, {
+      const curvedLine = UpdrawLine.create(mockCore, {
         startX: 0,
         startY: 0,
         endX: 100,
@@ -248,7 +248,7 @@ describe('KritzelLine', () => {
     });
 
     it('should calculate correct bounding box for horizontal line', () => {
-      const horizontalLine = KritzelLine.create(mockCore, {
+      const horizontalLine = UpdrawLine.create(mockCore, {
         startX: 0,
         startY: 50,
         endX: 100,
@@ -266,7 +266,7 @@ describe('KritzelLine', () => {
 
     it('should calculate correct bounding box for curved line with extrema', () => {
       // Curve that bulges beyond its endpoints
-      const curvedLine = KritzelLine.create(mockCore, {
+      const curvedLine = UpdrawLine.create(mockCore, {
         startX: 0,
         startY: 0,
         endX: 100,
@@ -283,7 +283,7 @@ describe('KritzelLine', () => {
     });
 
     it('should include stroke width in bounding box', () => {
-      const thickLine = KritzelLine.create(mockCore, {
+      const thickLine = UpdrawLine.create(mockCore, {
         startX: 0,
         startY: 0,
         endX: 100,
@@ -300,7 +300,7 @@ describe('KritzelLine', () => {
 
   describe('static calculateBoundingBox', () => {
     it('should calculate bounding box for straight line', () => {
-      const bbox = KritzelLine.calculateBoundingBox(0, 0, 100, 100, undefined, undefined, 4);
+      const bbox = UpdrawLine.calculateBoundingBox(0, 0, 100, 100, undefined, undefined, 4);
 
       expect(bbox.minX).toBe(-2);
       expect(bbox.minY).toBe(-2);
@@ -309,7 +309,7 @@ describe('KritzelLine', () => {
     });
 
     it('should handle reversed coordinates', () => {
-      const bbox = KritzelLine.calculateBoundingBox(100, 100, 0, 0, undefined, undefined, 4);
+      const bbox = UpdrawLine.calculateBoundingBox(100, 100, 0, 0, undefined, undefined, 4);
 
       expect(bbox.minX).toBe(-2);
       expect(bbox.minY).toBe(-2);
@@ -427,7 +427,7 @@ describe('KritzelLine', () => {
     });
 
     it('should use minimum hit threshold for thin lines', () => {
-      const thinLine = KritzelLine.create(mockCore, {
+      const thinLine = UpdrawLine.create(mockCore, {
         startX: 0,
         startY: 0,
         endX: 100,
@@ -440,7 +440,7 @@ describe('KritzelLine', () => {
     });
 
     it('should handle curved lines', () => {
-      const curvedLine = KritzelLine.create(mockCore, {
+      const curvedLine = UpdrawLine.create(mockCore, {
         startX: 0,
         startY: 0,
         endX: 100,
@@ -457,7 +457,7 @@ describe('KritzelLine', () => {
 
   describe('hitTestPolygon', () => {
     it('should return true when polygon contains line endpoint', () => {
-      const polygon: KritzelPolygon = {
+      const polygon: UpdrawPolygon = {
         topLeft: { x: 0, y: 0 },
         topRight: { x: 50, y: 0 },
         bottomRight: { x: 50, y: 50 },
@@ -468,7 +468,7 @@ describe('KritzelLine', () => {
     });
 
     it('should return false when polygon is far from line', () => {
-      const polygon: KritzelPolygon = {
+      const polygon: UpdrawPolygon = {
         topLeft: { x: 500, y: 500 },
         topRight: { x: 600, y: 500 },
         bottomRight: { x: 600, y: 600 },
@@ -533,7 +533,7 @@ describe('KritzelLine', () => {
     });
 
     it('should update control point on curved line', () => {
-      const curvedLine = KritzelLine.create(mockCore, {
+      const curvedLine = UpdrawLine.create(mockCore, {
         startX: 0,
         startY: 0,
         endX: 100,
@@ -548,7 +548,7 @@ describe('KritzelLine', () => {
     });
 
     it('should clear control point when undefined', () => {
-      const curvedLine = KritzelLine.create(mockCore, {
+      const curvedLine = UpdrawLine.create(mockCore, {
         startX: 0,
         startY: 0,
         endX: 100,
@@ -613,7 +613,7 @@ describe('KritzelLine', () => {
       });
 
       it('should return custom size when configured', () => {
-        const lineWithArrows = KritzelLine.create(mockCore, {
+        const lineWithArrows = UpdrawLine.create(mockCore, {
           startX: 0,
           startY: 0,
           endX: 100,
@@ -637,7 +637,7 @@ describe('KritzelLine', () => {
       });
 
       it('should return custom fill when configured', () => {
-        const lineWithArrows = KritzelLine.create(mockCore, {
+        const lineWithArrows = UpdrawLine.create(mockCore, {
           startX: 0,
           startY: 0,
           endX: 100,
@@ -680,7 +680,7 @@ describe('KritzelLine', () => {
       });
 
       it('should return true when start arrow is enabled', () => {
-        const lineWithArrow = KritzelLine.create(mockCore, {
+        const lineWithArrow = UpdrawLine.create(mockCore, {
           startX: 0,
           startY: 0,
           endX: 100,
@@ -694,7 +694,7 @@ describe('KritzelLine', () => {
       });
 
       it('should return false when start arrow is disabled', () => {
-        const lineWithArrow = KritzelLine.create(mockCore, {
+        const lineWithArrow = UpdrawLine.create(mockCore, {
           startX: 0,
           startY: 0,
           endX: 100,
@@ -714,7 +714,7 @@ describe('KritzelLine', () => {
       });
 
       it('should return true when end arrow is enabled', () => {
-        const lineWithArrow = KritzelLine.create(mockCore, {
+        const lineWithArrow = UpdrawLine.create(mockCore, {
           startX: 0,
           startY: 0,
           endX: 100,
@@ -737,7 +737,7 @@ describe('KritzelLine', () => {
 
   describe('edge cases', () => {
     it('should handle zero-length line', () => {
-      const zeroLine = KritzelLine.create(mockCore, {
+      const zeroLine = UpdrawLine.create(mockCore, {
         startX: 50,
         startY: 50,
         endX: 50,
@@ -750,7 +750,7 @@ describe('KritzelLine', () => {
     });
 
     it('should handle negative coordinates', () => {
-      const negativeLine = KritzelLine.create(mockCore, {
+      const negativeLine = UpdrawLine.create(mockCore, {
         startX: -100,
         startY: -100,
         endX: 100,
@@ -764,7 +764,7 @@ describe('KritzelLine', () => {
     });
 
     it('should handle very large coordinates', () => {
-      const largeLine = KritzelLine.create(mockCore, {
+      const largeLine = UpdrawLine.create(mockCore, {
         startX: 0,
         startY: 0,
         endX: 10000,
@@ -779,7 +779,7 @@ describe('KritzelLine', () => {
     });
 
     it('should handle fractional coordinates', () => {
-      const fractionalLine = KritzelLine.create(mockCore, {
+      const fractionalLine = UpdrawLine.create(mockCore, {
         startX: 0.5,
         startY: 0.5,
         endX: 100.5,
@@ -809,7 +809,7 @@ describe('KritzelLine', () => {
 
     it('should reset caches to null after deserialize', () => {
       const serialized = line.serialize();
-      const revived = KritzelLine.create(mockCore).deserialize<KritzelLine>(serialized);
+      const revived = UpdrawLine.create(mockCore).deserialize<UpdrawLine>(serialized);
       const revivedPrivate = revived as unknown as {
         _adjustedPoints: number[][] | null;
         _clipInfo: { start?: { x: number; y: number; t?: number }; end?: { x: number; y: number; t?: number } } | null;

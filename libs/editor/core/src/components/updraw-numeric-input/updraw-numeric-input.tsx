@@ -1,11 +1,11 @@
 import { Component, Host, h, Prop, Event, EventEmitter, State, Watch } from '@stencil/core';
 
 @Component({
-  tag: 'kritzel-numeric-input',
-  styleUrl: 'kritzel-numeric-input.css',
+  tag: 'updraw-numeric-input',
+  styleUrl: 'updraw-numeric-input.css',
   shadow: true,
 })
-export class KritzelNumericInput {
+export class UpdrawNumericInput {
   /** Current numeric value (undefined when cleared) */
   @Prop({ mutable: true }) value?: number;
 

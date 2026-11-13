@@ -1,4 +1,4 @@
-# kritzel-share-dialog
+# updraw-share-dialog
 
 
 
@@ -9,7 +9,7 @@
 
 Share dialog component for managing workspace link sharing.
 This is a presentational component that emits events for all actions.
-The parent component (kritzel-editor) handles the business logic.
+The parent component (updraw-editor) handles the business logic.
 
 ## Properties
 
@@ -55,22 +55,22 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [kritzel-editor](../kritzel-editor)
+ - [updraw-editor](../updraw-editor)
 
 ### Depends on
 
-- [kritzel-dialog](../kritzel-dialog)
-- [kritzel-slide-toggle](../kritzel-slide-toggle)
-- kritzel-icon
+- [updraw-dialog](../updraw-dialog)
+- [updraw-slide-toggle](../updraw-slide-toggle)
+- updraw-icon
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-share-dialog --> kritzel-dialog
-  kritzel-share-dialog --> kritzel-slide-toggle
-  kritzel-share-dialog --> kritzel-icon
-  kritzel-editor --> kritzel-share-dialog
-  style kritzel-share-dialog fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-share-dialog --> updraw-dialog
+  updraw-share-dialog --> updraw-slide-toggle
+  updraw-share-dialog --> updraw-icon
+  updraw-editor --> updraw-share-dialog
+  style updraw-share-dialog fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

@@ -1,10 +1,10 @@
 import { useRef } from "react";
 import {
-  KritzelEditor,
+  UpdrawEditor,
   lightTheme,
-  HTMLKritzelEditorElement,
-  type KritzelTheme,
-} from "@kritzel/react-editor";
+  HTMLUpdrawEditorElement,
+  type UpdrawTheme,
+} from "@updraw/react-editor";
 import { seedEditor } from "../../shared/demo-shared";
 
 const brandPurple = "#7c3aed";
@@ -13,7 +13,7 @@ const brandPurpleActive = "#5b21b6";
 const brandPurpleLight = "rgba(124, 58, 237, 0.1)";
 const brandPurpleMedium = "rgba(124, 58, 237, 0.2)";
 
-const brandedPurpleFlatTheme: KritzelTheme = {
+const brandedPurpleFlatTheme: UpdrawTheme = {
   ...lightTheme,
   name: "branded-purple-flat",
   global: {
@@ -259,7 +259,7 @@ const brandedPurpleFlatTheme: KritzelTheme = {
 const themes = [brandedPurpleFlatTheme];
 
 export function ThemingCustomPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
 
   return (
     <div
@@ -269,7 +269,7 @@ export function ThemingCustomPage() {
         background: "linear-gradient(180deg, #fbf8ff 0%, #f3ebff 100%)",
       }}
     >
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="theming-custom"
         theme="branded-purple-flat"

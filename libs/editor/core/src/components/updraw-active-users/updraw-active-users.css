@@ -13,9 +13,9 @@
   transition: margin-left 200ms ease;
 }
 
-.avatar-wrapper kritzel-avatar {
+.avatar-wrapper updraw-avatar {
   border-radius: 50%;
-  box-shadow: 0 0 0 2px var(--kritzel-active-users-avatar-border-color, #ffffff);
+  box-shadow: 0 0 0 2px var(--updraw-active-users-avatar-border-color, #ffffff);
 }
 
 .avatars:hover .avatar-wrapper {
@@ -29,9 +29,9 @@
   transform: translateX(-50%);
   margin-top: 12px;
   padding: 4px 8px;
-  background-color: var(--kritzel-active-users-tooltip-background, #333333);
-  color: var(--kritzel-active-users-tooltip-color, #ffffff);
-  font-family: var(--kritzel-active-users-font-family, var(--kritzel-global-font-family, sans-serif));
+  background-color: var(--updraw-active-users-tooltip-background, #333333);
+  color: var(--updraw-active-users-tooltip-color, #ffffff);
+  font-family: var(--updraw-active-users-font-family, var(--updraw-global-font-family, sans-serif));
   font-size: 12px;
   font-weight: 500;
   border-radius: 4px;
@@ -50,10 +50,10 @@
 .overflow-count {
   position: relative;
   margin-left: 8px;
-  font-family: var(--kritzel-active-users-font-family, var(--kritzel-global-font-family, sans-serif));
-  font-size: var(--kritzel-active-users-overflow-font-size, 14px);
+  font-family: var(--updraw-active-users-font-family, var(--updraw-global-font-family, sans-serif));
+  font-size: var(--updraw-active-users-overflow-font-size, 14px);
   font-weight: 500;
-  color: var(--kritzel-active-users-overflow-color, #666666);
+  color: var(--updraw-active-users-overflow-color, #666666);
   white-space: nowrap;
   cursor: default;
 }
@@ -75,9 +75,9 @@
   width: 40%;
   height: 40%;
   border-radius: 50%;
-  background-color: var(--kritzel-active-users-agent-badge-background, var(--agent-color, #6b7280));
-  color: var(--kritzel-active-users-agent-badge-color, #ffffff);
-  box-shadow: 0 0 0 2px var(--kritzel-active-users-avatar-border-color, #ffffff);
+  background-color: var(--updraw-active-users-agent-badge-background, var(--agent-color, #6b7280));
+  color: var(--updraw-active-users-agent-badge-color, #ffffff);
+  box-shadow: 0 0 0 2px var(--updraw-active-users-avatar-border-color, #ffffff);
   pointer-events: none;
 }
 
@@ -89,9 +89,9 @@
 .avatar-wrapper.is-busy::after {
   content: '';
   position: absolute;
-  inset: calc(-1 * var(--kritzel-active-users-agent-ring-width, 2px) - 2px);
+  inset: calc(-1 * var(--updraw-active-users-agent-ring-width, 2px) - 2px);
   border-radius: 50%;
-  border: var(--kritzel-active-users-agent-ring-width, 2px) solid var(--agent-color, #6b7280);
+  border: var(--updraw-active-users-agent-ring-width, 2px) solid var(--agent-color, #6b7280);
   pointer-events: none;
   animation: agent-ring-pulse 1.4s ease-in-out infinite;
 }

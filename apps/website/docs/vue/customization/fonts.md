@@ -1,8 +1,8 @@
 ---
 sidebar_label: Fonts
 displayed_sidebar: tutorialSidebar
-title: "Custom Fonts Concept | Kritzel for Vue"
-description: "Understand the core concept of Custom Fonts in Kritzel."
+title: "Custom Fonts Concept | Updraw for Vue"
+description: "Understand the core concept of Custom Fonts in Updraw."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,11 +11,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel comes with a dedicated system for managing custom fonts, allowing you to integrate web fonts in text-based canvas objects or in the editor's UI.
+Updraw comes with a dedicated system for managing custom fonts, allowing you to integrate web fonts in text-based canvas objects or in the editor's UI.
 
 ## Registering Custom Fonts
 
-Register fonts declaratively through the `customFonts` prop on `<KritzelEditor>` or programmatically using `registerFonts()`. Registered fonts immediately become available to the text tool and can be applied to the editor's UI.
+Register fonts declaratively through the `customFonts` prop on `<UpdrawEditor>` or programmatically using `registerFonts()`. Registered fonts immediately become available to the text tool and can be applied to the editor's UI.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"

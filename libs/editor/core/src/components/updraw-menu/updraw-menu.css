@@ -2,23 +2,23 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  font-family: var(--kritzel-menu-font-family, var(--kritzel-global-font-family, sans-serif));
-  background-color: var(--kritzel-menu-background-color, #ffffff);
-  width: var(--kritzel-menu-width, 200px);
-  padding: var(--kritzel-menu-padding, 8px);
-  border-radius: var(--kritzel-menu-border-radius, 12px);
-  box-shadow: var(--kritzel-menu-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
-  border: var(--kritzel-menu-border, 1px solid #ebebeb);
+  font-family: var(--updraw-menu-font-family, var(--updraw-global-font-family, sans-serif));
+  background-color: var(--updraw-menu-background-color, #ffffff);
+  width: var(--updraw-menu-width, 200px);
+  padding: var(--updraw-menu-padding, 8px);
+  border-radius: var(--updraw-menu-border-radius, 12px);
+  box-shadow: var(--updraw-menu-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  border: var(--updraw-menu-border, 1px solid #ebebeb);
   z-index: 2;
-  gap: var(--kritzel-menu-gap, 4px);
+  gap: var(--updraw-menu-gap, 4px);
   overflow-y: auto;
-  scrollbar-color: var(--kritzel-global-scrollbar-thumb-color, #ebebeb) transparent;
+  scrollbar-color: var(--updraw-global-scrollbar-thumb-color, #ebebeb) transparent;
   scrollbar-width: thin;
-  max-height: var(--kritzel-portal-max-height, 300px);
+  max-height: var(--updraw-portal-max-height, 300px);
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
   outline: none;
-  clip-path: inset(0 round var(--kritzel-menu-border-radius, 12px));
+  clip-path: inset(0 round var(--updraw-menu-border-radius, 12px));
 }
 
 :host:focus-visible {

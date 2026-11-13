@@ -5,7 +5,7 @@ import { test, expect } from '../fixtures/editor.fixture';
  * the component's async item-processing to finish, then let the browser paint.
  */
 async function waitForContextMenu(page: import('@playwright/test').Page, timeout = 4_000) {
-  const menuContainer = page.locator('kritzel-editor kritzel-context-menu >>> .menu-container').first();
+  const menuContainer = page.locator('updraw-editor updraw-context-menu >>> .menu-container').first();
   await menuContainer.waitFor({ state: 'visible', timeout });
   // Allow the component's processItems (async) + adjustPositionToViewport to run
   await page.evaluate(
@@ -21,7 +21,7 @@ async function waitForContextMenu(page: import('@playwright/test').Page, timeout
  * element-targeted click on the engine to reduce coordinate drift in CI.
  */
 async function rightClickAt(page: import('@playwright/test').Page, x: number, y: number) {
-  const engine = page.locator('kritzel-engine').first();
+  const engine = page.locator('updraw-engine').first();
   const box = await engine.boundingBox();
 
   if (box && box.width > 2 && box.height > 2) {
@@ -68,7 +68,7 @@ async function openContextMenuAt(page: import('@playwright/test').Page, x: numbe
 async function getContextMenuRect(
   page: import('@playwright/test').Page,
 ): Promise<{ x: number; y: number; width: number; height: number } | null> {
-  const menuContainer = page.locator('kritzel-editor kritzel-context-menu >>> .menu-container').first();
+  const menuContainer = page.locator('updraw-editor updraw-context-menu >>> .menu-container').first();
   const box = await menuContainer.boundingBox();
   if (!box) {
     return null;
@@ -79,14 +79,14 @@ async function getContextMenuRect(
 
 async function clickFirstEnabledContextMenuItem(page: import('@playwright/test').Page): Promise<void> {
   const enabledItem = page
-    .locator('kritzel-editor kritzel-context-menu')
+    .locator('updraw-editor updraw-context-menu')
     .getByRole('button')
     .first();
   await enabledItem.click();
 }
 
 async function waitForContextMenuToClose(page: import('@playwright/test').Page, timeout = 4_000): Promise<void> {
-  const menuHost = page.locator('kritzel-editor kritzel-context-menu');
+  const menuHost = page.locator('updraw-editor updraw-context-menu');
   await expect(menuHost).toHaveCount(0, { timeout });
 }
 
@@ -99,9 +99,9 @@ async function waitForTextObjectLayoutToStabilize(
       await document.fonts.ready;
     }
 
-    const editor = document.querySelector('kritzel-editor') as any;
+    const editor = document.querySelector('updraw-editor') as any;
     if (!editor) {
-      throw new Error('kritzel-editor not found');
+      throw new Error('updraw-editor not found');
     }
 
     const readDimensions = async () => {
@@ -167,7 +167,7 @@ test.describe('Context Menu', () => {
       expect(rect!.width).toBeGreaterThan(0);
       expect(rect!.height).toBeGreaterThan(0);
 
-      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
+      await expect(editorPage.page.locator('updraw-editor')).toHaveScreenshot();
     });
 
     test('global context menu at center should be positioned near the click point', async ({
@@ -203,7 +203,7 @@ test.describe('Context Menu', () => {
       // The menu must not overflow the bottom of the viewport
       expect(rect!.y + rect!.height).toBeLessThanOrEqual(editorPage.page.viewportSize()!.height + 1);
 
-      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
+      await expect(editorPage.page.locator('updraw-editor')).toHaveScreenshot();
     });
 
     test('global context menu should stay within viewport when opened near the right edge', async ({
@@ -221,7 +221,7 @@ test.describe('Context Menu', () => {
       const viewportWidth = editorPage.page.viewportSize()!.width;
       expect(rect!.x + rect!.width).toBeLessThanOrEqual(viewportWidth + 1);
 
-      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
+      await expect(editorPage.page.locator('updraw-editor')).toHaveScreenshot();
     });
 
     test('global context menu should stay within viewport when opened at the bottom-right corner', async ({
@@ -240,7 +240,7 @@ test.describe('Context Menu', () => {
       expect(rect!.x + rect!.width).toBeLessThanOrEqual(vpWidth + 1);
       expect(rect!.y + rect!.height).toBeLessThanOrEqual(vpHeight + 1);
 
-      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
+      await expect(editorPage.page.locator('updraw-editor')).toHaveScreenshot();
     });
 
     test('global context menu should stay within viewport when opened near the top-left corner', async ({
@@ -258,7 +258,7 @@ test.describe('Context Menu', () => {
       expect(rect!.x).toBeGreaterThanOrEqual(0);
       expect(rect!.y).toBeGreaterThanOrEqual(0);
 
-      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
+      await expect(editorPage.page.locator('updraw-editor')).toHaveScreenshot();
     });
   });
 
@@ -289,7 +289,7 @@ test.describe('Context Menu', () => {
       expect(rect!.width).toBeGreaterThan(0);
       expect(rect!.height).toBeGreaterThan(0);
 
-      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
+      await expect(editorPage.page.locator('updraw-editor')).toHaveScreenshot();
     });
 
     test('object context menu should stay within viewport when object is near the right edge', async ({
@@ -320,7 +320,7 @@ test.describe('Context Menu', () => {
       const { width: vpWidth } = editorPage.page.viewportSize()!;
       expect(rect!.x + rect!.width).toBeLessThanOrEqual(vpWidth + 1);
 
-      await expect(editorPage.page.locator('kritzel-engine')).toHaveScreenshot();
+      await expect(editorPage.page.locator('updraw-engine')).toHaveScreenshot();
     });
 
     test('object context menu should stay within viewport when object is near the bottom-right corner', async ({
@@ -352,7 +352,7 @@ test.describe('Context Menu', () => {
       expect(rect!.x + rect!.width).toBeLessThanOrEqual(vpWidth + 1);
       expect(rect!.y + rect!.height).toBeLessThanOrEqual(vpHeight + 1);
 
-      await expect(editorPage.page.locator('kritzel-engine')).toHaveScreenshot();
+      await expect(editorPage.page.locator('updraw-engine')).toHaveScreenshot();
     });
 
     test('does not show export actions in object context menu', async ({ editorPage }) => {
@@ -370,7 +370,7 @@ test.describe('Context Menu', () => {
       const { pageX, pageY } = await editorPage.worldToPage(-80, -60);
       await openContextMenuAt(editorPage.page, pageX, pageY);
 
-      const menuHost = editorPage.page.locator('kritzel-editor kritzel-context-menu');
+      const menuHost = editorPage.page.locator('updraw-editor updraw-context-menu');
       await expect(menuHost.getByRole('button', { name: /^Export$/i })).toHaveCount(0);
       await expect(menuHost.getByRole('button', { name: /^Export as PNG$/i })).toHaveCount(0);
       await expect(menuHost.getByRole('button', { name: /^Export as SVG$/i })).toHaveCount(0);
@@ -460,7 +460,7 @@ test.describe('Context Menu', () => {
       expect(rect!.x + rect!.width).toBeLessThanOrEqual(vpWidth + 1);
       expect(rect!.y + rect!.height).toBeLessThanOrEqual(vpHeight + 1);
 
-      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
+      await expect(editorPage.page.locator('updraw-editor')).toHaveScreenshot();
     });
 
     test('object context menu near bottom edge at 25% zoom should appear near the cursor', async ({
@@ -495,7 +495,7 @@ test.describe('Context Menu', () => {
       expect(rect!.x + rect!.width).toBeLessThanOrEqual(vpWidth + 1);
       expect(rect!.y + rect!.height).toBeLessThanOrEqual(vpHeight + 1);
 
-      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
+      await expect(editorPage.page.locator('updraw-editor')).toHaveScreenshot();
     });
   });
 });

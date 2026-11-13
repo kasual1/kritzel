@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 import {
-  KRITZEL_DEFAULT_OBJECT_TITLEBAR,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelObjectConfig,
-} from "@kritzel/react-editor";
+  UPDRAW_DEFAULT_OBJECT_TITLEBAR,
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawObjectConfig,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -18,15 +18,15 @@ export function ObjectsConfigurationPage() {
   const [areShapesRotatable, setAreShapesRotatable] = useState(false);
   const [areShapesResizable, setAreShapesResizable] = useState(false);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ objects: createSeedObjects() }),
+    new UpdrawWorkspace({ objects: createSeedObjects() }),
   ]);
 
   // A new object on every change, so that the editor rerenders with the new rules.
-  const objectConfig = useMemo<KritzelObjectConfig>(
+  const objectConfig = useMemo<UpdrawObjectConfig>(
     () => ({
-      hasTitlebar: (object) => object.__class__ === "KritzelShape",
-      isRotatable: (object) => areShapesRotatable || object.__class__ !== "KritzelShape",
-      isResizable: (object) => areShapesResizable || object.__class__ !== "KritzelShape",
+      hasTitlebar: (object) => object.__class__ === "UpdrawShape",
+      isRotatable: (object) => areShapesRotatable || object.__class__ !== "UpdrawShape",
+      isResizable: (object) => areShapesResizable || object.__class__ !== "UpdrawShape",
     }),
     [areShapesRotatable, areShapesResizable],
   );
@@ -51,7 +51,7 @@ export function ObjectsConfigurationPage() {
           <span>Resize shapes</span>
         </label>
       </div>
-      <KritzelEditor
+      <UpdrawEditor
         editorId="objects-configuration"
         theme="light"
         themes={themes}
@@ -62,7 +62,7 @@ export function ObjectsConfigurationPage() {
         isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
-        objectTitlebar={KRITZEL_DEFAULT_OBJECT_TITLEBAR}
+        objectTitlebar={UPDRAW_DEFAULT_OBJECT_TITLEBAR}
         objectConfig={objectConfig}
         style={editorStyle}
       />

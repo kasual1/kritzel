@@ -1,7 +1,7 @@
 ---
 sidebar_label: Agents
 displayed_sidebar: tutorialSidebar
-title: "Agents | Kritzel for Angular"
+title: "Agents | Updraw for Angular"
 description: "Connect the chat box to an LLM and let it work on the canvas, as the user or as an agent with its own cursor, selection, and undo history. Agents can also be driven from code."
 ---
 
@@ -11,10 +11,10 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel lets an LLM work on the canvas next to people. Two classes make this work:
+Updraw lets an LLM work on the canvas next to people. Two classes make this work:
 
-- **`KritzelChatSession`** connects the chat box of the editor to a model. It runs the tool loop in the browser, where the canvas tools act, and sends each step to your server, which holds the API key.
-- **`KritzelAgent`** gives the work a cursor of its own, with a name, a status, its own selection, and its own undo history. You can also drive an agent from code, without a model.
+- **`UpdrawChatSession`** connects the chat box of the editor to a model. It runs the tool loop in the browser, where the canvas tools act, and sends each step to your server, which holds the API key.
+- **`UpdrawAgent`** gives the work a cursor of its own, with a name, a status, its own selection, and its own undo history. You can also drive an agent from code, without a model.
 
 The model works either **as the user**, with instant changes that the user can undo, or **as an agent**, whose cursor the user watches while it works.
 
@@ -28,19 +28,19 @@ The demo answers from a script instead of a model, so it works without a server.
 
 ## Connecting the Chat Box
 
-Create a `KritzelChatSession` once, as a field of your component, and pass it to the editor with the `chatSession` input. `createHttpTransport()` posts each step of the conversation to an endpoint of [your server](#your-server):
+Create an `UpdrawChatSession` once, as a field of your component, and pass it to the editor with the `chatSession` input. `createHttpTransport()` posts each step of the conversation to an endpoint of [your server](#your-server):
 
 ```ts
 import { Component } from '@angular/core';
-import { createHttpTransport, KritzelChatSession, KritzelEditor } from '@kritzel/angular-editor';
+import { createHttpTransport, UpdrawChatSession, UpdrawEditor } from '@updraw/angular-editor';
 
 @Component({
   selector: 'app-chat-board',
-  imports: [KritzelEditor],
-  template: `<kritzel-editor [chatSession]="session" [isChatBoxVisible]="true"></kritzel-editor>`,
+  imports: [UpdrawEditor],
+  template: `<updraw-editor [chatSession]="session" [isChatBoxVisible]="true"></updraw-editor>`,
 })
 export class ChatBoardComponent {
-  session = new KritzelChatSession({
+  session = new UpdrawChatSession({
     transport: createHttpTransport('/api/chat'),
     system: 'You help the user with their whiteboard. Keep answers short.',
   });
@@ -62,15 +62,15 @@ The chat box now sends its prompts to the session, shows its progress, and stops
 
 ## Your Server
 
-Your server holds the API key and translates between Kritzel's chat protocol and your model provider. For each step, it receives a [`KritzelChatRequest`](../api-reference/chat-session.md#kritzelchatrequest) with the conversation and the tools, calls the model, and answers with its next message. With Claude and the Anthropic TypeScript SDK:
+Your server holds the API key and translates between Updraw's chat protocol and your model provider. For each step, it receives a [`UpdrawChatRequest`](../api-reference/chat-session.md#updrawchatrequest) with the conversation and the tools, calls the model, and answers with its next message. With Claude and the Anthropic TypeScript SDK:
 
 ```ts
 import Anthropic from '@anthropic-ai/sdk';
-import type { KritzelChatMessage, KritzelChatPart, KritzelChatRequest, KritzelChatResponse } from '@kritzel/angular-editor';
+import type { UpdrawChatMessage, UpdrawChatPart, UpdrawChatRequest, UpdrawChatResponse } from '@updraw/angular-editor';
 
 const client = new Anthropic(); // Reads ANTHROPIC_API_KEY on the server.
 
-export async function handleChat(request: KritzelChatRequest, signal?: AbortSignal): Promise<KritzelChatResponse> {
+export async function handleChat(request: UpdrawChatRequest, signal?: AbortSignal): Promise<UpdrawChatResponse> {
   const response = await client.messages.create(
     {
       model: 'claude-opus-5-5',
@@ -85,7 +85,7 @@ export async function handleChat(request: KritzelChatRequest, signal?: AbortSign
     },
     { signal },
   );
-  const parts = response.content.flatMap((block): KritzelChatPart[] => {
+  const parts = response.content.flatMap((block): UpdrawChatPart[] => {
     if (block.type === 'text') return [{ type: 'text', text: block.text }];
     if (block.type === 'tool_use') return [{ type: 'tool-call', id: block.id, name: block.name, input: block.input }];
     return [];
@@ -98,7 +98,7 @@ export async function handleChat(request: KritzelChatRequest, signal?: AbortSign
 }
 
 /** Anthropic has no tool role: tool results are sent as user content. */
-function toAnthropic(message: KritzelChatMessage): Anthropic.MessageParam {
+function toAnthropic(message: UpdrawChatMessage): Anthropic.MessageParam {
   const original = message.providerData?.content as Anthropic.ContentBlockParam[] | undefined;
   if (message.role === 'assistant' && original) return { role: 'assistant', content: original };
 
@@ -128,16 +128,16 @@ Your server is an open door to your model account. Authenticate and rate-limit u
 
 ### Streaming
 
-Instead of one JSON answer, your server can stream [`KritzelChatStreamEvent`](../api-reference/chat-session.md#kritzelchatstreamevent)s as `application/x-ndjson` or `text/event-stream`. The session then runs each tool call as soon as the model has written it, and shows widgets and images as placeholders while the model still writes them. With Claude, set `eager_input_streaming: true` on the tools, send a `tool-call-start` for each `tool_use` block, each `input_json_delta` as a `tool-call-delta`, and the complete call as a `part`.
+Instead of one JSON answer, your server can stream [`UpdrawChatStreamEvent`](../api-reference/chat-session.md#updrawchatstreamevent)s as `application/x-ndjson` or `text/event-stream`. The session then runs each tool call as soon as the model has written it, and shows widgets and images as placeholders while the model still writes them. With Claude, set `eager_input_streaming: true` on the tools, send a `tool-call-start` for each `tool_use` block, each `input_json_delta` as a `tool-call-delta`, and the complete call as a `part`.
 
 ## Working as an Agent
 
 Pass an `agent`, and the model works through its cursor. The editor adds the agent when the session is bound:
 
 ```ts
-const session = new KritzelChatSession({
+const session = new UpdrawChatSession({
   transport: createHttpTransport('/api/chat'),
-  agent: new KritzelAgent({ name: 'Assistant', color: '#7C3AED' }),
+  agent: new UpdrawAgent({ name: 'Assistant', color: '#7C3AED' }),
 });
 ```
 
@@ -156,16 +156,16 @@ An agent doesn't need a model. Add it to the editor once the editor is ready, an
 
 ```ts
 import { Component, viewChild } from '@angular/core';
-import { KritzelAgent, KritzelEditor } from '@kritzel/angular-editor';
+import { UpdrawAgent, UpdrawEditor } from '@updraw/angular-editor';
 
 @Component({
   selector: 'app-guided-board',
-  imports: [KritzelEditor],
-  template: `<kritzel-editor (isReady)="onReady()"></kritzel-editor>`,
+  imports: [UpdrawEditor],
+  template: `<updraw-editor (isReady)="onReady()"></updraw-editor>`,
 })
 export class GuidedBoardComponent {
-  editor = viewChild(KritzelEditor);
-  guide = new KritzelAgent({ name: 'Guide', color: '#0EA5E9' });
+  editor = viewChild(UpdrawEditor);
+  guide = new UpdrawAgent({ name: 'Guide', color: '#0EA5E9' });
 
   async onReady() {
     const guide = this.guide;
@@ -196,7 +196,7 @@ export class GuidedBoardComponent {
 
 ## Conflicts
 
-Agents never take an object away from a person. Every action resolves with `{ completed, reason?, objectIds? }`. An action on an object that the user or a collaborator is working on, or that another agent has claimed, is refused or stops, with a `reason` such as `'user-selected'`. The canvas tools give the model the same reason, with a hint to leave the object alone. See [KritzelAgenticActionFailureReason](../api-reference/agent.md#kritzelagenticactionfailurereason) for all reasons.
+Agents never take an object away from a person. Every action resolves with `{ completed, reason?, objectIds? }`. An action on an object that the user or a collaborator is working on, or that another agent has claimed, is refused or stops, with a `reason` such as `'user-selected'`. The canvas tools give the model the same reason, with a hint to leave the object alone. See [UpdrawAgenticActionFailureReason](../api-reference/agent.md#updrawagenticactionfailurereason) for all reasons.
 
 Objects that an agent creates get its `id` as their `userId`, and `objectsAdded`, `objectsUpdated`, and `objectsRemoved` carry a `source` that names the agent.
 
@@ -211,9 +211,9 @@ Create an agent with `broadcast: false` to keep it to your editor. `getRemoteAge
 Pass your own tools in `tools`. Each has a `name`, a `description`, an `inputSchema` (a JSON Schema), and `run()`, which resolves with a string for the model. Its `actor` acts on the canvas as the session, so the changes undo and stop like those of the canvas tools:
 
 ```ts
-import { formatAgentToolResult, KritzelIframeObject, type KritzelChatTool } from '@kritzel/angular-editor';
+import { formatAgentToolResult, UpdrawIframeObject, type UpdrawChatTool } from '@updraw/angular-editor';
 
-export const addReportTool: KritzelChatTool = {
+export const addReportTool: UpdrawChatTool = {
   name: 'add_sales_report',
   description: 'Adds the sales report of a quarter, for example "2026-Q3", with its top-left corner at (x, y).',
   inputSchema: {
@@ -224,7 +224,7 @@ export const addReportTool: KritzelChatTool = {
   run: async (input, { actor }) => {
     const { quarter, x, y } = input as { quarter: string; x: number; y: number }; // Check the input in your app.
     const html = await renderSalesReport(quarter);
-    const report = new KritzelIframeObject({ html, translateX: x, translateY: y, width: 480, height: 320 });
+    const report = new UpdrawIframeObject({ html, translateX: x, translateY: y, width: 480, height: 320 });
     return formatAgentToolResult(await actor.perform({ type: 'addObject', object: report }));
   },
 };
@@ -237,9 +237,9 @@ To run the canvas tools in a tool loop of your own instead of a session, `agent.
 `createScriptedTransport()` answers from a script instead of a model, for demos and tests:
 
 ```ts
-import { createScriptedTransport, KritzelChatSession } from '@kritzel/angular-editor';
+import { createScriptedTransport, UpdrawChatSession } from '@updraw/angular-editor';
 
-const session = new KritzelChatSession({
+const session = new UpdrawChatSession({
   transport: createScriptedTransport([
     { text: 'Adding a note.', toolCalls: [{ tool: 'create_shape', input: { x: 0, y: 0, width: 160, height: 80, text: 'Hello' } }] },
     'Done.',

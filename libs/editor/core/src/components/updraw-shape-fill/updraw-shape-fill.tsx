@@ -3,11 +3,11 @@ import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 export type ShapeFillType = 'transparent' | 'filled';
 
 @Component({
-  tag: 'kritzel-shape-fill',
-  styleUrl: 'kritzel-shape-fill.css',
+  tag: 'updraw-shape-fill',
+  styleUrl: 'updraw-shape-fill.css',
   shadow: true,
 })
-export class KritzelShapeFill {
+export class UpdrawShapeFill {
   /** Current fill type */
   @Prop({ mutable: true }) value: ShapeFillType = 'transparent';
 
@@ -19,7 +19,7 @@ export class KritzelShapeFill {
   }
 
   private renderFillIcon(type: ShapeFillType) {
-    const strokeColor = 'var(--kritzel-global-text-primary)';
+    const strokeColor = 'var(--updraw-global-text-primary)';
 
     if (type === 'transparent') {
       return (

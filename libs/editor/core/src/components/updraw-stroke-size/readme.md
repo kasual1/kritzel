@@ -1,4 +1,4 @@
-# kritzel-stroke-size
+# updraw-stroke-size
 
 
 
@@ -24,18 +24,18 @@
 
 ### Used by
 
- - [kritzel-tool-config](../kritzel-tool-config)
+ - [updraw-tool-config](../updraw-tool-config)
 
 ### Depends on
 
-- [kritzel-color](../kritzel-color)
+- [updraw-color](../updraw-color)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-stroke-size --> kritzel-color
-  kritzel-tool-config --> kritzel-stroke-size
-  style kritzel-stroke-size fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-stroke-size --> updraw-color
+  updraw-tool-config --> updraw-stroke-size
+  style updraw-stroke-size fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

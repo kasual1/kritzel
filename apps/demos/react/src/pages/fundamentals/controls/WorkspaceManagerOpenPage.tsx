@@ -1,24 +1,24 @@
 import { useRef, useState } from "react";
 import {
-  HTMLKritzelEditorElement,
+  HTMLUpdrawEditorElement,
   InMemorySyncProvider,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelSyncConfig,
-} from "@kritzel/react-editor";
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawSyncConfig,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 import { editorStyle, hostStyle, toolbarStyle } from "../../shared/demo-shared";
 
 const themes = [reactThemeLight, reactThemeDark];
-const syncConfig: KritzelSyncConfig = { providers: [InMemorySyncProvider] };
+const syncConfig: UpdrawSyncConfig = { providers: [InMemorySyncProvider] };
 
 export function WorkspaceManagerOpenPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [isWorkspaceManagerVisible, setIsWorkspaceManagerVisible] = useState(true);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ objects: createSeedObjects() }),
+    new UpdrawWorkspace({ objects: createSeedObjects() }),
   ]);
 
   async function onReady() {
@@ -37,7 +37,7 @@ export function WorkspaceManagerOpenPage() {
           <span>Workspace manager</span>
         </label>
       </div>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="workspace-manager-open"
         theme="light"

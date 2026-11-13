@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { KritzelEditor } from '@kritzel/vue-editor';
+import { UpdrawEditor } from '@updraw/vue-editor';
 
-const editorId = 'kritzel-canvas';
+const editorId = 'updraw-canvas';
 const isReady = ref(false);
 
 function onReady(): void {
@@ -12,12 +12,12 @@ function onReady(): void {
 
 <template>
   <section>
-    <KritzelEditor
+    <UpdrawEditor
       :editorId="editorId"
       @isReady="onReady"
       style="display: block; width: 100%; height: 480px"
-      aria-label="Kritzel canvas"
+      aria-label="Updraw canvas"
     />
-    <p role="status">{{ isReady ? 'Kritzel is ready.' : 'Loading Kritzel…' }}</p>
+    <p role="status">{{ isReady ? 'Updraw is ready.' : 'Loading Updraw…' }}</p>
   </section>
 </template>

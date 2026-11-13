@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { KritzelEditor, KritzelWorkspace, LocaleCode } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawWorkspace, LocaleCode } from '@updraw/angular-editor';
 import { createSeedObjects } from '../../../const/seed-objects';
 import {
   InfoPanelComponent,
@@ -11,7 +11,7 @@ import { angularThemeDark } from '../../../const/angular-theme-dark';
 
 @Component({
   selector: 'app-localization-listen',
-  imports: [KritzelEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
+  imports: [UpdrawEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -23,7 +23,7 @@ import { angularThemeDark } from '../../../const/angular-theme-dark';
 
     <div class="content">
       <div class="editor-wrap">
-        <kritzel-editor
+        <updraw-editor
           editorId="localization-listen"
           [locale]="activeLocale()"
           [workspaces]="workspaces()"
@@ -35,7 +35,7 @@ import { angularThemeDark } from '../../../const/angular-theme-dark';
           [isWorkspaceManagerVisible]="true"
           (isReady)="onReady()"
           (localeChange)="onLocaleChange($event)"
-        ></kritzel-editor>
+        ></updraw-editor>
       </div>
 
       <app-info-panel #infoPanel [hasToolbarToggle]="true">
@@ -81,7 +81,7 @@ import { angularThemeDark } from '../../../const/angular-theme-dark';
 export class LocalizationListenComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
   activeLocale = signal<LocaleCode>('en');
   localeHistory = signal<LocaleCode[]>([]);

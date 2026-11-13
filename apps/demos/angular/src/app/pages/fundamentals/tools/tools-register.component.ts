@@ -1,22 +1,22 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
-  KritzelBrushTool,
-  KritzelEditor,
-  KritzelSelectionTool,
-  KritzelTextTool,
-  KritzelToolbarItem,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawBrushTool,
+  UpdrawEditor,
+  UpdrawSelectionTool,
+  UpdrawTextTool,
+  UpdrawToolbarItem,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-tools-register',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="tools-register"
       [theme]="'light'"
       [themes]="themes"
@@ -26,7 +26,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [
     `
@@ -36,7 +36,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         height: 100%;
         font-family: Roboto, sans-serif;
       }
-      kritzel-editor {
+      updraw-editor {
         flex: 1;
       }
       .status-bar {
@@ -54,20 +54,20 @@ import { createSeedObjects } from '../../../const/seed-objects';
 export class ToolsRegisterComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
-  toolbarItems: KritzelToolbarItem[] = [
+  toolbarItems: UpdrawToolbarItem[] = [
     {
       name: 'select',
       type: 'tool',
-      tool: KritzelSelectionTool,
+      tool: UpdrawSelectionTool,
       icon: 'cursor',
       isDefault: true,
     },
     {
       name: 'brush',
       type: 'tool',
-      tool: KritzelBrushTool,
+      tool: UpdrawBrushTool,
       icon: 'pen',
       config: {
         color: { light: '#1f2937', dark: '#f3f4f6' },
@@ -81,7 +81,7 @@ export class ToolsRegisterComponent {
     {
       name: 'highlighter',
       type: 'tool',
-      tool: KritzelBrushTool,
+      tool: UpdrawBrushTool,
       icon: 'highlighter',
       config: {
         color: { light: '#ffeb3b', dark: '#fff176' },
@@ -96,7 +96,7 @@ export class ToolsRegisterComponent {
     {
       name: 'text',
       type: 'tool',
-      tool: KritzelTextTool,
+      tool: UpdrawTextTool,
       icon: 'type',
       config: {
         color: { light: '#1f2937', dark: '#f3f4f6' },

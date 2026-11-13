@@ -1,8 +1,8 @@
-import type { KritzelAgenticDrawPathAction } from '../../interfaces/agentic-action.interface';
-import type { KritzelPoint } from '../../interfaces/point.interface';
-import { KritzelPath } from '../objects/path.class';
+import type { UpdrawAgenticDrawPathAction } from '../../interfaces/agentic-action.interface';
+import type { UpdrawPoint } from '../../interfaces/point.interface';
+import { UpdrawPath } from '../objects/path.class';
 import { AGENTIC_ACTION_DRAW_SPEED } from '../../constants/agentic-action.constants';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
 import { resolveBrushStyle } from '../../helpers/agentic-style.helper';
 import { AGENTIC_STROKE_STYLE_KEYS, assertStyle } from '../../helpers/agentic-validation.helper';
 
@@ -10,7 +10,7 @@ import { AGENTIC_STROKE_STYLE_KEYS, assertStyle } from '../../helpers/agentic-va
 const MIN_POINT_DISTANCE_PX = 3;
 
 /** Cumulative arc lengths of a polyline. */
-export function cumulativeLengths(points: KritzelPoint[]): number[] {
+export function cumulativeLengths(points: UpdrawPoint[]): number[] {
   const lengths = [0];
   for (let i = 1; i < points.length; i++) {
     lengths.push(lengths[i - 1] + Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y));
@@ -22,11 +22,11 @@ export function cumulativeLengths(points: KritzelPoint[]): number[] {
  * The part of a polyline up to arc length `distance`, ending in an interpolated tip.
  * Points closer than `minDistance` to the previously kept point are dropped (the tip is always kept).
  */
-export function polylinePrefix(points: KritzelPoint[], lengths: number[], distance: number, minDistance: number): KritzelPoint[] {
+export function polylinePrefix(points: UpdrawPoint[], lengths: number[], distance: number, minDistance: number): UpdrawPoint[] {
   const total = lengths[lengths.length - 1];
   const target = Math.max(0, Math.min(distance, total));
-  const result: KritzelPoint[] = [points[0]];
-  let tip: KritzelPoint = points[0];
+  const result: UpdrawPoint[] = [points[0]];
+  let tip: UpdrawPoint = points[0];
 
   for (let i = 1; i < points.length; i++) {
     if (lengths[i] <= target) {
@@ -51,7 +51,7 @@ export function polylinePrefix(points: KritzelPoint[], lengths: number[], distan
 }
 
 /** `drawPath`: presses at the first point and draws through the points like the brush. */
-export const drawPathExecutor: KritzelAgenticActionExecutor<KritzelAgenticDrawPathAction> = {
+export const drawPathExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticDrawPathAction> = {
   mutates: true,
 
   validate(action) {
@@ -82,8 +82,8 @@ export const drawPathExecutor: KritzelAgenticActionExecutor<KritzelAgenticDrawPa
     const total = lengths[lengths.length - 1];
     const minDistance = MIN_POINT_DISTANCE_PX / (state.scale || 1);
 
-    const build = (worldPoints: KritzelPoint[]) => {
-      const path = KritzelPath.create(core, {
+    const build = (worldPoints: UpdrawPoint[]) => {
+      const path = UpdrawPath.create(core, {
         points: worldPoints.map(point => [point.x * scale, point.y * scale]),
         translateX: 0,
         translateY: 0,

@@ -1,6 +1,6 @@
-import type { KritzelAgenticEditLineAction } from '../../interfaces/agentic-action.interface';
-import { KritzelLine } from '../objects/line.class';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpdrawAgenticEditLineAction } from '../../interfaces/agentic-action.interface';
+import { UpdrawLine } from '../objects/line.class';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
 import { assertObjectId } from '../../helpers/agentic-validation.helper';
 import { prepareTopLevelTargets } from './select.executor';
 import { assertLineEnd, assertOptionalPoint, bendLine, dragLineEnd, isObjectEnd, LINE_GEOMETRY_PROPERTIES, refuseUnanchorable } from './line-handles';
@@ -9,7 +9,7 @@ import { assertLineEnd, assertOptionalPoint, bendLine, dragLineEnd, isObjectEnd,
  * `editLine`: changes a line with its handles, like the user does: drags the start, then the end (detaching an
  * end on the way and attaching it to an object on release), then the middle handle to bend or straighten it.
  */
-export const editLineExecutor: KritzelAgenticActionExecutor<KritzelAgenticEditLineAction> = {
+export const editLineExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticEditLineAction> = {
   mutates: true,
 
   validate(action) {
@@ -34,7 +34,7 @@ export const editLineExecutor: KritzelAgenticActionExecutor<KritzelAgenticEditLi
       return preparation;
     }
     const line = run.map!.findById(action.lineId);
-    if (!(line instanceof KritzelLine)) {
+    if (!(line instanceof UpdrawLine)) {
       return { reason: 'invalid-target', objectIds: [action.lineId] };
     }
     const objectIds = [action.from, action.to].filter(end => end !== undefined && isObjectEnd(end)).map(end => (end as { objectId: string }).objectId);

@@ -1,16 +1,16 @@
-# kritzel-input
+# updraw-input
 
 A text input component with optional label and suffix support.
 
 ## Usage
 
 ```html
-<kritzel-input
+<updraw-input
   label="Filename"
   value="my-file"
   placeholder="Enter filename"
   suffix=".json"
-></kritzel-input>
+></updraw-input>
 ```
 
 <!-- Auto Generated Below -->
@@ -39,13 +39,13 @@ A text input component with optional label and suffix support.
 
 ### Used by
 
- - [kritzel-export](../kritzel-export)
+ - [updraw-export](../updraw-export)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-export --> kritzel-input
-  style kritzel-input fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-export --> updraw-input
+  style updraw-input fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

@@ -1,14 +1,14 @@
-import { KritzelAnchorManager } from './anchor.manager';
-import { KritzelCore } from '../core/core.class';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelSelectionBox } from '../objects/selection-box.class';
-import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelPath } from '../objects/path.class';
-import { KritzelShape } from '../objects/shape.class';
+import { UpdrawAnchorManager } from './anchor.manager';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpdrawSelectionBox } from '../objects/selection-box.class';
+import { UpdrawGeometryHelper } from '../../helpers/geometry.helper';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawPath } from '../objects/path.class';
+import { UpdrawShape } from '../objects/shape.class';
 import { SnapCandidate, SnapPreviewCandidate } from '../../interfaces/anchor.interface';
-import { KritzelPolygon } from '../../interfaces/polygon.interface';
+import { UpdrawPolygon } from '../../interfaces/polygon.interface';
 
 jest.mock('../core/core.class');
 jest.mock('../objects/line.class');
@@ -19,16 +19,16 @@ jest.mock('../objects/shape.class');
 jest.mock('../objects/path.class');
 jest.mock('../../helpers/geometry.helper');
 
-describe('KritzelAnchorManager', () => {
-  let manager: KritzelAnchorManager;
+describe('UpdrawAnchorManager', () => {
+  let manager: UpdrawAnchorManager;
   let mockCore: any;
   let mockObjectsMap: any;
   let mockState: any;
 
-  const createMockLine = (overrides: Partial<KritzelLine> = {}): KritzelLine => {
-    const line = Object.create(KritzelLine.prototype) as KritzelLine;
+  const createMockLine = (overrides: Partial<UpdrawLine> = {}): UpdrawLine => {
+    const line = Object.create(UpdrawLine.prototype) as UpdrawLine;
     Object.assign(line, {
-      __class__: 'KritzelLine',
+      __class__: 'UpdrawLine',
       id: 'line-1',
       startX: 0,
       startY: 0,
@@ -71,7 +71,7 @@ describe('KritzelAnchorManager', () => {
       hasStartArrow: { get() { return this.arrows?.start?.enabled === true; } },
       hasEndArrow: { get() { return this.arrows?.end?.enabled === true; } },
       rotatedPolygon: {
-        get(): KritzelPolygon {
+        get(): UpdrawPolygon {
           return {
             topLeft: { x: this.translateX, y: this.translateY },
             topRight: { x: this.translateX + this.totalWidth / this.scale, y: this.translateY },
@@ -84,9 +84,9 @@ describe('KritzelAnchorManager', () => {
     return line;
   };
 
-  const createMockObject = (overrides: Partial<KritzelBaseObject<Element>> = {}, prototype: object = Object.prototype): KritzelBaseObject<Element> => {
+  const createMockObject = (overrides: Partial<UpdrawBaseObject<Element>> = {}, prototype: object = Object.prototype): UpdrawBaseObject<Element> => {
     const fields = {
-      __class__: 'KritzelBaseObject',
+      __class__: 'UpdrawBaseObject',
       id: 'obj-1',
       x: 0,
       y: 0,
@@ -103,7 +103,7 @@ describe('KritzelAnchorManager', () => {
       get totalHeight() { return this.height + this.padding * 2; },
       get centerX() { return this.translateX + this.totalWidth / 2 / this.scale; },
       get centerY() { return this.translateY + this.totalHeight / 2 / this.scale; },
-      get rotatedPolygon(): KritzelPolygon {
+      get rotatedPolygon(): UpdrawPolygon {
         return {
           topLeft: { x: this.translateX, y: this.translateY },
           topRight: { x: this.translateX + this.totalWidth / this.scale, y: this.translateY },
@@ -114,19 +114,19 @@ describe('KritzelAnchorManager', () => {
     };
     // Copy property descriptors so the getters stay live on objects with a class prototype
     const obj = Object.create(prototype, Object.getOwnPropertyDescriptors(fields));
-    return Object.assign(obj, overrides) as unknown as KritzelBaseObject<Element>;
+    return Object.assign(obj, overrides) as unknown as UpdrawBaseObject<Element>;
   };
 
   // Children of mock groups, resolvable through store.objects.findById.
-  const knownObjects = new Map<string, KritzelBaseObject<Element>>();
+  const knownObjects = new Map<string, UpdrawBaseObject<Element>>();
 
-  const createMockGroup = (id: string, zIndex: number, children: KritzelBaseObject<Element>[]): KritzelBaseObject<Element> => {
+  const createMockGroup = (id: string, zIndex: number, children: UpdrawBaseObject<Element>[]): UpdrawBaseObject<Element> => {
     children.forEach(child => knownObjects.set(child.id, child));
-    return createMockObject({ __class__: 'KritzelGroup', id, zIndex, childIds: children.map(child => child.id) } as Partial<KritzelBaseObject<Element>>, KritzelGroup.prototype);
+    return createMockObject({ __class__: 'UpdrawGroup', id, zIndex, childIds: children.map(child => child.id) } as Partial<UpdrawBaseObject<Element>>, UpdrawGroup.prototype);
   };
 
   // Resolves objects by id in the given order.
-  const inOrder = (objects: Record<string, KritzelBaseObject<Element>>, ids: string[]): KritzelBaseObject<Element>[] => {
+  const inOrder = (objects: Record<string, UpdrawBaseObject<Element>>, ids: string[]): UpdrawBaseObject<Element>[] => {
     return ids.map(id => objects[id]);
   };
 
@@ -158,9 +158,9 @@ describe('KritzelAnchorManager', () => {
         get currentZIndex() { return 1; },
       },
       rerender: jest.fn(),
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    manager = new KritzelAnchorManager(mockCore);
+    manager = new UpdrawAnchorManager(mockCore);
   });
 
   afterEach(() => {
@@ -591,7 +591,7 @@ describe('KritzelAnchorManager', () => {
       const obj = createMockObject({ id: 'obj-1', zIndex: 1 });
       mockCore.store.allNonSelectionObjects = [obj];
 
-      (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapTarget(125, 125, 'line-1');
 
@@ -607,7 +607,7 @@ describe('KritzelAnchorManager', () => {
       const obj = createMockObject({ id: 'obj-1', zIndex: 1 });
       mockCore.store.allNonSelectionObjects = [lineObj as any, obj];
 
-      (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapTarget(125, 125, 'line-1');
 
@@ -620,7 +620,7 @@ describe('KritzelAnchorManager', () => {
       const obj = createMockObject({ id: 'obj-1', zIndex: 1 });
       mockCore.store.allNonSelectionObjects = [obj];
 
-      (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapTarget(125, 125, 'line-1', 'obj-1');
 
@@ -628,7 +628,7 @@ describe('KritzelAnchorManager', () => {
     });
 
     it('should skip non-anchorable objects (lines, selection boxes)', () => {
-      const selectionBox = Object.create(KritzelSelectionBox.prototype);
+      const selectionBox = Object.create(UpdrawSelectionBox.prototype);
       selectionBox.id = 'sel-box-1';
       selectionBox.isVisible = true;
       selectionBox.zIndex = 1;
@@ -640,7 +640,7 @@ describe('KritzelAnchorManager', () => {
       };
       mockCore.store.allNonSelectionObjects = [selectionBox];
 
-      (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapTarget(50, 50, 'line-1');
 
@@ -653,7 +653,7 @@ describe('KritzelAnchorManager', () => {
       const obj3 = createMockObject({ id: 'obj-3', zIndex: 3 });
       mockCore.store.allNonSelectionObjects = [obj1, obj2, obj3];
 
-      (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapTarget(125, 125, 'line-1');
 
@@ -664,7 +664,7 @@ describe('KritzelAnchorManager', () => {
       const obj = createMockObject({ id: 'obj-1', zIndex: 1, isVisible: false });
       mockCore.store.allNonSelectionObjects = [obj];
 
-      (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapTarget(125, 125, 'line-1');
 
@@ -675,7 +675,7 @@ describe('KritzelAnchorManager', () => {
       const obj = createMockObject({ id: 'obj-1', zIndex: 1 });
       mockCore.store.allNonSelectionObjects = [obj];
 
-      (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       expect(manager.findSnapTarget(111, 125, 'line-1', undefined, 'mouse')).toBeNull();
       expect(manager.findSnapTarget(111, 125, 'line-1', undefined, 'touch')).toEqual({
@@ -691,7 +691,7 @@ describe('KritzelAnchorManager', () => {
       // Zoom out so the base radius (min(w,h)/5 = 10 world units) shrinks in screen space.
       mockState.scale = 0.25;
 
-      (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       // Distance 40 from center (125,125) exceeds the base radius of 10, but the
       // mouse floor of 12 / 0.25 = 48 world units keeps snapping usable when zoomed out.
@@ -710,7 +710,7 @@ describe('KritzelAnchorManager', () => {
       const obj = createMockObject({ id: 'obj-1', zIndex: 1 });
       mockCore.store.allNonSelectionObjects = [obj];
 
-      (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapPreviewTarget(101, 101, 'line-1');
 
@@ -723,7 +723,7 @@ describe('KritzelAnchorManager', () => {
 
     describe('z-order ties', () => {
       beforeEach(() => {
-        (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+        (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
       });
 
       // Group shares its zIndex with its top member (child-b).
@@ -976,7 +976,7 @@ describe('KritzelAnchorManager', () => {
         return [];
       });
       // Mock geometry helper to return an intersection point
-      (KritzelGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 100, y: 125 });
+      (UpdrawGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 100, y: 125 });
 
       const result = manager.getAnchorLinesRenderData();
 
@@ -1219,21 +1219,21 @@ describe('KritzelAnchorManager', () => {
 
   describe('rebuildIndex', () => {
     it('should rebuild the index from all lines in the store', () => {
-      const line1 = new KritzelLine();
+      const line1 = new UpdrawLine();
       Object.assign(line1, {
-        __class__: 'KritzelLine',
+        __class__: 'UpdrawLine',
         id: 'line-1',
         startAnchor: { objectId: 'obj-1' },
         endAnchor: { objectId: 'obj-2' },
       });
-      const line2 = new KritzelLine();
+      const line2 = new UpdrawLine();
       Object.assign(line2, {
-        __class__: 'KritzelLine',
+        __class__: 'UpdrawLine',
         id: 'line-2',
         startAnchor: { objectId: 'obj-1' },
       });
 
-      // KritzelLine instances must pass the instanceof check
+      // UpdrawLine instances must pass the instanceof check
       mockCore.store.allObjects = [line1, line2];
 
       manager.rebuildIndex();
@@ -1361,7 +1361,7 @@ describe('KritzelAnchorManager', () => {
       });
 
       // Mock the geometry helper to return an edge intersection
-      (KritzelGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 50, y: 25 });
+      (UpdrawGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 50, y: 25 });
 
       const result = manager.computeAnchorVisualization(line, 'start');
 
@@ -1445,7 +1445,7 @@ describe('KritzelAnchorManager', () => {
         if (fn(targetObject)) return [targetObject];
         return [];
       });
-      (KritzelGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 50, y: 0 });
+      (UpdrawGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 50, y: 0 });
 
       const result = manager.computeClippedLinePath(line);
 
@@ -1459,7 +1459,7 @@ describe('KritzelAnchorManager', () => {
       const line = createMockLine({ id: 'line-1' });
       const targetObject = createMockObject({ id: 'obj-1' });
 
-      (KritzelGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 100, y: 100 });
+      (UpdrawGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 100, y: 100 });
 
       const result = manager.computeAnchorClipInfo(line, 'start', targetObject);
 
@@ -1479,7 +1479,7 @@ describe('KritzelAnchorManager', () => {
       // For curved lines, the curve exit point detection is used
       // Mock isPointInPolygon for the sampling algorithm
       let callCount = 0;
-      (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockImplementation(() => {
+      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockImplementation(() => {
         callCount++;
         // First few calls inside, then outside (simulating curve exiting polygon)
         return callCount <= 3;
@@ -1488,7 +1488,7 @@ describe('KritzelAnchorManager', () => {
       manager.computeAnchorClipInfo(line, 'start', targetObject);
 
       // The important thing is that the curved path was taken
-      expect(KritzelGeometryHelper.isPointInPolygon).toHaveBeenCalled();
+      expect(UpdrawGeometryHelper.isPointInPolygon).toHaveBeenCalled();
     });
 
     it('should handle path objects with custom clip detection', () => {
@@ -1497,8 +1497,8 @@ describe('KritzelAnchorManager', () => {
         controlX: 50,
         controlY: 50,
       });
-      const pathObject = createMockObject({ id: 'path-1' }, KritzelPath.prototype) as any;
-      pathObject.__class__ = 'KritzelPath';
+      const pathObject = createMockObject({ id: 'path-1' }, UpdrawPath.prototype) as any;
+      pathObject.__class__ = 'UpdrawPath';
       pathObject.points = [[0, 0], [50, 50], [100, 0]];
       pathObject.strokeWidth = 4;
       pathObject.scale = 1;
@@ -1514,8 +1514,8 @@ describe('KritzelAnchorManager', () => {
 
     it('should handle shape objects with custom clip polygon', () => {
       const line = createMockLine({ id: 'line-1' });
-      const shapeObject = createMockObject({ id: 'shape-1' }, KritzelShape.prototype) as any;
-      shapeObject.__class__ = 'KritzelShape';
+      const shapeObject = createMockObject({ id: 'shape-1' }, UpdrawShape.prototype) as any;
+      shapeObject.__class__ = 'UpdrawShape';
       shapeObject.getClipPolygon = jest.fn().mockReturnValue([
         { x: 0, y: 50 },
         { x: 50, y: 0 },
@@ -1523,12 +1523,12 @@ describe('KritzelAnchorManager', () => {
         { x: 50, y: 100 },
       ]);
 
-      (KritzelGeometryHelper.getLinePointsArrayIntersection as jest.Mock).mockReturnValue({ x: 50, y: 0 });
+      (UpdrawGeometryHelper.getLinePointsArrayIntersection as jest.Mock).mockReturnValue({ x: 50, y: 0 });
 
       const result = manager.computeAnchorClipInfo(line, 'start', shapeObject);
 
       expect(result).not.toBeNull();
-      expect(KritzelGeometryHelper.getLinePointsArrayIntersection).toHaveBeenCalled();
+      expect(UpdrawGeometryHelper.getLinePointsArrayIntersection).toHaveBeenCalled();
     });
   });
 

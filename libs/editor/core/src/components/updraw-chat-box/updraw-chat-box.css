@@ -2,7 +2,7 @@
 :host {
   display: block;
   box-sizing: border-box;
-  width: var(--kritzel-chat-box-width, 480px);
+  width: var(--updraw-chat-box-width, 480px);
   max-width: 100%;
   pointer-events: none;
 }
@@ -10,11 +10,11 @@
 .chat-box {
   position: relative;
   box-sizing: border-box;
-  padding: var(--kritzel-chat-box-padding, 6px);
-  border: var(--kritzel-chat-box-border, 1px solid #e4e4e7);
-  border-radius: var(--kritzel-chat-box-border-radius, 20px);
-  background-color: var(--kritzel-chat-box-background-color, #ffffff);
-  box-shadow: var(--kritzel-chat-box-box-shadow, 0 4px 8px rgba(20, 18, 31, 0.04), 0 18px 36px -14px rgba(20, 18, 31, 0.2));
+  padding: var(--updraw-chat-box-padding, 6px);
+  border: var(--updraw-chat-box-border, 1px solid #e4e4e7);
+  border-radius: var(--updraw-chat-box-border-radius, 20px);
+  background-color: var(--updraw-chat-box-background-color, #ffffff);
+  box-shadow: var(--updraw-chat-box-box-shadow, 0 4px 8px rgba(20, 18, 31, 0.04), 0 18px 36px -14px rgba(20, 18, 31, 0.2));
   pointer-events: auto;
 }
 
@@ -40,12 +40,12 @@
   max-width: 100%;
   height: 32px;
   padding: 0 4px 0 10px;
-  border: var(--kritzel-chat-box-border, 1px solid #e4e4e7);
+  border: var(--updraw-chat-box-border, 1px solid #e4e4e7);
   border-radius: 999px;
-  background-color: var(--kritzel-chat-box-background-color, #ffffff);
-  box-shadow: var(--kritzel-chat-box-chip-box-shadow, 0 4px 12px -6px rgba(20, 18, 31, 0.18));
-  color: var(--kritzel-chat-box-text-color, #0a0a0a);
-  font-family: var(--kritzel-global-font-family, sans-serif);
+  background-color: var(--updraw-chat-box-background-color, #ffffff);
+  box-shadow: var(--updraw-chat-box-chip-box-shadow, 0 4px 12px -6px rgba(20, 18, 31, 0.18));
+  color: var(--updraw-chat-box-text-color, #0a0a0a);
+  font-family: var(--updraw-global-font-family, sans-serif);
   font-size: 13px;
   white-space: nowrap;
   pointer-events: auto;
@@ -60,15 +60,15 @@
 
 .chat-chips-more {
   padding: 0 4px;
-  color: var(--kritzel-chat-box-chip-muted-text-color, #71717a);
-  font-family: var(--kritzel-global-font-family, sans-serif);
+  color: var(--updraw-chat-box-chip-muted-text-color, #71717a);
+  font-family: var(--updraw-global-font-family, sans-serif);
   font-size: 13px;
   white-space: nowrap;
   pointer-events: auto;
 }
 
 .chat-chip-icon {
-  color: var(--kritzel-chat-box-button-background-color, #4A7DFF);
+  color: var(--updraw-chat-box-button-background-color, #4A7DFF);
 }
 
 .chat-chip-label,
@@ -99,7 +99,7 @@
 .chat-chip-separator,
 .chat-chip-hint,
 .chat-chip-remove {
-  color: var(--kritzel-chat-box-chip-muted-text-color, #71717a);
+  color: var(--updraw-chat-box-chip-muted-text-color, #71717a);
 }
 
 .chat-chip-remove {
@@ -112,16 +112,16 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
 }
 
 .chat-chip-remove:hover:not(:disabled) {
-  color: var(--kritzel-chat-box-text-color, #0a0a0a);
+  color: var(--updraw-chat-box-text-color, #0a0a0a);
 }
 
 .chat-chip-remove:focus-visible {
-  outline: 2px solid var(--kritzel-chat-box-button-background-color, #4A7DFF);
+  outline: 2px solid var(--updraw-chat-box-button-background-color, #4A7DFF);
   outline-offset: 1px;
 }
 
@@ -142,9 +142,9 @@
 .chat-progress-ring {
   width: calc(100% - 2px);
   height: calc(100% - 2px);
-  rx: calc(var(--kritzel-chat-box-border-radius, 20px) - 1px);
+  rx: calc(var(--updraw-chat-box-border-radius, 20px) - 1px);
   fill: none;
-  stroke: var(--kritzel-chat-box-button-background-color, #4A7DFF);
+  stroke: var(--updraw-chat-box-button-background-color, #4A7DFF);
   stroke-width: 2px;
   stroke-linecap: round;
   stroke-dasharray: 18 82;
@@ -162,8 +162,8 @@
   display: flex;
   box-sizing: border-box;
   overflow: hidden;
-  border-radius: var(--kritzel-chat-box-input-border-radius, 14px);
-  background-color: var(--kritzel-chat-box-input-background-color, #f3f4f6);
+  border-radius: var(--updraw-chat-box-input-border-radius, 14px);
+  background-color: var(--updraw-chat-box-input-background-color, #f3f4f6);
 }
 
 /* Padding lives on the textarea so the whole grey area is clickable. */
@@ -174,7 +174,7 @@
   margin: 0;
   padding: 12px 14px calc(44px - 1.4em);
   /* Explicit heights in both modes let the collapse/expand transition animate (min-height would snap). */
-  height: max(var(--kritzel-chat-box-input-min-height, 88px), calc(1.4em + 56px), var(--chat-input-height, 0px));
+  height: max(var(--updraw-chat-box-input-min-height, 88px), calc(1.4em + 56px), var(--chat-input-height, 0px));
   max-height: calc(5.6em + 56px);
   border-radius: inherit;
   cursor: text;
@@ -182,11 +182,11 @@
   outline: none;
   resize: none;
   background: transparent;
-  color: var(--kritzel-chat-box-text-color, #0a0a0a);
-  font-family: var(--kritzel-global-font-family, sans-serif);
-  font-size: var(--kritzel-chat-box-font-size, 15px);
+  color: var(--updraw-chat-box-text-color, #0a0a0a);
+  font-family: var(--updraw-global-font-family, sans-serif);
+  font-size: var(--updraw-chat-box-font-size, 15px);
   line-height: 1.4;
-  scrollbar-color: var(--kritzel-chat-box-scrollbar-thumb-color, var(--kritzel-global-scrollbar-thumb-color, #d4d4d4)) transparent;
+  scrollbar-color: var(--updraw-chat-box-scrollbar-thumb-color, var(--updraw-global-scrollbar-thumb-color, #d4d4d4)) transparent;
   scrollbar-width: thin;
   /* The visible caret is drawn by .chat-caret so its width can be themed. */
   caret-color: transparent;
@@ -203,9 +203,9 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: var(--kritzel-chat-box-caret-width, 2px);
+  width: var(--updraw-chat-box-caret-width, 2px);
   border-radius: 1px;
-  background-color: var(--kritzel-chat-box-caret-color, #4A7DFF);
+  background-color: var(--updraw-chat-box-caret-color, #4A7DFF);
   pointer-events: none;
   visibility: hidden;
 }
@@ -227,12 +227,12 @@
 }
 
 .chat-input::selection {
-  background-color: var(--kritzel-chat-box-selection-background-color, #4A7DFF);
-  color: var(--kritzel-chat-box-selection-color, #ffffff);
+  background-color: var(--updraw-chat-box-selection-background-color, #4A7DFF);
+  color: var(--updraw-chat-box-selection-color, #ffffff);
 }
 
 .chat-input::placeholder {
-  color: var(--kritzel-chat-box-placeholder-color, #9ca3af);
+  color: var(--updraw-chat-box-placeholder-color, #9ca3af);
 }
 
 .chat-input:disabled {
@@ -253,19 +253,19 @@
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background-color: var(--kritzel-chat-box-button-background-color, #4A7DFF);
-  color: var(--kritzel-chat-box-button-color, #ffffff);
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  background-color: var(--updraw-chat-box-button-background-color, #4A7DFF);
+  color: var(--updraw-chat-box-button-color, #ffffff);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   transition: background-color 150ms ease, opacity 150ms ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 .chat-submit:hover:not(:disabled) {
-  background-color: var(--kritzel-chat-box-button-hover-background-color, #3A6AE8);
+  background-color: var(--updraw-chat-box-button-hover-background-color, #3A6AE8);
 }
 
 .chat-submit:focus-visible {
-  outline: 2px solid var(--kritzel-chat-box-button-background-color, #4A7DFF);
+  outline: 2px solid var(--updraw-chat-box-button-background-color, #4A7DFF);
   outline-offset: 4px;
 }
 
@@ -300,9 +300,9 @@
   overflow: hidden;
   white-space: pre;
   text-overflow: ellipsis;
-  color: var(--kritzel-chat-box-text-color, #0a0a0a);
-  font-family: var(--kritzel-global-font-family, sans-serif);
-  font-size: var(--kritzel-chat-box-font-size, 15px);
+  color: var(--updraw-chat-box-text-color, #0a0a0a);
+  font-family: var(--updraw-global-font-family, sans-serif);
+  font-size: var(--updraw-chat-box-font-size, 15px);
   line-height: 1.4;
   pointer-events: none;
 }

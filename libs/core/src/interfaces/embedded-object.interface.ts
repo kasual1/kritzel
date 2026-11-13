@@ -1,4 +1,4 @@
-export interface KritzelEmbeddedObject {
+export interface UpdrawEmbeddedObject {
   isInteractive: boolean;
   isSelected: boolean;
 

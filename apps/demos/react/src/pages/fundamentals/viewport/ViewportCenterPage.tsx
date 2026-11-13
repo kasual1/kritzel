@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import {
-  KritzelEditor,
-  type HTMLKritzelEditorElement,
-  type KritzelBaseObject,
-} from "@kritzel/react-editor";
+  UpdrawEditor,
+  type HTMLUpdrawEditorElement,
+  type UpdrawBaseObject,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
@@ -16,8 +16,8 @@ import { Toolbar } from "../../../components/Toolbar";
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ViewportCenterPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const [objects, setObjects] = useState<KritzelBaseObject<HTMLElement | SVGElement>[]>([]);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const [objects, setObjects] = useState<UpdrawBaseObject<HTMLElement | SVGElement>[]>([]);
 
   async function onReady() {
     if (!editorRef.current) {
@@ -25,7 +25,7 @@ export function ViewportCenterPage() {
     }
 
     await seedEditor(editorRef.current);
-    setObjects(((await editorRef.current.getAllObjects()) ?? []) as KritzelBaseObject<HTMLElement | SVGElement>[]);
+    setObjects(((await editorRef.current.getAllObjects()) ?? []) as UpdrawBaseObject<HTMLElement | SVGElement>[]);
   }
 
   async function centerOn(index: number) {
@@ -43,7 +43,7 @@ export function ViewportCenterPage() {
         <button onClick={() => void centerOn(3)} disabled={objects.length < 4}>Center on Path</button>
         <button onClick={() => void editorRef.current?.backToContent()}>Back to Content</button>
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="viewport-center"
         theme="light"

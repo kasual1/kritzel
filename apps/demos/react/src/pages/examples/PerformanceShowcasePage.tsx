@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import {
-  KritzelDynamicObjectRendererRegistry,
-  KritzelEditor,
-  KritzelWorkspace,
-  type HTMLKritzelEditorElement,
-  type KritzelSyncConfig,
-} from "@kritzel/react-editor";
+  UpdrawDynamicObjectRendererRegistry,
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type HTMLUpdrawEditorElement,
+  type UpdrawSyncConfig,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../const/react-theme-dark";
 import { reactThemeLight } from "../../const/react-theme-light";
 import {
@@ -64,13 +64,13 @@ function countButtonStyle(active: boolean): CSSProperties {
 }
 
 export function PerformanceShowcasePage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const mountedButtons = useRef(new Map<string, GithubStarButtonInstance>());
   const [starCount, setStarCount] = useState(DEFAULT_STAR_COUNT);
   const [isBusy, setIsBusy] = useState(false);
 
-  const syncConfig = useMemo<KritzelSyncConfig>(() => ({ providers: [] }), []);
-  const workspaces = useMemo(() => [new KritzelWorkspace({ objects: createGithubStarObjects(DEFAULT_STAR_COUNT) })], []);
+  const syncConfig = useMemo<UpdrawSyncConfig>(() => ({ providers: [] }), []);
+  const workspaces = useMemo(() => [new UpdrawWorkspace({ objects: createGithubStarObjects(DEFAULT_STAR_COUNT) })], []);
 
   useEffect(() => {
     const buttons = mountedButtons.current;
@@ -79,7 +79,7 @@ export function PerformanceShowcasePage() {
       buttons.delete(objectId);
       if (container) container.innerHTML = "";
     };
-    KritzelDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
+    UpdrawDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
       onMount: ({ object, container, data }) => {
         if (!container) return;
         destroy(object.id, container);
@@ -95,7 +95,7 @@ export function PerformanceShowcasePage() {
     return () => {
       buttons.forEach((instance) => instance.destroy());
       buttons.clear();
-      KritzelDynamicObjectRendererRegistry.unregister(GITHUB_STAR_RENDERER_KEY);
+      UpdrawDynamicObjectRendererRegistry.unregister(GITHUB_STAR_RENDERER_KEY);
     };
   }, []);
 
@@ -116,7 +116,7 @@ export function PerformanceShowcasePage() {
 
   return (
     <div style={hostStyle}>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="examples-performance-showcase"
         theme="light"

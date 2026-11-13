@@ -1,12 +1,12 @@
-import type { KritzelBaseObject } from '../classes/objects/base-object.class';
-import { KritzelGroup } from '../classes/objects/group.class';
-import { KritzelSelectionBox } from '../classes/objects/selection-box.class';
-import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
+import type { UpdrawBaseObject } from '../classes/objects/base-object.class';
+import { UpdrawGroup } from '../classes/objects/group.class';
+import { UpdrawSelectionBox } from '../classes/objects/selection-box.class';
+import { UpdrawSelectionGroup } from '../classes/objects/selection-group.class';
 
 /**
  * Minimal view of an object needed to plan z-order changes.
  */
-export interface KritzelZOrderItem {
+export interface UpdrawZOrderItem {
   id: string;
   zIndex: number;
   isGroup: boolean;
@@ -16,12 +16,12 @@ export interface KritzelZOrderItem {
 /**
  * Z-order operations that move layers relative to their siblings.
  */
-export type KritzelZOrderOperation = 'forward' | 'backward' | 'front' | 'back';
+export type UpdrawZOrderOperation = 'forward' | 'backward' | 'front' | 'back';
 
 /**
  * Result of planning a new group.
  */
-export interface KritzelGroupZOrderPlan {
+export interface UpdrawGroupZOrderPlan {
   /** Ids of the objects to group, ordered bottom to top. */
   childIds: string[];
   /** The group that contains all grouped objects and receives the new group, or null for the top level. */
@@ -43,13 +43,13 @@ export interface KritzelGroupZOrderPlan {
  *
  * All planning functions are pure; they return the zIndex values that have to change, keyed by id.
  */
-export class KritzelZOrderHelper {
+export class UpdrawZOrderHelper {
   /**
    * Compares two objects by stacking order. On equal zIndex a group sorts above its tied top member,
    * so its (empty) wrapper and outline paint over its children.
    */
-  static compareStackOrder(a: KritzelBaseObject<any>, b: KritzelBaseObject<any>): number {
-    return a.zIndex - b.zIndex || Number(KritzelZOrderHelper.isGroup(a)) - Number(KritzelZOrderHelper.isGroup(b));
+  static compareStackOrder(a: UpdrawBaseObject<any>, b: UpdrawBaseObject<any>): number {
+    return a.zIndex - b.zIndex || Number(UpdrawZOrderHelper.isGroup(a)) - Number(UpdrawZOrderHelper.isGroup(b));
   }
 
   /**
@@ -61,8 +61,8 @@ export class KritzelZOrderHelper {
    * @param operation - The z-order operation.
    * @returns New zIndex values keyed by object id; empty when nothing has to change.
    */
-  static reorder(items: KritzelZOrderItem[], rootIds: string[], operation: KritzelZOrderOperation): Map<string, number> {
-    const planner = new KritzelZOrderPlanner(items);
+  static reorder(items: UpdrawZOrderItem[], rootIds: string[], operation: UpdrawZOrderOperation): Map<string, number> {
+    const planner = new UpdrawZOrderPlanner(items);
     planner.reorder(planner.tree.resolveRoots(rootIds), operation);
     return planner.finish();
   }
@@ -76,8 +76,8 @@ export class KritzelZOrderHelper {
    * @param rootIds - Ids of the objects to group.
    * @returns The plan, or null when fewer than two independent objects remain.
    */
-  static planGroup(items: KritzelZOrderItem[], rootIds: string[]): KritzelGroupZOrderPlan | null {
-    const planner = new KritzelZOrderPlanner(items);
+  static planGroup(items: UpdrawZOrderItem[], rootIds: string[]): UpdrawGroupZOrderPlan | null {
+    const planner = new UpdrawZOrderPlanner(items);
     const resolved = planner.tree.resolveRoots(rootIds);
     if (resolved.length < 2) {
       return null;
@@ -102,8 +102,8 @@ export class KritzelZOrderHelper {
    * @param groupIds - Ids of the groups that are dissolved.
    * @returns New zIndex values keyed by object id; empty when nothing has to change.
    */
-  static planUngroup(items: KritzelZOrderItem[], groupIds: string[]): Map<string, number> {
-    const planner = new KritzelZOrderPlanner(items);
+  static planUngroup(items: UpdrawZOrderItem[], groupIds: string[]): Map<string, number> {
+    const planner = new UpdrawZOrderPlanner(items);
     planner.ungroup(groupIds);
     return planner.finish(new Set(groupIds));
   }
@@ -117,15 +117,15 @@ export class KritzelZOrderHelper {
    * @param getChildren - Returns the children of a group in bottom-to-top order.
    * @returns The next free zIndex.
    */
-  static allocate(object: KritzelBaseObject<any>, start: number, getChildren: (group: KritzelGroup) => KritzelBaseObject<any>[]): number {
-    if (!KritzelZOrderHelper.isGroup(object)) {
+  static allocate(object: UpdrawBaseObject<any>, start: number, getChildren: (group: UpdrawGroup) => UpdrawBaseObject<any>[]): number {
+    if (!UpdrawZOrderHelper.isGroup(object)) {
       object.zIndex = start;
       return start + 1;
     }
 
     let next = start;
     for (const child of getChildren(object)) {
-      next = KritzelZOrderHelper.allocate(child, next, getChildren);
+      next = UpdrawZOrderHelper.allocate(child, next, getChildren);
     }
 
     // An empty group still takes a slot so it does not tie with an unrelated object.
@@ -139,27 +139,27 @@ export class KritzelZOrderHelper {
    * @param object - The object to rank.
    * @param getChildren - Returns the children of a group.
    */
-  static stackAnchor(object: KritzelBaseObject<any>, getChildren: (group: KritzelGroup) => KritzelBaseObject<any>[]): number {
-    if (!KritzelZOrderHelper.isGroup(object)) {
+  static stackAnchor(object: UpdrawBaseObject<any>, getChildren: (group: UpdrawGroup) => UpdrawBaseObject<any>[]): number {
+    if (!UpdrawZOrderHelper.isGroup(object)) {
       return object.zIndex;
     }
 
     const anchors = getChildren(object)
-      .filter(child => !KritzelZOrderHelper.isGroup(child) || getChildren(child).length > 0)
-      .map(child => KritzelZOrderHelper.stackAnchor(child, getChildren));
+      .filter(child => !UpdrawZOrderHelper.isGroup(child) || getChildren(child).length > 0)
+      .map(child => UpdrawZOrderHelper.stackAnchor(child, getChildren));
     return anchors.length > 0 ? Math.max(...anchors) : object.zIndex;
   }
 
   /** The objects z-order changes are planned for, each once and without selections, with their items. */
-  static collect(objects: Iterable<KritzelBaseObject<any>>): { objects: Map<string, KritzelBaseObject<any>>; items: KritzelZOrderItem[] } {
-    const byId = new Map<string, KritzelBaseObject<any>>();
-    const items: KritzelZOrderItem[] = [];
+  static collect(objects: Iterable<UpdrawBaseObject<any>>): { objects: Map<string, UpdrawBaseObject<any>>; items: UpdrawZOrderItem[] } {
+    const byId = new Map<string, UpdrawBaseObject<any>>();
+    const items: UpdrawZOrderItem[] = [];
     for (const object of objects) {
-      if (object instanceof KritzelSelectionGroup || object instanceof KritzelSelectionBox || byId.has(object.id)) {
+      if (object instanceof UpdrawSelectionGroup || object instanceof UpdrawSelectionBox || byId.has(object.id)) {
         continue;
       }
       byId.set(object.id, object);
-      items.push(KritzelZOrderHelper.toItem(object));
+      items.push(UpdrawZOrderHelper.toItem(object));
     }
     return { objects: byId, items };
   }
@@ -167,26 +167,26 @@ export class KritzelZOrderHelper {
   /**
    * Maps an object to the minimal z-order view used for planning.
    */
-  static toItem(object: KritzelBaseObject<any>): KritzelZOrderItem {
-    const isGroup = KritzelZOrderHelper.isGroup(object);
+  static toItem(object: UpdrawBaseObject<any>): UpdrawZOrderItem {
+    const isGroup = UpdrawZOrderHelper.isGroup(object);
     return { id: object.id, zIndex: object.zIndex, isGroup, childIds: isGroup ? [...(object.childIds ?? [])] : [] };
   }
 
-  private static isGroup(object: KritzelBaseObject<any>): object is KritzelGroup {
-    return object instanceof KritzelGroup;
+  private static isGroup(object: UpdrawBaseObject<any>): object is UpdrawGroup {
+    return object instanceof UpdrawGroup;
   }
 }
 
 /**
  * Group hierarchy derived from the items' childIds. Dangling ids, second parents and cycles are ignored.
  */
-class KritzelZOrderTree {
-  private readonly byId = new Map<string, KritzelZOrderItem>();
+class UpdrawZOrderTree {
+  private readonly byId = new Map<string, UpdrawZOrderItem>();
   private readonly parentOf = new Map<string, string>();
   private readonly kids = new Map<string, string[]>();
   private readonly visibleMemo = new Map<string, string[]>();
 
-  constructor(readonly items: KritzelZOrderItem[]) {
+  constructor(readonly items: UpdrawZOrderItem[]) {
     items.forEach(item => this.byId.set(item.id, item));
 
     for (const group of items) {
@@ -211,7 +211,7 @@ class KritzelZOrderTree {
     return this.byId.has(id);
   }
 
-  item(id: string): KritzelZOrderItem {
+  item(id: string): UpdrawZOrderItem {
     return this.byId.get(id);
   }
 
@@ -289,8 +289,8 @@ class KritzelZOrderTree {
  * removing their visible members and re-inserting them as one contiguous block, and every object whose
  * order changed is renumbered afterwards, reusing the values of the region it moved in.
  */
-class KritzelZOrderPlanner {
-  readonly tree: KritzelZOrderTree;
+class UpdrawZOrderPlanner {
+  readonly tree: UpdrawZOrderTree;
 
   /** Visible object ids, bottom to top. */
   private order: string[];
@@ -304,8 +304,8 @@ class KritzelZOrderPlanner {
   /** Members of the moved units; preferred to change over bystanders when values have to be repaired. */
   private readonly moving = new Set<string>();
 
-  constructor(items: KritzelZOrderItem[]) {
-    this.tree = new KritzelZOrderTree(items);
+  constructor(items: UpdrawZOrderItem[]) {
+    this.tree = new UpdrawZOrderTree(items);
     items.forEach(item => this.current.set(item.id, item.zIndex));
     this.order = items
       .map((item, index) => ({ item, index }))
@@ -315,7 +315,7 @@ class KritzelZOrderPlanner {
     this.reindex();
   }
 
-  reorder(roots: string[], operation: KritzelZOrderOperation): void {
+  reorder(roots: string[], operation: UpdrawZOrderOperation): void {
     const scopes = new Map<string | null, Set<string>>();
     for (const root of roots) {
       this.markMoving(root);
@@ -383,7 +383,7 @@ class KritzelZOrderPlanner {
    * @param removedGroupIds - Groups that are about to be removed and need no value.
    */
   finish(removedGroupIds: Set<string> = new Set()): Map<string, number> {
-    const values = new KritzelZOrderValueAssigner(this.order, this.current, this.touched, this.fresh, this.moving, this.tree.items).assign();
+    const values = new UpdrawZOrderValueAssigner(this.order, this.current, this.touched, this.fresh, this.moving, this.tree.items).assign();
 
     const groups = new Set<string>();
     for (const id of [...this.touched, ...this.fresh]) {
@@ -566,7 +566,7 @@ class KritzelZOrderPlanner {
 /**
  * Turns a new stacking order into zIndex values with as few changes as possible.
  */
-class KritzelZOrderValueAssigner {
+class UpdrawZOrderValueAssigner {
   private readonly values: Map<string, number>;
   private readonly isTouched: boolean[];
   private readonly proposed: number[];
@@ -577,7 +577,7 @@ class KritzelZOrderValueAssigner {
     touched: Set<string>,
     private readonly fresh: Set<string>,
     private readonly moving: Set<string>,
-    private readonly items: KritzelZOrderItem[],
+    private readonly items: UpdrawZOrderItem[],
   ) {
     this.values = new Map(current);
     this.isTouched = order.map(id => touched.has(id) && !fresh.has(id));

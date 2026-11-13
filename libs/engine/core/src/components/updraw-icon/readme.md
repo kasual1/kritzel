@@ -1,4 +1,4 @@
-# kritzel-icon
+# updraw-icon
 
 
 
@@ -18,15 +18,15 @@
 
 ### Used by
 
- - [kritzel-engine](../kritzel-engine)
- - [kritzel-object-titlebar-layer](../kritzel-object-titlebar-layer)
+ - [updraw-engine](../updraw-engine)
+ - [updraw-object-titlebar-layer](../updraw-object-titlebar-layer)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-engine --> kritzel-icon
-  kritzel-object-titlebar-layer --> kritzel-icon
-  style kritzel-icon fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-engine --> updraw-icon
+  updraw-object-titlebar-layer --> updraw-icon
+  style updraw-icon fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

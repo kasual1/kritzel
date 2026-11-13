@@ -6,7 +6,7 @@
 
 ## Structure
 
-Helpers are static utility classes — no instance state, no constructor, no dependency on `KritzelCore`.
+Helpers are static utility classes — no instance state, no constructor, no dependency on `UpdrawCore`.
 
 ```typescript
 export class MyHelper {
@@ -35,10 +35,10 @@ export class MyHelper {
 ## Conventions
 
 - File name: `<domain>.helper.ts`
-- Class name: `<Domain>Helper` (or `Kritzel<Domain>Helper` for namespacing)
+- Class name: `<Domain>Helper` (or `Updraw<Domain>Helper` for namespacing)
 - All methods are `static`
 - No side effects — pure functions only
-- No dependency on `KritzelCore` or store
+- No dependency on `UpdrawCore` or store
 - Helpers are imported directly where needed; they are not injected
 
 ## When to Create a Helper vs. Inline Logic

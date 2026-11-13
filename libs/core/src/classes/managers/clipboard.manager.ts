@@ -1,19 +1,19 @@
-import { KritzelCore } from '../core/core.class';
-import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelImage } from '../objects/image.class';
-import { KritzelText } from '../objects/text.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
-import { KritzelReviver } from '../core/reviver.class';
-import { KritzelPasteIntentProviderRegistry } from '../registries/paste-intent-provider.registry';
-import { KritzelEventPasteIntentProvider } from '../providers/paste-intent/event-paste-intent.provider';
-import { KritzelNavigatorPasteIntentProvider } from '../providers/paste-intent/navigator-paste-intent.provider';
-import { KritzelIosPasteIntentProvider } from '../providers/paste-intent/ios-paste-intent.provider';
-import { KritzelClipboardPayload, PasteIntent, SerializedClipboardObject, CLIPBOARD_PAYLOAD_PREFIX } from './clipboard.types';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpdrawImage } from '../objects/image.class';
+import { UpdrawText } from '../objects/text.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawZOrderHelper } from '../../helpers/z-order.helper';
+import { UpdrawReviver } from '../core/reviver.class';
+import { UpdrawPasteIntentProviderRegistry } from '../registries/paste-intent-provider.registry';
+import { UpdrawEventPasteIntentProvider } from '../providers/paste-intent/event-paste-intent.provider';
+import { UpdrawNavigatorPasteIntentProvider } from '../providers/paste-intent/navigator-paste-intent.provider';
+import { UpdrawIosPasteIntentProvider } from '../providers/paste-intent/ios-paste-intent.provider';
+import { UpdrawClipboardPayload, PasteIntent, SerializedClipboardObject, CLIPBOARD_PAYLOAD_PREFIX } from './clipboard.types';
 import imageCompression from 'browser-image-compression';
-import { KritzelImageFileHelper } from '../../helpers/image-file.helper';
+import { UpdrawImageFileHelper } from '../../helpers/image-file.helper';
 
 export type { PasteIntent } from './clipboard.types';
 
@@ -21,23 +21,23 @@ export type { PasteIntent } from './clipboard.types';
  * Manages clipboard operations (copy/cut/paste) for a core instance.
  *
  * The system clipboard is the preferred source of truth: copy serializes the current
- * selection into a Kritzel payload, paste reads + revives it.
+ * selection into an Updraw payload, paste reads + revives it.
  *
  * A copy also mirrors the payload into an in-memory session buffer. On platforms where
  * eventless programmatic clipboard access is unavailable (notably iOS Safari, where the
  * context menu triggers copy/paste without a native ClipboardEvent), the session buffer
  * is used as the fallback source so internal object copy/paste keeps working.
  */
-export class KritzelClipboardManager {
-  private readonly _core: KritzelCore;
-  private readonly _pasteIntentRegistry: KritzelPasteIntentProviderRegistry;
+export class UpdrawClipboardManager {
+  private readonly _core: UpdrawCore;
+  private readonly _pasteIntentRegistry: UpdrawPasteIntentProviderRegistry;
 
   /**
    * In-memory mirror of the most recent copy payload. Acts as the fallback clipboard
    * source when the system clipboard cannot be read programmatically (e.g. iOS Safari
    * context-menu paste). Reset is not required; a new copy overwrites it.
    */
-  private _sessionClipboardPayload: KritzelClipboardPayload | null = null;
+  private _sessionClipboardPayload: UpdrawClipboardPayload | null = null;
 
   /**
    * In-memory cascade offset (world units) applied to successive pastes of the same
@@ -45,22 +45,22 @@ export class KritzelClipboardManager {
    */
   private _pasteOffset = 0;
 
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     this._core = core;
-    this._pasteIntentRegistry = new KritzelPasteIntentProviderRegistry(this._core);
+    this._pasteIntentRegistry = new UpdrawPasteIntentProviderRegistry(this._core);
 
     // Provider order is intentional: iOS eventless path should short-circuit,
     // native paste events remain preferred, and async navigator APIs are fallback.
-    this._pasteIntentRegistry.register(new KritzelIosPasteIntentProvider());
-    this._pasteIntentRegistry.register(new KritzelEventPasteIntentProvider());
-    this._pasteIntentRegistry.register(new KritzelNavigatorPasteIntentProvider());
+    this._pasteIntentRegistry.register(new UpdrawIosPasteIntentProvider());
+    this._pasteIntentRegistry.register(new UpdrawEventPasteIntentProvider());
+    this._pasteIntentRegistry.register(new UpdrawNavigatorPasteIntentProvider());
   }
 
   /**
    * The most recent copy payload mirrored in memory, used as a fallback clipboard
    * source when the system clipboard cannot be read programmatically.
    */
-  get sessionClipboardPayload(): KritzelClipboardPayload | null {
+  get sessionClipboardPayload(): UpdrawClipboardPayload | null {
     return this._sessionClipboardPayload;
   }
 
@@ -68,21 +68,21 @@ export class KritzelClipboardManager {
    * Serializes an object for the clipboard payload. Groups additionally embed their
    * (recursively serialized) children under `__children__` so the payload is self-contained.
    */
-  private serializeForClipboard(object: KritzelBaseObject<any>): SerializedClipboardObject {
+  private serializeForClipboard(object: UpdrawBaseObject<any>): SerializedClipboardObject {
     const serialized = (typeof object.serialize === 'function' ? object.serialize() : object) as SerializedClipboardObject;
 
-    if (object instanceof KritzelGroup) {
+    if (object instanceof UpdrawGroup) {
       serialized.__children__ = object.children.map(child => this.serializeForClipboard(child));
     }
 
     return serialized;
   }
 
-  private serializeClipboardPayload(payload: KritzelClipboardPayload): string {
+  private serializeClipboardPayload(payload: UpdrawClipboardPayload): string {
     return `${CLIPBOARD_PAYLOAD_PREFIX}${JSON.stringify(payload)}`;
   }
 
-  private async writeBrowserClipboardPayload(payload: KritzelClipboardPayload, event?: ClipboardEvent): Promise<void> {
+  private async writeBrowserClipboardPayload(payload: UpdrawClipboardPayload, event?: ClipboardEvent): Promise<void> {
     const serialized = this.serializeClipboardPayload(payload);
 
     if (event?.clipboardData) {
@@ -105,17 +105,17 @@ export class KritzelClipboardManager {
    * Revives a single serialized clipboard object (and its embedded group children).
    * IDs are NOT regenerated here; see regenerateIdsAndRemapAnchors.
    */
-  private reviveClipboardObject(serialized: SerializedClipboardObject): KritzelBaseObject<any> | null {
-    const reviver = new KritzelReviver(this._core);
+  private reviveClipboardObject(serialized: SerializedClipboardObject): UpdrawBaseObject<any> | null {
+    const reviver = new UpdrawReviver(this._core);
     const { __children__, ...objectData } = serialized;
-    const revived = reviver.revive<KritzelBaseObject<any>>(objectData);
+    const revived = reviver.revive<UpdrawBaseObject<any>>(objectData);
 
     if (!revived) {
       return null;
     }
 
-    if (__children__ && revived instanceof KritzelGroup) {
-      const children = __children__.map(child => this.reviveClipboardObject(child)).filter((child): child is KritzelBaseObject<any> => child != null);
+    if (__children__ && revived instanceof UpdrawGroup) {
+      const children = __children__.map(child => this.reviveClipboardObject(child)).filter((child): child is UpdrawBaseObject<any> => child != null);
 
       revived._pendingChildren = children;
       revived.childIds = children.map(child => child.id);
@@ -130,14 +130,14 @@ export class KritzelClipboardManager {
    * siblings to their new IDs. Anchors pointing at objects outside the pasted set are
    * left untouched so they stay connected to the existing object.
    */
-  private regenerateIdsAndRemapAnchors(topLevel: KritzelBaseObject<any>[]): void {
-    const all: KritzelBaseObject<any>[] = [];
-    const hasOnlyTopLevelLines = topLevel.length > 0 && topLevel.every(object => object instanceof KritzelLine);
+  private regenerateIdsAndRemapAnchors(topLevel: UpdrawBaseObject<any>[]): void {
+    const all: UpdrawBaseObject<any>[] = [];
+    const hasOnlyTopLevelLines = topLevel.length > 0 && topLevel.every(object => object instanceof UpdrawLine);
 
-    const collect = (objects: KritzelBaseObject<any>[]): void => {
+    const collect = (objects: UpdrawBaseObject<any>[]): void => {
       for (const object of objects) {
         all.push(object);
-        if (object instanceof KritzelGroup) {
+        if (object instanceof UpdrawGroup) {
           collect(object._pendingChildren);
         }
       }
@@ -153,11 +153,11 @@ export class KritzelClipboardManager {
     }
 
     for (const object of all) {
-      if (object instanceof KritzelGroup) {
+      if (object instanceof UpdrawGroup) {
         object.childIds = object.childIds.map(id => idMap.get(id) ?? id);
       }
 
-      if (object instanceof KritzelLine) {
+      if (object instanceof UpdrawLine) {
         if (object.startAnchor && idMap.has(object.startAnchor.objectId)) {
           object.startAnchor = { objectId: idMap.get(object.startAnchor.objectId)! };
         } else if (hasOnlyTopLevelLines) {
@@ -181,7 +181,7 @@ export class KritzelClipboardManager {
       return;
     }
 
-    const payload: KritzelClipboardPayload = {
+    const payload: UpdrawClipboardPayload = {
       version: 1,
       sourceWorkspaceId: this._core.store.state.activeWorkspace?.id,
       objects: selectionGroup.objects.sort((a, b) => a.zIndex - b.zIndex).map(obj => this.serializeForClipboard(obj)),
@@ -210,7 +210,7 @@ export class KritzelClipboardManager {
     this._core.delete();
   }
 
-  private materializeKritzelObjects(intent: Extract<PasteIntent, { type: 'kritzel_objects' }>): KritzelBaseObject<any>[] {
+  private materializeUpdrawObjects(intent: Extract<PasteIntent, { type: 'updraw_objects' }>): UpdrawBaseObject<any>[] {
     return this.reviveCopies(intent.payload.objects);
   }
 
@@ -218,12 +218,12 @@ export class KritzelClipboardManager {
    * Copies of objects, not inserted yet: fresh IDs at every nesting level, group children pending, and lines
    * anchored to copied objects anchored to the copies instead. Insert them with {@link insertCopies}.
    */
-  createCopies(objects: KritzelBaseObject<any>[]): KritzelBaseObject<any>[] {
+  createCopies(objects: UpdrawBaseObject<any>[]): UpdrawBaseObject<any>[] {
     return this.reviveCopies(objects.map(object => this.serializeForClipboard(object)));
   }
 
-  private reviveCopies(serialized: SerializedClipboardObject[]): KritzelBaseObject<any>[] {
-    const objects = serialized.map(object => this.reviveClipboardObject(object)).filter((object): object is KritzelBaseObject<any> => object != null);
+  private reviveCopies(serialized: SerializedClipboardObject[]): UpdrawBaseObject<any>[] {
+    const objects = serialized.map(object => this.reviveClipboardObject(object)).filter((object): object is UpdrawBaseObject<any> => object != null);
     this.regenerateIdsAndRemapAnchors(objects);
     return objects;
   }
@@ -234,34 +234,34 @@ export class KritzelClipboardManager {
    * selection alone; call it inside the caller's transaction.
    * @returns Every inserted object, group children before their group.
    */
-  insertCopies(copies: KritzelBaseObject<any>[], offsetX: number, offsetY: number): KritzelBaseObject<any>[] {
+  insertCopies(copies: UpdrawBaseObject<any>[], offsetX: number, offsetY: number): UpdrawBaseObject<any>[] {
     const workspaceId = this._core.store.state.activeWorkspace!.id;
 
     // Stack the copies above everything in their original order; each group becomes one contiguous layer.
-    const getPendingChildren = (group: KritzelGroup) => group._pendingChildren;
-    const sortByStackOrder = (objects: KritzelBaseObject<any>[]) =>
+    const getPendingChildren = (group: UpdrawGroup) => group._pendingChildren;
+    const sortByStackOrder = (objects: UpdrawBaseObject<any>[]) =>
       objects
-        .map(object => ({ object, anchor: KritzelZOrderHelper.stackAnchor(object, getPendingChildren) }))
+        .map(object => ({ object, anchor: UpdrawZOrderHelper.stackAnchor(object, getPendingChildren) }))
         .sort((a, b) => a.anchor - b.anchor)
         .map(({ object }) => object);
-    const sortPendingChildren = (object: KritzelBaseObject<any>): void => {
-      if (object instanceof KritzelGroup) {
+    const sortPendingChildren = (object: UpdrawBaseObject<any>): void => {
+      if (object instanceof UpdrawGroup) {
         object._pendingChildren.forEach(sortPendingChildren);
         object._pendingChildren = sortByStackOrder(object._pendingChildren);
       }
     };
     copies.forEach(sortPendingChildren);
     let nextZIndex = this._core.store.currentZIndex;
-    sortByStackOrder(copies).forEach(obj => (nextZIndex = KritzelZOrderHelper.allocate(obj, nextZIndex, getPendingChildren)));
+    sortByStackOrder(copies).forEach(obj => (nextZIndex = UpdrawZOrderHelper.allocate(obj, nextZIndex, getPendingChildren)));
 
-    const inserted: KritzelBaseObject<any>[] = [];
-    const insert = (object: KritzelBaseObject<any>): void => {
+    const inserted: UpdrawBaseObject<any>[] = [];
+    const insert = (object: UpdrawBaseObject<any>): void => {
       if (object.workspaceId !== workspaceId) {
         object.workspaceId = workspaceId;
       }
       object.updatePosition(object.translateX + offsetX, object.translateY + offsetY);
 
-      if (object instanceof KritzelGroup && object._pendingChildren.length > 0) {
+      if (object instanceof UpdrawGroup && object._pendingChildren.length > 0) {
         const pendingChildren = object._pendingChildren;
         object._pendingChildren = [];
         pendingChildren.forEach(insert);
@@ -277,13 +277,13 @@ export class KritzelClipboardManager {
     return inserted;
   }
 
-  private async materializeImageFiles(intent: Extract<PasteIntent, { type: 'image_files' }>): Promise<KritzelBaseObject<any>[] | null> {
+  private async materializeImageFiles(intent: Extract<PasteIntent, { type: 'image_files' }>): Promise<UpdrawBaseObject<any>[] | null> {
     try {
       const scale = this._core.store.state.scale;
       const offset = 25 / scale;
       const preparePromises = intent.files.map(async (file, index) => {
         const preparedFile = await this.prepareImageFile(file);
-        return KritzelImage.fromBlob(this._core, preparedFile, {
+        return UpdrawImage.fromBlob(this._core, preparedFile, {
           translateX: index * offset,
           translateY: index * offset,
         });
@@ -297,15 +297,15 @@ export class KritzelClipboardManager {
   }
 
   private async prepareImageFile(file: File): Promise<File> {
-    if (KritzelImageFileHelper.isGifFile(file)) {
+    if (UpdrawImageFileHelper.isGifFile(file)) {
       return file;
     }
 
     return imageCompression(file, { maxWidthOrHeight: 1200 });
   }
 
-  private async materializePlainText(intent: Extract<PasteIntent, { type: 'plain_text' }>): Promise<KritzelBaseObject<any>[] | null> {
-    const textObject = KritzelText.create(this._core);
+  private async materializePlainText(intent: Extract<PasteIntent, { type: 'plain_text' }>): Promise<UpdrawBaseObject<any>[] | null> {
+    const textObject = UpdrawText.create(this._core);
 
     const paragraphs = intent.text.split('\n').map(line => {
       if (line.length === 0) {
@@ -331,10 +331,10 @@ export class KritzelClipboardManager {
   async paste(x?: number, y?: number, event?: ClipboardEvent): Promise<void> {
     const pasteIntent = await this._pasteIntentRegistry.resolve(event);
 
-    let objects: KritzelBaseObject<any>[] | null = null;
+    let objects: UpdrawBaseObject<any>[] | null = null;
 
-    if (pasteIntent.type === 'kritzel_objects') {
-      objects = this.materializeKritzelObjects(pasteIntent);
+    if (pasteIntent.type === 'updraw_objects') {
+      objects = this.materializeUpdrawObjects(pasteIntent);
     } else if (pasteIntent.type === 'image_files') {
       objects = await this.materializeImageFiles(pasteIntent);
     } else if (pasteIntent.type === 'plain_text') {
@@ -348,7 +348,7 @@ export class KritzelClipboardManager {
     await this.insertMaterializedObjects(objects, pasteIntent, x, y);
   }
 
-  private async insertMaterializedObjects(copiedObjects: KritzelBaseObject<any>[], pasteIntent: PasteIntent, x?: number, y?: number): Promise<void> {
+  private async insertMaterializedObjects(copiedObjects: UpdrawBaseObject<any>[], pasteIntent: PasteIntent, x?: number, y?: number): Promise<void> {
     const activeWorkspace = this._core.store.state.activeWorkspace;
     if (!activeWorkspace) {
       return;
@@ -358,7 +358,7 @@ export class KritzelClipboardManager {
     // This happens if the user specifically pasted from a different workspace,
     // OR if we're inserting brand new external items (like images or text).
     const isDifferentWorkspace = copiedObjects.some(obj => obj.workspaceId !== activeWorkspace.id);
-    const isNewExternalContent = pasteIntent.type !== 'kritzel_objects';
+    const isNewExternalContent = pasteIntent.type !== 'updraw_objects';
     const shouldCenterInViewport = isDifferentWorkspace || isNewExternalContent;
     const hasExplicitPastePosition = x !== undefined && y !== undefined;
 
@@ -389,7 +389,7 @@ export class KritzelClipboardManager {
     this._core.removeSelectionGroup();
     this._core.removeSelectionBox();
 
-    const selectionGroup = KritzelSelectionGroup.create(this._core);
+    const selectionGroup = UpdrawSelectionGroup.create(this._core);
 
     this._core.store.objects.transaction(() => {
       this.insertCopies(copiedObjects, offsetX, offsetY);
@@ -414,7 +414,7 @@ export class KritzelClipboardManager {
     this._core.store.state.isSelecting = false;
 
     // Use a double requestAnimationFrame to ensure the browser has fully rendered the DOM,
-    // and objects like KritzelText have executed their own internal size-adjustment rAF calls.
+    // and objects like UpdrawText have executed their own internal size-adjustment rAF calls.
     await new Promise<void>(resolve => {
       requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
     });

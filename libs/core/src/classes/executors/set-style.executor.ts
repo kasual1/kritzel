@@ -1,40 +1,40 @@
-import type { KritzelAgenticObjectStyle, KritzelAgenticSetStyleAction } from '../../interfaces/agentic-action.interface';
-import type { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelShape } from '../objects/shape.class';
-import { KritzelText } from '../objects/text.class';
-import { KritzelPath } from '../objects/path.class';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelGroup } from '../objects/group.class';
+import type { UpdrawAgenticObjectStyle, UpdrawAgenticSetStyleAction } from '../../interfaces/agentic-action.interface';
+import type { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpdrawShape } from '../objects/shape.class';
+import { UpdrawText } from '../objects/text.class';
+import { UpdrawPath } from '../objects/path.class';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawGroup } from '../objects/group.class';
 import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES } from '../../constants/agentic-action.constants';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
 import { collectWithDescendants } from '../../helpers/agentic-conflict.helper';
 import { toThemeColor } from '../../helpers/agentic-style.helper';
 import { flyToObjects, prepareTopLevelTargets } from './select.executor';
 import { AGENTIC_OBJECT_STYLE_KEYS, assertObjectIds, assertStyle, uniqueIds } from '../../helpers/agentic-validation.helper';
 
-type AnyObject = KritzelBaseObject<any>;
+type AnyObject = UpdrawBaseObject<any>;
 
 /** The object properties a style sets on one object; fields that don't apply to its type are left out. */
-export function stylePatchFor(object: AnyObject, style: KritzelAgenticObjectStyle): Record<string, unknown> {
+export function stylePatchFor(object: AnyObject, style: UpdrawAgenticObjectStyle): Record<string, unknown> {
   const patch: Record<string, unknown> = {};
   if (style.opacity !== undefined) {
     patch.opacity = style.opacity;
   }
-  if (object instanceof KritzelShape) {
+  if (object instanceof UpdrawShape) {
     if (style.fillColor !== undefined) patch.fillColor = toThemeColor(style.fillColor);
     if (style.strokeColor !== undefined) patch.strokeColor = toThemeColor(style.strokeColor);
     if (style.strokeWidth !== undefined) patch.strokeWidth = style.strokeWidth;
     if (style.fontSize !== undefined) patch.fontSize = style.fontSize;
     if (style.fontFamily !== undefined) patch.fontFamily = style.fontFamily;
     if (style.fontColor !== undefined) patch.fontColor = toThemeColor(style.fontColor);
-  } else if (object instanceof KritzelText) {
+  } else if (object instanceof UpdrawText) {
     if (style.fontSize !== undefined) patch.fontSize = style.fontSize;
     if (style.fontFamily !== undefined) patch.fontFamily = style.fontFamily;
     if (style.fontColor !== undefined) patch.fontColor = toThemeColor(style.fontColor);
-  } else if (object instanceof KritzelPath) {
+  } else if (object instanceof UpdrawPath) {
     if (style.strokeColor !== undefined) patch.fill = toThemeColor(style.strokeColor);
     if (style.strokeWidth !== undefined) patch.strokeWidth = style.strokeWidth;
-  } else if (object instanceof KritzelLine) {
+  } else if (object instanceof UpdrawLine) {
     if (style.strokeColor !== undefined) patch.stroke = toThemeColor(style.strokeColor);
     if (style.strokeWidth !== undefined) patch.strokeWidth = style.strokeWidth;
     if (style.arrows !== undefined) {
@@ -64,7 +64,7 @@ function applyPatch(object: AnyObject, patch: Record<string, unknown>): void {
 }
 
 /** `setStyle`: clicks the objects and restyles them; groups style their children. */
-export const setStyleExecutor: KritzelAgenticActionExecutor<KritzelAgenticSetStyleAction> = {
+export const setStyleExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticSetStyleAction> = {
   mutates: true,
 
   validate(action) {
@@ -80,7 +80,7 @@ export const setStyleExecutor: KritzelAgenticActionExecutor<KritzelAgenticSetSty
     const map = run.map!;
     const applies = Array.from(collectWithDescendants(map, preparation.targetIds)).some(id => {
       const object = map.findById(id);
-      return !!object && !(object instanceof KritzelGroup) && Object.keys(stylePatchFor(object, action.style)).length > 0;
+      return !!object && !(object instanceof UpdrawGroup) && Object.keys(stylePatchFor(object, action.style)).length > 0;
     });
     return applies ? preparation : { reason: 'invalid-target', objectIds: preparation.targetIds };
   },
@@ -96,7 +96,7 @@ export const setStyleExecutor: KritzelAgenticActionExecutor<KritzelAgenticSetSty
     run.mutate(() => {
       for (const id of collectWithDescendants(map, ids)) {
         const object = map.findById(id);
-        if (!object || object instanceof KritzelGroup) {
+        if (!object || object instanceof UpdrawGroup) {
           continue;
         }
         const patch = stylePatchFor(object, action.style);
@@ -107,7 +107,7 @@ export const setStyleExecutor: KritzelAgenticActionExecutor<KritzelAgenticSetSty
         applyPatch(object, patch);
         map.update(object);
         run.changedProperties.set(id, keys);
-        if (object instanceof KritzelText && (patch.fontSize !== undefined || patch.fontFamily !== undefined)) {
+        if (object instanceof UpdrawText && (patch.fontSize !== undefined || patch.fontFamily !== undefined)) {
           remeasure.push(id);
         }
       }
@@ -115,18 +115,18 @@ export const setStyleExecutor: KritzelAgenticActionExecutor<KritzelAgenticSetSty
     run.assertActive();
 
     // Text sizes come from the DOM: measure on-screen texts again once they rendered the new font.
-    const visible = remeasure.filter(id => (map.findById(id) as KritzelText | undefined)?.isInViewport());
+    const visible = remeasure.filter(id => (map.findById(id) as UpdrawText | undefined)?.isInViewport());
     if (visible.length > 0) {
       core.rerender();
       for (let frame = 0; frame < AGENTIC_ACTION_MOUNT_WAIT_FRAMES; frame++) {
         await run.nextRenderedFrame();
-        if (visible.every(id => (map.findById(id) as KritzelText | undefined)?.isMounted)) {
+        if (visible.every(id => (map.findById(id) as UpdrawText | undefined)?.isMounted)) {
           break;
         }
       }
       run.mutate(() => {
         for (const id of visible) {
-          const text = map.findById(id) as KritzelText | undefined;
+          const text = map.findById(id) as UpdrawText | undefined;
           if (text) {
             text.adjustSizeOnInput();
             map.update(text);

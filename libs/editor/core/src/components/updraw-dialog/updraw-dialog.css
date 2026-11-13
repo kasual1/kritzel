@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--kritzel-dialog-backdrop-color, rgba(0, 0, 0, 0.5));
+  background-color: var(--updraw-dialog-backdrop-color, rgba(0, 0, 0, 0.5));
   opacity: 1;
   transition: opacity 150ms ease-out;
 }
@@ -30,19 +30,19 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  background-color: var(--kritzel-dialog-background-color, #ffffff);
-  border-radius: var(--kritzel-dialog-border-radius, 12px);
-  box-shadow: var(--kritzel-dialog-box-shadow, 0 4px 20px rgba(0, 0, 0, 0.15));
-  border: var(--kritzel-dialog-border, 1px solid #ebebeb);
-  max-height: var(--kritzel-dialog-max-height, 90vh);
-  max-width: var(--kritzel-dialog-max-width, 90vw);
+  background-color: var(--updraw-dialog-background-color, #ffffff);
+  border-radius: var(--updraw-dialog-border-radius, 12px);
+  box-shadow: var(--updraw-dialog-box-shadow, 0 4px 20px rgba(0, 0, 0, 0.15));
+  border: var(--updraw-dialog-border, 1px solid #ebebeb);
+  max-height: var(--updraw-dialog-max-height, 90vh);
+  max-width: var(--updraw-dialog-max-width, 90vw);
   overflow: hidden;
   transform: scale(1);
   opacity: 1;
   transition:
     transform 200ms ease-out,
     opacity 200ms ease-out;
-  font-family: var(--kritzel-dialog-font-family, var(--kritzel-global-font-family, sans-serif));
+  font-family: var(--updraw-dialog-font-family, var(--updraw-global-font-family, sans-serif));
 }
 
 .dialog-content.is-animating {
@@ -52,18 +52,18 @@
 
 /* Size variants */
 .dialog-content.size-small {
-  width: var(--kritzel-dialog-width-small, 320px);
-  height: var(--kritzel-dialog-height-small, auto);
+  width: var(--updraw-dialog-width-small, 320px);
+  height: var(--updraw-dialog-height-small, auto);
 }
 
 .dialog-content.size-medium {
-  width: var(--kritzel-dialog-width-medium, 480px);
-  height: var(--kritzel-dialog-height-medium, auto);
+  width: var(--updraw-dialog-width-medium, 480px);
+  height: var(--updraw-dialog-height-medium, auto);
 }
 
 .dialog-content.size-large {
-  width: var(--kritzel-dialog-width-large, 640px);
-  height: var(--kritzel-dialog-height-large, auto);
+  width: var(--updraw-dialog-width-large, 640px);
+  height: var(--updraw-dialog-height-large, auto);
 }
 
 .dialog-content.size-fullscreen {
@@ -132,16 +132,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--kritzel-dialog-header-padding, 16px 20px);
-  border-bottom: var(--kritzel-dialog-header-border, 1px solid #ebebeb);
+  padding: var(--updraw-dialog-header-padding, 16px 20px);
+  border-bottom: var(--updraw-dialog-header-border, 1px solid #ebebeb);
   gap: 12px;
 }
 
 .dialog-title {
   margin: 0;
-  font-size: var(--kritzel-dialog-title-font-size, 18px);
-  font-weight: var(--kritzel-dialog-title-font-weight, 600);
-  color: var(--kritzel-dialog-title-color, #1a1a1a);
+  font-size: var(--updraw-dialog-title-font-size, 18px);
+  font-weight: var(--updraw-dialog-title-font-weight, 600);
+  color: var(--updraw-dialog-title-color, #1a1a1a);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -156,10 +156,10 @@
   height: 32px;
   padding: 0;
   border: none;
-  border-radius: var(--kritzel-dialog-close-button-border-radius, 6px);
-  background-color: var(--kritzel-dialog-close-button-background, transparent);
-  color: var(--kritzel-dialog-close-button-color, #666666);
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  border-radius: var(--updraw-dialog-close-button-border-radius, 6px);
+  background-color: var(--updraw-dialog-close-button-background, transparent);
+  color: var(--updraw-dialog-close-button-color, #666666);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   transition:
     background-color 150ms ease,
     color 150ms ease;
@@ -168,12 +168,12 @@
 }
 
 .close-button:hover {
-  background-color: var(--kritzel-dialog-close-button-hover-background, #f5f5f5);
-  color: var(--kritzel-dialog-close-button-hover-color, #1a1a1a);
+  background-color: var(--updraw-dialog-close-button-hover-background, #f5f5f5);
+  color: var(--updraw-dialog-close-button-hover-color, #1a1a1a);
 }
 
 .close-button:active {
-  background-color: var(--kritzel-dialog-close-button-active-background, #ebebeb);
+  background-color: var(--updraw-dialog-close-button-active-background, #ebebeb);
 }
 
 .close-button:focus-visible {
@@ -182,11 +182,11 @@
 }
 
 .dialog-body {
-  padding: var(--kritzel-dialog-body-padding, 20px);
+  padding: var(--updraw-dialog-body-padding, 20px);
   overflow-y: auto;
   flex: 1;
   min-height: 0;
-  scrollbar-color: var(--kritzel-global-scrollbar-thumb-color, #ebebeb) transparent;
+  scrollbar-color: var(--updraw-global-scrollbar-thumb-color, #ebebeb) transparent;
   scrollbar-width: thin;
 }
 
@@ -194,9 +194,9 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--kritzel-dialog-footer-gap, 8px);
-  padding: var(--kritzel-dialog-footer-padding, 16px 20px);
-  border-top: var(--kritzel-dialog-footer-border, 1px solid #ebebeb);
+  gap: var(--updraw-dialog-footer-gap, 8px);
+  padding: var(--updraw-dialog-footer-padding, 16px 20px);
+  border-top: var(--updraw-dialog-footer-border, 1px solid #ebebeb);
 }
 
 /* Slotted content styling hints */

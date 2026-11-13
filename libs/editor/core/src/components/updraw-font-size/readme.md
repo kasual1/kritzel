@@ -1,4 +1,4 @@
-# kritzel-font-size
+# updraw-font-size
 
 
 
@@ -25,18 +25,18 @@
 
 ### Used by
 
- - [kritzel-tool-config](../kritzel-tool-config)
+ - [updraw-tool-config](../updraw-tool-config)
 
 ### Depends on
 
-- [kritzel-font](../kritzel-font)
+- [updraw-font](../updraw-font)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-font-size --> kritzel-font
-  kritzel-tool-config --> kritzel-font-size
-  style kritzel-font-size fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-font-size --> updraw-font
+  updraw-tool-config --> updraw-font-size
+  style updraw-font-size fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

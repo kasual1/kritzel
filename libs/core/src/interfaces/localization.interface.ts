@@ -13,7 +13,7 @@ export type LocaleCode = 'en' | 'de' | 'fr' | (string & NonNullable<unknown>);
  * safety: typos in term keys are caught by the compiler and editors can
  * autocomplete the available keys.
  */
-export interface KritzelTerms {
+export interface UpdrawTerms {
   // Context menu
   'menu.copy': string;
   'menu.cut': string;
@@ -156,36 +156,36 @@ export interface KritzelTerms {
 }
 
 /**
- * A localization key. Restricted to the known {@link KritzelTerms} keys so that
+ * A localization key. Restricted to the known {@link UpdrawTerms} keys so that
  * lookups are validated at compile time.
  */
-export type KritzelTermKey = keyof KritzelTerms;
+export type UpdrawTermKey = keyof UpdrawTerms;
 
 /**
  * Definition of a single locale.
  *
- * `terms` is a `Partial<KritzelTerms>`, so a locale may override only a subset
+ * `terms` is a `Partial<UpdrawTerms>`, so a locale may override only a subset
  * of the available terms. Any missing term is resolved through the fallback
- * chain (see {@link KritzelLocalizationManager}). This mirrors the theming API,
+ * chain (see {@link UpdrawLocalizationManager}). This mirrors the theming API,
  * allowing consumers to spread a built-in locale and override specific keys:
  *
  * ```ts
- * const myDe: KritzelLocale = {
+ * const myDe: UpdrawLocale = {
  *   code: 'de',
  *   terms: { ...DE_LOCALE.terms, 'menu.copy': 'Duplizieren' },
  * };
  * ```
  */
-export interface KritzelLocale {
+export interface UpdrawLocale {
   /** Canonical locale code, e.g. 'en', 'de', 'fr'. */
   code: LocaleCode;
   /** Optional human-readable display name shown in the language selector, e.g. 'Deutsch'. */
   label?: string;
   /** Partial map of term keys to translated strings. Missing keys fall back. */
-  terms: Partial<KritzelTerms>;
+  terms: Partial<UpdrawTerms>;
 }
 
 /**
  * Values used to interpolate `{placeholder}` tokens inside a translated term.
  */
-export type KritzelTermVars = Record<string, string | number>;
+export type UpdrawTermVars = Record<string, string | number>;

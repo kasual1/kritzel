@@ -5,7 +5,7 @@ export interface UserData {
   name: string;
 }
 
-const STORAGE_KEY = 'kritzel_user';
+const STORAGE_KEY = 'updraw_user';
 
 export const userResolver: ResolveFn<UserData> = () => {
   const stored = localStorage.getItem(STORAGE_KEY);

@@ -1,20 +1,20 @@
-import { KritzelSelectionTool } from './selection-tool.class';
-import { KritzelCore } from '../core/core.class';
-import { KritzelMoveHandler } from '../handlers/move.handler';
-import { KritzelResizeHandler } from '../handlers/resize.handler';
-import { KritzelRotationHandler } from '../handlers/rotation.handler';
-import { KritzelSelectionHandler } from '../handlers/selection.handler';
-import { KritzelHoverHandler } from '../handlers/hover.handler';
-import { KritzelLineHandleHandler } from '../handlers/line-handle.handler';
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelColorHelper } from '../../helpers/color.helper';
-import { KritzelPath } from '../objects/path.class';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelText } from '../objects/text.class';
-import { KritzelShape } from '../objects/shape.class';
-import { KritzelImage } from '../objects/image.class';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelDynamicObject } from '../objects/dynamic-object.class';
+import { UpdrawSelectionTool } from './selection-tool.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawMoveHandler } from '../handlers/move.handler';
+import { UpdrawResizeHandler } from '../handlers/resize.handler';
+import { UpdrawRotationHandler } from '../handlers/rotation.handler';
+import { UpdrawSelectionHandler } from '../handlers/selection.handler';
+import { UpdrawHoverHandler } from '../handlers/hover.handler';
+import { UpdrawLineHandleHandler } from '../handlers/line-handle.handler';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpdrawColorHelper } from '../../helpers/color.helper';
+import { UpdrawPath } from '../objects/path.class';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawText } from '../objects/text.class';
+import { UpdrawShape } from '../objects/shape.class';
+import { UpdrawImage } from '../objects/image.class';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawDynamicObject } from '../objects/dynamic-object.class';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 jest.mock('../core/core.class');
@@ -28,13 +28,13 @@ jest.mock('../../helpers/event.helper');
 jest.mock('../../helpers/color.helper');
 jest.mock('../objects/selection-group.class');
 
-describe('KritzelSelectionTool', () => {
-  let tool: KritzelSelectionTool;
+describe('UpdrawSelectionTool', () => {
+  let tool: UpdrawSelectionTool;
   let mockCore: any;
   let mockState: any;
 
   const createMockPath = (props: any = {}) => {
-    const obj = Object.create(KritzelPath.prototype);
+    const obj = Object.create(UpdrawPath.prototype);
     return Object.assign(obj, {
       fill: DEFAULT_COLOR_PALETTE[0],
       strokeWidth: 6,
@@ -44,9 +44,9 @@ describe('KritzelSelectionTool', () => {
   };
 
   const createMockLine = (props: any = {}) => {
-    const obj = Object.create(KritzelLine.prototype);
+    const obj = Object.create(UpdrawLine.prototype);
     return Object.assign(obj, {
-      __class__: 'KritzelLine',
+      __class__: 'UpdrawLine',
       stroke: DEFAULT_COLOR_PALETTE[1],
       strokeWidth: 4,
       opacity: 1,
@@ -56,7 +56,7 @@ describe('KritzelSelectionTool', () => {
   };
 
   const createMockText = (props: any = {}) => {
-    const obj = Object.create(KritzelText.prototype);
+    const obj = Object.create(UpdrawText.prototype);
     return Object.assign(obj, {
       fontColor: DEFAULT_COLOR_PALETTE[2],
       fontSize: 16,
@@ -67,7 +67,7 @@ describe('KritzelSelectionTool', () => {
   };
 
   const createMockShape = (props: any = {}) => {
-    const obj = Object.create(KritzelShape.prototype);
+    const obj = Object.create(UpdrawShape.prototype);
     return Object.assign(obj, {
       strokeColor: DEFAULT_COLOR_PALETTE[0],
       strokeWidth: 2,
@@ -79,7 +79,7 @@ describe('KritzelSelectionTool', () => {
   };
 
   const createMockImage = (props: any = {}) => {
-    const obj = Object.create(KritzelImage.prototype);
+    const obj = Object.create(UpdrawImage.prototype);
     return Object.assign(obj, {
       opacity: 1,
       ...props,
@@ -87,8 +87,8 @@ describe('KritzelSelectionTool', () => {
   };
 
   const createMockGroup = (children: any[]) => {
-    const obj = Object.create(KritzelGroup.prototype);
-    obj.__class__ = 'KritzelGroup';
+    const obj = Object.create(UpdrawGroup.prototype);
+    obj.__class__ = 'UpdrawGroup';
     Object.defineProperty(obj, 'children', { value: children, configurable: true });
     return obj;
   };
@@ -190,12 +190,12 @@ describe('KritzelSelectionTool', () => {
       removeSelectionGroup: jest.fn(),
       addSelectionGroup: jest.fn(),
       getCanvasPoint: jest.fn().mockReturnValue({ x: 100, y: 200 }),
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
-    (KritzelColorHelper.determineTextColor as jest.Mock).mockReturnValue({ light: '#ffffff', dark: '#000000' });
+    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpdrawColorHelper.determineTextColor as jest.Mock).mockReturnValue({ light: '#ffffff', dark: '#000000' });
 
-    tool = new KritzelSelectionTool(mockCore);
+    tool = new UpdrawSelectionTool(mockCore);
   });
 
   afterEach(() => {
@@ -208,12 +208,12 @@ describe('KritzelSelectionTool', () => {
 
   describe('constructor', () => {
     it('should initialize all handlers', () => {
-      expect(KritzelSelectionHandler).toHaveBeenCalledWith(mockCore);
-      expect(KritzelMoveHandler).toHaveBeenCalledWith(mockCore);
-      expect(KritzelHoverHandler).toHaveBeenCalledWith(mockCore);
-      expect(KritzelResizeHandler).toHaveBeenCalledWith(mockCore);
-      expect(KritzelRotationHandler).toHaveBeenCalledWith(mockCore);
-      expect(KritzelLineHandleHandler).toHaveBeenCalledWith(mockCore);
+      expect(UpdrawSelectionHandler).toHaveBeenCalledWith(mockCore);
+      expect(UpdrawMoveHandler).toHaveBeenCalledWith(mockCore);
+      expect(UpdrawHoverHandler).toHaveBeenCalledWith(mockCore);
+      expect(UpdrawResizeHandler).toHaveBeenCalledWith(mockCore);
+      expect(UpdrawRotationHandler).toHaveBeenCalledWith(mockCore);
+      expect(UpdrawLineHandleHandler).toHaveBeenCalledWith(mockCore);
     });
 
     it('should have default palette matching DEFAULT_COLOR_PALETTE', () => {
@@ -296,28 +296,28 @@ describe('KritzelSelectionTool', () => {
       expect(tool.color).toEqual(DEFAULT_COLOR_PALETTE[0]);
     });
 
-    it('should return fill from KritzelPath', () => {
+    it('should return fill from UpdrawPath', () => {
       const fill = { light: '#ff0000', dark: '#ff0000' };
       setSelectionGroupObjects([createMockPath({ fill })]);
 
       expect(tool.color).toEqual(fill);
     });
 
-    it('should return stroke from KritzelLine', () => {
+    it('should return stroke from UpdrawLine', () => {
       const stroke = { light: '#00ff00', dark: '#00ff00' };
       setSelectionGroupObjects([createMockLine({ stroke })]);
 
       expect(tool.color).toEqual(stroke);
     });
 
-    it('should return fontColor from KritzelText', () => {
+    it('should return fontColor from UpdrawText', () => {
       const fontColor = { light: '#0000ff', dark: '#0000ff' };
       setSelectionGroupObjects([createMockText({ fontColor })]);
 
       expect(tool.color).toEqual(fontColor);
     });
 
-    it('should return strokeColor from KritzelShape', () => {
+    it('should return strokeColor from UpdrawShape', () => {
       const strokeColor = { light: '#ff00ff', dark: '#ff00ff' };
       setSelectionGroupObjects([createMockShape({ strokeColor })]);
 
@@ -351,7 +351,7 @@ describe('KritzelSelectionTool', () => {
   // ============================================
 
   describe('color setter', () => {
-    it('should update fill on KritzelPath', () => {
+    it('should update fill on UpdrawPath', () => {
       const path = createMockPath();
       setSelectionGroupObjects([path]);
       const newColor = { light: '#ff0000', dark: '#ff0000' };
@@ -362,7 +362,7 @@ describe('KritzelSelectionTool', () => {
       expect(mockCore.rerender).toHaveBeenCalled();
     });
 
-    it('should update stroke on KritzelLine', () => {
+    it('should update stroke on UpdrawLine', () => {
       const line = createMockLine();
       setSelectionGroupObjects([line]);
       const newColor = { light: '#00ff00', dark: '#00ff00' };
@@ -372,7 +372,7 @@ describe('KritzelSelectionTool', () => {
       expect(mockCore.updateObject).toHaveBeenCalledWith(line, { stroke: newColor });
     });
 
-    it('should update fontColor on KritzelText', () => {
+    it('should update fontColor on UpdrawText', () => {
       const text = createMockText();
       setSelectionGroupObjects([text]);
       const newColor = { light: '#0000ff', dark: '#0000ff' };
@@ -382,7 +382,7 @@ describe('KritzelSelectionTool', () => {
       expect(mockCore.updateObject).toHaveBeenCalledWith(text, { fontColor: newColor });
     });
 
-    it('should update strokeColor on KritzelShape', () => {
+    it('should update strokeColor on UpdrawShape', () => {
       const shape = createMockShape();
       setSelectionGroupObjects([shape]);
       const newColor = { light: '#ff00ff', dark: '#ff00ff' };
@@ -459,25 +459,25 @@ describe('KritzelSelectionTool', () => {
       expect(tool.size).toBe(1);
     });
 
-    it('should return strokeWidth from KritzelPath', () => {
+    it('should return strokeWidth from UpdrawPath', () => {
       setSelectionGroupObjects([createMockPath({ strokeWidth: 8 })]);
 
       expect(tool.size).toBe(8);
     });
 
-    it('should return strokeWidth from KritzelLine', () => {
+    it('should return strokeWidth from UpdrawLine', () => {
       setSelectionGroupObjects([createMockLine({ strokeWidth: 3 })]);
 
       expect(tool.size).toBe(3);
     });
 
-    it('should return fontSize from KritzelText', () => {
+    it('should return fontSize from UpdrawText', () => {
       setSelectionGroupObjects([createMockText({ fontSize: 24 })]);
 
       expect(tool.size).toBe(24);
     });
 
-    it('should return strokeWidth from KritzelShape', () => {
+    it('should return strokeWidth from UpdrawShape', () => {
       setSelectionGroupObjects([createMockShape({ strokeWidth: 5 })]);
 
       expect(tool.size).toBe(5);
@@ -491,7 +491,7 @@ describe('KritzelSelectionTool', () => {
   });
 
   describe('size setter', () => {
-    it('should update strokeWidth on KritzelPath', () => {
+    it('should update strokeWidth on UpdrawPath', () => {
       const path = createMockPath();
       setSelectionGroupObjects([path]);
 
@@ -501,7 +501,7 @@ describe('KritzelSelectionTool', () => {
       expect(mockCore.rerender).toHaveBeenCalled();
     });
 
-    it('should update strokeWidth on KritzelLine', () => {
+    it('should update strokeWidth on UpdrawLine', () => {
       const line = createMockLine();
       setSelectionGroupObjects([line]);
 
@@ -510,7 +510,7 @@ describe('KritzelSelectionTool', () => {
       expect(mockCore.updateObject).toHaveBeenCalledWith(line, { strokeWidth: 5 });
     });
 
-    it('should update fontSize on KritzelText', () => {
+    it('should update fontSize on UpdrawText', () => {
       const text = createMockText();
       setSelectionGroupObjects([text]);
 
@@ -519,7 +519,7 @@ describe('KritzelSelectionTool', () => {
       expect(mockCore.updateObject).toHaveBeenCalledWith(text, { fontSize: 20 });
     });
 
-    it('should update strokeWidth on KritzelShape', () => {
+    it('should update strokeWidth on UpdrawShape', () => {
       const shape = createMockShape();
       setSelectionGroupObjects([shape]);
 
@@ -546,7 +546,7 @@ describe('KritzelSelectionTool', () => {
       expect(tool.fillColor).toEqual({ light: 'transparent', dark: 'transparent' });
     });
 
-    it('should return fillColor from KritzelShape', () => {
+    it('should return fillColor from UpdrawShape', () => {
       const fillColor = { light: '#ff0000', dark: '#ff0000' };
       setSelectionGroupObjects([createMockShape({ fillColor })]);
 
@@ -555,7 +555,7 @@ describe('KritzelSelectionTool', () => {
   });
 
   describe('fillColor setter', () => {
-    it('should update fillColor and fontColor on KritzelShape', () => {
+    it('should update fillColor and fontColor on UpdrawShape', () => {
       const shape = createMockShape();
       setSelectionGroupObjects([shape]);
       const newFill = { light: '#00ff00', dark: '#00ff00' };
@@ -563,7 +563,7 @@ describe('KritzelSelectionTool', () => {
 
       tool.fillColor = newFill;
 
-      expect(KritzelColorHelper.determineTextColor).toHaveBeenCalledWith(newFill);
+      expect(UpdrawColorHelper.determineTextColor).toHaveBeenCalledWith(newFill);
       expect(mockCore.updateObject).toHaveBeenCalledWith(shape, { fillColor: newFill, fontColor: expectedTextColor });
     });
 
@@ -609,13 +609,13 @@ describe('KritzelSelectionTool', () => {
       expect(tool.fontFamily).toBe('Arial');
     });
 
-    it('should return fontFamily from KritzelText', () => {
+    it('should return fontFamily from UpdrawText', () => {
       setSelectionGroupObjects([createMockText({ fontFamily: 'Courier' })]);
 
       expect(tool.fontFamily).toBe('Courier');
     });
 
-    it('should return fontFamily from KritzelShape', () => {
+    it('should return fontFamily from UpdrawShape', () => {
       setSelectionGroupObjects([createMockShape({ fontFamily: 'Georgia' })]);
 
       expect(tool.fontFamily).toBe('Georgia');
@@ -629,7 +629,7 @@ describe('KritzelSelectionTool', () => {
   });
 
   describe('fontFamily setter', () => {
-    it('should update fontFamily on KritzelText', () => {
+    it('should update fontFamily on UpdrawText', () => {
       const text = createMockText();
       setSelectionGroupObjects([text]);
 
@@ -639,7 +639,7 @@ describe('KritzelSelectionTool', () => {
       expect(mockCore.rerender).toHaveBeenCalled();
     });
 
-    it('should update fontFamily on KritzelShape', () => {
+    it('should update fontFamily on UpdrawShape', () => {
       const shape = createMockShape();
       setSelectionGroupObjects([shape]);
 
@@ -660,7 +660,7 @@ describe('KritzelSelectionTool', () => {
       expect(tool.arrows).toEqual({ start: { enabled: false }, end: { enabled: false } });
     });
 
-    it('should return arrows from KritzelLine', () => {
+    it('should return arrows from UpdrawLine', () => {
       const arrows = { start: { enabled: true }, end: { enabled: false } };
       setSelectionGroupObjects([createMockLine({ arrows })]);
 
@@ -669,7 +669,7 @@ describe('KritzelSelectionTool', () => {
   });
 
   describe('arrows setter', () => {
-    it('should update arrows on KritzelLine', () => {
+    it('should update arrows on UpdrawLine', () => {
       const line = createMockLine();
       setSelectionGroupObjects([line]);
       const newArrows = { start: { enabled: false }, end: { enabled: true } };
@@ -854,7 +854,7 @@ describe('KritzelSelectionTool', () => {
     });
 
     it('should not process left-click logic for non-left click', () => {
-      (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+      (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
       setSelectionGroupObjects([createMockPath()]);
 
       tool.handlePointerDown(createMouseEvent({ button: 2 }));
@@ -865,8 +865,8 @@ describe('KritzelSelectionTool', () => {
     });
 
     it('should keep current selection group when clicking an already selected dynamic object', () => {
-      const customEl = Object.create(KritzelDynamicObject.prototype);
-      customEl.__class__ = 'KritzelDynamicObject';
+      const customEl = Object.create(UpdrawDynamicObject.prototype);
+      customEl.__class__ = 'UpdrawDynamicObject';
       customEl.id = 'custom-1';
       customEl.hitTest = jest.fn().mockReturnValue(true);
 
@@ -1099,10 +1099,10 @@ describe('KritzelSelectionTool', () => {
     });
   });
 
-  describe('KritzelDynamicObject interaction semantics', () => {
+  describe('UpdrawDynamicObject interaction semantics', () => {
     it('should allow normal selection/move handlers for unselected dynamic objects', () => {
-      const customEl = Object.create(KritzelDynamicObject.prototype);
-      customEl.__class__ = 'KritzelDynamicObject';
+      const customEl = Object.create(UpdrawDynamicObject.prototype);
+      customEl.__class__ = 'UpdrawDynamicObject';
       customEl.id = 'custom-1';
       customEl.isSelected = false;
       customEl.isInteractive = false;
@@ -1122,8 +1122,8 @@ describe('KritzelSelectionTool', () => {
     });
 
     it('should skip normal handlers for selected single dynamic objects', () => {
-      const customEl = Object.create(KritzelDynamicObject.prototype);
-      customEl.__class__ = 'KritzelDynamicObject';
+      const customEl = Object.create(UpdrawDynamicObject.prototype);
+      customEl.__class__ = 'UpdrawDynamicObject';
       customEl.id = 'custom-1';
       customEl.isSelected = true;
       customEl.isInteractive = false;
@@ -1149,8 +1149,8 @@ describe('KritzelSelectionTool', () => {
     });
 
     it('should keep handlers active for dynamic objects during multi-selection', () => {
-      const customEl = Object.create(KritzelDynamicObject.prototype);
-      customEl.__class__ = 'KritzelDynamicObject';
+      const customEl = Object.create(UpdrawDynamicObject.prototype);
+      customEl.__class__ = 'UpdrawDynamicObject';
       customEl.id = 'custom-1';
       customEl.isSelected = true;
       customEl.isInteractive = false;
@@ -1174,9 +1174,9 @@ describe('KritzelSelectionTool', () => {
       expect(tool.selectionHandler.handlePointerDown).toHaveBeenCalled();
     });
 
-    it('should not affect KritzelText isInteractive behavior', () => {
-      const text = Object.create(KritzelText.prototype);
-      text.__class__ = 'KritzelText';
+    it('should not affect UpdrawText isInteractive behavior', () => {
+      const text = Object.create(UpdrawText.prototype);
+      text.__class__ = 'UpdrawText';
       text.isInteractive = true;
 
       const selectionGroup = Object.create(Object.prototype);

@@ -1,14 +1,14 @@
 import {
-  KritzelBaseObject,
-  KritzelLine,
-  KritzelPath,
-  KritzelShape,
+  UpdrawBaseObject,
+  UpdrawLine,
+  UpdrawPath,
+  UpdrawShape,
   ShapeType,
-} from "@kritzel/react-editor";
+} from "@updraw/react-editor";
 
-export function createSeedObjects(): KritzelBaseObject[] {
+export function createSeedObjects(): UpdrawBaseObject[] {
   return [
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -18,7 +18,7 @@ export function createSeedObjects(): KritzelBaseObject[] {
       strokeColor: { light: "#c62828", dark: "#ef9a9a" },
       strokeWidth: 3,
     }),
-    new KritzelShape({
+    new UpdrawShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -28,7 +28,7 @@ export function createSeedObjects(): KritzelBaseObject[] {
       strokeColor: { light: "#1565c0", dark: "#90caf9" },
       strokeWidth: 3,
     }),
-    new KritzelLine({
+    new UpdrawLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -36,7 +36,7 @@ export function createSeedObjects(): KritzelBaseObject[] {
       stroke: { light: "#4caf50", dark: "#81c784" },
       strokeWidth: 3,
     }),
-    new KritzelPath({
+    new UpdrawPath({
       points: [
         [0, 0, 0.5],
         [15, -20, 0.5],

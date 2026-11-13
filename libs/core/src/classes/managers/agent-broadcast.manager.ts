@@ -1,5 +1,5 @@
-import type { KritzelCore } from '../core/core.class';
-import type { KritzelAwarenessAgent } from '../../interfaces/agent.interface';
+import type { UpdrawCore } from '../core/core.class';
+import type { UpdrawAwarenessAgent } from '../../interfaces/agent.interface';
 
 /** How often agent motion is shared, in milliseconds (the same rate collaborators receive awareness at). */
 export const AGENT_BROADCAST_INTERVAL_MS = 100;
@@ -16,8 +16,8 @@ export const AGENT_BROADCAST_MAX_IDS = 50;
  * idle agents send nothing. Adding or removing an agent, renaming, recoloring or hiding it and turning
  * `broadcast` on or off are sent at once; status, activity, motion and selections follow the throttle.
  */
-export class KritzelAgentBroadcaster {
-  private readonly _core: KritzelCore;
+export class UpdrawAgentBroadcaster {
+  private readonly _core: UpdrawCore;
   private _lastSent: string | null = null;
   /** Which agents were last sent, with what collaborators see of them at once (see `structureOf`). */
   private _lastStructure: string | null = null;
@@ -26,7 +26,7 @@ export class KritzelAgentBroadcaster {
   private _dirty = false;
   private _started = false;
 
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     this._core = core;
   }
 
@@ -60,10 +60,10 @@ export class KritzelAgentBroadcaster {
   }
 
   /** The payload of the local agents that have `broadcast` on. */
-  buildPayload(): KritzelAwarenessAgent[] {
+  buildPayload(): UpdrawAwarenessAgent[] {
     const cursors = this._core.agenticCursorManager;
     const actions = this._core.agenticActionManager;
-    const payload: KritzelAwarenessAgent[] = [];
+    const payload: UpdrawAwarenessAgent[] = [];
     for (const agent of this._core.agentManager.getAll()) {
       const cursor = cursors.get(agent.id);
       if (!agent.broadcast || !cursor) {
@@ -147,7 +147,7 @@ export class KritzelAgentBroadcaster {
 }
 
 /** The part of a payload that is sent without waiting for the throttle. */
-function structureOf(payload: KritzelAwarenessAgent[]): string {
+function structureOf(payload: UpdrawAwarenessAgent[]): string {
   return JSON.stringify(payload.map(agent => [agent.id, agent.name, agent.color, agent.avatarUrl ?? null, agent.visible]));
 }
 

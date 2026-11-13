@@ -1,18 +1,18 @@
 # Tools & Toolbar
 
-A *tool* is the active pointer-interaction mode; exactly one is active at a time. The default `<kritzel-editor>` toolbar registers these tools under these names:
+A *tool* is the active pointer-interaction mode; exactly one is active at a time. The default `<updraw-editor>` toolbar registers these tools under these names:
 
 | Name | Class | Creates |
 |---|---|---|
-| `selection` (default active) | `KritzelSelectionTool` | â€” selects/transforms |
-| `brush` | `KritzelBrushTool` | `KritzelPath` |
-| `eraser` | `KritzelEraserTool` | â€” removes objects |
-| `line` | `KritzelLineTool` | `KritzelLine` |
-| `shape` | `KritzelShapeTool` | `KritzelShape` |
-| `text` | `KritzelTextTool` | `KritzelText` |
-| `image` | `KritzelImageTool` | `KritzelImage` |
+| `selection` (default active) | `UpdrawSelectionTool` | â€” selects/transforms |
+| `brush` | `UpdrawBrushTool` | `UpdrawPath` |
+| `eraser` | `UpdrawEraserTool` | â€” removes objects |
+| `line` | `UpdrawLineTool` | `UpdrawLine` |
+| `shape` | `UpdrawShapeTool` | `UpdrawShape` |
+| `text` | `UpdrawTextTool` | `UpdrawText` |
+| `image` | `UpdrawImageTool` | `UpdrawImage` |
 
-Tool *names are whatever the toolbar config / `registerTool` call says* â€” when you customize the toolbar, `changeActiveToolByName` must use your names. `<kritzel-engine>` registers none.
+Tool *names are whatever the toolbar config / `registerTool` call says* â€” when you customize the toolbar, `changeActiveToolByName` must use your names. `<updraw-engine>` registers none.
 
 ## Switching tools
 
@@ -27,14 +27,14 @@ Switching tools clears the current selection. `disable()` / `enable()` turn all 
 ## Tool config interfaces
 
 ```ts
-interface KritzelBrushToolConfig {
+interface UpdrawBrushToolConfig {
   color: ThemeAwareColor;                 // { light, dark }
   size: number;
   palette: ThemeAwareColor[];             // [] disables the picker
   opacity?: number;                       // highlighters typically ~0.6
 }
 
-interface KritzelLineToolConfig {
+interface UpdrawLineToolConfig {
   color: ThemeAwareColor;
   size: number;
   palette: ThemeAwareColor[];
@@ -44,7 +44,7 @@ interface KritzelLineToolConfig {
   };
 }
 
-interface KritzelShapeToolConfig {
+interface UpdrawShapeToolConfig {
   shapeType: ShapeType;
   fillColor: ThemeAwareColor;
   strokeColor: ThemeAwareColor;
@@ -55,7 +55,7 @@ interface KritzelShapeToolConfig {
   palette: ThemeAwareColor[];
 }
 
-interface KritzelTextToolConfig {
+interface UpdrawTextToolConfig {
   color: ThemeAwareColor;
   size: number;
   fontFamily: string;
@@ -70,15 +70,15 @@ Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` â€�
 The most common customization: several variants of a built-in tool under distinct names (e.g. color-locked brushes driven by your own UI):
 
 ```ts
-import { KritzelBrushTool, KritzelBrushToolConfig } from '@kritzel/angular-editor';
+import { UpdrawBrushTool, UpdrawBrushToolConfig } from '@updraw/angular-editor';
 
 async onReady() {
-  const red: KritzelBrushToolConfig = {
+  const red: UpdrawBrushToolConfig = {
     color: { light: '#ff0000', dark: '#ff6666' },
     size: 16,
     palette: [],                  // empty → no color picker, color is locked
   };
-  await this.editor.registerTool('red-brush', KritzelBrushTool, red);
+  await this.editor.registerTool('red-brush', UpdrawBrushTool, red);
   await this.editor.changeActiveToolByName('red-brush');
 }
 ```
@@ -87,17 +87,17 @@ async onReady() {
 
 ## Customizing the toolbar (`[toolbarItems]`)
 
-Replace the editor's toolbar wholesale with a `KritzelToolbarItem[]`:
+Replace the editor's toolbar wholesale with an `UpdrawToolbarItem[]`:
 
 ```ts
 import {
-  KritzelToolbarItem, KritzelSelectionTool, KritzelBrushTool, KritzelTextTool, ShapeType,
-} from '@kritzel/angular-editor';
+  UpdrawToolbarItem, UpdrawSelectionTool, UpdrawBrushTool, UpdrawTextTool, ShapeType,
+} from '@updraw/angular-editor';
 
-readonly toolbarItems: KritzelToolbarItem[] = [
-  { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
+readonly toolbarItems: UpdrawToolbarItem[] = [
+  { name: 'select', type: 'tool', isDefault: true, tool: UpdrawSelectionTool, icon: 'cursor' },
   {
-    name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen',
+    name: 'brush', type: 'tool', tool: UpdrawBrushTool, icon: 'pen',
     config: {
       color: { light: '#1f2937', dark: '#f3f4f6' },
       size: 6,
@@ -108,7 +108,7 @@ readonly toolbarItems: KritzelToolbarItem[] = [
     },
   },
   {
-    name: 'highlighter', type: 'tool', tool: KritzelBrushTool, icon: 'highlighter',
+    name: 'highlighter', type: 'tool', tool: UpdrawBrushTool, icon: 'highlighter',
     config: {
       color: { light: '#ffeb3b', dark: '#fff176' },
       size: 20, opacity: 0.6,
@@ -116,7 +116,7 @@ readonly toolbarItems: KritzelToolbarItem[] = [
     },
   },
   {
-    name: 'text', type: 'tool', tool: KritzelTextTool, icon: 'type',
+    name: 'text', type: 'tool', tool: UpdrawTextTool, icon: 'type',
     config: {
       color: { light: '#1f2937', dark: '#f3f4f6' },
       size: 18, fontFamily: 'Arial',
@@ -128,7 +128,7 @@ readonly toolbarItems: KritzelToolbarItem[] = [
 ```
 
 ```html
-<kritzel-editor [toolbarItems]="toolbarItems"></kritzel-editor>
+<updraw-editor [toolbarItems]="toolbarItems"></updraw-editor>
 ```
 
 Rules:
@@ -142,12 +142,12 @@ To hide the toolbar entirely and drive tools from your own Angular UI: `[isToolb
 
 ## Fully custom tool classes
 
-For new interaction behavior, extend `KritzelBaseTool` (exported from `@kritzel/angular-editor`) and override the lifecycle/pointer hooks:
+For new interaction behavior, extend `UpdrawBaseTool` (exported from `@updraw/angular-editor`) and override the lifecycle/pointer hooks:
 
 ```ts
-import { KritzelBaseTool } from '@kritzel/angular-editor';
+import { UpdrawBaseTool } from '@updraw/angular-editor';
 
-export class StampTool extends KritzelBaseTool {
+export class StampTool extends UpdrawBaseTool {
   override onActivate(): void {}
   override onDeactivate(): void {}
   override handlePointerDown(ev: PointerEvent): void { /* place a stamp */ }

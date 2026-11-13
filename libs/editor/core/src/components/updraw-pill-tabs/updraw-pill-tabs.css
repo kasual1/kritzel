@@ -9,8 +9,8 @@
   gap: 4px;
   padding: 4px;
   max-width: 100%;
-  border-radius: var(--kritzel-pill-tabs-border-radius, 10px);
-  background: var(--kritzel-pill-tabs-background, #f0f0f0);
+  border-radius: var(--updraw-pill-tabs-border-radius, 10px);
+  background: var(--updraw-pill-tabs-background, #f0f0f0);
   box-sizing: border-box;
 }
 
@@ -23,25 +23,25 @@
   max-width: 100%;
   padding: 8px 16px;
   border: none;
-  border-radius: var(--kritzel-pill-tabs-tab-border-radius, 8px);
-  background: var(--kritzel-pill-tabs-tab-background, transparent);
-  color: var(--kritzel-pill-tabs-tab-text-color, #666666);
+  border-radius: var(--updraw-pill-tabs-tab-border-radius, 8px);
+  background: var(--updraw-pill-tabs-tab-background, transparent);
+  color: var(--updraw-pill-tabs-tab-text-color, #666666);
   font-family: inherit;
   font-size: 14px;
   font-weight: 500;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
   white-space: nowrap;
 }
 
 .pill-tab:hover:not(.selected) {
-  background: var(--kritzel-pill-tabs-tab-background-hover, rgba(0, 0, 0, 0.05));
+  background: var(--updraw-pill-tabs-tab-background-hover, rgba(0, 0, 0, 0.05));
 }
 
 .pill-tab.selected {
-  background: var(--kritzel-pill-tabs-tab-background-selected, #ffffff);
-  color: var(--kritzel-pill-tabs-tab-text-color-selected, #000000);
-  box-shadow: var(--kritzel-pill-tabs-tab-shadow-selected, 0 1px 3px rgba(0, 0, 0, 0.1));
+  background: var(--updraw-pill-tabs-tab-background-selected, #ffffff);
+  color: var(--updraw-pill-tabs-tab-text-color-selected, #000000);
+  box-shadow: var(--updraw-pill-tabs-tab-shadow-selected, 0 1px 3px rgba(0, 0, 0, 0.1));
 }
 
 .pill-tab:focus {
@@ -49,13 +49,13 @@
 }
 
 .pill-tab:focus-visible {
-  box-shadow: 0 0 0 2px var(--kritzel-global-focus-ring-color, rgba(0, 122, 255, 0.3));
+  box-shadow: 0 0 0 2px var(--updraw-global-focus-ring-color, rgba(0, 122, 255, 0.3));
 }
 
 .pill-tab-label {
   display: block;
   min-width: 0;
-  max-width: var(--kritzel-pill-tabs-tab-label-max-width, 10rem);
+  max-width: var(--updraw-pill-tabs-tab-label-max-width, 10rem);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -63,6 +63,6 @@
 }
 
 /* Icon styling */
-.pill-tab kritzel-icon {
+.pill-tab updraw-icon {
   flex-shrink: 0;
 }

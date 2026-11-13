@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { KritzelEditor, type HTMLKritzelEditorElement, type LocaleCode } from "@kritzel/react-editor";
+import { UpdrawEditor, type HTMLUpdrawEditorElement, type LocaleCode } from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
@@ -13,7 +13,7 @@ const localeOptions: { code: LocaleCode; label: string }[] = [
 ];
 
 export function LocalizationSwitchPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [locale, setLocale] = useState<LocaleCode>("en");
 
   return (
@@ -23,7 +23,7 @@ export function LocalizationSwitchPage() {
           <button key={code} className={locale === code ? "active" : undefined} onClick={() => setLocale(code)}>{label}</button>
         ))}
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="localization-switch"
         locale={locale}

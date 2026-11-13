@@ -2,11 +2,11 @@
 import { ref } from 'vue'
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelShape,
-  KritzelText,
+  UpdrawEditor,
+  UpdrawShape,
+  UpdrawText,
   ShapeType,
-} from '@kritzel/vue-editor'
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../const/vue-theme-dark'
 import { vueThemeLight } from '../../const/vue-theme-light'
 
@@ -21,7 +21,7 @@ const themes = [vueThemeLight, vueThemeDark]
 const editorStyle = { display: 'block', width: '100%', height: '100%' }
 
 const slides: Slide[] = [
-  { title: '1. Welcome to Kritzel', centerX: 0, centerY: 0 },
+  { title: '1. Welcome to Updraw', centerX: 0, centerY: 0 },
   { title: '2. Core Frontend Capabilities', centerX: 1200, centerY: 0 },
   { title: '3. Seamless Presentation Layout', centerX: 2400, centerY: 0 },
 ]
@@ -47,7 +47,7 @@ async function seedSlides() {
 
   // Slide 1 background frame and content
   await editor.value.addObject(
-    new KritzelShape({
+    new UpdrawShape({
       translateX: -400,
       translateY: -225,
       width: 800,
@@ -60,8 +60,8 @@ async function seedSlides() {
   )
 
   await editor.value.addObject(
-    new KritzelText({
-      text: 'Welcome to Kritzel',
+    new UpdrawText({
+      text: 'Welcome to Updraw',
       translateX: -350,
       translateY: -150,
       fontSize: 36,
@@ -70,7 +70,7 @@ async function seedSlides() {
   )
 
   await editor.value.addObject(
-    new KritzelText({
+    new UpdrawText({
       text: 'A modern vector drawing component for web builders. This workspace demonstrates Slideshow Mode, spacing slide sheets on a virtual horizontal track.\n\nUse the presentation controls above to glide smoothly between slides!',
       translateX: -350,
       translateY: -50,
@@ -81,7 +81,7 @@ async function seedSlides() {
 
   // Decorative shape slide 1
   await editor.value.addObject(
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 200,
       translateY: 50,
       width: 120,
@@ -95,7 +95,7 @@ async function seedSlides() {
 
   // Slide 2 background frame and content
   await editor.value.addObject(
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 800,
       translateY: -225,
       width: 800,
@@ -108,7 +108,7 @@ async function seedSlides() {
   )
 
   await editor.value.addObject(
-    new KritzelText({
+    new UpdrawText({
       text: 'Core Frontend Power',
       translateX: 850,
       translateY: -150,
@@ -118,7 +118,7 @@ async function seedSlides() {
   )
 
   await editor.value.addObject(
-    new KritzelText({
+    new UpdrawText({
       text: 'â€¢ Offline-First Canvas Persistence\nâ€¢ Dynamic Viewport & Navigation Helpers\nâ€¢ Tailored Custom Color Tool Palettes\nâ€¢ Entirely Interactive Drawing Tools',
       translateX: 850,
       translateY: -50,
@@ -129,7 +129,7 @@ async function seedSlides() {
 
   // Decorative shape slide 2
   await editor.value.addObject(
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 1400,
       translateY: 50,
       width: 120,
@@ -143,7 +143,7 @@ async function seedSlides() {
 
   // Slide 3 background frame and content
   await editor.value.addObject(
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 2000,
       translateY: -225,
       width: 800,
@@ -156,7 +156,7 @@ async function seedSlides() {
   )
 
   await editor.value.addObject(
-    new KritzelText({
+    new UpdrawText({
       text: 'Seamless Bounded Layouts',
       translateX: 2050,
       translateY: -150,
@@ -166,7 +166,7 @@ async function seedSlides() {
   )
 
   await editor.value.addObject(
-    new KritzelText({
+    new UpdrawText({
       text: 'By setting finite limits on the viewport bounds, the user can draw and interact inside the slide card, but cannot pan away to empty space.\n\nCombined with pan animation flows, this makes a wonderful presentation experience.',
       translateX: 2050,
       translateY: -50,
@@ -177,7 +177,7 @@ async function seedSlides() {
 
   // Decorative shape slide 3
   await editor.value.addObject(
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 2600,
       translateY: 50,
       width: 100,
@@ -249,7 +249,7 @@ async function navigateToSlide(index: number) {
     </header>
 
     <div class="editor-container">
-      <KritzelEditor
+      <UpdrawEditor
         ref="editor"
         editorId="slideshow-presentation"
         theme="light"

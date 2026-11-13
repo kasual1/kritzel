@@ -1,4 +1,4 @@
-# kritzel-login-dialog
+# updraw-login-dialog
 
 
 
@@ -9,14 +9,14 @@
 
 Login dialog component for displaying authentication provider buttons.
 This is a presentational component that emits events for all actions.
-The parent component (kritzel-editor) handles the actual authentication flow.
+The parent component (updraw-editor) handles the actual authentication flow.
 
 ## Properties
 
 | Property      | Attribute      | Description                                        | Type                     | Default     |
 | ------------- | -------------- | -------------------------------------------------- | ------------------------ | ----------- |
 | `dialogTitle` | `dialog-title` | Dialog title                                       | `string`                 | `'Sign in'` |
-| `providers`   | --             | Array of authentication provider buttons to render | `KritzelLoginProvider[]` | `[]`        |
+| `providers`   | --             | Array of authentication provider buttons to render | `UpdrawLoginProvider[]` | `[]`        |
 | `subtitle`    | `subtitle`     | Optional subtitle text displayed below the title   | `string`                 | `undefined` |
 
 
@@ -71,20 +71,20 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [kritzel-editor](../kritzel-editor)
+ - [updraw-editor](../updraw-editor)
 
 ### Depends on
 
-- [kritzel-dialog](../kritzel-dialog)
-- kritzel-icon
+- [updraw-dialog](../updraw-dialog)
+- updraw-icon
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-login-dialog --> kritzel-dialog
-  kritzel-login-dialog --> kritzel-icon
-  kritzel-editor --> kritzel-login-dialog
-  style kritzel-login-dialog fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-login-dialog --> updraw-dialog
+  updraw-login-dialog --> updraw-icon
+  updraw-editor --> updraw-login-dialog
+  style updraw-login-dialog fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

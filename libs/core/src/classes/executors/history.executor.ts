@@ -1,12 +1,12 @@
-import type { KritzelAgenticRedoAction, KritzelAgenticUndoAction } from '../../interfaces/agentic-action.interface';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
-import type { KritzelAgenticActionRun } from '../managers/agentic-action-run.class';
-import type { KritzelAgentHistoryResult } from '../structures/object-map.structure';
+import type { UpdrawAgenticRedoAction, UpdrawAgenticUndoAction } from '../../interfaces/agentic-action.interface';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpdrawAgenticActionRun } from '../managers/agentic-action-run.class';
+import type { UpdrawAgentHistoryResult } from '../structures/object-map.structure';
 import { flyToObjects } from './select.executor';
 
-type HistoryAction = KritzelAgenticUndoAction | KritzelAgenticRedoAction;
+type HistoryAction = UpdrawAgenticUndoAction | UpdrawAgenticRedoAction;
 
-function createHistoryExecutor(direction: 'undo' | 'redo'): KritzelAgenticActionExecutor<HistoryAction> {
+function createHistoryExecutor(direction: 'undo' | 'redo'): UpdrawAgenticActionExecutor<HistoryAction> {
   const emptyReason = direction === 'undo' ? 'nothing-to-undo' : 'nothing-to-redo';
 
   return {
@@ -17,7 +17,7 @@ function createHistoryExecutor(direction: 'undo' | 'redo'): KritzelAgenticAction
       // Nothing to validate.
     },
 
-    prepare(run: KritzelAgenticActionRun) {
+    prepare(run: UpdrawAgenticActionRun) {
       // Actors working as the user share the user's history; they never undo or redo on their own.
       if (run.actorKind === 'user') {
         return { reason: 'not-allowed' as const };
@@ -33,7 +33,7 @@ function createHistoryExecutor(direction: 'undo' | 'redo'): KritzelAgenticAction
       return { targetIds: ids, referenceIds: [] };
     },
 
-    async execute(run: KritzelAgenticActionRun) {
+    async execute(run: UpdrawAgenticActionRun) {
       const map = run.map!;
       if (run.displayIds.length > 0) {
         await flyToObjects(run, run.displayIds);
@@ -44,7 +44,7 @@ function createHistoryExecutor(direction: 'undo' | 'redo'): KritzelAgenticAction
       // The step replaces the instances of its objects; stop checking them as "changed elsewhere".
       run.untrack([...run.targetIds]);
       run.applyingHistory = true;
-      let result: KritzelAgentHistoryResult;
+      let result: UpdrawAgentHistoryResult;
       try {
         result = direction === 'undo' ? map.undoAgent(run.cursorId) : map.redoAgent(run.cursorId);
       } finally {

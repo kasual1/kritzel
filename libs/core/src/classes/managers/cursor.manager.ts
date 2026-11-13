@@ -1,43 +1,43 @@
-import { KritzelCursorHelper } from '../../helpers/cursor.helper';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawCursorHelper } from '../../helpers/cursor.helper';
+import { UpdrawCore } from '../core/core.class';
 
 /**
  * Manages cursor state and updates across the application.
  * Handles cursor changes based on handle hovers, tool states, and interactions.
  */
-export class KritzelCursorManager {
-  private readonly _core: KritzelCore;
+export class UpdrawCursorManager {
+  private readonly _core: UpdrawCore;
   private _targetElement: HTMLElement | null = null;
   private _shadowRoot: ShadowRoot | null = null;
 
   /**
-   * Creates a new KritzelCursorManager instance.
-   * @param core - The KritzelCore instance that provides access to the store and other core functionality.
+   * Creates a new UpdrawCursorManager instance.
+   * @param core - The UpdrawCore instance that provides access to the store and other core functionality.
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     this._core = core;
   }
 
   /**
    * Sets the target element where cursor styles will be applied.
    * Resets any cursor styles on the previous target element before setting the new one.
-   * Also sets the `--kritzel-global-pointer-cursor` CSS variable for child components to use.
+   * Also sets the `--updraw-global-pointer-cursor` CSS variable for child components to use.
    * @param element - The HTML element to apply cursor styles to, or null to clear the target.
    */
   setTargetElement(element: HTMLElement | null): void {
     // Reset cursor on old target
     if (this._targetElement) {
       this._targetElement.style.cursor = '';
-      this._targetElement.style.removeProperty('--kritzel-global-default-cursor');
-      this._targetElement.style.removeProperty('--kritzel-global-pointer-cursor');
+      this._targetElement.style.removeProperty('--updraw-global-default-cursor');
+      this._targetElement.style.removeProperty('--updraw-global-pointer-cursor');
     }
 
     this._targetElement = element;
 
     // Set the pointer cursor CSS variable for child components to use
     if (this._targetElement) {
-      this._targetElement.style.setProperty('--kritzel-global-default-cursor', KritzelCursorHelper.getCursor({ iconName: 'default' }));
-      this._targetElement.style.setProperty('--kritzel-global-pointer-cursor', KritzelCursorHelper.getPointerCursor());
+      this._targetElement.style.setProperty('--updraw-global-default-cursor', UpdrawCursorHelper.getCursor({ iconName: 'default' }));
+      this._targetElement.style.setProperty('--updraw-global-pointer-cursor', UpdrawCursorHelper.getPointerCursor());
     }
   }
 
@@ -120,7 +120,7 @@ export class KritzelCursorManager {
 
     // Titlebar drag surfaces move their object; their controls keep the pointer cursor from CSS
     const topmost = elementsAtPoint[0];
-    if (topmost.closest?.('[data-kritzel-titlebar-surface]') && !topmost.closest?.('[data-kritzel-titlebar-control]')) {
+    if (topmost.closest?.('[data-updraw-titlebar-surface]') && !topmost.closest?.('[data-updraw-titlebar-control]')) {
       this._core.store.state.cursor = { icon: 'hand', iconActive: 'handGrab' };
       return;
     }
@@ -131,7 +131,7 @@ export class KritzelCursorManager {
 
   /**
    * Applies the current cursor state to the target element.
-   * Reads the cursor configuration from the store state and uses KritzelCursorHelper
+   * Reads the cursor configuration from the store state and uses UpdrawCursorHelper
    * to generate the appropriate cursor value. Uses the active icon when pointer is down,
    * otherwise uses the default icon.
    * Should be called in the render loop to keep the cursor in sync with state.
@@ -144,7 +144,7 @@ export class KritzelCursorManager {
     const iconActive = state.cursor?.iconActive ?? icon;
     const rotation = state.cursor?.rotation;
 
-    const cursor = KritzelCursorHelper.getCursor({
+    const cursor = UpdrawCursorHelper.getCursor({
       iconName: isPointerDown ? iconActive : icon,
       rotation: rotation,
     });
@@ -162,8 +162,8 @@ export class KritzelCursorManager {
   cleanup(): void {
     if (this._targetElement) {
       this._targetElement.style.cursor = '';
-      this._targetElement.style.removeProperty('--kritzel-global-default-cursor');
-      this._targetElement.style.removeProperty('--kritzel-global-pointer-cursor');
+      this._targetElement.style.removeProperty('--updraw-global-default-cursor');
+      this._targetElement.style.removeProperty('--updraw-global-pointer-cursor');
     }
     this._targetElement = null;
     this._shadowRoot = null;

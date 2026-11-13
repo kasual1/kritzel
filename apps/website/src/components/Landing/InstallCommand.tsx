@@ -26,7 +26,7 @@ export function InstallCommand() {
   const [isReady, setIsReady] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
   const selected = FRAMEWORKS.find((option) => option.id === framework) ?? FRAMEWORKS[0];
-  const command = `npm i @kritzel/${selected.id}-editor`;
+  const command = `npm i @updraw/${selected.id}-editor`;
 
   useEffect(() => setIsReady(true), []);
 

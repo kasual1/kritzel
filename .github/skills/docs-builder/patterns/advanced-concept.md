@@ -2,7 +2,7 @@
 
 ## Overview
 
-Advanced pages explain specialized Kritzel integrations and capabilities that build on the core architecture, such as localization, custom fonts, collaboration, persistence providers, or dynamic object integrations. They should retain the concise, concept-first style of Fundamentals pages while documenting the additional configuration and framework integration details these features require.
+Advanced pages explain specialized Updraw integrations and capabilities that build on the core architecture, such as localization, custom fonts, collaboration, persistence providers, or dynamic object integrations. They should retain the concise, concept-first style of Fundamentals pages while documenting the additional configuration and framework integration details these features require.
 
 ## File Naming & Location
 
@@ -18,8 +18,8 @@ Advanced pages explain specialized Kritzel integrations and capabilities that bu
 ---
 sidebar_label: <Concept Name>
 displayed_sidebar: tutorialSidebar
-title: "<Concept Name> Concept | Kritzel for Angular"
-description: "Understand the advanced usage of <Concept Name> in Kritzel."
+title: "<Concept Name> Concept | Updraw for Angular"
+description: "Understand the advanced usage of <Concept Name> in Updraw."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -30,7 +30,7 @@ Use framework-specific titles for React and Vue translations. Keep the `displaye
 ## Page Structure
 
 1. **`# <Concept Name>`** — The main page title.
-2. **`## Overview`** — Explain the capability, its role in Kritzel, and when developers should use it.
+2. **`## Overview`** — Explain the capability, its role in Updraw, and when developers should use it.
 3. **Focused configuration sections** — Show atomic tasks such as enabling the feature, registering custom definitions, or handling runtime changes.
 4. **`## Related API Methods`** — List the most relevant props, methods, events, providers, registries, or types.
 5. End with an API Reference link relative to the page location: `[API Reference](../api-reference/editor.md)`.
@@ -83,7 +83,7 @@ Keep examples focused. Do not turn an Advanced page into a complete application 
 - Angular routes belong in `apps/demos/angular/src/app/app.routes.ts` under the `advanced` route group.
 - React routes belong in `apps/demos/react/src/App.tsx` with matching imports and `/advanced/...` paths.
 - Vue routes belong in `apps/demos/vue/src/router.ts` with matching imports and `/advanced/...` paths.
-- React and Vue prose should refer to `<KritzelEditor>`, not `<kritzel-editor>`.
+- React and Vue prose should refer to `<UpdrawEditor>`, not `<updraw-editor>`.
 - Vue documentation snippets that show component or template markup use `html` fences.
 - Keep Angular as the source of truth, then port structure and meaning to React and Vue with framework-specific syntax.
 

@@ -10,7 +10,7 @@ const baseUrl = `/${(process.env.Docusaurus_BASE_URL || '/').split('/').filter(B
 const parser = unified().use(remarkParse).use(remarkGfm).use(remarkStringify);
 const indexPath = new URL('llms.txt', buildRoot);
 const index = await readFile(indexPath, 'utf8');
-if (!index.startsWith('# Kritzel\n')) throw new Error('Missing or invalid generated llms.txt');
+if (!index.startsWith('# Updraw\n')) throw new Error('Missing or invalid generated llms.txt');
 
 function visit(node, visitor) {
   for (const child of node.children ?? []) visit(child, visitor);
@@ -21,7 +21,7 @@ const pages = new Set();
 visit(parser.parse(index), (node) => {
   if (node.type !== 'link') return;
   const url = new URL(node.url);
-  if (url.origin !== 'https://kritzel.io' || !url.pathname.endsWith('.md')) return;
+  if (url.origin !== 'https://updraw.io' || !url.pathname.endsWith('.md')) return;
   if (!url.pathname.startsWith(baseUrl)) throw new Error(`Missing base URL: ${url.href}`);
   const relativePath = url.pathname.slice(baseUrl.length);
   const output = new URL(relativePath, buildRoot);

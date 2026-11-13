@@ -1,6 +1,6 @@
-import type { KritzelTheme } from "@kritzel/vue-editor";
+import type { UpdrawTheme } from "@updraw/vue-editor";
 
-export const vueThemeLight: KritzelTheme = {
+export const vueThemeLight: UpdrawTheme = {
   name: 'light',
   global: {
     primaryColor: '#42b883',

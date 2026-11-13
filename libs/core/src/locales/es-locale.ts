@@ -1,9 +1,9 @@
-import { KritzelLocale } from '../interfaces/localization.interface';
+import { UpdrawLocale } from '../interfaces/localization.interface';
 
 /**
  * Built-in Spanish locale.
  */
-export const ES_LOCALE: KritzelLocale = {
+export const ES_LOCALE: UpdrawLocale = {
   code: 'es',
   label: 'Español',
   terms: {
@@ -76,7 +76,7 @@ export const ES_LOCALE: KritzelLocale = {
     'settings.developer.showMigrationInfo.label': 'Mostrar información de migración',
     'settings.developer.showMigrationInfo.description': 'Muestra información de depuración sobre las migraciones de datos.',
     'settings.about.title': 'Acerca de',
-    'settings.about.description': 'Kritzel - Una aplicación de dibujo',
+    'settings.about.description': 'Updraw - Una aplicación de dibujo',
 
     // Export dialog
     'export.dialogTitle': 'Exportar',
@@ -134,7 +134,7 @@ export const ES_LOCALE: KritzelLocale = {
     'moreMenu.ariaLabel': 'Más opciones',
 
     // Watermark
-    'watermark.poweredBy': 'Desarrollado por Kritzel',
+    'watermark.poweredBy': 'Desarrollado por Updraw',
 
     // Object type labels
     'objectType.shape': 'Forma',

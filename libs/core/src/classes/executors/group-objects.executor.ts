@@ -1,17 +1,17 @@
-import type { KritzelAgenticGroupObjectsAction, KritzelAgenticUngroupObjectsAction } from '../../interfaces/agentic-action.interface';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
-import { KritzelGroup } from '../objects/group.class';
+import type { UpdrawAgenticGroupObjectsAction, UpdrawAgenticUngroupObjectsAction } from '../../interfaces/agentic-action.interface';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
+import { UpdrawGroup } from '../objects/group.class';
 import { flyToObjects, prepareTopLevelTargets } from './select.executor';
 import { applyZIndexUpdates } from './order-objects.executor';
 import { assertObjectIds, uniqueIds } from '../../helpers/agentic-validation.helper';
 import { unionCenter } from '../../helpers/agentic-geometry.helper';
-import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
+import { UpdrawZOrderHelper } from '../../helpers/z-order.helper';
 
 /**
  * `groupObjects`: clicks the objects one after the other, so the selection builds up like shift-clicking them, and
  * groups them. The group becomes one layer at the topmost object, like `editor.group()`.
  */
-export const groupObjectsExecutor: KritzelAgenticActionExecutor<KritzelAgenticGroupObjectsAction> = {
+export const groupObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticGroupObjectsAction> = {
   mutates: true,
 
   validate(action) {
@@ -43,13 +43,13 @@ export const groupObjectsExecutor: KritzelAgenticActionExecutor<KritzelAgenticGr
     }
 
     const group = run.mutate(() => {
-      const { objects, items } = KritzelZOrderHelper.collect(map.allObjects());
+      const { objects, items } = UpdrawZOrderHelper.collect(map.allObjects());
       // Top-level objects are grouped at the top level.
-      const plan = KritzelZOrderHelper.planGroup(items, ids);
+      const plan = UpdrawZOrderHelper.planGroup(items, ids);
       if (!plan || plan.parentId !== null) {
         return null;
       }
-      const created = run.own(KritzelGroup.createFromObjects(core, plan.childIds.map(id => objects.get(id)!)));
+      const created = run.own(UpdrawGroup.createFromObjects(core, plan.childIds.map(id => objects.get(id)!)));
       if (plan.groupZIndex !== null) {
         created.zIndex = plan.groupZIndex;
       }
@@ -69,7 +69,7 @@ export const groupObjectsExecutor: KritzelAgenticActionExecutor<KritzelAgenticGr
 };
 
 /** `ungroupObjects`: clicks the groups and dissolves them; their children keep their place in the stacking order. */
-export const ungroupObjectsExecutor: KritzelAgenticActionExecutor<KritzelAgenticUngroupObjectsAction> = {
+export const ungroupObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticUngroupObjectsAction> = {
   mutates: true,
 
   validate(action) {
@@ -81,7 +81,7 @@ export const ungroupObjectsExecutor: KritzelAgenticActionExecutor<KritzelAgentic
     if ('reason' in preparation) {
       return preparation;
     }
-    const notGroups = preparation.targetIds.filter(id => !(run.map!.findById(id) instanceof KritzelGroup));
+    const notGroups = preparation.targetIds.filter(id => !(run.map!.findById(id) instanceof UpdrawGroup));
     return notGroups.length > 0 ? { reason: 'invalid-target', objectIds: notGroups } : preparation;
   },
 
@@ -93,11 +93,11 @@ export const ungroupObjectsExecutor: KritzelAgenticActionExecutor<KritzelAgentic
 
     const childrenByGroup = new Map<string, string[]>();
     run.mutate(() => {
-      const { items } = KritzelZOrderHelper.collect(map.allObjects());
+      const { items } = UpdrawZOrderHelper.collect(map.allObjects());
       // Children that share a z-index get distinct ones, so they keep their order without the group.
-      const updates = KritzelZOrderHelper.planUngroup(items, ids);
+      const updates = UpdrawZOrderHelper.planUngroup(items, ids);
       for (const id of ids) {
-        const group = map.findById(id) as KritzelGroup | null;
+        const group = map.findById(id) as UpdrawGroup | null;
         if (!group) {
           run.stop('object-removed', [id]);
         }

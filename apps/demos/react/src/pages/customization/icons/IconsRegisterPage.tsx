@@ -1,11 +1,11 @@
-import { KritzelEditor, KritzelWorkspace } from "@kritzel/react-editor";
+import { UpdrawEditor, UpdrawWorkspace } from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 import { editorStyle, hostStyle } from "../../shared/demo-shared";
 
 const themes = [reactThemeLight, reactThemeDark];
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })];
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })];
 const customSvgIcons = {
   cursor: '<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960"><path d="M516-120 402-402 120-516v-56l720-268-268 720zm26-148 162-436-436 162 196 78zm-78-196"/></svg>',
   pen: '<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960"><path d="m490-527 37 37 217-217-37-37zM200-200h37l233-233-37-37-233 233zm355-205L405-555l167-167-29-29-219 219-56-56 218-219q24-24 56.5-24t56.5 24l29 29 50-50q12-12 28.5-12t28.5 12l93 93q12 12 12 28.5T828-678zM270-120H120v-150l285-285 150 150z"/></svg>',
@@ -69,7 +69,7 @@ const customSvgIcons = {
 export function IconsRegisterPage() {
   return (
     <div style={hostStyle}>
-      <KritzelEditor
+      <UpdrawEditor
         editorId="icons-register"
         customSvgIcons={customSvgIcons}
         workspaces={workspaces}

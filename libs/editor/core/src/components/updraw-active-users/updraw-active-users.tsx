@@ -1,24 +1,24 @@
 ﻿import { Component, Host, h, Prop } from '@stencil/core';
-import { IKritzelUser, KritzelAgentPresence, KritzelRemoteAgentPresence } from '@kritzel/core';
+import { IUpdrawUser, UpdrawAgentPresence, UpdrawRemoteAgentPresence } from '@updraw/core';
 
-type StackEntry = { kind: 'user'; user: IKritzelUser } | { kind: 'agent'; agent: KritzelAgentPresence | KritzelRemoteAgentPresence };
+type StackEntry = { kind: 'user'; user: IUpdrawUser } | { kind: 'agent'; agent: UpdrawAgentPresence | UpdrawRemoteAgentPresence };
 
 @Component({
-  tag: 'kritzel-active-users',
-  styleUrl: 'kritzel-active-users.css',
+  tag: 'updraw-active-users',
+  styleUrl: 'updraw-active-users.css',
   shadow: true,
 })
-export class KritzelActiveUsers {
+export class UpdrawActiveUsers {
   /**
    * Array of active users to display
    */
-  @Prop() users: IKritzelUser[] = [];
+  @Prop() users: IUpdrawUser[] = [];
 
   /**
    * Agents to display after the users: local agents and agents of collaborators. Shown with a bot badge,
    * a ring while they work and their status in the tooltip.
    */
-  @Prop() agents: (KritzelAgentPresence | KritzelRemoteAgentPresence)[] = [];
+  @Prop() agents: (UpdrawAgentPresence | UpdrawRemoteAgentPresence)[] = [];
 
   /**
    * Avatar size in pixels
@@ -35,7 +35,7 @@ export class KritzelActiveUsers {
    */
   @Prop() overlap: number = 20;
 
-  private getDisplayName(user: IKritzelUser): string {
+  private getDisplayName(user: IUpdrawUser): string {
     return (
       user.displayName ??
       ([user.firstName, user.lastName].filter(Boolean).join(' ') ||
@@ -103,7 +103,7 @@ export class KritzelActiveUsers {
                   ...(isAgent ? { '--agent-color': entry.agent.color } : {}),
                 }}
               >
-                <kritzel-avatar user={entry.kind === 'user' ? entry.user : entry.agent} size={this.avatarSize}></kritzel-avatar>
+                <updraw-avatar user={entry.kind === 'user' ? entry.user : entry.agent} size={this.avatarSize}></updraw-avatar>
                 {isAgent && (
                   <span class="agent-badge" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="currentColor">

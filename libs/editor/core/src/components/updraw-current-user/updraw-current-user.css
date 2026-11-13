@@ -5,7 +5,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-kritzel-avatar {
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+updraw-avatar {
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   border-radius: 50%;
 }

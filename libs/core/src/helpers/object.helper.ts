@@ -1,5 +1,5 @@
-import { KritzelEmbeddedObject } from '../interfaces/embedded-object.interface';
-import { KritzelElementAwareObject } from '../interfaces/object-element.interface';
+import { UpdrawEmbeddedObject } from '../interfaces/embedded-object.interface';
+import { UpdrawElementAwareObject } from '../interfaces/object-element.interface';
 
 export class ObjectHelper {
   static generateUUID(length: number = 16): string {
@@ -22,12 +22,12 @@ export class ObjectHelper {
     return !!object && (object as { __class__?: string }).__class__ === className;
   }
 
-  static isKritzelEmbeddedObject(object: unknown): object is KritzelEmbeddedObject {
+  static isUpdrawEmbeddedObject(object: unknown): object is UpdrawEmbeddedObject {
     if (!object || typeof object !== 'object') {
       return false;
     }
 
-    const candidate = object as Partial<KritzelEmbeddedObject>;
+    const candidate = object as Partial<UpdrawEmbeddedObject>;
     return (
       typeof candidate.isInteractive === 'boolean' &&
       typeof candidate.isSelected === 'boolean' &&
@@ -39,13 +39,13 @@ export class ObjectHelper {
     );
   }
 
-  /** Whether an object's content elements can be picked, highlighted, queried and pointed at, see `KritzelElementAwareObject`. */
-  static isKritzelElementAwareObject(object: unknown): object is KritzelElementAwareObject {
+  /** Whether an object's content elements can be picked, highlighted, queried and pointed at, see `UpdrawElementAwareObject`. */
+  static isUpdrawElementAwareObject(object: unknown): object is UpdrawElementAwareObject {
     if (!object || typeof object !== 'object') {
       return false;
     }
 
-    const candidate = object as Partial<KritzelElementAwareObject>;
+    const candidate = object as Partial<UpdrawElementAwareObject>;
     return (
       typeof candidate.setElementPicking === 'function' &&
       typeof candidate.setElementHighlights === 'function' &&
@@ -59,7 +59,7 @@ export class ObjectHelper {
     );
   }
 
-  static isKritzelExportable(object: unknown): object is { getSupportedExportFormats(): string[]; exportAs(format: string, context: unknown): Promise<string | null> } {
+  static isUpdrawExportable(object: unknown): object is { getSupportedExportFormats(): string[]; exportAs(format: string, context: unknown): Promise<string | null> } {
     if (!object || typeof object !== 'object') {
       return false;
     }

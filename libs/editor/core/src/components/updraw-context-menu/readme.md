@@ -1,4 +1,4 @@
-# kritzel-context-menu
+# updraw-context-menu
 
 
 
@@ -10,7 +10,7 @@
 | Property  | Attribute | Description | Type                                             | Default     |
 | --------- | --------- | ----------- | ------------------------------------------------ | ----------- |
 | `items`   | --        |             | `ContextMenuItem[]`                              | `undefined` |
-| `objects` | --        |             | `KritzelBaseObject<HTMLElement \| SVGElement>[]` | `undefined` |
+| `objects` | --        |             | `UpdrawBaseObject<HTMLElement \| SVGElement>[]` | `undefined` |
 
 
 ## Events
@@ -25,18 +25,18 @@
 
 ### Used by
 
- - [kritzel-editor](../kritzel-editor)
+ - [updraw-editor](../updraw-editor)
 
 ### Depends on
 
-- kritzel-icon
+- updraw-icon
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-context-menu --> kritzel-icon
-  kritzel-editor --> kritzel-context-menu
-  style kritzel-context-menu fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-context-menu --> updraw-icon
+  updraw-editor --> updraw-context-menu
+  style updraw-context-menu fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

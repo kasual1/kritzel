@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawWorkspace } from '@updraw/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -7,7 +7,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-viewport-boundaries',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -17,7 +17,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       <button (click)="panRight()">Pan Right</button>
     </app-toolbar>
 
-    <kritzel-editor
+    <updraw-editor
       editorId="viewport-boundaries"
       [theme]="'light'"
       [themes]="themes"
@@ -30,21 +30,21 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    kritzel-editor { flex: 1; }
+    updraw-editor { flex: 1; }
   `],
 })
 export class ViewportBoundariesComponent {
   private readonly panStep = 100;
 
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
   async panUp() {
     await this.panBy(0, -this.panStep);

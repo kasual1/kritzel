@@ -35,38 +35,38 @@ async function prepareBrowserEntry(context, appDirectory) {
     if (errors.length) throw new Error(formatDiagnostics(errors));
     entry = `import '@angular/compiler';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideKritzel } from '@kritzel/angular-${component}';
-import { KritzelCanvasComponent } from './compiled/kritzel-canvas.component.js';
-bootstrapApplication(KritzelCanvasComponent, { providers: [provideKritzel()] }).catch(error => { console.error(error); });
+import { provideUpdraw } from '@updraw/angular-${component}';
+import { UpdrawCanvasComponent } from './compiled/updraw-canvas.component.js';
+bootstrapApplication(UpdrawCanvasComponent, { providers: [provideUpdraw()] }).catch(error => { console.error(error); });
 `;
   } else if (framework === 'react') {
     entry = `import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { KritzelCanvas } from './src/components/kritzel-canvas/KritzelCanvas';
-createRoot(document.getElementById('app')).render(React.createElement(KritzelCanvas));
+import { UpdrawCanvas } from './src/components/updraw-canvas/UpdrawCanvas';
+createRoot(document.getElementById('app')).render(React.createElement(UpdrawCanvas));
 `;
   } else {
     entry = `import { createApp } from 'vue';
-import KritzelCanvas from './src/components/kritzel-canvas/KritzelCanvas.vue';
-createApp(KritzelCanvas).mount('#app');
+import UpdrawCanvas from './src/components/updraw-canvas/UpdrawCanvas.vue';
+createApp(UpdrawCanvas).mount('#app');
 `;
   }
   await writeFile(path.join(appDirectory, 'main.tsx'), entry);
   await writeFile(path.join(appDirectory, 'index.html'), `<!doctype html>
-<html><head><meta charset="UTF-8"><title>Kritzel generated starter</title></head>
-<body>${framework === 'angular' ? '<kritzel-canvas></kritzel-canvas>' : '<div id="app"></div>'}
+<html><head><meta charset="UTF-8"><title>Updraw generated starter</title></head>
+<body>${framework === 'angular' ? '<updraw-canvas></updraw-canvas>' : '<div id="app"></div>'}
 <script>
 if (new URLSearchParams(location.search).has('fail-registration')) {
   const define = customElements.define.bind(customElements);
   customElements.define = (name, constructor, options) => {
-    if (name === 'kritzel-engine') {
+    if (name === 'updraw-engine') {
       constructor.prototype.registerTool = async () => null;
     }
     return define(name, constructor, options);
   };
 }
 document.addEventListener('${component === 'engine' ? 'isEngineReady' : 'isReady'}', () => {
-  document.documentElement.dataset.kritzelReady = '${component}';
+  document.documentElement.dataset.updrawReady = '${component}';
 }, true);
 document.addEventListener('activeToolChange', event => {
   document.documentElement.dataset.activeTool = event.detail.toolType;

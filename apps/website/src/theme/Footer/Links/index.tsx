@@ -28,7 +28,7 @@ export default function LinksWrapper(props: Props): ReactNode {
     title: '',
     items: [
       {
-        html: `<div class="kritzel-footer-brand"><a href="${homeUrl}" class="kritzel-footer-brand__logo-badge" aria-label="Go to Kritzel home page"><img src="${logoUrl}" alt="Kritzel logo" class="kritzel-footer-brand__logo" /></a><p class="kritzel-footer-brand__description">Build infinite canvas experiences in minutes.</p></div>`,
+        html: `<div class="updraw-footer-brand"><a href="${homeUrl}" class="updraw-footer-brand__logo-badge" aria-label="Go to Updraw home page"><img src="${logoUrl}" alt="Updraw logo" class="updraw-footer-brand__logo" /></a><p class="updraw-footer-brand__description">Build infinite canvas experiences in minutes.</p></div>`,
       },
     ],
   };

@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
-  KritzelEditor,
-  KritzelObjectConfig,
-  KritzelObjectTitlebarActionEvent,
-  KritzelObjectTitlebarConfig,
-  KritzelShape,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawObjectConfig,
+  UpdrawObjectTitlebarActionEvent,
+  UpdrawObjectTitlebarConfig,
+  UpdrawShape,
+  UpdrawWorkspace,
   ShapeType,
-} from '@kritzel/angular-editor';
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { ToolbarComponent } from '../../../components/toolbar.component';
@@ -28,15 +28,15 @@ const frameConfig = {
 
 function createFrames() {
   return [
-    new KritzelShape({ ...frameConfig, name: 'Desktop', translateX: -268, translateY: -130, width: 1200, height: 800 }),
-    new KritzelShape({ ...frameConfig, name: 'Tablet', translateX: 4, translateY: -130, width: 768, height: 1024 }),
-    new KritzelShape({ ...frameConfig, name: 'Phone', translateX: 190, translateY: -130, width: 390, height: 844 }),
+    new UpdrawShape({ ...frameConfig, name: 'Desktop', translateX: -268, translateY: -130, width: 1200, height: 800 }),
+    new UpdrawShape({ ...frameConfig, name: 'Tablet', translateX: 4, translateY: -130, width: 768, height: 1024 }),
+    new UpdrawShape({ ...frameConfig, name: 'Phone', translateX: 190, translateY: -130, width: 390, height: 844 }),
   ];
 }
 
 @Component({
   selector: 'app-titlebar-configuration',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -44,7 +44,7 @@ function createFrames() {
       <span class="status">{{ lastAction() }}</span>
     </app-toolbar>
 
-    <kritzel-editor
+    <updraw-editor
       editorId="titlebar-configuration"
       [theme]="'light'"
       [themes]="themes"
@@ -56,21 +56,21 @@ function createFrames() {
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (objectTitlebarAction)="onTitlebarAction($event)"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    kritzel-editor { flex: 1; }
+    updraw-editor { flex: 1; }
   `],
 })
 export class TitlebarConfigurationComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createFrames() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createFrames() })]);
 
-  readonly objectConfig: KritzelObjectConfig = {
+  readonly objectConfig: UpdrawObjectConfig = {
     // Only named frames get a titlebar.
     hasTitlebar: object => !!object.name,
     isRotatable: false,
@@ -78,7 +78,7 @@ export class TitlebarConfigurationComponent {
   };
 
   // Declared once as a stable field and shared by every object accepted by `objectConfig.hasTitlebar`.
-  readonly objectTitlebar: KritzelObjectTitlebarConfig = {
+  readonly objectTitlebar: UpdrawObjectTitlebarConfig = {
     left: [
       { id: 'preview', type: 'button', icon: 'play', tooltip: 'Preview', variant: 'filled' },
       { id: 'title', type: 'title' },
@@ -92,7 +92,7 @@ export class TitlebarConfigurationComponent {
   lastAction = signal('Click a titlebar button');
 
   // The output runs inside the Angular zone, unlike `action` callbacks on the config.
-  async onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEvent>) {
+  async onTitlebarAction(event: CustomEvent<UpdrawObjectTitlebarActionEvent>) {
     const { elementId, objectId, objectType } = event.detail;
     const object = await this.editor.getObjectById(objectId);
     const label = actionLabels[elementId] ?? elementId;

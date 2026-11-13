@@ -5,26 +5,26 @@ jest.mock('@stencil/core', () => ({
   State: () => () => {},
 }));
 
-class MockKritzelPath { }
-class MockKritzelLine { }
-class MockKritzelShape { }
+class MockUpdrawPath { }
+class MockUpdrawLine { }
+class MockUpdrawShape { }
 
-jest.mock('@kritzel/core/src/classes/objects/path.class', () => ({
-  KritzelPath: MockKritzelPath,
+jest.mock('@updraw/core/src/classes/objects/path.class', () => ({
+  UpdrawPath: MockUpdrawPath,
 }));
-jest.mock('@kritzel/core/src/classes/objects/line.class', () => ({
-  KritzelLine: MockKritzelLine,
+jest.mock('@updraw/core/src/classes/objects/line.class', () => ({
+  UpdrawLine: MockUpdrawLine,
 }));
-jest.mock('@kritzel/core/src/classes/objects/shape.class', () => ({
-  KritzelShape: MockKritzelShape,
+jest.mock('@updraw/core/src/classes/objects/shape.class', () => ({
+  UpdrawShape: MockUpdrawShape,
 }));
 
-import { KritzelAwarenessCursors } from './kritzel-awareness-cursors';
-import { KritzelCore, KritzelViewportOverlayHelper } from '@kritzel/core';
+import { UpdrawAwarenessCursors } from './updraw-awareness-cursors';
+import { UpdrawCore, UpdrawViewportOverlayHelper } from '@updraw/core';
 
-describe('KritzelAwarenessCursors', () => {
-  let component: KritzelAwarenessCursors;
-  let mockCore: KritzelCore;
+describe('UpdrawAwarenessCursors', () => {
+  let component: UpdrawAwarenessCursors;
+  let mockCore: UpdrawCore;
 
   const createMockCore = (overrides: Partial<{
     scale: number;
@@ -61,7 +61,7 @@ describe('KritzelAwarenessCursors', () => {
           findById: jest.fn(),
         },
       },
-    } as unknown as KritzelCore;
+    } as unknown as UpdrawCore;
   };
 
   const createAwarenessStates = (entries: Array<{
@@ -83,7 +83,7 @@ describe('KritzelAwarenessCursors', () => {
 
   beforeEach(() => {
     mockCore = createMockCore();
-    component = new KritzelAwarenessCursors();
+    component = new UpdrawAwarenessCursors();
     component.core = mockCore;
     component.showEdgeIndicators = true;
     component.edgeIndicatorPadding = 40;
@@ -245,28 +245,28 @@ describe('KritzelAwarenessCursors', () => {
 
   describe('clampToEdge', () => {
     it('should clamp coordinates to left edge', () => {
-      const result = KritzelViewportOverlayHelper.clampToEdge(component.core.store.state, -100, 400, component.edgeIndicatorPadding);
+      const result = UpdrawViewportOverlayHelper.clampToEdge(component.core.store.state, -100, 400, component.edgeIndicatorPadding);
 
       expect(result.x).toBe(40); // edgeIndicatorPadding
       expect(result.y).toBe(400);
     });
 
     it('should clamp coordinates to top edge', () => {
-      const result = KritzelViewportOverlayHelper.clampToEdge(component.core.store.state, 500, -200, component.edgeIndicatorPadding);
+      const result = UpdrawViewportOverlayHelper.clampToEdge(component.core.store.state, 500, -200, component.edgeIndicatorPadding);
 
       expect(result.x).toBe(500);
       expect(result.y).toBe(40);
     });
 
     it('should clamp coordinates to right edge', () => {
-      const result = KritzelViewportOverlayHelper.clampToEdge(component.core.store.state, 1500, 400, component.edgeIndicatorPadding);
+      const result = UpdrawViewportOverlayHelper.clampToEdge(component.core.store.state, 1500, 400, component.edgeIndicatorPadding);
 
       expect(result.x).toBe(960); // viewportWidth - padding
       expect(result.y).toBe(400);
     });
 
     it('should clamp coordinates to bottom edge', () => {
-      const result = KritzelViewportOverlayHelper.clampToEdge(component.core.store.state, 500, 1200, component.edgeIndicatorPadding);
+      const result = UpdrawViewportOverlayHelper.clampToEdge(component.core.store.state, 500, 1200, component.edgeIndicatorPadding);
 
       expect(result.x).toBe(500);
       expect(result.y).toBe(760); // viewportHeight - padding
@@ -274,14 +274,14 @@ describe('KritzelAwarenessCursors', () => {
 
     it('should compute correct angle for off-screen cursor', () => {
       // Cursor far to the right: angle should be ~0 (pointing right)
-      const result = KritzelViewportOverlayHelper.clampToEdge(component.core.store.state, 2000, 400, component.edgeIndicatorPadding);
+      const result = UpdrawViewportOverlayHelper.clampToEdge(component.core.store.state, 2000, 400, component.edgeIndicatorPadding);
 
       expect(result.angle).toBeCloseTo(0, 1);
     });
 
     it('should compute correct angle for cursor below viewport', () => {
       // Cursor far below: angle should be ~π/2 (pointing down)
-      const result = KritzelViewportOverlayHelper.clampToEdge(component.core.store.state, 500, 2000, component.edgeIndicatorPadding);
+      const result = UpdrawViewportOverlayHelper.clampToEdge(component.core.store.state, 500, 2000, component.edgeIndicatorPadding);
 
       expect(result.angle).toBeCloseTo(Math.PI / 2, 1);
     });
@@ -289,23 +289,23 @@ describe('KritzelAwarenessCursors', () => {
 
   describe('getInitials', () => {
     it('should return two initials for full name', () => {
-      expect(KritzelViewportOverlayHelper.getInitials('John Doe')).toBe('JD');
+      expect(UpdrawViewportOverlayHelper.getInitials('John Doe')).toBe('JD');
     });
 
     it('should return single initial for single name', () => {
-      expect(KritzelViewportOverlayHelper.getInitials('Alice')).toBe('A');
+      expect(UpdrawViewportOverlayHelper.getInitials('Alice')).toBe('A');
     });
 
     it('should use first and last for multi-part names', () => {
-      expect(KritzelViewportOverlayHelper.getInitials('John Michael Doe')).toBe('JD');
+      expect(UpdrawViewportOverlayHelper.getInitials('John Michael Doe')).toBe('JD');
     });
 
     it('should handle empty string', () => {
-      expect(KritzelViewportOverlayHelper.getInitials('?')).toBe('?');
+      expect(UpdrawViewportOverlayHelper.getInitials('?')).toBe('?');
     });
 
     it('should uppercase initials', () => {
-      expect(KritzelViewportOverlayHelper.getInitials('john doe')).toBe('JD');
+      expect(UpdrawViewportOverlayHelper.getInitials('john doe')).toBe('JD');
     });
   });
 
@@ -367,8 +367,8 @@ describe('KritzelAwarenessCursors', () => {
       expect(result).toBeNull();
     });
 
-    it('should return world coords for a KritzelPath last point', () => {
-      const mockPath = Object.create(MockKritzelPath.prototype);
+    it('should return world coords for an UpdrawPath last point', () => {
+      const mockPath = Object.create(MockUpdrawPath.prototype);
       Object.assign(mockPath, {
         points: [[10, 20], [30, 40]],
         x: 5,
@@ -388,8 +388,8 @@ describe('KritzelAwarenessCursors', () => {
       });
     });
 
-    it('should return null for a completed KritzelPath', () => {
-      const mockPath = Object.create(MockKritzelPath.prototype);
+    it('should return null for a completed UpdrawPath', () => {
+      const mockPath = Object.create(MockUpdrawPath.prototype);
       Object.assign(mockPath, {
         points: [[10, 20]],
         translateX: 0,
@@ -404,10 +404,10 @@ describe('KritzelAwarenessCursors', () => {
       expect(result).toBeNull();
     });
 
-    it('should return world coords for a KritzelLine end point', () => {
-      const mockLine = Object.create(MockKritzelLine.prototype);
+    it('should return world coords for an UpdrawLine end point', () => {
+      const mockLine = Object.create(MockUpdrawLine.prototype);
       Object.assign(mockLine, {
-        __class__: 'KritzelLine',
+        __class__: 'UpdrawLine',
         endX: 50,
         endY: 60,
         x: 5,
@@ -427,10 +427,10 @@ describe('KritzelAwarenessCursors', () => {
       });
     });
 
-    it('should return null for a completed KritzelLine', () => {
-      const mockLine = Object.create(MockKritzelLine.prototype);
+    it('should return null for a completed UpdrawLine', () => {
+      const mockLine = Object.create(MockUpdrawLine.prototype);
       Object.assign(mockLine, {
-        __class__: 'KritzelLine',
+        __class__: 'UpdrawLine',
         endX: 50,
         endY: 60,
         translateX: 0,
@@ -445,8 +445,8 @@ describe('KritzelAwarenessCursors', () => {
       expect(result).toBeNull();
     });
 
-    it('should return null for a KritzelShape (falls back to awareness cursor)', () => {
-      const mockShape = Object.create(MockKritzelShape.prototype);
+    it('should return null for an UpdrawShape (falls back to awareness cursor)', () => {
+      const mockShape = Object.create(MockUpdrawShape.prototype);
       Object.assign(mockShape, {
         x: 10,
         y: 20,

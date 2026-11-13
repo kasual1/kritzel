@@ -1,21 +1,21 @@
 import { useState } from 'react';
-import { KritzelEditor } from '@kritzel/react-editor';
+import { UpdrawEditor } from '@updraw/react-editor';
 
-const editorId = 'kritzel-canvas';
+const editorId = 'updraw-canvas';
 const canvasStyle = { display: 'block', width: '100%', height: 480 };
 
-export function KritzelCanvas() {
+export function UpdrawCanvas() {
   const [isReady, setIsReady] = useState(false);
 
   return (
     <section>
-      <KritzelEditor
+      <UpdrawEditor
         editorId={editorId}
         onIsReady={() => setIsReady(true)}
         style={canvasStyle}
-        aria-label="Kritzel canvas"
+        aria-label="Updraw canvas"
       />
-      <p role="status">{isReady ? 'Kritzel is ready.' : 'Loading Kritzel…'}</p>
+      <p role="status">{isReady ? 'Updraw is ready.' : 'Loading Updraw…'}</p>
     </section>
   );
 }

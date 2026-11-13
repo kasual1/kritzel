@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getEditorRef, KritzelEditor, KritzelWorkspace } from '@kritzel/vue-editor'
+import { getEditorRef, UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -7,7 +7,7 @@ import { editorStyle, hostStyle } from '../../shared/demo-shared'
 import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 const editor = getEditorRef('editor')
 
 async function panToOrigin() {
@@ -35,7 +35,7 @@ async function setViewportCenter() {
       <button @click="panToOffset">Pan to (200, 150)</button>
       <button @click="setViewportCenter">Center on (100, 100)</button>
     </Toolbar>
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="viewport-pan"
       theme="light"

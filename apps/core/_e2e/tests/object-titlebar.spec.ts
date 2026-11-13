@@ -7,9 +7,9 @@ async function configureTitlebar(page: Page) {
     const w = window as any;
     w.__titlebarActions = [];
     w.__titlebarEvents = [];
-    const editor = document.querySelector('kritzel-editor') as any;
+    const editor = document.querySelector('updraw-editor') as any;
     editor.addEventListener('objectTitlebarAction', (event: CustomEvent) => w.__titlebarEvents.push(event.detail.elementId));
-    editor.objectConfig = { hasTitlebar: (object: any) => object.__class__ === 'KritzelGroup' || !!object.name };
+    editor.objectConfig = { hasTitlebar: (object: any) => object.__class__ === 'UpdrawGroup' || !!object.name };
     editor.objectTitlebar = {
       left: [
         {
@@ -34,7 +34,7 @@ async function nextFrame(page: Page) {
 }
 
 function titlebarFor(page: Page, id: string): Locator {
-  return page.locator(`kritzel-engine .object-titlebar[data-titlebar-owner-id="${id}"]`);
+  return page.locator(`updraw-engine .object-titlebar[data-titlebar-owner-id="${id}"]`);
 }
 
 /** Page position inside the titlebar's drag surface, right of the left items and away from the buttons. */
@@ -64,7 +64,7 @@ test.describe('Object titlebar', () => {
     await editorPage.addShape({ translateX: 600, translateY: 200, width: 200, height: 150 });
     await nextFrame(page);
 
-    await expect(page.locator('kritzel-engine .object-titlebar')).toHaveCount(1);
+    await expect(page.locator('updraw-engine .object-titlebar')).toHaveCount(1);
     const titlebar = titlebarFor(page, named.id);
     await expect(titlebar.locator('.object-titlebar-title')).toHaveText('Desktop');
     await expect(titlebar.locator('[data-element-id="size"]')).toHaveText('300');
@@ -73,13 +73,13 @@ test.describe('Object titlebar', () => {
 
   test('renders no titlebars when objectConfig.hasTitlebar is missing', async ({ editorPage, page }) => {
     await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
-    const titlebars = page.locator('kritzel-engine .object-titlebar');
+    const titlebars = page.locator('updraw-engine .object-titlebar');
     await expect(titlebars).toHaveCount(1);
 
     const messages: string[] = [];
     page.on('console', message => messages.push(message.text()));
     await page.evaluate(() => {
-      const editor = document.querySelector('kritzel-editor') as any;
+      const editor = document.querySelector('updraw-editor') as any;
       editor.objectConfig = {};
     });
     await nextFrame(page);
@@ -177,7 +177,7 @@ test.describe('Object titlebar', () => {
     await page.mouse.click(point.x, point.y);
 
     await expect(titlebar).toHaveAttribute('data-state', 'active');
-    const isEditing = await page.evaluate(() => !!(document.querySelector('kritzel-engine') as any).core.store.activeText);
+    const isEditing = await page.evaluate(() => !!(document.querySelector('updraw-engine') as any).core.store.activeText);
     expect(isEditing).toBe(false);
   });
 
@@ -185,7 +185,7 @@ test.describe('Object titlebar', () => {
     const first = await editorPage.addShape({ translateX: 200, translateY: 200, width: 150, height: 150, name: 'Mobile' });
     const second = await editorPage.addShape({ translateX: 400, translateY: 200, width: 150, height: 150, name: 'Tablet' });
     await nextFrame(page);
-    const titlebars = page.locator('kritzel-engine .object-titlebar');
+    const titlebars = page.locator('updraw-engine .object-titlebar');
     await expect(titlebars).toHaveCount(2);
 
     await editorPage.selectObjects([first, second]);
@@ -194,7 +194,7 @@ test.describe('Object titlebar', () => {
     await nextFrame(page);
 
     await expect(titlebars).toHaveCount(1);
-    await expect(titlebars.first()).toHaveAttribute('data-object-type', 'KritzelGroup');
+    await expect(titlebars.first()).toHaveAttribute('data-object-type', 'UpdrawGroup');
 
     await dragBy(page, await surfacePoint(titlebars.first()), 100, 50);
 
@@ -209,12 +209,12 @@ test.describe('Object titlebar', () => {
     const first = await editorPage.addShape({ translateX: 200, translateY: 200, width: 150, height: 150, name: 'Mobile' });
     const second = await editorPage.addShape({ translateX: 400, translateY: 200, width: 150, height: 150, name: 'Tablet' });
     await nextFrame(page);
-    const titlebars = page.locator('kritzel-engine .object-titlebar');
+    const titlebars = page.locator('updraw-engine .object-titlebar');
     await expect(titlebars).toHaveCount(2);
 
     await page.evaluate(() => {
-      const editor = document.querySelector('kritzel-editor') as any;
-      editor.objectConfig = { hasTitlebar: (object: any) => object.__class__ === 'KritzelGroup' };
+      const editor = document.querySelector('updraw-editor') as any;
+      editor.objectConfig = { hasTitlebar: (object: any) => object.__class__ === 'UpdrawGroup' };
     });
     await nextFrame(page);
     await expect(titlebars).toHaveCount(0);
@@ -225,7 +225,7 @@ test.describe('Object titlebar', () => {
     await nextFrame(page);
 
     const allObjects = await editorPage.getAllObjects<{ id: string; __class__: string }>();
-    const group = allObjects.find(object => object.__class__ === 'KritzelGroup');
+    const group = allObjects.find(object => object.__class__ === 'UpdrawGroup');
     expect(group).toBeDefined();
     await expect(titlebars).toHaveCount(1);
     await expect(titlebarFor(page, group!.id)).toHaveCount(1);
@@ -234,14 +234,14 @@ test.describe('Object titlebar', () => {
   test('buttons use the custom pointer cursor and disabled buttons the custom default cursor', async ({ editorPage, page }) => {
     const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     const button = titlebarFor(page, shape.id).locator('[data-element-id="play"]');
-    const pointerCursor = await page.evaluate(() => getComputedStyle(document.body).getPropertyValue('--kritzel-global-pointer-cursor').trim());
+    const pointerCursor = await page.evaluate(() => getComputedStyle(document.body).getPropertyValue('--updraw-global-pointer-cursor').trim());
     expect(pointerCursor).toMatch(/^url\(/);
 
     await expect(button).toHaveCSS('cursor', /^url\(/);
     expect(await button.evaluate(element => getComputedStyle(element).cursor)).not.toBe('pointer');
 
     await page.evaluate(() => {
-      const editor = document.querySelector('kritzel-editor') as any;
+      const editor = document.querySelector('updraw-editor') as any;
       editor.objectTitlebar = {
         ...editor.objectTitlebar,
         left: editor.objectTitlebar.left.map((item: any) => (item.id === 'play' ? { ...item, isDisabled: true } : item)),
@@ -260,7 +260,7 @@ test.describe('Object titlebar', () => {
         const w = window as any;
         w.__menuActions = [];
         w.__menuEvents = [];
-        const editor = document.querySelector('kritzel-editor') as any;
+        const editor = document.querySelector('updraw-editor') as any;
         editor.addEventListener('objectTitlebarAction', (event: CustomEvent) => w.__menuEvents.push(event.detail));
         editor.objectTitlebar = {
           ...editor.objectTitlebar,
@@ -282,7 +282,7 @@ test.describe('Object titlebar', () => {
       await nextFrame(page);
     }
 
-    const menu = (page: Page) => page.locator('kritzel-menu[data-testid="object-titlebar-menu"]');
+    const menu = (page: Page) => page.locator('updraw-menu[data-testid="object-titlebar-menu"]');
     const menuItem = (page: Page, id: string) => menu(page).locator(`[data-testid="menu-item-${id}"]`);
 
     test('opens below its button, lists visible menu items and runs the selected one', async ({ editorPage, page }) => {
@@ -296,7 +296,7 @@ test.describe('Object titlebar', () => {
 
       await expect(menu(page)).toBeVisible();
       await expect(button).toHaveAttribute('aria-expanded', 'true');
-      await expect(menu(page).locator('kritzel-menu-item')).toHaveCount(2);
+      await expect(menu(page).locator('updraw-menu-item')).toHaveCount(2);
       await expect(menuItem(page, 'duplicate')).toContainText('Duplicate');
       await expect(menuItem(page, 'hidden')).toHaveCount(0);
       const [buttonBox, menuBox] = await Promise.all([button.boundingBox(), menu(page).boundingBox()]);
@@ -329,9 +329,9 @@ test.describe('Object titlebar', () => {
 
       // Theme tokens are applied as variables on the editor, from where the portal copies them.
       await page.evaluate(() => {
-        const editor = document.querySelector('kritzel-editor') as HTMLElement;
-        editor.style.setProperty('--kritzel-titlebar-menu-padding', '10px');
-        editor.style.setProperty('--kritzel-titlebar-menu-item-height', '40px');
+        const editor = document.querySelector('updraw-editor') as HTMLElement;
+        editor.style.setProperty('--updraw-titlebar-menu-padding', '10px');
+        editor.style.setProperty('--updraw-titlebar-menu-item-height', '40px');
       });
       await button.click();
 
@@ -391,7 +391,7 @@ test.describe('Object titlebar', () => {
       // The closed portal removes itself from the editor, which must not break the editor's later renders.
       await page.mouse.click(empty.pageX, empty.pageY, { button: 'right' });
 
-      await page.locator('kritzel-editor kritzel-context-menu >>> .menu-container').first().waitFor({ state: 'visible' });
+      await page.locator('updraw-editor updraw-context-menu >>> .menu-container').first().waitFor({ state: 'visible' });
       expect(errors).toEqual([]);
     });
 
@@ -428,7 +428,7 @@ test.describe('Object titlebar', () => {
     /** Makes the title editable and returns the title element of the given object's titlebar. */
     async function enableRenaming(page: Page, id: string) {
       await page.evaluate(() => {
-        const editor = document.querySelector('kritzel-editor') as any;
+        const editor = document.querySelector('updraw-editor') as any;
         editor.objectTitlebar = {
           ...editor.objectTitlebar,
           left: editor.objectTitlebar.left.map((item: any) => (item.type === 'title' ? { ...item, isEditable: true } : item)),
@@ -501,7 +501,7 @@ test.describe('Object titlebar', () => {
       const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
       // The default test config only gives named objects a titlebar.
       await page.evaluate(() => {
-        (document.querySelector('kritzel-editor') as any).objectConfig = { hasTitlebar: true };
+        (document.querySelector('updraw-editor') as any).objectConfig = { hasTitlebar: true };
       });
       const title = await enableRenaming(page, shape.id);
 
@@ -556,7 +556,7 @@ test.describe('Object titlebar', () => {
 
     test('title with dimensions follows resizing and undo', async ({ editorPage, page }) => {
       await page.evaluate(() => {
-        const editor = document.querySelector('kritzel-editor') as any;
+        const editor = document.querySelector('updraw-editor') as any;
         editor.objectTitlebar = {
           left: [{ type: 'title', id: 'title' }],
           right: [
@@ -608,7 +608,7 @@ test.describe('Object titlebar', () => {
       await page.evaluate(() => {
         const w = window as any;
         w.__configEvents = [];
-        const editor = document.querySelector('kritzel-editor') as any;
+        const editor = document.querySelector('updraw-editor') as any;
         editor.addEventListener('objectTitlebarAction', (event: CustomEvent) => w.__configEvents.push(event.detail));
         editor.objectTitlebar = {
           left: [
@@ -663,7 +663,7 @@ test.describe('Object titlebar', () => {
 
     test('elements with minBarWidth hide on narrow titlebars', async ({ editorPage, page }) => {
       await page.evaluate(() => {
-        const editor = document.querySelector('kritzel-editor') as any;
+        const editor = document.querySelector('updraw-editor') as any;
         editor.objectTitlebar = {
           left: [{ type: 'title', id: 'title' }],
           right: [{ type: 'text', id: 'dimensions', minBarWidth: 200, text: (context: any) => String(Math.round(context.contentSize.width)) }],
@@ -688,7 +688,7 @@ test.describe('Object titlebar', () => {
           const w = window as any;
           w.__configEvents = [];
           w.__addClicks = [];
-          const editor = document.querySelector('kritzel-editor') as any;
+          const editor = document.querySelector('updraw-editor') as any;
           editor.addEventListener('objectTitlebarAction', (event: CustomEvent) => w.__configEvents.push(event.detail));
           editor.objectTitlebar = {
             left: [
@@ -714,7 +714,7 @@ test.describe('Object titlebar', () => {
         await nextFrame(page);
       }
 
-      const menu = (page: Page) => page.locator('kritzel-menu[data-testid="object-titlebar-menu"]');
+      const menu = (page: Page) => page.locator('updraw-menu[data-testid="object-titlebar-menu"]');
       const menuItem = (page: Page, id: string) => menu(page).locator(`[data-testid="menu-item-${id}"]`);
 
       test('the button runs its action without opening the menu, and the menu lists items for its object', async ({ editorPage, page }) => {
@@ -821,7 +821,7 @@ test.describe('Object titlebar', () => {
 
     test('isEditable can enable renaming per object', async ({ editorPage, page }) => {
       await page.evaluate(() => {
-        const editor = document.querySelector('kritzel-editor') as any;
+        const editor = document.querySelector('updraw-editor') as any;
         editor.objectTitlebar = {
           left: [{ type: 'title', id: 'title', isEditable: (context: any) => context.object.name !== 'Locked' }],
         };
@@ -843,8 +843,8 @@ test.describe('Object titlebar', () => {
 
     test('a group titlebar with dimensions can be renamed', async ({ editorPage, page }) => {
       await page.evaluate(() => {
-        const editor = document.querySelector('kritzel-editor') as any;
-        editor.objectConfig = { hasTitlebar: (object: any) => object.__class__ === 'KritzelGroup' };
+        const editor = document.querySelector('updraw-editor') as any;
+        editor.objectConfig = { hasTitlebar: (object: any) => object.__class__ === 'UpdrawGroup' };
         editor.objectTitlebar = {
           left: [
             { type: 'title', id: 'title', isEditable: true },
@@ -859,7 +859,7 @@ test.describe('Object titlebar', () => {
       await editorPage.clearSelection();
       await nextFrame(page);
 
-      const titlebar = page.locator('kritzel-engine .object-titlebar[data-object-type="KritzelGroup"]');
+      const titlebar = page.locator('updraw-engine .object-titlebar[data-object-type="UpdrawGroup"]');
       await expect(titlebar.locator('[data-element-id="count"]')).toHaveText('2 items');
       const title = titlebar.locator('.object-titlebar-title');
       await expect(title).toHaveText('Group');
@@ -871,13 +871,13 @@ test.describe('Object titlebar', () => {
       await page.keyboard.press('Enter');
 
       await expect(title).toHaveText('Screens');
-      const group = (await editorPage.getAllObjects<{ __class__: string; name?: string }>()).find(object => object.__class__ === 'KritzelGroup');
+      const group = (await editorPage.getAllObjects<{ __class__: string; name?: string }>()).find(object => object.__class__ === 'UpdrawGroup');
       expect(group?.name).toBe('Screens');
     });
 
     test('visibility "active" shows the titlebar only for selected objects', async ({ editorPage, page }) => {
       await page.evaluate(() => {
-        const editor = document.querySelector('kritzel-editor') as any;
+        const editor = document.querySelector('updraw-editor') as any;
         editor.objectTitlebar = { ...editor.objectTitlebar, visibility: 'active' };
       });
       const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
@@ -895,7 +895,7 @@ test.describe('Object titlebar', () => {
 
     test('draggable: false selects the object without moving it', async ({ editorPage, page }) => {
       await page.evaluate(() => {
-        const editor = document.querySelector('kritzel-editor') as any;
+        const editor = document.querySelector('updraw-editor') as any;
         editor.objectTitlebar = { ...editor.objectTitlebar, draggable: false };
       });
       const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
@@ -917,7 +917,7 @@ test.describe('Object titlebar', () => {
 
     await page.mouse.click(point.x, point.y, { button: 'right' });
 
-    await page.locator('kritzel-editor kritzel-context-menu >>> .menu-container').first().waitFor({ state: 'visible' });
+    await page.locator('updraw-editor updraw-context-menu >>> .menu-container').first().waitFor({ state: 'visible' });
     const selected = await editorPage.getSelectedObjects<{ id: string }>();
     expect(selected.map(object => object.id)).toEqual([shape.id]);
   });
@@ -925,9 +925,9 @@ test.describe('Object titlebar', () => {
   test('theme variables can make the titlebar transparent and move it onto the object edge', async ({ editorPage, page }) => {
     const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     await page.evaluate(() => {
-      const editor = document.querySelector('kritzel-editor') as HTMLElement;
-      editor.style.setProperty('--kritzel-titlebar-background-color', 'transparent');
-      editor.style.setProperty('--kritzel-titlebar-offset', '0px');
+      const editor = document.querySelector('updraw-editor') as HTMLElement;
+      editor.style.setProperty('--updraw-titlebar-background-color', 'transparent');
+      editor.style.setProperty('--updraw-titlebar-offset', '0px');
     });
     await nextFrame(page);
     const titlebar = titlebarFor(page, shape.id);
@@ -958,7 +958,7 @@ test.describe('Object titlebar', () => {
 
     test('visual: titlebar with every element type', async ({ editorPage, page }) => {
       await page.evaluate(() => {
-        const editor = document.querySelector('kritzel-editor') as any;
+        const editor = document.querySelector('updraw-editor') as any;
         editor.objectTitlebar = {
           left: [
             { type: 'icon', id: 'kind', icon: 'viewport' },
@@ -985,7 +985,7 @@ test.describe('Object titlebar', () => {
     test('visual: open titlebar menu', async ({ editorPage, page }) => {
       const shape = await editorPage.addShape({ translateX: 100, translateY: 150, width: 400, height: 200, name: 'Desktop' });
       await page.evaluate(() => {
-        const editor = document.querySelector('kritzel-editor') as any;
+        const editor = document.querySelector('updraw-editor') as any;
         editor.objectTitlebar = {
           ...editor.objectTitlebar,
           right: [
@@ -1005,7 +1005,7 @@ test.describe('Object titlebar', () => {
       });
       await nextFrame(page);
       await titlebarFor(page, shape.id).locator('[data-element-id="more"]').click();
-      await expect(page.locator('kritzel-menu[data-testid="object-titlebar-menu"]')).toBeVisible();
+      await expect(page.locator('updraw-menu[data-testid="object-titlebar-menu"]')).toBeVisible();
       await settle(editorPage, page);
 
       // The menu lives in a portal on the body, so capture the whole page.
@@ -1015,7 +1015,7 @@ test.describe('Object titlebar', () => {
     test('visual: title rename input', async ({ editorPage, page }) => {
       const shape = await editorPage.addShape({ translateX: 100, translateY: 150, width: 400, height: 200, name: 'Desktop' });
       await page.evaluate(() => {
-        const editor = document.querySelector('kritzel-editor') as any;
+        const editor = document.querySelector('updraw-editor') as any;
         editor.objectTitlebar = {
           ...editor.objectTitlebar,
           left: editor.objectTitlebar.left.map((item: any) => (item.type === 'title' ? { ...item, isEditable: true } : item)),
@@ -1040,7 +1040,7 @@ test.describe('Object titlebar', () => {
       await expect(editorPage.engine).toHaveScreenshot('rotation-follow.png', { animations: 'disabled' });
 
       await page.evaluate(() => {
-        const editor = document.querySelector('kritzel-editor') as any;
+        const editor = document.querySelector('updraw-editor') as any;
         editor.objectTitlebar = { ...editor.objectTitlebar, rotation: 'upright' };
       });
       await settle(editorPage, page);
@@ -1049,7 +1049,7 @@ test.describe('Object titlebar', () => {
 
     test('visual: titlebars in the dark theme', async ({ editorPage, page }) => {
       await page.evaluate(() => {
-        (document.querySelector('kritzel-editor') as any).theme = 'dark';
+        (document.querySelector('updraw-editor') as any).theme = 'dark';
       });
       await editorPage.addShape({ translateX: 100, translateY: 150, width: 300, height: 150, name: 'Desktop' });
       const active = await editorPage.addShape({ translateX: 500, translateY: 150, width: 300, height: 150, name: 'Tablet' });
@@ -1062,7 +1062,7 @@ test.describe('Object titlebar', () => {
 
   test('exposes parts for styling from page CSS', async ({ editorPage, page }) => {
     const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
-    await page.addStyleTag({ content: 'kritzel-engine::part(titlebar-active) { outline: 3px solid rgb(255, 0, 0); }' });
+    await page.addStyleTag({ content: 'updraw-engine::part(titlebar-active) { outline: 3px solid rgb(255, 0, 0); }' });
     const titlebar = titlebarFor(page, shape.id);
 
     const point = await surfacePoint(titlebar);

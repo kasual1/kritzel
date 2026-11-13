@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
-import { KritzelEditor, KritzelTheme, KritzelWorkspace } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawTheme, UpdrawWorkspace } from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -7,7 +7,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-theming-apply',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -25,7 +25,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       </button>
     </app-toolbar>
     <div class="editor-wrap">
-      <kritzel-editor
+      <updraw-editor
         editorId="theming-apply"
         [theme]="activeName"
         [themes]="themes"
@@ -34,7 +34,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="true"
         [isWorkspaceManagerVisible]="true"
-      ></kritzel-editor>
+      ></updraw-editor>
     </div>
   `,
   styles: [
@@ -52,9 +52,9 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   ],
 })
 export class ThemingApplyComponent {
-  themes: KritzelTheme[] = [angularThemeLight, angularThemeDark];
+  themes: UpdrawTheme[] = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
   activeName: string = 'light';
 

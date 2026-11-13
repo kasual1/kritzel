@@ -1,17 +1,17 @@
-import { KritzelCore } from '../core/core.class';
-import { KritzelBaseObject } from './base-object.class';
-import { KritzelMathHelper } from '../../helpers/math.helper';
-import { KritzelDynamicObjectRendererRegistry } from '../registries/dynamic-object-renderer.registry';
-import { KritzelHTMLHelper } from '../../helpers/html.helper';
-import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interface';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawBaseObject } from './base-object.class';
+import { UpdrawMathHelper } from '../../helpers/math.helper';
+import { UpdrawDynamicObjectRendererRegistry } from '../registries/dynamic-object-renderer.registry';
+import { UpdrawHTMLHelper } from '../../helpers/html.helper';
+import { UpdrawEmbeddedObject } from '../../interfaces/embedded-object.interface';
 
 /**
- * Configuration options for creating a KritzelDynamicObject instance.
+ * Configuration options for creating an UpdrawDynamicObject instance.
  */
-export interface KritzelDynamicObjectConfig {
+export interface UpdrawDynamicObjectConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
-  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
+  /** Whether the engine's loading placeholder is drawn over the object, see `UpdrawBaseObject.setLoading()`. */
   isLoading?: boolean;
   element?: HTMLElement;
   rendererKey?: string;
@@ -28,12 +28,12 @@ export interface KritzelDynamicObjectConfig {
 }
 
 /**
- * Represents a custom HTML element that can be placed and manipulated on the Kritzel canvas.
- * Extends KritzelBaseObject to inherit common object functionality like positioning,
+ * Represents a custom HTML element that can be placed and manipulated on the Updraw canvas.
+ * Extends UpdrawBaseObject to inherit common object functionality like positioning,
  * scaling, and lifecycle management.
  */
-export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> implements KritzelEmbeddedObject {
-  override __class__: string = 'KritzelDynamicObject';
+export class UpdrawDynamicObject extends UpdrawBaseObject<HTMLElement> implements UpdrawEmbeddedObject {
+  override __class__: string = 'UpdrawDynamicObject';
 
   /** The HTML element to be rendered on the canvas. */
   element!: HTMLElement;
@@ -53,7 +53,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
 
   /**
    * Corner radius: pixels, or any CSS `border-radius`, overriding the theme's. `undefined` uses the theme's.
-   * Content can match it with `var(--kritzel-content-border-radius)`.
+   * Content can match it with `var(--updraw-content-border-radius)`.
    */
   borderRadius?: number | string;
 
@@ -62,12 +62,12 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
 
   /**
    * Whether content is clipped to the object's rounded box. Turn it off for content that overflows on purpose
-   * (popovers, dropdowns, its own shadow), and round its corners with `var(--kritzel-content-border-radius)`.
+   * (popovers, dropdowns, its own shadow), and round its corners with `var(--updraw-content-border-radius)`.
    */
   clipContent: boolean = true;
 
   /**
-   * Creates a new KritzelDynamicObject instance.
+   * Creates a new UpdrawDynamicObject instance.
    * @param config - Optional configuration object for the dynamic object.
    * @param config.element - The HTML element to wrap.
    * @param config.translateX - Initial X position offset. Defaults to 0.
@@ -76,7 +76,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
    * @param config.height - Initial height in pixels. Defaults to 0.
    * @param config.width - Initial width in pixels. Defaults to 0.
    */
-  constructor(config?: KritzelDynamicObjectConfig) {
+  constructor(config?: UpdrawDynamicObjectConfig) {
     super();
     this.name = config?.name;
     this.isLoading = config?.isLoading ?? false;
@@ -87,7 +87,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
     if (config) {
       this.translateX = config.translateX || 0;
       this.translateY = config.translateY || 0;
-      this.rotation = KritzelMathHelper.degreesToRadians(config.rotation ?? 0);
+      this.rotation = UpdrawMathHelper.degreesToRadians(config.rotation ?? 0);
       this.scale = config.scale || 1;
       this.element = config.element ?? this.createPlaceholder();
       this.height = config.height || 0;
@@ -98,9 +98,9 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
   }
 
   /**
-   * Factory method to create a new KritzelDynamicObject with proper core binding.
+   * Factory method to create a new UpdrawDynamicObject with proper core binding.
    * Generates a unique ID and assigns the element to the active workspace.
-   * @param core - The KritzelCore instance for state management and ID generation.
+   * @param core - The UpdrawCore instance for state management and ID generation.
    * @param config - Optional configuration object for the dynamic object.
    * @param config.element - The HTML element to wrap.
    * @param config.translateX - Initial X position offset.
@@ -108,10 +108,10 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
    * @param config.scale - Initial scale factor.
    * @param config.height - Initial height in pixels.
    * @param config.width - Initial width in pixels.
-   * @returns A new KritzelBaseObject instance bound to the core.
+   * @returns A new UpdrawBaseObject instance bound to the core.
    */
-  static override create(core: KritzelCore, config?: KritzelDynamicObjectConfig): KritzelBaseObject<Element> {
-    const object = new KritzelDynamicObject(config);
+  static override create(core: UpdrawCore, config?: UpdrawDynamicObjectConfig): UpdrawBaseObject<Element> {
+    const object = new UpdrawDynamicObject(config);
 
     object._core = core;
     object.id = object.generateId();
@@ -153,7 +153,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
 
     // Try renderer-based approach if a key is set
     if (this.rendererKey) {
-      const renderer = KritzelDynamicObjectRendererRegistry.get(this.rendererKey);
+      const renderer = UpdrawDynamicObjectRendererRegistry.get(this.rendererKey);
       if (renderer) {
         element.innerHTML = ''; // Clear container
         renderer.onMount({
@@ -189,7 +189,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
 
   private applyInteractiveState(): void {
     const pointerEvents = this.isInteractive ? 'auto' : 'none';
-    const contentCursor = this.isInteractive ? 'var(--kritzel-global-default-cursor, auto)' : '';
+    const contentCursor = this.isInteractive ? 'var(--updraw-global-default-cursor, auto)' : '';
 
     if (this.element) {
       this.element.style.pointerEvents = pointerEvents;
@@ -399,7 +399,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
 
     // Try renderer-based unmount if renderer is registered
     if (this.rendererKey) {
-      const renderer = KritzelDynamicObjectRendererRegistry.get(this.rendererKey);
+      const renderer = UpdrawDynamicObjectRendererRegistry.get(this.rendererKey);
       if (renderer) {
         // Capture any updated data returned by renderer
         const updatedData = renderer.onUnmount({
@@ -423,7 +423,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
    * framework components are detected as well.
    */
   isElementScrollable(): boolean {
-    return !!KritzelHTMLHelper.findScrollableElement(this.element);
+    return !!UpdrawHTMLHelper.findScrollableElement(this.element);
   }
 
   /**
@@ -476,10 +476,10 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
    * Creates a deep copy of this dynamic object.
    * The copy receives a new unique ID, is marked as unmounted,
    * and contains a cloned copy of the underlying HTML element.
-   * @returns A new KritzelDynamicObject instance with copied properties and a cloned DOM element.
+   * @returns A new UpdrawDynamicObject instance with copied properties and a cloned DOM element.
    */
-  override copy(): KritzelDynamicObject {
-    const copiedObject: KritzelDynamicObject = Object.create(Object.getPrototypeOf(this));
+  override copy(): UpdrawDynamicObject {
+    const copiedObject: UpdrawDynamicObject = Object.create(Object.getPrototypeOf(this));
     Object.assign(copiedObject, this);
     copiedObject.id = this.generateId();
     copiedObject.isMounted = false;
@@ -529,7 +529,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
 
   private serializeRendererData(): unknown {
     if (this.rendererKey) {
-      const renderer = KritzelDynamicObjectRendererRegistry.get(this.rendererKey);
+      const renderer = UpdrawDynamicObjectRendererRegistry.get(this.rendererKey);
 
       if (renderer?.onSerialize) {
         return structuredClone(renderer.onSerialize({

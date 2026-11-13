@@ -1,6 +1,6 @@
 ---
 title: License
-description: Kritzel is open source software released under the MIT License.
+description: Updraw is open source software released under the MIT License.
 ---
 
 # MIT License

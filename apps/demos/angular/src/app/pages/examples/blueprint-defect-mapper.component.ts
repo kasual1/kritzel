@@ -6,12 +6,12 @@ import {
   signal,
 } from '@angular/core';
 import {
-  KritzelEditor,
-  KritzelShape,
-  KritzelImage,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawShape,
+  UpdrawImage,
+  UpdrawWorkspace,
   ShapeType,
-} from '@kritzel/angular-editor';
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { InfoPanelComponent } from '../../components/info-panel.component';
@@ -28,13 +28,13 @@ interface Defect {
 
 @Component({
   selector: 'app-blueprint-defect-mapper',
-  imports: [InfoPanelComponent, KritzelEditor],
+  imports: [InfoPanelComponent, UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mapper-workspace">
       <div class="editor-pane">
         @if (workspaces().length > 0) {
-          <kritzel-editor
+          <updraw-editor
             editorId="blueprint-defect-mapper"
             #editorEl
             [themes]="themes"
@@ -47,7 +47,7 @@ interface Defect {
             [workspaces]="workspaces()"
             (isReady)="onReady()"
             (click)="onCanvasClick($event)"
-          ></kritzel-editor>
+          ></updraw-editor>
         }
 
         @if (placingMode()) {
@@ -173,7 +173,7 @@ interface Defect {
       height: 100%;
     }
 
-    kritzel-editor {
+    updraw-editor {
       display: block;
       width: 100%;
       height: 100%;
@@ -440,7 +440,7 @@ interface Defect {
   `,
 })
 export class BlueprintDefectMapperComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
   @ViewChild('editorEl', { read: ElementRef })
   editorEl!: ElementRef<HTMLElement>;
 
@@ -452,7 +452,7 @@ export class BlueprintDefectMapperComponent {
 
   placingMode = signal<boolean>(false);
   defects = signal<Defect[]>([]);
-  workspaces = signal<KritzelWorkspace[]>([]);
+  workspaces = signal<UpdrawWorkspace[]>([]);
 
   private nextDefectId = 2; // seeded defects account for 1, 2
 
@@ -468,7 +468,7 @@ export class BlueprintDefectMapperComponent {
   }
 
   private async initializeWorkspace(): Promise<void> {
-    const background = await KritzelImage.fromUrl(
+    const background = await UpdrawImage.fromUrl(
       'assets/floorplan.png',
       {
         maxWidth: 660,
@@ -499,11 +499,11 @@ export class BlueprintDefectMapperComponent {
     ];
 
     const initialList: Defect[] = [];
-    const objects: Array<KritzelImage | KritzelShape> = [background];
+    const objects: Array<UpdrawImage | UpdrawShape> = [background];
 
     for (const d of seedPins) {
       const pinId = `pin-${d.id}`;
-      const pin = new KritzelShape({
+      const pin = new UpdrawShape({
         translateX: d.x - this.pinSize / 2,
         translateY: d.y - this.pinSize / 2,
         width: this.pinSize,
@@ -529,12 +529,12 @@ export class BlueprintDefectMapperComponent {
     }
 
     this.defects.set(initialList);
-    this.workspaces.set([new KritzelWorkspace({ objects })]);
+    this.workspaces.set([new UpdrawWorkspace({ objects })]);
   }
 
   async normalizeFirstSeedPin() {
     const firstPin = (await this.editor.getObjectById('pin-defect-1')) as
-      | KritzelShape
+      | UpdrawShape
       | undefined;
     if (!firstPin) {
       return;
@@ -550,7 +550,7 @@ export class BlueprintDefectMapperComponent {
 
   async normalizeSecondSeedPin() {
     const secondPin = (await this.editor.getObjectById('pin-defect-2')) as
-      | KritzelShape
+      | UpdrawShape
       | undefined;
     if (!secondPin) {
       return;
@@ -567,8 +567,8 @@ export class BlueprintDefectMapperComponent {
   async restoreDefectsFromCanvas() {
     const all = await this.editor.getAllObjects();
     const pinObjects = all.filter(
-      (o) => o.id.startsWith('pin-') && o instanceof KritzelShape,
-    ) as KritzelShape[];
+      (o) => o.id.startsWith('pin-') && o instanceof UpdrawShape,
+    ) as UpdrawShape[];
 
     const restoredList: Defect[] = [];
     pinObjects.forEach((pin) => {
@@ -654,7 +654,7 @@ export class BlueprintDefectMapperComponent {
     const defectId = `defect-user-${++this.nextDefectId}`;
     const pinId = `pin-${defectId}`;
 
-    const pin = new KritzelShape({
+    const pin = new UpdrawShape({
       translateX: worldPos.x - this.pinSize / 2,
       translateY: worldPos.y - this.pinSize / 2,
       width: this.pinSize,
@@ -702,7 +702,7 @@ export class BlueprintDefectMapperComponent {
       list.map((d) => (d.id === defect.id ? { ...d, status: newStatus } : d)),
     );
 
-    const pin = (await this.editor.getObjectById(defect.pinId)) as KritzelShape;
+    const pin = (await this.editor.getObjectById(defect.pinId)) as UpdrawShape;
     if (pin) {
       await this.editor.updateObject(pin, {
         fillColor: this.getPinColor(newStatus),
@@ -710,15 +710,15 @@ export class BlueprintDefectMapperComponent {
     }
   }
 
-  async findPinsForDefect(defect: Defect): Promise<KritzelShape[]> {
+  async findPinsForDefect(defect: Defect): Promise<UpdrawShape[]> {
     const idCandidates = Array.from(
       new Set([defect.pinId, `pin-${defect.id}`, defect.id]),
     );
 
-    const directMatches: KritzelShape[] = [];
+    const directMatches: UpdrawShape[] = [];
     for (const id of idCandidates) {
-      const pin = (await this.editor.getObjectById(id)) as KritzelShape | null;
-      if (pin && pin instanceof KritzelShape && pin.shapeType === ShapeType.Ellipse) {
+      const pin = (await this.editor.getObjectById(id)) as UpdrawShape | null;
+      if (pin && pin instanceof UpdrawShape && pin.shapeType === ShapeType.Ellipse) {
         directMatches.push(pin);
       }
     }
@@ -730,10 +730,10 @@ export class BlueprintDefectMapperComponent {
     const all = await this.editor.getAllObjects();
     const idMatches = all.filter(
       (obj) =>
-        obj instanceof KritzelShape &&
+        obj instanceof UpdrawShape &&
         obj.shapeType === ShapeType.Ellipse &&
         idCandidates.includes(obj.id),
-    ) as KritzelShape[];
+    ) as UpdrawShape[];
 
     if (idMatches.length > 0) {
       return idMatches;
@@ -741,11 +741,11 @@ export class BlueprintDefectMapperComponent {
 
     // Fallback for legacy/persisted IDs: match the nearest pin to the defect coordinates.
     const ellipsePins = all.filter(
-      (obj) => obj instanceof KritzelShape && obj.shapeType === ShapeType.Ellipse,
-    ) as KritzelShape[];
+      (obj) => obj instanceof UpdrawShape && obj.shapeType === ShapeType.Ellipse,
+    ) as UpdrawShape[];
 
     const maxDistance = this.pinSize;
-    let bestMatch: KritzelShape | null = null;
+    let bestMatch: UpdrawShape | null = null;
     let bestDistance = Number.POSITIVE_INFINITY;
 
     for (const pin of ellipsePins) {

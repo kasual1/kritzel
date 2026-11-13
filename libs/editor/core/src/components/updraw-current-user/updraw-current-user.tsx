@@ -1,17 +1,17 @@
 ﻿import { Component, Host, h, Prop } from '@stencil/core';
-import { IKritzelUser } from '@kritzel/core';
-import { KritzelTermKey } from '@kritzel/core';
+import { IUpdrawUser } from '@updraw/core';
+import { UpdrawTermKey } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-current-user',
-  styleUrl: 'kritzel-current-user.css',
+  tag: 'updraw-current-user',
+  styleUrl: 'updraw-current-user.css',
   shadow: true,
 })
-export class KritzelCurrentUser {
+export class UpdrawCurrentUser {
   /**
    * The current user to display
    */
-  @Prop() user?: IKritzelUser;
+  @Prop() user?: IUpdrawUser;
 
   /**
    * Avatar size in pixels
@@ -19,12 +19,12 @@ export class KritzelCurrentUser {
   @Prop() avatarSize: number = 40;
 
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
 
   render() {
     return (
       <Host>
-        <kritzel-avatar user={this.user} size={this.avatarSize}></kritzel-avatar>
+        <updraw-avatar user={this.user} size={this.avatarSize}></updraw-avatar>
       </Host>
     );
   }

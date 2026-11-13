@@ -59,7 +59,7 @@ function encodePng(w, h, rgba) {
   ]);
 }
 
-const SEED_KEY = 'kritzel-thumbnail-seed';
+const SEED_KEY = 'updraw-thumbnail-seed';
 
 // Inserts a tEXt chunk right before IEND (tEXt is Latin-1, so the seed is stored URI-encoded).
 function withSeed(png, seed) {
@@ -97,7 +97,7 @@ export function renderThumbnail(seed, outFile, { scale = 1 } = {}) {
   return outFile;
 }
 
-// Experiment: the artwork only shines through the shape of the Kritzel logo (no label, no seed).
+// Experiment: the artwork only shines through the shape of the Updraw logo (no label, no seed).
 // `background` is a CSS color, 'transparent', or 'dim' (the artwork itself, darkened, around the logo).
 export const LOGO_MASK_BACKGROUNDS = { white: '#ffffff', dark: '#141a2b', dim: 'dim', transparent: 'transparent' };
 

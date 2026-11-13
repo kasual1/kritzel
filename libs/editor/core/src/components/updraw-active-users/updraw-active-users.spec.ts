@@ -6,7 +6,7 @@ jest.mock('@stencil/core', () => ({
   h: (tag: any, props: any, ...children: any[]) => ({ type: tag, props, children }),
 }));
 
-import { KritzelActiveUsers } from './kritzel-active-users';
+import { UpdrawActiveUsers } from './updraw-active-users';
 
 function collect(node: any, predicate: (value: any) => boolean, found: any[] = []): any[] {
   if (!node || typeof node !== 'object') {
@@ -48,9 +48,9 @@ const agent = (overrides: Record<string, unknown> = {}) => ({
   ...overrides,
 });
 
-describe('kritzel-active-users', () => {
+describe('updraw-active-users', () => {
   it('shows agents after the users, local agents before remote ones', () => {
-    const component = new KritzelActiveUsers();
+    const component = new UpdrawActiveUsers();
     component.users = [{ id: 'ana', displayName: 'Ana' }] as any;
     component.agents = [
       agent({ id: 'remote', name: 'Remote', isRemote: true, clientId: 2, hostUser: { id: 'bo', displayName: 'Bo' } }),
@@ -65,7 +65,7 @@ describe('kritzel-active-users', () => {
   });
 
   it('marks busy agents, shows their status and lists an agent the host passes as a user only once', () => {
-    const component = new KritzelActiveUsers();
+    const component = new UpdrawActiveUsers();
     component.users = [{ id: 'writer', displayName: 'Writer' }] as any;
     component.agents = [agent(), agent({ id: 'planner', name: 'Planner', status: 'Planning', activeAction: 'moveObject' })] as any;
 
@@ -77,7 +77,7 @@ describe('kritzel-active-users', () => {
   });
 
   it('hides itself without users and agents', () => {
-    const component = new KritzelActiveUsers();
+    const component = new UpdrawActiveUsers();
     component.users = [];
     component.agents = [];
 

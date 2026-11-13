@@ -1,13 +1,13 @@
 import { useRef, useState, type CSSProperties } from "react";
 import {
   darkTheme,
-  KritzelBrushTool,
-  KritzelEditor,
-  KritzelImage,
-  KritzelTextTool,
-  type HTMLKritzelEditorElement,
-  type KritzelTheme,
-} from "@kritzel/react-editor";
+  UpdrawBrushTool,
+  UpdrawEditor,
+  UpdrawImage,
+  UpdrawTextTool,
+  type HTMLUpdrawEditorElement,
+  type UpdrawTheme,
+} from "@updraw/react-editor";
 
 type AnnotationMode = "sketch" | "text";
 
@@ -17,7 +17,7 @@ type ColorTool = {
   color: string;
 };
 
-const annotationThemeDark: KritzelTheme = {
+const annotationThemeDark: UpdrawTheme = {
   ...darkTheme,
   name: "dark",
   engine: {
@@ -197,13 +197,13 @@ const MinusIcon = () => (
 );
 
 export function ImageAnnotationStudioPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [activeMode, setActiveMode] = useState<AnnotationMode>("sketch");
   const [activeSketchTool, setActiveSketchTool] = useState<string>("ink-red");
 
-  async function registerColorTools(editor: HTMLKritzelEditorElement) {
+  async function registerColorTools(editor: HTMLUpdrawEditorElement) {
     for (const tool of colorTools) {
-      await editor.registerTool(tool.name, KritzelBrushTool, {
+      await editor.registerTool(tool.name, UpdrawBrushTool, {
         color: { light: tool.color, dark: tool.color },
         size: 5,
         palette: [{ light: tool.color, dark: tool.color, label: tool.label }],
@@ -227,18 +227,18 @@ export function ImageAnnotationStudioPage() {
     // aligned with the currently selected sketch swatch.
     const textToolConfig = {
       fontColor: textColor,
-    } as unknown as Parameters<HTMLKritzelEditorElement["registerTool"]>[2];
+    } as unknown as Parameters<HTMLUpdrawEditorElement["registerTool"]>[2];
 
-    await editor.registerTool("text", KritzelTextTool, textToolConfig);
+    await editor.registerTool("text", UpdrawTextTool, textToolConfig);
   }
 
-  async function ensureSeedImage(editor: HTMLKritzelEditorElement) {
+  async function ensureSeedImage(editor: HTMLUpdrawEditorElement) {
     const existing = await editor.getAllObjects();
-    if (existing.some((object) => object instanceof KritzelImage)) {
+    if (existing.some((object) => object instanceof UpdrawImage)) {
       return;
     }
 
-    const image = await KritzelImage.fromUrl(
+    const image = await UpdrawImage.fromUrl(
       "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1800&q=80",
       { maxWidth: 660, maxHeight: 360 },
     );
@@ -311,7 +311,7 @@ export function ImageAnnotationStudioPage() {
 
   return (
     <div style={hostStyle}>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="image-annotation-studio"
         theme="dark"

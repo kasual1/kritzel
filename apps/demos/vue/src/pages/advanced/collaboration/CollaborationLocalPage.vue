@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   BroadcastSyncProvider,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelSyncConfig,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawSyncConfig,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -12,8 +12,8 @@ import { editorStyle, hostStyle } from '../../shared/demo-shared'
 import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
-const syncConfig: KritzelSyncConfig = {
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const syncConfig: UpdrawSyncConfig = {
   providers: [BroadcastSyncProvider],
 }
 </script>
@@ -24,7 +24,7 @@ const syncConfig: KritzelSyncConfig = {
       <span class="label">Cross-tab Sync</span>
       <span class="status">BroadcastChannel enabled</span>
     </Toolbar>
-    <KritzelEditor
+    <UpdrawEditor
       editorId="collaboration-local"
       theme="light"
       :themes="themes"

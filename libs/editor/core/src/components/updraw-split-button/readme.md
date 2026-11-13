@@ -1,4 +1,4 @@
-# kritzel-split-button
+# updraw-split-button
 
 
 
@@ -11,7 +11,7 @@
 | -------------------- | ---------------------- | ----------- | ------------------------- | --------------- |
 | `buttonIcon`         | `button-icon`          |             | `string`                  | `'plus'`        |
 | `dropdownIcon`       | `dropdown-icon`        |             | `string`                  | `'chevronDown'` |
-| `items`              | --                     |             | `IKritzelMenuItem<any>[]` | `[]`            |
+| `items`              | --                     |             | `IUpdrawMenuItem<any>[]` | `[]`            |
 | `mainButtonDisabled` | `main-button-disabled` |             | `boolean`                 | `false`         |
 | `menuButtonDisabled` | `menu-button-disabled` |             | `boolean`                 | `false`         |
 
@@ -20,11 +20,11 @@
 
 | Event                 | Description | Type                                                |
 | --------------------- | ----------- | --------------------------------------------------- |
-| `itemCancel`          |             | `CustomEvent<IKritzelMenuItem<any>>`                |
-| `itemCloseChildMenu`  |             | `CustomEvent<IKritzelMenuItem<any>>`                |
-| `itemSave`            |             | `CustomEvent<IKritzelMenuItem<any>>`                |
-| `itemSelect`          |             | `CustomEvent<IKritzelMenuItemSelectEvent>`          |
-| `itemToggleChildMenu` |             | `CustomEvent<IKritzelMenuItemToggleChildMenuEvent>` |
+| `itemCancel`          |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
+| `itemCloseChildMenu`  |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
+| `itemSave`            |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
+| `itemSelect`          |             | `CustomEvent<IUpdrawMenuItemSelectEvent>`          |
+| `itemToggleChildMenu` |             | `CustomEvent<IUpdrawMenuItemToggleChildMenuEvent>` |
 | `mainButtonClick`     |             | `CustomEvent<void>`                                 |
 | `menuClose`           |             | `CustomEvent<void>`                                 |
 | `menuOpen`            |             | `CustomEvent<void>`                                 |
@@ -67,25 +67,25 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [kritzel-workspace-manager](../kritzel-workspace-manager)
+ - [updraw-workspace-manager](../updraw-workspace-manager)
 
 ### Depends on
 
-- kritzel-icon
-- [kritzel-portal](../kritzel-portal)
-- [kritzel-menu](../kritzel-menu)
+- updraw-icon
+- [updraw-portal](../updraw-portal)
+- [updraw-menu](../updraw-menu)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-split-button --> kritzel-icon
-  kritzel-split-button --> kritzel-portal
-  kritzel-split-button --> kritzel-menu
-  kritzel-menu --> kritzel-menu-item
-  kritzel-menu-item --> kritzel-icon
-  kritzel-menu-item --> kritzel-portal
-  kritzel-workspace-manager --> kritzel-split-button
-  style kritzel-split-button fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-split-button --> updraw-icon
+  updraw-split-button --> updraw-portal
+  updraw-split-button --> updraw-menu
+  updraw-menu --> updraw-menu-item
+  updraw-menu-item --> updraw-icon
+  updraw-menu-item --> updraw-portal
+  updraw-workspace-manager --> updraw-split-button
+  style updraw-split-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

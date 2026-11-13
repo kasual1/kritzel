@@ -1,14 +1,14 @@
 import { useMemo, useRef, useState, type CSSProperties } from "react";
 import {
-  KritzelEditor,
-  KritzelLine,
-  KritzelPath,
-  KritzelShape,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawLine,
+  UpdrawPath,
+  UpdrawShape,
+  UpdrawWorkspace,
   ShapeType,
-  type KritzelBaseObject,
-  type HTMLKritzelEditorElement,
-} from "@kritzel/react-editor";
+  type UpdrawBaseObject,
+  type HTMLUpdrawEditorElement,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -24,9 +24,9 @@ const preStyle: CSSProperties = {
   lineHeight: 1.45,
 };
 
-function createImportedWorkspaceObjects(): KritzelBaseObject[] {
+function createImportedWorkspaceObjects(): UpdrawBaseObject[] {
   return [
-    new KritzelShape({
+    new UpdrawShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -36,7 +36,7 @@ function createImportedWorkspaceObjects(): KritzelBaseObject[] {
       strokeColor: { light: "#1565c0", dark: "#1565c0" },
       strokeWidth: 3,
     }),
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -46,7 +46,7 @@ function createImportedWorkspaceObjects(): KritzelBaseObject[] {
       strokeColor: { light: "#00bcd4", dark: "#00bcd4" },
       strokeWidth: 3,
     }),
-    new KritzelLine({
+    new UpdrawLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -54,7 +54,7 @@ function createImportedWorkspaceObjects(): KritzelBaseObject[] {
       stroke: { light: "#00bcd4", dark: "#00bcd4" },
       strokeWidth: 3,
     }),
-    new KritzelPath({
+    new UpdrawPath({
       points: [[0, 0, 0.5], [30, -40, 0.5], [60, -10, 0.5], [90, -50, 0.5], [120, -20, 0.5], [150, -60, 0.5], [180, -30, 0.5], [210, -70, 0.5], [240, -40, 0.5]],
       translateX: -125,
       translateY: 125,
@@ -65,7 +65,7 @@ function createImportedWorkspaceObjects(): KritzelBaseObject[] {
 }
 
 function createImportedWorkspaceJson(): string {
-  const workspace = new KritzelWorkspace({
+  const workspace = new UpdrawWorkspace({
     name: "Imported Workspace",
     objects: createImportedWorkspaceObjects(),
   });
@@ -77,11 +77,11 @@ function createImportedWorkspaceJson(): string {
 }
 
 export function ImportExportWorkspaceImportPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [jsonInput] = useState(createImportedWorkspaceJson);
   const [activeWorkspaceName, setActiveWorkspaceName] = useState("");
   const workspaces = useMemo(
-    () => [new KritzelWorkspace({ id: "workspace-import-initial", name: "Initial Workspace", objects: createSeedObjects() })],
+    () => [new UpdrawWorkspace({ id: "workspace-import-initial", name: "Initial Workspace", objects: createSeedObjects() })],
     [],
   );
 
@@ -107,7 +107,7 @@ export function ImportExportWorkspaceImportPage() {
         <span className="status">Active workspace: {activeWorkspaceName}</span>
       </Toolbar>
       <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
-        <KritzelEditor
+        <UpdrawEditor
           ref={editorRef}
           editorId="import-export-workspace-import"
           theme="light"

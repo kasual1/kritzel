@@ -1,23 +1,23 @@
-import { KritzelBoundingBox } from '../../interfaces/bounding-box.interface';
-import { KritzelObject } from '../../interfaces/object.interface';
-import { KritzelPolygon } from '../../interfaces/polygon.interface';
-import { KritzelSerializable } from '../../interfaces/serializable.interface';
+import { UpdrawBoundingBox } from '../../interfaces/bounding-box.interface';
+import { UpdrawObject } from '../../interfaces/object.interface';
+import { UpdrawPolygon } from '../../interfaces/polygon.interface';
+import { UpdrawSerializable } from '../../interfaces/serializable.interface';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
-import { KritzelCore } from '../core/core.class';
-import { KritzelClonable } from '../../interfaces/clonable.interface';
+import { UpdrawGeometryHelper } from '../../helpers/geometry.helper';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawClonable } from '../../interfaces/clonable.interface';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 
 /**
- * Base class for all objects that can be rendered on the Kritzel canvas.
+ * Base class for all objects that can be rendered on the Updraw canvas.
  * Provides common functionality for positioning, transformation, hit testing,
  * serialization, and lifecycle management.
  * @template T - The type of the underlying DOM element (HTMLElement or SVGElement)
  */
-export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> implements KritzelObject<T>, KritzelSerializable, KritzelClonable<KritzelBaseObject<T>> {
-  __class__: string = 'KritzelBaseObject';
+export class UpdrawBaseObject<T extends Element = HTMLElement | SVGElement> implements UpdrawObject<T>, UpdrawSerializable, UpdrawClonable<UpdrawBaseObject<T>> {
+  __class__: string = 'UpdrawBaseObject';
 
-  _core!: KritzelCore;
+  _core!: UpdrawCore;
   _elementRef!: T;
 
   id: string;
@@ -92,7 +92,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
    * Gets the axis-aligned bounding box of the object without rotation.
    * @returns The bounding box with position, scale, and dimensions
    */
-  get boundingBox(): KritzelBoundingBox {
+  get boundingBox(): UpdrawBoundingBox {
     return {
       x: this.translateX,
       y: this.translateY,
@@ -107,7 +107,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
    * Calculates the smallest rectangle that contains all four rotated corners.
    * @returns The bounding box accounting for rotation
    */
-  get rotatedBoundingBox(): KritzelBoundingBox {
+  get rotatedBoundingBox(): UpdrawBoundingBox {
     const polygon = this.rotatedPolygon;
     const xValues = [polygon.topLeft.x, polygon.topRight.x, polygon.bottomRight.x, polygon.bottomLeft.x];
     const yValues = [polygon.topLeft.y, polygon.topRight.y, polygon.bottomRight.y, polygon.bottomLeft.y];
@@ -131,7 +131,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
    * Uses optimized trigonometric calculations with precomputed cos/sin values.
    * @returns A polygon with topLeft, topRight, bottomRight, and bottomLeft coordinates
    */
-  get rotatedPolygon(): KritzelPolygon {
+  get rotatedPolygon(): UpdrawPolygon {
     const cx = this.translateX + this.totalWidth / 2 / this.scale;
     const cy = this.translateY + this.totalHeight / 2 / this.scale;
     const angle = this.rotation;
@@ -239,20 +239,20 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   /**
-   * Creates a new KritzelBaseObject instance with a generated unique ID.
+   * Creates a new UpdrawBaseObject instance with a generated unique ID.
    */
   constructor() {
     this.id = this.generateId();
   }
 
   /**
-   * Factory method to create a new KritzelBaseObject with core context.
+   * Factory method to create a new UpdrawBaseObject with core context.
    * Automatically assigns the current z-index and active workspace ID.
-   * @param core - The KritzelCore instance providing context and state
-   * @returns A new KritzelBaseObject instance configured with core context
+   * @param core - The UpdrawCore instance providing context and state
+   * @returns A new UpdrawBaseObject instance configured with core context
    */
-  static create(core: KritzelCore): KritzelBaseObject<Element> {
-    const object = new KritzelBaseObject();
+  static create(core: UpdrawCore): UpdrawBaseObject<Element> {
+    const object = new UpdrawBaseObject();
 
     object._core = core;
     object.zIndex = core.store.currentZIndex;
@@ -301,7 +301,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     }
 
 
-    const viewportBounds: KritzelBoundingBox = {
+    const viewportBounds: UpdrawBoundingBox = {
       x: -this._core.store.state.translateX / this._core.store.state.scale,
       y: -this._core.store.state.translateY / this._core.store.state.scale,
       z: this._core.store.state.scale,
@@ -421,7 +421,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
    * The clone shares the same prototype and copies all properties.
    * @returns A new instance with identical properties including the same ID
    */
-  clone(): KritzelBaseObject<T> {
+  clone(): UpdrawBaseObject<T> {
     const clone = Object.create(Object.getPrototypeOf(this));
     Object.assign(clone, this);
     clone.id = this.id;
@@ -434,8 +434,8 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
    * The copied object is not mounted by default.
    * @returns A new instance with copied properties and a new unique ID
    */
-  copy(): KritzelBaseObject<T> {
-    const copiedObject: KritzelBaseObject<T> = Object.create(Object.getPrototypeOf(this));
+  copy(): UpdrawBaseObject<T> {
+    const copiedObject: UpdrawBaseObject<T> = Object.create(Object.getPrototypeOf(this));
     Object.assign(copiedObject, this);
     copiedObject.id = this.generateId();
     copiedObject.isMounted = false;
@@ -515,18 +515,18 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
    * should override.
    * @param previous - The previous local instance being replaced.
    */
-  adoptTransientStateFrom(_previous: KritzelBaseObject<any>): void {
+  adoptTransientStateFrom(_previous: UpdrawBaseObject<any>): void {
     // no-op by default
   }
 
   /**
    * Type guard to check if this object is of a specific class type.
    * Compares against the __class__ property.
-   * @template T - The expected class type extending KritzelBaseObject
+   * @template T - The expected class type extending UpdrawBaseObject
    * @param className - The class name to check against
    * @returns True if this object's __class__ matches the given class name
    */
-  isClass<T extends KritzelBaseObject>(this: T, className: string): this is T {
+  isClass<T extends UpdrawBaseObject>(this: T, className: string): this is T {
     return this.__class__ === className;
   }
 
@@ -565,9 +565,9 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
    * @param polygon - The polygon to test intersection against
    * @returns True if the polygons intersect
    */
-  hitTestPolygon(polygon: KritzelPolygon): boolean {
+  hitTestPolygon(polygon: UpdrawPolygon): boolean {
     const objectPolygon = this.rotatedPolygon;
-    return KritzelGeometryHelper.doPolygonsIntersect(objectPolygon, polygon);
+    return UpdrawGeometryHelper.doPolygonsIntersect(objectPolygon, polygon);
   }
 
   /**

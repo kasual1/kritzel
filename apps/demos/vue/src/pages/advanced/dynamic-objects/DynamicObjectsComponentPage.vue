@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onBeforeUnmount } from 'vue'
 import {
-  KritzelDynamicObject,
-  KritzelEditor,
-  KritzelWorkspace,
+  UpdrawDynamicObject,
+  UpdrawEditor,
+  UpdrawWorkspace,
   registerVueDynamicObjectRenderer,
-} from '@kritzel/vue-editor'
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import CalculatorWidget from './CalculatorWidget.ce.vue'
@@ -20,7 +20,7 @@ const themes = [vueThemeLight, vueThemeDark]
 const unregisterCalculatorRenderer = registerVueDynamicObjectRenderer<CalculatorState>(
   CALCULATOR_RENDERER_KEY,
   {
-    tagName: 'kritzel-vue-calculator-widget',
+    tagName: 'updraw-vue-calculator-widget',
     component: CalculatorWidget,
     createInitialState: createCalculatorInitialState,
     getInitialState: (data) => normalizeCalculatorState(data),
@@ -34,10 +34,10 @@ const unregisterCalculatorRenderer = registerVueDynamicObjectRenderer<Calculator
   },
 )
 
-function createCalculatorObject(): KritzelDynamicObject {
+function createCalculatorObject(): UpdrawDynamicObject {
   const placeholder = document.createElement('div')
   placeholder.textContent = 'Loading Calculator...'
-  const object = new KritzelDynamicObject({
+  const object = new UpdrawDynamicObject({
     element: placeholder,
     rendererKey: CALCULATOR_RENDERER_KEY,
     rendererData: createCalculatorInitialState(),
@@ -51,7 +51,7 @@ function createCalculatorObject(): KritzelDynamicObject {
   return object
 }
 
-const workspaces = [new KritzelWorkspace({ objects: [createCalculatorObject()] })]
+const workspaces = [new UpdrawWorkspace({ objects: [createCalculatorObject()] })]
 
 onBeforeUnmount(() => {
   unregisterCalculatorRenderer()
@@ -59,7 +59,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <KritzelEditor
+  <UpdrawEditor
     editorId="dynamic-objects-component"
     theme="light"
     :themes="themes"

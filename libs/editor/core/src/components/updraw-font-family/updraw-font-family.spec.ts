@@ -1,4 +1,4 @@
-import { KritzelFontFamily } from './kritzel-font-family';
+import { UpdrawFontFamily } from './updraw-font-family';
 
 jest.mock('@stencil/core', () => ({
   ...jest.requireActual('@stencil/core/internal/testing'),
@@ -9,11 +9,11 @@ jest.mock('@stencil/core', () => ({
   Event: () => () => {},
 }));
 
-describe('KritzelFontFamily', () => {
-  let component: KritzelFontFamily;
+describe('UpdrawFontFamily', () => {
+  let component: UpdrawFontFamily;
 
   beforeEach(() => {
-    component = new KritzelFontFamily();
+    component = new UpdrawFontFamily();
   });
 
   it('uses provided fontOptions as-is', () => {

@@ -8,8 +8,8 @@ loader/
 .env.*
 !.env.example
 
-.agents/skills/kritzel/
-.claude/skills/kritzel/
+.agents/skills/updraw/
+.claude/skills/updraw/
 
 # Former license signing keys — kept ignored so a leftover local private key is never committed.
 scripts/license/keys/

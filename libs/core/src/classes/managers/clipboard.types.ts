@@ -1,4 +1,4 @@
-export const CLIPBOARD_PAYLOAD_PREFIX = 'kritzel-clipboard/v1:';
+export const CLIPBOARD_PAYLOAD_PREFIX = 'updraw-clipboard/v1:';
 
 export interface SerializedClipboardObject {
   [key: string]: any;
@@ -6,14 +6,14 @@ export interface SerializedClipboardObject {
   __children__?: SerializedClipboardObject[];
 }
 
-export interface KritzelClipboardPayload {
+export interface UpdrawClipboardPayload {
   version: 1;
   sourceWorkspaceId?: string;
   objects: SerializedClipboardObject[];
 }
 
 export type PasteIntent =
-  | { type: 'kritzel_objects'; payload: KritzelClipboardPayload }
+  | { type: 'updraw_objects'; payload: UpdrawClipboardPayload }
   | { type: 'image_files'; files: File[] }
   | { type: 'plain_text'; text: string }
   | { type: 'unknown' };

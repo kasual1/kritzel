@@ -1,4 +1,4 @@
-# kritzel-font
+# updraw-font
 
 
 
@@ -18,13 +18,13 @@
 
 ### Used by
 
- - [kritzel-font-size](../kritzel-font-size)
+ - [updraw-font-size](../updraw-font-size)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-font-size --> kritzel-font
-  style kritzel-font fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-font-size --> updraw-font
+  style updraw-font fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

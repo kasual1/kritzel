@@ -1,4 +1,4 @@
-# kritzel-dialog
+# updraw-dialog
 
 A generic, reusable dialog component for displaying modal content to the user.
 
@@ -16,25 +16,25 @@ A generic, reusable dialog component for displaying modal content to the user.
 ## Usage
 
 ```html
-<kritzel-dialog is-open="true" dialog-title="Confirm Action" size="medium">
+<updraw-dialog is-open="true" dialog-title="Confirm Action" size="medium">
   <p>Are you sure you want to proceed?</p>
   <div slot="footer">
     <button>Cancel</button>
     <button>Confirm</button>
   </div>
-</kritzel-dialog>
+</updraw-dialog>
 ```
 
 ### With custom header
 
 ```html
-<kritzel-dialog is-open="true">
+<updraw-dialog is-open="true">
   <div slot="header">
     <h2>Custom Header</h2>
     <span>Subtitle text</span>
   </div>
   <p>Dialog content goes here.</p>
-</kritzel-dialog>
+</updraw-dialog>
 ```
 
 <!-- Auto Generated Below -->
@@ -60,13 +60,13 @@ A generic, reusable dialog component for displaying modal content to the user.
 
 | Event         | Description                    | Type                                    |
 | ------------- | ------------------------------ | --------------------------------------- |
-| `dialogClose` | Emitted when the dialog closes | `CustomEvent<IKritzelDialogCloseEvent>` |
+| `dialogClose` | Emitted when the dialog closes | `CustomEvent<IUpdrawDialogCloseEvent>` |
 | `dialogOpen`  | Emitted when the dialog opens  | `CustomEvent<void>`                     |
 
 
 ## Methods
 
-### `close(reason?: KritzelDialogCloseReason) => Promise<void>`
+### `close(reason?: UpdrawDialogCloseReason) => Promise<void>`
 
 
 
@@ -116,21 +116,21 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [kritzel-current-user-dialog](../kritzel-current-user-dialog)
- - [kritzel-export](../kritzel-export)
- - [kritzel-login-dialog](../kritzel-login-dialog)
- - [kritzel-settings](../kritzel-settings)
- - [kritzel-share-dialog](../kritzel-share-dialog)
+ - [updraw-current-user-dialog](../updraw-current-user-dialog)
+ - [updraw-export](../updraw-export)
+ - [updraw-login-dialog](../updraw-login-dialog)
+ - [updraw-settings](../updraw-settings)
+ - [updraw-share-dialog](../updraw-share-dialog)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-current-user-dialog --> kritzel-dialog
-  kritzel-export --> kritzel-dialog
-  kritzel-login-dialog --> kritzel-dialog
-  kritzel-settings --> kritzel-dialog
-  kritzel-share-dialog --> kritzel-dialog
-  style kritzel-dialog fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-current-user-dialog --> updraw-dialog
+  updraw-export --> updraw-dialog
+  updraw-login-dialog --> updraw-dialog
+  updraw-settings --> updraw-dialog
+  updraw-share-dialog --> updraw-dialog
+  style updraw-dialog fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

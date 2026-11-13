@@ -1,10 +1,10 @@
 ---
-title: "Kritzel is now open source"
-description: "Kritzel is now fully open source under the MIT license, free for everyone to use, modify, and build infinite canvas apps with."
+title: "Updraw is now open source"
+description: "Updraw is now fully open source under the MIT license, free for everyone to use, modify, and build infinite canvas apps with."
 date: 2026-10-22
 thumbnailSeed: "c182b01d"
-image: /img/blog/kritzel-is-now-open-source.png
-thumbnail: /videos/2026_10_22_Kritzel_Open_Source.mp4
+image: /img/blog/updraw-is-now-open-source.png
+thumbnail: /videos/2026_10_22_Updraw_Open_Source.mp4
 ---
 
 Hey there,
@@ -13,13 +13,13 @@ While I've been improving the docs over the last couple of months and made some 
 
 {/* truncate */}
 
-When I started developing Kritzel I always envisioned it as a library that I would market to small or mid sized companies, helping them to build cool tools based on the infinite canvas technology.
+When I started developing Updraw I always envisioned it as a library that I would market to small or mid sized companies, helping them to build cool tools based on the infinite canvas technology.
 
-Since over the last year the market has dramatically shifted and I was never truly happy with the idea of creating Kritzel as proprietary software, I finally made the decision to make it fully open source.
+Since over the last year the market has dramatically shifted and I was never truly happy with the idea of creating Updraw as proprietary software, I finally made the decision to make it fully open source.
 
 It is now available under the MIT license and you can do whatever you want with it for free. Since this was certainly a huge step and it took months to convince myself to finally make this decision, now writing this feels just right.
 
-Software development and building things has always been my greatest passion and seeing others build upon Kritzel will bring me a lot of joy.
+Software development and building things has always been my greatest passion and seeing others build upon Updraw will bring me a lot of joy.
 
 Certainly this project holds everything I know about creating good software and especially code I wrote within the first year is a result of many sleepless nights and a lot of inner pressure that almost made me stop this project.
 

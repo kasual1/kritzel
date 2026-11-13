@@ -1,24 +1,24 @@
-/* Maps the titlebar menu theme variables onto kritzel-menu, so it is as compact as the context menu. */
+/* Maps the titlebar menu theme variables onto updraw-menu, so it is as compact as the context menu. */
 :host {
   display: block;
-  --kritzel-menu-width: auto;
-  --kritzel-menu-background-color: var(--kritzel-titlebar-menu-background-color, #ffffff);
-  --kritzel-menu-border: var(--kritzel-titlebar-menu-border, 1px solid #ebebeb);
-  --kritzel-menu-border-radius: var(--kritzel-titlebar-menu-border-radius, 12px);
-  --kritzel-menu-box-shadow: var(--kritzel-titlebar-menu-box-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
-  --kritzel-menu-font-family: var(--kritzel-titlebar-menu-font-family, var(--kritzel-global-font-family, sans-serif));
-  --kritzel-menu-gap: var(--kritzel-titlebar-menu-gap, 2px);
-  --kritzel-menu-padding: var(--kritzel-titlebar-menu-padding, 4px);
-  --kritzel-menu-item-border-radius: var(--kritzel-titlebar-menu-item-border-radius, 12px);
-  --kritzel-menu-item-color: var(--kritzel-titlebar-menu-item-color, #333333);
-  --kritzel-menu-item-font-size: var(--kritzel-titlebar-menu-item-font-size, 14px);
-  --kritzel-menu-item-height: var(--kritzel-titlebar-menu-item-height, 32px);
-  --kritzel-menu-item-min-height: var(--kritzel-titlebar-menu-item-height, 32px);
-  --kritzel-menu-item-overlay-background-color: var(--kritzel-titlebar-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
-  --kritzel-menu-item-padding: var(--kritzel-titlebar-menu-item-padding, 8px);
+  --updraw-menu-width: auto;
+  --updraw-menu-background-color: var(--updraw-titlebar-menu-background-color, #ffffff);
+  --updraw-menu-border: var(--updraw-titlebar-menu-border, 1px solid #ebebeb);
+  --updraw-menu-border-radius: var(--updraw-titlebar-menu-border-radius, 12px);
+  --updraw-menu-box-shadow: var(--updraw-titlebar-menu-box-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
+  --updraw-menu-font-family: var(--updraw-titlebar-menu-font-family, var(--updraw-global-font-family, sans-serif));
+  --updraw-menu-gap: var(--updraw-titlebar-menu-gap, 2px);
+  --updraw-menu-padding: var(--updraw-titlebar-menu-padding, 4px);
+  --updraw-menu-item-border-radius: var(--updraw-titlebar-menu-item-border-radius, 12px);
+  --updraw-menu-item-color: var(--updraw-titlebar-menu-item-color, #333333);
+  --updraw-menu-item-font-size: var(--updraw-titlebar-menu-item-font-size, 14px);
+  --updraw-menu-item-height: var(--updraw-titlebar-menu-item-height, 32px);
+  --updraw-menu-item-min-height: var(--updraw-titlebar-menu-item-height, 32px);
+  --updraw-menu-item-overlay-background-color: var(--updraw-titlebar-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  --updraw-menu-item-padding: var(--updraw-titlebar-menu-item-padding, 8px);
 }
 
-kritzel-menu {
-  min-width: var(--kritzel-titlebar-menu-min-width, 140px);
-  max-width: var(--kritzel-titlebar-menu-max-width, 280px);
+updraw-menu {
+  min-width: var(--updraw-titlebar-menu-min-width, 140px);
+  max-width: var(--updraw-titlebar-menu-max-width, 280px);
 }

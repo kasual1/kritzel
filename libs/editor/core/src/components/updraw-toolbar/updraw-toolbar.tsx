@@ -1,49 +1,49 @@
 import { Component, h, Prop, State, Element, Host, Listen, Event, EventEmitter, Method, Watch } from '@stencil/core';
-import { KritzelBrushTool } from '@kritzel/core';
-import { KritzelLineTool } from '@kritzel/core';
-import { KritzelShapeTool } from '@kritzel/core';
-import { KritzelTextTool } from '@kritzel/core';
-import { KritzelToolbarItem, KritzelToolbarSubOption } from '@kritzel/core';
-import { KritzelBaseTool } from '@kritzel/core';
-import { KritzelDevicesHelper } from '@kritzel/core';
-import { KritzelUndoState } from '@kritzel/core';
-import { ToolDisplayValues } from '@kritzel/core';
-import { KritzelToolConfigHelper } from '@kritzel/core';
-import { KritzelColorHelper } from '@kritzel/core';
-import { ThemeName } from '@kritzel/core';
-import { KritzelTermKey } from '@kritzel/core';
+import { UpdrawBrushTool } from '@updraw/core';
+import { UpdrawLineTool } from '@updraw/core';
+import { UpdrawShapeTool } from '@updraw/core';
+import { UpdrawTextTool } from '@updraw/core';
+import { UpdrawToolbarItem, UpdrawToolbarSubOption } from '@updraw/core';
+import { UpdrawBaseTool } from '@updraw/core';
+import { UpdrawDevicesHelper } from '@updraw/core';
+import { UpdrawUndoState } from '@updraw/core';
+import { ToolDisplayValues } from '@updraw/core';
+import { UpdrawToolConfigHelper } from '@updraw/core';
+import { UpdrawColorHelper } from '@updraw/core';
+import { ThemeName } from '@updraw/core';
+import { UpdrawTermKey } from '@updraw/core';
 
 type ToolConfig = Record<string, any>;
 
 @Component({
-  tag: 'kritzel-toolbar',
-  styleUrl: 'kritzel-toolbar.css',
+  tag: 'updraw-toolbar',
+  styleUrl: 'updraw-toolbar.css',
   shadow: true,
   assetsDirs: ['../assets'],
 })
-export class KritzelToolbar {
+export class UpdrawToolbar {
   @Element() host!: HTMLElement;
 
   @Prop() visible: boolean = true;
-  @Prop() toolbarItems: KritzelToolbarItem[] = [];
-  @Prop({ mutable: true }) activeControl: KritzelToolbarItem | null = null;
+  @Prop() toolbarItems: UpdrawToolbarItem[] = [];
+  @Prop({ mutable: true }) activeControl: UpdrawToolbarItem | null = null;
   @Prop() isUtilityPanelVisible: boolean = true;
-  @Prop() undoState: KritzelUndoState = null;
+  @Prop() undoState: UpdrawUndoState = null;
   @Prop() theme: ThemeName = 'light';
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
 
   @Event() isToolbarReady: EventEmitter<void>;
 
   @State() firstConfig: ToolConfig | null = null;
-  @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
-  @State() selectedSubOptions: Map<string, KritzelToolbarSubOption> = new Map();
+  @State() isTouchDevice: boolean = UpdrawDevicesHelper.isTouchDevice();
+  @State() selectedSubOptions: Map<string, UpdrawToolbarSubOption> = new Map();
   @State() canScrollLeft: boolean = false;
   @State() canScrollRight: boolean = false;
   @State() needsScrolling: boolean = false;
   @State() displayValues: ToolDisplayValues | null = null;
 
-  @State() internalToolbar: KritzelToolbarItem[] = [];
+  @State() internalToolbar: UpdrawToolbarItem[] = [];
   @State() resolvedDisabled: Map<string, boolean> = new Map();
 
   private handleActiveToolChangeBound = this.handleActiveToolChange.bind(this);
@@ -54,7 +54,7 @@ export class KritzelToolbar {
     if (event.key === 'Escape') {
       event.preventDefault();
       this.closeTooltip();
-      this.kritzelEngine?.enable();
+      this.updrawEngine?.enable();
     }
   }
 
@@ -62,7 +62,7 @@ export class KritzelToolbar {
     this.activeControl = this.internalToolbar.find(control => control.tool === event.detail) || null;
 
     if (this.activeControl?.tool) {
-      this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
+      this.updateDisplayValues(this.activeControl.tool as UpdrawBaseTool);
     }
     this.closeTooltip();
   }
@@ -76,7 +76,7 @@ export class KritzelToolbar {
 
   @Watch('toolbarItems')
   async onToolbarItemsChange() {
-    if (this.kritzelEngine) {
+    if (this.updrawEngine) {
       await this.initializeTools();
     }
   }
@@ -84,33 +84,33 @@ export class KritzelToolbar {
   @Watch('theme')
   onThemeChange() {
     if (this.activeControl?.tool) {
-      this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
+      this.updateDisplayValues(this.activeControl.tool as UpdrawBaseTool);
     }
   }
 
   @Method()
   async closeTooltip() {
-    document.dispatchEvent(new CustomEvent('kritzelTooltipCloseAll'));
+    document.dispatchEvent(new CustomEvent('updrawTooltipCloseAll'));
   }
 
-  kritzelEngine: HTMLKritzelEngineElement | null = null;
+  updrawEngine: HTMLUpdrawEngineElement | null = null;
   toolsScrollRef: HTMLDivElement | null = null;
   private configTriggerRef: HTMLElement | null = null;
 
   get activeToolAsTextTool() {
-    return this.activeControl?.tool as KritzelTextTool;
+    return this.activeControl?.tool as UpdrawTextTool;
   }
 
   get activeToolAsBrushTool() {
-    return this.activeControl?.tool as KritzelBrushTool;
+    return this.activeControl?.tool as UpdrawBrushTool;
   }
 
   get activeToolAsLineTool() {
-    return this.activeControl?.tool as KritzelLineTool;
+    return this.activeControl?.tool as UpdrawLineTool;
   }
 
   get activeToolAsShapeTool() {
-    return this.activeControl?.tool as KritzelShapeTool;
+    return this.activeControl?.tool as UpdrawShapeTool;
   }
 
   private handleDisplayValuesChange = (event: CustomEvent<ToolDisplayValues>) => {
@@ -121,8 +121,8 @@ export class KritzelToolbar {
     this.displayValues = newVal;
   };
 
-  private updateDisplayValues(tool: KritzelBaseTool) {
-    const config = KritzelToolConfigHelper.getToolConfig(tool as any);
+  private updateDisplayValues(tool: UpdrawBaseTool) {
+    const config = UpdrawToolConfigHelper.getToolConfig(tool as any);
     if (!config) {
       this.displayValues = null;
       return;
@@ -133,12 +133,12 @@ export class KritzelToolbar {
     const size = (tool as any)[config.sizeProperty];
 
     const displayValues: ToolDisplayValues = {
-      color: KritzelColorHelper.applyOpacity(color, opacity, this.theme),
+      color: UpdrawColorHelper.applyOpacity(color, opacity, this.theme),
       size,
     };
 
     if (tool.toolType === 'text') {
-      displayValues.fontFamily = (tool as KritzelTextTool).fontFamily;
+      displayValues.fontFamily = (tool as UpdrawTextTool).fontFamily;
     }
 
     // Check for equality implementation to prevent unnecessary re-renders
@@ -169,9 +169,9 @@ export class KritzelToolbar {
   }
 
   disconnectedCallback() {
-    if (this.kritzelEngine) {
-      this.kritzelEngine.removeEventListener('activeToolChange', this.handleActiveToolChangeBound);
-      this.kritzelEngine.removeEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
+    if (this.updrawEngine) {
+      this.updrawEngine.removeEventListener('activeToolChange', this.handleActiveToolChangeBound);
+      this.updrawEngine.removeEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
     }
   }
 
@@ -195,15 +195,15 @@ export class KritzelToolbar {
   };
 
   private async initializeEngine() {
-    await customElements.whenDefined('kritzel-engine');
-    this.kritzelEngine = this.host.parentElement.querySelector('kritzel-engine');
+    await customElements.whenDefined('updraw-engine');
+    this.updrawEngine = this.host.parentElement.querySelector('updraw-engine');
 
-    if (!this.kritzelEngine) {
-      throw new Error('kritzel-engine not found in parent element.');
+    if (!this.updrawEngine) {
+      throw new Error('updraw-engine not found in parent element.');
     }
 
-    this.kritzelEngine.addEventListener('activeToolChange', this.handleActiveToolChangeBound as EventListener);
-    this.kritzelEngine.addEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
+    this.updrawEngine.addEventListener('activeToolChange', this.handleActiveToolChangeBound as EventListener);
+    this.updrawEngine.addEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
   }
 
   private async initializeTools() {
@@ -214,16 +214,16 @@ export class KritzelToolbar {
 
     for (const c of newToolbar) {
       if (c.type === 'tool' && c.tool) {
-        const registered = await this.kritzelEngine!.getTool(c.name);
+        const registered = await this.updrawEngine!.getTool(c.name);
         if (registered) {
           c.tool = registered;
         }
       }
 
       if (c.type === 'tool' && c.isDefault && !this.isControlDisabled(c) && c.tool) {
-        await this.kritzelEngine!.setActiveTool(c.name);
+        await this.updrawEngine!.setActiveTool(c.name);
         this.activeControl = c;
-        this.updateDisplayValues(c.tool as KritzelBaseTool);
+        this.updateDisplayValues(c.tool as UpdrawBaseTool);
         hasDefault = true;
       }
 
@@ -242,9 +242,9 @@ export class KritzelToolbar {
     if (!hasDefault) {
       const firstTool = this.internalToolbar.find(c => c.type === 'tool' && c.tool && !this.isControlDisabled(c));
       if (firstTool) {
-        await this.kritzelEngine!.setActiveTool(firstTool.name);
+        await this.updrawEngine!.setActiveTool(firstTool.name);
         this.activeControl = firstTool;
-        this.updateDisplayValues(firstTool.tool as KritzelBaseTool);
+        this.updateDisplayValues(firstTool.tool as UpdrawBaseTool);
       }
     }
   }
@@ -252,7 +252,7 @@ export class KritzelToolbar {
   /**
    * Resolves each tool's `isDisabled` (boolean or sync/async function) into `resolvedDisabled`.
    */
-  private async resolveDisabledStates(items: KritzelToolbarItem[]): Promise<void> {
+  private async resolveDisabledStates(items: UpdrawToolbarItem[]): Promise<void> {
     const entries = await Promise.all(
       items
         .filter(item => item.type === 'tool')
@@ -272,11 +272,11 @@ export class KritzelToolbar {
     return !!value;
   }
 
-  private isControlDisabled(control: KritzelToolbarItem): boolean {
+  private isControlDisabled(control: UpdrawToolbarItem): boolean {
     return this.resolvedDisabled.get(control.name) ?? false;
   }
 
-  private async handleControlClick(control: KritzelToolbarItem) {
+  private async handleControlClick(control: UpdrawToolbarItem) {
     if (this.isControlDisabled(control)) {
       return;
     }
@@ -284,21 +284,21 @@ export class KritzelToolbar {
     this.activeControl = control;
 
     if (this.activeControl.type === 'tool') {
-      this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
-      await this.kritzelEngine.setActiveTool(this.activeControl.name);
+      this.updateDisplayValues(this.activeControl.tool as UpdrawBaseTool);
+      await this.updrawEngine.setActiveTool(this.activeControl.name);
     }
   }
 
   private async handleToolChange(event: CustomEvent) {
     this.activeControl = { ...this.activeControl, tool: event.detail };
-    await this.kritzelEngine.setActiveTool(this.activeControl.name);
+    await this.updrawEngine.setActiveTool(this.activeControl.name);
   }
 
   /**
    * Get the currently selected sub-option for a control.
    * Returns the first sub-option as default if none is selected.
    */
-  private getSelectedSubOption(control: KritzelToolbarItem): KritzelToolbarSubOption | undefined {
+  private getSelectedSubOption(control: UpdrawToolbarItem): UpdrawToolbarSubOption | undefined {
     if (!control.subOptions?.length) return undefined;
     return this.selectedSubOptions.get(control.name) || control.subOptions[0];
   }
@@ -306,7 +306,7 @@ export class KritzelToolbar {
   /**
    * Select a sub-option and update the tool property
    */
-  private async selectSubOption(control: KritzelToolbarItem, option: KritzelToolbarSubOption) {
+  private async selectSubOption(control: UpdrawToolbarItem, option: UpdrawToolbarSubOption) {
     if (this.isControlDisabled(control)) {
       return;
     }
@@ -330,7 +330,7 @@ export class KritzelToolbar {
 
   render() {
     const activeToolConfig = this.activeControl?.tool
-      ? KritzelToolConfigHelper.getToolConfig(this.activeControl.tool as any)
+      ? UpdrawToolConfigHelper.getToolConfig(this.activeControl.tool as any)
       : null;
     const hasConfigUI = activeToolConfig !== null;
 
@@ -346,7 +346,7 @@ export class KritzelToolbar {
         }}
       >
         {this.isUtilityPanelVisible && (
-          <kritzel-utility-panel
+          <updraw-utility-panel
             style={{
               position: 'absolute',
               bottom: '56px',
@@ -354,18 +354,18 @@ export class KritzelToolbar {
             }}
             undoState={this.undoState}
             terms={this.terms}
-            onUndo={() => this.kritzelEngine?.undo()}
-            onRedo={() => this.kritzelEngine?.redo()}
-            onDelete={() => this.kritzelEngine?.delete()}
-          ></kritzel-utility-panel>
+            onUndo={() => this.updrawEngine?.undo()}
+            onRedo={() => this.updrawEngine?.redo()}
+            onDelete={() => this.updrawEngine?.delete()}
+          ></updraw-utility-panel>
         )}
 
-        <div class="kritzel-toolbar">
+        <div class="updraw-toolbar">
           {/* Left scroll indicator gradient */}
           <div class={{ 'scroll-indicator-left': true, 'visible': this.canScrollLeft }}></div>
 
           {/* Scrollable tool controls container */}
-          <div class="kritzel-tools-scroll" ref={el => (this.toolsScrollRef = el)} onScroll={this.handleToolsScroll}>
+          <div class="updraw-tools-scroll" ref={el => (this.toolsScrollRef = el)} onScroll={this.handleToolsScroll}>
             {toolControls.map(control => {
               // Check if this control has sub-options (split-button)
               if (control.subOptions?.length) {
@@ -376,7 +376,7 @@ export class KritzelToolbar {
                 return (
                   <div
                     class={{
-                      'kritzel-control-split': true,
+                      'updraw-control-split': true,
                       'selected': isActive,
                     }}
                     key={control.name}
@@ -387,7 +387,7 @@ export class KritzelToolbar {
                   >
                     <button
                       class={{
-                        'kritzel-control-main': true,
+                        'updraw-control-main': true,
                         'disabled': isDisabled,
                       }}
                       disabled={isDisabled}
@@ -396,11 +396,11 @@ export class KritzelToolbar {
                       aria-disabled={isDisabled}
                       data-testid={`tool-${control.name}-main`}
                     >
-                      <kritzel-icon name={selectedSubOption?.icon || control.icon}></kritzel-icon>
+                      <updraw-icon name={selectedSubOption?.icon || control.icon}></updraw-icon>
                     </button>
                     <button
                       class={{
-                        'kritzel-control-dropdown': true,
+                        'updraw-control-dropdown': true,
                         'visible': isActive,
                         'disabled': isDisabled,
                       }}
@@ -413,40 +413,40 @@ export class KritzelToolbar {
                       data-testid={`tool-${control.name}-dropdown`}
                       tabIndex={isActive ? 0 : -1}
                     >
-                      <kritzel-icon name="chevronDown" size={12}></kritzel-icon>
+                      <updraw-icon name="chevronDown" size={12}></updraw-icon>
                     </button>
 
-                    <kritzel-tooltip anchorElement={(control as any)._anchorRef} triggerElement={(control as any)._triggerRef}>
-                      <div class="kritzel-submenu-content">
+                    <updraw-tooltip anchorElement={(control as any)._anchorRef} triggerElement={(control as any)._triggerRef}>
+                      <div class="updraw-submenu-content">
                         {control.subOptions.map(option => (
                           <button
                             class={{
-                              'kritzel-submenu-item': true,
+                              'updraw-submenu-item': true,
                               'active': option.id === selectedSubOption?.id,
                             }}
                             key={option.id}
                             data-testid={`suboption-${option.id}`}
                             onClick={() => this.selectSubOption(control, option)}
                           >
-                            <kritzel-icon name={option.icon} size={20}></kritzel-icon>
+                            <updraw-icon name={option.icon} size={20}></updraw-icon>
                             <span>{option.label}</span>
                           </button>
                         ))}
                       </div>
-                    </kritzel-tooltip>
+                    </updraw-tooltip>
                   </div>
                 );
               }
 
               if (control.type === 'separator') {
-                return <div class="kritzel-control-separator" key={control.name}></div>;
+                return <div class="updraw-control-separator" key={control.name}></div>;
               }
 
               // Regular tool control (no sub-options)
               return (
                 <button
                   class={{
-                    'kritzel-control': true,
+                    'updraw-control': true,
                     'selected': this.activeControl?.name === control?.name,
                     'disabled': this.isControlDisabled(control),
                   }}
@@ -457,7 +457,7 @@ export class KritzelToolbar {
                   aria-label={control.name.charAt(0).toUpperCase() + control.name.slice(1)}
                   aria-disabled={this.isControlDisabled(control)}
                 >
-                  <kritzel-icon name={control.icon}></kritzel-icon>
+                  <updraw-icon name={control.icon}></updraw-icon>
                 </button>
               );
             })}
@@ -470,7 +470,7 @@ export class KritzelToolbar {
           {configControl && this.activeControl && (
             <div
               class={{
-                'kritzel-config-container': true,
+                'updraw-config-container': true,
                 'visible': hasConfigUI,
               }}
               key={configControl.name}
@@ -478,21 +478,21 @@ export class KritzelToolbar {
               {/* Left gradient on config control */}
               <div class={{ 'config-gradient-left': true, 'visible': this.needsScrolling }}></div>
 
-              <kritzel-tooltip anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement} triggerElement={this.configTriggerRef}>
-                <kritzel-tool-config
+              <updraw-tooltip anchorElement={this.host.shadowRoot?.querySelector('.updraw-config-container') as HTMLElement} triggerElement={this.configTriggerRef}>
+                <updraw-tool-config
                   tool={this.activeControl.tool as any}
                   theme={this.theme}
-                  engine={this.kritzelEngine}
+                  engine={this.updrawEngine}
                   terms={this.terms}
                   onToolChange={event => this.handleToolChange?.(event)}
                   onDisplayValuesChange={this.handleDisplayValuesChange}
                   style={{ width: '100%', height: '100%' }}
-                ></kritzel-tool-config>
-              </kritzel-tooltip>
+                ></updraw-tool-config>
+              </updraw-tooltip>
 
               <div
                 tabIndex={hasConfigUI ? 0 : -1}
-                class="kritzel-config"
+                class="updraw-config"
                 data-testid="tool-config"
                 ref={el => {
                   if (el) this.configTriggerRef = el;
@@ -508,7 +508,7 @@ export class KritzelToolbar {
               >
                 {this.displayValues && (
                   <div class="color-container">
-                    <kritzel-color
+                    <updraw-color
                       value={this.displayValues.color}
                       theme={this.theme}
                       size={18}
@@ -516,7 +516,7 @@ export class KritzelToolbar {
                         borderRadius: '50%',
                         border: 'none',
                       }}
-                    ></kritzel-color>
+                    ></updraw-color>
                   </div>
                 )}
               </div>

@@ -1,12 +1,12 @@
 import { useRef, useState } from "react";
 import {
   InMemorySyncProvider,
-  KritzelEditor,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawWorkspace,
   type ActiveWorkspaceChangeEvent,
-  type HTMLKritzelEditorElement,
-  type KritzelSyncConfig,
-} from "@kritzel/react-editor";
+  type HTMLUpdrawEditorElement,
+  type UpdrawSyncConfig,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -17,13 +17,13 @@ import {
 import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [InMemorySyncProvider],
 };
 
 function createInitialWorkspaces() {
   return [
-    new KritzelWorkspace({
+    new UpdrawWorkspace({
       id: "board-1",
       name: "Board 1",
       objects: createSeedObjects(),
@@ -32,7 +32,7 @@ function createInitialWorkspaces() {
 }
 
 export function WorkspacesCreatePage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [workspaces, setWorkspaces] = useState(createInitialWorkspaces);
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | undefined>(
     "board-1",
@@ -50,7 +50,7 @@ export function WorkspacesCreatePage() {
 
     const workspaceNumber = workspaces.length + 1;
     const workspace = await editor.createWorkspace(
-      new KritzelWorkspace({
+      new UpdrawWorkspace({
         id: `board-${workspaceNumber}`,
         name: `Board ${workspaceNumber}`,
         objects: createSeedObjects(),
@@ -64,7 +64,7 @@ export function WorkspacesCreatePage() {
     }
   }
 
-  async function switchTo(workspace: KritzelWorkspace) {
+  async function switchTo(workspace: UpdrawWorkspace) {
     await editorRef.current?.setActiveWorkspace(workspace.id);
   }
 
@@ -84,7 +84,7 @@ export function WorkspacesCreatePage() {
           </button>
         ))}
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="workspaces-create"
         theme="light"

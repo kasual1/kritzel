@@ -1,13 +1,13 @@
-import { KritzelIconName } from '../classes/registries/icon-registry.class';
+import { UpdrawIconName } from '../classes/registries/icon-registry.class';
 
-export interface IKritzelMenuItem<T = any> {
+export interface IUpdrawMenuItem<T = any> {
   id: string;
   label: string;
-  icon?: KritzelIconName;
+  icon?: UpdrawIconName;
   iconTooltip?: string;
   color?: string;
   value?: T;
-  children?: IKritzelMenuItem[];
+  children?: IUpdrawMenuItem[];
   isSelectable?: boolean;
   isSelected?: boolean;
   isEditing?: boolean;
@@ -16,16 +16,16 @@ export interface IKritzelMenuItem<T = any> {
   isChildMenuOpen?: boolean;
   isNewItem?: boolean;
   childMenuAnchor?: HTMLElement;
-  unchangedState?: Partial<IKritzelMenuItem>;
-  action?: (item: IKritzelMenuItem, parent: IKritzelMenuItem) => void;
+  unchangedState?: Partial<IUpdrawMenuItem>;
+  action?: (item: IUpdrawMenuItem, parent: IUpdrawMenuItem) => void;
 }
 
-export interface IKritzelMenuItemSelectEvent {
-  item: IKritzelMenuItem;
-  parent: IKritzelMenuItem;
+export interface IUpdrawMenuItemSelectEvent {
+  item: IUpdrawMenuItem;
+  parent: IUpdrawMenuItem;
 }
 
-export interface IKritzelMenuItemToggleChildMenuEvent {
-  item: IKritzelMenuItem;
+export interface IUpdrawMenuItemToggleChildMenuEvent {
+  item: IUpdrawMenuItem;
   childMenuAnchor: HTMLElement;
 }

@@ -1,12 +1,12 @@
-import { KritzelAsset } from '../../../interfaces/asset.interface';
-import { IAssetStorageProvider, KritzelAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
+import { UpdrawAsset } from '../../../interfaces/asset.interface';
+import { IAssetStorageProvider, UpdrawAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
 
 /**
  * Pre-signed upload descriptor returned by the host application.
  * `method` defaults to `PUT` which matches the common S3 pattern, but
  * `POST` is also supported for S3 browser-based uploads with form fields.
  */
-export interface KritzelPresignedUpload {
+export interface UpdrawPresignedUpload {
   /** Stable asset id. Host may honor metadata.id or assign a new one. */
   id: string;
   /** Fully-qualified URL bytes should be sent to. */
@@ -30,7 +30,7 @@ export interface PresignedAssetProviderOptions {
    * Returns a pre-signed upload descriptor for the given metadata. The
    * host application typically calls its backend to obtain a signed URL.
    */
-  getUploadDescriptor: (metadata: KritzelAssetPutMetadata) => Promise<KritzelPresignedUpload>;
+  getUploadDescriptor: (metadata: UpdrawAssetPutMetadata) => Promise<UpdrawPresignedUpload>;
 
   /**
    * Returns a URL from which the given asset can be loaded (often a
@@ -85,7 +85,7 @@ export class PresignedAssetProvider implements IAssetStorageProvider {
     return true;
   }
 
-  async put(blob: Blob, metadata: KritzelAssetPutMetadata): Promise<KritzelAsset> {
+  async put(blob: Blob, metadata: UpdrawAssetPutMetadata): Promise<UpdrawAsset> {
     const descriptor = await this._options.getUploadDescriptor(metadata);
     const method = descriptor.method ?? 'PUT';
     const headers = { ...(descriptor.headers ?? {}) };

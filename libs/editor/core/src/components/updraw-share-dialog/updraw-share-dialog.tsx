@@ -1,18 +1,18 @@
 ﻿import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop, Watch } from '@stencil/core';
-import { KritzelTermKey } from '@kritzel/core';
+import { UpdrawTermKey } from '@updraw/core';
 import QRCode from 'qrcode';
 
 /**
  * Share dialog component for managing workspace link sharing.
  * This is a presentational component that emits events for all actions.
- * The parent component (kritzel-editor) handles the business logic.
+ * The parent component (updraw-editor) handles the business logic.
  */
 @Component({
-  tag: 'kritzel-share-dialog',
-  styleUrl: 'kritzel-share-dialog.css',
+  tag: 'updraw-share-dialog',
+  styleUrl: 'updraw-share-dialog.css',
   shadow: true,
 })
-export class KritzelShareDialog {
+export class UpdrawShareDialog {
   @Element() host!: HTMLElement;
 
   /**
@@ -26,7 +26,7 @@ export class KritzelShareDialog {
   @Prop() workspaceId: string | undefined = undefined;
 
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
 
   @Watch('isPublic')
   onIsPublicChange(newValue: boolean) {
@@ -159,7 +159,7 @@ export class KritzelShareDialog {
   render() {
     return (
       <Host>
-        <kritzel-dialog
+        <updraw-dialog
           dialogTitle={this.terms['share.dialogTitle'] ?? 'Share Workspace'}
           size="small"
           isOpen={this.isDialogOpen}
@@ -178,7 +178,7 @@ export class KritzelShareDialog {
                       : (this.terms['share.linkSharing.disabledDescription'] ?? 'Link sharing is disabled. Only you can access this workspace.')}
                   </p>
                 </div>
-                <kritzel-slide-toggle
+                <updraw-slide-toggle
                   checked={this.internalIsPublic}
                   onCheckedChange={this.handleToggleChange}
                   label={this.terms['share.linkSharing.toggleLabel'] ?? 'Enable link sharing'}
@@ -202,7 +202,7 @@ export class KritzelShareDialog {
                     onClick={this.handleCopyUrl}
                     title={this.copySuccess ? (this.terms['share.copyLink.copied'] ?? 'Copied!') : (this.terms['share.copyLink.title'] ?? 'Copy link')}
                   >
-                    <kritzel-icon
+                    <updraw-icon
                       name={this.copySuccess ? 'check' : 'copy'}
                       size={18}
                     />
@@ -220,7 +220,7 @@ export class KritzelShareDialog {
               </div>
             )}
           </div>
-        </kritzel-dialog>
+        </updraw-dialog>
       </Host>
     );
   }

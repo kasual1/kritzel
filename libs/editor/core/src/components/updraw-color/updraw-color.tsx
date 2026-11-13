@@ -1,14 +1,14 @@
 ﻿import { Component, Host, Prop, h } from '@stencil/core';
-import { ThemeAwareColor } from '@kritzel/core';
-import { ThemeName } from '@kritzel/core';
-import { KritzelColorHelper } from '@kritzel/core';
+import { ThemeAwareColor } from '@updraw/core';
+import { ThemeName } from '@updraw/core';
+import { UpdrawColorHelper } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-color',
-  styleUrl: 'kritzel-color.css',
+  tag: 'updraw-color',
+  styleUrl: 'updraw-color.css',
   shadow: true,
 })
-export class KritzelColorComponent {
+export class UpdrawColorComponent {
   @Prop() value: string | ThemeAwareColor;
   @Prop() theme: ThemeName;
   @Prop() size: number = 24;
@@ -16,7 +16,7 @@ export class KritzelColorComponent {
   private resolveColor(): string {
     if (!this.value) return '';
     if (typeof this.value === 'string') return this.value;
-    return KritzelColorHelper.resolveThemeColor(this.value, this.theme);
+    return UpdrawColorHelper.resolveThemeColor(this.value, this.theme);
   }
 
   private isLightColor(hexColor: string): boolean {

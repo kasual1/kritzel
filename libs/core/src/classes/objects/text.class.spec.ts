@@ -1,7 +1,7 @@
-import { KritzelText } from './text.class';
-import { KritzelCore } from '../core/core.class';
-import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import { KritzelDevicesHelper } from '../../helpers/devices.helper';
+import { UpdrawText } from './text.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawKeyboardHelper } from '../../helpers/keyboard.helper';
+import { UpdrawDevicesHelper } from '../../helpers/devices.helper';
 
 // Mock prosemirror modules
 jest.mock('prosemirror-state', () => ({
@@ -91,7 +91,7 @@ jest.mock('prosemirror-commands', () => ({
 }));
 
 jest.mock('../../helpers/keyboard.helper', () => ({
-  KritzelKeyboardHelper: {
+  UpdrawKeyboardHelper: {
     disableInteractiveWidget: jest.fn(),
     enableInteractiveWidget: jest.fn(),
     forceHideKeyboard: jest.fn(),
@@ -99,15 +99,15 @@ jest.mock('../../helpers/keyboard.helper', () => ({
 }));
 
 jest.mock('../../helpers/devices.helper', () => ({
-  KritzelDevicesHelper: {
+  UpdrawDevicesHelper: {
     isIOS: jest.fn(() => false),
     isTouchDevice: jest.fn(() => false),
   },
 }));
 
-describe('KritzelText', () => {
-  let textObject: KritzelText;
-  let mockCore: jest.Mocked<KritzelCore>;
+describe('UpdrawText', () => {
+  let textObject: UpdrawText;
+  let mockCore: jest.Mocked<UpdrawCore>;
   let mockObjectsUpdate: jest.Mock;
   let mockObjectsConsolidate: jest.Mock;
   let mockSetState: jest.Mock;
@@ -116,7 +116,7 @@ describe('KritzelText', () => {
   let mockEmitObjectsAdded: jest.Mock;
   let mockEmitObjectsUpdated: jest.Mock;
 
-  const createMockCore = (): jest.Mocked<KritzelCore> => {
+  const createMockCore = (): jest.Mocked<UpdrawCore> => {
     const objectsUpdate = jest.fn();
     const objectsConsolidate = jest.fn();
     const setState = jest.fn();
@@ -169,14 +169,14 @@ describe('KritzelText', () => {
       toolRegistry: {
         getTool: jest.fn(() => ({ name: 'text' })),
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
   };
 
   beforeEach(() => {
     mockCore = createMockCore();
 
     // Use static create method to properly initialize the text object
-    textObject = KritzelText.create(mockCore, 12, 'Helvetica');
+    textObject = UpdrawText.create(mockCore, 12, 'Helvetica');
     textObject.translateX = 10;
     textObject.translateY = 20;
     textObject.fontColor = { light: '#ff0000', dark: '#ff0000' };
@@ -188,12 +188,12 @@ describe('KritzelText', () => {
 
   describe('constructor', () => {
     it('should create a text object with default values when no config provided', () => {
-      const defaultText = new KritzelText();
+      const defaultText = new UpdrawText();
 
       expect(defaultText.fontFamily).toBe('Arial');
       expect(defaultText.fontSize).toBe(8);
       expect(defaultText.fontColor).toEqual({ light: '#000000', dark: '#ffffff' });
-      expect(defaultText.__class__).toBe('KritzelText');
+      expect(defaultText.__class__).toBe('UpdrawText');
       expect(defaultText.isEditable).toBe(true);
       expect(defaultText.isEditing).toBe(false);
       expect(defaultText.rows).toBe(1);
@@ -208,7 +208,7 @@ describe('KritzelText', () => {
     });
 
     it('should convert constructor rotation from degrees to radians', () => {
-      const configuredText = new KritzelText({
+      const configuredText = new UpdrawText({
         text: 'Hello',
         rotation: -90,
       });
@@ -219,7 +219,7 @@ describe('KritzelText', () => {
 
   describe('static create', () => {
     it('should create a text object with core reference and workspace id', () => {
-      const createdText = KritzelText.create(mockCore, 14, 'Georgia');
+      const createdText = UpdrawText.create(mockCore, 14, 'Georgia');
 
       expect(createdText._core).toBe(mockCore);
       expect(createdText.workspaceId).toBe('workspace-1');
@@ -229,8 +229,8 @@ describe('KritzelText', () => {
     });
 
     it('should generate a unique id', () => {
-      const text1 = KritzelText.create(mockCore);
-      const text2 = KritzelText.create(mockCore);
+      const text1 = UpdrawText.create(mockCore);
+      const text2 = UpdrawText.create(mockCore);
 
       expect(text1.id).toBeDefined();
       expect(text2.id).toBeDefined();
@@ -238,19 +238,19 @@ describe('KritzelText', () => {
     });
 
     it('should set transparent background', () => {
-      const createdText = KritzelText.create(mockCore);
+      const createdText = UpdrawText.create(mockCore);
 
       expect(createdText.backgroundColor).toEqual({ light: 'transparent', dark: 'transparent' });
     });
 
     it('should create an editor', () => {
-      const createdText = KritzelText.create(mockCore);
+      const createdText = UpdrawText.create(mockCore);
 
       expect(createdText.editor).toBeDefined();
     });
 
     it('should convert create rotation from degrees to radians', () => {
-      const createdText = KritzelText.create(mockCore, 12, 'Helvetica', undefined, -90);
+      const createdText = UpdrawText.create(mockCore, 12, 'Helvetica', undefined, -90);
 
       expect(createdText.rotation).toBeCloseTo(-Math.PI / 2);
     });
@@ -499,7 +499,7 @@ describe('KritzelText', () => {
 
     it('should scroll into view on iOS', () => {
       jest.useFakeTimers();
-      (KritzelDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
+      (UpdrawDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
 
       const scrollIntoViewMock = jest.fn();
       textObject.editor!.dom.scrollIntoView = scrollIntoViewMock;
@@ -524,14 +524,14 @@ describe('KritzelText', () => {
 
       textObject.edit();
 
-      expect(KritzelKeyboardHelper.disableInteractiveWidget).not.toHaveBeenCalled();
+      expect(UpdrawKeyboardHelper.disableInteractiveWidget).not.toHaveBeenCalled();
       expect(textObject.uneditedObject).toBeNull();
     });
 
     it('should disable interactive widget', () => {
       textObject.edit();
 
-      expect(KritzelKeyboardHelper.disableInteractiveWidget).toHaveBeenCalled();
+      expect(UpdrawKeyboardHelper.disableInteractiveWidget).toHaveBeenCalled();
     });
 
     it('should clone current object as uneditedObject', () => {
@@ -569,7 +569,7 @@ describe('KritzelText', () => {
     it('should enable interactive widget', () => {
       textObject.edit();
 
-      expect(KritzelKeyboardHelper.enableInteractiveWidget).toHaveBeenCalled();
+      expect(UpdrawKeyboardHelper.enableInteractiveWidget).toHaveBeenCalled();
     });
   });
 
@@ -764,7 +764,7 @@ describe('KritzelText', () => {
     });
 
     it('should exclude uneditedObject from serialization', () => {
-      textObject.uneditedObject = textObject.clone() as KritzelText;
+      textObject.uneditedObject = textObject.clone() as UpdrawText;
       const serialized = textObject.serialize();
 
       expect(serialized.uneditedObject).toBeUndefined();

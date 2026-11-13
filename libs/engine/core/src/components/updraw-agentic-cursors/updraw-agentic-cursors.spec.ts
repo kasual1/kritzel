@@ -9,9 +9,9 @@ jest.mock('@stencil/core', () => ({
   writeTask: (task: () => void) => mockWrites.push(task),
 }));
 
-import { KritzelAgenticCursors } from './kritzel-agentic-cursors';
-import { KritzelLine } from '@kritzel/core';
-import type { KritzelAgenticCursor, KritzelCore } from '@kritzel/core';
+import { UpdrawAgenticCursors } from './updraw-agentic-cursors';
+import { UpdrawLine } from '@updraw/core';
+import type { UpdrawAgenticCursor, UpdrawCore } from '@updraw/core';
 
 interface VNode {
   $tag$?: string | ((...args: unknown[]) => unknown);
@@ -33,7 +33,7 @@ const byClass = (root: VNode, className: string) =>
 
 const flushWrites = () => mockWrites.splice(0).forEach(task => task());
 
-const createCursor = (overrides: Partial<KritzelAgenticCursor> = {}): KritzelAgenticCursor => ({
+const createCursor = (overrides: Partial<UpdrawAgenticCursor> = {}): UpdrawAgenticCursor => ({
   id: 'agent',
   name: 'Agent',
   color: '#7C3AED',
@@ -51,9 +51,9 @@ const createCursor = (overrides: Partial<KritzelAgenticCursor> = {}): KritzelAge
   ...overrides,
 });
 
-describe('KritzelAgenticCursors', () => {
-  let component: KritzelAgenticCursors;
-  let cursors: KritzelAgenticCursor[];
+describe('UpdrawAgenticCursors', () => {
+  let component: UpdrawAgenticCursors;
+  let cursors: UpdrawAgenticCursor[];
   let objects: Map<string, any>;
   let changeListener: (() => void) | null;
   let frameListener: (() => void) | null;
@@ -106,9 +106,9 @@ describe('KritzelAgenticCursors', () => {
           return unsubscribeFrame;
         },
       },
-    } as unknown as KritzelCore;
+    } as unknown as UpdrawCore;
 
-    component = new KritzelAgenticCursors();
+    component = new UpdrawAgenticCursors();
     component.core = core;
     component.showEdgeIndicators = true;
     component.edgeIndicatorPadding = 8;
@@ -278,7 +278,7 @@ describe('KritzelAgenticCursors', () => {
     it('shows no handle for several objects, lines and objects that cannot rotate', () => {
       objects.set('a', createObject('a', 0, 0, 10, 5));
       objects.set('b', createObject('b', 20, 0, 10, 5));
-      objects.set('line', Object.setPrototypeOf(createObject('line', 40, 0, 10, 5), KritzelLine.prototype));
+      objects.set('line', Object.setPrototypeOf(createObject('line', 40, 0, 10, 5), UpdrawLine.prototype));
 
       cursors = [createCursor({ selectedObjectIds: ['a', 'b'] })];
       expect(handleParts(component.render() as unknown as VNode).groups).toHaveLength(0);
@@ -294,7 +294,7 @@ describe('KritzelAgenticCursors', () => {
     });
 
     it('shows the handle of the object an agent rotates, even a line', () => {
-      objects.set('line', Object.setPrototypeOf(createObject('line', 0, 0, 10, 5), KritzelLine.prototype));
+      objects.set('line', Object.setPrototypeOf(createObject('line', 0, 0, 10, 5), UpdrawLine.prototype));
       cursors = [createCursor({ selectedObjectIds: ['line'], activeAction: 'rotateObject' })];
       expect(handleParts(component.render() as unknown as VNode).groups).toHaveLength(1);
     });

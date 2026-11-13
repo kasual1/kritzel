@@ -7,19 +7,19 @@ import {
 } from '@angular/core';
 import {
   InMemorySyncProvider,
-  KritzelBaseObject,
-  KritzelEditor,
-  KritzelSyncConfig,
-  KritzelText,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawBaseObject,
+  UpdrawEditor,
+  UpdrawSyncConfig,
+  UpdrawText,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
   selector: 'app-basic-usage',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <header class="toolbar">
@@ -42,7 +42,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       <span class="status">{{ statusLine() }}</span>
     </header>
 
-    <kritzel-editor
+    <updraw-editor
       editorId="basic-usage"
       #editor
       [syncConfig]="syncConfig"
@@ -57,7 +57,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       [isToolbarVisible]="false"
       (isReady)="onReady()"
       (objectsChange)="onObjectsChange($event)"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [
     `
@@ -111,7 +111,7 @@ import { createSeedObjects } from '../../const/seed-objects';
         white-space: nowrap;
       }
 
-      kritzel-editor {
+      updraw-editor {
         flex: 1;
         min-height: 0;
         display: block;
@@ -120,14 +120,14 @@ import { createSeedObjects } from '../../const/seed-objects';
   ],
 })
 export class BasicUsageComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
-  syncConfig: KritzelSyncConfig = {
+  syncConfig: UpdrawSyncConfig = {
     providers: [InMemorySyncProvider],
   };
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
   isReady = signal<boolean>(false);
   activeTool = signal<'brush' | 'selection'>('selection');
@@ -146,7 +146,7 @@ export class BasicUsageComponent {
   }
 
   onObjectsChange(
-    event: CustomEvent<KritzelBaseObject<HTMLElement | SVGElement>[]>,
+    event: CustomEvent<UpdrawBaseObject<HTMLElement | SVGElement>[]>,
   ) {
     this.objectsCount.set(event.detail.length);
   }
@@ -162,7 +162,7 @@ export class BasicUsageComponent {
   }
 
   async addText() {
-    const text = new KritzelText({
+    const text = new UpdrawText({
       text: 'Programmatic text!',
       translateX: 0,
       translateY: 0,

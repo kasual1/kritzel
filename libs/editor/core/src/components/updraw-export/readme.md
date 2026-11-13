@@ -1,4 +1,4 @@
-# kritzel-export
+# updraw-export
 
 
 
@@ -55,25 +55,25 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [kritzel-editor](../kritzel-editor)
+ - [updraw-editor](../updraw-editor)
 
 ### Depends on
 
-- [kritzel-input](../kritzel-input)
-- [kritzel-dropdown](../kritzel-dropdown)
-- [kritzel-dialog](../kritzel-dialog)
-- [kritzel-pill-tabs](../kritzel-pill-tabs)
+- [updraw-input](../updraw-input)
+- [updraw-dropdown](../updraw-dropdown)
+- [updraw-dialog](../updraw-dialog)
+- [updraw-pill-tabs](../updraw-pill-tabs)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-export --> kritzel-input
-  kritzel-export --> kritzel-dropdown
-  kritzel-export --> kritzel-dialog
-  kritzel-export --> kritzel-pill-tabs
-  kritzel-pill-tabs --> kritzel-icon
-  kritzel-editor --> kritzel-export
-  style kritzel-export fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-export --> updraw-input
+  updraw-export --> updraw-dropdown
+  updraw-export --> updraw-dialog
+  updraw-export --> updraw-pill-tabs
+  updraw-pill-tabs --> updraw-icon
+  updraw-editor --> updraw-export
+  style updraw-export fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

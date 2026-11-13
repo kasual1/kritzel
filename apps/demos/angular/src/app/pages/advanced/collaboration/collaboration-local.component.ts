@@ -1,10 +1,10 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import {
-  KritzelEditor,
+  UpdrawEditor,
   BroadcastSyncProvider,
-  KritzelSyncConfig,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawSyncConfig,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -12,7 +12,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-collaboration-local',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -20,7 +20,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       <span class="status">BroadcastChannel enabled</span>
     </app-toolbar>
     <div class="editor-wrap">
-      <kritzel-editor
+      <updraw-editor
         editorId="collaboration-local"
         [syncConfig]="syncConfig"
         [theme]="'light'"
@@ -31,7 +31,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-      ></kritzel-editor>
+      ></updraw-editor>
     </div>
   `,
   styles: [
@@ -59,9 +59,9 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 export class CollaborationLocalComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
-  syncConfig: KritzelSyncConfig = {
+  syncConfig: UpdrawSyncConfig = {
     providers: [BroadcastSyncProvider],
   };
 

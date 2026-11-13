@@ -1,12 +1,12 @@
-import { KritzelCore } from '../classes/core/core.class';
+import { UpdrawCore } from '../classes/core/core.class';
 import { PasteIntent } from '../classes/managers/clipboard.types';
 
-export interface KritzelPasteIntentProviderContext {
-  core: KritzelCore;
+export interface UpdrawPasteIntentProviderContext {
+  core: UpdrawCore;
   event?: ClipboardEvent;
 }
 
-export interface KritzelPasteIntentProvider {
-  canHandle(context: KritzelPasteIntentProviderContext): boolean;
-  getPasteIntent(context: KritzelPasteIntentProviderContext): Promise<PasteIntent>;
+export interface UpdrawPasteIntentProvider {
+  canHandle(context: UpdrawPasteIntentProviderContext): boolean;
+  getPasteIntent(context: UpdrawPasteIntentProviderContext): Promise<PasteIntent>;
 }

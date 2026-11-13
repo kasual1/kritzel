@@ -1,11 +1,11 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 
 @Component({
-  tag: 'kritzel-opacity-slider',
-  styleUrl: 'kritzel-opacity-slider.css',
+  tag: 'updraw-opacity-slider',
+  styleUrl: 'updraw-opacity-slider.css',
   shadow: true,
 })
-export class KritzelOpacitySlider {
+export class UpdrawOpacitySlider {
   /** Current opacity value (0 to 1) */
   @Prop({ mutable: true }) value: number = 1;
 
@@ -51,7 +51,7 @@ export class KritzelOpacitySlider {
               onInput={(e) => this.handleInput(e)}
               style={{
                 '--slider-progress': `${percentage}%`,
-                '--kritzel-opacity-slider-thumb-border-color': this.previewColor,
+                '--updraw-opacity-slider-thumb-border-color': this.previewColor,
               } as any}
             />
           </div>

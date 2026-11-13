@@ -1,5 +1,5 @@
 # Builds the showcase app when app or library files change. The client is built against the
-# local kritzel libraries (file: deps), the servers are built standalone.
+# local updraw libraries (file: deps), the servers are built standalone.
 name: Test app
 
 on:
@@ -26,7 +26,7 @@ jobs:
       - name: Install root dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Build Kritzel libraries
+      - name: Build Updraw libraries
         run: npm run build
 
       - name: Install client dependencies

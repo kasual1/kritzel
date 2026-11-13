@@ -1,4 +1,4 @@
-# kritzel-tooltip
+# updraw-tooltip
 
 
 
@@ -77,13 +77,13 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [kritzel-toolbar](../kritzel-toolbar)
+ - [updraw-toolbar](../updraw-toolbar)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-toolbar --> kritzel-tooltip
-  style kritzel-tooltip fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-toolbar --> updraw-tooltip
+  style updraw-tooltip fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

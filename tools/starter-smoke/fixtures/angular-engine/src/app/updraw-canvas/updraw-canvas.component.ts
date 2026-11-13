@@ -1,37 +1,37 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import {
-  KritzelBrushTool,
-  KritzelEngine,
-  KritzelEraserTool,
-  KritzelSelectionTool,
-} from '@kritzel/angular-engine';
+  UpdrawBrushTool,
+  UpdrawEngine,
+  UpdrawEraserTool,
+  UpdrawSelectionTool,
+} from '@updraw/angular-engine';
 
 @Component({
-  selector: 'kritzel-canvas',
+  selector: 'updraw-canvas',
   standalone: true,
-  imports: [KritzelEngine],
-  templateUrl: './kritzel-canvas.component.html',
-  styleUrls: ['./kritzel-canvas.component.scss'],
+  imports: [UpdrawEngine],
+  templateUrl: './updraw-canvas.component.html',
+  styleUrls: ['./updraw-canvas.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class KritzelCanvasComponent {
-  @ViewChild(KritzelEngine, { static: true }) private engine!: KritzelEngine;
+export class UpdrawCanvasComponent {
+  @ViewChild(UpdrawEngine, { static: true }) private engine!: UpdrawEngine;
 
-  readonly editorId = 'kritzel-canvas';
+  readonly editorId = 'updraw-canvas';
   initializationError = '';
 
   constructor(private readonly changeDetector: ChangeDetectorRef) {}
 
   async onEngineReady(): Promise<void> {
     try {
-      if (!(await this.engine.registerTool('selection', KritzelSelectionTool))) {
-        throw new Error('Kritzel could not register the selection tool.');
+      if (!(await this.engine.registerTool('selection', UpdrawSelectionTool))) {
+        throw new Error('Updraw could not register the selection tool.');
       }
-      if (!(await this.engine.registerTool('brush', KritzelBrushTool))) {
-        throw new Error('Kritzel could not register the brush tool.');
+      if (!(await this.engine.registerTool('brush', UpdrawBrushTool))) {
+        throw new Error('Updraw could not register the brush tool.');
       }
-      if (!(await this.engine.registerTool('eraser', KritzelEraserTool))) {
-        throw new Error('Kritzel could not register the eraser tool.');
+      if (!(await this.engine.registerTool('eraser', UpdrawEraserTool))) {
+        throw new Error('Updraw could not register the eraser tool.');
       }
       await this.engine.setActiveTool('brush');
     } catch (error: unknown) {

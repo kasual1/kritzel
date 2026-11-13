@@ -1,4 +1,4 @@
-# kritzel-color
+# updraw-color
 
 
 
@@ -18,17 +18,17 @@
 
 ### Used by
 
- - [kritzel-color-palette](../kritzel-color-palette)
- - [kritzel-stroke-size](../kritzel-stroke-size)
- - [kritzel-toolbar](../kritzel-toolbar)
+ - [updraw-color-palette](../updraw-color-palette)
+ - [updraw-stroke-size](../updraw-stroke-size)
+ - [updraw-toolbar](../updraw-toolbar)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-color-palette --> kritzel-color
-  kritzel-stroke-size --> kritzel-color
-  kritzel-toolbar --> kritzel-color
-  style kritzel-color fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-color-palette --> updraw-color
+  updraw-stroke-size --> updraw-color
+  updraw-toolbar --> updraw-color
+  style updraw-color fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

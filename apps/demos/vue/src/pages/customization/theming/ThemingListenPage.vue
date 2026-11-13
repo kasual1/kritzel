@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { KritzelEditor, KritzelWorkspace } from '@kritzel/vue-editor'
+import { UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -13,7 +13,7 @@ import { useInfoPanel } from '../../../components/info-panel'
 const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 const activeTheme = ref('light')
 const themeHistory = ref<string[]>([])
 
@@ -35,7 +35,7 @@ function onThemeChange(event: CustomEvent<string>) {
       <InfoPanelToggle :panel="infoPanel" />
     </Toolbar>
     <div class="content">
-      <KritzelEditor
+      <UpdrawEditor
         editorId="theming-listen"
         :theme="activeTheme"
         :themes="themes"

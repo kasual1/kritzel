@@ -1,77 +1,77 @@
-import { KritzelCore } from '../core/core.class';
-import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelSelectionBox } from '../objects/selection-box.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawSelectionBox } from '../objects/selection-box.class';
 import {
-  KRITZEL_TITLEBAR_DEFAULT_HEIGHT,
-  KRITZEL_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH,
-  KRITZEL_TITLEBAR_DEFAULT_OFFSET,
-  KritzelObjectTitlebarHelper,
+  UPDRAW_TITLEBAR_DEFAULT_HEIGHT,
+  UPDRAW_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH,
+  UPDRAW_TITLEBAR_DEFAULT_OFFSET,
+  UpdrawObjectTitlebarHelper,
 } from '../../helpers/object-titlebar.helper';
 import {
-  KritzelObjectTitlebarConfig,
-  KritzelObjectTitlebarContext,
-  KritzelObjectTitlebarMenuState,
-  KritzelTitlebarElement,
-  KritzelTitlebarMenu,
-  KritzelTitlebarMenuItem,
-  KritzelTitlebarSection,
-  KritzelTitlebarValue,
+  UpdrawObjectTitlebarConfig,
+  UpdrawObjectTitlebarContext,
+  UpdrawObjectTitlebarMenuState,
+  UpdrawTitlebarElement,
+  UpdrawTitlebarMenu,
+  UpdrawTitlebarMenuItem,
+  UpdrawTitlebarSection,
+  UpdrawTitlebarValue,
 } from '../../interfaces/object-titlebar.interface';
-import { KritzelTermKey } from '../../interfaces/localization.interface';
-import { KritzelIconName } from '../registries/icon-registry.class';
-import { KRITZEL_ROTATION_HANDLE_DISTANCE } from '../../constants/engine.constants';
+import { UpdrawTermKey } from '../../interfaces/localization.interface';
+import { UpdrawIconName } from '../registries/icon-registry.class';
+import { UPDRAW_ROTATION_HANDLE_DISTANCE } from '../../constants/engine.constants';
 
 /** Marks titlebar elements that resolve to their owner object (the drag surface). */
-export const KRITZEL_TITLEBAR_OWNER_ATTRIBUTE = 'data-titlebar-owner-id';
+export const UPDRAW_TITLEBAR_OWNER_ATTRIBUTE = 'data-titlebar-owner-id';
 /** Marks interactive titlebar elements; pointer input on them never reaches the active tool. */
-export const KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE = 'data-kritzel-titlebar-control';
+export const UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE = 'data-updraw-titlebar-control';
 /** Marks an editable title; its value is the id of the title element. */
-export const KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE = 'data-kritzel-titlebar-editable-title';
+export const UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE = 'data-updraw-titlebar-editable-title';
 /** Marks the input used to rename an object; keyboard input in it never reaches canvas shortcuts. */
-export const KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE = 'data-kritzel-titlebar-title-input';
+export const UPDRAW_TITLEBAR_TITLE_INPUT_ATTRIBUTE = 'data-updraw-titlebar-title-input';
 
-const DEFAULT_LEFT_ELEMENTS: KritzelTitlebarElement[] = [{ id: 'title', type: 'title' }];
-const SECTIONS: KritzelTitlebarSection[] = ['left', 'center', 'right'];
+const DEFAULT_LEFT_ELEMENTS: UpdrawTitlebarElement[] = [{ id: 'title', type: 'title' }];
+const SECTIONS: UpdrawTitlebarSection[] = ['left', 'center', 'right'];
 
-const OBJECT_TYPE_TERMS: Record<string, KritzelTermKey> = {
-  KritzelShape: 'objectType.shape',
-  KritzelText: 'objectType.text',
-  KritzelImage: 'objectType.image',
-  KritzelPath: 'objectType.path',
-  KritzelLine: 'objectType.line',
-  KritzelGroup: 'objectType.group',
-  KritzelIframeObject: 'objectType.iframe',
-  KritzelDynamicObject: 'objectType.dynamic',
+const OBJECT_TYPE_TERMS: Record<string, UpdrawTermKey> = {
+  UpdrawShape: 'objectType.shape',
+  UpdrawText: 'objectType.text',
+  UpdrawImage: 'objectType.image',
+  UpdrawPath: 'objectType.path',
+  UpdrawLine: 'objectType.line',
+  UpdrawGroup: 'objectType.group',
+  UpdrawIframeObject: 'objectType.iframe',
+  UpdrawDynamicObject: 'objectType.dynamic',
 };
 
 /** Icons from the default registry that represent each object type. */
-export const KRITZEL_OBJECT_TYPE_ICONS: Record<string, KritzelIconName> = {
-  KritzelShape: 'shapes',
-  KritzelText: 'type',
-  KritzelImage: 'image',
-  KritzelPath: 'pen',
-  KritzelLine: 'arrow',
-  KritzelGroup: 'group',
-  KritzelIframeObject: 'layoutTemplate',
-  KritzelDynamicObject: 'braces',
+export const UPDRAW_OBJECT_TYPE_ICONS: Record<string, UpdrawIconName> = {
+  UpdrawShape: 'shapes',
+  UpdrawText: 'type',
+  UpdrawImage: 'image',
+  UpdrawPath: 'pen',
+  UpdrawLine: 'arrow',
+  UpdrawGroup: 'group',
+  UpdrawIframeObject: 'layoutTemplate',
+  UpdrawDynamicObject: 'braces',
 };
 
 /** Default titlebar: the object's type icon followed by its title. */
-export const KRITZEL_DEFAULT_OBJECT_TITLEBAR: KritzelObjectTitlebarConfig = {
+export const UPDRAW_DEFAULT_OBJECT_TITLEBAR: UpdrawObjectTitlebarConfig = {
   left: [
-    { id: 'type-icon', type: 'icon', icon: context => KRITZEL_OBJECT_TYPE_ICONS[context.objectType] ?? 'square' },
+    { id: 'type-icon', type: 'icon', icon: context => UPDRAW_OBJECT_TYPE_ICONS[context.objectType] ?? 'square' },
     { id: 'title', type: 'title' },
   ],
 };
 
 /** The open titlebar menu. */
-interface KritzelOpenTitlebarMenu {
+interface UpdrawOpenTitlebarMenu {
   ownerId: string;
   elementId: string;
-  section: KritzelTitlebarSection;
-  items: KritzelTitlebarMenuItem[];
+  section: UpdrawTitlebarSection;
+  items: UpdrawTitlebarMenuItem[];
   anchor: HTMLElement;
   anchorRect: DOMRect;
   /** Camera when the menu opened; the menu closes once it moves. */
@@ -81,17 +81,17 @@ interface KritzelOpenTitlebarMenu {
 }
 
 /** Size of the titlebar band, read from the theme on every render. */
-export interface KritzelTitlebarMetrics {
+export interface UpdrawTitlebarMetrics {
   height: number;
   offset: number;
 }
 
 /** An element with all of its dynamic values evaluated for one titlebar. */
-export interface KritzelResolvedTitlebarElement {
-  element: KritzelTitlebarElement;
-  section: KritzelTitlebarSection;
+export interface UpdrawResolvedTitlebarElement {
+  element: UpdrawTitlebarElement;
+  section: UpdrawTitlebarSection;
   text?: string;
-  icon?: KritzelIconName;
+  icon?: UpdrawIconName;
   label?: string;
   tooltip?: string;
   isDisabled?: boolean;
@@ -103,9 +103,9 @@ export interface KritzelResolvedTitlebarElement {
 }
 
 /** Everything needed to render one titlebar. */
-export interface KritzelResolvedTitlebar {
-  owner: KritzelBaseObject<any>;
-  context: KritzelObjectTitlebarContext;
+export interface UpdrawResolvedTitlebar {
+  owner: UpdrawBaseObject<any>;
+  context: UpdrawObjectTitlebarContext;
   isActive: boolean;
   /** CSS transform of the anchor inside the origin layer. */
   transform: string;
@@ -113,7 +113,7 @@ export interface KritzelResolvedTitlebar {
   width: number;
   /** Id of the title element currently being edited, if any. */
   editingElementId?: string;
-  sections: Record<KritzelTitlebarSection, KritzelResolvedTitlebarElement[]>;
+  sections: Record<UpdrawTitlebarSection, UpdrawResolvedTitlebarElement[]>;
 }
 
 /**
@@ -121,21 +121,21 @@ export interface KritzelResolvedTitlebar {
  * titlebar button clicks and menus. The configuration is read live from the engine's
  * `objectTitlebar` prop, so late prop updates from framework wrappers always apply.
  */
-export class KritzelObjectTitlebarManager {
-  private readonly _core: KritzelCore;
+export class UpdrawObjectTitlebarManager {
+  private readonly _core: UpdrawCore;
   private readonly _warnedElements = new Set<string>();
   private _hasReportedMissingHasTitlebar = false;
   private _editingTitle: { ownerId: string; elementId: string } | null = null;
-  private _openMenu: KritzelOpenTitlebarMenu | null = null;
+  private _openMenu: UpdrawOpenTitlebarMenu | null = null;
   /** Latest input value of the title being edited, committed if the edit ends without a blur. */
   private _titleDraft: string | null = null;
 
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     this._core = core;
   }
 
   /** The current titlebar configuration, or `undefined` when titlebars are disabled. */
-  get config(): KritzelObjectTitlebarConfig | undefined {
+  get config(): UpdrawObjectTitlebarConfig | undefined {
     return this._core.engine?.objectTitlebar ?? undefined;
   }
 
@@ -151,19 +151,19 @@ export class KritzelObjectTitlebarManager {
   }
 
   /** Reads the titlebar height and offset tokens, falling back to defaults for non-pixel values. */
-  getMetrics(style: Pick<CSSStyleDeclaration, 'getPropertyValue'> | null | undefined): KritzelTitlebarMetrics {
+  getMetrics(style: Pick<CSSStyleDeclaration, 'getPropertyValue'> | null | undefined): UpdrawTitlebarMetrics {
     return {
-      height: KritzelObjectTitlebarHelper.parsePixels(style?.getPropertyValue('--kritzel-titlebar-height'), KRITZEL_TITLEBAR_DEFAULT_HEIGHT),
-      offset: KritzelObjectTitlebarHelper.parsePixels(style?.getPropertyValue('--kritzel-titlebar-offset'), KRITZEL_TITLEBAR_DEFAULT_OFFSET),
+      height: UpdrawObjectTitlebarHelper.parsePixels(style?.getPropertyValue('--updraw-titlebar-height'), UPDRAW_TITLEBAR_DEFAULT_HEIGHT),
+      offset: UpdrawObjectTitlebarHelper.parsePixels(style?.getPropertyValue('--updraw-titlebar-offset'), UPDRAW_TITLEBAR_DEFAULT_OFFSET),
     };
   }
 
   /** World units by which the render query must be widened so titlebars hanging into view are rendered. */
-  getCullingPadding(metrics: KritzelTitlebarMetrics): number {
+  getCullingPadding(metrics: UpdrawTitlebarMetrics): number {
     if (!this.isEnabled) {
       return 0;
     }
-    return KritzelObjectTitlebarHelper.getCullingPadding(metrics.height, metrics.offset, this._core.store.state.scale);
+    return UpdrawObjectTitlebarHelper.getCullingPadding(metrics.height, metrics.offset, this._core.store.state.scale);
   }
 
   /**
@@ -171,19 +171,19 @@ export class KritzelObjectTitlebarManager {
    * (not children of a candidate group) for which `objectConfig.hasTitlebar` is true.
    * A group's bounds contain its children, so a visible child's group is always a candidate.
    */
-  getOwners(candidates: KritzelBaseObject<any>[]): KritzelBaseObject<any>[] {
+  getOwners(candidates: UpdrawBaseObject<any>[]): UpdrawBaseObject<any>[] {
     const objectConfigManager = this._core.objectConfigManager;
     if (!objectConfigManager.isConfigured('hasTitlebar')) {
       if (this.isEnabled && !this._hasReportedMissingHasTitlebar) {
         this._hasReportedMissingHasTitlebar = true;
-        console.info("[KritzelObjectTitlebar] No titlebars are rendered because `objectConfig.hasTitlebar` is not set, e.g. `objectConfig = { hasTitlebar: object => object.__class__ === 'KritzelGroup' }`.");
+        console.info("[UpdrawObjectTitlebar] No titlebars are rendered because `objectConfig.hasTitlebar` is not set, e.g. `objectConfig = { hasTitlebar: object => object.__class__ === 'UpdrawGroup' }`.");
       }
       return [];
     }
 
     const childIds = new Set<string>();
     for (const candidate of candidates) {
-      if (candidate instanceof KritzelGroup) {
+      if (candidate instanceof UpdrawGroup) {
         for (const childId of candidate.childIds) {
           childIds.add(childId);
         }
@@ -194,8 +194,8 @@ export class KritzelObjectTitlebarManager {
       candidate =>
         !candidate.markedForRemoval &&
         !childIds.has(candidate.id) &&
-        !(candidate instanceof KritzelSelectionGroup) &&
-        !(candidate instanceof KritzelSelectionBox) &&
+        !(candidate instanceof UpdrawSelectionGroup) &&
+        !(candidate instanceof UpdrawSelectionBox) &&
         objectConfigManager.hasTitlebar(candidate),
     );
   }
@@ -204,7 +204,7 @@ export class KritzelObjectTitlebarManager {
    * Returns the ids of titlebar owners that are active: selected themselves, or containing
    * a selected object (nested groups resolve selection to their direct parent).
    */
-  getActiveOwnerIds(candidates: KritzelBaseObject<any>[]): Set<string> {
+  getActiveOwnerIds(candidates: UpdrawBaseObject<any>[]): Set<string> {
     const selectedIds = this._core.store.selectionGroup?.objectIds ?? [];
     const active = new Set<string>();
     if (selectedIds.length === 0) {
@@ -213,7 +213,7 @@ export class KritzelObjectTitlebarManager {
 
     const parentOf = new Map<string, string>();
     for (const candidate of candidates) {
-      if (candidate instanceof KritzelGroup) {
+      if (candidate instanceof UpdrawGroup) {
         for (const childId of candidate.childIds) {
           parentOf.set(childId, candidate.id);
         }
@@ -239,21 +239,21 @@ export class KritzelObjectTitlebarManager {
    * The engine passes the titlebars and metrics of its render; without them, only the titlebar `target` shows on its
    * own is considered, by the rules of `resolveTitlebars` but without its side effects on open edits and menus.
    */
-  getRotationHandleDistance(target: KritzelBaseObject<any>, rendered?: { titlebars: KritzelResolvedTitlebar[]; metrics: KritzelTitlebarMetrics }): number {
+  getRotationHandleDistance(target: UpdrawBaseObject<any>, rendered?: { titlebars: UpdrawResolvedTitlebar[]; metrics: UpdrawTitlebarMetrics }): number {
     if (!this.coversTopEdge(target, rendered?.titlebars ?? this.getOwnTitlebar(target))) {
-      return KRITZEL_ROTATION_HANDLE_DISTANCE;
+      return UPDRAW_ROTATION_HANDLE_DISTANCE;
     }
     const host = this._core.engine?.host;
     const { height, offset } = rendered?.metrics ?? this.getMetrics(host && typeof getComputedStyle === 'function' ? getComputedStyle(host) : null);
-    return KRITZEL_ROTATION_HANDLE_DISTANCE + height + offset;
+    return UPDRAW_ROTATION_HANDLE_DISTANCE + height + offset;
   }
 
   /** Whether one of the shown titlebars sits on the top edge of `target`, where its rotation handle starts. */
-  private coversTopEdge(target: KritzelBaseObject<any>, titlebars: Pick<KritzelResolvedTitlebar, 'owner' | 'isActive'>[]): boolean {
+  private coversTopEdge(target: UpdrawBaseObject<any>, titlebars: Pick<UpdrawResolvedTitlebar, 'owner' | 'isActive'>[]): boolean {
     if (titlebars.length === 0) {
       return false;
     }
-    const ids = target instanceof KritzelSelectionGroup ? target.objectIds : [target.id];
+    const ids = target instanceof UpdrawSelectionGroup ? target.objectIds : [target.id];
     if (ids.length === 1 && titlebars.some(titlebar => titlebar.owner.id === ids[0])) {
       return true;
     }
@@ -264,35 +264,35 @@ export class KritzelObjectTitlebarManager {
   }
 
   /** The titlebar `object` shows on its own, if any. */
-  private getOwnTitlebar(object: KritzelBaseObject<any>): Pick<KritzelResolvedTitlebar, 'owner' | 'isActive'>[] {
+  private getOwnTitlebar(object: UpdrawBaseObject<any>): Pick<UpdrawResolvedTitlebar, 'owner' | 'isActive'>[] {
     const config = this.config;
     if (!config || this.getOwners([object]).length === 0) {
       return [];
     }
     const isActive = this.getActiveOwnerIds(this.withNestedGroups(object)).has(object.id);
-    const anchor = KritzelObjectTitlebarHelper.getAnchor(object, this._core.store.state, config.rotation ?? 'follow');
+    const anchor = UpdrawObjectTitlebarHelper.getAnchor(object, this._core.store.state, config.rotation ?? 'follow');
     return this.isShown(object, isActive, anchor.width, config) ? [{ owner: object, isActive }] : [];
   }
 
   /** The visibility rules: a titlebar being edited stays visible until the edit ends. */
-  private isShown(owner: KritzelBaseObject<any>, isActive: boolean, width: number, config: KritzelObjectTitlebarConfig): boolean {
+  private isShown(owner: UpdrawBaseObject<any>, isActive: boolean, width: number, config: UpdrawObjectTitlebarConfig): boolean {
     if (this._editingTitle?.ownerId === owner.id) {
       return true;
     }
-    return (config.visibility !== 'active' || isActive) && width >= (config.hideBelowWidth ?? KRITZEL_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH);
+    return (config.visibility !== 'active' || isActive) && width >= (config.hideBelowWidth ?? UPDRAW_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH);
   }
 
   /** The object and the groups nested in it, so that a selected descendant makes it active. */
-  private withNestedGroups(object: KritzelBaseObject<any>): KritzelBaseObject<any>[] {
+  private withNestedGroups(object: UpdrawBaseObject<any>): UpdrawBaseObject<any>[] {
     const result = [object];
     const seen = new Set([object.id]);
     for (let i = 0; i < result.length; i++) {
       const current = result[i];
-      if (!(current instanceof KritzelGroup)) {
+      if (!(current instanceof UpdrawGroup)) {
         continue;
       }
       for (const child of current.children) {
-        if (child instanceof KritzelGroup && !seen.has(child.id)) {
+        if (child instanceof UpdrawGroup && !seen.has(child.id)) {
           seen.add(child.id);
           result.push(child);
         }
@@ -302,7 +302,7 @@ export class KritzelObjectTitlebarManager {
   }
 
   /** Resolves the titlebars to render for the given candidate objects. */
-  resolveTitlebars(candidates: KritzelBaseObject<any>[]): KritzelResolvedTitlebar[] {
+  resolveTitlebars(candidates: UpdrawBaseObject<any>[]): UpdrawResolvedTitlebar[] {
     const config = this.config;
     if (!config) {
       this.closeMenu();
@@ -315,13 +315,13 @@ export class KritzelObjectTitlebarManager {
     const owners = this.getOwners(candidates);
 
     const activeOwnerIds = this.getActiveOwnerIds(candidates);
-    const titlebars: KritzelResolvedTitlebar[] = [];
+    const titlebars: UpdrawResolvedTitlebar[] = [];
     const editing = this._editingTitle;
 
     for (const owner of owners) {
       const isActive = activeOwnerIds.has(owner.id);
       const isEditing = editing?.ownerId === owner.id;
-      const anchor = KritzelObjectTitlebarHelper.getAnchor(owner, viewport, config.rotation ?? 'follow');
+      const anchor = UpdrawObjectTitlebarHelper.getAnchor(owner, viewport, config.rotation ?? 'follow');
       if (!this.isShown(owner, isActive, anchor.width, config)) {
         continue;
       }
@@ -337,7 +337,7 @@ export class KritzelObjectTitlebarManager {
         owner,
         context,
         isActive,
-        transform: KritzelObjectTitlebarHelper.getTransform(anchor, viewport.scale),
+        transform: UpdrawObjectTitlebarHelper.getTransform(anchor, viewport.scale),
         width: anchor.width,
         editingElementId: isEditedElementShown ? editing.elementId : undefined,
         sections,
@@ -372,7 +372,7 @@ export class KritzelObjectTitlebarManager {
   }
 
   /** Builds the context passed to dynamic element values and actions. */
-  createContext(owner: KritzelBaseObject<any>, isActive: boolean, barWidth: number): KritzelObjectTitlebarContext {
+  createContext(owner: UpdrawBaseObject<any>, isActive: boolean, barWidth: number): UpdrawObjectTitlebarContext {
     const bounds = owner.boundingBox;
     const translate = this.translate;
     const title = this.resolveTitle(owner);
@@ -381,8 +381,8 @@ export class KritzelObjectTitlebarManager {
       object: owner,
       objectType: owner.__class__,
       // Resolving group children scans the store, so only do it when a callback asks for them.
-      get children(): KritzelBaseObject[] {
-        return owner instanceof KritzelGroup ? owner.children : [];
+      get children(): UpdrawBaseObject[] {
+        return owner instanceof UpdrawGroup ? owner.children : [];
       },
       isActive,
       title,
@@ -394,7 +394,7 @@ export class KritzelObjectTitlebarManager {
   }
 
   /** Resolves an object's title: config resolver, then object name, then a localized type label. */
-  resolveTitle(owner: KritzelBaseObject<any>): string {
+  resolveTitle(owner: UpdrawBaseObject<any>): string {
     const resolver = this.config?.title;
     if (resolver) {
       try {
@@ -424,17 +424,17 @@ export class KritzelObjectTitlebarManager {
   getOwnerFromEvent(
     event: Pick<PointerEvent, 'clientX' | 'clientY'> & { composedPath?: () => EventTarget[] },
     options: { includeControls?: boolean } = {},
-  ): KritzelBaseObject<any> | null {
+  ): UpdrawBaseObject<any> | null {
     if (!this.isEnabled) {
       return null;
     }
 
     for (const target of event.composedPath?.() ?? []) {
-      if (!options.includeControls && this.hasAttribute(target, KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE)) {
+      if (!options.includeControls && this.hasAttribute(target, UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE)) {
         return null;
       }
-      if (this.hasAttribute(target, KRITZEL_TITLEBAR_OWNER_ATTRIBUTE)) {
-        return this.findOwnerById((target as Element).getAttribute(KRITZEL_TITLEBAR_OWNER_ATTRIBUTE));
+      if (this.hasAttribute(target, UPDRAW_TITLEBAR_OWNER_ATTRIBUTE)) {
+        return this.findOwnerById((target as Element).getAttribute(UPDRAW_TITLEBAR_OWNER_ATTRIBUTE));
       }
     }
 
@@ -443,17 +443,17 @@ export class KritzelObjectTitlebarManager {
     if (!topmost) {
       return null;
     }
-    if (!options.includeControls && topmost.closest(`[${KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE}]`)) {
+    if (!options.includeControls && topmost.closest(`[${UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE}]`)) {
       return null;
     }
-    const surface = topmost.closest(`[${KRITZEL_TITLEBAR_OWNER_ATTRIBUTE}]`);
-    return this.findOwnerById(surface?.getAttribute(KRITZEL_TITLEBAR_OWNER_ATTRIBUTE));
+    const surface = topmost.closest(`[${UPDRAW_TITLEBAR_OWNER_ATTRIBUTE}]`);
+    return this.findOwnerById(surface?.getAttribute(UPDRAW_TITLEBAR_OWNER_ATTRIBUTE));
   }
 
   /** Whether the event originated on an interactive titlebar control. */
   isControlEvent(event: { composedPath?: () => EventTarget[] }): boolean {
     const path = event.composedPath?.() ?? [];
-    return path.some(target => this.hasAttribute(target, KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE));
+    return path.some(target => this.hasAttribute(target, UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE));
   }
 
   /**
@@ -461,7 +461,7 @@ export class KritzelObjectTitlebarManager {
    * `action` and emits `objectTitlebarAction`; a menu opens or closes and emits `objectTitlebarMenuStateChange`.
    * Does nothing while the engine is disabled.
    */
-  invokeElement(ownerId: string, section: KritzelTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement): void {
+  invokeElement(ownerId: string, section: UpdrawTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement): void {
     if (this._core.store.isDisabled) {
       return;
     }
@@ -486,14 +486,14 @@ export class KritzelObjectTitlebarManager {
     try {
       element.action?.(context, event);
     } catch (error) {
-      console.error(`[KritzelObjectTitlebar] Action of element "${element.id}" failed:`, error);
+      console.error(`[UpdrawObjectTitlebar] Action of element "${element.id}" failed:`, error);
     }
 
     this.emitAction(owner, section, element.id, anchor.getBoundingClientRect());
   }
 
   /** The state of the titlebar menu, as emitted with `objectTitlebarMenuStateChange`. */
-  get menuState(): KritzelObjectTitlebarMenuState {
+  get menuState(): UpdrawObjectTitlebarMenuState {
     const menu = this._openMenu;
     if (!menu) {
       return { isVisible: false, items: [] };
@@ -547,13 +547,13 @@ export class KritzelObjectTitlebarManager {
     try {
       menuItem.action?.(context, menuItem);
     } catch (error) {
-      console.error(`[KritzelObjectTitlebar] Action of menu item "${menuItemId}" in "${element.id}" failed:`, error);
+      console.error(`[UpdrawObjectTitlebar] Action of menu item "${menuItemId}" in "${element.id}" failed:`, error);
     }
 
     this.emitAction(owner, menu.section, element.id, menu.anchorRect, menuItemId);
   }
 
-  private toggleMenu(owner: KritzelBaseObject<any>, section: KritzelTitlebarSection, element: KritzelTitlebarMenu, context: KritzelObjectTitlebarContext, anchor: HTMLElement): void {
+  private toggleMenu(owner: UpdrawBaseObject<any>, section: UpdrawTitlebarSection, element: UpdrawTitlebarMenu, context: UpdrawObjectTitlebarContext, anchor: HTMLElement): void {
     const isOpen = this._openMenu?.ownerId === owner.id && this._openMenu.elementId === element.id;
     if (isOpen) {
       this.closeMenu();
@@ -576,7 +576,7 @@ export class KritzelObjectTitlebarManager {
   }
 
   /** Resolves the visible items of a menu, with labels translated and `isDisabled` evaluated. */
-  private resolveMenuItems(element: KritzelTitlebarMenu, context: KritzelObjectTitlebarContext): KritzelTitlebarMenuItem[] {
+  private resolveMenuItems(element: UpdrawTitlebarMenu, context: UpdrawObjectTitlebarContext): UpdrawTitlebarMenuItem[] {
     const items = this.evaluate(element.items, context, [], element.id);
     if (!Array.isArray(items)) {
       return [];
@@ -596,7 +596,7 @@ export class KritzelObjectTitlebarManager {
    * nor deselected, and the camera has not moved, since the menu is anchored to where the button was.
    * Menus also open on inactive titlebars, because clicking a titlebar button never changes the selection.
    */
-  private isMenuStillValid(menu: KritzelOpenTitlebarMenu, titlebars: KritzelResolvedTitlebar[]): boolean {
+  private isMenuStillValid(menu: UpdrawOpenTitlebarMenu, titlebars: UpdrawResolvedTitlebar[]): boolean {
     const { scale, translateX, translateY } = this._core.store.state;
     const hasViewportChanged = scale !== menu.viewport.scale || translateX !== menu.viewport.translateX || translateY !== menu.viewport.translateY;
     const titlebar = titlebars.find(candidate => candidate.owner.id === menu.ownerId);
@@ -605,14 +605,14 @@ export class KritzelObjectTitlebarManager {
   }
 
   /** Builds the context of an owner outside of a render, e.g. for a click. */
-  private createLiveContext(owner: KritzelBaseObject<any>): KritzelObjectTitlebarContext {
+  private createLiveContext(owner: UpdrawBaseObject<any>): UpdrawObjectTitlebarContext {
     const state = this._core.store.state;
-    const anchor = KritzelObjectTitlebarHelper.getAnchor(owner, { scale: state.scale, translateX: state.translateX, translateY: state.translateY }, this.config?.rotation ?? 'follow');
+    const anchor = UpdrawObjectTitlebarHelper.getAnchor(owner, { scale: state.scale, translateX: state.translateX, translateY: state.translateY }, this.config?.rotation ?? 'follow');
     const isActive = this.getActiveOwnerIds(this._core.store.allObjects).has(owner.id);
     return this.createContext(owner, isActive, anchor.width);
   }
 
-  private emitAction(owner: KritzelBaseObject<any>, section: KritzelTitlebarSection, elementId: string, anchorRect: DOMRect, menuItemId?: string): void {
+  private emitAction(owner: UpdrawBaseObject<any>, section: UpdrawTitlebarSection, elementId: string, anchorRect: DOMRect, menuItemId?: string): void {
     this._core.engine?.emitObjectTitlebarAction({
       elementId,
       ...(menuItemId === undefined ? {} : { menuItemId }),
@@ -625,11 +625,11 @@ export class KritzelObjectTitlebarManager {
   }
 
   private readonly translate = (key: string, vars?: Record<string, string | number>): string => {
-    return this._core.localizationManager.translate(key as KritzelTermKey, vars);
+    return this._core.localizationManager.translate(key as UpdrawTermKey, vars);
   };
 
-  private resolveElements(elements: KritzelTitlebarElement[], section: KritzelTitlebarSection, context: KritzelObjectTitlebarContext): KritzelResolvedTitlebarElement[] {
-    const resolved: KritzelResolvedTitlebarElement[] = [];
+  private resolveElements(elements: UpdrawTitlebarElement[], section: UpdrawTitlebarSection, context: UpdrawObjectTitlebarContext): UpdrawResolvedTitlebarElement[] {
+    const resolved: UpdrawResolvedTitlebarElement[] = [];
 
     for (const element of elements) {
       const showWhen = element.showWhen ?? 'always';
@@ -692,7 +692,7 @@ export class KritzelObjectTitlebarManager {
    * Evaluates a static or dynamic value. Failing callbacks and promises (which are not
    * supported because values are evaluated during render) resolve to the fallback.
    */
-  private evaluate<T>(value: KritzelTitlebarValue<T> | undefined, context: KritzelObjectTitlebarContext, fallback: T, elementId: string): T {
+  private evaluate<T>(value: UpdrawTitlebarValue<T> | undefined, context: UpdrawObjectTitlebarContext, fallback: T, elementId: string): T {
     if (value === undefined) {
       return fallback;
     }
@@ -701,7 +701,7 @@ export class KritzelObjectTitlebarManager {
     }
 
     try {
-      const result = (value as (context: KritzelObjectTitlebarContext) => T)(context);
+      const result = (value as (context: UpdrawObjectTitlebarContext) => T)(context);
       if (result && typeof (result as unknown as PromiseLike<T>).then === 'function') {
         this.warnOnce(elementId, 'Titlebar values must be synchronous; promises are not supported.');
         return (typeof fallback === 'boolean' ? false : fallback) as T;
@@ -718,10 +718,10 @@ export class KritzelObjectTitlebarManager {
       return;
     }
     this._warnedElements.add(elementId);
-    console.warn(`[KritzelObjectTitlebar] Element "${elementId}" could not be resolved:`, error);
+    console.warn(`[UpdrawObjectTitlebar] Element "${elementId}" could not be resolved:`, error);
   }
 
-  private getSectionElements(config: KritzelObjectTitlebarConfig | undefined, section: KritzelTitlebarSection): KritzelTitlebarElement[] {
+  private getSectionElements(config: UpdrawObjectTitlebarConfig | undefined, section: UpdrawTitlebarSection): UpdrawTitlebarElement[] {
     if (!config || !SECTIONS.includes(section)) {
       return [];
     }
@@ -745,21 +745,21 @@ export class KritzelObjectTitlebarManager {
       return null;
     }
 
-    let title = (event.composedPath?.() ?? []).find(target => this.hasAttribute(target, KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE)) as Element | undefined;
+    let title = (event.composedPath?.() ?? []).find(target => this.hasAttribute(target, UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE)) as Element | undefined;
     if (!title) {
       const topmost = this._core.engine?.host?.shadowRoot?.elementsFromPoint?.(event.clientX, event.clientY)?.[0];
-      title = topmost?.closest(`[${KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE}]`) ?? undefined;
+      title = topmost?.closest(`[${UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE}]`) ?? undefined;
     }
 
-    const ownerId = title?.closest(`[${KRITZEL_TITLEBAR_OWNER_ATTRIBUTE}]`)?.getAttribute(KRITZEL_TITLEBAR_OWNER_ATTRIBUTE);
-    const elementId = title?.getAttribute(KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE);
+    const ownerId = title?.closest(`[${UPDRAW_TITLEBAR_OWNER_ATTRIBUTE}]`)?.getAttribute(UPDRAW_TITLEBAR_OWNER_ATTRIBUTE);
+    const elementId = title?.getAttribute(UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE);
     return ownerId && elementId ? { ownerId, elementId } : null;
   }
 
   /** Whether the event originated in the input used to rename an object. */
   isTitleInputEvent(event: { composedPath?: () => EventTarget[] }): boolean {
     const path = event.composedPath?.() ?? [];
-    return path.some(target => this.hasAttribute(target, KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE));
+    return path.some(target => this.hasAttribute(target, UPDRAW_TITLEBAR_TITLE_INPUT_ATTRIBUTE));
   }
 
   /** Starts renaming an object through the given title element of its titlebar. */
@@ -815,13 +815,13 @@ export class KritzelObjectTitlebarManager {
     this._core.rerender();
   }
 
-  private isTitleEditStillValid(editing: { ownerId: string; elementId: string }, titlebars: KritzelResolvedTitlebar[]): boolean {
+  private isTitleEditStillValid(editing: { ownerId: string; elementId: string }, titlebars: UpdrawResolvedTitlebar[]): boolean {
     const owner = this.findOwnerById(editing.ownerId);
     const isSelected = !!this._core.store.selectionGroup?.objectIds.includes(editing.ownerId);
     return !!owner && !owner.markedForRemoval && isSelected && titlebars.some(titlebar => titlebar.editingElementId === editing.elementId && titlebar.owner.id === editing.ownerId);
   }
 
-  private findOwnerById(id: string | null | undefined): KritzelBaseObject<any> | null {
+  private findOwnerById(id: string | null | undefined): UpdrawBaseObject<any> | null {
     if (!id) {
       return null;
     }

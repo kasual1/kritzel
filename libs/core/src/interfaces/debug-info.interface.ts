@@ -1,4 +1,4 @@
-export interface KritzelDebugInfo {
+export interface UpdrawDebugInfo {
   showViewportInfo: boolean;
   showObjectInfo: boolean;
   showSyncProviderInfo: boolean;

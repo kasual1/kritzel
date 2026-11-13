@@ -1,12 +1,12 @@
-import { KritzelMouseButton } from '../enums/event-button.enum';
+import { UpdrawMouseButton } from '../enums/event-button.enum';
 
-export class KritzelEventHelper {
+export class UpdrawEventHelper {
   public static isRightClick(ev: MouseEvent): boolean {
-    return ev.button === KritzelMouseButton.Right;
+    return ev.button === UpdrawMouseButton.Right;
   }
 
   public static isLeftClick(ev: MouseEvent): boolean {
-    return ev.button === KritzelMouseButton.Left;
+    return ev.button === UpdrawMouseButton.Left;
   }
 
   public static isPointerEventOnContextMenu(event: PointerEvent): boolean {
@@ -83,7 +83,7 @@ export class KritzelEventHelper {
     try {
       listener();
     } catch (error) {
-      console.error(`[Kritzel] ${name} failed:`, error);
+      console.error(`[Updraw] ${name} failed:`, error);
     }
   }
 }

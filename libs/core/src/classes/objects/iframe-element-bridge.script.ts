@@ -1,25 +1,25 @@
 /**
- * Message types of the element bridge between a `KritzelIframeObject` and its page.
+ * Message types of the element bridge between an `UpdrawIframeObject` and its page.
  * Page → host: ready, hover, click, pick, rects, query result, interaction result. Host → page: sync, query, interaction.
  */
 export const IFRAME_ELEMENT_MESSAGES = {
-  ready: 'kritzel-iframe-ready',
-  sync: 'kritzel-iframe-element-sync',
-  query: 'kritzel-iframe-element-query',
-  queryResult: 'kritzel-iframe-element-query-result',
-  interact: 'kritzel-iframe-element-interact',
-  interactResult: 'kritzel-iframe-element-interact-result',
-  hover: 'kritzel-iframe-element-hover',
-  click: 'kritzel-iframe-element-click',
-  pick: 'kritzel-iframe-element-pick',
-  rects: 'kritzel-iframe-element-rects',
+  ready: 'updraw-iframe-ready',
+  sync: 'updraw-iframe-element-sync',
+  query: 'updraw-iframe-element-query',
+  queryResult: 'updraw-iframe-element-query-result',
+  interact: 'updraw-iframe-element-interact',
+  interactResult: 'updraw-iframe-element-interact-result',
+  hover: 'updraw-iframe-element-hover',
+  click: 'updraw-iframe-element-click',
+  pick: 'updraw-iframe-element-pick',
+  rects: 'updraw-iframe-element-rects',
 } as const;
 
 /** Tag of the element that holds the highlight layer inside the page. Its shadow root keeps page CSS out. */
-export const IFRAME_ELEMENT_OVERLAY_TAG = 'kritzel-element-overlay';
+export const IFRAME_ELEMENT_OVERLAY_TAG = 'updraw-element-overlay';
 
 /** Attribute set on the page's root element while picking, used to show the default cursor everywhere. */
-export const IFRAME_ELEMENT_PICKING_ATTRIBUTE = 'data-kritzel-picking';
+export const IFRAME_ELEMENT_PICKING_ATTRIBUTE = 'data-updraw-picking';
 
 /**
  * CSS used while picking: keeps the default cursor on links and buttons, since clicks don't activate them, and lets
@@ -27,7 +27,7 @@ export const IFRAME_ELEMENT_PICKING_ATTRIBUTE = 'data-kritzel-picking';
  * receive them otherwise). Pointing at a nested frame picks the element that contains it.
  */
 export const IFRAME_ELEMENT_PICKING_CSS =
-  `html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}], html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] * { cursor: var(--kritzel-iframe-default-cursor) !important; }`
+  `html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}], html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] * { cursor: var(--updraw-iframe-default-cursor) !important; }`
   + ` html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] iframe, html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] embed, html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] object { pointer-events: none !important; }`;
 
 /**
@@ -126,9 +126,9 @@ export function createIframeElementBridgeScript(documentToken: number): string {
     return !!matches && matches.length === 1 && matches[0] === element;
   };
   const uniqueAnchor = element => {
-    const kritzelId = element.getAttribute('data-kritzel-id');
-    if (kritzelId) {
-      const selector = '[data-kritzel-id="' + escape(kritzelId) + '"]';
+    const updrawId = element.getAttribute('data-updraw-id');
+    if (updrawId) {
+      const selector = '[data-updraw-id="' + escape(updrawId) + '"]';
       if (matchesExactly(selector, element)) return selector;
     }
     if (element.id) {
@@ -292,8 +292,8 @@ export function createIframeElementBridgeScript(documentToken: number): string {
     };
     const visibleRect = visibleRectOf(element, null);
     if (visibleRect) info.visibleRect = toRect(visibleRect);
-    const kritzelId = element.getAttribute('data-kritzel-id');
-    if (kritzelId) info.kritzelId = clip(kritzelId, MAX_ATTRIBUTE);
+    const updrawId = element.getAttribute('data-updraw-id');
+    if (updrawId) info.updrawId = clip(updrawId, MAX_ATTRIBUTE);
     if (element.id) info.id = clip(element.id, MAX_ATTRIBUTE);
     const text = textOf(element);
     if (text) info.text = text;
@@ -306,8 +306,8 @@ export function createIframeElementBridgeScript(documentToken: number): string {
     return info;
   };
   const shortName = element => {
-    const kritzelId = element.getAttribute('data-kritzel-id');
-    if (kritzelId) return clip(kritzelId, 60);
+    const updrawId = element.getAttribute('data-updraw-id');
+    if (updrawId) return clip(updrawId, 60);
     let name = element.localName;
     if (element.id) return clip(name + '#' + element.id, 60);
     const classes = Array.from(element.classList).slice(0, 2);

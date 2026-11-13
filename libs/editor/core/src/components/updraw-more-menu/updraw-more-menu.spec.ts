@@ -1,4 +1,4 @@
-import { KritzelMoreMenu } from './kritzel-more-menu';
+import { UpdrawMoreMenu } from './updraw-more-menu';
 
 jest.mock('@stencil/core', () => ({
   ...jest.requireActual('@stencil/core/internal/testing'),
@@ -11,11 +11,11 @@ jest.mock('@stencil/core', () => ({
   Element: () => () => {},
 }));
 
-describe('KritzelMoreMenu', () => {
-  let component: KritzelMoreMenu;
+describe('UpdrawMoreMenu', () => {
+  let component: UpdrawMoreMenu;
 
   beforeEach(() => {
-    component = new KritzelMoreMenu();
+    component = new UpdrawMoreMenu();
     component.host = document.createElement('div');
   });
 

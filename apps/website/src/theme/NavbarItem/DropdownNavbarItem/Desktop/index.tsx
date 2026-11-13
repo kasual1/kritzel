@@ -89,8 +89,8 @@ export default function DropdownNavbarItemDesktop({
           href="https://github.com/kasual1/kritzel"
           target="_blank"
           rel="noreferrer"
-          aria-label="Kritzel on GitHub"
-          title="Kritzel on GitHub">
+          aria-label="Updraw on GitHub"
+          title="Updraw on GitHub">
           <img src="/img/github-framework.svg" alt="" aria-hidden="true" />
         </a>
       )}

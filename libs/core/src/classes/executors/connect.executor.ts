@@ -1,13 +1,13 @@
-import type { KritzelAgenticConnectAction } from '../../interfaces/agentic-action.interface';
-import type { KritzelPoint } from '../../interfaces/point.interface';
-import { KritzelLine } from '../objects/line.class';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpdrawAgenticConnectAction } from '../../interfaces/agentic-action.interface';
+import type { UpdrawPoint } from '../../interfaces/point.interface';
+import { UpdrawLine } from '../objects/line.class';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
 import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { resolveLineStyle } from '../../helpers/agentic-style.helper';
 import { AGENTIC_LINE_STYLE_KEYS, assertObjectId, assertStyle } from '../../helpers/agentic-validation.helper';
 
 /** `connect`: drags a line from one object to another and anchors both ends, so it follows them. */
-export const connectExecutor: KritzelAgenticActionExecutor<KritzelAgenticConnectAction> = {
+export const connectExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticConnectAction> = {
   mutates: true,
 
   validate(action) {
@@ -39,7 +39,7 @@ export const connectExecutor: KritzelAgenticActionExecutor<KritzelAgenticConnect
     const style = resolveLineStyle(core, action.style);
     const scale = state.lockDrawingScale ? 1 : state.scale || 1;
 
-    const centerOf = (id: string): KritzelPoint => {
+    const centerOf = (id: string): UpdrawPoint => {
       const point = cursors.resolveTarget({ objectId: id, anchor: 'center' });
       if (!point) {
         run.stop('object-removed', [id]);
@@ -47,8 +47,8 @@ export const connectExecutor: KritzelAgenticActionExecutor<KritzelAgenticConnect
       return point;
     };
 
-    const build = (start: KritzelPoint, end: KritzelPoint) => {
-      const line = KritzelLine.create(core, {
+    const build = (start: UpdrawPoint, end: UpdrawPoint) => {
+      const line = UpdrawLine.create(core, {
         startX: start.x * scale,
         startY: start.y * scale,
         endX: end.x * scale,

@@ -1,19 +1,19 @@
 ﻿import { Component, Host, h, Prop, Method, State, Element, Event, EventEmitter } from '@stencil/core';
-import { IKritzelUser } from '@kritzel/core';
-import { KritzelTermKey } from '@kritzel/core';
+import { IUpdrawUser } from '@updraw/core';
+import { UpdrawTermKey } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-current-user-dialog',
-  styleUrl: 'kritzel-current-user-dialog.css',
+  tag: 'updraw-current-user-dialog',
+  styleUrl: 'updraw-current-user-dialog.css',
   shadow: true,
 })
-export class KritzelCurrentUserDialog {
+export class UpdrawCurrentUserDialog {
   @Element() host!: HTMLElement;
 
-  @Prop() user?: IKritzelUser;
+  @Prop() user?: IUpdrawUser;
 
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
 
   @State() isDialogOpen: boolean = false;
 
@@ -53,7 +53,7 @@ export class KritzelCurrentUserDialog {
 
     return (
       <Host>
-        <kritzel-dialog
+        <updraw-dialog
           dialogTitle={this.terms['currentUser.dialogTitle'] ?? 'Account'}
           isOpen={this.isDialogOpen}
           onDialogClose={this.closeDialog}
@@ -61,16 +61,16 @@ export class KritzelCurrentUserDialog {
           contained={true}
         >
           <div class="user-info">
-            <kritzel-avatar user={this.user} size={80}></kritzel-avatar>
+            <updraw-avatar user={this.user} size={80}></updraw-avatar>
 
             {displayName && <div class="user-name">{displayName}</div>}
             {this.user?.email && <div class="user-email">{this.user.email}</div>}
 
-            <kritzel-button class="logout-button" variant="primary" onButtonClick={this.handleLogout}>
+            <updraw-button class="logout-button" variant="primary" onButtonClick={this.handleLogout}>
               {this.terms['menu.logout'] ?? 'Logout'}
-            </kritzel-button>
+            </updraw-button>
           </div>
-        </kritzel-dialog>
+        </updraw-dialog>
       </Host>
     );
   }

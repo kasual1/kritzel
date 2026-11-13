@@ -8,7 +8,7 @@ Run all commands from `apps/app` (or use the `app:*` scripts from the monorepo r
 This development environment matches production architecture exactly:
 - **nginx** serves as the single entry point on port 8080, routing traffic to all backend services
 - **api**, **websocket** and **postgres** are accessible only through the internal Docker network
-- The **Angular client** is not a container in dev: it runs on the host via `npm run app:client` (from the monorepo root) so it can use the local kritzel libraries. nginx proxies `/` to `host.docker.internal:4200`
+- The **Angular client** is not a container in dev: it runs on the host via `npm run app:client` (from the monorepo root) so it can use the local updraw libraries. nginx proxies `/` to `host.docker.internal:4200`
 - This ensures you test the same routing and reverse proxy behavior as production
 
 ### Accessing Services
@@ -27,7 +27,7 @@ This development environment matches production architecture exactly:
 docker compose --env-file .env.dev -f docker-compose.dev.yml up -d --build
 ```
 
-Then start the client from the monorepo root (builds the kritzel libraries, installs them into the client and runs `ng serve`):
+Then start the client from the monorepo root (builds the updraw libraries, installs them into the client and runs `ng serve`):
 
 ```bash
 npm run app:client
@@ -170,7 +170,7 @@ docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql 
 ```
 
 ```bash
-docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d kritzel_yjs -c "\\dt"
+docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d updraw_yjs -c "\\dt"
 ```
 
 ## WebSocket migrations (TypeORM)
@@ -196,7 +196,7 @@ docker compose --env-file .env.dev -f docker-compose.dev.yml exec websocket sh -
 Show applied migration history in the DB:
 
 ```bash
-docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d kritzel_yjs -c "SELECT id, timestamp, name FROM migrations ORDER BY id"
+docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d updraw_yjs -c "SELECT id, timestamp, name FROM migrations ORDER BY id"
 ```
 
 Auto-apply pending migrations by restarting websocket (startup runs migrations first):

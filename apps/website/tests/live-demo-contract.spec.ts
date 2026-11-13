@@ -125,8 +125,8 @@ describe('Framework documentation parity', () => {
 
   test('React docs do not leak Angular-specific integration details', () => {
     const forbiddenPatterns = [
-      /@kritzel\/angular-editor/,
-      /<kritzel-editor\b/,
+      /@updraw\/angular-editor/,
+      /<updraw-editor\b/,
       /\/docs\/angular(?:\/|\b)/,
       /\bViewChild\b/,
       /\bviewChild\s*\(/,
@@ -158,8 +158,8 @@ describe('Framework documentation parity', () => {
 
   test('Vue docs do not leak Angular-specific integration details', () => {
     const forbiddenPatterns = [
-      /@kritzel\/angular-editor/,
-      /<kritzel-editor\b/,
+      /@updraw\/angular-editor/,
+      /<updraw-editor\b/,
       /\/docs\/angular(?:\/|\b)/,
       /\bViewChild\b/,
       /\bviewChild\s*\(/,

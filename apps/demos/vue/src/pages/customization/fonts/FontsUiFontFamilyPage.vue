@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  KritzelEditor,
-  type KritzelFontMap,
-  type KritzelTheme,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  type UpdrawFontMap,
+  type UpdrawTheme,
+} from '@updraw/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
 
 const editor = getEditorRef('editor')
-const fonts: KritzelFontMap = {
+const fonts: UpdrawFontMap = {
   pacifico: {
     family: 'Pacifico',
     label: 'Pacifico Cursive',
@@ -17,7 +17,7 @@ const fonts: KritzelFontMap = {
     source: 'https://fonts.googleapis.com/css2?family=Pacifico&display=swap',
   },
 }
-const themes: KritzelTheme[] = [{
+const themes: UpdrawTheme[] = [{
   ...vueThemeLight,
   global: {
     ...vueThemeLight.global,
@@ -32,7 +32,7 @@ function onReady() {
 
 <template>
   <div :style="hostStyle">
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="fonts-ui-font-family"
       :customFonts="fonts"

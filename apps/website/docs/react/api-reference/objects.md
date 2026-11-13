@@ -1,12 +1,12 @@
 ---
 sidebar_label: Objects
-title: "Objects | Kritzel for React"
-description: "Reference for all canvas object types in Kritzel: brush, line, shape, text, and image."
+title: "Objects | Updraw for React"
+description: "Reference for all canvas object types in Updraw: brush, line, shape, text, and image."
 toc_max_heading_level: 2
 ---
 # Objects
 
-This is the API reference for all canvas object types in Kritzel.
+This is the API reference for all canvas object types in Updraw.
 Every object consists of properties, computed properties, and methods.
 
 ## Base Object
@@ -55,15 +55,15 @@ Abstract base class for every object that can be placed on the canvas. All other
 | centerY | number | Center Y coordinate |
 | totalWidth | number | Width including padding and borders |
 | totalHeight | number | Height including padding and borders |
-| boundingBox | KritzelBoundingBox | Axis-aligned bounding box |
-| rotatedBoundingBox | KritzelBoundingBox | Bounding box accounting for rotation |
-| rotatedPolygon | KritzelPolygon | Four corners of the rotated rectangle |
+| boundingBox | UpdrawBoundingBox | Axis-aligned bounding box |
+| rotatedBoundingBox | UpdrawBoundingBox | Bounding box accounting for rotation |
+| rotatedPolygon | UpdrawPolygon | Four corners of the rotated rectangle |
 | transformationMatrix | DOMMatrix | Full transformation matrix |
 | rotationDegrees | number | Rotation converted to degrees |
 
 ### Common Constructor Options
 
-The constructor of every object accepts the following options in addition to its own, for example in `KritzelShapeConfig` or `KritzelTextConfig`.
+The constructor of every object accepts the following options in addition to its own, for example in `UpdrawShapeConfig` or `UpdrawTextConfig`.
 
 | Option | Type | Description |
 |--------|------|-------------|
@@ -71,7 +71,7 @@ The constructor of every object accepts the following options in addition to its
 | isLoading | boolean | Whether the object starts out with a loading placeholder. Defaults to `false` |
 
 ```ts
-const frame = new KritzelShape({ translateX: 0, translateY: 0, width: 400, height: 240, name: 'Desktop' });
+const frame = new UpdrawShape({ translateX: 0, translateY: 0, width: 400, height: 240, name: 'Desktop' });
 ```
 
 See [Object Titlebar](../fundamentals/controls.md#object-titlebar) for details.
@@ -82,7 +82,7 @@ While `isLoading` is `true`, the engine draws a grey placeholder with a glare an
 
 ```ts
 const card = await editorRef.current?.addObject(
-  new KritzelShape({ translateX: 0, translateY: 0, width: 320, height: 200, isLoading: true }),
+  new UpdrawShape({ translateX: 0, translateY: 0, width: 320, height: 200, isLoading: true }),
 );
 
 // later, once the content is ready
@@ -118,8 +118,8 @@ card?.setLoading(false);
 
 Freehand brush strokes. Rendered as SVG paths using the [perfect-freehand](https://github.com/steveruizok/perfect-freehand) library.
 
-- Created by: `KritzelBrushTool`
-- Removed by: `KritzelEraserTool`
+- Created by: `UpdrawBrushTool`
+- Removed by: `UpdrawEraserTool`
 
 ### Properties
 
@@ -146,7 +146,7 @@ Freehand brush strokes. Rendered as SVG paths using the [perfect-freehand](https
 
 Straight lines and arrows with configurable start/end arrowheads.
 
-- Created by: `KritzelLineTool`
+- Created by: `UpdrawLineTool`
 - Supports anchor snapping to other objects (connecting lines to shapes)
 - Arrowhead styles: `triangle`, `open`, `diamond`, `circle`
 
@@ -182,7 +182,7 @@ Straight lines and arrows with configurable start/end arrowheads.
 
 Geometric shapes: rectangle, ellipse, or triangle.
 
-- Created by: `KritzelShapeTool`
+- Created by: `UpdrawShapeTool`
 - Can contain editable text
 - Shape type is determined by the `ShapeType` enum
 
@@ -209,7 +209,7 @@ enum ShapeType {
 | isEditing | boolean | false | Whether the shape's text is currently being edited |
 | editor | EditorView | — | ProseMirror editor instance for the shape's text |
 | content | any | — | Serialized ProseMirror document content |
-| uneditedObject | KritzelShape | — | Snapshot of the shape before editing started |
+| uneditedObject | UpdrawShape | — | Snapshot of the shape before editing started |
 
 ### Computed Properties
 
@@ -232,7 +232,7 @@ enum ShapeType {
 
 Rich text object powered by [ProseMirror](https://prosemirror.net/).
 
-- Created by: `KritzelTextTool`
+- Created by: `UpdrawTextTool`
 - Supports font family, size, and color configuration
 
 ### Properties
@@ -250,7 +250,7 @@ Rich text object powered by [ProseMirror](https://prosemirror.net/).
 | isNewlyCreated | boolean | false | Whether the text object was just created and not yet edited |
 | editor | EditorView | — | ProseMirror editor instance |
 | content | any | — | Serialized ProseMirror document content |
-| uneditedObject | KritzelText | — | Snapshot of the text object before editing started |
+| uneditedObject | UpdrawText | — | Snapshot of the text object before editing started |
 | rows | number | 1 | Number of text rows |
 
 ### Computed Properties
@@ -274,7 +274,7 @@ Rich text object powered by [ProseMirror](https://prosemirror.net/).
 
 Raster image object.
 
-- Created by: `KritzelImageTool`
+- Created by: `UpdrawImageTool`
 - Supports resizing while maintaining aspect ratio
 
 ### Properties
@@ -288,7 +288,7 @@ Raster image object.
 | maxHeight | number | 300 | Maximum height in pixels |
 | maxCompressionSize | number | 1200 | Maximum size used when compressing the image |
 | resolvedSrc | string | — | URL resolved from the asset storage layer (not persisted) |
-| loadState | KritzelAssetLoadState | idle | Current load state of the referenced asset (not persisted) |
+| loadState | UpdrawAssetLoadState | idle | Current load state of the referenced asset (not persisted) |
 | maxLoadAttempts | number | 3 | Maximum number of definitive resolution failures before giving up |
 | loadAttempts | number | 0 | Number of definitive resolution failures so far (not persisted) |
 | maxTransientRetryDurationMs | number | 30000 | Maximum time to keep retrying transient failures |
@@ -320,7 +320,7 @@ Permanent grouping of multiple objects. Unlike a temporary multi-selection, a gr
 
 | Property | Type | Description |
 |----------|------|-------------|
-| children | KritzelBaseObject[] | The actual child objects resolved from the store |
+| children | UpdrawBaseObject[] | The actual child objects resolved from the store |
 | length | number | Number of children in this group |
 
 ### Methods
@@ -378,8 +378,8 @@ HTML, CSS, and JavaScript in a sandboxed iframe on the canvas.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| content | KritzelIframeContent | — | The `html`, `css`, and `script` of the page |
-| state | `Record<string, unknown>` | — | Serializable state shared with the page as `kritzel.state` |
+| content | UpdrawIframeContent | — | The `html`, `css`, and `script` of the page |
+| state | `Record<string, unknown>` | — | Serializable state shared with the page as `updraw.state` |
 | title | string | 'Embedded content' | Title of the iframe element |
 | sandbox | string[] | ['allow-scripts'] | Sandbox tokens of the iframe |
 
@@ -399,7 +399,7 @@ HTML, CSS, and JavaScript in a sandboxed iframe on the canvas.
 | setElementHighlights(highlights) | Replaces the element highlights drawn inside the page. Pass an empty array to remove them |
 | getElementHighlights() | Returns the current element highlights |
 | queryElements(selector, limitOrOptions) | Describes the elements of the page that match a CSS selector, in document order, with their state. Pass the `limit` (default 100, at most 500) or options: `limit`, `interactiveOnly: true` for elements a user can interact with, `includeValues: true` for the values of form fields (never of password fields) |
-| interactWithElement(selector, interaction, options) | Performs an interaction on the first matching element as a user would: a click, hover, fill, check, key press, or scroll (see [`KritzelObjectElementInteraction`](./agent.md#kritzelobjectelementinteraction)). Scrolls it into view and checks that it is visible, enabled, and not covered first; `{ trial: true }` only checks. Resolves with `completed: false` and a `reason` when it can't be performed, and rejects only for an invalid selector or interaction. The events are not trusted and carry no user activation, so APIs that need a user gesture (audio, fullscreen, clipboard) may refuse to work from them |
+| interactWithElement(selector, interaction, options) | Performs an interaction on the first matching element as a user would: a click, hover, fill, check, key press, or scroll (see [`UpdrawObjectElementInteraction`](./agent.md#updrawobjectelementinteraction)). Scrolls it into view and checks that it is visible, enabled, and not covered first; `{ trial: true }` only checks. Resolves with `completed: false` and a `reason` when it can't be performed, and rejects only for an invalid selector or interaction. The events are not trusted and carry no user activation, so APIs that need a user gesture (audio, fullscreen, clipboard) may refuse to work from them |
 | trackElement(selector) | Starts reporting the visible position of the first element that matches a selector. Calls are counted, so each call needs a matching `untrackElement`. An agent's cursor uses this to follow an element it points at (`agent.moveTo({ objectId, selector })`) |
 | untrackElement(selector) | Undoes one `trackElement` call for a selector |
 | getTrackedElementRect(selector) | Returns the last known visible bounding box of a tracked element in content coordinates, or `null` if it hasn't been seen yet |

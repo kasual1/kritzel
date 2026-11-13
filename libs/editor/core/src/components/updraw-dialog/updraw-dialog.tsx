@@ -1,13 +1,13 @@
 ﻿import { Component, Element, Event, EventEmitter, Host, Listen, Method, Prop, State, Watch, h } from '@stencil/core';
-import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from '@kritzel/core';
-import { KritzelHTMLHelper } from '@kritzel/core';
+import { IUpdrawDialogCloseEvent, UpdrawDialogCloseReason } from '@updraw/core';
+import { UpdrawHTMLHelper } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-dialog',
-  styleUrl: 'kritzel-dialog.css',
+  tag: 'updraw-dialog',
+  styleUrl: 'updraw-dialog.css',
   shadow: true,
 })
-export class KritzelDialog {
+export class UpdrawDialog {
   @Element() host: HTMLElement;
 
   /** Whether the dialog is open */
@@ -49,7 +49,7 @@ export class KritzelDialog {
   @Event() dialogOpen: EventEmitter<void>;
 
   /** Emitted when the dialog closes */
-  @Event() dialogClose: EventEmitter<IKritzelDialogCloseEvent>;
+  @Event() dialogClose: EventEmitter<IUpdrawDialogCloseEvent>;
 
   private previousOverflow: string = '';
   private previousActiveElement: HTMLElement | null = null;
@@ -103,7 +103,7 @@ export class KritzelDialog {
   }
 
   @Method()
-  async close(reason: KritzelDialogCloseReason = 'programmatic'): Promise<void> {
+  async close(reason: UpdrawDialogCloseReason = 'programmatic'): Promise<void> {
     this.emitClose(reason);
   }
 
@@ -158,12 +158,12 @@ export class KritzelDialog {
   private findContainerElement(): HTMLElement | null {
     // Walk up the composed DOM (crossing shadow roots) and return the first
     // ancestor that opts into containing dialogs. We accept either an explicit
-    // [data-kritzel-dialog-container] marker or the kritzel-editor host so any
+    // [data-updraw-dialog-container] marker or the updraw-editor host so any
     // consumer can opt in without modifying the editor itself.
     let node: Node | null = this.host;
     while (node) {
       if (node instanceof HTMLElement) {
-        if (node.hasAttribute('data-kritzel-dialog-container') || node.tagName === 'KRITZEL-EDITOR') {
+        if (node.hasAttribute('data-updraw-dialog-container') || node.tagName === 'UPDRAW-EDITOR') {
           return node;
         }
       }
@@ -257,7 +257,7 @@ export class KritzelDialog {
     return null;
   }
 
-  private emitClose(reason: KritzelDialogCloseReason) {
+  private emitClose(reason: UpdrawDialogCloseReason) {
     this.dialogClose.emit({ reason });
   }
 
@@ -332,7 +332,7 @@ export class KritzelDialog {
     const dialogContent = this.host.shadowRoot?.querySelector('.dialog-content') as HTMLElement;
     if (!dialogContent) return;
 
-    const focusableElements = KritzelHTMLHelper.getFocusableElements(dialogContent);
+    const focusableElements = UpdrawHTMLHelper.getFocusableElements(dialogContent);
     const slotElements = this.getSlottedFocusableElements();
     const allFocusable = [...focusableElements, ...slotElements];
 
@@ -350,8 +350,8 @@ export class KritzelDialog {
     slots.forEach(slot => {
       const assigned = slot.assignedElements({ flatten: true }) as HTMLElement[];
       assigned.forEach(el => {
-        // Use KritzelHTMLHelper to find focusable elements including those in nested shadow DOMs
-        const elements = KritzelHTMLHelper.getFocusableElements(el);
+        // Use UpdrawHTMLHelper to find focusable elements including those in nested shadow DOMs
+        const elements = UpdrawHTMLHelper.getFocusableElements(el);
         focusable.push(...elements);
       });
     });

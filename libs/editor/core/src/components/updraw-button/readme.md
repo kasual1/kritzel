@@ -1,4 +1,4 @@
-# kritzel-button
+# updraw-button
 
 
 
@@ -32,15 +32,15 @@
 
 ### Used by
 
- - [kritzel-current-user-dialog](../kritzel-current-user-dialog)
- - [kritzel-editor](../kritzel-editor)
+ - [updraw-current-user-dialog](../updraw-current-user-dialog)
+ - [updraw-editor](../updraw-editor)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-current-user-dialog --> kritzel-button
-  kritzel-editor --> kritzel-button
-  style kritzel-button fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-current-user-dialog --> updraw-button
+  updraw-editor --> updraw-button
+  style updraw-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

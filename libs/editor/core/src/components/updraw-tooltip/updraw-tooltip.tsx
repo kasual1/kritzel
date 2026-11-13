@@ -1,12 +1,12 @@
 ﻿import { Component, Host, Prop, h, Element, State, Listen, Method, Event, EventEmitter, Watch } from '@stencil/core';
-import { KritzelHTMLHelper } from '@kritzel/core';
+import { UpdrawHTMLHelper } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-tooltip',
-  styleUrl: 'kritzel-tooltip.css',
+  tag: 'updraw-tooltip',
+  styleUrl: 'updraw-tooltip.css',
   shadow: true,
 })
-export class KritzelTooltip {
+export class UpdrawTooltip {
   @Element() host: HTMLElement;
 
   @Prop({ mutable: true }) isVisible: boolean = false;
@@ -48,7 +48,7 @@ export class KritzelTooltip {
     }
   }
 
-  @Listen('kritzelTooltipCloseAll', { target: 'document' })
+  @Listen('updrawTooltipCloseAll', { target: 'document' })
   handleCloseAll(event: CustomEvent) {
     if (event.detail !== this.host) {
       this.close();
@@ -83,7 +83,7 @@ export class KritzelTooltip {
   @Method()
   async open() {
     if (this.isVisible) return;
-    document.dispatchEvent(new CustomEvent('kritzelTooltipCloseAll', { detail: this.host }));
+    document.dispatchEvent(new CustomEvent('updrawTooltipCloseAll', { detail: this.host }));
     this.isVisible = true;
     this.tooltipOpened.emit();
   }
@@ -106,7 +106,7 @@ export class KritzelTooltip {
 
   @Method()
   async focusContent() {
-    const focusableElements = KritzelHTMLHelper.getFocusableElements(this.host);
+    const focusableElements = UpdrawHTMLHelper.getFocusableElements(this.host);
     if (focusableElements.length > 0) {
       focusableElements[0].focus();
     }

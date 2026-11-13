@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type CSSProperties } from "react";
-import { KritzelEditor, KritzelWorkspace, type HTMLKritzelEditorElement } from "@kritzel/react-editor";
+import { UpdrawEditor, UpdrawWorkspace, type HTMLUpdrawEditorElement } from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -16,10 +16,10 @@ const preStyle: CSSProperties = {
 };
 
 export function ImportExportWorkspaceExportPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [jsonPreview, setJsonPreview] = useState('Click "Preview as JSON" to see the exported workspace.');
   const workspaces = useMemo(
-    () => [new KritzelWorkspace({ id: "workspace-export", name: "Workspace Export", objects: createSeedObjects() })],
+    () => [new UpdrawWorkspace({ id: "workspace-export", name: "Workspace Export", objects: createSeedObjects() })],
     [],
   );
 
@@ -42,7 +42,7 @@ export function ImportExportWorkspaceExportPage() {
         <button onClick={() => void downloadJson()}>Download JSON</button>
       </Toolbar>
       <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
-        <KritzelEditor
+        <UpdrawEditor
           ref={editorRef}
           editorId="import-export-workspace-export"
           theme="light"

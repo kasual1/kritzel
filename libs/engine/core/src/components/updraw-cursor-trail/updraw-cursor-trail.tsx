@@ -1,13 +1,13 @@
 import { Component, Host, Listen, Prop, State, h } from '@stencil/core';
-import { KritzelMouseButton, KritzelCore } from '@kritzel/core';
+import { UpdrawMouseButton, UpdrawCore } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-cursor-trail',
-  styleUrl: 'kritzel-cursor-trail.css',
+  tag: 'updraw-cursor-trail',
+  styleUrl: 'updraw-cursor-trail.css',
   shadow: true,
 })
-export class KritzelCursorTrail {
-  @Prop() core!: KritzelCore;
+export class UpdrawCursorTrail {
+  @Prop() core!: UpdrawCore;
 
   @State() cursorTrailPoints: Array<{ x: number; y: number; timestamp: number }> = [];
   @State() isLeftButtonDown: boolean = false;
@@ -15,7 +15,7 @@ export class KritzelCursorTrail {
   @Listen('pointerdown', { target: 'window', passive: true })
   handleMouseDown(ev: PointerEvent) {
     if (ev.pointerType === 'mouse') {
-      if (ev.button === KritzelMouseButton.Left) {
+      if (ev.button === UpdrawMouseButton.Left) {
         this.isLeftButtonDown = true;
         this.cursorTrailPoints = [];
       }
@@ -46,7 +46,7 @@ export class KritzelCursorTrail {
   @Listen('pointerup', { target: 'window', passive: true })
   handlePointerUp(ev: PointerEvent) {
     if (ev.pointerType === 'mouse') {
-      if (ev.button === KritzelMouseButton.Left) {
+      if (ev.button === UpdrawMouseButton.Left) {
         this.isLeftButtonDown = false;
         this.cursorTrailPoints = [];
       }
@@ -96,7 +96,7 @@ export class KritzelCursorTrail {
               width: '100%',
               height: '100%',
               pointerEvents: 'none',
-              opacity: 'var(--kritzel-cursor-trail-opacity, var(--kritzel-global-cursor-trail-opacity, 0.6))',
+              opacity: 'var(--updraw-cursor-trail-opacity, var(--updraw-global-cursor-trail-opacity, 0.6))',
               zIndex: '9000',
             }}
           >
@@ -117,7 +117,7 @@ export class KritzelCursorTrail {
                   y1={prevPoint.y.toString()}
                   x2={point.x.toString()}
                   y2={point.y.toString()}
-                  stroke="var(--kritzel-cursor-trail-color, var(--kritzel-global-cursor-trail-color, rgb(228, 228, 228)))"
+                  stroke="var(--updraw-cursor-trail-color, var(--updraw-global-cursor-trail-color, rgb(228, 228, 228)))"
                   stroke-width={baseStrokeWidth.toString()}
                   stroke-linecap="round"
                 />

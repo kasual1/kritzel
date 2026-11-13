@@ -6,20 +6,20 @@
 
 ## Purpose
 
-`KritzelCore` is the central orchestrator — the service locator that wires together all subsystems. It owns the store, managers, registries, and coordinates workspace lifecycle, object management, selection, clipboard, and z-ordering.
+`UpdrawCore` is the central orchestrator — the service locator that wires together all subsystems. It owns the store, managers, registries, and coordinates workspace lifecycle, object management, selection, clipboard, and z-ordering.
 
 ## Structure
 
 ```typescript
-export class KritzelCore {
-  private readonly _kritzelEngine: KritzelEngine;
-  private readonly _store: KritzelStore;
-  private readonly _appStateMap: KritzelAppStateMap;
-  private readonly _anchorManager: KritzelAnchorManager;
-  private readonly _cursorManager: KritzelCursorManager;
-  private readonly _themeManager: KritzelThemeManager;
-  private readonly _toolRegistry: KritzelToolRegistry;
-  private readonly _assetResolver: KritzelAssetResolver;
+export class UpdrawCore {
+  private readonly _updrawEngine: UpdrawEngine;
+  private readonly _store: UpdrawStore;
+  private readonly _appStateMap: UpdrawAppStateMap;
+  private readonly _anchorManager: UpdrawAnchorManager;
+  private readonly _cursorManager: UpdrawCursorManager;
+  private readonly _themeManager: UpdrawThemeManager;
+  private readonly _toolRegistry: UpdrawToolRegistry;
+  private readonly _assetResolver: UpdrawAssetResolver;
 }
 ```
 
@@ -80,7 +80,7 @@ const { x, y } = this.getCanvasPoint(event);
 ```typescript
 this.removeSelectionGroup();
 this.removeSelectionBox();
-const selectionGroup = KritzelSelectionGroup.create(this);
+const selectionGroup = UpdrawSelectionGroup.create(this);
 selectionGroup.addOrRemove(object);
 selectionGroup.isSelected = true;
 this.addSelectionGroup(selectionGroup);
@@ -116,7 +116,7 @@ this._core.editorId       // storage key namespace
 
 ## Conventions
 
-- Core is instantiated once per editor by `KritzelEngine`
+- Core is instantiated once per editor by `UpdrawEngine`
 - Never instantiate core directly in tests — mock or use a test harness
 - Methods that modify objects should emit change events: `this.engine.emitObjectsChange()`
 - Methods that affect viewport should emit: `this.engine.emitObjectsInViewportChange()`

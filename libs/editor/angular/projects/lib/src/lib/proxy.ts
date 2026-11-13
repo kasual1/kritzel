@@ -4,33 +4,33 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Even
 
 import { ProxyCmp } from './angular-component-lib/utils';
 
-import type { Components } from '@kritzel/editor/dist/components';
+import type { Components } from '@updraw/editor/dist/components';
 
-import { defineCustomElement as defineKritzelChatBox } from '@kritzel/editor/dist/components/kritzel-chat-box.js';
-import { defineCustomElement as defineKritzelEditor } from '@kritzel/editor/dist/components/kritzel-editor.js';
-import { defineCustomElement as defineKritzelSettings } from '@kritzel/editor/dist/components/kritzel-settings.js';
-import { defineCustomElement as defineKritzelShapeFill } from '@kritzel/editor/dist/components/kritzel-shape-fill.js';
-import { defineCustomElement as defineKritzelShareDialog } from '@kritzel/editor/dist/components/kritzel-share-dialog.js';
-import { defineCustomElement as defineKritzelSplitButton } from '@kritzel/editor/dist/components/kritzel-split-button.js';
-import { defineCustomElement as defineKritzelStrokeSize } from '@kritzel/editor/dist/components/kritzel-stroke-size.js';
+import { defineCustomElement as defineUpdrawChatBox } from '@updraw/editor/dist/components/updraw-chat-box.js';
+import { defineCustomElement as defineUpdrawEditor } from '@updraw/editor/dist/components/updraw-editor.js';
+import { defineCustomElement as defineUpdrawSettings } from '@updraw/editor/dist/components/updraw-settings.js';
+import { defineCustomElement as defineUpdrawShapeFill } from '@updraw/editor/dist/components/updraw-shape-fill.js';
+import { defineCustomElement as defineUpdrawShareDialog } from '@updraw/editor/dist/components/updraw-share-dialog.js';
+import { defineCustomElement as defineUpdrawSplitButton } from '@updraw/editor/dist/components/updraw-split-button.js';
+import { defineCustomElement as defineUpdrawStrokeSize } from '@updraw/editor/dist/components/updraw-stroke-size.js';
 @ProxyCmp({
-  defineCustomElementFn: defineKritzelChatBox,
+  defineCustomElementFn: defineUpdrawChatBox,
   inputs: ['chips', 'disabled', 'loading', 'mode', 'placeholder', 'terms', 'value']
 })
 @Component({
-  selector: 'kritzel-chat-box',
+  selector: 'updraw-chat-box',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['chips', 'disabled', 'loading', 'mode', 'placeholder', 'terms', 'value'],
   outputs: ['chatSubmit', 'chatStop', 'modeChange', 'chatChipRemove'],
 })
-export class KritzelChatBox {
-  protected el: HTMLKritzelChatBoxElement;
-  @Output() chatSubmit = new EventEmitter<KritzelChatBoxCustomEvent<string>>();
-  @Output() chatStop = new EventEmitter<KritzelChatBoxCustomEvent<void>>();
-  @Output() modeChange = new EventEmitter<KritzelChatBoxCustomEvent<IKritzelChatBoxKritzelChatBoxMode>>();
-  @Output() chatChipRemove = new EventEmitter<KritzelChatBoxCustomEvent<IKritzelChatBoxKritzelChatBoxChip>>();
+export class UpdrawChatBox {
+  protected el: HTMLUpdrawChatBoxElement;
+  @Output() chatSubmit = new EventEmitter<UpdrawChatBoxCustomEvent<string>>();
+  @Output() chatStop = new EventEmitter<UpdrawChatBoxCustomEvent<void>>();
+  @Output() modeChange = new EventEmitter<UpdrawChatBoxCustomEvent<IUpdrawChatBoxUpdrawChatBoxMode>>();
+  @Output() chatChipRemove = new EventEmitter<UpdrawChatBoxCustomEvent<IUpdrawChatBoxUpdrawChatBoxChip>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -38,68 +38,68 @@ export class KritzelChatBox {
 }
 
 
-import type { KritzelChatBoxCustomEvent } from '@kritzel/editor/dist/components';
-import type { KritzelChatBoxMode as IKritzelChatBoxKritzelChatBoxMode } from '@kritzel/editor/dist/components';
-import type { KritzelChatBoxChip as IKritzelChatBoxKritzelChatBoxChip } from '@kritzel/editor/dist/components';
+import type { UpdrawChatBoxCustomEvent } from '@updraw/editor/dist/components';
+import type { UpdrawChatBoxMode as IUpdrawChatBoxUpdrawChatBoxMode } from '@updraw/editor/dist/components';
+import type { UpdrawChatBoxChip as IUpdrawChatBoxUpdrawChatBoxChip } from '@updraw/editor/dist/components';
 
-export declare interface KritzelChatBox extends Components.KritzelChatBox {
+export declare interface UpdrawChatBox extends Components.UpdrawChatBox {
   /**
    * Emitted with the current text when the user submits the chat box.
    */
-  chatSubmit: EventEmitter<KritzelChatBoxCustomEvent<string>>;
+  chatSubmit: EventEmitter<UpdrawChatBoxCustomEvent<string>>;
   /**
    * Emitted when the user stops the current response.
    */
-  chatStop: EventEmitter<KritzelChatBoxCustomEvent<void>>;
+  chatStop: EventEmitter<UpdrawChatBoxCustomEvent<void>>;
   /**
    * Emitted when the mode changes, including automatic expansion.
    */
-  modeChange: EventEmitter<KritzelChatBoxCustomEvent<IKritzelChatBoxKritzelChatBoxMode>>;
+  modeChange: EventEmitter<UpdrawChatBoxCustomEvent<IUpdrawChatBoxUpdrawChatBoxMode>>;
   /**
    * Emitted with the chip whose remove button the user activated. The chip stays until `chips` no longer contains it.
    */
-  chatChipRemove: EventEmitter<KritzelChatBoxCustomEvent<IKritzelChatBoxKritzelChatBoxChip>>;
+  chatChipRemove: EventEmitter<UpdrawChatBoxCustomEvent<IUpdrawChatBoxUpdrawChatBoxChip>>;
 }
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineKritzelEditor,
+  defineCustomElementFn: defineUpdrawEditor,
   inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxChips', 'chatBoxMode', 'chatSession', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isAgentAvatarsVisible', 'isChatBoxLoading', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWatermarkVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectConfig', 'objectContextMenuItems', 'objectTitlebar', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
   methods: ['getObjectById', 'addObject', 'addObjects', 'updateObject', 'removeObject', 'removeObjects', 'getSelectedObjects', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'panToObject', 'backToContent', 'centerAllObjects', 'centerObjects', 'setViewport', 'panTo', 'zoomTo', 'zoomIn', 'zoomOut', 'getViewport', 'screenToWorld', 'worldToScreen', 'setActiveWorkspace', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace', 'loadSharedWorkspace', 'reinitSync', 'registerTool', 'setActiveTool', 'disable', 'enable', 'copy', 'cut', 'paste', 'delete', 'bringForward', 'sendBackward', 'bringToFront', 'sendToBack', 'alignObjects', 'group', 'ungroup', 'undo', 'redo', 'getScreenshot', 'exportViewportAsPng', 'exportViewportAsSvg', 'getSelectedObjectSupportedExportFormats', 'canExportSelectedObjectAs', 'exportSelectedObject', 'exportAsJson', 'importFromJson', 'downloadAsJson', 'importFromFile', 'loadObjectsFromJson', 'getObjectsTotalCount', 'getAllObjects', 'findObjects', 'getObjectsInViewport', 'addAgent', 'removeAgent', 'getAgent', 'getAgents', 'getRemoteAgents', 'setObjectElementPicking', 'highlightObjectElements', 'clearObjectElementHighlights', 'queryObjectElements', 'hideContextMenu', 'openContextMenu', 'openWorkspaceManagerMenu', 'closeWorkspaceManagerMenu', 'openMoreMenu', 'closeMoreMenu', 'openUserDialog', 'closeUserDialog', 'openExportDialog', 'closeExportDialog', 'openImportDialog', 'closeImportDialog', 'openSettingsDialog', 'closeSettingsDialog', 'openShareDialog', 'closeShareDialog', 'triggerSelectionChange', 'beginSceneBootstrap', 'endSceneBootstrap', 'getDisplayableShortcuts', 'openLoginDialog', 'closeLoginDialog', 'setLoginLoading', 'setLocale', 'getLocale', 'getAvailableLocales', 'registerLocales', 'registerFonts', 't', 'triggerNotification']
 })
 @Component({
-  selector: 'kritzel-editor',
+  selector: 'updraw-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxChips', 'chatBoxMode', 'chatSession', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isAgentAvatarsVisible', 'isChatBoxLoading', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWatermarkVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectConfig', 'objectContextMenuItems', 'objectTitlebar', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
   outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange', 'chatSubmit', 'chatStop', 'chatChipRemove', 'agentsChange', 'objectTitlebarAction', 'objectElementHover', 'objectElementClick', 'objectElementPick'],
 })
-export class KritzelEditor {
-  protected el: HTMLKritzelEditorElement;
-  @Output() isReady = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorEditorIsReadyEvent>>();
-  @Output() activeWorkspaceChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorActiveWorkspaceChangeEvent>>();
-  @Output() objectsChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelBaseObject[]>>();
-  @Output() objectsAdded = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorObjectsAddedEvent>>();
-  @Output() objectsRemoved = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorObjectsRemovedEvent>>();
-  @Output() objectsUpdated = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorObjectsUpdatedEvent>>();
-  @Output() objectsSelectionChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelBaseObject[]>>();
-  @Output() undoStateChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelUndoState>>();
-  @Output() themeChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorThemeName>>();
-  @Output() localeChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorLocaleCode>>();
-  @Output() viewportChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelViewportState>>();
-  @Output() logout = new EventEmitter<KritzelEditorCustomEvent<void>>();
-  @Output() login = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorLoginEvent>>();
-  @Output() isPublicChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorIKritzelIsPublicChangeEvent>>();
-  @Output() awarenessChange = new EventEmitter<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>();
-  @Output() chatSubmit = new EventEmitter<KritzelEditorCustomEvent<string>>();
-  @Output() chatStop = new EventEmitter<KritzelEditorCustomEvent<void>>();
-  @Output() chatChipRemove = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelChatBoxChip>>();
-  @Output() agentsChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelAgentsChangeEvent>>();
-  @Output() objectTitlebarAction = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelObjectTitlebarActionEvent>>();
-  @Output() objectElementHover = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelObjectElementHoverEvent>>();
-  @Output() objectElementClick = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelObjectElementClickEvent>>();
-  @Output() objectElementPick = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelObjectElementPickEvent>>();
+export class UpdrawEditor {
+  protected el: HTMLUpdrawEditorElement;
+  @Output() isReady = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorEditorIsReadyEvent>>();
+  @Output() activeWorkspaceChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorActiveWorkspaceChangeEvent>>();
+  @Output() objectsChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawBaseObject[]>>();
+  @Output() objectsAdded = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorObjectsAddedEvent>>();
+  @Output() objectsRemoved = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorObjectsRemovedEvent>>();
+  @Output() objectsUpdated = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorObjectsUpdatedEvent>>();
+  @Output() objectsSelectionChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawBaseObject[]>>();
+  @Output() undoStateChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawUndoState>>();
+  @Output() themeChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorThemeName>>();
+  @Output() localeChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorLocaleCode>>();
+  @Output() viewportChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawViewportState>>();
+  @Output() logout = new EventEmitter<UpdrawEditorCustomEvent<void>>();
+  @Output() login = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorLoginEvent>>();
+  @Output() isPublicChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorIUpdrawIsPublicChangeEvent>>();
+  @Output() awarenessChange = new EventEmitter<UpdrawEditorCustomEvent<Map<number, Record<string, any>>>>();
+  @Output() chatSubmit = new EventEmitter<UpdrawEditorCustomEvent<string>>();
+  @Output() chatStop = new EventEmitter<UpdrawEditorCustomEvent<void>>();
+  @Output() chatChipRemove = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawChatBoxChip>>();
+  @Output() agentsChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawAgentsChangeEvent>>();
+  @Output() objectTitlebarAction = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectTitlebarActionEvent>>();
+  @Output() objectElementHover = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectElementHoverEvent>>();
+  @Output() objectElementClick = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectElementClickEvent>>();
+  @Output() objectElementPick = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectElementPickEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -107,117 +107,117 @@ export class KritzelEditor {
 }
 
 
-import type { KritzelEditorCustomEvent } from '@kritzel/editor/dist/components';
-import type { EditorIsReadyEvent as IKritzelEditorEditorIsReadyEvent } from '@kritzel/editor/dist/components';
-import type { ActiveWorkspaceChangeEvent as IKritzelEditorActiveWorkspaceChangeEvent } from '@kritzel/editor/dist/components';
-import type { KritzelBaseObject as IKritzelEditorKritzelBaseObject } from '@kritzel/editor/dist/components';
-import type { ObjectsAddedEvent as IKritzelEditorObjectsAddedEvent } from '@kritzel/editor/dist/components';
-import type { ObjectsRemovedEvent as IKritzelEditorObjectsRemovedEvent } from '@kritzel/editor/dist/components';
-import type { ObjectsUpdatedEvent as IKritzelEditorObjectsUpdatedEvent } from '@kritzel/editor/dist/components';
-import type { KritzelUndoState as IKritzelEditorKritzelUndoState } from '@kritzel/editor/dist/components';
-import type { ThemeName as IKritzelEditorThemeName } from '@kritzel/editor/dist/components';
-import type { LocaleCode as IKritzelEditorLocaleCode } from '@kritzel/editor/dist/components';
-import type { KritzelViewportState as IKritzelEditorKritzelViewportState } from '@kritzel/editor/dist/components';
-import type { LoginEvent as IKritzelEditorLoginEvent } from '@kritzel/editor/dist/components';
-import type { IKritzelIsPublicChangeEvent as IKritzelEditorIKritzelIsPublicChangeEvent } from '@kritzel/editor/dist/components';
-import type { KritzelChatBoxChip as IKritzelEditorKritzelChatBoxChip } from '@kritzel/editor/dist/components';
-import type { KritzelAgentsChangeEvent as IKritzelEditorKritzelAgentsChangeEvent } from '@kritzel/editor/dist/components';
-import type { KritzelObjectTitlebarActionEvent as IKritzelEditorKritzelObjectTitlebarActionEvent } from '@kritzel/editor/dist/components';
-import type { KritzelObjectElementHoverEvent as IKritzelEditorKritzelObjectElementHoverEvent } from '@kritzel/editor/dist/components';
-import type { KritzelObjectElementClickEvent as IKritzelEditorKritzelObjectElementClickEvent } from '@kritzel/editor/dist/components';
-import type { KritzelObjectElementPickEvent as IKritzelEditorKritzelObjectElementPickEvent } from '@kritzel/editor/dist/components';
+import type { UpdrawEditorCustomEvent } from '@updraw/editor/dist/components';
+import type { EditorIsReadyEvent as IUpdrawEditorEditorIsReadyEvent } from '@updraw/editor/dist/components';
+import type { ActiveWorkspaceChangeEvent as IUpdrawEditorActiveWorkspaceChangeEvent } from '@updraw/editor/dist/components';
+import type { UpdrawBaseObject as IUpdrawEditorUpdrawBaseObject } from '@updraw/editor/dist/components';
+import type { ObjectsAddedEvent as IUpdrawEditorObjectsAddedEvent } from '@updraw/editor/dist/components';
+import type { ObjectsRemovedEvent as IUpdrawEditorObjectsRemovedEvent } from '@updraw/editor/dist/components';
+import type { ObjectsUpdatedEvent as IUpdrawEditorObjectsUpdatedEvent } from '@updraw/editor/dist/components';
+import type { UpdrawUndoState as IUpdrawEditorUpdrawUndoState } from '@updraw/editor/dist/components';
+import type { ThemeName as IUpdrawEditorThemeName } from '@updraw/editor/dist/components';
+import type { LocaleCode as IUpdrawEditorLocaleCode } from '@updraw/editor/dist/components';
+import type { UpdrawViewportState as IUpdrawEditorUpdrawViewportState } from '@updraw/editor/dist/components';
+import type { LoginEvent as IUpdrawEditorLoginEvent } from '@updraw/editor/dist/components';
+import type { IUpdrawIsPublicChangeEvent as IUpdrawEditorIUpdrawIsPublicChangeEvent } from '@updraw/editor/dist/components';
+import type { UpdrawChatBoxChip as IUpdrawEditorUpdrawChatBoxChip } from '@updraw/editor/dist/components';
+import type { UpdrawAgentsChangeEvent as IUpdrawEditorUpdrawAgentsChangeEvent } from '@updraw/editor/dist/components';
+import type { UpdrawObjectTitlebarActionEvent as IUpdrawEditorUpdrawObjectTitlebarActionEvent } from '@updraw/editor/dist/components';
+import type { UpdrawObjectElementHoverEvent as IUpdrawEditorUpdrawObjectElementHoverEvent } from '@updraw/editor/dist/components';
+import type { UpdrawObjectElementClickEvent as IUpdrawEditorUpdrawObjectElementClickEvent } from '@updraw/editor/dist/components';
+import type { UpdrawObjectElementPickEvent as IUpdrawEditorUpdrawObjectElementPickEvent } from '@updraw/editor/dist/components';
 
-export declare interface KritzelEditor extends Components.KritzelEditor {
+export declare interface UpdrawEditor extends Components.UpdrawEditor {
 
-  isReady: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorEditorIsReadyEvent>>;
+  isReady: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorEditorIsReadyEvent>>;
 
-  activeWorkspaceChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorActiveWorkspaceChangeEvent>>;
+  activeWorkspaceChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorActiveWorkspaceChangeEvent>>;
 
-  objectsChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelBaseObject[]>>;
+  objectsChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawBaseObject[]>>;
   /**
    * Emitted when objects are added. `source` is set when an agent made the change.
    */
-  objectsAdded: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorObjectsAddedEvent>>;
+  objectsAdded: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorObjectsAddedEvent>>;
   /**
    * Emitted when objects are removed. `source` is set when an agent made the change.
    */
-  objectsRemoved: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorObjectsRemovedEvent>>;
+  objectsRemoved: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorObjectsRemovedEvent>>;
   /**
    * Emitted when objects are updated. `source` is set when an agent made the change.
    */
-  objectsUpdated: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorObjectsUpdatedEvent>>;
+  objectsUpdated: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorObjectsUpdatedEvent>>;
 
-  objectsSelectionChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelBaseObject[]>>;
+  objectsSelectionChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawBaseObject[]>>;
 
-  undoStateChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelUndoState>>;
+  undoStateChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawUndoState>>;
 
-  themeChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorThemeName>>;
+  themeChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorThemeName>>;
 
-  localeChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorLocaleCode>>;
+  localeChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorLocaleCode>>;
 
-  viewportChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelViewportState>>;
+  viewportChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawViewportState>>;
 
-  logout: EventEmitter<KritzelEditorCustomEvent<void>>;
+  logout: EventEmitter<UpdrawEditorCustomEvent<void>>;
 
-  login: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorLoginEvent>>;
+  login: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorLoginEvent>>;
 
-  isPublicChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorIKritzelIsPublicChangeEvent>>;
+  isPublicChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorIUpdrawIsPublicChangeEvent>>;
 
-  awarenessChange: EventEmitter<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>;
+  awarenessChange: EventEmitter<UpdrawEditorCustomEvent<Map<number, Record<string, any>>>>;
   /**
    * Emitted with the chat box text when the user submits it. With a `chatSession`, the prompt is sent to it
 unless a listener calls `preventDefault()`.
    */
-  chatSubmit: EventEmitter<KritzelEditorCustomEvent<string>>;
+  chatSubmit: EventEmitter<UpdrawEditorCustomEvent<string>>;
   /**
    * Emitted when the user stops the current chat response. A `chatSession` is stopped too.
    */
-  chatStop: EventEmitter<KritzelEditorCustomEvent<void>>;
+  chatStop: EventEmitter<UpdrawEditorCustomEvent<void>>;
   /**
    * Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it.
    */
-  chatChipRemove: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelChatBoxChip>>;
+  chatChipRemove: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawChatBoxChip>>;
   /**
    * Emitted when agents are added or removed, or when what the avatar stack shows of them changes
 (name, color, avatar, status, visibility, activity). Never emitted for plain cursor motion.
    */
-  agentsChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelAgentsChangeEvent>>;
+  agentsChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawAgentsChangeEvent>>;
   /**
    * Emitted when a button or a menu item in an object titlebar is clicked.
    */
-  objectTitlebarAction: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelObjectTitlebarActionEvent>>;
+  objectTitlebarAction: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectTitlebarActionEvent>>;
   /**
    * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object,
 such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
    */
-  objectElementHover: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelObjectElementHoverEvent>>;
+  objectElementHover: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectElementHoverEvent>>;
   /**
    * Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual.
    */
-  objectElementClick: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelObjectElementClickEvent>>;
+  objectElementClick: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectElementClickEvent>>;
   /**
    * Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`.
    */
-  objectElementPick: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelObjectElementPickEvent>>;
+  objectElementPick: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectElementPickEvent>>;
 }
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineKritzelSettings,
+  defineCustomElementFn: defineUpdrawSettings,
   inputs: ['availableLocales', 'availableThemes', 'settings', 'shortcuts', 'terms'],
   methods: ['open', 'close']
 })
 @Component({
-  selector: 'kritzel-settings',
+  selector: 'updraw-settings',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['availableLocales', 'availableThemes', 'settings', 'shortcuts', 'terms'],
   outputs: ['settingsChange'],
 })
-export class KritzelSettings {
-  protected el: HTMLKritzelSettingsElement;
-  @Output() settingsChange = new EventEmitter<KritzelSettingsCustomEvent<IKritzelSettingsKritzelSettingsConfig>>();
+export class UpdrawSettings {
+  protected el: HTMLUpdrawSettingsElement;
+  @Output() settingsChange = new EventEmitter<UpdrawSettingsCustomEvent<IUpdrawSettingsUpdrawSettingsConfig>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -225,32 +225,32 @@ export class KritzelSettings {
 }
 
 
-import type { KritzelSettingsCustomEvent } from '@kritzel/editor/dist/components';
-import type { KritzelSettingsConfig as IKritzelSettingsKritzelSettingsConfig } from '@kritzel/editor/dist/components';
+import type { UpdrawSettingsCustomEvent } from '@updraw/editor/dist/components';
+import type { UpdrawSettingsConfig as IUpdrawSettingsUpdrawSettingsConfig } from '@updraw/editor/dist/components';
 
-export declare interface KritzelSettings extends Components.KritzelSettings {
+export declare interface UpdrawSettings extends Components.UpdrawSettings {
   /**
    * Emitted when settings change
    */
-  settingsChange: EventEmitter<KritzelSettingsCustomEvent<IKritzelSettingsKritzelSettingsConfig>>;
+  settingsChange: EventEmitter<UpdrawSettingsCustomEvent<IUpdrawSettingsUpdrawSettingsConfig>>;
 }
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineKritzelShapeFill,
+  defineCustomElementFn: defineUpdrawShapeFill,
   inputs: ['value']
 })
 @Component({
-  selector: 'kritzel-shape-fill',
+  selector: 'updraw-shape-fill',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['value'],
   outputs: ['valueChange'],
 })
-export class KritzelShapeFill {
-  protected el: HTMLKritzelShapeFillElement;
-  @Output() valueChange = new EventEmitter<KritzelShapeFillCustomEvent<IKritzelShapeFillShapeFillType>>();
+export class UpdrawShapeFill {
+  protected el: HTMLUpdrawShapeFillElement;
+  @Output() valueChange = new EventEmitter<UpdrawShapeFillCustomEvent<IUpdrawShapeFillShapeFillType>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -258,32 +258,32 @@ export class KritzelShapeFill {
 }
 
 
-import type { KritzelShapeFillCustomEvent } from '@kritzel/editor/dist/components';
-import type { ShapeFillType as IKritzelShapeFillShapeFillType } from '@kritzel/editor/dist/components';
+import type { UpdrawShapeFillCustomEvent } from '@updraw/editor/dist/components';
+import type { ShapeFillType as IUpdrawShapeFillShapeFillType } from '@updraw/editor/dist/components';
 
-export declare interface KritzelShapeFill extends Components.KritzelShapeFill {
+export declare interface UpdrawShapeFill extends Components.UpdrawShapeFill {
 
-  valueChange: EventEmitter<KritzelShapeFillCustomEvent<IKritzelShapeFillShapeFillType>>;
+  valueChange: EventEmitter<UpdrawShapeFillCustomEvent<IUpdrawShapeFillShapeFillType>>;
 }
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineKritzelShareDialog,
+  defineCustomElementFn: defineUpdrawShareDialog,
   inputs: ['isPublic', 'terms', 'workspaceId'],
   methods: ['open', 'close']
 })
 @Component({
-  selector: 'kritzel-share-dialog',
+  selector: 'updraw-share-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['isPublic', 'terms', 'workspaceId'],
   outputs: ['toggleIsPublic', 'dialogClosed'],
 })
-export class KritzelShareDialog {
-  protected el: HTMLKritzelShareDialogElement;
-  @Output() toggleIsPublic = new EventEmitter<KritzelShareDialogCustomEvent<boolean>>();
-  @Output() dialogClosed = new EventEmitter<KritzelShareDialogCustomEvent<void>>();
+export class UpdrawShareDialog {
+  protected el: HTMLUpdrawShareDialogElement;
+  @Output() toggleIsPublic = new EventEmitter<UpdrawShareDialogCustomEvent<boolean>>();
+  @Output() dialogClosed = new EventEmitter<UpdrawShareDialogCustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -291,43 +291,43 @@ export class KritzelShareDialog {
 }
 
 
-import type { KritzelShareDialogCustomEvent } from '@kritzel/editor/dist/components';
+import type { UpdrawShareDialogCustomEvent } from '@updraw/editor/dist/components';
 
-export declare interface KritzelShareDialog extends Components.KritzelShareDialog {
+export declare interface UpdrawShareDialog extends Components.UpdrawShareDialog {
   /**
    * Emitted when the user toggles the public sharing state.
    */
-  toggleIsPublic: EventEmitter<KritzelShareDialogCustomEvent<boolean>>;
+  toggleIsPublic: EventEmitter<UpdrawShareDialogCustomEvent<boolean>>;
   /**
    * Emitted when the dialog is closed.
    */
-  dialogClosed: EventEmitter<KritzelShareDialogCustomEvent<void>>;
+  dialogClosed: EventEmitter<UpdrawShareDialogCustomEvent<void>>;
 }
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineKritzelSplitButton,
+  defineCustomElementFn: defineUpdrawSplitButton,
   inputs: ['buttonIcon', 'dropdownIcon', 'items', 'mainButtonDisabled', 'menuButtonDisabled'],
   methods: ['open', 'close', 'focusMenu']
 })
 @Component({
-  selector: 'kritzel-split-button',
+  selector: 'updraw-split-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['buttonIcon', 'dropdownIcon', 'items', 'mainButtonDisabled', 'menuButtonDisabled'],
   outputs: ['mainButtonClick', 'itemSelect', 'itemSave', 'itemCancel', 'itemToggleChildMenu', 'itemCloseChildMenu', 'menuOpen', 'menuClose'],
 })
-export class KritzelSplitButton {
-  protected el: HTMLKritzelSplitButtonElement;
-  @Output() mainButtonClick = new EventEmitter<KritzelSplitButtonCustomEvent<void>>();
-  @Output() itemSelect = new EventEmitter<KritzelSplitButtonCustomEvent<IKritzelSplitButtonIKritzelMenuItemSelectEvent>>();
-  @Output() itemSave = new EventEmitter<KritzelSplitButtonCustomEvent<IKritzelSplitButtonIKritzelMenuItem>>();
-  @Output() itemCancel = new EventEmitter<KritzelSplitButtonCustomEvent<IKritzelSplitButtonIKritzelMenuItem>>();
-  @Output() itemToggleChildMenu = new EventEmitter<KritzelSplitButtonCustomEvent<IKritzelSplitButtonIKritzelMenuItemToggleChildMenuEvent>>();
-  @Output() itemCloseChildMenu = new EventEmitter<KritzelSplitButtonCustomEvent<IKritzelSplitButtonIKritzelMenuItem>>();
-  @Output() menuOpen = new EventEmitter<KritzelSplitButtonCustomEvent<void>>();
-  @Output() menuClose = new EventEmitter<KritzelSplitButtonCustomEvent<void>>();
+export class UpdrawSplitButton {
+  protected el: HTMLUpdrawSplitButtonElement;
+  @Output() mainButtonClick = new EventEmitter<UpdrawSplitButtonCustomEvent<void>>();
+  @Output() itemSelect = new EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItemSelectEvent>>();
+  @Output() itemSave = new EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItem>>();
+  @Output() itemCancel = new EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItem>>();
+  @Output() itemToggleChildMenu = new EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItemToggleChildMenuEvent>>();
+  @Output() itemCloseChildMenu = new EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItem>>();
+  @Output() menuOpen = new EventEmitter<UpdrawSplitButtonCustomEvent<void>>();
+  @Output() menuClose = new EventEmitter<UpdrawSplitButtonCustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -335,46 +335,46 @@ export class KritzelSplitButton {
 }
 
 
-import type { KritzelSplitButtonCustomEvent } from '@kritzel/editor/dist/components';
-import type { IKritzelMenuItemSelectEvent as IKritzelSplitButtonIKritzelMenuItemSelectEvent } from '@kritzel/editor/dist/components';
-import type { IKritzelMenuItem as IKritzelSplitButtonIKritzelMenuItem } from '@kritzel/editor/dist/components';
-import type { IKritzelMenuItemToggleChildMenuEvent as IKritzelSplitButtonIKritzelMenuItemToggleChildMenuEvent } from '@kritzel/editor/dist/components';
+import type { UpdrawSplitButtonCustomEvent } from '@updraw/editor/dist/components';
+import type { IUpdrawMenuItemSelectEvent as IUpdrawSplitButtonIUpdrawMenuItemSelectEvent } from '@updraw/editor/dist/components';
+import type { IUpdrawMenuItem as IUpdrawSplitButtonIUpdrawMenuItem } from '@updraw/editor/dist/components';
+import type { IUpdrawMenuItemToggleChildMenuEvent as IUpdrawSplitButtonIUpdrawMenuItemToggleChildMenuEvent } from '@updraw/editor/dist/components';
 
-export declare interface KritzelSplitButton extends Components.KritzelSplitButton {
+export declare interface UpdrawSplitButton extends Components.UpdrawSplitButton {
 
-  mainButtonClick: EventEmitter<KritzelSplitButtonCustomEvent<void>>;
+  mainButtonClick: EventEmitter<UpdrawSplitButtonCustomEvent<void>>;
 
-  itemSelect: EventEmitter<KritzelSplitButtonCustomEvent<IKritzelSplitButtonIKritzelMenuItemSelectEvent>>;
+  itemSelect: EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItemSelectEvent>>;
 
-  itemSave: EventEmitter<KritzelSplitButtonCustomEvent<IKritzelSplitButtonIKritzelMenuItem>>;
+  itemSave: EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItem>>;
 
-  itemCancel: EventEmitter<KritzelSplitButtonCustomEvent<IKritzelSplitButtonIKritzelMenuItem>>;
+  itemCancel: EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItem>>;
 
-  itemToggleChildMenu: EventEmitter<KritzelSplitButtonCustomEvent<IKritzelSplitButtonIKritzelMenuItemToggleChildMenuEvent>>;
+  itemToggleChildMenu: EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItemToggleChildMenuEvent>>;
 
-  itemCloseChildMenu: EventEmitter<KritzelSplitButtonCustomEvent<IKritzelSplitButtonIKritzelMenuItem>>;
+  itemCloseChildMenu: EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItem>>;
 
-  menuOpen: EventEmitter<KritzelSplitButtonCustomEvent<void>>;
+  menuOpen: EventEmitter<UpdrawSplitButtonCustomEvent<void>>;
 
-  menuClose: EventEmitter<KritzelSplitButtonCustomEvent<void>>;
+  menuClose: EventEmitter<UpdrawSplitButtonCustomEvent<void>>;
 }
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineKritzelStrokeSize,
+  defineCustomElementFn: defineUpdrawStrokeSize,
   inputs: ['selectedSize', 'sizes']
 })
 @Component({
-  selector: 'kritzel-stroke-size',
+  selector: 'updraw-stroke-size',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['selectedSize', 'sizes'],
   outputs: ['sizeChange'],
 })
-export class KritzelStrokeSize {
-  protected el: HTMLKritzelStrokeSizeElement;
-  @Output() sizeChange = new EventEmitter<KritzelStrokeSizeCustomEvent<number>>();
+export class UpdrawStrokeSize {
+  protected el: HTMLUpdrawStrokeSizeElement;
+  @Output() sizeChange = new EventEmitter<UpdrawStrokeSizeCustomEvent<number>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -382,11 +382,11 @@ export class KritzelStrokeSize {
 }
 
 
-import type { KritzelStrokeSizeCustomEvent } from '@kritzel/editor/dist/components';
+import type { UpdrawStrokeSizeCustomEvent } from '@updraw/editor/dist/components';
 
-export declare interface KritzelStrokeSize extends Components.KritzelStrokeSize {
+export declare interface UpdrawStrokeSize extends Components.UpdrawStrokeSize {
 
-  sizeChange: EventEmitter<KritzelStrokeSizeCustomEvent<number>>;
+  sizeChange: EventEmitter<UpdrawStrokeSizeCustomEvent<number>>;
 }
 
 

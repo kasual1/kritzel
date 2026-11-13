@@ -1,21 +1,21 @@
-import { KritzelBaseObject } from './base-object.class';
-import { KritzelPolygon } from '../../interfaces/polygon.interface';
-import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
-import { KritzelPoint } from '../../interfaces/point.interface';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawBaseObject } from './base-object.class';
+import { UpdrawPolygon } from '../../interfaces/polygon.interface';
+import { UpdrawGeometryHelper } from '../../helpers/geometry.helper';
+import { UpdrawPoint } from '../../interfaces/point.interface';
+import { UpdrawCore } from '../core/core.class';
 import { LineAnchor } from '../../interfaces/anchor.interface';
 import { ArrowHeadStyle, LineArrowConfig } from '../../interfaces/arrow-head.interface';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
-import { KritzelColorHelper } from '../../helpers/color.helper';
-import { KritzelMathHelper } from '../../helpers/math.helper';
+import { UpdrawColorHelper } from '../../helpers/color.helper';
+import { UpdrawMathHelper } from '../../helpers/math.helper';
 
 /**
- * Configuration options for creating a KritzelLine instance.
+ * Configuration options for creating an UpdrawLine instance.
  */
-export interface KritzelLineConfig {
+export interface UpdrawLineConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
-  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
+  /** Whether the engine's loading placeholder is drawn over the object, see `UpdrawBaseObject.setLoading()`. */
   isLoading?: boolean;
   startX: number;
   startY: number;
@@ -39,8 +39,8 @@ export interface KritzelLineConfig {
   arrows?: LineArrowConfig;
 }
 
-export class KritzelLine extends KritzelBaseObject<SVGElement> {
-  override __class__: string = 'KritzelLine';
+export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
+  override __class__: string = 'UpdrawLine';
 
   startX: number;
   startY: number;
@@ -51,7 +51,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   stroke: ThemeAwareColor;
   strokeWidth: number;
   scale: number = 1;
-  options: KritzelLineConfig | undefined;
+  options: UpdrawLineConfig | undefined;
 
   /** Anchor connection for the start point of the line */
   startAnchor?: LineAnchor;
@@ -90,11 +90,11 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   }
 
   /**
-   * Creates a new KritzelLine instance.
+   * Creates a new UpdrawLine instance.
    * @param config - Optional configuration options for the line including start/end points,
    *                 control point for curves, stroke settings, anchors, and arrow configuration
    */
-  constructor(config?: KritzelLineConfig) {
+  constructor(config?: UpdrawLineConfig) {
     super();
     this.name = config?.name;
     this.isLoading = config?.isLoading ?? false;
@@ -107,7 +107,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.controlY = config?.controlY;
     this.translateX = config?.translateX ?? 0;
     this.translateY = config?.translateY ?? 0;
-    this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
+    this.rotation = UpdrawMathHelper.degreesToRadians(config?.rotation ?? 0);
     this.scale = config?.scale ?? 1;
     this.strokeWidth = config?.strokeWidth ?? 4;
     this.stroke = config?.stroke ?? { light: '#000000', dark: '#ffffff' };
@@ -118,14 +118,14 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   }
 
   /**
-   * Factory method to create a new KritzelLine with a core reference and unique ID.
+   * Factory method to create a new UpdrawLine with a core reference and unique ID.
    * This is the preferred way to create lines that will be managed by the core.
-   * @param core - The KritzelCore instance that will manage this line
+   * @param core - The UpdrawCore instance that will manage this line
    * @param options - Optional configuration options for the line
-   * @returns A fully initialized KritzelLine instance with generated ID and workspace assignment
+   * @returns A fully initialized UpdrawLine instance with generated ID and workspace assignment
    */
-  static override create(core: KritzelCore, options?: KritzelLineConfig): KritzelLine {
-    const object = new KritzelLine();
+  static override create(core: UpdrawCore, options?: UpdrawLineConfig): UpdrawLine {
+    const object = new UpdrawLine();
 
     object._core = core;
     object.id = object.generateId();
@@ -140,7 +140,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     object.controlY = options?.controlY;
     object.translateX = options?.translateX ?? 0;
     object.translateY = options?.translateY ?? 0;
-    object.rotation = KritzelMathHelper.degreesToRadians(options?.rotation ?? 0);
+    object.rotation = UpdrawMathHelper.degreesToRadians(options?.rotation ?? 0);
     object.scale = options?.scale ?? 1;
     object.strokeWidth = options?.strokeWidth ?? 4;
     object.stroke = options?.stroke ?? { light: '#000000', dark: '#ffffff' };
@@ -292,7 +292,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
    * @param polygon - The polygon to test intersection with, defined by four corner points
    * @returns True if any part of the line intersects with the polygon
    */
-  override hitTestPolygon(polygon: KritzelPolygon): boolean {
+  override hitTestPolygon(polygon: UpdrawPolygon): boolean {
     const halfStroke = this.strokeWidth / this.scale / 2;
 
     if (this._adjustedPoints === null) {
@@ -301,7 +301,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
 
     const clip = this.getClipInfo();
 
-    const polyPoints: KritzelPoint[] = [
+    const polyPoints: UpdrawPoint[] = [
       { x: polygon.bottomLeft.x, y: polygon.bottomLeft.y },
       { x: polygon.bottomRight.x, y: polygon.bottomRight.y },
       { x: polygon.topRight.x, y: polygon.topRight.y },
@@ -316,7 +316,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     const endpoints = [p1, p2];
 
     for (const [px, py] of endpoints) {
-      if (KritzelGeometryHelper.isPointInPolygon({ x: px, y: py }, polyPoints)) {
+      if (UpdrawGeometryHelper.isPointInPolygon({ x: px, y: py }, polyPoints)) {
         return true;
       }
     }
@@ -346,7 +346,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
         const bx = oneMinusT * oneMinusT * p0[0] + 2 * oneMinusT * t * controlAdjusted[0] + t * t * p2[0];
         const by = oneMinusT * oneMinusT * p0[1] + 2 * oneMinusT * t * controlAdjusted[1] + t * t * p2[1];
 
-        if (KritzelGeometryHelper.isPointInPolygon({ x: bx, y: by }, polyPoints)) {
+        if (UpdrawGeometryHelper.isPointInPolygon({ x: bx, y: by }, polyPoints)) {
           return true;
         }
 
@@ -372,7 +372,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
       const q1 = polyPoints[j];
       const q2 = polyPoints[(j + 1) % polyPoints.length];
 
-      if (KritzelGeometryHelper.intersectLines(checkP1, checkP2, q1, q2)) {
+      if (UpdrawGeometryHelper.intersectLines(checkP1, checkP2, q1, q2)) {
         return true;
       }
 
@@ -743,11 +743,11 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
    * @returns A polygon with four corner points (topLeft, topRight, bottomRight, bottomLeft)
    *          transformed to world coordinates with rotation applied
    */
-  override get rotatedPolygon(): KritzelPolygon {
+  override get rotatedPolygon(): UpdrawPolygon {
     const padding = this.padding;
 
     // Use the bounding box which accounts for curve extrema
-    const { minX, minY, maxX, maxY } = KritzelLine.calculateBoundingBox(
+    const { minX, minY, maxX, maxY } = UpdrawLine.calculateBoundingBox(
       this.startX,
       this.startY,
       this.endX,
@@ -861,7 +861,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
    * @returns Object with minX, minY, maxX, maxY bounds including stroke width padding
    */
   calculateBoundingBox(): { minX: number; minY: number; maxX: number; maxY: number } {
-    return KritzelLine.calculateBoundingBox(
+    return UpdrawLine.calculateBoundingBox(
       this.startX,
       this.startY,
       this.endX,
@@ -950,7 +950,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   getArrowFill(end: 'start' | 'end'): string {
     const config = end === 'start' ? this.arrows?.start : this.arrows?.end;
     const color = config?.fill ?? this.stroke;
-    return KritzelColorHelper.resolveThemeColor(color, this._core?.themeManager?.currentTheme);
+    return UpdrawColorHelper.resolveThemeColor(color, this._core?.themeManager?.currentTheme);
   }
 
   /**

@@ -2,23 +2,23 @@
 import { ref, shallowRef } from 'vue'
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelLine,
-  KritzelPath,
-  KritzelShape,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawLine,
+  UpdrawPath,
+  UpdrawShape,
+  UpdrawWorkspace,
   ShapeType,
-  type KritzelBaseObject,
-} from '@kritzel/vue-editor'
+  type UpdrawBaseObject,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import Toolbar from '../../../components/Toolbar.vue'
 import InfoPanel from '../../../components/InfoPanel.vue'
 
-function createImportedWorkspaceObjects(): KritzelBaseObject[] {
+function createImportedWorkspaceObjects(): UpdrawBaseObject[] {
   return [
-    new KritzelShape({
+    new UpdrawShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -28,7 +28,7 @@ function createImportedWorkspaceObjects(): KritzelBaseObject[] {
       strokeColor: { light: '#1565c0', dark: '#1565c0' },
       strokeWidth: 3,
     }),
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -38,7 +38,7 @@ function createImportedWorkspaceObjects(): KritzelBaseObject[] {
       strokeColor: { light: '#00bcd4', dark: '#00bcd4' },
       strokeWidth: 3,
     }),
-    new KritzelLine({
+    new UpdrawLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -46,7 +46,7 @@ function createImportedWorkspaceObjects(): KritzelBaseObject[] {
       stroke: { light: '#00bcd4', dark: '#00bcd4' },
       strokeWidth: 3,
     }),
-    new KritzelPath({
+    new UpdrawPath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -67,7 +67,7 @@ function createImportedWorkspaceObjects(): KritzelBaseObject[] {
 }
 
 function createImportedWorkspaceJson(): string {
-  const workspace = new KritzelWorkspace({
+  const workspace = new UpdrawWorkspace({
     name: 'Imported Workspace',
     objects: createImportedWorkspaceObjects(),
   })
@@ -87,7 +87,7 @@ const jsonInput = ref('')
 const activeWorkspaceName = ref('')
 const themes = [vueThemeLight, vueThemeDark]
 const workspaces = shallowRef([
-  new KritzelWorkspace({
+  new UpdrawWorkspace({
     id: 'workspace-import-initial',
     name: 'Initial Workspace',
     objects: createSeedObjects(),
@@ -119,7 +119,7 @@ async function importJson(): Promise<void> {
     </Toolbar>
     <div class="content">
       <div class="editor-wrap">
-        <KritzelEditor
+        <UpdrawEditor
           ref="editor"
           editorId="import-export-workspace-import"
           theme="light"

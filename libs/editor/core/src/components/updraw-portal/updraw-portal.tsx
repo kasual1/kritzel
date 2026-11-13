@@ -1,13 +1,13 @@
 ﻿import { Component, Host, Listen, Prop, Watch, h, Event, EventEmitter, Element } from '@stencil/core';
-import { ObjectHelper } from '@kritzel/core';
-import { KritzelHTMLHelper } from '@kritzel/core';
-import { KritzelKeyboardHelper } from '@kritzel/core';
+import { ObjectHelper } from '@updraw/core';
+import { UpdrawHTMLHelper } from '@updraw/core';
+import { UpdrawKeyboardHelper } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-portal',
+  tag: 'updraw-portal',
   shadow: true,
 })
-export class KritzelPortal {
+export class UpdrawPortal {
   @Element() host: HTMLElement;
 
   @Prop() anchor: HTMLElement;
@@ -38,7 +38,7 @@ export class KritzelPortal {
 
   @Event() close: EventEmitter<void>;
 
-  @Listen('kritzel-dismiss-menus', { target: 'window' })
+  @Listen('updraw-dismiss-menus', { target: 'window' })
   handleDismissMenus() {
     if (this.portal) {
       this.close.emit();
@@ -128,7 +128,7 @@ export class KritzelPortal {
       return;
     }
 
-    const isInViewport = KritzelHTMLHelper.isElementInViewport(this.anchor);
+    const isInViewport = UpdrawHTMLHelper.isElementInViewport(this.anchor);
 
     if (!isInViewport) {
       this.anchor?.blur();
@@ -181,7 +181,7 @@ export class KritzelPortal {
   }
 
   private trapFocus(event: KeyboardEvent) {
-    const focusableElements = KritzelHTMLHelper.getFocusableElements(this.host);
+    const focusableElements = UpdrawHTMLHelper.getFocusableElements(this.host);
     if (focusableElements.length === 0) return;
 
     const firstFocusable = focusableElements[0];
@@ -208,7 +208,7 @@ export class KritzelPortal {
     const firstAssigned = slotEl?.assignedElements({ flatten: true })[0] as HTMLElement | undefined;
     if (!firstAssigned) return null;
 
-    const focusable = KritzelHTMLHelper.getFocusableElements(firstAssigned);
+    const focusable = UpdrawHTMLHelper.getFocusableElements(firstAssigned);
     return focusable[0] ?? firstAssigned;
   }
 
@@ -259,7 +259,7 @@ export class KritzelPortal {
     const spaceAbove = refRect.top - offset - padding;
 
     // Reset max-height CSS custom property  
-    this.host.style.removeProperty('--kritzel-portal-max-height');
+    this.host.style.removeProperty('--updraw-portal-max-height');
 
     if (portalRect.height <= spaceBelow) {
       // Fits below the anchor
@@ -272,11 +272,11 @@ export class KritzelPortal {
       if (spaceBelow >= spaceAbove) {
         // More space below, keep it below with constrained height
         top = refRect.bottom + offset;
-        this.host.style.setProperty('--kritzel-portal-max-height', `${spaceBelow}px`);
+        this.host.style.setProperty('--updraw-portal-max-height', `${spaceBelow}px`);
       } else {
         // More space above, position above with constrained height
         top = padding;
-        this.host.style.setProperty('--kritzel-portal-max-height', `${spaceAbove}px`);
+        this.host.style.setProperty('--updraw-portal-max-height', `${spaceAbove}px`);
       }
     }
 
@@ -288,7 +288,7 @@ export class KritzelPortal {
 
     let current: HTMLElement | null = this.anchor;
     while (current) {
-      const provider = current.closest('kritzel-editor');
+      const provider = current.closest('updraw-editor');
       if (provider instanceof HTMLElement) {
         return provider;
       }
@@ -323,7 +323,7 @@ export class KritzelPortal {
         if (!this.portal) return;
         for (let i = 0; i < themeProvider.style.length; i++) {
           const prop = themeProvider.style[i];
-          if (prop.startsWith('--kritzel-')) {
+          if (prop.startsWith('--updraw-')) {
             this.portal.style.setProperty(prop, themeProvider.style.getPropertyValue(prop));
           }
         }
@@ -381,7 +381,7 @@ export class KritzelPortal {
     if (!this.anchor || !this.portal) return;
 
     const isPositioned = this.portal.style.visibility === 'visible';
-    if (isPositioned && KritzelKeyboardHelper.isKeyboardOpen()) {
+    if (isPositioned && UpdrawKeyboardHelper.isKeyboardOpen()) {
       this.keepFocusedFieldVisible();
       return;
     }
@@ -406,7 +406,7 @@ export class KritzelPortal {
     if (rect.top >= visibleTop && rect.bottom <= visibleBottom) return;
 
     if (rect.bottom > visibleBottom) {
-      const scrollContainer = KritzelHTMLHelper.getScrollableParent(field);
+      const scrollContainer = UpdrawHTMLHelper.getScrollableParent(field);
       if (scrollContainer instanceof HTMLElement && this.isInsideHost(scrollContainer)) {
         // Scroll no further than bringing the field to the top of the scroll container.
         const maxScroll = Math.max(0, rect.top - scrollContainer.getBoundingClientRect().top - this.keyboardPadding);

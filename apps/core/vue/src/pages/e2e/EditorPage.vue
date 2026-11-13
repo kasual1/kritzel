@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { KritzelEditor } from '@kritzel/vue-editor'
+import { UpdrawEditor } from '@updraw/vue-editor'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import { vueThemeDark } from '../../const/vue-theme-dark'
 </script>
 
 <template>
   <main>
-    <KritzelEditor theme="light" :themes="[vueThemeLight, vueThemeDark]" />
+    <UpdrawEditor theme="light" :themes="[vueThemeLight, vueThemeDark]" />
   </main>
 </template>
 

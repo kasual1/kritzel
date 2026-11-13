@@ -10,8 +10,8 @@
 
 export type * from './components';
 
-export type HTMLKritzelEngineElement = HTMLElementTagNameMap['kritzel-engine'];
+export type HTMLUpdrawEngineElement = HTMLElementTagNameMap['updraw-engine'];
 
-// The engine's classes, helpers and types live in @kritzel/core. Re-exporting them keeps
-// existing `@kritzel/engine` imports working and shares one copy of every class.
-export * from '@kritzel/core';
+// The engine's classes, helpers and types live in @updraw/core. Re-exporting them keeps
+// existing `@updraw/engine` imports working and shares one copy of every class.
+export * from '@updraw/core';

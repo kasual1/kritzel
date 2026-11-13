@@ -2,10 +2,10 @@
 import {
   getEditorRef,
   InMemorySyncProvider,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelSyncConfig,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawSyncConfig,
+} from '@updraw/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -15,8 +15,8 @@ import { editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
 const editor = getEditorRef('editor')
 const isWorkspaceManagerVisible = ref(true)
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
-const syncConfig: KritzelSyncConfig = { providers: [InMemorySyncProvider] }
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const syncConfig: UpdrawSyncConfig = { providers: [InMemorySyncProvider] }
 
 async function onReady() {
   await editor.value?.openWorkspaceManagerMenu()
@@ -39,7 +39,7 @@ function setWorkspaceManagerVisible(event: Event) {
         <span>Workspace manager</span>
       </label>
     </div>
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="workspace-manager-open"
       theme="light"

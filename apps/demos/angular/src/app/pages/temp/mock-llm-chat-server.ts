@@ -2,12 +2,12 @@
 // The streaming variant (`mock-llm-stream-chat-server.ts`) reuses the client and conversion helpers exported here.
 import Anthropic from '@anthropic-ai/sdk';
 import type {
-  KritzelChatMessage,
-  KritzelChatPart,
-  KritzelChatResponse,
-  KritzelChatStopReason,
-  KritzelChatTransport,
-} from '@kritzel/angular-editor';
+  UpdrawChatMessage,
+  UpdrawChatPart,
+  UpdrawChatResponse,
+  UpdrawChatStopReason,
+  UpdrawChatTransport,
+} from '@updraw/angular-editor';
 
 /**
  * The browser never sees the key: `proxy.conf.mjs` forwards this path to api.anthropic.com and adds
@@ -28,7 +28,7 @@ are made with the user's own hands, on their selection, and undo like theirs. Wh
 created. Reply in one short sentence; the canvas shows the result.`;
 
 /** Stands in for `fetch('/api/chat')`: one model step per request, answered by Claude. */
-export const llmTransport: KritzelChatTransport = async (request, { signal }) => {
+export const llmTransport: UpdrawChatTransport = async (request, { signal }) => {
   const response = await client.beta.messages.create(
     {
       model: MODEL,
@@ -48,7 +48,7 @@ export const llmTransport: KritzelChatTransport = async (request, { signal }) =>
 };
 
 /** The conversation in the Messages API's shape. Tool results go back as user messages. */
-export function toAnthropicMessages(messages: KritzelChatMessage[]): Anthropic.Beta.BetaMessageParam[] {
+export function toAnthropicMessages(messages: UpdrawChatMessage[]): Anthropic.Beta.BetaMessageParam[] {
   const result: Anthropic.Beta.BetaMessageParam[] = [];
   // Tool calls left out of the assistant message before (see `withoutDeclined`), by ID, with their names.
   let leftOut = new Map<string, string>();
@@ -104,7 +104,7 @@ function withoutDeclined(content: Anthropic.Beta.BetaContentBlockParam[]): {
   return { content: kept, leftOut };
 }
 
-function toAnthropicBlock(part: KritzelChatPart): Anthropic.Beta.BetaContentBlockParam[] {
+function toAnthropicBlock(part: UpdrawChatPart): Anthropic.Beta.BetaContentBlockParam[] {
   switch (part.type) {
     case 'text':
       return part.text ? [{ type: 'text', text: part.text }] : [];
@@ -131,8 +131,8 @@ export function parseJson(text: string, fallback: unknown): unknown {
 }
 
 /** The model's answer in the chat protocol's shape; its raw content rides along to be sent back next step. */
-function toChatResponse(response: Anthropic.Beta.BetaMessage): KritzelChatResponse {
-  const parts: KritzelChatPart[] = [];
+function toChatResponse(response: Anthropic.Beta.BetaMessage): UpdrawChatResponse {
+  const parts: UpdrawChatPart[] = [];
   for (const block of response.content) {
     if (block.type === 'text' && block.text) parts.push({ type: 'text', text: block.text });
     if (block.type === 'tool_use') parts.push({ type: 'tool-call', id: block.id, name: block.name, input: block.input });
@@ -144,7 +144,7 @@ function toChatResponse(response: Anthropic.Beta.BetaMessage): KritzelChatRespon
   };
 }
 
-export const STOP_REASONS: Record<string, KritzelChatStopReason> = {
+export const STOP_REASONS: Record<string, UpdrawChatStopReason> = {
   end_turn: 'end',
   tool_use: 'tool-calls',
   max_tokens: 'max-tokens',

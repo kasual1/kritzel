@@ -1,19 +1,19 @@
-import type { KritzelAgenticClickAction } from '../../interfaces/agentic-action.interface';
-import type { KritzelPoint } from '../../interfaces/point.interface';
-import type { KritzelBaseObject } from '../objects/base-object.class';
-import type { KritzelObjectMap } from '../structures/object-map.structure';
-import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpdrawAgenticClickAction } from '../../interfaces/agentic-action.interface';
+import type { UpdrawPoint } from '../../interfaces/point.interface';
+import type { UpdrawBaseObject } from '../objects/base-object.class';
+import type { UpdrawObjectMap } from '../structures/object-map.structure';
+import { UpdrawZOrderHelper } from '../../helpers/z-order.helper';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
 import { findParentGroup, isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { isPointInCorners } from '../../helpers/agentic-geometry.helper';
 import { assertElementTarget, assertTarget } from '../../helpers/agentic-validation.helper';
 import { isElementTarget, isObjectTarget } from '../../helpers/agentic-geometry.helper';
 import { performElementInteraction, prepareElementTarget } from './interact-with-element.executor';
 
-type ObjectMap = KritzelObjectMap<KritzelBaseObject<any>>;
+type ObjectMap = UpdrawObjectMap<UpdrawBaseObject<any>>;
 
 /** The top-most visible top-level object at a world point, or `null`. */
-export function hitTestTopMost(map: ObjectMap, point: KritzelPoint): KritzelBaseObject<any> | null {
+export function hitTestTopMost(map: ObjectMap, point: UpdrawPoint): UpdrawBaseObject<any> | null {
   const hits = map
     .filter(object => {
       if (isSelectionObject(object) || object.isVisible === false) {
@@ -23,7 +23,7 @@ export function hitTestTopMost(map: ObjectMap, point: KritzelPoint): KritzelBase
       const corners = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
       return isPointInCorners(point, corners) && object.hitTest(point.x, point.y);
     })
-    .sort(KritzelZOrderHelper.compareStackOrder);
+    .sort(UpdrawZOrderHelper.compareStackOrder);
   let hit = hits.length > 0 ? hits[hits.length - 1] : null;
   // Clicks select whole groups, like the selection tool.
   const seen = new Set<string>();
@@ -42,7 +42,7 @@ export function hitTestTopMost(map: ObjectMap, point: KritzelPoint): KritzelBase
  * `click`: flies to the target and presses. Visual only on the canvas; an element target (`{ objectId, selector }`)
  * is really clicked, see `interactWithElement`.
  */
-export const clickExecutor: KritzelAgenticActionExecutor<KritzelAgenticClickAction> = {
+export const clickExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticClickAction> = {
   mutates: false,
 
   validate(action) {

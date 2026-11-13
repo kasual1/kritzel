@@ -22,16 +22,16 @@
 		"removeComments": false,
 		"strictPropertyInitialization": false,
 		"paths": {
-			"@kritzel/stencil": [
+			"@updraw/stencil": [
 				"./libs/engine/core"
 			],
-			"@kritzel/stencil/loader": [
+			"@updraw/stencil/loader": [
 				"./libs/engine/core/loader"
 			],
-			"@kritzel/angular": [
+			"@updraw/angular": [
 				"./libs/editor/angular/dist/lib"
 			],
-			"@kritzel/react": [
+			"@updraw/react": [
 				"./libs/editor/react/dist/lib"
 			]
 		}

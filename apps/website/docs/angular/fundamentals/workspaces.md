@@ -1,8 +1,8 @@
 ---
 sidebar_label: Workspaces
 displayed_sidebar: tutorialSidebar
-title: "Workspaces Concept | Kritzel for Angular"
-description: "Understand the core concept of Workspaces in Kritzel."
+title: "Workspaces Concept | Updraw for Angular"
+description: "Understand the core concept of Workspaces in Updraw."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -17,7 +17,7 @@ Workspaces can either be created programmatically or managed through the built-i
 
 ## Creating Workspaces
 
-Workspaces can be created by instantiating a `KritzelWorkspace` object and passing it to `editor.createWorkspace()`. You can specify custom properties such as the workspace `name`, initial canvas `viewport` settings, or a custom `id`.
+Workspaces can be created by instantiating an `UpdrawWorkspace` object and passing it to `editor.createWorkspace()`. You can specify custom properties such as the workspace `name`, initial canvas `viewport` settings, or a custom `id`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
@@ -57,7 +57,7 @@ Call `deleteWorkspace()` with the workspace to remove. Keep at least one workspa
 
 ## Switching Workspaces
 
-By default, Kritzel provides a built-in UI for managing multiple workspaces. However, if you hide this UI (`hideWorkspaceManager`), you can programmatically build your own workspace navigation. The `<kritzel-editor>` exposes an `[activeWorkspaceId]` input and an `(activeWorkspaceChange)` output binding that make switching between canvases seamless.
+By default, Updraw provides a built-in UI for managing multiple workspaces. However, if you hide this UI (`hideWorkspaceManager`), you can programmatically build your own workspace navigation. The `<updraw-editor>` exposes an `[activeWorkspaceId]` input and an `(activeWorkspaceChange)` output binding that make switching between canvases seamless.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"

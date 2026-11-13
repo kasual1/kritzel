@@ -1,4 +1,4 @@
-import { HocuspocusSyncProvider, KritzelEditor } from "@kritzel/react-editor";
+import { HocuspocusSyncProvider, UpdrawEditor } from "@updraw/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 import { reactThemeDark } from "../../const/react-theme-dark";
 
@@ -9,7 +9,7 @@ const syncConfig = {
 export function EditorHocuspocusPage() {
   return (
     <div className="app">
-      <KritzelEditor
+      <UpdrawEditor
         theme="light"
         themes={[reactThemeLight, reactThemeDark]}
         syncConfig={syncConfig}

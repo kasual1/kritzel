@@ -5,5 +5,5 @@
   "lib": {
     "entryFile": "src/public-api.ts"
   },
-  "allowedNonPeerDependencies": ["@kritzel/editor", "@kritzel/engine"]
+  "allowedNonPeerDependencies": ["@updraw/editor", "@updraw/engine"]
 }

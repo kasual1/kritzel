@@ -1,6 +1,6 @@
-import { KritzelEngineState } from "../interfaces/engine-state.interface";
+import { UpdrawEngineState } from "../interfaces/engine-state.interface";
 
-export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
+export const DEFAULT_ENGINE_CONFIG: UpdrawEngineState = {
   activeWorkspace: undefined,
   activeTool: null,
   objects: null,

@@ -1,12 +1,12 @@
 import { useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import {
   InMemorySyncProvider,
-  KritzelEditor,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawWorkspace,
   type ActiveWorkspaceChangeEvent,
-  type HTMLKritzelEditorElement,
-  type KritzelSyncConfig,
-} from "@kritzel/react-editor";
+  type HTMLUpdrawEditorElement,
+  type UpdrawSyncConfig,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -14,7 +14,7 @@ import { editorStyle, hostStyle } from "../../shared/demo-shared";
 import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [InMemorySyncProvider],
 };
 const tabStyle: CSSProperties = {
@@ -52,7 +52,7 @@ function createInitialWorkspaces() {
   return Array.from(
     { length: 6 },
     (_, index) =>
-      new KritzelWorkspace({
+      new UpdrawWorkspace({
         id: `board-${index + 1}`,
         name: `Board ${index + 1}`,
         objects: createSeedObjects(),
@@ -61,7 +61,7 @@ function createInitialWorkspaces() {
 }
 
 export function WorkspacesDeletePage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [workspaces, setWorkspaces] = useState(createInitialWorkspaces);
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | undefined>(
     "board-1",
@@ -73,12 +73,12 @@ export function WorkspacesDeletePage() {
     setActiveWorkspaceId(event.detail.id);
   }
 
-  async function switchTo(workspace: KritzelWorkspace) {
+  async function switchTo(workspace: UpdrawWorkspace) {
     await editorRef.current?.setActiveWorkspace(workspace.id);
   }
 
   async function deleteWorkspace(
-    workspace: KritzelWorkspace,
+    workspace: UpdrawWorkspace,
     event: MouseEvent<HTMLButtonElement>,
   ) {
     event.stopPropagation();
@@ -136,7 +136,7 @@ export function WorkspacesDeletePage() {
           );
         })}
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="workspaces-delete"
         theme="light"

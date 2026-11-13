@@ -1,11 +1,11 @@
 ---
 sidebar_label: Quick Start
-title: "Quick Start | Kritzel for React"
-description: "Install and integrate the Kritzel infinite canvas into your React application in minutes."
+title: "Quick Start | Updraw for React"
+description: "Install and integrate the Updraw infinite canvas into your React application in minutes."
 keywords:
   - react whiteboard
   - react infinite canvas
-  - kritzel
+  - updraw
 toc_max_heading_level: 2
 ---
 
@@ -14,19 +14,19 @@ import SkillInstallation from '@site/src/components/SkillInstallation';
 
 # Quick Start
 
-The following guide gets you a full Kritzel editor setup in under five minutes.
+The following guide gets you a full Updraw editor setup in under five minutes.
 
 ## Installation
 
-Run the following command to install the Kritzel editor in your project.
+Run the following command to install the Updraw editor in your project.
 
 ```bash
-npm install @kritzel/react-editor
+npm install @updraw/react-editor
 ```
 
 <SkillInstallation>
 
-Install the related Kritzel skill for coding assistance:
+Install the related Updraw skill for coding assistance:
 
 ```bash
 npx skills add kasual1/kritzel
@@ -36,13 +36,13 @@ npx skills add kasual1/kritzel
 
 ## Setup
 
-Import and render the `<KritzelEditor>` component:
+Import and render the `<UpdrawEditor>` component:
 
 ```tsx title="Editor.tsx"
-import { KritzelEditor } from '@kritzel/react-editor';
+import { UpdrawEditor } from '@updraw/react-editor';
 
 export function Editor() {
-  return <KritzelEditor style={{ display: 'block', width: '100%', height: '100vh' }} />;
+  return <UpdrawEditor style={{ display: 'block', width: '100%', height: '100vh' }} />;
 }
 ```
 
@@ -63,15 +63,15 @@ By default, the editor uses an empty sync provider list, so canvas state is rese
 For provider behavior details and persistence guidance, take a look at [Persistence](../fundamentals/persistence.md).
 
 ```tsx title="Editor.tsx"
-import { IndexedDBSyncProvider, KritzelEditor, type KritzelSyncConfig } from '@kritzel/react-editor';
+import { IndexedDBSyncProvider, UpdrawEditor, type UpdrawSyncConfig } from '@updraw/react-editor';
 
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [IndexedDBSyncProvider],
 };
 
 export function Editor() {
   return (
-    <KritzelEditor
+    <UpdrawEditor
       syncConfig={syncConfig}
       style={{ display: 'block', width: '100%', height: '100vh' }}
     />
@@ -81,7 +81,7 @@ export function Editor() {
 
 ### Full Viewport Styling
 
-To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g., `styles.css`):
+To ensure the Updraw editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g., `styles.css`):
 
 ```css
 html,

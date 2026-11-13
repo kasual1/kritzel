@@ -1,9 +1,9 @@
 {
-  "name": "@kritzel/react-demo",
+  "name": "@updraw/react-demo",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://kritzel.io",
+  "homepage": "https://updraw.io",
   "scripts": {
     "start": "vite",
     "clean": "rimraf dist node_modules",
@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",
-    "@kritzel/react-engine": "file:../../../libs/engine/react/dist",
-    "@kritzel/react-editor": "file:../../../libs/editor/react/dist",
+    "@updraw/react-engine": "file:../../../libs/engine/react/dist",
+    "@updraw/react-editor": "file:../../../libs/editor/react/dist",
     "postprocessing": "^6.39.4",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",

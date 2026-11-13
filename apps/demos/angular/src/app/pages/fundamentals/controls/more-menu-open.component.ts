@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
-import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawWorkspace } from '@updraw/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-more-menu-open',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="control-panel">
@@ -15,7 +15,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         <span>More menu</span>
       </label>
     </div>
-    <kritzel-editor
+    <updraw-editor
       editorId="more-menu-open"
       [theme]="'light'"
       [themes]="themes"
@@ -25,23 +25,23 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="isMoreMenuVisible()"
       (isReady)="onReady()"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: `
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
     .control-panel { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; }
     .checkbox-control { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #333; cursor: pointer; }
-    kritzel-editor { flex: 1; }
+    updraw-editor { flex: 1; }
   `,
 })
 export class MoreMenuOpenComponent {
-  editor = viewChild(KritzelEditor);
+  editor = viewChild(UpdrawEditor);
 
   isMoreMenuVisible = signal(true);
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
   moreMenuItems = [
     {

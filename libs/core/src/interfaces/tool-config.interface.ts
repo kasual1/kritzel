@@ -1,6 +1,6 @@
-import { KritzelBaseTool } from '../classes/tools/base-tool.class';
+import { UpdrawBaseTool } from '../classes/tools/base-tool.class';
 
-export type { KritzelToolType } from './tool-type.interface';
+export type { UpdrawToolType } from './tool-type.interface';
 
 export type ToolConfigType = 'brush' | 'line' | 'shape' | 'text' | 'selection';
 
@@ -21,7 +21,7 @@ export interface ToolConfigDefinition {
   controls: ToolConfigControl[];
 }
 
-export type ConfigurableTool = KritzelBaseTool;
+export type ConfigurableTool = UpdrawBaseTool;
 
 export interface ToolDisplayValues {
   color: string;

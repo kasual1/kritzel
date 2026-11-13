@@ -1,13 +1,13 @@
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelBaseHandler } from './base.handler';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpdrawBaseHandler } from './base.handler';
+import { UpdrawCore } from '../core/core.class';
 
 /**
  * Handles rotation interactions for selected objects on the canvas.
  * Supports both mouse and touch/pen input for rotating the selection group
  * around its center point.
  */
-export class KritzelRotationHandler extends KritzelBaseHandler {
+export class UpdrawRotationHandler extends UpdrawBaseHandler {
   /** The initial angle (in radians) between the cursor and the selection group center when rotation starts. */
   initialRotation: number = 0;
 
@@ -24,10 +24,10 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   initialCenterY: number = 0;
 
   /**
-   * Creates an instance of KritzelRotationHandler.
-   * @param core - The KritzelCore instance that provides access to the store, engine, and other core functionalities.
+   * Creates an instance of UpdrawRotationHandler.
+   * @param core - The UpdrawCore instance that provides access to the store, engine, and other core functionalities.
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     super(core);
   }
 
@@ -50,7 +50,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
    */
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      if (KritzelEventHelper.isLeftClick(event)) {
+      if (UpdrawEventHelper.isLeftClick(event)) {
         const selectionGroup = this._core.store.selectionGroup;
         if (selectionGroup && this._core.store.state.isRotationHandleSelected && this._core.objectConfigManager.isRotatable(selectionGroup)) {
           selectionGroup.beginTransform();

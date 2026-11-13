@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
 import {
-  HTMLKritzelEditorElement,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelBaseObject,
-} from "@kritzel/react-editor";
+  HTMLUpdrawEditorElement,
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawBaseObject,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -15,14 +15,14 @@ import { InfoPanel, InfoPanelToggle, useInfoPanel } from "../../../components/In
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ObjectsFilterPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const infoPanel = useInfoPanel({ hasToolbarToggle: true });
-  const [results, setResults] = useState<KritzelBaseObject[]>([]);
+  const [results, setResults] = useState<UpdrawBaseObject[]>([]);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ objects: createSeedObjects() }),
+    new UpdrawWorkspace({ objects: createSeedObjects() }),
   ]);
 
-  async function highlightResults(nextResults: KritzelBaseObject[]) {
+  async function highlightResults(nextResults: UpdrawBaseObject[]) {
     const editor = editorRef.current;
     if (!editor) return;
     const all = await editor.getAllObjects();
@@ -30,7 +30,7 @@ export function ObjectsFilterPage() {
     await Promise.all(nextResults.map((object) => editor.updateObject(object, { opacity: 1 })));
   }
 
-  async function showResults(nextResults: KritzelBaseObject[]) {
+  async function showResults(nextResults: UpdrawBaseObject[]) {
     setResults(nextResults);
     await highlightResults(nextResults);
   }
@@ -61,16 +61,16 @@ export function ObjectsFilterPage() {
   return (
     <div style={hostStyle}>
       <Toolbar>
-        <button onClick={() => void queryByType("KritzelShape")}>Shapes</button>
-        <button onClick={() => void queryByType("KritzelPath")}>Paths</button>
-        <button onClick={() => void queryByType("KritzelLine")}>Lines</button>
+        <button onClick={() => void queryByType("UpdrawShape")}>Shapes</button>
+        <button onClick={() => void queryByType("UpdrawPath")}>Paths</button>
+        <button onClick={() => void queryByType("UpdrawLine")}>Lines</button>
         <button onClick={() => void queryAll()}>All</button>
         <button onClick={() => void queryNone()}>None</button>
         <button onClick={() => void queryInViewport()}>In Viewport</button>
         <InfoPanelToggle panel={infoPanel} />
       </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        <KritzelEditor
+        <UpdrawEditor
           ref={editorRef}
           editorId="objects-filter"
           theme="light"

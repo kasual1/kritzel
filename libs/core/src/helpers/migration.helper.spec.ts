@@ -1,6 +1,6 @@
 import * as Y from 'yjs';
 import { runMigrations } from './migration.helper';
-import { KritzelMigration } from '../interfaces/migration.interface';
+import { UpdrawMigration } from '../interfaces/migration.interface';
 
 describe('runMigrations', () => {
   let ydoc: Y.Doc;
@@ -20,7 +20,7 @@ describe('runMigrations', () => {
   it('should not run migrations when document version equals current version', () => {
     metadataMap.set('schemaVersion', 3);
     const migrateFn = jest.fn();
-    const migrations: KritzelMigration[] = [{ fromVersion: 2, toVersion: 3, migrate: migrateFn }];
+    const migrations: UpdrawMigration[] = [{ fromVersion: 2, toVersion: 3, migrate: migrateFn }];
 
     const result = runMigrations(ydoc, metadataMap, { data: dataMap }, migrations, 3);
 
@@ -31,7 +31,7 @@ describe('runMigrations', () => {
   it('should not run migrations when document version exceeds current version', () => {
     metadataMap.set('schemaVersion', 5);
     const migrateFn = jest.fn();
-    const migrations: KritzelMigration[] = [{ fromVersion: 4, toVersion: 5, migrate: migrateFn }];
+    const migrations: UpdrawMigration[] = [{ fromVersion: 4, toVersion: 5, migrate: migrateFn }];
 
     const result = runMigrations(ydoc, metadataMap, { data: dataMap }, migrations, 3);
 
@@ -41,7 +41,7 @@ describe('runMigrations', () => {
 
   it('should default to version 0 when no schemaVersion is set', () => {
     const migrateFn = jest.fn();
-    const migrations: KritzelMigration[] = [{ fromVersion: 0, toVersion: 1, migrate: migrateFn }];
+    const migrations: UpdrawMigration[] = [{ fromVersion: 0, toVersion: 1, migrate: migrateFn }];
 
     const result = runMigrations(ydoc, metadataMap, { data: dataMap }, migrations, 1);
 
@@ -52,7 +52,7 @@ describe('runMigrations', () => {
   it('should execute migrations in order', () => {
     const executionOrder: number[] = [];
 
-    const migrations: KritzelMigration[] = [
+    const migrations: UpdrawMigration[] = [
       { fromVersion: 1, toVersion: 2, migrate: () => executionOrder.push(2) },
       { fromVersion: 0, toVersion: 1, migrate: () => executionOrder.push(1) },
       { fromVersion: 2, toVersion: 3, migrate: () => executionOrder.push(3) },
@@ -70,7 +70,7 @@ describe('runMigrations', () => {
     const skip2 = jest.fn();
     const run3 = jest.fn();
 
-    const migrations: KritzelMigration[] = [
+    const migrations: UpdrawMigration[] = [
       { fromVersion: 0, toVersion: 1, migrate: skip1 },
       { fromVersion: 1, toVersion: 2, migrate: skip2 },
       { fromVersion: 2, toVersion: 3, migrate: run3 },
@@ -84,7 +84,7 @@ describe('runMigrations', () => {
   });
 
   it('should update schemaVersion in metadata after running migrations', () => {
-    const migrations: KritzelMigration[] = [
+    const migrations: UpdrawMigration[] = [
       { fromVersion: 0, toVersion: 1, migrate: jest.fn() },
       { fromVersion: 1, toVersion: 2, migrate: jest.fn() },
     ];
@@ -111,7 +111,7 @@ describe('runMigrations', () => {
 
   it('should pass ydoc and maps to each migration function', () => {
     const migrateFn = jest.fn();
-    const migrations: KritzelMigration[] = [{ fromVersion: 0, toVersion: 1, migrate: migrateFn }];
+    const migrations: UpdrawMigration[] = [{ fromVersion: 0, toVersion: 1, migrate: migrateFn }];
     const maps = { data: dataMap };
 
     runMigrations(ydoc, metadataMap, maps, migrations, 1);
@@ -124,7 +124,7 @@ describe('runMigrations', () => {
     const run2 = jest.fn();
     const skip3 = jest.fn();
 
-    const migrations: KritzelMigration[] = [
+    const migrations: UpdrawMigration[] = [
       { fromVersion: 0, toVersion: 1, migrate: run1 },
       { fromVersion: 1, toVersion: 2, migrate: run2 },
       { fromVersion: 2, toVersion: 3, migrate: skip3 },
@@ -141,7 +141,7 @@ describe('runMigrations', () => {
   it('should actually transform data in Yjs maps', () => {
     dataMap.set('item-1', { name: 'old', value: 10 });
 
-    const migrations: KritzelMigration[] = [
+    const migrations: UpdrawMigration[] = [
       {
         fromVersion: 0,
         toVersion: 1,
@@ -163,7 +163,7 @@ describe('runMigrations', () => {
   it('should handle idempotent migrations safely', () => {
     dataMap.set('item-1', { name: 'test' });
 
-    const idempotentMigration: KritzelMigration = {
+    const idempotentMigration: UpdrawMigration = {
       fromVersion: 0,
       toVersion: 1,
       migrate: (_ydoc, maps) => {
@@ -187,24 +187,24 @@ describe('runMigrations', () => {
 
   it('should log migration progress when quiet is false', () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-    const migrations: KritzelMigration[] = [
+    const migrations: UpdrawMigration[] = [
       { fromVersion: 0, toVersion: 1, migrate: jest.fn() },
       { fromVersion: 1, toVersion: 2, migrate: jest.fn() },
     ];
 
     runMigrations(ydoc, metadataMap, { data: dataMap }, migrations, 2, { quiet: false });
 
-    expect(consoleSpy).toHaveBeenCalledWith('[Kritzel] Running 2 migration(s) from v0 to v2');
-    expect(consoleSpy).toHaveBeenCalledWith('[Kritzel] Migrating v0 → v1');
-    expect(consoleSpy).toHaveBeenCalledWith('[Kritzel] Migrating v1 → v2');
-    expect(consoleSpy).toHaveBeenCalledWith('[Kritzel] Migrations complete. Schema now at v2');
+    expect(consoleSpy).toHaveBeenCalledWith('[Updraw] Running 2 migration(s) from v0 to v2');
+    expect(consoleSpy).toHaveBeenCalledWith('[Updraw] Migrating v0 → v1');
+    expect(consoleSpy).toHaveBeenCalledWith('[Updraw] Migrating v1 → v2');
+    expect(consoleSpy).toHaveBeenCalledWith('[Updraw] Migrations complete. Schema now at v2');
 
     consoleSpy.mockRestore();
   });
 
   it('should not log migration progress when quiet is true', () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-    const migrations: KritzelMigration[] = [
+    const migrations: UpdrawMigration[] = [
       { fromVersion: 0, toVersion: 1, migrate: jest.fn() },
     ];
 
@@ -217,7 +217,7 @@ describe('runMigrations', () => {
 
   it('should default to quiet when no options are provided', () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-    const migrations: KritzelMigration[] = [
+    const migrations: UpdrawMigration[] = [
       { fromVersion: 0, toVersion: 1, migrate: jest.fn() },
     ];
 

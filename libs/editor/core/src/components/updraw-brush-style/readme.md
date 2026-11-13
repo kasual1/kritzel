@@ -1,4 +1,4 @@
-# kritzel-brush-style
+# updraw-brush-style
 
 
 
@@ -24,15 +24,15 @@
 
 ### Depends on
 
-- [kritzel-dropdown](../kritzel-dropdown)
-- kritzel-icon
+- [updraw-dropdown](../updraw-dropdown)
+- updraw-icon
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-brush-style --> kritzel-dropdown
-  kritzel-brush-style --> kritzel-icon
-  style kritzel-brush-style fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-brush-style --> updraw-dropdown
+  updraw-brush-style --> updraw-icon
+  style updraw-brush-style fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

@@ -263,11 +263,11 @@
   pointer-events: auto;
   touch-action: none;
   user-select: none;
-  cursor: var(--kritzel-site-hand-cursor) !important;
+  cursor: var(--updraw-site-hand-cursor) !important;
 }
 
 .canvasLayer .draggableItem[data-dragging] {
-  cursor: var(--kritzel-site-grab-cursor) !important;
+  cursor: var(--updraw-site-grab-cursor) !important;
 }
 
 .draggableItem:focus {
@@ -560,7 +560,7 @@
 .historyButton[data-active] {
   color: var(--landing-ink);
   pointer-events: auto;
-  cursor: var(--kritzel-site-pointer-cursor);
+  cursor: var(--updraw-site-pointer-cursor);
 }
 
 .historyDivider {
@@ -589,7 +589,7 @@
   border-radius: 10px;
   color: var(--landing-ink);
   pointer-events: auto;
-  cursor: var(--kritzel-site-pointer-cursor);
+  cursor: var(--updraw-site-pointer-cursor);
   padding: 0;
   border: 0;
   background: transparent;
@@ -1114,7 +1114,7 @@
   transform: translateX(-4cqw) scale(0.96);
 }
 
-/* Kritzel's object titlebar (kritzel-object-titlebar-layer.css) scaled with the demo, blue while active. */
+/* Updraw's object titlebar (updraw-object-titlebar-layer.css) scaled with the demo, blue while active. */
 .framesTitlebar {
   position: absolute;
   right: 0;
@@ -1189,7 +1189,7 @@
     color 0.25s ease;
 }
 
-/* Pressed by the agent's click, like Kritzel's titlebar buttons. */
+/* Pressed by the agent's click, like Updraw's titlebar buttons. */
 .framesAdd[data-pressed] {
   background: rgba(0, 122, 255, 0.16);
 }
@@ -1486,7 +1486,7 @@
   border-radius: 3cqw;
 }
 
-/* Kritzel's agentic cursor (kritzel-agentic-cursors.css), just the arrow. It keeps Kritzel's size in wide demos and shrinks a little in narrow ones, so it does not cover the frames.
+/* Updraw's agentic cursor (updraw-agentic-cursors.css), just the arrow. It keeps Updraw's size in wide demos and shrinks a little in narrow ones, so it does not cover the frames.
    Its tip is at the translated point (set from FramesDemo). */
 .framesCursor {
   --frames-arrow: clamp(16px, 3.8cqw, 20px);

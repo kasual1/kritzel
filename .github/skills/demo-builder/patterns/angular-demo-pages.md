@@ -52,8 +52,8 @@ Skip framework theme only when the demo intentionally needs a neutral baseline (
 ## Editor / Engine Ref Access
 
 Angular refs resolve directly to native elements:
-- Editor: `HTMLKritzelEditorElement`
-- Engine: `HTMLKritzelEngineElement`
+- Editor: `HTMLUpdrawEditorElement`
+- Engine: `HTMLUpdrawEngineElement`
 
 Use `viewChild` + `ElementRef` for direct API calls.
 
@@ -63,7 +63,7 @@ When demos need preloaded canvas content, prefer `createSeedObjects()` from `app
 
 ## Dynamic Objects
 
-When a page uses `KritzelDynamicObject`:
+When a page uses `UpdrawDynamicObject`:
 
 1. Keep renderer setup and object factories in dedicated files instead of bloating the page component.
 2. Register/unregister renderers inside component lifecycle paths.

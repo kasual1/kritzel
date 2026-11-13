@@ -1,11 +1,11 @@
-import { KritzelAsset } from '../../../interfaces/asset.interface';
+import { UpdrawAsset } from '../../../interfaces/asset.interface';
 import {
   AssetProviderConfig,
   AssetProviderFactory,
   IAssetStorageProvider,
-  KritzelAssetPutMetadata,
+  UpdrawAssetPutMetadata,
 } from '../../../interfaces/asset-provider.interface';
-import { KritzelAssetStorageConfig } from '../../../interfaces/asset-storage-config.interface';
+import { UpdrawAssetStorageConfig } from '../../../interfaces/asset-storage-config.interface';
 import { IndexedDBAssetProvider } from './indexeddb-asset-provider.class';
 
 /** In-memory retry state for a pending remote upload. */
@@ -25,7 +25,7 @@ const MAX_RETRY_DELAY_MS = 5 * 60_000; // 5 minutes
  * Thrown when an asset id cannot be located in any configured provider.
  *
  * This is distinct from transport / network errors: callers (e.g.
- * {@link KritzelImage.ensureResolved}) use the type to decide whether a
+ * {@link UpdrawImage.ensureResolved}) use the type to decide whether a
  * failure is permanent (asset truly missing) or transient (network blip,
  * remote temporarily unreachable) and should be retried without
  * burning the per-page-load attempt budget.
@@ -33,7 +33,7 @@ const MAX_RETRY_DELAY_MS = 5 * 60_000; // 5 minutes
 export class AssetNotFoundError extends Error {
   readonly assetId: string;
   constructor(assetId: string, message?: string) {
-    super(message ?? `[KritzelAssetResolver] Asset ${assetId} not found in any configured provider.`);
+    super(message ?? `[UpdrawAssetResolver] Asset ${assetId} not found in any configured provider.`);
     this.name = 'AssetNotFoundError';
     this.assetId = assetId;
   }
@@ -43,7 +43,7 @@ export class AssetNotFoundError extends Error {
  * Orchestrates asset storage across one or more providers.
  *
  * Responsibilities:
- *  - Instantiates providers from a {@link KritzelAssetStorageConfig}.
+ *  - Instantiates providers from a {@link UpdrawAssetStorageConfig}.
  *  - Always ensures an {@link IndexedDBAssetProvider} is present as the
  *    local cache / optimistic write buffer.
  *  - Implements a write-through upload pipeline: bytes are written to the
@@ -55,11 +55,11 @@ export class AssetNotFoundError extends Error {
  *
  * Crash / reload resilience: the "needs upload" state is stored directly
  * on the asset's metadata record in the local IndexedDB provider (as
- * `KritzelAsset.pendingRemotes`). On `init()` the resolver scans for any
+ * `UpdrawAsset.pendingRemotes`). On `init()` the resolver scans for any
  * such records and re-enqueues them, so uploads that were interrupted
  * by a reload eventually complete without requiring a separate queue DB.
  */
-export class KritzelAssetResolver {
+export class UpdrawAssetResolver {
   private _providers: IAssetStorageProvider[] = [];
   private _local: IndexedDBAssetProvider | null = null;
   /** Remote providers ordered as configured. */
@@ -71,7 +71,7 @@ export class KritzelAssetResolver {
    * Created lazily so that callers issuing `resolve()` / `fetchBlob()` /
    * `put()` before {@link init} has been invoked are queued instead of
    * rejected. This eliminates a race on reload where the renderer
-   * triggers `KritzelImage.ensureResolved()` before the engine has
+   * triggers `UpdrawImage.ensureResolved()` before the engine has
    * finished wiring up the asset storage layer.
    */
   private _readyPromise: Promise<void> | null = null;
@@ -111,7 +111,7 @@ export class KritzelAssetResolver {
    *                 is automatically prepended when the list contains none,
    *                 so local caching is always available.
    */
-  async init(config?: KritzelAssetStorageConfig): Promise<void> {
+  async init(config?: UpdrawAssetStorageConfig): Promise<void> {
     if (this._initialized) return;
     // Ensure the deferred ready promise exists before any async work so
     // concurrent callers awaiting `ensureReady()` are unblocked together.
@@ -154,7 +154,7 @@ export class KritzelAssetResolver {
       } catch (err) {
         if (this.canLogInfo()) {
           console.warn(
-            `[Kritzel] Asset resolver remote provider "${provider.name}" failed to initialize. ` +
+            `[Updraw] Asset resolver remote provider "${provider.name}" failed to initialize. ` +
               `Assets will be served from the local provider until the remote becomes available.`,
             err,
           );
@@ -185,7 +185,7 @@ export class KritzelAssetResolver {
   /** Tears down the resolver and all providers. */
   destroy(): void {
     if (this.canLogInfo()) {
-      console.info('[Kritzel] Asset resolver destroyed');
+      console.info('[Updraw] Asset resolver destroyed');
     }
     this._destroyed = true;
     if (this._flushTimer) {
@@ -207,7 +207,7 @@ export class KritzelAssetResolver {
     this._initialized = false;
     // Reject any callers still waiting on init so they don't hang forever.
     if (this._rejectReady) {
-      this._rejectReady(new Error('[KritzelAssetResolver] Destroyed before initialization completed.'));
+      this._rejectReady(new Error('[UpdrawAssetResolver] Destroyed before initialization completed.'));
     }
     this._readyPromise = null;
     this._resolveReady = null;
@@ -224,15 +224,15 @@ export class KritzelAssetResolver {
    * Callers receive the asset descriptor synchronously after the local
    * write completes; remote replication happens in the background.
    */
-  async put(blob: Blob, metadata: KritzelAssetPutMetadata): Promise<KritzelAsset> {
+  async put(blob: Blob, metadata: UpdrawAssetPutMetadata): Promise<UpdrawAsset> {
     await this.ensureReady();
 
     const id = metadata.id ?? this.generateUuid();
-    const fullMetadata: KritzelAssetPutMetadata = { ...metadata, id };
+    const fullMetadata: UpdrawAssetPutMetadata = { ...metadata, id };
 
     // Always write to the local provider first so the UI can render
     // immediately and offline usage is supported.
-    let asset: KritzelAsset | null = null;
+    let asset: UpdrawAsset | null = null;
     if (this._local) {
       asset = await this._local.put(blob, fullMetadata);
     }
@@ -257,7 +257,7 @@ export class KritzelAssetResolver {
     if (!asset) {
       // No local provider? Upload synchronously to the first remote.
       if (this._remoteProviders.length === 0) {
-        throw new Error('[KritzelAssetResolver] No providers configured to store asset.');
+        throw new Error('[UpdrawAssetResolver] No providers configured to store asset.');
       }
       asset = await this._remoteProviders[0].put(blob, fullMetadata);
     }
@@ -324,7 +324,7 @@ export class KritzelAssetResolver {
       // Remotes were tried and all failed. Without HTTP-status visibility
       // we cannot tell "truly missing" from "network blip", so surface a
       // generic error and let the caller treat it as transient.
-      throw new Error(`[KritzelAssetResolver] Failed to resolve asset ${id}: ${String(lastError)}`);
+      throw new Error(`[UpdrawAssetResolver] Failed to resolve asset ${id}: ${String(lastError)}`);
     })();
 
     this._resolvePromises.set(id, promise);
@@ -369,14 +369,14 @@ export class KritzelAssetResolver {
     if (remoteAttempts === 0 && (localTried ? localMissed : true)) {
       throw new AssetNotFoundError(id);
     }
-    throw new Error(`[KritzelAssetResolver] Failed to fetch blob for ${id}: ${String(lastError)}`);
+    throw new Error(`[UpdrawAssetResolver] Failed to fetch blob for ${id}: ${String(lastError)}`);
   }
 
   /**
    * Uploads a legacy data-URL and returns the new asset. Used by the
-   * migration step for existing `KritzelImage.src` payloads.
+   * migration step for existing `UpdrawImage.src` payloads.
    */
-  async putDataUrl(dataUrl: string, metadata: Omit<KritzelAssetPutMetadata, 'mimeType'> & { mimeType?: string }): Promise<KritzelAsset> {
+  async putDataUrl(dataUrl: string, metadata: Omit<UpdrawAssetPutMetadata, 'mimeType'> & { mimeType?: string }): Promise<UpdrawAsset> {
     const blob = await this.dataUrlToBlob(dataUrl);
     return this.put(blob, {
       ...metadata,
@@ -390,7 +390,7 @@ export class KritzelAssetResolver {
 
   private logProviderConfiguration(): void {
     const lines: string[] = [
-      `[Kritzel] Asset resolver initialized with ${this._providers.length} provider(s):`,
+      `[Updraw] Asset resolver initialized with ${this._providers.length} provider(s):`,
     ];
     for (const provider of this._providers) {
       const role = provider === this._local ? 'local (primary write target)' : provider.type;
@@ -455,7 +455,7 @@ export class KritzelAssetResolver {
     }
 
     if (this.canLogInfo() && recoveredCount > 0) {
-      console.info(`[Kritzel] Asset resolver recovered ${recoveredCount} pending upload(s)`);
+      console.info(`[Updraw] Asset resolver recovered ${recoveredCount} pending upload(s)`);
     }
   }
 
@@ -488,7 +488,7 @@ export class KritzelAssetResolver {
       }
 
       let blob: Blob;
-      let metadata: KritzelAsset | undefined;
+      let metadata: UpdrawAsset | undefined;
       try {
         [blob, metadata] = await Promise.all([
           this._local.fetch(job.id),
@@ -513,7 +513,7 @@ export class KritzelAssetResolver {
         this._pending.delete(key);
         await this.clearPendingRemote(job.id, job.providerName);
         if (this.canLogInfo()) {
-          console.info(`[Kritzel] Asset resolver uploaded ${job.id} to ${provider.name}`);
+          console.info(`[Updraw] Asset resolver uploaded ${job.id} to ${provider.name}`);
         }
       } catch (err) {
         job.attempts += 1;
@@ -525,7 +525,7 @@ export class KritzelAssetResolver {
         nextRetryIn = Math.min(nextRetryIn, delay);
         if (this.canLogInfo()) {
           console.warn(
-            `[Kritzel] Asset resolver upload to ${provider.name} failed for ${job.id} (attempt ${job.attempts}). ` +
+            `[Updraw] Asset resolver upload to ${provider.name} failed for ${job.id} (attempt ${job.attempts}). ` +
               `Retrying in ${Math.round(delay / 1000)}s.`,
             err,
           );
@@ -560,7 +560,7 @@ export class KritzelAssetResolver {
   private ensureReady(): Promise<void> {
     if (this._initialized) return Promise.resolve();
     if (this._destroyed) {
-      return Promise.reject(new Error('[KritzelAssetResolver] Resolver was destroyed.'));
+      return Promise.reject(new Error('[UpdrawAssetResolver] Resolver was destroyed.'));
     }
     return this.getReadyPromise();
   }

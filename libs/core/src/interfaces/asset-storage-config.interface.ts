@@ -1,7 +1,7 @@
 import { AssetProviderConfig } from './asset-provider.interface';
 
 /**
- * Configuration for the asset storage layer used by Kritzel to store
+ * Configuration for the asset storage layer used by Updraw to store
  * binary payloads (images, etc.) outside of the Yjs CRDT.
  *
  * The Yjs document only stores asset ids; the actual bytes live in the
@@ -27,7 +27,7 @@ import { AssetProviderConfig } from './asset-provider.interface';
  * }
  * ```
  */
-export interface KritzelAssetStorageConfig {
+export interface UpdrawAssetStorageConfig {
   /**
    * Ordered list of asset providers. Resolution walks the list in order
    * and returns the first provider that can serve a given id (typically

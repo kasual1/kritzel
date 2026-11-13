@@ -9,21 +9,21 @@ import {
   type MouseEvent as ReactMouseEvent,
 } from "react";
 import {
-  KritzelEditor,
+  UpdrawEditor,
   ShapeType,
-  type HTMLKritzelEditorElement,
-  type KritzelBaseObject,
-  type KritzelSyncConfig,
+  type HTMLUpdrawEditorElement,
+  type UpdrawBaseObject,
+  type UpdrawSyncConfig,
   type ObjectsAddedEvent,
   type ObjectsRemovedEvent,
   type ObjectsUpdatedEvent,
-} from "@kritzel/react-editor";
+} from "@updraw/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 import { reactThemeDark } from "../../const/react-theme-dark";
 import { createSeedObjects } from "../getting-started/seed-objects";
 import { InfoPanel, useInfoPanel } from "../../components/InfoPanel";
 
-type AnyObject = KritzelBaseObject<HTMLElement | SVGElement> & {
+type AnyObject = UpdrawBaseObject<HTMLElement | SVGElement> & {
   childIds?: string[];
   fill?: unknown;
   fillColor?: unknown;
@@ -32,7 +32,7 @@ type AnyObject = KritzelBaseObject<HTMLElement | SVGElement> & {
   text?: string;
 };
 
-const AVAILABLE_TYPES = ["KritzelShape", "KritzelText", "KritzelLine", "KritzelPath"];
+const AVAILABLE_TYPES = ["UpdrawShape", "UpdrawText", "UpdrawLine", "UpdrawPath"];
 const themes = [reactThemeLight, reactThemeDark];
 
 const hostStyle: CSSProperties = {
@@ -166,25 +166,25 @@ function resolveThemeColor(raw: unknown, fallback: string): string {
 }
 
 export function ObjectExplorerPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const infoPanel = useInfoPanel({ showOnMobile: true });
-  const selectionEditorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const selectionEditorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const selectionHandlerRef = useRef<(() => void) | null>(null);
 
-  const syncConfig = useMemo<KritzelSyncConfig>(() => ({ providers: [] }), []);
+  const syncConfig = useMemo<UpdrawSyncConfig>(() => ({ providers: [] }), []);
 
   const [allObjects, setAllObjects] = useState<AnyObject[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [selectedObject, setSelectedObject] = useState<AnyObject | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(
-    new Set([...AVAILABLE_TYPES, "KritzelGroup"]),
+    new Set([...AVAILABLE_TYPES, "UpdrawGroup"]),
   );
 
   const childIds = useMemo(() => {
     const ids = new Set<string>();
     allObjects.forEach((obj) => {
-      if (obj.__class__ === "KritzelGroup" && obj.childIds) {
+      if (obj.__class__ === "UpdrawGroup" && obj.childIds) {
         obj.childIds.forEach((id: string) => ids.add(id));
       }
     });
@@ -224,13 +224,13 @@ export function ObjectExplorerPage() {
       if (obj.__class__.toLowerCase().includes(query)) {
         return true;
       }
-      if (obj.__class__ === "KritzelText") {
+      if (obj.__class__ === "UpdrawText") {
         const txt = (obj.text as string) || "";
         if (txt.toLowerCase().includes(query)) {
           return true;
         }
       }
-      if (obj.__class__ === "KritzelShape") {
+      if (obj.__class__ === "UpdrawShape") {
         const shapeType = (obj.shapeType as string) || "";
         if (shapeType.toLowerCase().includes(query)) {
           return true;
@@ -248,7 +248,7 @@ export function ObjectExplorerPage() {
           if (matchesFilter(child)) {
             return true;
           }
-          if (child.__class__ === "KritzelGroup" && visit(child)) {
+          if (child.__class__ === "UpdrawGroup" && visit(child)) {
             return true;
           }
         }
@@ -263,7 +263,7 @@ export function ObjectExplorerPage() {
   const isNodeVisible = useCallback(
     (obj: AnyObject): boolean =>
       matchesFilter(obj) ||
-      (obj.__class__ === "KritzelGroup" && hasMatchingDescendant(obj)),
+      (obj.__class__ === "UpdrawGroup" && hasMatchingDescendant(obj)),
     [matchesFilter, hasMatchingDescendant],
   );
 
@@ -367,7 +367,7 @@ export function ObjectExplorerPage() {
 
   function toggleExpand(event: ReactMouseEvent, obj: AnyObject) {
     event.stopPropagation();
-    if (obj.__class__ !== "KritzelGroup") {
+    if (obj.__class__ !== "UpdrawGroup") {
       return;
     }
     setExpandedGroups((groups) => {
@@ -383,22 +383,22 @@ export function ObjectExplorerPage() {
 
   function getDisplayName(obj: AnyObject): string {
     switch (obj.__class__) {
-      case "KritzelGroup": {
+      case "UpdrawGroup": {
         const count = obj.childIds?.length ?? 0;
         return `Group (${count} items)`;
       }
-      case "KritzelShape":
+      case "UpdrawShape":
         return obj.shapeType === ShapeType.Ellipse ? "Ellipse" : "Rectangle";
-      case "KritzelText": {
+      case "UpdrawText": {
         const txt = (obj.text as string) || "Blank Text";
         return `Text "${txt.length > 15 ? `${txt.slice(0, 15)}...` : txt}"`;
       }
-      case "KritzelLine":
+      case "UpdrawLine":
         return "Line";
-      case "KritzelPath":
+      case "UpdrawPath":
         return "Brush Path";
       default:
-        return obj.__class__.replace("Kritzel", "");
+        return obj.__class__.replace("Updraw", "");
     }
   }
 
@@ -441,7 +441,7 @@ export function ObjectExplorerPage() {
       return null;
     }
 
-    const isGroup = obj.__class__ === "KritzelGroup";
+    const isGroup = obj.__class__ === "UpdrawGroup";
     const expanded = isExpanded(obj.id);
     const isSelected = selectedObject?.id === obj.id;
 
@@ -529,7 +529,7 @@ export function ObjectExplorerPage() {
     <div style={hostStyle}>
       <div style={contentShellStyle}>
         <div style={editorContainerStyle}>
-          <KritzelEditor
+          <UpdrawEditor
             ref={editorRef}
             editorId="object-explorer"
             theme="light"
@@ -585,7 +585,7 @@ export function ObjectExplorerPage() {
                   style={filterChipStyle(selectedTypes.has(type))}
                   onClick={() => void toggleTypeFilter(type)}
                 >
-                  {type.replace("Kritzel", "")}
+                  {type.replace("Updraw", "")}
                 </button>
               ))}
             </div>
@@ -607,7 +607,7 @@ export function ObjectExplorerPage() {
           {selectedObject && (
             <section style={inspectorStyle}>
               <h4 style={sectionHeadingStyle}>
-                Inspector: {selectedObject.__class__.replace("Kritzel", "")}
+                Inspector: {selectedObject.__class__.replace("Updraw", "")}
               </h4>
 
               <div style={inspectorFieldStyle}>
@@ -638,7 +638,7 @@ export function ObjectExplorerPage() {
                 </div>
               </div>
 
-              {selectedObject.__class__ === "KritzelText" && (
+              {selectedObject.__class__ === "UpdrawText" && (
                 <div style={inspectorFieldStyle}>
                   <label style={inspectorLabelStyle}>Text Content</label>
                   <input
@@ -650,7 +650,7 @@ export function ObjectExplorerPage() {
                 </div>
               )}
 
-              {selectedObject.__class__ === "KritzelShape" && (
+              {selectedObject.__class__ === "UpdrawShape" && (
                 <>
                   <div style={inspectorFieldStyle}>
                     <label style={inspectorLabelStyle}>Size W / H</label>
@@ -682,7 +682,7 @@ export function ObjectExplorerPage() {
                 </>
               )}
 
-              {selectedObject.__class__ === "KritzelPath" && (
+              {selectedObject.__class__ === "UpdrawPath" && (
                 <>
                   <div style={inspectorFieldStyle}>
                     <label style={inspectorLabelStyle}>Fill Color</label>

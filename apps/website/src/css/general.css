@@ -249,15 +249,15 @@ article a[aria-label^="Read more about "] {
   }
 }
 :root {
-  --kritzel-site-default-cursor: url("/img/cursor-default.svg") 4 4, auto;
-  --kritzel-site-pointer-cursor: url("/img/cursor-pointer.svg") 12 12, pointer;
-  --kritzel-site-hand-cursor: url("/img/cursor-hand.svg") 12 12, grab;
-  --kritzel-site-grab-cursor: url("/img/cursor-grab.svg") 12 12, grabbing;
+  --updraw-site-default-cursor: url("/img/cursor-default.svg") 4 4, auto;
+  --updraw-site-pointer-cursor: url("/img/cursor-pointer.svg") 12 12, pointer;
+  --updraw-site-hand-cursor: url("/img/cursor-hand.svg") 12 12, grab;
+  --updraw-site-grab-cursor: url("/img/cursor-grab.svg") 12 12, grabbing;
 }
 
 html,
 body {
-  cursor: var(--kritzel-site-default-cursor);
+  cursor: var(--updraw-site-default-cursor);
 }
 
 a[href],
@@ -273,7 +273,7 @@ select,
 label[for],
 label:has(input[type="checkbox"], input[type="radio"]),
 [class*="wordmarkLetter"] {
-  cursor: var(--kritzel-site-pointer-cursor) !important;
+  cursor: var(--updraw-site-pointer-cursor) !important;
 }
 
 button:disabled,

@@ -5,10 +5,10 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  KritzelEditor,
-  KritzelBaseObject,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawEditor,
+  UpdrawBaseObject,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -16,7 +16,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-objects-remove',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -24,7 +24,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         Remove Object
       </button>
     </app-toolbar>
-    <kritzel-editor
+    <updraw-editor
       editorId="objects-remove"
       [theme]="'light'"
       [themes]="themes"
@@ -33,7 +33,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [
     `
@@ -43,22 +43,22 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         height: 100%;
         font-family: Roboto, sans-serif;
       }
-      kritzel-editor {
+      updraw-editor {
         flex: 1;
       }
     `,
   ],
 })
 export class ObjectsRemoveComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
   private readonly seedObjects = createSeedObjects();
 
-  workspaces = signal([new KritzelWorkspace({ objects: this.seedObjects })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: this.seedObjects })]);
 
-  objects = signal<KritzelBaseObject[]>(this.seedObjects);
+  objects = signal<UpdrawBaseObject[]>(this.seedObjects);
 
   async removeLastObject() {
     const all = await this.editor.getAllObjects();

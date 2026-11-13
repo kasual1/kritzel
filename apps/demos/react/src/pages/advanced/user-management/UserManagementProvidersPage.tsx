@@ -1,5 +1,5 @@
 import { useMemo, useRef } from "react";
-import { KritzelEditor, type HTMLKritzelEditorElement } from "@kritzel/react-editor";
+import { UpdrawEditor, type HTMLUpdrawEditorElement } from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createUserManagementWorkspaces } from "./user-management-shared";
@@ -16,7 +16,7 @@ const providerIcons = {
 };
 
 const loginConfig = {
-  title: "Sign in to Kritzel",
+  title: "Sign in to Updraw",
   providers: [
     { name: "google", label: "Continue with Google", icon: "google" },
     { name: "facebook", label: "Continue with Facebook", icon: "facebook" },
@@ -25,12 +25,12 @@ const loginConfig = {
 };
 
 export function UserManagementProvidersPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const workspaces = useMemo(() => createUserManagementWorkspaces(), []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="user-management-providers"
         loginConfig={loginConfig}

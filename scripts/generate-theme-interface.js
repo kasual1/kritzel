@@ -1,5 +1,5 @@
 /**
- * Script to find all CSS variables (--kritzel-*) in the engine/editor component CSS files
+ * Script to find all CSS variables (--updraw-*) in the engine/editor component CSS files
  * and generate/update the theme.interface.ts file.
  *
  * Usage: node scripts/generate-theme-interface.js
@@ -14,7 +14,7 @@ const ENGINE_SOURCE_DIR = path.join(__dirname, '../libs/engine/core/src');
 const EDITOR_SOURCE_DIR = path.join(__dirname, '../libs/editor/core/src');
 const THEME_INTERFACE_PATH = path.join(CORE_SOURCE_DIR, 'interfaces', 'theme.interface.ts');
 const CSS_FILE_PATTERN = /\.(css|tsx|ts)$/;
-const CSS_VARIABLE_PATTERN = /--kritzel-([a-zA-Z0-9-]+)/g;
+const CSS_VARIABLE_PATTERN = /--updraw-([a-zA-Z0-9-]+)/g;
 
 // Known categories based on component structure
 const KNOWN_CATEGORIES = [
@@ -97,7 +97,7 @@ function extractVariablesFromFile(filePath) {
   CSS_VARIABLE_PATTERN.lastIndex = 0;
 
   while ((match = CSS_VARIABLE_PATTERN.exec(content)) !== null) {
-    variables.add(`--kritzel-${match[1]}`);
+    variables.add(`--updraw-${match[1]}`);
   }
 
   return Array.from(variables);
@@ -107,7 +107,7 @@ function extractVariablesFromFile(filePath) {
  * Determine the category for a CSS variable
  */
 function getCategoryForVariable(variable) {
-  const name = variable.replace('--kritzel-', '');
+  const name = variable.replace('--updraw-', '');
 
   // Sort categories by length (longest first) to match most specific first
   const sortedCategories = [...KNOWN_CATEGORIES].sort((a, b) => b.length - a.length);
@@ -154,7 +154,7 @@ function groupVariablesByCategory(variables) {
  * Convert CSS variable name to camelCase property name
  */
 function toCamelCase(cssVariable, category) {
-  let name = cssVariable.replace('--kritzel-', '');
+  let name = cssVariable.replace('--updraw-', '');
 
   // Remove category prefix if present
   const categoryPrefix = category;
@@ -190,7 +190,7 @@ function generateThemeInterface(groups) {
   lines.push("/**");
   lines.push(" * Complete theme definition with all CSS variable values grouped by category");
   lines.push(" */");
-  lines.push("export interface KritzelTheme {");
+  lines.push("export interface UpdrawTheme {");
   lines.push("  /** Theme identifier */");
   lines.push("  name: ThemeName;");
 

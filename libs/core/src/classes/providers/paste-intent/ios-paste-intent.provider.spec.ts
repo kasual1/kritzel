@@ -1,22 +1,22 @@
-import { KritzelIosPasteIntentProvider } from './ios-paste-intent.provider';
-import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
+import { UpdrawIosPasteIntentProvider } from './ios-paste-intent.provider';
+import { UpdrawDevicesHelper } from '../../../helpers/devices.helper';
 
 jest.mock('../../../helpers/devices.helper', () => ({
-  KritzelDevicesHelper: {
+  UpdrawDevicesHelper: {
     isIOS: jest.fn(),
   },
 }));
 
-describe('KritzelIosPasteIntentProvider', () => {
-  let provider: KritzelIosPasteIntentProvider;
+describe('UpdrawIosPasteIntentProvider', () => {
+  let provider: UpdrawIosPasteIntentProvider;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    provider = new KritzelIosPasteIntentProvider();
+    provider = new UpdrawIosPasteIntentProvider();
   });
 
   it('handles iOS eventless paste context', () => {
-    (KritzelDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
+    (UpdrawDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
 
     const canHandle = provider.canHandle({ core: {} as any });
 
@@ -24,7 +24,7 @@ describe('KritzelIosPasteIntentProvider', () => {
   });
 
   it('does not handle when a native clipboard event is present', () => {
-    (KritzelDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
+    (UpdrawDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
 
     const canHandle = provider.canHandle({
       core: {} as any,
@@ -35,12 +35,12 @@ describe('KritzelIosPasteIntentProvider', () => {
   });
 
   it('returns the in-memory session payload when available', async () => {
-    const payload = { version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] };
+    const payload = { version: 1, objects: [{ id: 'x', __class__: 'UpdrawShape' }] };
     const core = { clipboardManager: { sessionClipboardPayload: payload } } as any;
 
     const intent = await provider.getPasteIntent({ core });
 
-    expect(intent).toEqual({ type: 'kritzel_objects', payload });
+    expect(intent).toEqual({ type: 'updraw_objects', payload });
   });
 
   it('returns unknown when the session buffer is empty', async () => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-const STORAGE_KEY = 'kritzel-preferred-framework';
-const CHANGE_EVENT = 'kritzel-framework-preference-change';
+const STORAGE_KEY = 'updraw-preferred-framework';
+const CHANGE_EVENT = 'updraw-framework-preference-change';
 
 export type Framework = 'angular' | 'react' | 'vue';
 

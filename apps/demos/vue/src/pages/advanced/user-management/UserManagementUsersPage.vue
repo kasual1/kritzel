@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import {
-  KritzelEditor,
-  KritzelWorkspace,
-  type IKritzelUser,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type IUpdrawUser,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
-const user: IKritzelUser = {
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const user: IUpdrawUser = {
   id: 'user-current-1',
   displayName: 'Ada Lovelace',
   email: 'ada@example.com',
@@ -18,7 +18,7 @@ const user: IKritzelUser = {
   color: '#42b883',
   isGuest: false,
 }
-const activeUsers: IKritzelUser[] = [
+const activeUsers: IUpdrawUser[] = [
   {
     id: 'user-collaborator-1',
     displayName: 'Grace Hopper',
@@ -47,7 +47,7 @@ const activeUsers: IKritzelUser[] = [
 </script>
 
 <template>
-  <KritzelEditor
+  <UpdrawEditor
     editorId="user-management-users"
     :user="user"
     :activeUsers="activeUsers"

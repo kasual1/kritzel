@@ -1,18 +1,18 @@
 # Tools & Toolbar
 
-A *tool* is the active pointer-interaction mode; exactly one is active at a time. The default `<KritzelEditor>` toolbar registers these tools under these names:
+A *tool* is the active pointer-interaction mode; exactly one is active at a time. The default `<UpdrawEditor>` toolbar registers these tools under these names:
 
 | Name | Class | Creates |
 |---|---|---|
-| `selection` (default active) | `KritzelSelectionTool` | â€” selects/transforms |
-| `brush` | `KritzelBrushTool` | `KritzelPath` |
-| `eraser` | `KritzelEraserTool` | â€” removes objects |
-| `line` | `KritzelLineTool` | `KritzelLine` |
-| `shape` | `KritzelShapeTool` | `KritzelShape` |
-| `text` | `KritzelTextTool` | `KritzelText` |
-| `image` | `KritzelImageTool` | `KritzelImage` |
+| `selection` (default active) | `UpdrawSelectionTool` | â€” selects/transforms |
+| `brush` | `UpdrawBrushTool` | `UpdrawPath` |
+| `eraser` | `UpdrawEraserTool` | â€” removes objects |
+| `line` | `UpdrawLineTool` | `UpdrawLine` |
+| `shape` | `UpdrawShapeTool` | `UpdrawShape` |
+| `text` | `UpdrawTextTool` | `UpdrawText` |
+| `image` | `UpdrawImageTool` | `UpdrawImage` |
 
-Tool *names are whatever the toolbar config / `registerTool` call says* â€” when you customize the toolbar, `changeActiveToolByName` must use your names. `<KritzelEngine>` registers none.
+Tool *names are whatever the toolbar config / `registerTool` call says* â€” when you customize the toolbar, `changeActiveToolByName` must use your names. `<UpdrawEngine>` registers none.
 
 ## Switching tools
 
@@ -27,14 +27,14 @@ Switching tools clears the current selection. `disable()` / `enable()` turn all 
 ## Tool config interfaces
 
 ```ts
-interface KritzelBrushToolConfig {
+interface UpdrawBrushToolConfig {
   color: ThemeAwareColor;                 // { light, dark }
   size: number;
   palette: ThemeAwareColor[];             // [] disables the picker
   opacity?: number;                       // highlighters typically ~0.6
 }
 
-interface KritzelLineToolConfig {
+interface UpdrawLineToolConfig {
   color: ThemeAwareColor;
   size: number;
   palette: ThemeAwareColor[];
@@ -44,7 +44,7 @@ interface KritzelLineToolConfig {
   };
 }
 
-interface KritzelShapeToolConfig {
+interface UpdrawShapeToolConfig {
   shapeType: ShapeType;
   fillColor: ThemeAwareColor;
   strokeColor: ThemeAwareColor;
@@ -55,7 +55,7 @@ interface KritzelShapeToolConfig {
   palette: ThemeAwareColor[];
 }
 
-interface KritzelTextToolConfig {
+interface UpdrawTextToolConfig {
   color: ThemeAwareColor;
   size: number;
   fontFamily: string;
@@ -63,25 +63,25 @@ interface KritzelTextToolConfig {
 }
 ```
 
-All config types are exported from `@kritzel/react-editor`. Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` â€” spread them to tweak a single field.
+All config types are exported from `@updraw/react-editor`. Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` â€” spread them to tweak a single field.
 
 ## Registering preconfigured tool variants
 
 The most common customization: several variants of a built-in tool under distinct names (e.g. color-locked brushes driven by your own UI):
 
 ```tsx
-import { KritzelBrushTool, type KritzelBrushToolConfig } from '@kritzel/react-editor';
+import { UpdrawBrushTool, type UpdrawBrushToolConfig } from '@updraw/react-editor';
 
 async function onReady() {
   const editor = editorRef.current;
   if (!editor) return;
 
-  const red: KritzelBrushToolConfig = {
+  const red: UpdrawBrushToolConfig = {
     color: { light: '#ff0000', dark: '#ff6666' },
     size: 16,
     palette: [],                  // empty → no color picker, color is locked
   };
-  await editor.registerTool('red-brush', KritzelBrushTool, red);
+  await editor.registerTool('red-brush', UpdrawBrushTool, red);
   await editor.changeActiveToolByName('red-brush');
 }
 ```
@@ -90,18 +90,18 @@ async function onReady() {
 
 ## Customizing the toolbar (`toolbarItems` prop)
 
-Replace the editor's toolbar wholesale with a `KritzelToolbarItem[]`. **Define the array at module scope** (or `useMemo`) â€” a fresh array per render re-triggers the toolbar setup:
+Replace the editor's toolbar wholesale with an `UpdrawToolbarItem[]`. **Define the array at module scope** (or `useMemo`) â€” a fresh array per render re-triggers the toolbar setup:
 
 ```tsx
 import {
-  KritzelSelectionTool, KritzelBrushTool, KritzelTextTool,
-  type KritzelToolbarItem,
-} from '@kritzel/react-editor';
+  UpdrawSelectionTool, UpdrawBrushTool, UpdrawTextTool,
+  type UpdrawToolbarItem,
+} from '@updraw/react-editor';
 
-const toolbarItems: KritzelToolbarItem[] = [
-  { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
+const toolbarItems: UpdrawToolbarItem[] = [
+  { name: 'select', type: 'tool', isDefault: true, tool: UpdrawSelectionTool, icon: 'cursor' },
   {
-    name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen',
+    name: 'brush', type: 'tool', tool: UpdrawBrushTool, icon: 'pen',
     config: {
       color: { light: '#1f2937', dark: '#f3f4f6' },
       size: 6,
@@ -112,7 +112,7 @@ const toolbarItems: KritzelToolbarItem[] = [
     },
   },
   {
-    name: 'highlighter', type: 'tool', tool: KritzelBrushTool, icon: 'highlighter',
+    name: 'highlighter', type: 'tool', tool: UpdrawBrushTool, icon: 'highlighter',
     config: {
       color: { light: '#ffeb3b', dark: '#fff176' },
       size: 20, opacity: 0.6,
@@ -120,7 +120,7 @@ const toolbarItems: KritzelToolbarItem[] = [
     },
   },
   {
-    name: 'text', type: 'tool', tool: KritzelTextTool, icon: 'type',
+    name: 'text', type: 'tool', tool: UpdrawTextTool, icon: 'type',
     config: {
       color: { light: '#1f2937', dark: '#f3f4f6' },
       size: 18, fontFamily: 'Arial',
@@ -131,7 +131,7 @@ const toolbarItems: KritzelToolbarItem[] = [
 ];
 
 // in the component:
-<KritzelEditor toolbarItems={toolbarItems} ... />
+<UpdrawEditor toolbarItems={toolbarItems} ... />
 ```
 
 Rules:
@@ -145,12 +145,12 @@ To hide the toolbar entirely and drive tools from your own React UI: `isToolbarV
 
 ## Fully custom tool classes
 
-For new interaction behavior, extend `KritzelBaseTool` (exported from `@kritzel/react-editor`) and override the lifecycle/pointer hooks:
+For new interaction behavior, extend `UpdrawBaseTool` (exported from `@updraw/react-editor`) and override the lifecycle/pointer hooks:
 
 ```tsx
-import { KritzelBaseTool } from '@kritzel/react-editor';
+import { UpdrawBaseTool } from '@updraw/react-editor';
 
-export class StampTool extends KritzelBaseTool {
+export class StampTool extends UpdrawBaseTool {
   override onActivate(): void {}
   override onDeactivate(): void {}
   override handlePointerDown(ev: PointerEvent): void { /* place a stamp */ }

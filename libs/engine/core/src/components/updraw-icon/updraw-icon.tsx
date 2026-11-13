@@ -1,13 +1,13 @@
 import { Component, h, Prop, Host, forceUpdate } from '@stencil/core';
-import { KritzelIconName, KritzelIconRegistry } from '@kritzel/core';
+import { UpdrawIconName, UpdrawIconRegistry } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-icon',
-  styleUrl: 'kritzel-icon.css',
+  tag: 'updraw-icon',
+  styleUrl: 'updraw-icon.css',
   shadow: true,
 })
-export class KritzelIcon {
-  @Prop() name: KritzelIconName;
+export class UpdrawIcon {
+  @Prop() name: UpdrawIconName;
   @Prop() label?: string;
   @Prop() size: number = 24;
 
@@ -15,7 +15,7 @@ export class KritzelIcon {
 
   connectedCallback() {
     this.unsubscribe?.();
-    this.unsubscribe = KritzelIconRegistry.subscribe(name => {
+    this.unsubscribe = UpdrawIconRegistry.subscribe(name => {
       if (name === this.name) {
         forceUpdate(this);
       }
@@ -29,10 +29,10 @@ export class KritzelIcon {
   }
 
   render() {
-    const svgContent = KritzelIconRegistry.get(this.name);
+    const svgContent = UpdrawIconRegistry.get(this.name);
 
     if (!svgContent) {
-      console.error(`[kritzel-icon] Icon "${this.name}" not found in registry.`);
+      console.error(`[updraw-icon] Icon "${this.name}" not found in registry.`);
       return <span class="error-icon" aria-label={`Error: Icon ${this.name} not found`}>?</span>;
     }
 

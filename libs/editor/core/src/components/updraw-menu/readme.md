@@ -1,4 +1,4 @@
-# kritzel-menu
+# updraw-menu
 
 
 
@@ -9,8 +9,8 @@
 
 | Property | Attribute | Description | Type                      | Default     |
 | -------- | --------- | ----------- | ------------------------- | ----------- |
-| `items`  | --        |             | `IKritzelMenuItem<any>[]` | `undefined` |
-| `parent` | --        |             | `IKritzelMenuItem<any>`   | `null`      |
+| `items`  | --        |             | `IUpdrawMenuItem<any>[]` | `undefined` |
+| `parent` | --        |             | `IUpdrawMenuItem<any>`   | `null`      |
 
 
 ## Events
@@ -18,11 +18,11 @@
 | Event                 | Description | Type                                                |
 | --------------------- | ----------- | --------------------------------------------------- |
 | `close`               |             | `CustomEvent<void>`                                 |
-| `itemCancel`          |             | `CustomEvent<IKritzelMenuItem<any>>`                |
-| `itemCloseChildMenu`  |             | `CustomEvent<IKritzelMenuItem<any>>`                |
-| `itemSave`            |             | `CustomEvent<IKritzelMenuItem<any>>`                |
-| `itemSelect`          |             | `CustomEvent<IKritzelMenuItemSelectEvent>`          |
-| `itemToggleChildMenu` |             | `CustomEvent<IKritzelMenuItemToggleChildMenuEvent>` |
+| `itemCancel`          |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
+| `itemCloseChildMenu`  |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
+| `itemSave`            |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
+| `itemSelect`          |             | `CustomEvent<IUpdrawMenuItemSelectEvent>`          |
+| `itemToggleChildMenu` |             | `CustomEvent<IUpdrawMenuItemToggleChildMenuEvent>` |
 
 
 ## Methods
@@ -58,24 +58,24 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [kritzel-more-menu](../kritzel-more-menu)
- - [kritzel-split-button](../kritzel-split-button)
- - [kritzel-titlebar-menu](../kritzel-titlebar-menu)
+ - [updraw-more-menu](../updraw-more-menu)
+ - [updraw-split-button](../updraw-split-button)
+ - [updraw-titlebar-menu](../updraw-titlebar-menu)
 
 ### Depends on
 
-- [kritzel-menu-item](../kritzel-menu-item)
+- [updraw-menu-item](../updraw-menu-item)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-menu --> kritzel-menu-item
-  kritzel-menu-item --> kritzel-icon
-  kritzel-menu-item --> kritzel-portal
-  kritzel-more-menu --> kritzel-menu
-  kritzel-split-button --> kritzel-menu
-  kritzel-titlebar-menu --> kritzel-menu
-  style kritzel-menu fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-menu --> updraw-menu-item
+  updraw-menu-item --> updraw-icon
+  updraw-menu-item --> updraw-portal
+  updraw-more-menu --> updraw-menu
+  updraw-split-button --> updraw-menu
+  updraw-titlebar-menu --> updraw-menu
+  style updraw-menu fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

@@ -3,18 +3,18 @@
  * Images are the primary consumer today; other kinds are reserved so a
  * single provider infrastructure can serve future object types.
  */
-export type KritzelAssetKind = 'image' | 'video' | 'audio' | 'file';
+export type UpdrawAssetKind = 'image' | 'video' | 'audio' | 'file';
 
 /**
  * Describes a stored binary asset.
- * Only the `id` is persisted inside the Yjs document on Kritzel objects;
+ * Only the `id` is persisted inside the Yjs document on Updraw objects;
  * all other fields are metadata carried by the asset layer.
  */
-export interface KritzelAsset {
+export interface UpdrawAsset {
   /** Stable identifier (uuid). Persisted inside canvas objects. */
   id: string;
   /** Coarse kind used to dispatch consumers. */
-  kind: KritzelAssetKind;
+  kind: UpdrawAssetKind;
   /** MIME type of the stored bytes (e.g. `image/png`). */
   mimeType: string;
   /** Size of the stored bytes in bytes. */
@@ -42,4 +42,4 @@ export interface KritzelAsset {
  * Lifecycle state used by consumers (e.g. the renderer) to react to
  * in-flight asset resolution without having to poll.
  */
-export type KritzelAssetLoadState = 'idle' | 'loading' | 'ready' | 'error';
+export type UpdrawAssetLoadState = 'idle' | 'loading' | 'ready' | 'error';

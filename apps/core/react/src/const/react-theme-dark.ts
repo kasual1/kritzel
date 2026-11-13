@@ -1,6 +1,6 @@
-import { darkTheme, KritzelTheme } from "@kritzel/react-editor";
+import { darkTheme, UpdrawTheme } from "@updraw/react-editor";
 
-export const reactThemeDark: KritzelTheme = {
+export const reactThemeDark: UpdrawTheme = {
   ...darkTheme,
   name: 'dark',
   global: {

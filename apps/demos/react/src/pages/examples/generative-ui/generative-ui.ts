@@ -1,15 +1,15 @@
 import {
-  KritzelChatSession,
+  UpdrawChatSession,
   MODEL_IFRAME_CONTENT_SECURITY_POLICY,
-  type KritzelBaseObject,
-  type KritzelChatBoxChip,
-  type KritzelChatTransport,
-  type KritzelIframeContent,
-  type KritzelIframeObject,
-  type KritzelObjectConfig,
-  type KritzelObjectTitlebarConfig,
-  type KritzelTheme,
-} from "@kritzel/react-editor";
+  type UpdrawBaseObject,
+  type UpdrawChatBoxChip,
+  type UpdrawChatTransport,
+  type UpdrawIframeContent,
+  type UpdrawIframeObject,
+  type UpdrawObjectConfig,
+  type UpdrawObjectTitlebarConfig,
+  type UpdrawTheme,
+} from "@updraw/react-editor";
 
 /** How the demo answers prompts: with a model and the user's own API key, or with canned UIs. */
 export type RequestMode = "live" | "mock";
@@ -36,12 +36,12 @@ read_iframe first when you don't know its current code, and prefer edits for sma
  * A chat session that builds UIs. `canvasTools: { iframes: true }` gives the model create_iframe, read_iframe and
  * update_iframe next to the other canvas tools.
  */
-export function createGenerativeUiSession(transport: KritzelChatTransport): KritzelChatSession {
-  return new KritzelChatSession({ transport, system: SYSTEM_PROMPT, canvasTools: { iframes: true } });
+export function createGenerativeUiSession(transport: UpdrawChatTransport): UpdrawChatSession {
+  return new UpdrawChatSession({ transport, system: SYSTEM_PROMPT, canvasTools: { iframes: true } });
 }
 
 /** UIs get rounded corners and a soft shadow, like frames in a design tool. */
-export function withUiFrames(theme: KritzelTheme): KritzelTheme {
+export function withUiFrames(theme: UpdrawTheme): UpdrawTheme {
   return {
     ...theme,
     iframe: {
@@ -53,12 +53,12 @@ export function withUiFrames(theme: KritzelTheme): KritzelTheme {
 }
 
 /** UIs get a titlebar and keep their orientation. */
-export const objectConfig: KritzelObjectConfig = {
+export const objectConfig: UpdrawObjectConfig = {
   hasTitlebar: (object) => isUi(object),
   isRotatable: false,
 };
 
-export const objectTitlebar: KritzelObjectTitlebarConfig = {
+export const objectTitlebar: UpdrawObjectTitlebarConfig = {
   left: [
     { id: "title", type: "title", isEditable: true },
     {
@@ -72,16 +72,16 @@ export const objectTitlebar: KritzelObjectTitlebarConfig = {
   right: [{ id: "play", type: "button", icon: "play", tooltip: "Open fullscreen" }],
 };
 
-export function isUi(object: KritzelBaseObject): object is KritzelIframeObject {
-  return object.__class__ === "KritzelIframeObject";
+export function isUi(object: UpdrawBaseObject): object is UpdrawIframeObject {
+  return object.__class__ === "UpdrawIframeObject";
 }
 
-export function getUiTitle(ui: KritzelIframeObject): string {
+export function getUiTitle(ui: UpdrawIframeObject): string {
   return ui.name ?? ui.title;
 }
 
 /** A chip for each selected UI. The session tells the model which UIs a prompt sent with them is about. */
-export function getUiChips(objects: KritzelBaseObject[]): KritzelChatBoxChip[] {
+export function getUiChips(objects: UpdrawBaseObject[]): UpdrawChatBoxChip[] {
   return objects.filter(isUi).map((ui) => ({ id: ui.id, objectId: ui.id, label: getUiTitle(ui), icon: "cursor" }));
 }
 
@@ -94,7 +94,7 @@ export function getErrorMessage(error: unknown): string {
  * A standalone HTML document of a UI, to show it fullscreen. It keeps the content security policy that the canvas
  * gives model-written code, so the UI can't reach the network there either.
  */
-export function createUiDocument({ html, css, script }: KritzelIframeContent, title: string): string {
+export function createUiDocument({ html, css, script }: UpdrawIframeContent, title: string): string {
   const safeTitle = title.replace(/&/g, "&amp;").replace(/</g, "&lt;");
   return `<!doctype html>
 <html>

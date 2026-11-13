@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import {
-  KritzelEditor,
-  type HTMLKritzelEditorElement,
-  type KritzelViewportState,
-} from "@kritzel/react-editor";
+  UpdrawEditor,
+  type HTMLUpdrawEditorElement,
+  type UpdrawViewportState,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
@@ -14,8 +14,8 @@ const panStep = 100;
 const zoomFactor = 1.1;
 
 export function ViewportEventsPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const [viewport, setViewport] = useState<KritzelViewportState | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const [viewport, setViewport] = useState<UpdrawViewportState | null>(null);
 
   async function panBy(offsetX: number, offsetY: number) {
     const editor = editorRef.current;
@@ -33,7 +33,7 @@ export function ViewportEventsPage() {
     );
   }
 
-  function onViewportChange(event: CustomEvent<KritzelViewportState>) {
+  function onViewportChange(event: CustomEvent<UpdrawViewportState>) {
     setViewport(event.detail);
   }
 
@@ -50,7 +50,7 @@ export function ViewportEventsPage() {
         <span className="status">Y: {Math.round(viewport?.translateY ?? 0)}</span>
         <span className="status">Scale: {(viewport?.scale ?? 1).toFixed(2)}</span>
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="viewport-events"
         theme="light"

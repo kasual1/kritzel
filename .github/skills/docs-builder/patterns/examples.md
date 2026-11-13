@@ -2,7 +2,7 @@
 
 ## Overview
 
-Example pages demonstrate a single Kritzel feature through multiple **self-contained, realistic use cases**. Each example on the page is a complete, copy-paste-ready implementation that solves a real scenario a developer might encounter. Examples are ordered from simple to advanced, but every example stands alone — a developer can grab any single one without needing the others.
+Example pages demonstrate a single Updraw feature through multiple **self-contained, realistic use cases**. Each example on the page is a complete, copy-paste-ready implementation that solves a real scenario a developer might encounter. Examples are ordered from simple to advanced, but every example stands alone — a developer can grab any single one without needing the others.
 
 Each page lives at `apps/website/docs/angular/examples/<feature>.md` and uses the `<LiveDemo>` component to embed hosted previews alongside fetched source code.
 
@@ -17,7 +17,7 @@ Each page lives at `apps/website/docs/angular/examples/<feature>.md` and uses th
 ---
 sidebar_label: <Short Label>
 displayed_sidebar: tutorialSidebar
-title: "<Feature> Example | Kritzel for Angular"
+title: "<Feature> Example | Updraw for Angular"
 description: "<One-sentence summary of what the page demonstrates.>"
 ---
 
@@ -28,7 +28,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 1. **`# <Feature>`** — intro paragraph describing what the page covers and what kind of use cases the reader will find.
 2. **`## Prerequisites`** — link to Quick Start guide.
-3. **`## Featured Concepts`** — a short list of the key Kritzel concepts showcased in this demo. Each item is a concept name linked to its dedicated documentation page so users can read about it in detail. Keep this to 2–5 bullet points. Do NOT explain the concepts inline — let the linked pages do the teaching.
+3. **`## Featured Concepts`** — a short list of the key Updraw concepts showcased in this demo. Each item is a concept name linked to its dedicated documentation page so users can read about it in detail. Keep this to 2–5 bullet points. Do NOT explain the concepts inline — let the linked pages do the teaching.
 4. **`## <Use Case Title>` sections** — each section is a complete, self-contained example named after the scenario it solves (e.g., "Annotation-Only Toolbar", "Diagramming Toolbar", "Custom External Toolbar").
 
 ### Featured Concepts Format
@@ -85,7 +85,7 @@ apps/demos/angular/src/app/examples/<feature>/
 Each component is a standalone Angular component following these rules:
 
 - `ChangeDetectionStrategy.OnPush`
-- Standalone pattern with `imports: [KritzelEditor]`
+- Standalone pattern with `imports: [UpdrawEditor]`
 - `:host { display: block; height: 100%; }` for full-height layout (or `display: flex` when using side panels)
 - **Self-contained**: every example includes all the code needed to work independently — no relying on a "previous step" for context
 
@@ -174,7 +174,7 @@ When editing an existing example page:
 
 ## Styling Rules for Demo Components
 
-Custom UI elements (side panels, filter bars, layer panels, toolbars, status displays) that sit alongside the `<kritzel-editor>` must follow these rules:
+Custom UI elements (side panels, filter bars, layer panels, toolbars, status displays) that sit alongside the `<updraw-editor>` must follow these rules:
 
 ### Font Family
 
@@ -219,7 +219,7 @@ Quick checks before finishing:
 
 1. React/Vue pages preserve the Angular section structure and scenario order.
 2. Framework naming is translated in frontmatter and prose (no Angular-specific wording where framework-specific).
-3. React/Vue docs use `<KritzelEditor>` (not `<kritzel-editor>`).
+3. React/Vue docs use `<UpdrawEditor>` (not `<updraw-editor>`).
 4. Vue embedded component/template snippets use `html` fences (not `vue`).
 5. `<LiveDemo>` uses framework-specific `repoUrl` and file extensions (`.tsx` for React, `.vue` for Vue).
 6. Links in translated pages resolve to existing framework docs.

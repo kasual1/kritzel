@@ -1,4 +1,4 @@
-# kritzel-dropdown
+# updraw-dropdown
 
 
 
@@ -35,19 +35,19 @@
 
 ### Used by
 
- - [kritzel-brush-style](../kritzel-brush-style)
- - [kritzel-export](../kritzel-export)
- - [kritzel-font-family](../kritzel-font-family)
- - [kritzel-settings](../kritzel-settings)
+ - [updraw-brush-style](../updraw-brush-style)
+ - [updraw-export](../updraw-export)
+ - [updraw-font-family](../updraw-font-family)
+ - [updraw-settings](../updraw-settings)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-brush-style --> kritzel-dropdown
-  kritzel-export --> kritzel-dropdown
-  kritzel-font-family --> kritzel-dropdown
-  kritzel-settings --> kritzel-dropdown
-  style kritzel-dropdown fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-brush-style --> updraw-dropdown
+  updraw-export --> updraw-dropdown
+  updraw-font-family --> updraw-dropdown
+  updraw-settings --> updraw-dropdown
+  style updraw-dropdown fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

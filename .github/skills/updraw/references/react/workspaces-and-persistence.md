@@ -5,13 +5,13 @@
 A workspace is a complete document: its objects, view state, and metadata. The editor always has one active workspace (one is created automatically on first run).
 
 ```tsx
-import { KritzelWorkspace } from '@kritzel/react-editor';
+import { UpdrawWorkspace } from '@updraw/react-editor';
 
 const workspaces = await editor.getWorkspaces();
 const active = await editor.getActiveWorkspace();
 
 // Create — constructor takes (id, name)
-const ws = new KritzelWorkspace(crypto.randomUUID(), 'Board 2');
+const ws = new UpdrawWorkspace(crypto.randomUUID(), 'Board 2');
 await editor.createWorkspace(ws);
 
 await editor.updateWorkspace(ws);        // rename etc. (mutate metadata, then update)
@@ -25,7 +25,7 @@ Drive the active workspace via the `activeWorkspaceId` prop backed by state, and
 ```tsx
 const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | undefined>(undefined);
 
-<KritzelEditor
+<UpdrawEditor
   activeWorkspaceId={activeWorkspaceId}
   onActiveWorkspaceChange={event => setActiveWorkspaceId(event.detail.id)}
   onIsReady={event => setActiveWorkspaceId(event.detail.activeWorkspace.id)}
@@ -36,23 +36,23 @@ Your own workspace switcher buttons just call `setActiveWorkspaceId(ws.id)` — 
 
 ## Persistence & sync providers
 
-Kritzel state lives in a Yjs document; sync providers decide where it goes. **Default is `{ providers: [] }` — nothing persists across reloads.**
+Updraw state lives in a Yjs document; sync providers decide where it goes. **Default is `{ providers: [] }` — nothing persists across reloads.**
 
 ```tsx
 import { useMemo } from 'react';
-import { IndexedDBSyncProvider, type KritzelSyncConfig } from '@kritzel/react-editor';
+import { IndexedDBSyncProvider, type UpdrawSyncConfig } from '@updraw/react-editor';
 
-const syncConfig = useMemo<KritzelSyncConfig>(
+const syncConfig = useMemo<UpdrawSyncConfig>(
   () => ({ providers: [IndexedDBSyncProvider] }),   // local persistence, restored on reload
   [],
 );
 
-<KritzelEditor syncConfig={syncConfig} />
+<UpdrawEditor syncConfig={syncConfig} />
 ```
 
 **Always memoize (or module-scope) `syncConfig`** — a new object every render churns the prop on the web component.
 
-Available providers (all exported from `@kritzel/react-editor`):
+Available providers (all exported from `@updraw/react-editor`):
 
 | Provider | Persists/Syncs to | Use |
 |---|---|---|
@@ -65,7 +65,7 @@ Available providers (all exported from `@kritzel/react-editor`):
 Providers are additive — combine for offline + realtime:
 
 ```tsx
-const syncConfig = useMemo<KritzelSyncConfig>(() => ({
+const syncConfig = useMemo<UpdrawSyncConfig>(() => ({
   providers: [
     IndexedDBSyncProvider,
     HocuspocusSyncProvider.with({ url: 'wss://collab.example.com', token: () => auth.getToken() }),
@@ -77,7 +77,7 @@ If you change `syncConfig` after init (e.g. after login), call `await editor.rei
 
 ## Collaboration extras
 
-- Pass the current user for presence: `user={currentUser}` with `IKritzelUser` shape `{ id, displayName?, firstName?, lastName?, email?, profileImageUrl?, color?, isGuest? }`; show others via `activeUsers`. The editor treats `isGuest: true` (or no user) as logged out.
+- Pass the current user for presence: `user={currentUser}` with `IUpdrawUser` shape `{ id, displayName?, firstName?, lastName?, email?, profileImageUrl?, color?, isGuest? }`; show others via `activeUsers`. The editor treats `isGuest: true` (or no user) as logged out.
 - Live remote cursors/presence arrive on `onAwarenessChange` → `Map<number, Record<string, any>>`.
 - Shared/public workspaces: `await editor.loadSharedWorkspace(token)`; observe `onIsPublicChange`.
 - Image/file binaries are stored via the `assetStorageConfig` prop; default is IndexedDB-backed. HTTP/presigned-URL providers exist for server storage.

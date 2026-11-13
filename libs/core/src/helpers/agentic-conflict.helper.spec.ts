@@ -1,13 +1,13 @@
-import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
-import { KritzelGroup } from '../classes/objects/group.class';
+import { UpdrawSelectionGroup } from '../classes/objects/selection-group.class';
+import { UpdrawGroup } from '../classes/objects/group.class';
 import { buildFrameCache, buildParentIndex, classifySelectionGroup, detectObjectConflict, expandWithRelatives, findParentGroup } from './agentic-conflict.helper';
 
 const createGroup = (fields: Record<string, unknown>) => {
-  const group = Object.create(KritzelSelectionGroup.prototype);
+  const group = Object.create(UpdrawSelectionGroup.prototype);
   for (const [key, value] of Object.entries({ objectIds: [], ...fields })) {
     Object.defineProperty(group, key, { value, writable: true, configurable: true });
   }
-  return group as KritzelSelectionGroup;
+  return group as UpdrawSelectionGroup;
 };
 
 const createMap = (objects: any[], options: { docClientId?: number; awareness?: Map<number, any>; localClientId?: number } = {}) => ({
@@ -76,7 +76,7 @@ describe('agentic conflict helpers', () => {
 
   describe('group relatives', () => {
     const createGroupObject = (id: string, childIds: string[]) => {
-      const group = Object.create(KritzelGroup.prototype);
+      const group = Object.create(UpdrawGroup.prototype);
       Object.defineProperty(group, 'id', { value: id });
       Object.defineProperty(group, 'childIds', { value: childIds });
       Object.defineProperty(group, 'children', { get: () => childIds.map(childId => objects.find(o => o.id === childId)) });

@@ -1,24 +1,24 @@
 import { Component, Host, Prop, h } from '@stencil/core';
-import { KritzelCore, KRITZEL_WEBSITE_URL } from '@kritzel/core';
+import { UpdrawCore, UPDRAW_WEBSITE_URL } from '@updraw/core';
 
 /**
- * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
+ * "Powered by Updraw" watermark shown in the bottom-right corner of the engine.
  *
  * Rendered inside the engine's Shadow DOM unless the engine's
- * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
+ * `isWatermarkVisible` prop is set to false. The badge links to the Updraw
  * website.
  */
 @Component({
-  tag: 'kritzel-watermark',
-  styleUrl: 'kritzel-watermark.css',
+  tag: 'updraw-watermark',
+  styleUrl: 'updraw-watermark.css',
   shadow: true,
 })
-export class KritzelWatermark {
+export class UpdrawWatermark {
   /** The core instance used to resolve localized terms. */
-  @Prop() core!: KritzelCore;
+  @Prop() core!: UpdrawCore;
 
   /**
-   * Resolved "Powered by Kritzel" label. Passed in by the engine so the badge
+   * Resolved "Powered by Updraw" label. Passed in by the engine so the badge
    * re-renders when the active locale changes. Falls back to resolving the term
    * from the core when not provided.
    */
@@ -31,7 +31,7 @@ export class KritzelWatermark {
       <Host>
         <a
           class="watermark-link"
-          href={KRITZEL_WEBSITE_URL}
+          href={UPDRAW_WEBSITE_URL}
           target="_blank"
           rel="noopener noreferrer"
           part="watermark"

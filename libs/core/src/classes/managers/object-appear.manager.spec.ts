@@ -1,8 +1,8 @@
-import { KritzelBaseObject } from '../objects/base-object.class';
-import { KRITZEL_OBJECT_APPEAR_MAX_STAGGER_INDEX, KritzelObjectAppearManager } from './object-appear.manager';
+import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UPDRAW_OBJECT_APPEAR_MAX_STAGGER_INDEX, UpdrawObjectAppearManager } from './object-appear.manager';
 
-const objectWithId = (id: string): KritzelBaseObject<any> => {
-  const object = new KritzelBaseObject();
+const objectWithId = (id: string): UpdrawBaseObject<any> => {
+  const object = new UpdrawBaseObject();
   object.id = id;
   return object;
 };
@@ -10,13 +10,13 @@ const objectWithId = (id: string): KritzelBaseObject<any> => {
 const timing = { duration: 600, stagger: 100 };
 const ready = () => true;
 
-describe('KritzelObjectAppearManager', () => {
-  let manager: KritzelObjectAppearManager;
+describe('UpdrawObjectAppearManager', () => {
+  let manager: UpdrawObjectAppearManager;
 
-  const appearing = (...args: Parameters<KritzelObjectAppearManager['resolve']>) => manager.resolve(...args).appearing;
+  const appearing = (...args: Parameters<UpdrawObjectAppearManager['resolve']>) => manager.resolve(...args).appearing;
 
   beforeEach(() => {
-    manager = new KritzelObjectAppearManager();
+    manager = new UpdrawObjectAppearManager();
   });
 
   it('resolves marked objects with their stagger index while their animation runs', () => {
@@ -43,7 +43,7 @@ describe('KritzelObjectAppearManager', () => {
     const object = objectWithId('a');
     manager.mark([object], 100);
 
-    expect(appearing([object], ready, timing, 0).get('a')).toBe(KRITZEL_OBJECT_APPEAR_MAX_STAGGER_INDEX);
+    expect(appearing([object], ready, timing, 0).get('a')).toBe(UPDRAW_OBJECT_APPEAR_MAX_STAGGER_INDEX);
   });
 
   it('starts the animation once the object is ready to show', () => {
@@ -63,7 +63,7 @@ describe('KritzelObjectAppearManager', () => {
   it('reports the objects that started in a render and those that wait to be ready', () => {
     const [a, b] = [objectWithId('a'), objectWithId('b')];
     manager.mark([a, b]);
-    const isReady = (object: KritzelBaseObject<any>) => object.id === 'a';
+    const isReady = (object: UpdrawBaseObject<any>) => object.id === 'a';
 
     const first = manager.resolve([a, b], isReady, timing, 0);
     expect(first.started).toEqual(new Set(['a']));
@@ -94,7 +94,7 @@ describe('KritzelObjectAppearManager', () => {
 
   it('ignores objects without an ID and forgets everything on clear', () => {
     const object = objectWithId('a');
-    manager.mark([new KritzelBaseObject(), object]);
+    manager.mark([new UpdrawBaseObject(), object]);
     manager.clear();
 
     expect(appearing([object], ready, timing, 0)).toEqual(new Map());

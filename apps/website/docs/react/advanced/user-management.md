@@ -1,8 +1,8 @@
 ---
 sidebar_label: User Management
 displayed_sidebar: tutorialSidebar
-title: "User Management Concept | Kritzel for React"
-description: "Understand how to configure Kritzel's user management and login dialog with authentication providers."
+title: "User Management Concept | Updraw for React"
+description: "Understand how to configure Updraw's user management and login dialog with authentication providers."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,11 +11,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel comes with a whole set of user management features, such as configurable login dialogs and user profile handling. While the editor provides the UI and event hooks, your application is responsible for performing the actual authentication and managing user state.
+Updraw comes with a whole set of user management features, such as configurable login dialogs and user profile handling. While the editor provides the UI and event hooks, your application is responsible for performing the actual authentication and managing user state.
 
 ## Configuring Providers
 
-To enable Kritzel's user management features, provide a `loginConfig` with at least one authentication provider. This renders the login button at the top right of `<KritzelEditor>` and displays the login dialog with a button for each configured provider.
+To enable Updraw's user management features, provide a `loginConfig` with at least one authentication provider. This renders the login button at the top right of `<UpdrawEditor>` and displays the login dialog with a button for each configured provider.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
@@ -41,7 +41,7 @@ Clicking a provider button puts that button into a loading state and invokes the
 
 ## Handling the Logout
 
-When the user selects the logout action, `<KritzelEditor>` invokes `onLogout`. Your application should clear the controlled `user` prop and update its authentication state.
+When the user selects the logout action, `<UpdrawEditor>` invokes `onLogout`. Your application should clear the controlled `user` prop and update its authentication state.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"

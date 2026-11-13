@@ -1,22 +1,22 @@
-import { KritzelBaseObject } from "../classes/objects/base-object.class";
-import { KritzelObjectMap } from "../classes/structures/object-map.structure";
-import { KritzelBaseTool } from "../classes/tools/base-tool.class";
-import { KritzelWorkspace } from "../classes/core/workspace.class";
-import { KritzelHandleType } from "../enums/handle-type.enum";
+import { UpdrawBaseObject } from "../classes/objects/base-object.class";
+import { UpdrawObjectMap } from "../classes/structures/object-map.structure";
+import { UpdrawBaseTool } from "../classes/tools/base-tool.class";
+import { UpdrawWorkspace } from "../classes/core/workspace.class";
+import { UpdrawHandleType } from "../enums/handle-type.enum";
 import { ContextMenuItem } from "./context-menu-item.interface";
-import { KritzelDebugInfo } from "./debug-info.interface";
+import { UpdrawDebugInfo } from "./debug-info.interface";
 import { LineHandleType } from "../classes/handlers/line-handle.handler";
 import { SnapCandidate, SnapPreviewCandidate } from "./anchor.interface";
 
-import { KritzelIconName } from '../classes/registries/icon-registry.class';
+import { UpdrawIconName } from '../classes/registries/icon-registry.class';
 
-export interface KritzelEngineState {
-  activeWorkspace: KritzelWorkspace | null | undefined;
-  activeTool: KritzelBaseTool | null;
-  objects: KritzelObjectMap<KritzelBaseObject<Element>> | null;
+export interface UpdrawEngineState {
+  activeWorkspace: UpdrawWorkspace | null | undefined;
+  activeTool: UpdrawBaseTool | null;
+  objects: UpdrawObjectMap<UpdrawBaseObject<Element>> | null;
   snapCandidate?: SnapCandidate | null;
   snapPreviewCandidate?: SnapPreviewCandidate | null;
-  resizeHandleType: KritzelHandleType | undefined;
+  resizeHandleType: UpdrawHandleType | undefined;
   lineHandleType: LineHandleType | undefined;
   hasViewportChanged: boolean;
   hasObjectsChanged: boolean;
@@ -46,7 +46,7 @@ export interface KritzelEngineState {
   contextMenuWorldX: number;
   contextMenuWorldY: number;
   skipContextMenu: boolean;
-  debugInfo: KritzelDebugInfo;
+  debugInfo: UpdrawDebugInfo;
   host: HTMLElement | null;
   pointerX: number;
   pointerY: number;
@@ -66,10 +66,10 @@ export interface KritzelEngineState {
   longTouchTimeout: number | null;
   longTouchDelay: number;
   pointers: Map<number, PointerEvent>;
-  workspaces: KritzelWorkspace[];
+  workspaces: UpdrawWorkspace[];
   cursor: {
-    icon: KritzelIconName | 'default';
-    iconActive?: KritzelIconName | 'default';
+    icon: UpdrawIconName | 'default';
+    iconActive?: UpdrawIconName | 'default';
     rotation?: number;
   },
   /** When true, objects are drawn at a fixed visual size regardless of zoom level */

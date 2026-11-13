@@ -1,8 +1,8 @@
-import { KritzelPoint } from "../interfaces/point.interface";
-import { KritzelPolygon } from "../interfaces/polygon.interface";
+import { UpdrawPoint } from "../interfaces/point.interface";
+import { UpdrawPolygon } from "../interfaces/polygon.interface";
 
-export class KritzelGeometryHelper {
-	static doPolygonsIntersect(polygon1: KritzelPolygon, polygon2: KritzelPolygon): boolean {
+export class UpdrawGeometryHelper {
+	static doPolygonsIntersect(polygon1: UpdrawPolygon, polygon2: UpdrawPolygon): boolean {
 		// 1. Convert polygons to array of points for easier processing
 		const points1 = [polygon1.bottomLeft, polygon1.bottomRight, polygon1.topRight, polygon1.topLeft];
 		const points2 = [polygon2.bottomLeft, polygon2.bottomRight, polygon2.topRight, polygon2.topLeft];
@@ -39,7 +39,7 @@ export class KritzelGeometryHelper {
 		return false; // No intersection found
 	}
 
-	static isPointInPolygon(point: KritzelPoint, polygon: KritzelPoint[]): boolean {
+	static isPointInPolygon(point: UpdrawPoint, polygon: UpdrawPoint[]): boolean {
 		let inside = false;
 		for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
 			const xi = polygon[i].x,
@@ -53,7 +53,7 @@ export class KritzelGeometryHelper {
 		return inside;
 	}
 
-	static intersectLines(p1a: KritzelPoint, p1b: KritzelPoint, p2a: KritzelPoint, p2b: KritzelPoint): boolean {
+	static intersectLines(p1a: UpdrawPoint, p1b: UpdrawPoint, p2a: UpdrawPoint, p2b: UpdrawPoint): boolean {
 		const det = (p1b.x - p1a.x) * (p2b.y - p2a.y) - (p1b.y - p1a.y) * (p2b.x - p2a.x);
 		if (det === 0) {
 			return false; // Lines are parallel
@@ -69,7 +69,7 @@ export class KritzelGeometryHelper {
 	 * Finds the intersection point between a line segment and a line segment.
 	 * Returns the intersection point or null if no intersection.
 	 */
-	static getLineIntersectionPoint(p1a: KritzelPoint, p1b: KritzelPoint, p2a: KritzelPoint, p2b: KritzelPoint): KritzelPoint | null {
+	static getLineIntersectionPoint(p1a: UpdrawPoint, p1b: UpdrawPoint, p2a: UpdrawPoint, p2b: UpdrawPoint): UpdrawPoint | null {
 		const det = (p1b.x - p1a.x) * (p2b.y - p2a.y) - (p1b.y - p1a.y) * (p2b.x - p2a.x);
 		if (det === 0) {
 			return null; // Lines are parallel
@@ -91,9 +91,9 @@ export class KritzelGeometryHelper {
 	 * Finds the closest intersection point between a line segment (from lineStart to lineEnd)
 	 * and a polygon. Returns the intersection point closest to lineStart, or null if no intersection.
 	 */
-	static getLinePolygonIntersection(lineStart: KritzelPoint, lineEnd: KritzelPoint, polygon: KritzelPolygon): KritzelPoint | null {
+	static getLinePolygonIntersection(lineStart: UpdrawPoint, lineEnd: UpdrawPoint, polygon: UpdrawPolygon): UpdrawPoint | null {
 		const points = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
-		let closestIntersection: KritzelPoint | null = null;
+		let closestIntersection: UpdrawPoint | null = null;
 		let closestDistance = Infinity;
 
 		for (let i = 0; i < points.length; i++) {
@@ -132,8 +132,8 @@ export class KritzelGeometryHelper {
 		ry: number,
 		segments: number = 32,
 		rotation: number = 0
-	): KritzelPoint[] {
-		const points: KritzelPoint[] = [];
+	): UpdrawPoint[] {
+		const points: UpdrawPoint[] = [];
 		const cos = Math.cos(rotation);
 		const sin = Math.sin(rotation);
 
@@ -157,11 +157,11 @@ export class KritzelGeometryHelper {
 	 * or null if no intersection.
 	 */
 	static getLinePointsArrayIntersection(
-		lineStart: KritzelPoint,
-		lineEnd: KritzelPoint,
-		polygonPoints: KritzelPoint[]
-	): KritzelPoint | null {
-		let closestIntersection: KritzelPoint | null = null;
+		lineStart: UpdrawPoint,
+		lineEnd: UpdrawPoint,
+		polygonPoints: UpdrawPoint[]
+	): UpdrawPoint | null {
+		let closestIntersection: UpdrawPoint | null = null;
 		let closestDistance = Infinity;
 
 		for (let i = 0; i < polygonPoints.length; i++) {
@@ -188,7 +188,7 @@ export class KritzelGeometryHelper {
 	 * Checks if a point is inside a polygon defined as an array of points.
 	 * This is a convenience wrapper that works with arbitrary polygon point arrays.
 	 */
-	static isPointInPolygonPoints(point: KritzelPoint, polygonPoints: KritzelPoint[]): boolean {
+	static isPointInPolygonPoints(point: UpdrawPoint, polygonPoints: UpdrawPoint[]): boolean {
 		return this.isPointInPolygon(point, polygonPoints);
 	}
 }

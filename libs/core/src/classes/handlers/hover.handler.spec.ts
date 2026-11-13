@@ -1,9 +1,9 @@
-import { KritzelHoverHandler } from './hover.handler';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawHoverHandler } from './hover.handler';
+import { UpdrawCore } from '../core/core.class';
 
-describe('KritzelHoverHandler', () => {
-  let hoverHandler: KritzelHoverHandler;
-  let mockCore: jest.Mocked<KritzelCore>;
+describe('UpdrawHoverHandler', () => {
+  let hoverHandler: UpdrawHoverHandler;
+  let mockCore: jest.Mocked<UpdrawCore>;
   let mockObject: {
     isHovered: boolean;
     hitTest: jest.Mock;
@@ -41,9 +41,9 @@ describe('KritzelHoverHandler', () => {
         },
       },
       getObjectFromPointerEvent: jest.fn().mockReturnValue(mockObject),
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    hoverHandler = new KritzelHoverHandler(mockCore);
+    hoverHandler = new UpdrawHoverHandler(mockCore);
   });
 
   describe('handlePointerMove', () => {

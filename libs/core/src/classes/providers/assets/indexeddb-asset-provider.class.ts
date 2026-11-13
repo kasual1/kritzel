@@ -1,8 +1,8 @@
-import { KritzelAsset } from '../../../interfaces/asset.interface';
-import { IAssetStorageProvider, KritzelAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
+import { UpdrawAsset } from '../../../interfaces/asset.interface';
+import { IAssetStorageProvider, UpdrawAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
 
 /** Default database name used by IndexedDBAssetProvider. */
-const DEFAULT_DB_NAME = 'kritzel-assets';
+const DEFAULT_DB_NAME = 'updraw-assets';
 /** Object store holding the binary payloads. */
 const BLOB_STORE = 'blobs';
 /** Object store holding the asset metadata. */
@@ -14,7 +14,7 @@ const DB_VERSION = 1;
  * Options for {@link IndexedDBAssetProvider}.
  */
 export interface IndexedDBAssetProviderOptions {
-  /** Custom database name. Defaults to `kritzel-assets`. */
+  /** Custom database name. Defaults to `updraw-assets`. */
   dbName?: string;
 
   /**
@@ -50,7 +50,7 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
 
   /**
    * Factory helper enabling use as `IndexedDBAssetProvider.with({ dbName: '...' })`
-   * inside a `KritzelAssetStorageConfig.providers` array.
+   * inside an `UpdrawAssetStorageConfig.providers` array.
    */
   static with(options: IndexedDBAssetProviderOptions): { create: () => IAssetStorageProvider } {
     return { create: () => new IndexedDBAssetProvider(options) };
@@ -83,10 +83,10 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
     return this._knownIds.has(id);
   }
 
-  async put(blob: Blob, metadata: KritzelAssetPutMetadata): Promise<KritzelAsset> {
+  async put(blob: Blob, metadata: UpdrawAssetPutMetadata): Promise<UpdrawAsset> {
     const db = await this.ensureDb();
     const id = metadata.id ?? this.generateUuid();
-    const asset: KritzelAsset = {
+    const asset: UpdrawAsset = {
       id,
       kind: metadata.kind ?? 'file',
       mimeType: metadata.mimeType,
@@ -163,12 +163,12 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
    * Returns the metadata record for a stored asset, or `undefined` when
    * the asset is not present locally.
    */
-  async getMetadata(id: string): Promise<KritzelAsset | undefined> {
+  async getMetadata(id: string): Promise<UpdrawAsset | undefined> {
     const db = await this.ensureDb();
-    return new Promise<KritzelAsset | undefined>((resolve, reject) => {
+    return new Promise<UpdrawAsset | undefined>((resolve, reject) => {
       const tx = db.transaction(META_STORE, 'readonly');
       const req = tx.objectStore(META_STORE).get(id);
-      req.onsuccess = () => resolve(req.result as KritzelAsset | undefined);
+      req.onsuccess = () => resolve(req.result as UpdrawAsset | undefined);
       req.onerror = () => reject(req.error);
     });
   }
@@ -179,13 +179,13 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
    * re-enqueue uploads that were interrupted (e.g. the user reloaded
    * the tab while a background upload was retrying).
    */
-  async listAssetsWithPendingRemotes(): Promise<KritzelAsset[]> {
+  async listAssetsWithPendingRemotes(): Promise<UpdrawAsset[]> {
     const db = await this.ensureDb();
-    return new Promise<KritzelAsset[]>((resolve, reject) => {
+    return new Promise<UpdrawAsset[]>((resolve, reject) => {
       const tx = db.transaction(META_STORE, 'readonly');
       const req = tx.objectStore(META_STORE).getAll();
       req.onsuccess = () => {
-        const all = (req.result as KritzelAsset[]) ?? [];
+        const all = (req.result as UpdrawAsset[]) ?? [];
         resolve(all.filter(a => Array.isArray(a.pendingRemotes) && a.pendingRemotes.length > 0));
       };
       req.onerror = () => reject(req.error);
@@ -205,9 +205,9 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
       const store = tx.objectStore(META_STORE);
       const req = store.get(id);
       req.onsuccess = () => {
-        const existing = req.result as KritzelAsset | undefined;
+        const existing = req.result as UpdrawAsset | undefined;
         if (!existing) return; // Asset gone; nothing to update.
-        const updated: KritzelAsset = { ...existing };
+        const updated: UpdrawAsset = { ...existing };
         if (providerNames.length > 0) {
           updated.pendingRemotes = providerNames;
         } else {

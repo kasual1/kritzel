@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { KritzelEditor, KritzelWorkspace, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
+import { UpdrawEditor, UpdrawWorkspace, type HTMLUpdrawEditorElement } from '@updraw/react-editor';
 import { playRecorderScene } from './recorder-scene';
 
 const WORKSPACE_ID = 'agentic-canvas-generative-ui';
@@ -14,11 +14,11 @@ const hostStyle: CSSProperties = {
  * middle of the canvas, which is cleared again shortly after. The scene plays once when the editor is ready; reload to play it again.
  */
 export function AgenticCanvasGenerativeUiInfographic() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const [isWorking, setIsWorking] = useState(false);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ id: WORKSPACE_ID, name: 'Agentic canvas generative UI', objects: [] }),
+    new UpdrawWorkspace({ id: WORKSPACE_ID, name: 'Agentic canvas generative UI', objects: [] }),
   ]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
@@ -39,7 +39,7 @@ export function AgenticCanvasGenerativeUiInfographic() {
 
   return (
     <div style={hostStyle}>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="infographic-agentic-canvas-generative-ui"
         workspaces={workspaces}

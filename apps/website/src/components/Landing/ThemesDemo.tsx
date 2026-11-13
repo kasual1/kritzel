@@ -3,7 +3,7 @@ import styles from "./styles.module.css";
 
 /** Lengths are in cqw, so the themes scale with the demo. */
 const THEMES: Record<`--theme-${string}`, string>[] = [
-  // Kritzel's light theme.
+  // Updraw's light theme.
   {
     "--theme-canvas": "#ffffff",
     "--theme-surface": "#ffffff",
@@ -18,7 +18,7 @@ const THEMES: Record<`--theme-${string}`, string>[] = [
     "--theme-accent": "#18181b",
     "--theme-on-accent": "#ffffff",
   },
-  // Kritzel's dark theme.
+  // Updraw's dark theme.
   {
     "--theme-canvas": "#18181b",
     "--theme-surface": "#27272a",
@@ -114,7 +114,7 @@ function useThemeCycle(demoRef: React.RefObject<HTMLDivElement | null>) {
 }
 
 /**
- * A mock canvas with Kritzel's workspace manager, more menu and a chat box, whose colors, corners, borders and
+ * A mock canvas with Updraw's workspace manager, more menu and a chat box, whose colors, corners, borders and
  * shadows morph from one theme into the next.
  */
 export default function ThemesDemo() {

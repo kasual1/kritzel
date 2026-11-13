@@ -1,11 +1,11 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 
 @Component({
-  tag: 'kritzel-back-to-content',
-  styleUrl: 'kritzel-back-to-content.css',
+  tag: 'updraw-back-to-content',
+  styleUrl: 'updraw-back-to-content.css',
   shadow: true,
 })
-export class KritzelBackToContent {
+export class UpdrawBackToContent {
   /**
    * Whether the button is visible
    */
@@ -33,7 +33,7 @@ export class KritzelBackToContent {
           onClick={this.handleClick}
           aria-label={this.text}
         >
-          <kritzel-icon name="chevronsLeft"></kritzel-icon>
+          <updraw-icon name="chevronsLeft"></updraw-icon>
         </button>
       </Host>
     );

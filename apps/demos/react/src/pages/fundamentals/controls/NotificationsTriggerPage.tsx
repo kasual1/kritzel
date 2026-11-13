@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import {
-  HTMLKritzelEditorElement,
-  KritzelEditor,
-  KritzelWorkspace,
-} from "@kritzel/react-editor";
+  HTMLUpdrawEditorElement,
+  UpdrawEditor,
+  UpdrawWorkspace,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -13,9 +13,9 @@ import { Toolbar } from "../../../components/Toolbar";
 const themes = [reactThemeLight, reactThemeDark];
 
 export function NotificationsTriggerPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ objects: createSeedObjects() }),
+    new UpdrawWorkspace({ objects: createSeedObjects() }),
   ]);
 
   async function notify(type: "info" | "warning" | "error") {
@@ -32,7 +32,7 @@ export function NotificationsTriggerPage() {
         <button onClick={() => void notify("warning")}>Show warning</button>
         <button onClick={() => void notify("error")}>Show error</button>
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="notifications-trigger"
         theme="light"

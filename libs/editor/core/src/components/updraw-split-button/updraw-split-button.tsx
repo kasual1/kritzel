@@ -1,42 +1,42 @@
 import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
-import { KritzelDevicesHelper } from '@kritzel/core';
-import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from '@kritzel/core';
+import { UpdrawDevicesHelper } from '@updraw/core';
+import { IUpdrawMenuItem, IUpdrawMenuItemSelectEvent, IUpdrawMenuItemToggleChildMenuEvent } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-split-button',
-  styleUrl: 'kritzel-split-button.css',
+  tag: 'updraw-split-button',
+  styleUrl: 'updraw-split-button.css',
   shadow: true,
 })
-export class KritzelSplitButton {
+export class UpdrawSplitButton {
   @Element() host!: HTMLElement;
 
   @Prop() buttonIcon: string = 'plus';
   @Prop() dropdownIcon: string = 'chevronDown';
-  @Prop() items: IKritzelMenuItem[] = [];
+  @Prop() items: IUpdrawMenuItem[] = [];
   @Prop() mainButtonDisabled = false;
   @Prop() menuButtonDisabled = false;
 
   @Event() mainButtonClick: EventEmitter<void>;
-  @Event() itemSelect: EventEmitter<IKritzelMenuItemSelectEvent>;
-  @Event() itemSave: EventEmitter<IKritzelMenuItem>;
-  @Event() itemCancel: EventEmitter<IKritzelMenuItem>;
-  @Event() itemToggleChildMenu: EventEmitter<IKritzelMenuItemToggleChildMenuEvent>;
-  @Event() itemCloseChildMenu: EventEmitter<IKritzelMenuItem>;
+  @Event() itemSelect: EventEmitter<IUpdrawMenuItemSelectEvent>;
+  @Event() itemSave: EventEmitter<IUpdrawMenuItem>;
+  @Event() itemCancel: EventEmitter<IUpdrawMenuItem>;
+  @Event() itemToggleChildMenu: EventEmitter<IUpdrawMenuItemToggleChildMenuEvent>;
+  @Event() itemCloseChildMenu: EventEmitter<IUpdrawMenuItem>;
   @Event() menuOpen: EventEmitter<void>;
   @Event() menuClose: EventEmitter<void>;
 
   @State() isMenuOpen = false;
-  @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
+  @State() isTouchDevice: boolean = UpdrawDevicesHelper.isTouchDevice();
   @State() anchorElement: HTMLElement;
   @State() menuScrollTop: number = 0;
 
   splitMenuButtonRef: HTMLButtonElement;
-  menuRef: HTMLKritzelMenuElement;
+  menuRef: HTMLUpdrawMenuElement;
 
   @Method()
   async open() {
     if (this.isMenuOpen) return;
-    window.dispatchEvent(new CustomEvent('kritzel-dismiss-menus'));
+    window.dispatchEvent(new CustomEvent('updraw-dismiss-menus'));
     this.isMenuOpen = true;
     this.anchorElement = this.host;
     this.menuOpen.emit();
@@ -70,7 +70,7 @@ export class KritzelSplitButton {
 
   private openMenu = (event: MouseEvent) => {
     event.stopPropagation();
-    window.dispatchEvent(new CustomEvent('kritzel-dismiss-menus'));
+    window.dispatchEvent(new CustomEvent('updraw-dismiss-menus'));
     this.isMenuOpen = true;
     this.anchorElement = this.host;
     this.menuOpen.emit();
@@ -115,17 +115,17 @@ export class KritzelSplitButton {
     return (
       <Host class={{ mobile: this.isTouchDevice }}>
         <button class="split-main-button" tabIndex={0} onClick={this.handleButtonClick} disabled={this.mainButtonDisabled} aria-label="Main action">
-          {this.buttonIcon && <kritzel-icon name={this.buttonIcon}></kritzel-icon>}
+          {this.buttonIcon && <updraw-icon name={this.buttonIcon}></updraw-icon>}
         </button>
 
         <div class="split-divider"></div>
 
         <button ref={el => (this.splitMenuButtonRef = el)} class="split-menu-button" tabIndex={0} onClick={this.toggleMenu} disabled={this.menuButtonDisabled} aria-label="Open menu">
-          <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
+          <updraw-icon name={this.dropdownIcon}></updraw-icon>
         </button>
 
-        <kritzel-portal anchor={this.anchorElement} offsetY={4} onClose={this.closeMenu}>
-          <kritzel-menu
+        <updraw-portal anchor={this.anchorElement} offsetY={4} onClose={this.closeMenu}>
+          <updraw-menu
             ref={el => (this.menuRef = el)}
             items={this.items}
             onItemSelect={this.handleItemSelect}
@@ -135,8 +135,8 @@ export class KritzelSplitButton {
             onItemCloseChildMenu={this.handleItemCloseChildMenu}
             onClose={this.closeMenu}
             onScroll={this.handleScroll}
-          ></kritzel-menu>
-        </kritzel-portal>
+          ></updraw-menu>
+        </updraw-portal>
       </Host>
     );
   }

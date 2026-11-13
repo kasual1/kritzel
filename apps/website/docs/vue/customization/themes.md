@@ -1,8 +1,8 @@
 ---
 sidebar_label: Themes
 displayed_sidebar: tutorialSidebar
-title: "Themes | Kritzel for Vue"
-description: "Understand how to customize Kritzel with themes."
+title: "Themes | Updraw for Vue"
+description: "Understand how to customize Updraw with themes."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,9 +11,9 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel allows you to fully customize the appearance of the editor through a dedicated theming interface. A theme is a JSON-like structure containing the editor's configurable properties. You can either choose one of the built-in themes or create your own.
+Updraw allows you to fully customize the appearance of the editor through a dedicated theming interface. A theme is a JSON-like structure containing the editor's configurable properties. You can either choose one of the built-in themes or create your own.
 
-Kritzel comes with two built-in themes, `lightTheme` and `darkTheme`, and offers the `KritzelTheme` interface for creating custom themes.
+Updraw comes with two built-in themes, `lightTheme` and `darkTheme`, and offers the `UpdrawTheme` interface for creating custom themes.
 
 The full list of customizable properties can be found in the [API Reference](../api-reference/theming.md).
 
@@ -39,7 +39,7 @@ Listen for the `themeChange` event to react whenever the active theme changes. T
 
 ## Creating a Custom Theme
 
-Create a custom theme by overriding the groups and properties of `KritzelTheme`, then provide it through the editor's `themes` prop. Activate it by passing its name to the `theme` prop.
+Create a custom theme by overriding the groups and properties of `UpdrawTheme`, then provide it through the editor's `themes` prop. Activate it by passing its name to the `theme` prop.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"

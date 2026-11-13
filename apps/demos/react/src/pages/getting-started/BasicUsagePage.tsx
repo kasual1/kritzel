@@ -1,26 +1,26 @@
 import { useRef, useState } from "react";
 import {
   InMemorySyncProvider,
-  KritzelBaseObject,
-  KritzelEditor,
-  KritzelSyncConfig,
-  KritzelText,
-  KritzelWorkspace,
-} from "@kritzel/react-editor";
+  UpdrawBaseObject,
+  UpdrawEditor,
+  UpdrawSyncConfig,
+  UpdrawText,
+  UpdrawWorkspace,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../const/react-theme-dark";
 import { reactThemeLight } from "../../const/react-theme-light";
 import { createSeedObjects } from "./seed-objects";
 
 type ToolName = "brush" | "selection";
 
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [InMemorySyncProvider],
 };
 const themes = [reactThemeLight, reactThemeDark];
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })];
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })];
 
 export function BasicUsagePage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
 
   const [isReady, setIsReady] = useState(false);
   const [activeTool, setActiveTool] = useState<ToolName>("selection");
@@ -35,7 +35,7 @@ export function BasicUsagePage() {
   }
 
   function onObjectsChange(
-    event: CustomEvent<KritzelBaseObject<HTMLElement | SVGElement>[]>,
+    event: CustomEvent<UpdrawBaseObject<HTMLElement | SVGElement>[]>,
   ) {
     setObjectsCount(event.detail.length);
   }
@@ -66,7 +66,7 @@ export function BasicUsagePage() {
       return;
     }
 
-    const text = new KritzelText({
+    const text = new UpdrawText({
       text: "Programmatic text!",
       translateX: 0,
       translateY: 0,
@@ -149,7 +149,7 @@ export function BasicUsagePage() {
         </span>
       </header>
 
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="basic-usage"
         syncConfig={syncConfig}

@@ -1,14 +1,14 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
-import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawWorkspace } from '@updraw/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
   selector: 'app-quickstart',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="quickstart"
       [theme]="'angular-theme-light'"
       [themes]="themes"
@@ -17,7 +17,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [
     `
@@ -31,6 +31,6 @@ import { createSeedObjects } from '../../const/seed-objects';
 export class QuickStartComponent {
   themes = [angularThemeLight];
   workspaces = signal([
-    new KritzelWorkspace({ objects: createSeedObjects() }),
+    new UpdrawWorkspace({ objects: createSeedObjects() }),
   ]);
 }

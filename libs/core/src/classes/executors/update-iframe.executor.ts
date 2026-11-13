@@ -1,13 +1,13 @@
-import type { KritzelAgenticIframeChanges, KritzelAgenticUpdateIframeAction } from '../../interfaces/agentic-action.interface';
-import { KritzelIframeObject } from '../objects/iframe.class';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpdrawAgenticIframeChanges, UpdrawAgenticUpdateIframeAction } from '../../interfaces/agentic-action.interface';
+import { UpdrawIframeObject } from '../objects/iframe.class';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
 import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { assertObjectId } from '../../helpers/agentic-validation.helper';
 
 const CONTENT_FIELDS = ['html', 'css', 'script'] as const;
 
 /** Throws for changes that are not strings, an empty name, or (unless `allowEmpty`) no change at all. */
-function validateChanges(changes: KritzelAgenticIframeChanges, allowEmpty: boolean): void {
+function validateChanges(changes: UpdrawAgenticIframeChanges, allowEmpty: boolean): void {
   for (const field of ['name', ...CONTENT_FIELDS] as const) {
     if (changes[field] !== undefined && typeof changes[field] !== 'string') {
       throw new TypeError(`"${field}" must be a string.`);
@@ -25,7 +25,7 @@ function validateChanges(changes: KritzelAgenticIframeChanges, allowEmpty: boole
  * `updateIframe`: clicks an iframe and replaces parts of its code and its name, as one step of the history. With
  * `fill`, the iframe shows as loading until the changes arrive.
  */
-export const updateIframeExecutor: KritzelAgenticActionExecutor<KritzelAgenticUpdateIframeAction> = {
+export const updateIframeExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticUpdateIframeAction> = {
   mutates: true,
 
   validate(action) {
@@ -38,7 +38,7 @@ export const updateIframeExecutor: KritzelAgenticActionExecutor<KritzelAgenticUp
 
   prepare(run, action) {
     const object = run.map!.findById(action.objectId);
-    if (!object || isSelectionObject(object) || !(object instanceof KritzelIframeObject)) {
+    if (!object || isSelectionObject(object) || !(object instanceof UpdrawIframeObject)) {
       return { reason: 'invalid-target', objectIds: [action.objectId] };
     }
     return { targetIds: [action.objectId], referenceIds: [] };
@@ -56,10 +56,10 @@ export const updateIframeExecutor: KritzelAgenticActionExecutor<KritzelAgenticUp
     const map = run.map!;
     const liveIframe = () => {
       const found = map.findById(id);
-      return found instanceof KritzelIframeObject ? found : run.stop('object-removed', [id]);
+      return found instanceof UpdrawIframeObject ? found : run.stop('object-removed', [id]);
     };
 
-    let changes: KritzelAgenticIframeChanges = action;
+    let changes: UpdrawAgenticIframeChanges = action;
     if (action.fill) {
       run.mutate(() => {
         const iframe = liveIframe();

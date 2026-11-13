@@ -1,6 +1,6 @@
 :host {
   display: block;
-  z-index: var(--kritzel-back-to-content-z-index, 1000);
+  z-index: var(--updraw-back-to-content-z-index, 1000);
   pointer-events: none;
 }
 
@@ -8,18 +8,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: var(--kritzel-back-to-content-height, 50px);
+  height: var(--updraw-back-to-content-height, 50px);
   box-sizing: border-box;
-  gap: var(--kritzel-back-to-content-gap, 6px);
-  padding: var(--kritzel-back-to-content-padding, 0 16px);
-  border: var(--kritzel-back-to-content-border, 1px solid #ebebeb);
-  border-radius: var(--kritzel-back-to-content-border-radius, 12px);
-  background-color: var(--kritzel-back-to-content-background-color, #ffffff);
-  color: var(--kritzel-back-to-content-color, #000000);
-  font-size: var(--kritzel-back-to-content-font-size, 14px);
-  font-weight: var(--kritzel-back-to-content-font-weight, 500);
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
-  box-shadow: var(--kritzel-back-to-content-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  gap: var(--updraw-back-to-content-gap, 6px);
+  padding: var(--updraw-back-to-content-padding, 0 16px);
+  border: var(--updraw-back-to-content-border, 1px solid #ebebeb);
+  border-radius: var(--updraw-back-to-content-border-radius, 12px);
+  background-color: var(--updraw-back-to-content-background-color, #ffffff);
+  color: var(--updraw-back-to-content-color, #000000);
+  font-size: var(--updraw-back-to-content-font-size, 14px);
+  font-weight: var(--updraw-back-to-content-font-weight, 500);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
+  box-shadow: var(--updraw-back-to-content-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -36,10 +36,10 @@
 
 @media (hover: hover) {
   .back-to-content-button:hover {
-    background-color: var(--kritzel-back-to-content-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+    background-color: var(--updraw-back-to-content-hover-background-color, hsl(0, 0%, 0%, 4.3%));
   }
 }
 
 .back-to-content-button:active {
-  background-color: var(--kritzel-back-to-content-active-background-color, hsl(0, 0%, 0%, 8.6%));
+  background-color: var(--updraw-back-to-content-active-background-color, hsl(0, 0%, 0%, 8.6%));
 }

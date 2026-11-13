@@ -1,8 +1,8 @@
-import { KritzelPoint } from "./point.interface";
+import { UpdrawPoint } from "./point.interface";
 
-export interface KritzelPolygon {
-  bottomLeft: KritzelPoint;
-  bottomRight: KritzelPoint;
-  topLeft: KritzelPoint;
-  topRight: KritzelPoint;
+export interface UpdrawPolygon {
+  bottomLeft: UpdrawPoint;
+  bottomRight: UpdrawPoint;
+  topLeft: UpdrawPoint;
+  topRight: UpdrawPoint;
 }

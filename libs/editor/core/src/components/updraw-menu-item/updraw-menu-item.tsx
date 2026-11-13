@@ -1,29 +1,29 @@
 import { Component, Host, Prop, h, Element, State, Watch, Event, EventEmitter } from '@stencil/core';
-import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from '@kritzel/core';
-import { KritzelDevicesHelper } from '@kritzel/core';
+import { IUpdrawMenuItem, IUpdrawMenuItemSelectEvent, IUpdrawMenuItemToggleChildMenuEvent } from '@updraw/core';
+import { UpdrawDevicesHelper } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-menu-item',
-  styleUrl: 'kritzel-menu-item.css',
+  tag: 'updraw-menu-item',
+  styleUrl: 'updraw-menu-item.css',
   shadow: true,
 })
-export class KritzelMenuItem {
+export class UpdrawMenuItem {
   @Element() host: HTMLElement;
 
-  @Prop() item: IKritzelMenuItem;
+  @Prop() item: IUpdrawMenuItem;
   @Watch('item')
-  onItemChange(newValue: IKritzelMenuItem, oldValue: IKritzelMenuItem) {
+  onItemChange(newValue: IUpdrawMenuItem, oldValue: IUpdrawMenuItem) {
     if (newValue !== oldValue) {
       this.isDirty = false;
     }
   }
-  @Prop() parent: IKritzelMenuItem = null;
+  @Prop() parent: IUpdrawMenuItem = null;
 
-  @Event() itemSelect: EventEmitter<IKritzelMenuItemSelectEvent>;
-  @Event() itemSave: EventEmitter<IKritzelMenuItem>;
-  @Event() itemCancel: EventEmitter<IKritzelMenuItem>;
-  @Event() itemToggleChildMenu: EventEmitter<IKritzelMenuItemToggleChildMenuEvent>;
-  @Event() itemCloseChildMenu: EventEmitter<IKritzelMenuItem>;
+  @Event() itemSelect: EventEmitter<IUpdrawMenuItemSelectEvent>;
+  @Event() itemSave: EventEmitter<IUpdrawMenuItem>;
+  @Event() itemCancel: EventEmitter<IUpdrawMenuItem>;
+  @Event() itemToggleChildMenu: EventEmitter<IUpdrawMenuItemToggleChildMenuEvent>;
+  @Event() itemCloseChildMenu: EventEmitter<IUpdrawMenuItem>;
 
   @State()
   isDirty: boolean = false;
@@ -36,7 +36,7 @@ export class KritzelMenuItem {
         if (this.inputRef) {
           this.inputRef.focus();
 
-          if (KritzelDevicesHelper.isIOS()) {
+          if (UpdrawDevicesHelper.isIOS()) {
             const length = this.inputRef.value.length;
             this.inputRef.setSelectionRange(length, length);
           } else {
@@ -57,10 +57,10 @@ export class KritzelMenuItem {
   }
 
   private setDeviceSpecificStyles = () => {
-    const isTouchDevice = KritzelDevicesHelper.isTouchDevice();
+    const isTouchDevice = UpdrawDevicesHelper.isTouchDevice();
     if (isTouchDevice) {
-      this.host.style.setProperty('--kritzel-menu-item-overlay-background-color', 'transparent');
-      this.host.style.setProperty('--kritzel-menu-item-button-hover-background-color', 'transparent');
+      this.host.style.setProperty('--updraw-menu-item-overlay-background-color', 'transparent');
+      this.host.style.setProperty('--updraw-menu-item-button-hover-background-color', 'transparent');
     }
   };
 
@@ -98,13 +98,13 @@ export class KritzelMenuItem {
   };
 
   private renderViewMode() {
-    const childMenuTag = ['kritzel', 'menu'].join('-');
+    const childMenuTag = ['updraw', 'menu'].join('-');
 
     return [
       <div class="menu-item-content left">
         {this.item.icon && (
           <span title={this.item.iconTooltip}>
-            <kritzel-icon name={this.item.icon} size={16} style={this.item.color ? { '--kritzel-icon-color': this.item.color } : undefined}></kritzel-icon>
+            <updraw-icon name={this.item.icon} size={16} style={this.item.color ? { '--updraw-icon-color': this.item.color } : undefined}></updraw-icon>
           </span>
         )}
         <div style={this.item.color ? { color: this.item.color } : undefined}>{this.item.label}</div>
@@ -113,9 +113,9 @@ export class KritzelMenuItem {
         {this.item.children &&
           this.item.children.length > 0 && [
             <button id="child-menu-toggle" class="action-button" onClick={this.handleMenuToggle} disabled={this.item.isDisabled}>
-              <kritzel-icon name="ellipsisVertical" size={16}></kritzel-icon>
+              <updraw-icon name="ellipsisVertical" size={16}></updraw-icon>
             </button>,
-            <kritzel-portal anchor={this.item.childMenuAnchor} offsetY={4} onClose={this.handleMenuClose}>
+            <updraw-portal anchor={this.item.childMenuAnchor} offsetY={4} onClose={this.handleMenuClose}>
               {h(childMenuTag, {
                 items: this.item.children,
                 parent: this.item,
@@ -124,7 +124,7 @@ export class KritzelMenuItem {
                 onItemCancel: event => this.itemCancel.emit(event.detail),
                 onClose: this.handleMenuClose,
               })}
-            </kritzel-portal>,
+            </updraw-portal>,
           ]}
       </div>,
     ];
@@ -143,14 +143,14 @@ export class KritzelMenuItem {
       </div>,
       <div class="menu-item-content right">
         <div tabIndex={0} class="action-button" onClick={this.handleCancel}>
-          <kritzel-icon name="x" size={16}></kritzel-icon>
+          <updraw-icon name="x" size={16}></updraw-icon>
         </div>
         <div
           tabIndex={!this.isDirty && !this.item.isNewItem ? -1 : 0}
           class={{ 'action-button': true, 'disabled': !this.isDirty && !this.item.isNewItem }}
           onClick={this.handleSave}
         >
-          <kritzel-icon name="check" size={16}></kritzel-icon>
+          <updraw-icon name="check" size={16}></updraw-icon>
         </div>
       </div>,
     ];

@@ -1,4 +1,4 @@
-# kritzel-font-family
+# updraw-font-family
 
 
 
@@ -24,18 +24,18 @@
 
 ### Used by
 
- - [kritzel-tool-config](../kritzel-tool-config)
+ - [updraw-tool-config](../updraw-tool-config)
 
 ### Depends on
 
-- [kritzel-dropdown](../kritzel-dropdown)
+- [updraw-dropdown](../updraw-dropdown)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-font-family --> kritzel-dropdown
-  kritzel-tool-config --> kritzel-font-family
-  style kritzel-font-family fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-font-family --> updraw-dropdown
+  updraw-tool-config --> updraw-font-family
+  style updraw-font-family fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

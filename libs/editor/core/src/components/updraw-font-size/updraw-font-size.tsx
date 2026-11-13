@@ -1,11 +1,11 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 
 @Component({
-  tag: 'kritzel-font-size',
-  styleUrl: 'kritzel-font-size.css',
+  tag: 'updraw-font-size',
+  styleUrl: 'updraw-font-size.css',
   shadow: true,
 })
-export class KritzelFontSize {
+export class UpdrawFontSize {
   @Prop() sizes: number[] = [8, 10, 12, 16, 20, 24];
   @Prop({ mutable: true }) selectedSize: number | null = null;
   @Prop() fontFamily: string = 'Arial';
@@ -25,7 +25,7 @@ export class KritzelFontSize {
   }
 
   render() {
-    const color = 'var(--kritzel-global-text-primary)';
+    const color = 'var(--updraw-global-text-primary)';
     const sizes = this.sizes ?? [];
 
     return (
@@ -40,7 +40,7 @@ export class KritzelFontSize {
             onClick={() => this.handleSizeClick(size)}
             onKeyDown={event => this.handleKeyDown(event, size)}
           >
-            <kritzel-font fontFamily={this.fontFamily} size={size} color={color}></kritzel-font>
+            <updraw-font fontFamily={this.fontFamily} size={size} color={color}></updraw-font>
           </div>
         ))}
       </Host>

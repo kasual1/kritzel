@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, computed, signal } from '@angular/core';
 import {
-  KritzelAgent,
-  KritzelBaseObject,
-  KritzelChatBoxChip,
-  KritzelChatMessage,
-  KritzelChatSession,
-  KritzelEditor,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawAgent,
+  UpdrawBaseObject,
+  UpdrawChatBoxChip,
+  UpdrawChatMessage,
+  UpdrawChatSession,
+  UpdrawEditor,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -19,7 +19,7 @@ type Mode = 'user' | 'agent';
 const SYSTEM = 'You draw on a whiteboard. Keep answers short.';
 
 /** One line of the transcript: who wrote it and what. */
-function describe(message: KritzelChatMessage): string {
+function describe(message: UpdrawChatMessage): string {
   return message.parts
     .map(part => {
       if (part.type === 'text') return part.text;
@@ -32,7 +32,7 @@ function describe(message: KritzelChatMessage): string {
 
 @Component({
   selector: 'app-chat-sessions-modes',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -47,7 +47,7 @@ function describe(message: KritzelChatMessage): string {
     </app-toolbar>
     <div class="content">
       <div class="editor-wrap">
-        <kritzel-editor
+        <updraw-editor
           editorId="chat-sessions-modes"
           [theme]="'light'"
           [themes]="themes"
@@ -60,7 +60,7 @@ function describe(message: KritzelChatMessage): string {
           [isWorkspaceManagerVisible]="false"
           (objectsSelectionChange)="onSelectionChange($event.detail)"
           (chatChipRemove)="onChipRemove($event.detail)"
-        ></kritzel-editor>
+        ></updraw-editor>
       </div>
       <ol class="chat-transcript" aria-label="Transcript">
         @for (message of messages(); track $index) {
@@ -107,17 +107,17 @@ export class ChatSessionsModesComponent implements OnDestroy {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
   user = { id: 'demo-user', name: 'Demo User' };
 
   // One session per mode, created once: switching the mode binds the other one.
-  private readonly sessions: Record<Mode, KritzelChatSession> = (() => {
+  private readonly sessions: Record<Mode, UpdrawChatSession> = (() => {
     const transport = createDemoTransport();
-    const agent = new KritzelAgent({ id: 'assistant', name: 'Assistant', color: '#7C3AED' });
+    const agent = new UpdrawAgent({ id: 'assistant', name: 'Assistant', color: '#7C3AED' });
     return {
-      user: new KritzelChatSession({ transport, system: SYSTEM }),
-      agent: new KritzelChatSession({ transport, system: SYSTEM, agent }),
+      user: new UpdrawChatSession({ transport, system: SYSTEM }),
+      agent: new UpdrawChatSession({ transport, system: SYSTEM, agent }),
     };
   })();
 
@@ -125,9 +125,9 @@ export class ChatSessionsModesComponent implements OnDestroy {
 
   session = computed(() => this.sessions[this.mode()]);
 
-  chips = signal<KritzelChatBoxChip[]>([]);
+  chips = signal<UpdrawChatBoxChip[]>([]);
 
-  messages = signal<readonly KritzelChatMessage[]>([]);
+  messages = signal<readonly UpdrawChatMessage[]>([]);
 
   private unsubscribe: (() => void) | null = null;
 
@@ -141,18 +141,18 @@ export class ChatSessionsModesComponent implements OnDestroy {
     this.subscribe();
   }
 
-  onSelectionChange(objects: KritzelBaseObject[]): void {
+  onSelectionChange(objects: UpdrawBaseObject[]): void {
     this.chips.set(
       objects.map(object => ({
         id: object.id,
         objectId: object.id,
-        label: object.name || object.__class__.replace('Kritzel', ''),
+        label: object.name || object.__class__.replace('Updraw', ''),
         icon: 'cursor',
       })),
     );
   }
 
-  onChipRemove(chip: KritzelChatBoxChip): void {
+  onChipRemove(chip: UpdrawChatBoxChip): void {
     this.chips.update(current => current.filter(item => item.id !== chip.id));
   }
 

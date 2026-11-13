@@ -1,4 +1,4 @@
-# kritzel-titlebar-menu
+# updraw-titlebar-menu
 
 
 
@@ -7,14 +7,14 @@
 
 ## Overview
 
-The menu opened from a titlebar `menu` element: a compact `kritzel-menu` styled like the
-context menu through the `--kritzel-titlebar-menu-*` theme variables.
+The menu opened from a titlebar `menu` element: a compact `updraw-menu` styled like the
+context menu through the `--updraw-titlebar-menu-*` theme variables.
 
 ## Properties
 
 | Property | Attribute | Description                                                      | Type                        | Default |
 | -------- | --------- | ---------------------------------------------------------------- | --------------------------- | ------- |
-| `items`  | --        | Menu items of the open titlebar menu, as resolved by the engine. | `KritzelTitlebarMenuItem[]` | `[]`    |
+| `items`  | --        | Menu items of the open titlebar menu, as resolved by the engine. | `UpdrawTitlebarMenuItem[]` | `[]`    |
 
 
 ## Events
@@ -28,21 +28,21 @@ context menu through the `--kritzel-titlebar-menu-*` theme variables.
 
 ### Used by
 
- - [kritzel-editor](../kritzel-editor)
+ - [updraw-editor](../updraw-editor)
 
 ### Depends on
 
-- [kritzel-menu](../kritzel-menu)
+- [updraw-menu](../updraw-menu)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-titlebar-menu --> kritzel-menu
-  kritzel-menu --> kritzel-menu-item
-  kritzel-menu-item --> kritzel-icon
-  kritzel-menu-item --> kritzel-portal
-  kritzel-editor --> kritzel-titlebar-menu
-  style kritzel-titlebar-menu fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-titlebar-menu --> updraw-menu
+  updraw-menu --> updraw-menu-item
+  updraw-menu-item --> updraw-icon
+  updraw-menu-item --> updraw-portal
+  updraw-editor --> updraw-titlebar-menu
+  style updraw-titlebar-menu fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

@@ -7,11 +7,11 @@ export interface DropdownOption {
 }
 
 @Component({
-  tag: 'kritzel-dropdown',
-  styleUrl: 'kritzel-dropdown.css',
+  tag: 'updraw-dropdown',
+  styleUrl: 'updraw-dropdown.css',
   shadow: true,
 })
-export class KritzelDropdown {
+export class UpdrawDropdown {
   @Element() el: HTMLElement;
 
   @Prop() options: DropdownOption[] = [];

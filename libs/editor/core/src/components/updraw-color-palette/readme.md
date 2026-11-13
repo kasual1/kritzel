@@ -1,4 +1,4 @@
-# kritzel-color-palette
+# updraw-color-palette
 
 
 
@@ -28,18 +28,18 @@
 
 ### Used by
 
- - [kritzel-tool-config](../kritzel-tool-config)
+ - [updraw-tool-config](../updraw-tool-config)
 
 ### Depends on
 
-- [kritzel-color](../kritzel-color)
+- [updraw-color](../updraw-color)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-color-palette --> kritzel-color
-  kritzel-tool-config --> kritzel-color-palette
-  style kritzel-color-palette fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-color-palette --> updraw-color
+  updraw-tool-config --> updraw-color-palette
+  style updraw-color-palette fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

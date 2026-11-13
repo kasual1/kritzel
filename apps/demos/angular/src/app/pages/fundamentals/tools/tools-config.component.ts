@@ -1,25 +1,25 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
-  KritzelBrushTool,
-  KritzelEditor,
-  KritzelLineTool,
-  KritzelSelectionTool,
-  KritzelShapeTool,
-  KritzelTextTool,
-  KritzelToolbarItem,
-  KritzelWorkspace,
+  UpdrawBrushTool,
+  UpdrawEditor,
+  UpdrawLineTool,
+  UpdrawSelectionTool,
+  UpdrawShapeTool,
+  UpdrawTextTool,
+  UpdrawToolbarItem,
+  UpdrawWorkspace,
   ShapeType,
-} from '@kritzel/angular-editor';
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-tools-config',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="tools-config"
       [theme]="'light'"
       [themes]="themes"
@@ -29,7 +29,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: `
     :host {
@@ -41,19 +41,19 @@ import { createSeedObjects } from '../../../const/seed-objects';
 export class ToolsConfigComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
-  toolbarItems: KritzelToolbarItem[] = [
+  toolbarItems: UpdrawToolbarItem[] = [
     {
       name: 'selection',
       type: 'tool',
-      tool: KritzelSelectionTool,
+      tool: UpdrawSelectionTool,
       icon: 'cursor',
     },
     {
       name: 'brush',
       type: 'tool',
-      tool: KritzelBrushTool,
+      tool: UpdrawBrushTool,
       icon: 'pen',
       isDefault: true,
       config: {
@@ -71,7 +71,7 @@ export class ToolsConfigComponent {
     {
       name: 'line',
       type: 'tool',
-      tool: KritzelLineTool,
+      tool: UpdrawLineTool,
       icon: 'arrow',
       config: {
         color: { light: '#0284c7', dark: '#38bdf8', label: 'Sky' },
@@ -91,7 +91,7 @@ export class ToolsConfigComponent {
     {
       name: 'shape',
       type: 'tool',
-      tool: KritzelShapeTool,
+      tool: UpdrawShapeTool,
       icon: 'shapeEllipse',
       config: {
         shapeType: ShapeType.Ellipse,
@@ -117,7 +117,7 @@ export class ToolsConfigComponent {
     {
       name: 'text',
       type: 'tool',
-      tool: KritzelTextTool,
+      tool: UpdrawTextTool,
       icon: 'type',
       config: {
         color: { light: '#1f2937', dark: '#f3f4f6', label: 'Ink' },

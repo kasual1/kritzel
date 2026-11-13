@@ -1,10 +1,10 @@
-import { KritzelBrowserPermissionManager } from './browser-permission.manager';
+import { UpdrawBrowserPermissionManager } from './browser-permission.manager';
 
-describe('KritzelBrowserPermissionManager', () => {
-  let manager: KritzelBrowserPermissionManager;
+describe('UpdrawBrowserPermissionManager', () => {
+  let manager: UpdrawBrowserPermissionManager;
 
   beforeEach(() => {
-    manager = new KritzelBrowserPermissionManager({} as any);
+    manager = new UpdrawBrowserPermissionManager({} as any);
   });
 
   afterEach(() => {

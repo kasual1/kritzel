@@ -75,7 +75,7 @@ export function createCalculatorWidgetInitialState(): CalculatorWidgetState {
     .header span { color: #dd0031; font-size: 13px; font-weight: 700; }
     .display { display: flex; align-items: center; justify-content: flex-end; min-height: 0; padding: 0 12px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #202124; font-size: clamp(16px, 8cqh, 24px); font-weight: 700; line-height: 1; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .keypad { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: clamp(4px, 1.5cqh, 6px); min-height: 0; overflow: hidden; }
-    button { min-width: 0; min-height: 0; height: auto; border: 1px solid #dadce0; border-radius: 6px; background: #ffffff; color: #202124; cursor: var(--kritzel-global-pointer-cursor, pointer); font-size: clamp(11px, 5cqh, 15px); font-weight: 600; line-height: 1; }
+    button { min-width: 0; min-height: 0; height: auto; border: 1px solid #dadce0; border-radius: 6px; background: #ffffff; color: #202124; cursor: var(--updraw-global-pointer-cursor, pointer); font-size: clamp(11px, 5cqh, 15px); font-weight: 600; line-height: 1; }
     button:hover { background: #f8f9fa; }
     .operator { border-color: #dd0031; color: #dd0031; }
     .muted { color: #5f6368; }

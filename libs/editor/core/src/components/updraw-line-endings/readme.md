@@ -1,4 +1,4 @@
-# kritzel-line-endings
+# updraw-line-endings
 
 A component for selecting line ending styles (arrows) for both the start and end of a line.
 
@@ -24,13 +24,13 @@ A component for selecting line ending styles (arrows) for both the start and end
 
 ### Used by
 
- - [kritzel-tool-config](../kritzel-tool-config)
+ - [updraw-tool-config](../updraw-tool-config)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-tool-config --> kritzel-line-endings
-  style kritzel-line-endings fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-tool-config --> updraw-line-endings
+  style updraw-line-endings fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

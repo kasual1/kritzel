@@ -7,7 +7,7 @@ import * as Y from 'yjs';
  * Each migration must be idempotent — in a collaborative environment, multiple clients
  * may execute the same migration concurrently due to Yjs CRDT merging.
  */
-export interface KritzelMigration {
+export interface UpdrawMigration {
   /** The schema version this migration upgrades from. */
   fromVersion: number;
   /** The schema version this migration upgrades to. Must equal fromVersion + 1. */

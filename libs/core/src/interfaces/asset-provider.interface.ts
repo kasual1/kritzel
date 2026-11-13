@@ -1,4 +1,4 @@
-import { KritzelAsset } from './asset.interface';
+import { UpdrawAsset } from './asset.interface';
 
 /**
  * Distinguishes local-only asset providers (IndexedDB) from network providers
@@ -10,13 +10,13 @@ export type AssetProviderType = 'local' | 'remote';
  * Metadata supplied when uploading a new asset. The provider is free to
  * use or ignore hints (e.g. width/height) but MUST persist `mimeType`.
  */
-export interface KritzelAssetPutMetadata {
+export interface UpdrawAssetPutMetadata {
   mimeType: string;
   width?: number;
   height?: number;
   durationMs?: number;
   originalFilename?: string;
-  kind?: KritzelAsset['kind'];
+  kind?: UpdrawAsset['kind'];
   /**
    * Optional pre-assigned asset id. When provided, the provider should
    * use this id instead of generating one. This allows the resolver to
@@ -64,7 +64,7 @@ export interface IAssetStorageProvider {
    * Persists the given bytes and returns the resulting asset descriptor.
    * If `metadata.id` is provided, the provider MUST use that id.
    */
-  put(blob: Blob, metadata: KritzelAssetPutMetadata): Promise<KritzelAsset>;
+  put(blob: Blob, metadata: UpdrawAssetPutMetadata): Promise<UpdrawAsset>;
 
   /**
    * Returns a URL usable directly as an `<img src>` / `<video src>`.
@@ -95,7 +95,7 @@ export interface AssetProviderFactory {
 }
 
 /**
- * Configuration value accepted by `KritzelAssetStorageConfig.providers`:
+ * Configuration value accepted by `UpdrawAssetStorageConfig.providers`:
  * either a zero-arg class constructor or a factory object.
  */
 export type AssetProviderConfig = (new () => IAssetStorageProvider) | AssetProviderFactory;

@@ -18,8 +18,8 @@ const openModesPage = async (page: Page) => {
 /** Objects whose text contains the given text, with who created them. */
 const notesWithText = (page: Page, text: string) =>
   page.evaluate(async needle => {
-    const editor = document.querySelector('kritzel-editor') as EditorElement;
-    const shapes = await editor.findObjects(obj => obj.__class__ === 'KritzelShape');
+    const editor = document.querySelector('updraw-editor') as EditorElement;
+    const shapes = await editor.findObjects(obj => obj.__class__ === 'UpdrawShape');
     return shapes
       .filter(shape => JSON.stringify(shape.content ?? '').includes(needle))
       .map(shape => ({ id: shape.id as string, userId: shape.userId as string | undefined }));
@@ -44,8 +44,8 @@ test.describe('Chat Sessions', () => {
   test('turns the selection into chips and restyles the selected object', async ({ page }) => {
     const editorPage = await openModesPage(page);
     const target = await page.evaluate(async () => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
-      const [shape] = await editor.findObjects(obj => obj.__class__ === 'KritzelShape');
+      const editor = document.querySelector('updraw-editor') as EditorElement;
+      const [shape] = await editor.findObjects(obj => obj.__class__ === 'UpdrawShape');
       await editor.selectObjects([shape]);
       return { id: shape.id as string, fill: JSON.stringify(shape.fillColor) };
     });
@@ -56,7 +56,7 @@ test.describe('Chat Sessions', () => {
     await editorPage.waitForChatIdle();
 
     const fill = await page.evaluate(async id => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const [shape] = await editor.findObjects(obj => obj.id === id);
       return JSON.stringify(shape.fillColor);
     }, target.id);
@@ -85,7 +85,7 @@ test.describe('Chat Sessions', () => {
     await expect
       .poll(() =>
         page.evaluate(async () => {
-          const editor = document.querySelector('kritzel-editor') as EditorElement;
+          const editor = document.querySelector('updraw-editor') as EditorElement;
           return (await editor.getAgent('assistant')) !== null;
         }),
       )

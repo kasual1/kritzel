@@ -1,32 +1,32 @@
 import { useRef } from "react";
 import {
-  KritzelBrushTool,
-  KritzelEditor,
-  KritzelLineTool,
-  KritzelSelectionTool,
-  KritzelShapeTool,
-  KritzelTextTool,
+  UpdrawBrushTool,
+  UpdrawEditor,
+  UpdrawLineTool,
+  UpdrawSelectionTool,
+  UpdrawShapeTool,
+  UpdrawTextTool,
   ShapeType,
-  type HTMLKritzelEditorElement,
-  type KritzelToolbarItem,
-} from "@kritzel/react-editor";
+  type HTMLUpdrawEditorElement,
+  type UpdrawToolbarItem,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
 
 const themes = [reactThemeLight, reactThemeDark];
 
-const toolbarItems: KritzelToolbarItem[] = [
+const toolbarItems: UpdrawToolbarItem[] = [
   {
     name: "selection",
     type: "tool",
-    tool: KritzelSelectionTool,
+    tool: UpdrawSelectionTool,
     icon: "cursor",
   },
   {
     name: "brush",
     type: "tool",
-    tool: KritzelBrushTool,
+    tool: UpdrawBrushTool,
     icon: "pen",
     isDefault: true,
     config: {
@@ -44,7 +44,7 @@ const toolbarItems: KritzelToolbarItem[] = [
   {
     name: "line",
     type: "tool",
-    tool: KritzelLineTool,
+    tool: UpdrawLineTool,
     icon: "arrow",
     config: {
       color: { light: "#0284c7", dark: "#38bdf8", label: "Sky" },
@@ -64,7 +64,7 @@ const toolbarItems: KritzelToolbarItem[] = [
   {
     name: "shape",
     type: "tool",
-    tool: KritzelShapeTool,
+    tool: UpdrawShapeTool,
     icon: "shapeEllipse",
     config: {
       shapeType: ShapeType.Ellipse,
@@ -90,7 +90,7 @@ const toolbarItems: KritzelToolbarItem[] = [
   {
     name: "text",
     type: "tool",
-    tool: KritzelTextTool,
+    tool: UpdrawTextTool,
     icon: "type",
     config: {
       color: { light: "#1f2937", dark: "#f3f4f6", label: "Ink" },
@@ -111,11 +111,11 @@ const toolbarItems: KritzelToolbarItem[] = [
 ];
 
 export function ToolsConfigPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
 
   return (
     <div style={hostStyle}>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="tools-config"
         theme="light"

@@ -2,7 +2,7 @@ import { Pool } from "pg";
 
 const dbUrl =
   process.env.DATABASE_URL ||
-  "postgresql://postgres:postgres@postgres:5432/kritzel";
+  "postgresql://postgres:postgres@postgres:5432/updraw";
 
 export const pool = new Pool({ connectionString: dbUrl });
 

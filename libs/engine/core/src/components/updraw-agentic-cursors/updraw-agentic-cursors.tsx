@@ -1,9 +1,9 @@
 import { Component, Host, Prop, State, h, writeTask } from '@stencil/core';
-import { KritzelCore, KritzelAgenticCursor, KritzelLine, KritzelPoint, KritzelViewportOverlayHelper } from '@kritzel/core';
+import { UpdrawCore, UpdrawAgenticCursor, UpdrawLine, UpdrawPoint, UpdrawViewportOverlayHelper } from '@updraw/core';
 import { CursorArrow, CursorLabel, EdgeIndicator } from '../shared/cursor/cursor-visuals';
 
 /** A cursor to draw: a local agent (key = its ID) or a collaborator's agent (key = `r:<client>:<id>`). */
-type DrawnCursor = KritzelAgenticCursor & { key: string; isRemote?: boolean };
+type DrawnCursor = UpdrawAgenticCursor & { key: string; isRemote?: boolean };
 
 interface RenderedPosition {
   x: number;
@@ -11,12 +11,12 @@ interface RenderedPosition {
   inViewport: boolean;
 }
 
-/** Size of the engine's selection handles when `--kritzel-selection-handle-size` is not set. */
+/** Size of the engine's selection handles when `--updraw-selection-handle-size` is not set. */
 const DEFAULT_HANDLE_SIZE_PX = 6;
 
 /**
- * Renders the cursors of the local agents (`KritzelAgenticCursorManager`) and of collaborators' agents
- * (`KritzelRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
+ * Renders the cursors of the local agents (`UpdrawAgenticCursorManager`) and of collaborators' agents
+ * (`UpdrawRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
  * selection of one object, its rotation handle. Everything is keyed by the cursor key, so the same agent ID
  * in two tabs never collides.
  *
@@ -26,12 +26,12 @@ const DEFAULT_HANDLE_SIZE_PX = 6;
  * the same frame as the object state it follows and never runs ahead of the object.
  */
 @Component({
-  tag: 'kritzel-agentic-cursors',
-  styleUrls: ['../shared/cursor/cursor-visuals.css', 'kritzel-agentic-cursors.css'],
+  tag: 'updraw-agentic-cursors',
+  styleUrls: ['../shared/cursor/cursor-visuals.css', 'updraw-agentic-cursors.css'],
   shadow: true,
 })
-export class KritzelAgenticCursors {
-  @Prop() core!: KritzelCore;
+export class UpdrawAgenticCursors {
+  @Prop() core!: UpdrawCore;
   @Prop() showEdgeIndicators: boolean = true;
   @Prop() edgeIndicatorPadding: number = 8;
 
@@ -133,8 +133,8 @@ export class KritzelAgenticCursors {
     for (const cursor of cursorsList) {
       if (!cursor.visible) continue;
 
-      const screen = KritzelViewportOverlayHelper.worldToScreen(state, cursor.position.x, cursor.position.y);
-      const inViewport = KritzelViewportOverlayHelper.isInViewport(state, screen.x, screen.y);
+      const screen = UpdrawViewportOverlayHelper.worldToScreen(state, cursor.position.x, cursor.position.y);
+      const inViewport = UpdrawViewportOverlayHelper.isInViewport(state, screen.x, screen.y);
       const previous = this.renderedPositions.get(cursor.key);
 
       if (previous && previous.x === screen.x && previous.y === screen.y) continue;
@@ -230,8 +230,8 @@ export class KritzelAgenticCursors {
           </svg>
         )}
         {cursors.map(cursor => {
-          const screen = KritzelViewportOverlayHelper.worldToScreen(state, cursor.position.x, cursor.position.y);
-          const inViewport = KritzelViewportOverlayHelper.isInViewport(state, screen.x, screen.y);
+          const screen = UpdrawViewportOverlayHelper.worldToScreen(state, cursor.position.x, cursor.position.y);
+          const inViewport = UpdrawViewportOverlayHelper.isInViewport(state, screen.x, screen.y);
           this.renderedPositions.set(cursor.key, { x: screen.x, y: screen.y, inViewport });
 
           if (inViewport) {
@@ -287,7 +287,7 @@ export class KritzelAgenticCursors {
   }
 
   private renderEdgeIndicator(cursor: DrawnCursor, screenX: number, screenY: number) {
-    const clamped = KritzelViewportOverlayHelper.clampToEdge(this.core.store.state, screenX, screenY, this.edgeIndicatorPadding);
+    const clamped = UpdrawViewportOverlayHelper.clampToEdge(this.core.store.state, screenX, screenY, this.edgeIndicatorPadding);
     return (
       <EdgeIndicator
         indicatorKey={`agentic-edge-${cursor.key}`}
@@ -296,7 +296,7 @@ export class KritzelAgenticCursors {
         angle={clamped.angle}
         edge={clamped.edge}
         color={cursor.color}
-        label={cursor.name ? KritzelViewportOverlayHelper.getInitials(cursor.name) : '•'}
+        label={cursor.name ? UpdrawViewportOverlayHelper.getInitials(cursor.name) : '•'}
         classes={{ 'agentic-edge-indicator': true }}
       />
     );
@@ -338,7 +338,7 @@ export class KritzelAgenticCursors {
   /** Radius of the handle in screen pixels, the same as the engine's rotation handle. */
   private getHandleRadius(): number {
     const host = this.core.engine?.host;
-    const size = host && typeof getComputedStyle === 'function' ? parseFloat(getComputedStyle(host).getPropertyValue('--kritzel-selection-handle-size')) : NaN;
+    const size = host && typeof getComputedStyle === 'function' ? parseFloat(getComputedStyle(host).getPropertyValue('--updraw-selection-handle-size')) : NaN;
     return (Number.isFinite(size) && size > 1 ? size : DEFAULT_HANDLE_SIZE_PX) - 1;
   }
 
@@ -359,14 +359,14 @@ export class KritzelAgenticCursors {
       const object = objects.findById(objectId);
       if (!object) continue;
       const isRotating = cursor.activeAction === 'rotateObject';
-      if (!isRotating && (object instanceof KritzelLine || !this.core.objectConfigManager.isRotatable(object))) continue;
+      if (!isRotating && (object instanceof UpdrawLine || !this.core.objectConfigManager.isRotatable(object))) continue;
 
       const handle = this.core.agenticCursorManager.getRotationHandle(objectId);
       if (!handle) continue;
       const center = this.isOnHandle(cursor, objectId) ? this.followCursor(handle.base, handle.handle, cursor.position) : handle.handle;
 
-      const base = KritzelViewportOverlayHelper.worldToScreen(state, handle.base.x, handle.base.y);
-      const knob = KritzelViewportOverlayHelper.worldToScreen(state, center.x, center.y);
+      const base = UpdrawViewportOverlayHelper.worldToScreen(state, handle.base.x, handle.base.y);
+      const knob = UpdrawViewportOverlayHelper.worldToScreen(state, center.x, center.y);
       const [x1, y1, x2, y2] = [base.x, base.y, knob.x, knob.y].map(value => Math.round(value * 100) / 100);
       handles.push({
         key: `${cursor.key}:${objectId}`,
@@ -398,7 +398,7 @@ export class KritzelAgenticCursors {
    * A handle the cursor holds is under the cursor. The agent grabbed it at the zoom (and titlebar) of the tab it
    * runs in, so on a collaborator's screen, or after zooming, the handle slides along its stem to the cursor.
    */
-  private followCursor(base: KritzelPoint, handle: KritzelPoint, cursor: KritzelPoint): KritzelPoint {
+  private followCursor(base: UpdrawPoint, handle: UpdrawPoint, cursor: UpdrawPoint): UpdrawPoint {
     const dx = handle.x - base.x;
     const dy = handle.y - base.y;
     const length = Math.hypot(dx, dy);
@@ -423,7 +423,7 @@ export class KritzelAgenticCursors {
         const polygon = object.rotatedPolygon;
         const points = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft]
           .map(corner => {
-            const screen = KritzelViewportOverlayHelper.worldToScreen(state, corner.x, corner.y);
+            const screen = UpdrawViewportOverlayHelper.worldToScreen(state, corner.x, corner.y);
             return `${Math.round(screen.x * 100) / 100},${Math.round(screen.y * 100) / 100}`;
           })
           .join(' ');

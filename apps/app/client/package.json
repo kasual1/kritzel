@@ -29,7 +29,7 @@
     "@angular/platform-browser": "^21.2.24",
     "@angular/router": "^21.2.24",
     "@angular/service-worker": "^21.2.24",
-    "@kritzel/angular-editor": "file:../../../libs/editor/angular/dist/lib",
+    "@updraw/angular-editor": "file:../../../libs/editor/angular/dist/lib",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
@@ -43,9 +43,9 @@
     "vitest": "^4.0.8"
   },
   "overrides": {
-    "@kritzel/core": "file:../../../libs/core",
-    "@kritzel/editor": "file:../../../libs/editor/core",
-    "@kritzel/engine": "file:../../../libs/engine/core",
+    "@updraw/core": "file:../../../libs/core",
+    "@updraw/editor": "file:../../../libs/editor/core",
+    "@updraw/engine": "file:../../../libs/engine/core",
     "piscina": "^5.3.2",
     "vite": "^7.3.2"
   },

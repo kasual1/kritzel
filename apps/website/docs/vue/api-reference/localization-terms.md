@@ -1,22 +1,22 @@
 ---
 sidebar_label: Localization Terms
 displayed_sidebar: tutorialSidebar
-title: "Localization Terms | Kritzel for Vue"
-description: "Reference for all built-in localization keys and their default English text in Kritzel."
+title: "Localization Terms | Updraw for Vue"
+description: "Reference for all built-in localization keys and their default English text in Updraw."
 toc_max_heading_level: 4
 ---
 
 # Localization Terms
 
-This is the API reference for all built-in localization keys in Kritzel. Every key has default English text that can be overridden by custom locales.
+This is the API reference for all built-in localization keys in Updraw. Every key has default English text that can be overridden by custom locales.
 
 Override selected keys by providing a partial custom locale. Keys you omit continue to use the default English text.
 
 ```html
 <script setup lang="ts">
-import { KritzelEditor, type KritzelLocale } from '@kritzel/vue-editor'
+import { UpdrawEditor, type UpdrawLocale } from '@updraw/vue-editor'
 
-const customEnglish: KritzelLocale = {
+const customEnglish: UpdrawLocale = {
   code: 'en',
   label: 'English',
   terms: {
@@ -25,11 +25,11 @@ const customEnglish: KritzelLocale = {
   },
 }
 
-const customLocales: KritzelLocale[] = [customEnglish]
+const customLocales: UpdrawLocale[] = [customEnglish]
 </script>
 
 <template>
-  <KritzelEditor :locales="customLocales" />
+  <UpdrawEditor :locales="customLocales" />
 </template>
 ```
 
@@ -126,7 +126,7 @@ const customLocales: KritzelLocale[] = [customEnglish]
 | settings.developer.showMigrationInfo.description | Display debug information about data migrations. |
 | settings.categories.about | About |
 | settings.about.title | About |
-| settings.about.description | Kritzel - A drawing application |
+| settings.about.description | Updraw - A drawing application |
 
 ### Export dialog
 
@@ -205,7 +205,7 @@ const customLocales: KritzelLocale[] = [customEnglish]
 
 | Key | Default text |
 |------|--------------|
-| watermark.poweredBy | Powered by Kritzel |
+| watermark.poweredBy | Powered by Updraw |
 
 ### Object type labels
 

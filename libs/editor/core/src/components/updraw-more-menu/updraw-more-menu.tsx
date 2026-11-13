@@ -1,14 +1,14 @@
 import { Component, Host, h, Prop, State, Element, Event, EventEmitter, Watch, Method } from '@stencil/core';
-import { KritzelDevicesHelper } from '@kritzel/core';
-import { IKritzelMenuItem } from '@kritzel/core';
-import { KritzelTermKey } from '@kritzel/core';
+import { UpdrawDevicesHelper } from '@updraw/core';
+import { IUpdrawMenuItem } from '@updraw/core';
+import { UpdrawTermKey } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-more-menu',
-  styleUrl: 'kritzel-more-menu.css',
+  tag: 'updraw-more-menu',
+  styleUrl: 'updraw-more-menu.css',
   shadow: true,
 })
-export class KritzelMoreMenu {
+export class UpdrawMoreMenu {
   @Element() host!: HTMLElement;
 
   /**
@@ -21,7 +21,7 @@ export class KritzelMoreMenu {
    * Items with `isVisible` set to `false` will be filtered out.
    * Items with an `action` will have that action invoked on selection.
    */
-  @Prop() items: IKritzelMenuItem[] = [];
+  @Prop() items: IUpdrawMenuItem[] = [];
 
   /**
    * The icon to display on the button
@@ -39,16 +39,16 @@ export class KritzelMoreMenu {
   @Prop() offsetY: number = 4;
 
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
 
   /**
    * Emitted when a menu item is selected
    */
-  @Event() itemSelect: EventEmitter<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>;
+  @Event() itemSelect: EventEmitter<{ item: IUpdrawMenuItem; parent: IUpdrawMenuItem }>;
 
   @State() menuAnchor: HTMLElement = null;
-  @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
-  @State() visibleItems: IKritzelMenuItem[] = [];
+  @State() isTouchDevice: boolean = UpdrawDevicesHelper.isTouchDevice();
+  @State() visibleItems: IUpdrawMenuItem[] = [];
 
   private visibilityResolveVersion = 0;
 
@@ -63,7 +63,7 @@ export class KritzelMoreMenu {
       return;
     }
 
-    window.dispatchEvent(new CustomEvent('kritzel-dismiss-menus'));
+    window.dispatchEvent(new CustomEvent('updraw-dismiss-menus'));
     this.menuAnchor = this.host;
     this.visibleItems = this.filterVisibleItemsSync(this.items ?? []);
     await this.resolveVisibleItems();
@@ -116,8 +116,8 @@ export class KritzelMoreMenu {
     return visibility !== false;
   }
 
-  private filterVisibleItemsSync(items: IKritzelMenuItem[]): IKritzelMenuItem[] {
-    return items.reduce<IKritzelMenuItem[]>((visibleItems, item) => {
+  private filterVisibleItemsSync(items: IUpdrawMenuItem[]): IUpdrawMenuItem[] {
+    return items.reduce<IUpdrawMenuItem[]>((visibleItems, item) => {
       const isVisible = this.evaluateVisibilitySync(item.isVisible);
       if (isVisible === null || !isVisible) {
         return visibleItems;
@@ -137,7 +137,7 @@ export class KritzelMoreMenu {
     }, []);
   }
 
-  private async filterVisibleItems(items: IKritzelMenuItem[]): Promise<IKritzelMenuItem[]> {
+  private async filterVisibleItems(items: IUpdrawMenuItem[]): Promise<IUpdrawMenuItem[]> {
     const resolved = await Promise.all(
       items.map(async item => {
         const isVisible = await this.evaluateVisibility(item.isVisible);
@@ -156,7 +156,7 @@ export class KritzelMoreMenu {
       }),
     );
 
-    return resolved.filter((item): item is IKritzelMenuItem => !!item);
+    return resolved.filter((item): item is IUpdrawMenuItem => !!item);
   }
 
   private async resolveVisibleItems(): Promise<void> {
@@ -171,15 +171,15 @@ export class KritzelMoreMenu {
     this.visibleItems = resolvedItems;
   }
 
-  private resolveMenuLabels(items: IKritzelMenuItem[]): IKritzelMenuItem[] {
+  private resolveMenuLabels(items: IUpdrawMenuItem[]): IUpdrawMenuItem[] {
     return items.map(item => ({
       ...item,
-      label: this.terms[item.label as KritzelTermKey] ?? item.label,
+      label: this.terms[item.label as UpdrawTermKey] ?? item.label,
       children: item.children ? this.resolveMenuLabels(item.children) : undefined,
     }));
   }
 
-  private handleMenuItemSelect = (event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>): void => {
+  private handleMenuItemSelect = (event: CustomEvent<{ item: IUpdrawMenuItem; parent: IUpdrawMenuItem }>): void => {
     const { item, parent } = event.detail;
 
     if (item.action) {
@@ -199,15 +199,15 @@ export class KritzelMoreMenu {
             onClick={this.toggleMenu}
             aria-label={this.terms['moreMenu.ariaLabel'] ?? 'More options'}
           >
-            <kritzel-icon name={this.icon} size={this.iconSize}></kritzel-icon>
+            <updraw-icon name={this.icon} size={this.iconSize}></updraw-icon>
           </button>
 
-          <kritzel-portal anchor={this.menuAnchor} offsetY={this.offsetY} onClose={this.closeMenu}>
-            <kritzel-menu
+          <updraw-portal anchor={this.menuAnchor} offsetY={this.offsetY} onClose={this.closeMenu}>
+            <updraw-menu
               items={this.resolveMenuLabels(this.visibleItems)}
               onItemSelect={this.handleMenuItemSelect}
-            ></kritzel-menu>
-          </kritzel-portal>
+            ></updraw-menu>
+          </updraw-portal>
         </div>
       </Host>
     );

@@ -25,13 +25,13 @@
   border-radius: 3px;
   background: linear-gradient(
     to right,
-    var(--kritzel-opacity-slider-active-color, #007AFF) 0%,
-    var(--kritzel-opacity-slider-active-color, #007AFF) var(--slider-progress, 100%),
-    var(--kritzel-opacity-slider-track-color, #e0e0e0) var(--slider-progress, 100%),
-    var(--kritzel-opacity-slider-track-color, #e0e0e0) 100%
+    var(--updraw-opacity-slider-active-color, #007AFF) 0%,
+    var(--updraw-opacity-slider-active-color, #007AFF) var(--slider-progress, 100%),
+    var(--updraw-opacity-slider-track-color, #e0e0e0) var(--slider-progress, 100%),
+    var(--updraw-opacity-slider-track-color, #e0e0e0) 100%
   );
   outline: none;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
 }
 
 .opacity-slider::-webkit-slider-thumb {
@@ -40,9 +40,9 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--kritzel-opacity-slider-thumb-color, #ffffff);
-  border: 2px solid var(--kritzel-opacity-slider-thumb-border-color, #007AFF);
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  background: var(--updraw-opacity-slider-thumb-color, #ffffff);
+  border: 2px solid var(--updraw-opacity-slider-thumb-border-color, #007AFF);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: transform 0.1s ease;
 }
@@ -55,9 +55,9 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--kritzel-opacity-slider-thumb-color, #ffffff);
-  border: 2px solid var(--kritzel-opacity-slider-thumb-border-color, #007AFF);
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  background: var(--updraw-opacity-slider-thumb-color, #ffffff);
+  border: 2px solid var(--updraw-opacity-slider-thumb-border-color, #007AFF);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: transform 0.1s ease;
 }
@@ -77,9 +77,9 @@
 }
 
 .opacity-slider:focus::-webkit-slider-thumb {
-  box-shadow: 0 0 0 2px var(--kritzel-global-focus-ring-color, rgba(0, 122, 255, 0.3));
+  box-shadow: 0 0 0 2px var(--updraw-global-focus-ring-color, rgba(0, 122, 255, 0.3));
 }
 
 .opacity-slider:focus::-moz-range-thumb {
-  box-shadow: 0 0 0 2px var(--kritzel-global-focus-ring-color, rgba(0, 122, 255, 0.3));
+  box-shadow: 0 0 0 2px var(--updraw-global-focus-ring-color, rgba(0, 122, 255, 0.3));
 }

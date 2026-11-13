@@ -2,10 +2,10 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import {
   EditorIsReadyEvent,
-  KritzelDynamicObject,
-  KritzelEditor,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawDynamicObject,
+  UpdrawEditor,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { vi } from 'vitest';
 import { AuthService } from '../services/auth.service';
 import { ConfigService } from '../services/config.service';
@@ -15,11 +15,11 @@ import { animateWelcomeObject, createWelcomeObject, getWelcomeBoundsUpdate } fro
 
 describe('Starter workspace', () => {
   const user = { id: 'starter-test-user', displayName: 'Guest', isGuest: true };
-  const key = `kritzel_welcome_initialized:${user.id}`;
+  const key = `updraw_welcome_initialized:${user.id}`;
   let component: Editor;
-  let workspace: KritzelWorkspace;
+  let workspace: UpdrawWorkspace;
   let params: Record<string, string>;
-  let objects: KritzelDynamicObject[];
+  let objects: UpdrawDynamicObject[];
 
   beforeEach(() => {
     vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true })));
@@ -27,7 +27,7 @@ describe('Starter workspace', () => {
     params = {};
     objects = [];
     TestBed.configureTestingModule({
-      imports: [KritzelEditor],
+      imports: [UpdrawEditor],
       providers: [
         { provide: ActivatedRoute, useValue: { snapshot: { params } } },
         { provide: AuthService, useValue: {} },
@@ -37,8 +37,8 @@ describe('Starter workspace', () => {
     });
     component = TestBed.runInInjectionContext(() => new Editor());
     component.user = user;
-    workspace = new KritzelWorkspace();
-    component.editor = TestBed.createComponent(KritzelEditor).componentInstance;
+    workspace = new UpdrawWorkspace();
+    component.editor = TestBed.createComponent(UpdrawEditor).componentInstance;
     vi.spyOn(component.editor, 'getWorkspaces').mockImplementation(async () => [workspace]);
     vi.spyOn(component.editor, 'getObjectsTotalCount').mockImplementation(async () => objects.length);
     vi.spyOn(component.editor, 'getAllObjects').mockImplementation(async () => objects);
@@ -46,7 +46,7 @@ describe('Starter workspace', () => {
       width: 360, height: 640, scale: 1, translateX: 0, translateY: 0,
     });
     vi.spyOn(component.editor, 'addObject').mockImplementation(async (object) => {
-      if (!(object instanceof KritzelDynamicObject)) {
+      if (!(object instanceof UpdrawDynamicObject)) {
         throw new Error('Expected a dynamic Welcome object.');
       }
       objects.push(object);
@@ -87,7 +87,7 @@ describe('Starter workspace', () => {
   it('adds and centers a blue SVG path only on first initialization', async () => {
     await ready();
     expect(objects).toHaveLength(1);
-    expect(objects[0]).toBeInstanceOf(KritzelDynamicObject);
+    expect(objects[0]).toBeInstanceOf(UpdrawDynamicObject);
     expect(component.editor.centerObjectInViewport).toHaveBeenCalledWith(objects[0]);
     const svg = objects[0].element.querySelector('svg');
     expect(svg?.getAttribute('aria-label')).toBe('Welcome');
@@ -142,7 +142,7 @@ describe('Starter workspace', () => {
   it('does not restore Welcome after deletion, reload, or switching to an empty workspace', async () => {
     await ready();
     objects = [];
-    workspace = new KritzelWorkspace();
+    workspace = new UpdrawWorkspace();
     await ready();
     expect(objects).toHaveLength(0);
     expect(component.editor.addObject).toHaveBeenCalledTimes(1);
@@ -168,7 +168,7 @@ describe('Starter workspace', () => {
   });
 
   it('does not seed when the user already has multiple workspaces', async () => {
-    vi.mocked(component.editor.getWorkspaces).mockResolvedValue([workspace, new KritzelWorkspace()]);
+    vi.mocked(component.editor.getWorkspaces).mockResolvedValue([workspace, new UpdrawWorkspace()]);
     await ready();
     expect(objects).toHaveLength(0);
   });
@@ -191,7 +191,7 @@ describe('Starter workspace', () => {
   it('serializes the SVG for persistence without requiring a renderer', () => {
     const welcome = createWelcomeObject();
     const serialized = welcome.serialize();
-    const restored = new KritzelDynamicObject({}).deserialize<KritzelDynamicObject>(serialized);
+    const restored = new UpdrawDynamicObject({}).deserialize<UpdrawDynamicObject>(serialized);
     expect(restored.element.querySelector('path')?.getAttribute('stroke')).toBe('#4A7DFF');
     expect(restored.width).toBe(480);
     expect(restored.height).toBeCloseTo(480 * 72 / 253);
@@ -217,7 +217,7 @@ describe('Starter workspace', () => {
     expect(welcome.translateX).toBeCloseTo(100 + 18 * 480 / 280);
     expect(welcome.translateY).toBeCloseTo(200 + (206 - 120 * 480 / 280) / 2 + 29 * 480 / 280);
     expect(getWelcomeBoundsUpdate(welcome)).toBeNull();
-    const restored = new KritzelDynamicObject({}).deserialize<KritzelDynamicObject>(welcome.serialize());
+    const restored = new UpdrawDynamicObject({}).deserialize<UpdrawDynamicObject>(welcome.serialize());
     expect(restored.width).toBeCloseTo(welcome.width);
     expect(restored.element.querySelector('svg')?.getAttribute('viewBox')).toBe('18 29 253 72');
   });

@@ -12,7 +12,7 @@
   flex: 1;
 }
 
-.export-content kritzel-pill-tabs {
+.export-content updraw-pill-tabs {
   align-self: center;
 }
 
@@ -32,16 +32,16 @@
 .format-selection label {
   font-size: 14px;
   font-weight: 500;
-  color: var(--kritzel-global-text-primary, #333);
+  color: var(--updraw-global-text-primary, #333);
 }
 
 .export-primary-button {
   width: 100%;
   padding: 12px 24px;
-  background-color: var(--kritzel-global-primary-color, #007AFF);
-  color: var(--kritzel-global-primary-text-color, #fff);
+  background-color: var(--updraw-global-primary-color, #007AFF);
+  color: var(--updraw-global-primary-text-color, #fff);
   border: none;
-  border-radius: var(--kritzel-button-border-radius, 8px);
+  border-radius: var(--updraw-button-border-radius, 8px);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -50,7 +50,7 @@
 }
 
 .export-primary-button:hover {
-  background-color: var(--kritzel-global-primary-hover-color, #0066d6);
+  background-color: var(--updraw-global-primary-hover-color, #0066d6);
 }
 
 .export-primary-button:focus-visible {
@@ -73,12 +73,12 @@
   object-fit: contain;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   border-radius: 4px;
-  border: 1px solid var(--kritzel-global-border-color, #dbdbdb);
+  border: 1px solid var(--updraw-global-border-color, #dbdbdb);
 }
 
 .export-content p {
   margin: 0;
-  color: var(--kritzel-global-text-secondary, #666);
+  color: var(--updraw-global-text-secondary, #666);
 }
 
 @media (max-width: 576px) {

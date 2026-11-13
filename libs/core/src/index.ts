@@ -1,8 +1,8 @@
 /**
- * @fileoverview entry point of @kritzel/core
+ * @fileoverview entry point of @updraw/core
  *
- * Everything exported here is re-exported by @kritzel/engine, so apps keep importing from
- * @kritzel/engine, @kritzel/editor or their framework wrappers.
+ * Everything exported here is re-exported by @updraw/engine, so apps keep importing from
+ * @updraw/engine, @updraw/editor or their framework wrappers.
  */
 
 export * from './classes/objects/base-object.class';
@@ -147,8 +147,8 @@ export * from './constants/engine.constants';
 export * from './constants/version';
 
 
-// Engine internals: used by the @kritzel/engine components, which import them from
-// @kritzel/core. Not a stable API; they can change in any release.
+// Engine internals: used by the @updraw/engine components, which import them from
+// @updraw/core. Not a stable API; they can change in any release.
 export * from './classes/core/core.class';
 export * from './classes/core/reviver.class';
 export * from './classes/core/viewport.class';

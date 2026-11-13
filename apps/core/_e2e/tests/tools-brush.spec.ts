@@ -25,7 +25,7 @@ test.describe('Brush tool', () => {
     expect(count).toBe(1);
   });
 
-  test('should create a KritzelPath object after drawing', async ({ editorPage }) => {
+  test('should create an UpdrawPath object after drawing', async ({ editorPage }) => {
     await editorPage.prepareWaitForObjectsAdded();
 
     await editorPage.drawStroke([
@@ -39,7 +39,7 @@ test.describe('Brush tool', () => {
     const objects = await editorPage.getAllObjects<any>();
     expect(objects).toHaveLength(1);
     expect(objects[0].id).toBeDefined();
-    // KritzelPath objects have a points array and strokeWidth
+    // UpdrawPath objects have a points array and strokeWidth
     expect(objects[0].points).toBeDefined();
     expect(objects[0].points.length).toBeGreaterThanOrEqual(2);
     expect(objects[0].strokeWidth).toBeDefined();

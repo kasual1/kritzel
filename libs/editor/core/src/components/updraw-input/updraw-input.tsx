@@ -1,11 +1,11 @@
 import { Component, Host, h, Prop, Event, EventEmitter, State, Watch } from '@stencil/core';
 
 @Component({
-  tag: 'kritzel-input',
-  styleUrl: 'kritzel-input.css',
+  tag: 'updraw-input',
+  styleUrl: 'updraw-input.css',
   shadow: true,
 })
-export class KritzelInput {
+export class UpdrawInput {
   /** Current text value */
   @Prop({ mutable: true }) value: string = '';
 

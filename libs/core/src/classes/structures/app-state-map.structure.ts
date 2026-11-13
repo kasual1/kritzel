@@ -1,10 +1,10 @@
 import * as Y from 'yjs';
-import { KritzelWorkspace } from '../core/workspace.class';
-import type { KritzelCore } from '../core/core.class';
+import { UpdrawWorkspace } from '../core/workspace.class';
+import type { UpdrawCore } from '../core/core.class';
 import { ISyncProvider } from '../../interfaces/sync-provider.interface';
-import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
+import { UpdrawSyncConfig } from '../../interfaces/sync-config.interface';
 import { DEFAULT_SYNC_CONFIG } from '../../configs/default-sync.config';
-import { KritzelDocumentType } from '../../interfaces/document-metadata.interface';
+import { UpdrawDocumentType } from '../../interfaces/document-metadata.interface';
 import { APP_STATE_INSTANCE_ID_STORAGE_KEY } from '../../constants/storage.constants';
 import { CURRENT_APP_STATE_SCHEMA_VERSION } from '../../constants/schema.constants';
 import { ObjectHelper } from '../../helpers/object.helper';
@@ -16,13 +16,13 @@ import { APP_STATE_MIGRATIONS } from '../../migrations/app-state.migrations';
  * This class provides a synchronized map of workspaces that can be shared across
  * multiple clients using configurable sync providers (e.g., WebSocket, WebRTC).
  */
-export class KritzelAppStateMap {
-  private map: Map<string, KritzelWorkspace>;
+export class UpdrawAppStateMap {
+  private map: Map<string, UpdrawWorkspace>;
   private _ydoc: Y.Doc | null = null;
   private _workspacesMap: Y.Map<any> | null = null;
   private _metadataMap: Y.Map<any> | null = null;
   private _providers: ISyncProvider[] = [];
-  private _core: KritzelCore | null = null;
+  private _core: UpdrawCore | null = null;
   private _isReady: boolean = false;
   private _onRemoteChangeCallback: (() => void) | null = null;
   private _workspacesObserver: ((event: Y.YMapEvent<any>) => void) | null = null;
@@ -54,10 +54,10 @@ export class KritzelAppStateMap {
   }
 
   /**
-   * Creates a new KritzelAppStateMap instance with an empty workspace map.
+   * Creates a new UpdrawAppStateMap instance with an empty workspace map.
    */
   constructor() {
-    this.map = new Map<string, KritzelWorkspace>();
+    this.map = new Map<string, UpdrawWorkspace>();
   }
 
   /**
@@ -73,11 +73,11 @@ export class KritzelAppStateMap {
    * Initializes the app state map with Yjs synchronization.
    * Creates a dedicated Y.Doc for app state, sets up workspace observation,
    * instantiates and connects all configured sync providers, and loads existing workspaces.
-   * @param core - The KritzelCore instance for triggering re-renders and accessing the store.
+   * @param core - The UpdrawCore instance for triggering re-renders and accessing the store.
    * @param config - Optional sync configuration specifying providers. Defaults to DEFAULT_SYNC_CONFIG.
    * @returns A promise that resolves when all providers are connected and the state is loaded.
    */
-  async initialize(core: KritzelCore, config?: KritzelSyncConfig): Promise<void> {
+  async initialize(core: UpdrawCore, config?: UpdrawSyncConfig): Promise<void> {
     this._core = core;
 
     // Create a dedicated Y.Doc for app state (workspaces)
@@ -86,7 +86,7 @@ export class KritzelAppStateMap {
     this._metadataMap = this._ydoc.getMap('metadata');
 
     const instanceId = config?.appStateId ?? this.getOrCreateAppStateInstanceId(core);
-    const docName = core.editorId ? `kritzel-app-state-${core.editorId}-${instanceId}` : `kritzel-app-state-${instanceId}`;
+    const docName = core.editorId ? `updraw-app-state-${core.editorId}-${instanceId}` : `updraw-app-state-${instanceId}`;
    
     const finalConfig = config ?? DEFAULT_SYNC_CONFIG;
 
@@ -110,7 +110,7 @@ export class KritzelAppStateMap {
 
     if (showSyncProviderInfo) {
       const providerList = this._providers.map(p => `${p.constructor.name} (${p.type})`).join(', ');
-      console.info(`[Kritzel] App-state sync providers initialized for ${docName}: ${providerList || 'none'}`);
+      console.info(`[Updraw] App-state sync providers initialized for ${docName}: ${providerList || 'none'}`);
     }
 
     // Observe changes to workspaces and sync with application state
@@ -129,22 +129,22 @@ export class KritzelAppStateMap {
     const localResults = await Promise.allSettled(localProviders.map(p => p.connect()));
     if (showSyncProviderInfo) {
       const connectedLocalCount = localResults.filter(result => result.status === 'fulfilled').length;
-      console.info(`[Kritzel] App-state local providers connected: ${connectedLocalCount}/${localProviders.length}`);
+      console.info(`[Updraw] App-state local providers connected: ${connectedLocalCount}/${localProviders.length}`);
     }
     localResults.forEach((result, i) => {
       if (showSyncProviderInfo && result.status === 'rejected') {
-        console.error(`[Kritzel] Sync provider "${localProviders[i]?.constructor.name}" failed to connect:`, result.reason);
+        console.error(`[Updraw] Sync provider "${localProviders[i]?.constructor.name}" failed to connect:`, result.reason);
       }
     });
 
     // Connect network providers in the background (remote data arrives via Yjs observers)
     if (showSyncProviderInfo && networkProviders.length > 0) {
-      console.info(`[Kritzel] App-state network providers connecting in background: ${networkProviders.length}`);
+      console.info(`[Updraw] App-state network providers connecting in background: ${networkProviders.length}`);
     }
     const networkConnectPromises = networkProviders.map(provider =>
       provider.connect().catch(err => {
         if (showSyncProviderInfo) {
-          console.error(`[Kritzel] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
+          console.error(`[Updraw] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
         }
       }),
     );
@@ -173,11 +173,11 @@ export class KritzelAppStateMap {
    * @returns A stable instance identifier.
    * @throws Error when localStorage is unavailable or inaccessible.
    */
-  private getOrCreateAppStateInstanceId(core: KritzelCore): string {
+  private getOrCreateAppStateInstanceId(core: UpdrawCore): string {
     const storage = globalThis.localStorage;
 
     if (!storage) {
-      throw new Error('[KritzelAppStateMap] localStorage is unavailable. Cannot persist app-state document identity.');
+      throw new Error('[UpdrawAppStateMap] localStorage is unavailable. Cannot persist app-state document identity.');
     }
 
     const storageKey = core.getStorageKey(APP_STATE_INSTANCE_ID_STORAGE_KEY);
@@ -186,7 +186,7 @@ export class KritzelAppStateMap {
     try {
       instanceId = storage.getItem(storageKey);
     } catch {
-      throw new Error('[KritzelAppStateMap] Failed to read app-state instance id from localStorage.');
+      throw new Error('[UpdrawAppStateMap] Failed to read app-state instance id from localStorage.');
     }
 
     if (instanceId) {
@@ -198,7 +198,7 @@ export class KritzelAppStateMap {
     try {
       storage.setItem(storageKey, generatedInstanceId);
     } catch {
-      throw new Error('[KritzelAppStateMap] Failed to persist app-state instance id to localStorage.');
+      throw new Error('[UpdrawAppStateMap] Failed to persist app-state instance id to localStorage.');
     }
 
     return generatedInstanceId;
@@ -264,13 +264,13 @@ export class KritzelAppStateMap {
   }
 
   /**
-   * Reconstructs a KritzelWorkspace instance from its serialized form.
+   * Reconstructs an UpdrawWorkspace instance from its serialized form.
    * Restores all properties including id, name, viewport, and timestamps.
    * Handles both legacy { translateX, translateY } and new { centerWorldX, centerWorldY } viewport formats.
    * @param serialized - The serialized workspace data object.
-   * @returns A fully reconstructed KritzelWorkspace instance.
+   * @returns A fully reconstructed UpdrawWorkspace instance.
    */
-  private reviveWorkspace(serialized: any): KritzelWorkspace {
+  private reviveWorkspace(serialized: any): UpdrawWorkspace {
     let viewport = serialized.viewport;
 
     // Backward compatibility: convert legacy translateX/translateY to centerWorldX/centerWorldY
@@ -283,7 +283,7 @@ export class KritzelAppStateMap {
       };
     }
 
-    const workspace = new KritzelWorkspace({
+    const workspace = new UpdrawWorkspace({
       id: serialized.id,
       name: serialized.name,
       viewport,
@@ -301,7 +301,7 @@ export class KritzelAppStateMap {
    * Initializes document metadata if not already set.
    * Uses 'metadata' transaction origin to avoid triggering remote sync callbacks for local state.
    */
-  private initializeMetadata(type: KritzelDocumentType): void {
+  private initializeMetadata(type: UpdrawDocumentType): void {
     if (!this._metadataMap || !this._ydoc) {
       return;
     }
@@ -343,7 +343,7 @@ export class KritzelAppStateMap {
   /**
    * Returns the document type stored in metadata.
    */
-  getDocumentType(): KritzelDocumentType {
+  getDocumentType(): UpdrawDocumentType {
     return this._metadataMap?.get('type') ?? 'state';
   }
 
@@ -392,7 +392,7 @@ export class KritzelAppStateMap {
    * @param workspace - The workspace to insert.
    * @returns True if the workspace was successfully inserted, false if it has no id.
    */
-  insert(workspace: KritzelWorkspace): boolean {
+  insert(workspace: UpdrawWorkspace): boolean {
     if (!workspace.id) {
       return false;
     }
@@ -414,7 +414,7 @@ export class KritzelAppStateMap {
    * @param workspace - The workspace with updated data.
    * @returns True if the workspace was successfully updated, false if it doesn't exist or has no id.
    */
-  update(workspace: KritzelWorkspace): boolean {
+  update(workspace: UpdrawWorkspace): boolean {
     if (!workspace.id || !this.map.has(workspace.id)) {
       return false;
     }
@@ -437,7 +437,7 @@ export class KritzelAppStateMap {
    * @param predicate - A function that returns true for the workspace to remove.
    * @returns True if a matching workspace was found and removed, false otherwise.
    */
-  remove(predicate: (workspace: KritzelWorkspace) => boolean): boolean {
+  remove(predicate: (workspace: UpdrawWorkspace) => boolean): boolean {
     const workspaceToRemove = Array.from(this.map.values()).find(predicate);
 
     if (!workspaceToRemove) {
@@ -460,7 +460,7 @@ export class KritzelAppStateMap {
    * @param id - The unique identifier of the workspace to retrieve.
    * @returns The workspace if found, undefined otherwise.
    */
-  get(id: string): KritzelWorkspace | undefined {
+  get(id: string): UpdrawWorkspace | undefined {
     return this.map.get(id);
   }
 
@@ -468,7 +468,7 @@ export class KritzelAppStateMap {
    * Returns all workspaces currently stored in the map.
    * @returns An array containing all workspaces.
    */
-  allWorkspaces(): KritzelWorkspace[] {
+  allWorkspaces(): UpdrawWorkspace[] {
     return Array.from(this.map.values());
   }
 
@@ -477,7 +477,7 @@ export class KritzelAppStateMap {
    * @param predicate - A function that returns true for workspaces to include.
    * @returns An array of workspaces that match the predicate.
    */
-  filter(predicate: (workspace: KritzelWorkspace) => boolean): KritzelWorkspace[] {
+  filter(predicate: (workspace: UpdrawWorkspace) => boolean): UpdrawWorkspace[] {
     return Array.from(this.map.values()).filter(predicate);
   }
 
@@ -486,7 +486,7 @@ export class KritzelAppStateMap {
    * @param predicate - A function that returns true for the workspace to find.
    * @returns The first matching workspace, or undefined if no match is found.
    */
-  find(predicate: (workspace: KritzelWorkspace) => boolean): KritzelWorkspace | undefined {
+  find(predicate: (workspace: UpdrawWorkspace) => boolean): UpdrawWorkspace | undefined {
     return Array.from(this.map.values()).find(predicate);
   }
 

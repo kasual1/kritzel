@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelBaseObject,
-  type KritzelGroup,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawBaseObject,
+  type UpdrawGroup,
+} from '@updraw/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -22,13 +22,13 @@ import { useInfoPanel } from '../../../components/info-panel'
 const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
 const editor = getEditorRef('editor')
-const objects = ref<KritzelBaseObject[]>([])
+const objects = ref<UpdrawBaseObject[]>([])
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 
 async function refreshObjects() {
   const all = (await editor.value?.getAllObjects()) ?? []
-  objects.value = [...(all as KritzelBaseObject<HTMLElement | SVGElement>[])].sort(
+  objects.value = [...(all as UpdrawBaseObject<HTMLElement | SVGElement>[])].sort(
     (a, b) => a.zIndex - b.zIndex,
   )
 }
@@ -48,7 +48,7 @@ async function groupSelected() {
 async function ungroupSelected() {
   if (!editor.value) return
   const selected = await editor.value.getSelectedObjects()
-  const groups = selected.filter((object): object is KritzelGroup => object.__class__ === 'KritzelGroup')
+  const groups = selected.filter((object): object is UpdrawGroup => object.__class__ === 'UpdrawGroup')
   await editor.value.ungroup(groups)
   await refreshObjects()
 }
@@ -67,7 +67,7 @@ async function onReady() {
       <InfoPanelToggle :panel="infoPanel" />
     </Toolbar>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
-      <KritzelEditor
+      <UpdrawEditor
         ref="editor"
         editorId="objects-grouping"
         theme="light"

@@ -1,8 +1,8 @@
 import { test, expect, EditorPage } from '../fixtures/editor.fixture';
 
-const CLIPBOARD_PAYLOAD_PREFIX = 'kritzel-clipboard/v1:';
+const CLIPBOARD_PAYLOAD_PREFIX = 'updraw-clipboard/v1:';
 
-/** Parse the serialized Kritzel clipboard payload into its object list. */
+/** Parse the serialized Updraw clipboard payload into its object list. */
 function parseClipboardObjects(serialized: string): any[] {
   if (!serialized || !serialized.startsWith(CLIPBOARD_PAYLOAD_PREFIX)) {
     return [];
@@ -145,7 +145,7 @@ test.describe('Clipboard', () => {
       expect(pasted).toHaveLength(2);
       expect(pasted[0].id).not.toBe(shape.id);
       expect(pasted[0].shapeType).toBe('rectangle');
-      expect(pasted[1].__class__).toBe('KritzelSelectionGroup');
+      expect(pasted[1].__class__).toBe('UpdrawSelectionGroup');
     });
 
     test('should cut multiple selected objects', async ({ editorPage }) => {
@@ -388,7 +388,7 @@ test.describe('Clipboard', () => {
 
       const allObjects = await editorPage.getAllObjects<any>();
       expect(allObjects).toHaveLength(1);
-      expect(allObjects[0].__class__).toBe('KritzelImage');
+      expect(allObjects[0].__class__).toBe('UpdrawImage');
 
       await expect(editorPage.engine).toHaveScreenshot();
     });
@@ -403,12 +403,12 @@ test.describe('Clipboard', () => {
 
       const allObjects = await editorPage.getAllObjects<any>();
       expect(allObjects).toHaveLength(1);
-      expect(allObjects[0].__class__).toBe('KritzelText');
+      expect(allObjects[0].__class__).toBe('UpdrawText');
 
       await expect(editorPage.engine).toHaveScreenshot();
     });
 
-    test('should paste kritzel objects from one tab into a second editor in another tab', async ({ editorPage, context }) => {
+    test('should paste updraw objects from one tab into a second editor in another tab', async ({ editorPage, context }) => {
       // Tab 1: create and select objects, then copy them to the system clipboard.
       const shape1 = await editorPage.addShape({
         shapeType: 'rectangle',
@@ -440,7 +440,7 @@ test.describe('Clipboard', () => {
       expect(await secondEditor.getObjectsTotalCount()).toBe(0);
 
       await secondEditor.prepareWaitForObjectsAdded();
-      await secondEditor.pasteKritzelPayloadFromSystemClipboard(payload);
+      await secondEditor.pasteUpdrawPayloadFromSystemClipboard(payload);
       await secondEditor.waitForObjectsAdded();
       await secondEditor.clearSelection();
 
@@ -461,7 +461,7 @@ test.describe('Clipboard', () => {
       await editorPage.blockClipboardReadPermission();
       await editorPage.paste(400, 400);
 
-      const notificationCard = editorPage.page.locator('kritzel-notification-card');
+      const notificationCard = editorPage.page.locator('updraw-notification-card');
       await expect(notificationCard).toBeVisible();
       await expect(notificationCard.locator('.type-pill')).toHaveText('Error');
       await expect(notificationCard.locator('.message')).toContainText(

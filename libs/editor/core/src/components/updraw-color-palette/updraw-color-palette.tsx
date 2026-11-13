@@ -1,14 +1,14 @@
 ﻿import { Component, Host, h, Prop, EventEmitter, Event } from '@stencil/core';
-import { KritzelColorHelper } from '@kritzel/core';
-import { ThemeAwareColor } from '@kritzel/core';
-import { ThemeName } from '@kritzel/core';
+import { UpdrawColorHelper } from '@updraw/core';
+import { ThemeAwareColor } from '@updraw/core';
+import { ThemeName } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-color-palette',
-  styleUrl: 'kritzel-color-palette.css',
+  tag: 'updraw-color-palette',
+  styleUrl: 'updraw-color-palette.css',
   shadow: true,
 })
-export class KritzelColorPalette {
+export class UpdrawColorPalette {
   @Prop() colors: ThemeAwareColor[] = [];
   @Prop({ mutable: true }) selectedColor: ThemeAwareColor | null = null;
   @Prop() isExpanded: boolean = false;
@@ -69,7 +69,7 @@ export class KritzelColorPalette {
                 onClick={() => this.handleColorClick(color)}
                 onKeyDown={event => this.handleKeyDown(event, color)}
               >
-                <kritzel-color value={KritzelColorHelper.applyOpacity(color, this.opacity, this.theme)} theme={this.theme}></kritzel-color>
+                <updraw-color value={UpdrawColorHelper.applyOpacity(color, this.opacity, this.theme)} theme={this.theme}></updraw-color>
               </div>
             );
           })}

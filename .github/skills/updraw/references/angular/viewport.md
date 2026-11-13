@@ -1,6 +1,6 @@
 # Viewport: Camera, Coordinates, Boundaries
 
-The viewport is the camera over the infinite canvas. State (`KritzelViewportState`): `translateX`, `translateY` (pan, world coords), `scale` (zoom, default 1.0), plus viewport pixel dimensions.
+The viewport is the camera over the infinite canvas. State (`UpdrawViewportState`): `translateX`, `translateY` (pan, world coords), `scale` (zoom, default 1.0), plus viewport pixel dimensions.
 
 ## The one distinction that matters
 
@@ -53,7 +53,7 @@ Pointer/DOM events give **screen pixels**; the canvas uses **world coordinates**
 ```ts
 async onCanvasClick(ev: MouseEvent) {
   const { x, y } = await this.editor.screenToWorld(ev.clientX, ev.clientY);
-  const pin = new KritzelShape({
+  const pin = new UpdrawShape({
     shapeType: ShapeType.Ellipse,
     translateX: x - 25, translateY: y - 25,   // center the 50×50 pin on the click
     width: 50, height: 50,
@@ -70,7 +70,7 @@ Inverse: `await editor.worldToScreen(x, y)` — e.g. to position an Angular over
 ## Limits and constraints (inputs on the component)
 
 ```html
-<kritzel-editor
+<updraw-editor
   [scaleMin]="0.1"
   [scaleMax]="10"
   [viewportBoundaryLeft]="0"
@@ -80,7 +80,7 @@ Inverse: `await editor.worldToScreen(x, y)` — e.g. to position an Angular over
   [isPanningEnabled]="false"
   [isZoomingEnabled]="false"
   [lockDrawingScale]="true">
-</kritzel-editor>
+</updraw-editor>
 ```
 
 - `scaleMin` / `scaleMax` — zoom clamps (engine enforces absolute limits on top).
@@ -91,12 +91,12 @@ Inverse: `await editor.worldToScreen(x, y)` — e.g. to position an Angular over
 ## Reacting to viewport changes
 
 ```html
-<kritzel-editor (viewportChange)="onViewportChange($event)"></kritzel-editor>
+<updraw-editor (viewportChange)="onViewportChange($event)"></updraw-editor>
 ```
 
 ```ts
-readonly viewport = signal<KritzelViewportState | null>(null);
-onViewportChange(e: CustomEvent<KritzelViewportState>) { this.viewport.set(e.detail); }
+readonly viewport = signal<UpdrawViewportState | null>(null);
+onViewportChange(e: CustomEvent<UpdrawViewportState>) { this.viewport.set(e.detail); }
 ```
 
 `objectsInViewportChange` (engine event) fires when the set of visible objects changes — useful for virtualized side panels.

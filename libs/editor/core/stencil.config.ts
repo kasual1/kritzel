@@ -5,55 +5,55 @@ import { vueOutputTarget } from '@stencil/vue-output-target';
 import { resolve } from 'path';
 
 const INTERNAL_COMPONENTS = [
-  'kritzel-active-users',
-  'kritzel-avatar',
-  'kritzel-back-to-content',
-  'kritzel-brush-style',
-  'kritzel-button',
-  'kritzel-color',
-  'kritzel-color-palette',
-  'kritzel-context-menu',
-  'kritzel-current-user',
-  'kritzel-current-user-dialog',
-  'kritzel-awareness-cursors',
-  'kritzel-agentic-cursors',
-  'kritzel-object-titlebar-layer',
-  'kritzel-dialog',
-  'kritzel-dropdown',
-  'kritzel-cursor-trail',
-  'kritzel-export',
-  'kritzel-font',
-  'kritzel-font-family',
-  'kritzel-font-size',
-  'kritzel-icon',
-  'kritzel-input',
-  'kritzel-line-endings',
-  'kritzel-login-dialog',
-  'kritzel-master-detail',
-  'kritzel-menu',
-  'kritzel-menu-item',
-  'kritzel-more-menu',
-  'kritzel-notification-card',
-  'kritzel-numeric-input',
-  'kritzel-opacity-slider',
-  'kritzel-pill-tabs',
-  'kritzel-portal',
-  'kritzel-slide-toggle',
-  'kritzel-titlebar-menu',
-  'kritzel-tool-config',
-  'kritzel-toolbar',
-  'kritzel-tooltip',
-  'kritzel-utility-panel',
-  'kritzel-watermark',
-  'kritzel-workspace-manager',
-  'kritzel-zoom-panel',
-  'kritzel-engine',
+  'updraw-active-users',
+  'updraw-avatar',
+  'updraw-back-to-content',
+  'updraw-brush-style',
+  'updraw-button',
+  'updraw-color',
+  'updraw-color-palette',
+  'updraw-context-menu',
+  'updraw-current-user',
+  'updraw-current-user-dialog',
+  'updraw-awareness-cursors',
+  'updraw-agentic-cursors',
+  'updraw-object-titlebar-layer',
+  'updraw-dialog',
+  'updraw-dropdown',
+  'updraw-cursor-trail',
+  'updraw-export',
+  'updraw-font',
+  'updraw-font-family',
+  'updraw-font-size',
+  'updraw-icon',
+  'updraw-input',
+  'updraw-line-endings',
+  'updraw-login-dialog',
+  'updraw-master-detail',
+  'updraw-menu',
+  'updraw-menu-item',
+  'updraw-more-menu',
+  'updraw-notification-card',
+  'updraw-numeric-input',
+  'updraw-opacity-slider',
+  'updraw-pill-tabs',
+  'updraw-portal',
+  'updraw-slide-toggle',
+  'updraw-titlebar-menu',
+  'updraw-tool-config',
+  'updraw-toolbar',
+  'updraw-tooltip',
+  'updraw-utility-panel',
+  'updraw-watermark',
+  'updraw-workspace-manager',
+  'updraw-zoom-panel',
+  'updraw-engine',
 ];
 
 const isDev = process.argv.includes('--dev') || process.argv.includes('--serve');
 
 export const config: Config = {
-  namespace: 'kritzel-editor',
+  namespace: 'updraw-editor',
   minifyJs: false,
   ...(isDev
     ? {
@@ -64,17 +64,17 @@ export const config: Config = {
         rollupConfig: {
           inputOptions: {
             // The engine's components are compiled into this bundle from its Stencil collection
-            // (see the `import "@kritzel/engine"` in kritzel-editor.tsx). They and the editor import
-            // every class from @kritzel/core, so keep it external: the editor, the compiled engine
-            // components and @kritzel/engine then share one copy of each class.
+            // (see the `import "@updraw/engine"` in updraw-editor.tsx). They and the editor import
+            // every class from @updraw/core, so keep it external: the editor, the compiled engine
+            // components and @updraw/engine then share one copy of each class.
             // Keep yjs and its companions external (as the engine build does), otherwise the
-            // editor ships its own copy next to the one @kritzel/engine imports and Yjs warns
+            // editor ships its own copy next to the one @updraw/engine imports and Yjs warns
             // "Yjs was already imported", breaking its constructor checks.
             external: [
-              /^@kritzel\/core(\/.*)?$/,
-              '@kritzel/engine',
-              '@kritzel/engine/loader',
-              '@kritzel/engine/dist/components',
+              /^@updraw\/core(\/.*)?$/,
+              '@updraw/engine',
+              '@updraw/engine/loader',
+              '@updraw/engine/dist/components',
               /^(yjs|y-websocket|y-indexeddb|lib0)(\/.*)?$/,
             ],
           },
@@ -88,7 +88,7 @@ export const config: Config = {
         { type: 'docs-json', file: '.stencil/docs.json' },
         { type: 'dist-custom-elements', externalRuntime: false, customElementsExportBehavior: 'single-export-module' },
         angularOutputTarget({
-          componentCorePackage: '@kritzel/editor',
+          componentCorePackage: '@updraw/editor',
           directivesProxyFile: '../angular/projects/lib/src/lib/proxy.ts',
           directivesArrayFile: '../angular/projects/lib/src/lib/index.ts',
           outputType: 'standalone',
@@ -97,11 +97,11 @@ export const config: Config = {
         }),
         reactOutputTarget({
           outDir: '../react/lib/components/stencil-generated/',
-          stencilPackageName: '@kritzel/editor',
+          stencilPackageName: '@updraw/editor',
           excludeComponents: INTERNAL_COMPONENTS,
         }),
         vueOutputTarget({
-          componentCorePackage: '@kritzel/editor',
+          componentCorePackage: '@updraw/editor',
           proxiesFile: '../vue/lib/components.ts',
           includeImportCustomElements: true,
           customElementsDir: 'dist/components',
@@ -111,9 +111,9 @@ export const config: Config = {
   testing: {
     browserHeadless: 'shell',
     transform: { '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }] },
-    // Specs run against @kritzel/core's source, so they don't need a core build.
+    // Specs run against @updraw/core's source, so they don't need a core build.
     moduleNameMapper: {
-      '^@kritzel/core$': '<rootDir>/../../core/src/index.ts',
+      '^@updraw/core$': '<rootDir>/../../core/src/index.ts',
     },
     testPathIgnorePatterns: ['/node_modules/'],
     testRegex: ['(/__tests__/.*|(\\.|/)(spec|e2e))\\.(tsx?|ts?)$'],

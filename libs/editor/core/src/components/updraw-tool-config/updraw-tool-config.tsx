@@ -1,32 +1,32 @@
 import { Component, Host, Prop, h, Event, EventEmitter, State, Watch } from '@stencil/core';
-import { ConfigurableTool, ToolConfigDefinition, ToolDisplayValues } from '@kritzel/core';
-import { KritzelToolConfigHelper } from '@kritzel/core';
-import { KritzelTextTool } from '@kritzel/core';
-import { ShapeFillType } from '../kritzel-shape-fill/kritzel-shape-fill';
-import { LineArrowConfig } from '@kritzel/core';
-import { KritzelColorHelper } from '@kritzel/core';
-import { ThemeAwareColor } from '@kritzel/core';
-import { ThemeName } from '@kritzel/core';
-import { KritzelTermKey } from '@kritzel/core';
-import { KritzelFontRegistration } from '@kritzel/core';
-import { FontOption } from '../kritzel-font-family/kritzel-font-family';
-import { resolveTextToolAvailableFonts } from '@kritzel/core';
-import { KritzelFontRegistry } from '@kritzel/core';
+import { ConfigurableTool, ToolConfigDefinition, ToolDisplayValues } from '@updraw/core';
+import { UpdrawToolConfigHelper } from '@updraw/core';
+import { UpdrawTextTool } from '@updraw/core';
+import { ShapeFillType } from '../updraw-shape-fill/updraw-shape-fill';
+import { LineArrowConfig } from '@updraw/core';
+import { UpdrawColorHelper } from '@updraw/core';
+import { ThemeAwareColor } from '@updraw/core';
+import { ThemeName } from '@updraw/core';
+import { UpdrawTermKey } from '@updraw/core';
+import { UpdrawFontRegistration } from '@updraw/core';
+import { FontOption } from '../updraw-font-family/updraw-font-family';
+import { resolveTextToolAvailableFonts } from '@updraw/core';
+import { UpdrawFontRegistry } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-tool-config',
-  styleUrl: 'kritzel-tool-config.css',
+  tag: 'updraw-tool-config',
+  styleUrl: 'updraw-tool-config.css',
   shadow: true,
 })
-export class KritzelToolConfig {
+export class UpdrawToolConfig {
   @Prop({ mutable: true }) tool: ConfigurableTool;
   @Watch('tool')
   handleToolChange(newTool: ConfigurableTool, oldTool: ConfigurableTool) {
-    const newConfig = KritzelToolConfigHelper.getToolConfig(newTool);
+    const newConfig = UpdrawToolConfigHelper.getToolConfig(newTool);
     
     // Maintain settings when switching between shape tools
     if (oldTool && newTool && newConfig?.type === 'shape') {
-      const oldConfig = KritzelToolConfigHelper.getToolConfig(oldTool);
+      const oldConfig = UpdrawToolConfigHelper.getToolConfig(oldTool);
       if (oldConfig?.type === 'shape') {
         // Copy properties that should persist
         const propsToCopy = [
@@ -59,7 +59,7 @@ export class KritzelToolConfig {
   @Prop() theme: ThemeName;
   @Prop() engine: HTMLElement;
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
 
   private handleSelectionChangeBound = this.handleSelectionChange.bind(this);
 
@@ -88,7 +88,7 @@ export class KritzelToolConfig {
   @State() private updateTrigger: number = 0;
 
   private getFontOptionsFromTool(): FontOption[] | undefined {
-    const configuredFonts = resolveTextToolAvailableFonts((this.tool as { availableFonts?: KritzelFontRegistration[] }).availableFonts).map(font => {
+    const configuredFonts = resolveTextToolAvailableFonts((this.tool as { availableFonts?: UpdrawFontRegistration[] }).availableFonts).map(font => {
       const registeredFont = typeof font === 'string'
         ? {
             family: font,
@@ -111,7 +111,7 @@ export class KritzelToolConfig {
     const mergedFonts = [...configuredFonts];
     const seenFonts = new Set(mergedFonts.map(font => font.value.trim().toLocaleLowerCase()));
 
-    for (const font of KritzelFontRegistry.list()) {
+    for (const font of UpdrawFontRegistry.list()) {
       const normalizedValue = font.family.trim().toLocaleLowerCase();
       if (seenFonts.has(normalizedValue)) {
         continue;
@@ -130,7 +130,7 @@ export class KritzelToolConfig {
 
   handleSelectionChange() {
     if (this.tool?.toolType === 'selection') {
-      this.config = KritzelToolConfigHelper.getToolConfig(this.tool);
+      this.config = UpdrawToolConfigHelper.getToolConfig(this.tool);
       if (this.config) {
         this.updatePalette();
         this.updateSizes();
@@ -147,7 +147,7 @@ export class KritzelToolConfig {
   }
 
   componentWillLoad() {
-    this.config = KritzelToolConfigHelper.getToolConfig(this.tool);
+    this.config = UpdrawToolConfigHelper.getToolConfig(this.tool);
     if (this.config) {
       this.updatePalette();
       this.updateSizes();
@@ -167,12 +167,12 @@ export class KritzelToolConfig {
     const size = (this.tool as any)[this.config.sizeProperty];
 
     const displayValues: ToolDisplayValues = {
-      color: KritzelColorHelper.applyOpacity(color, opacity, this.theme),
+      color: UpdrawColorHelper.applyOpacity(color, opacity, this.theme),
       size,
     };
 
     if (this.tool.toolType === 'text') {
-      displayValues.fontFamily = (this.tool as KritzelTextTool).fontFamily;
+      displayValues.fontFamily = (this.tool as UpdrawTextTool).fontFamily;
     }
 
     this.displayValuesChange.emit(displayValues);
@@ -267,57 +267,57 @@ export class KritzelToolConfig {
     switch (control.type) {
       case 'stroke-size':
         return (
-          <kritzel-stroke-size
+          <updraw-stroke-size
             key={control.type}
             sizes={this.sizes}
             selectedSize={value}
             onSizeChange={this.handleSizeChange}
-          ></kritzel-stroke-size>
+          ></updraw-stroke-size>
         );
 
       case 'font-size':
         return (
-          <kritzel-font-size
+          <updraw-font-size
             key={control.type}
             sizes={this.sizes}
             selectedSize={value}
             fontFamily={(this.tool as any).fontFamily}
             onSizeChange={this.handleSizeChange}
-          ></kritzel-font-size>
+          ></updraw-font-size>
         );
 
       case 'line-endings':
         return (
-          <kritzel-line-endings
+          <updraw-line-endings
             key={control.type}
             value={value}
             onValueChange={(event: CustomEvent<LineArrowConfig>) =>
               this.handlePropertyChange(control.propertyName, event.detail)
             }
-          ></kritzel-line-endings>
+          ></updraw-line-endings>
         );
 
       case 'shape-fill':
         return (
-          <kritzel-shape-fill
+          <updraw-shape-fill
             key={control.type}
             value={this.getShapeFillValue()}
             onValueChange={(event: CustomEvent<ShapeFillType>) =>
               this.handlePropertyChange(control.propertyName, event.detail)
             }
-          ></kritzel-shape-fill>
+          ></updraw-shape-fill>
         );
 
       case 'font-family':
         return (
-          <kritzel-font-family
+          <updraw-font-family
             key={control.type}
             fontOptions={this.getFontOptionsFromTool()}
             selectedFontFamily={value}
             onFontFamilyChange={(event: CustomEvent<string>) =>
               this.handlePropertyChange(control.propertyName, event.detail)
             }
-          ></kritzel-font-family>
+          ></updraw-font-family>
         );
 
       default:
@@ -356,7 +356,7 @@ export class KritzelToolConfig {
           >
             {/* Color palette - only show when colors are available */}
             {shouldShowColorPalette && (
-              <kritzel-color-palette
+              <updraw-color-palette
                 colors={this.palette}
                 selectedColor={(this.tool as any)[this.config.colorProperty]}
                 isExpanded={this.isExpanded}
@@ -364,16 +364,16 @@ export class KritzelToolConfig {
                 opacity={this.currentOpacity}
                 theme={this.theme}
                 onColorChange={this.handleColorChange}
-              ></kritzel-color-palette>
+              ></updraw-color-palette>
             )}
 
             {sizeControl && this.renderControl(sizeControl)}
 
-            <kritzel-opacity-slider
+            <updraw-opacity-slider
               value={(this.tool as any)[this.config.opacityProperty]}
               previewColor={(this.tool as any)[this.config.colorProperty]}
               onValueChange={this.handleOpacityChange}
-            ></kritzel-opacity-slider>
+            ></updraw-opacity-slider>
 
             {/* Tool-specific controls with dividers */}
             {otherControls.map((control) => [
@@ -395,7 +395,7 @@ export class KritzelToolConfig {
                 onClick={this.handleToggleExpand}
                 title={this.isExpanded ? (this.terms['toolConfig.collapse'] ?? 'Collapse') : (this.terms['toolConfig.expand'] ?? 'Expand')}
               >
-                <kritzel-icon name={this.isExpanded ? 'chevronUp' : 'chevronDown'}></kritzel-icon>
+                <updraw-icon name={this.isExpanded ? 'chevronUp' : 'chevronDown'}></updraw-icon>
               </button>
             </div>
           )}

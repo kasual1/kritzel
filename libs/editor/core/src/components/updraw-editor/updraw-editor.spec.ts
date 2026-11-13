@@ -1,10 +1,10 @@
-﻿import { KritzelEditor } from './kritzel-editor';
-import { KritzelBaseObject } from '@kritzel/core';
-import { KritzelWorkspace } from '@kritzel/core';
-import { KritzelFontRegistry } from '@kritzel/core';
-import { KritzelIconRegistry } from '@kritzel/core';
-import { KritzelKeyboardHelper } from '@kritzel/core';
-import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '@kritzel/core';
+﻿import { UpdrawEditor } from './updraw-editor';
+import { UpdrawBaseObject } from '@updraw/core';
+import { UpdrawWorkspace } from '@updraw/core';
+import { UpdrawFontRegistry } from '@updraw/core';
+import { UpdrawIconRegistry } from '@updraw/core';
+import { UpdrawKeyboardHelper } from '@updraw/core';
+import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '@updraw/core';
 
 // Simple mock for decorators
 jest.mock('@stencil/core', () => ({
@@ -19,12 +19,12 @@ jest.mock('@stencil/core', () => ({
   Element: () => () => {},
 }));
 
-describe('KritzelEditor', () => {
-  let component: KritzelEditor;
+describe('UpdrawEditor', () => {
+  let component: UpdrawEditor;
   let mockEngine: any;
 
   beforeEach(() => {
-    component = new KritzelEditor();
+    component = new UpdrawEditor();
     component.host = {
       style: {
         setProperty: jest.fn(),
@@ -169,7 +169,7 @@ describe('KritzelEditor', () => {
       const createSession = () => {
         const listeners = new Set<() => void>();
         const session: any = {
-          [Symbol.for('kritzel.chatSession')]: true,
+          [Symbol.for('updraw.chatSession')]: true,
           running: false,
           send: jest.fn(() => {
             session.running = true;
@@ -255,7 +255,7 @@ describe('KritzelEditor', () => {
     it('re-emits titlebar actions once, stopping the engine event', () => {
       const emit = jest.fn();
       (component as any).objectTitlebarAction = { emit };
-      const detail = { elementId: 'play', section: 'left', objectId: 'a', objectType: 'KritzelShape', workspaceId: 'w', anchorRect: {} };
+      const detail = { elementId: 'play', section: 'left', objectId: 'a', objectType: 'UpdrawShape', workspaceId: 'w', anchorRect: {} };
       const event = { detail, stopPropagation: jest.fn() } as any;
 
       component.handleObjectTitlebarAction(event);
@@ -333,36 +333,36 @@ describe('KritzelEditor', () => {
 
       component.componentWillLoad();
 
-      expect(KritzelIconRegistry.get('editor-initial-icon')).toBe(svg);
+      expect(UpdrawIconRegistry.get('editor-initial-icon')).toBe(svg);
     });
 
     it('registers and replaces icons supplied after initialization', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
       component.componentWillLoad();
       component.onCustomSvgIconsChange({ 'editor-late-icon': '<svg/>' });
-      expect(KritzelIconRegistry.get('editor-late-icon')).toBe('<svg/>');
+      expect(UpdrawIconRegistry.get('editor-late-icon')).toBe('<svg/>');
 
       const replacement = '<svg><path d="M1 1L2 2"/></svg>';
       component.onCustomSvgIconsChange({ 'editor-late-icon': replacement });
-      expect(KritzelIconRegistry.get('editor-late-icon')).toBe(replacement);
+      expect(UpdrawIconRegistry.get('editor-late-icon')).toBe(replacement);
     });
 
     it('accepts undefined custom icons without removing existing registry entries', () => {
       component.onCustomSvgIconsChange({ 'editor-retained-icon': '<svg/>' });
 
       expect(() => component.onCustomSvgIconsChange(undefined)).not.toThrow();
-      expect(KritzelIconRegistry.get('editor-retained-icon')).toBe('<svg/>');
+      expect(UpdrawIconRegistry.get('editor-retained-icon')).toBe('<svg/>');
     });
 
     it('registers upgrade-time inputs before rendering even when the watcher did not run', () => {
       component.componentWillLoad();
-      const register = jest.spyOn(KritzelIconRegistry, 'registerIcons');
+      const register = jest.spyOn(UpdrawIconRegistry, 'registerIcons');
       component.customSvgIcons = { 'editor-upgrade-icon': '<svg/>' };
 
       component.componentWillRender();
       component.componentWillRender();
 
-      expect(KritzelIconRegistry.get('editor-upgrade-icon')).toBe('<svg/>');
+      expect(UpdrawIconRegistry.get('editor-upgrade-icon')).toBe('<svg/>');
       expect(register).toHaveBeenCalledTimes(1);
     });
   });
@@ -404,7 +404,7 @@ describe('KritzelEditor', () => {
 
   describe('Workspace Methods', () => {
     it('should store provided workspaces separately from activeWorkspace', () => {
-      const workspace = new KritzelWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
+      const workspace = new UpdrawWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
       component.workspaces = [workspace];
 
       expect(component.workspaces).toEqual([workspace]);
@@ -412,9 +412,9 @@ describe('KritzelEditor', () => {
     });
 
     it('should keep public workspaces separate from availableWorkspaces state', () => {
-      const providedWorkspace = new KritzelWorkspace({ id: 'provided-workspace', name: 'Provided Workspace' });
-      const availableWorkspace = new KritzelWorkspace({ id: 'available-workspace', name: 'Available Workspace' });
-      const activeWorkspace = new KritzelWorkspace({ id: 'active-workspace', name: 'Active Workspace' });
+      const providedWorkspace = new UpdrawWorkspace({ id: 'provided-workspace', name: 'Provided Workspace' });
+      const availableWorkspace = new UpdrawWorkspace({ id: 'available-workspace', name: 'Available Workspace' });
+      const activeWorkspace = new UpdrawWorkspace({ id: 'active-workspace', name: 'Active Workspace' });
       component.workspaces = [providedWorkspace];
       component.availableWorkspaces = [availableWorkspace];
       component.activeWorkspace = activeWorkspace;
@@ -430,7 +430,7 @@ describe('KritzelEditor', () => {
     });
 
     it('should switch the engine when workspace manager selects a workspace', async () => {
-      const workspace = new KritzelWorkspace({ id: 'ws-selected', name: 'Selected Workspace' });
+      const workspace = new UpdrawWorkspace({ id: 'ws-selected', name: 'Selected Workspace' });
       const event = { stopPropagation: jest.fn(), detail: workspace } as any;
 
       await component.handleWorkspaceManagerChange(event);
@@ -441,7 +441,7 @@ describe('KritzelEditor', () => {
     });
 
     it('should clear the active workspace when workspace manager emits no workspace', async () => {
-      component.activeWorkspace = new KritzelWorkspace({ id: 'ws-active', name: 'Active Workspace' });
+      component.activeWorkspace = new UpdrawWorkspace({ id: 'ws-active', name: 'Active Workspace' });
       const event = { stopPropagation: jest.fn(), detail: null } as any;
 
       await component.handleWorkspaceManagerChange(event);
@@ -458,8 +458,8 @@ describe('KritzelEditor', () => {
     });
 
     it('should pass configured workspace seed objects to the engine', async () => {
-      const object = { id: 'seed-object' } as KritzelBaseObject<any>;
-      const workspace = new KritzelWorkspace({ id: 'seeded-workspace', name: 'Seeded Workspace', objects: [object] });
+      const object = { id: 'seed-object' } as UpdrawBaseObject<any>;
+      const workspace = new UpdrawWorkspace({ id: 'seeded-workspace', name: 'Seeded Workspace', objects: [object] });
 
       await component.createWorkspace(workspace);
 
@@ -597,7 +597,7 @@ describe('KritzelEditor', () => {
     });
 
     it('should call centerObjects on engine', async () => {
-      const objects = [{ id: 'obj-1' }] as unknown as KritzelBaseObject[];
+      const objects = [{ id: 'obj-1' }] as unknown as UpdrawBaseObject[];
       await component.centerObjects(objects, false);
       expect(mockEngine.centerObjects).toHaveBeenCalledWith(objects, false);
     });
@@ -759,7 +759,7 @@ describe('KritzelEditor', () => {
     });
 
     it('should register custom fonts when the customFonts prop changes', () => {
-      const spy = jest.spyOn(KritzelFontRegistry, 'registerFonts').mockImplementation();
+      const spy = jest.spyOn(UpdrawFontRegistry, 'registerFonts').mockImplementation();
       const customFonts = {
         'editor-lora': {
           family: 'Lora',
@@ -773,8 +773,8 @@ describe('KritzelEditor', () => {
     });
 
     it('should register custom fonts in componentDidLoad', () => {
-      const spy = jest.spyOn(KritzelFontRegistry, 'registerFonts').mockImplementation();
-      const keyboardSpy = jest.spyOn(KritzelKeyboardHelper, 'onKeyboardVisibleChanged').mockReturnValue(() => {});
+      const spy = jest.spyOn(UpdrawFontRegistry, 'registerFonts').mockImplementation();
+      const keyboardSpy = jest.spyOn(UpdrawKeyboardHelper, 'onKeyboardVisibleChanged').mockReturnValue(() => {});
       component.customFonts = {
         'editor-inter': {
           family: 'Inter',
@@ -789,7 +789,7 @@ describe('KritzelEditor', () => {
     });
 
     it('should register custom fonts through the public method', async () => {
-      const spy = jest.spyOn(KritzelFontRegistry, 'registerFonts').mockImplementation();
+      const spy = jest.spyOn(UpdrawFontRegistry, 'registerFonts').mockImplementation();
       const runtimeFonts = {
         'editor-space-grotesk': {
           family: 'Space Grotesk',
@@ -863,8 +863,8 @@ describe('KritzelEditor', () => {
       })();
 
       const customElementsSpy = jest.spyOn(customElements, 'whenDefined').mockResolvedValue(undefined as any);
-      const waitForFontsSpy = jest.spyOn(KritzelFontRegistry, 'waitForFonts').mockReturnValue(deferred.promise);
-      const keyboardSpy = jest.spyOn(KritzelKeyboardHelper, 'onKeyboardVisibleChanged').mockReturnValue(() => {});
+      const waitForFontsSpy = jest.spyOn(UpdrawFontRegistry, 'waitForFonts').mockReturnValue(deferred.promise);
+      const keyboardSpy = jest.spyOn(UpdrawKeyboardHelper, 'onKeyboardVisibleChanged').mockReturnValue(() => {});
       component.isReady = { emit: jest.fn() } as any;
       component.customFonts = {
         'editor-racing': {

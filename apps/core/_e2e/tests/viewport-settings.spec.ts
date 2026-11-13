@@ -5,12 +5,12 @@ async function openViewportSettings(page: Page) {
   await page.getByTestId('more-menu-button').click();
   await page.getByTestId('menu-item-settings').click();
 
-  const settingsDialog = page.locator('kritzel-settings kritzel-dialog[is-open]');
+  const settingsDialog = page.locator('updraw-settings updraw-dialog[is-open]');
   await settingsDialog.waitFor({ state: 'attached' });
   await page.waitForTimeout(100);
 
-  const settingsRoot = page.locator('kritzel-settings');
-  await settingsRoot.locator('kritzel-master-detail').getByRole('tab', { name: /viewport/i }).click();
+  const settingsRoot = page.locator('updraw-settings');
+  await settingsRoot.locator('updraw-master-detail').getByRole('tab', { name: /viewport/i }).click();
   return settingsRoot;
 }
 
@@ -32,8 +32,8 @@ test.describe('Viewport settings', () => {
 
     const settingsRoot = await openViewportSettings(page);
 
-    const minZoomInput = settingsRoot.locator('kritzel-numeric-input').first();
-    const maxZoomInput = settingsRoot.locator('kritzel-numeric-input').nth(1);
+    const minZoomInput = settingsRoot.locator('updraw-numeric-input').first();
+    const maxZoomInput = settingsRoot.locator('updraw-numeric-input').nth(1);
 
     const minZoomField = minZoomInput.locator('input');
     const maxZoomField = maxZoomInput.locator('input');
@@ -43,7 +43,7 @@ test.describe('Viewport settings', () => {
     await maxZoomField.fill('1');
     await maxZoomField.press('Enter');
 
-    await page.locator('kritzel-settings kritzel-dialog[is-open] button[aria-label="Close dialog"]').click();
+    await page.locator('updraw-settings updraw-dialog[is-open] button[aria-label="Close dialog"]').click();
 
     const initialZoomPercent = await editorPage.getZoomPercent();
     await editorPage.zoomPanel.getByRole('button', { name: 'Zoom out' }).click();
@@ -68,7 +68,7 @@ test.describe('Viewport settings', () => {
     ];
 
     for (const { index, prop, value } of boundaryTests) {
-      const input = settingsRoot.locator('kritzel-numeric-input').nth(index).locator('input');
+      const input = settingsRoot.locator('updraw-numeric-input').nth(index).locator('input');
       await input.fill(value);
       await input.press('Enter');
       await expect.poll(async () => await editorPage.getProp<number>(prop)).toBe(Number(value));
@@ -81,16 +81,16 @@ test.describe('Viewport settings', () => {
 
     const settingsRoot = await openViewportSettings(page);
 
-    const boundaryInput = settingsRoot.locator('kritzel-numeric-input').nth(2).locator('input');
+    const boundaryInput = settingsRoot.locator('updraw-numeric-input').nth(2).locator('input');
     await boundaryInput.fill('200');
     await boundaryInput.press('Enter');
     await expect.poll(async () => await editorPage.getProp<number>('viewportBoundaryLeft')).toBe(200);
 
-    const stepperUp = settingsRoot.locator('kritzel-numeric-input').nth(2).locator('button.spinner-up');
+    const stepperUp = settingsRoot.locator('updraw-numeric-input').nth(2).locator('button.spinner-up');
     await stepperUp.click();
     await expect.poll(async () => await editorPage.getProp<number>('viewportBoundaryLeft')).toBe(300);
 
-    const stepperDown = settingsRoot.locator('kritzel-numeric-input').nth(2).locator('button.spinner-down');
+    const stepperDown = settingsRoot.locator('updraw-numeric-input').nth(2).locator('button.spinner-down');
     await stepperDown.click();
     await expect.poll(async () => await editorPage.getProp<number>('viewportBoundaryLeft')).toBe(200);
   });

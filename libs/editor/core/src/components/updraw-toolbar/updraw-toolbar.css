@@ -7,33 +7,33 @@
 }
 
 :host(.mobile) {
-  --kritzel-toolbar-control-hover-background-color: transparent;
-  --kritzel-toolbar-control-active-background-color: transparent;
+  --updraw-toolbar-control-hover-background-color: transparent;
+  --updraw-toolbar-control-active-background-color: transparent;
 }
 
-.kritzel-toolbar {
+.updraw-toolbar {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  gap: var(--kritzel-toolbar-gap, 8px);
+  gap: var(--updraw-toolbar-gap, 8px);
   height: 100%;
-  padding: var(--kritzel-toolbar-padding, 8px);
-  background-color: var(--kritzel-toolbar-background-color, #ffffff);
-  border-radius: var(--kritzel-toolbar-border-radius, 16px);
-  box-shadow: var(--kritzel-toolbar-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
-  border: var(--kritzel-toolbar-border, 1px solid #ebebeb);
+  padding: var(--updraw-toolbar-padding, 8px);
+  background-color: var(--updraw-toolbar-background-color, #ffffff);
+  border-radius: var(--updraw-toolbar-border-radius, 16px);
+  box-shadow: var(--updraw-toolbar-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  border: var(--updraw-toolbar-border, 1px solid #ebebeb);
   z-index: 1;
   position: relative;
   max-width: 100%;
   overflow: hidden;
 }
 
-.kritzel-tools-scroll {
+.updraw-tools-scroll {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: var(--kritzel-toolbar-gap, 8px);
+  gap: var(--updraw-toolbar-gap, 8px);
   overflow-x: auto;
   overflow-y: hidden;
   flex: 1 1 auto;
@@ -46,7 +46,7 @@
   -ms-overflow-style: none;
 }
 
-.kritzel-tools-scroll::-webkit-scrollbar {
+.updraw-tools-scroll::-webkit-scrollbar {
   display: none;
 }
 
@@ -65,14 +65,14 @@
 
 .scroll-indicator-left {
   left: 0;
-  background: linear-gradient(to right, var(--kritzel-toolbar-background-color, #ffffff), transparent);
-  border-radius: var(--kritzel-toolbar-border-radius, 16px) 0 0 var(--kritzel-toolbar-border-radius, 16px);
+  background: linear-gradient(to right, var(--updraw-toolbar-background-color, #ffffff), transparent);
+  border-radius: var(--updraw-toolbar-border-radius, 16px) 0 0 var(--updraw-toolbar-border-radius, 16px);
 }
 
 .scroll-indicator-right {
   right: 0;
-  background: linear-gradient(to left, var(--kritzel-toolbar-background-color, #ffffff), transparent);
-  border-radius: 0 var(--kritzel-toolbar-border-radius, 16px) var(--kritzel-toolbar-border-radius, 16px) 0;
+  background: linear-gradient(to left, var(--updraw-toolbar-background-color, #ffffff), transparent);
+  border-radius: 0 var(--updraw-toolbar-border-radius, 16px) var(--updraw-toolbar-border-radius, 16px) 0;
 }
 
 .scroll-indicator-left.visible,
@@ -80,93 +80,93 @@
   opacity: 1;
 }
 
-.kritzel-control {
+.updraw-control {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: var(--kritzel-toolbar-control-color, #000000);
-  border-radius: var(--kritzel-toolbar-control-border-radius, 12px);
-  padding: var(--kritzel-toolbar-control-padding, 8px);
+  color: var(--updraw-toolbar-control-color, #000000);
+  border-radius: var(--updraw-toolbar-control-border-radius, 12px);
+  padding: var(--updraw-toolbar-control-padding, 8px);
   border: none;
   background: none;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
   font-weight: bold;
 }
 
-.kritzel-control:focus,
-.kritzel-control:hover {
-  background-color: var(--kritzel-toolbar-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+.updraw-control:focus,
+.updraw-control:hover {
+  background-color: var(--updraw-toolbar-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
-.kritzel-control:active {
-  background-color: var(--kritzel-toolbar-control-active-background-color, hsl(0, 0%, 0%, 8.6%));
+.updraw-control:active {
+  background-color: var(--updraw-toolbar-control-active-background-color, hsl(0, 0%, 0%, 8.6%));
 }
 
-.kritzel-control.selected,
-.kritzel-control.selected:hover,
-.kritzel-control.selected:active {
-  background-color: var(--kritzel-toolbar-control-selected-background-color, #007AFF) !important;
-  color: var(--kritzel-toolbar-control-selected-color, #ffffff) !important;
+.updraw-control.selected,
+.updraw-control.selected:hover,
+.updraw-control.selected:active {
+  background-color: var(--updraw-toolbar-control-selected-background-color, #007AFF) !important;
+  color: var(--updraw-toolbar-control-selected-color, #ffffff) !important;
 }
 
-.kritzel-control.selected:focus {
-  background-color: var(--kritzel-toolbar-control-selected-background-color, #007bffe3) !important;
+.updraw-control.selected:focus {
+  background-color: var(--updraw-toolbar-control-selected-background-color, #007bffe3) !important;
 
 }
 
-.kritzel-control:disabled,
-.kritzel-control.disabled {
+.updraw-control:disabled,
+.updraw-control.disabled {
   opacity: 0.4;
   cursor: not-allowed;
   pointer-events: none;
 }
 
-.kritzel-control-separator {
+.updraw-control-separator {
   width: 1px;
   height: 24px;
-  background-color: var(--kritzel-toolbar-separator-color, #ebebeb);
+  background-color: var(--updraw-toolbar-separator-color, #ebebeb);
   margin: 0 4px;
 }
 
 
 /* Split-button control styles */
-.kritzel-control-split {
+.updraw-control-split {
   position: relative;
   display: flex;
   align-items: center;
-  border-radius: var(--kritzel-toolbar-control-border-radius, 12px);
-  color: var(--kritzel-toolbar-control-color, #000000);
+  border-radius: var(--updraw-toolbar-control-border-radius, 12px);
+  color: var(--updraw-toolbar-control-color, #000000);
 }
 
-.kritzel-control-split .kritzel-control-main {
+.updraw-control-split .updraw-control-main {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--kritzel-toolbar-control-padding, 8px);
+  padding: var(--updraw-toolbar-control-padding, 8px);
   border: none;
   background: none;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
-  border-radius: var(--kritzel-toolbar-control-border-radius, 12px);
+  border-radius: var(--updraw-toolbar-control-border-radius, 12px);
   color: inherit;
 }
 
 /* When selected, main button only has left-rounded corners (dropdown appears on right) */
-.kritzel-control-split.selected .kritzel-control-main {
-  border-radius: var(--kritzel-toolbar-control-border-radius, 12px) 0 0 var(--kritzel-toolbar-control-border-radius, 12px);
+.updraw-control-split.selected .updraw-control-main {
+  border-radius: var(--updraw-toolbar-control-border-radius, 12px) 0 0 var(--updraw-toolbar-control-border-radius, 12px);
 }
 
-.kritzel-control-split .kritzel-control-dropdown {
+.updraw-control-split .updraw-control-dropdown {
   display: flex;
   justify-content: center;
   align-items: center;
   align-self: stretch;
   border: none;
   background: none;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
-  border-radius: 0 var(--kritzel-toolbar-control-border-radius, 12px) var(--kritzel-toolbar-control-border-radius, 12px) 0;
+  border-radius: 0 var(--updraw-toolbar-control-border-radius, 12px) var(--updraw-toolbar-control-border-radius, 12px) 0;
   color: inherit;
 
   /* Hidden state - collapsed with no visibility */
@@ -180,82 +180,82 @@
   transition: width 0.15s ease-out, padding 0.15s ease-out, opacity 0.15s ease-out;
 }
 
-.kritzel-control-split .kritzel-control-dropdown.visible {
+.updraw-control-split .updraw-control-dropdown.visible {
   width: auto;
   padding: 0 6px;
   opacity: 1;
   pointer-events: auto;
 }
 
-.kritzel-control-split .kritzel-control-main:focus,
-.kritzel-control-split .kritzel-control-main:hover,
-.kritzel-control-split .kritzel-control-dropdown:focus,
-.kritzel-control-split .kritzel-control-dropdown:hover {
-  background-color: var(--kritzel-toolbar-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+.updraw-control-split .updraw-control-main:focus,
+.updraw-control-split .updraw-control-main:hover,
+.updraw-control-split .updraw-control-dropdown:focus,
+.updraw-control-split .updraw-control-dropdown:hover {
+  background-color: var(--updraw-toolbar-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
-.kritzel-control-split .kritzel-control-main:active,
-.kritzel-control-split .kritzel-control-dropdown:active {
-  background-color: var(--kritzel-toolbar-control-active-background-color, hsl(0, 0%, 0%, 8.6%));
+.updraw-control-split .updraw-control-main:active,
+.updraw-control-split .updraw-control-dropdown:active {
+  background-color: var(--updraw-toolbar-control-active-background-color, hsl(0, 0%, 0%, 8.6%));
 }
 
-.kritzel-control-split.selected {
-  background-color: var(--kritzel-toolbar-control-selected-background-color, #007AFF) !important;
-  color: var(--kritzel-toolbar-control-selected-color, #ffffff) !important;
+.updraw-control-split.selected {
+  background-color: var(--updraw-toolbar-control-selected-background-color, #007AFF) !important;
+  color: var(--updraw-toolbar-control-selected-color, #ffffff) !important;
 }
 
-.kritzel-control-split.selected .kritzel-control-main:hover,
-.kritzel-control-split.selected .kritzel-control-dropdown:hover {
+.updraw-control-split.selected .updraw-control-main:hover,
+.updraw-control-split.selected .updraw-control-dropdown:hover {
   background-color: rgba(255, 255, 255, 0.15);
 }
 
-.kritzel-control-split .kritzel-control-main:disabled,
-.kritzel-control-split .kritzel-control-main.disabled,
-.kritzel-control-split .kritzel-control-dropdown:disabled,
-.kritzel-control-split .kritzel-control-dropdown.disabled {
+.updraw-control-split .updraw-control-main:disabled,
+.updraw-control-split .updraw-control-main.disabled,
+.updraw-control-split .updraw-control-dropdown:disabled,
+.updraw-control-split .updraw-control-dropdown.disabled {
   opacity: 0.4;
   cursor: not-allowed;
   pointer-events: none;
 }
 
-/* Submenu content styles (positioned by kritzel-tooltip) */
-.kritzel-submenu-content {
+/* Submenu content styles (positioned by updraw-tooltip) */
+.updraw-submenu-content {
   display: flex;
   flex-direction: column;
-  gap: var(--kritzel-submenu-gap, 4px);
+  gap: var(--updraw-submenu-gap, 4px);
   min-width: 140px;
 }
 
-.kritzel-submenu-item {
+.updraw-submenu-item {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
   border: none;
   background: none;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   border-radius: 8px;
-  color: var(--kritzel-toolbar-control-color, #000000);
+  color: var(--updraw-toolbar-control-color, #000000);
   font-size: 14px;
   text-align: left;
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
 }
 
-.kritzel-submenu-item:hover {
-  background-color: var(--kritzel-toolbar-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+.updraw-submenu-item:hover {
+  background-color: var(--updraw-toolbar-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
-.kritzel-submenu-item.active {
-  background-color: var(--kritzel-toolbar-control-selected-background-color, #007AFF);
-  color: var(--kritzel-toolbar-control-selected-color, #ffffff);
+.updraw-submenu-item.active {
+  background-color: var(--updraw-toolbar-control-selected-background-color, #007AFF);
+  color: var(--updraw-toolbar-control-selected-color, #ffffff);
 }
 
-.kritzel-submenu-item.active:hover {
-  background-color: var(--kritzel-toolbar-control-selected-background-color, #007AFF);
+.updraw-submenu-item.active:hover {
+  background-color: var(--updraw-toolbar-control-selected-background-color, #007AFF);
 }
 
-.kritzel-config-container {
+.updraw-config-container {
   position: relative;
   display: flex;
   justify-content: center;
@@ -270,13 +270,13 @@
   opacity: 0;
   overflow: hidden;
   pointer-events: none;
-  margin-left: calc(-1 * var(--kritzel-toolbar-gap, 8px));
+  margin-left: calc(-1 * var(--updraw-toolbar-gap, 8px));
 
   /* Smooth transition */
   transition: width 0.2s ease-out, opacity 0.2s ease-out, margin-left 0.2s ease-out;
 }
 
-.kritzel-config-container.visible {
+.updraw-config-container.visible {
   width: 40px;
   opacity: 1;
   pointer-events: auto;
@@ -291,7 +291,7 @@
   bottom: 0;
   left: -32px;
   width: 32px;
-  background: linear-gradient(to right, transparent, var(--kritzel-toolbar-background-color, #ffffff));
+  background: linear-gradient(to right, transparent, var(--updraw-toolbar-background-color, #ffffff));
   pointer-events: none;
   z-index: 1;
   opacity: 0;
@@ -302,11 +302,11 @@
   opacity: 1;
 }
 
-.kritzel-config {
+.updraw-config {
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   border-radius: 50%;
 }
 
@@ -317,10 +317,10 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   border: 2px solid transparent;
   box-sizing: border-box;
-  background-color: var(--kritzel-color-palette-hover-background-color, #ebebeb);
+  background-color: var(--updraw-color-palette-hover-background-color, #ebebeb);
 }
 
 .font-container {
@@ -330,10 +330,10 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   border: 2px solid transparent;
   box-sizing: border-box;
-  background-color: var(--kritzel-color-palette-hover-background-color, #ebebeb);
+  background-color: var(--updraw-color-palette-hover-background-color, #ebebeb);
 }
 
 .no-config {
@@ -343,6 +343,6 @@
   border: 1px dashed gray;
 }
 
-kritzel-tooltip {
+updraw-tooltip {
   z-index: 10001;
 }

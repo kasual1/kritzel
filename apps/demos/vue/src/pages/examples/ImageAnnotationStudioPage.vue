@@ -2,12 +2,12 @@
 import { ref } from 'vue'
 import {
   getEditorRef,
-  KritzelBrushTool,
-  KritzelEditor,
-  KritzelImage,
-  KritzelTextTool,
-  type KritzelTheme,
-} from '@kritzel/vue-editor'
+  UpdrawBrushTool,
+  UpdrawEditor,
+  UpdrawImage,
+  UpdrawTextTool,
+  type UpdrawTheme,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../const/vue-theme-dark'
 
 type AnnotationMode = 'sketch' | 'text'
@@ -21,7 +21,7 @@ type ColorTool = {
 const editor = getEditorRef('editor')
 const editorStyle = { display: 'block', width: '100%', height: '100%' }
 
-const annotationTheme: KritzelTheme = {
+const annotationTheme: UpdrawTheme = {
   ...vueThemeDark,
   name: 'dark',
   engine: {
@@ -92,7 +92,7 @@ async function zoomOut() {
 
 async function registerColorTools() {
   for (const tool of colorTools) {
-    await editor.value?.registerTool(tool.name, KritzelBrushTool, {
+    await editor.value?.registerTool(tool.name, UpdrawBrushTool, {
       color: {
         light: tool.color,
         dark: tool.color,
@@ -128,7 +128,7 @@ async function syncTextColorToActiveSketchTool() {
     NonNullable<typeof editor.value>['registerTool']
   >[2]
 
-  await editor.value?.registerTool('text', KritzelTextTool, textToolConfig)
+  await editor.value?.registerTool('text', UpdrawTextTool, textToolConfig)
 }
 
 async function ensureSeedImage() {
@@ -141,7 +141,7 @@ async function ensureSeedImage() {
     return
   }
 
-  const image = await KritzelImage.fromUrl(
+  const image = await UpdrawImage.fromUrl(
     'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1800&q=80',
     {
       maxWidth: 660,
@@ -159,7 +159,7 @@ async function ensureSeedImage() {
 
 <template>
   <div class="annotation-page">
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="image-annotation-studio"
       theme="dark"

@@ -1,6 +1,6 @@
 :host {
   display: inline-block;
-  font-family: var(--kritzel-button-font-family, var(--kritzel-global-font-family, sans-serif));
+  font-family: var(--updraw-button-font-family, var(--updraw-global-font-family, sans-serif));
 }
 
 button {
@@ -13,57 +13,57 @@ button {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   display: inline-flex;
-  width: var(--kritzel-button-width, auto);
+  width: var(--updraw-button-width, auto);
   align-items: center;
   justify-content: center;
   gap: 6px;
-  border-radius: var(--kritzel-button-border-radius, 8px);
-  padding: var(--kritzel-button-padding, 12px 20px);
-  font-size: var(--kritzel-button-font-size, 14px);
-  font-weight: var(--kritzel-button-font-weight, 500);
+  border-radius: var(--updraw-button-border-radius, 8px);
+  padding: var(--updraw-button-padding, 12px 20px);
+  font-size: var(--updraw-button-font-size, 14px);
+  font-weight: var(--updraw-button-font-weight, 500);
   transition: background-color 0.15s ease, opacity 0.15s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 button.primary {
-  background-color: var(--kritzel-button-primary-background-color, #007AFF);
-  color: var(--kritzel-button-primary-color, #ffffff);
+  background-color: var(--updraw-button-primary-background-color, #007AFF);
+  color: var(--updraw-button-primary-color, #ffffff);
 }
 
 button.primary:hover {
-  background-color: var(--kritzel-button-primary-hover-background-color, #006ae6);
+  background-color: var(--updraw-button-primary-hover-background-color, #006ae6);
 }
 
 button.primary:active {
-  background-color: var(--kritzel-button-primary-active-background-color, #005bbf);
+  background-color: var(--updraw-button-primary-active-background-color, #005bbf);
 }
 
 button.secondary {
-  background-color: var(--kritzel-button-secondary-background-color, #f0f0f0);
-  color: var(--kritzel-button-secondary-color, #333333);
+  background-color: var(--updraw-button-secondary-background-color, #f0f0f0);
+  color: var(--updraw-button-secondary-color, #333333);
 }
 
 button.secondary:hover {
-  background-color: var(--kritzel-button-secondary-hover-background-color, #e0e0e0);
+  background-color: var(--updraw-button-secondary-hover-background-color, #e0e0e0);
 }
 
 button.secondary:active {
-  background-color: var(--kritzel-button-secondary-active-background-color, #d0d0d0);
+  background-color: var(--updraw-button-secondary-active-background-color, #d0d0d0);
 }
 
 button.text {
   background-color: transparent;
-  color: var(--kritzel-button-text-color, #007AFF);
+  color: var(--updraw-button-text-color, #007AFF);
 }
 
 button.text:hover {
-  background-color: var(--kritzel-button-text-hover-background-color, rgba(0, 122, 255, 0.08));
+  background-color: var(--updraw-button-text-hover-background-color, rgba(0, 122, 255, 0.08));
 }
 
 button.text:active {
-  background-color: var(--kritzel-button-text-active-background-color, rgba(0, 122, 255, 0.15));
+  background-color: var(--updraw-button-text-active-background-color, rgba(0, 122, 255, 0.15));
 }
 
 button.disabled {

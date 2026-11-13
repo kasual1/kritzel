@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { KritzelBrushTool, KritzelEditor, KritzelSelectionTool, type ContextMenuItem, type HTMLKritzelEditorElement, type KritzelToolbarItem } from "@kritzel/react-editor";
+import { UpdrawBrushTool, UpdrawEditor, UpdrawSelectionTool, type ContextMenuItem, type HTMLUpdrawEditorElement, type UpdrawToolbarItem } from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { seedEditor } from "../../shared/demo-shared";
@@ -9,12 +9,12 @@ const customSvgIcons = {
 };
 
 const contextMenuItems: ContextMenuItem[] = [{ label: "Alien icon", icon: "alien", action: () => undefined }];
-const toolbarItems: KritzelToolbarItem[] = [
-  { name: "select", type: "tool", tool: KritzelSelectionTool, icon: "cursor", isDefault: true },
+const toolbarItems: UpdrawToolbarItem[] = [
+  { name: "select", type: "tool", tool: UpdrawSelectionTool, icon: "cursor", isDefault: true },
   {
     name: "brush",
     type: "tool",
-    tool: KritzelBrushTool,
+    tool: UpdrawBrushTool,
     icon: "pen",
     config: {
       color: { light: "#4A7DFF", dark: "#5B8CFF", label: "React Blue" },
@@ -29,7 +29,7 @@ const toolbarItems: KritzelToolbarItem[] = [
 const themes = [reactThemeLight, reactThemeDark];
 
 export function IconsRegisterNewPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
 
   async function onReady() {
     if (!editorRef.current) return;
@@ -38,7 +38,7 @@ export function IconsRegisterNewPage() {
   }
 
   return (
-    <KritzelEditor
+    <UpdrawEditor
       ref={editorRef}
       editorId="icons-register-new"
       customSvgIcons={customSvgIcons}

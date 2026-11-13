@@ -1,8 +1,8 @@
 {
-  "name": "@kritzel/engine",
+  "name": "@updraw/engine",
   "version": "0.6.2",
-  "homepage": "https://kritzel.io/",
-  "description": "Kritzel helps you build infinite whiteboard experiences.",
+  "homepage": "https://updraw.io/",
+  "description": "Updraw helps you build infinite whiteboard experiences.",
   "keywords": [
     "infinite canvas",
     "collaboration",
@@ -62,7 +62,7 @@
     "release": "npm publish"
   },
   "dependencies": {
-    "@kritzel/core": "^0.6.2",
+    "@updraw/core": "^0.6.2",
     "@types/lodash": "^4.17.20",
     "html-to-image": "^1.11.11",
     "lodash": "^4.17.21",

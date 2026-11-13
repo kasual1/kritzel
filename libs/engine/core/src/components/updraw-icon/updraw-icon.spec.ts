@@ -6,15 +6,15 @@ jest.mock('@stencil/core', () => ({
 }));
 
 import { forceUpdate } from '@stencil/core';
-import { KritzelIconRegistry } from '@kritzel/core';
-import { KritzelIcon } from './kritzel-icon';
+import { UpdrawIconRegistry } from '@updraw/core';
+import { UpdrawIcon } from './updraw-icon';
 
-describe('kritzel-icon', () => {
-  let component: KritzelIcon;
+describe('updraw-icon', () => {
+  let component: UpdrawIcon;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    component = new KritzelIcon();
+    component = new UpdrawIcon();
   });
 
   afterEach(() => {
@@ -29,7 +29,7 @@ describe('kritzel-icon', () => {
     component.render();
     jest.mocked(forceUpdate).mockClear();
 
-    KritzelIconRegistry.register('late-custom-icon', '<svg viewBox="0 0 24 24"><path d="M2 2L22 22"/></svg>');
+    UpdrawIconRegistry.register('late-custom-icon', '<svg viewBox="0 0 24 24"><path d="M2 2L22 22"/></svg>');
 
     expect(forceUpdate).toHaveBeenCalledWith(component);
   });
@@ -37,14 +37,14 @@ describe('kritzel-icon', () => {
   it('refreshes when an existing icon is replaced but ignores unrelated registrations', () => {
     jest.spyOn(console, 'warn').mockImplementation(() => {});
     component.name = 'replace-custom-icon';
-    KritzelIconRegistry.register(component.name, '<svg/>');
+    UpdrawIconRegistry.register(component.name, '<svg/>');
     component.connectedCallback();
     jest.mocked(forceUpdate).mockClear();
 
-    KritzelIconRegistry.register('unrelated-custom-icon', '<svg/>');
+    UpdrawIconRegistry.register('unrelated-custom-icon', '<svg/>');
     expect(forceUpdate).not.toHaveBeenCalled();
 
-    KritzelIconRegistry.register(component.name, '<svg><path d="M1 1L2 2"/></svg>');
+    UpdrawIconRegistry.register(component.name, '<svg><path d="M1 1L2 2"/></svg>');
     expect(forceUpdate).toHaveBeenCalledTimes(1);
   });
 
@@ -54,7 +54,7 @@ describe('kritzel-icon', () => {
     component.disconnectedCallback();
     jest.mocked(forceUpdate).mockClear();
 
-    KritzelIconRegistry.register(component.name, '<svg/>');
+    UpdrawIconRegistry.register(component.name, '<svg/>');
     expect(forceUpdate).not.toHaveBeenCalled();
 
     component.connectedCallback();
@@ -67,9 +67,9 @@ describe('kritzel-icon', () => {
     component.name = 'next-custom-icon';
     jest.mocked(forceUpdate).mockClear();
 
-    KritzelIconRegistry.register('previous-custom-icon', '<svg/>');
+    UpdrawIconRegistry.register('previous-custom-icon', '<svg/>');
     expect(forceUpdate).not.toHaveBeenCalled();
-    KritzelIconRegistry.register('next-custom-icon', '<svg/>');
+    UpdrawIconRegistry.register('next-custom-icon', '<svg/>');
     expect(forceUpdate).toHaveBeenCalledWith(component);
   });
 });

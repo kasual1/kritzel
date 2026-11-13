@@ -1,7 +1,7 @@
 ---
 sidebar_label: Blueprint Defect Mapper
 displayed_sidebar: tutorialSidebar
-title: "Interactive Blueprint & Defect Pin Mapper | Kritzel for React"
+title: "Interactive Blueprint & Defect Pin Mapper | Updraw for React"
 description: "Incorporate static architectural blueprints and allow facility inspectors to register defect pins onto custom vector layouts."
 ---
 
@@ -13,7 +13,7 @@ This page walkthrough demonstrates how to build an interactive floor plan or blu
 
 ## Prerequisites
 
-Before diving into this walkthrough, complete the [Quick Start](../getting-started/quick-start.md) guide to set up `<KritzelEditor>` in your React application.
+Before diving into this walkthrough, complete the [Quick Start](../getting-started/quick-start.md) guide to set up `<UpdrawEditor>` in your React application.
 
 ---
 
@@ -33,7 +33,7 @@ This example makes use of the following core concepts. Click on the links below 
 The interactive workspace provides a pre-seeded Facilities blueprint image. Users can toggle "Defect Pin Placement Mode", click on the floor plan to drop brand-new outstanding issues, and monitor existing defects from the side inspector card. Clicking any row in the Reported Defects list automatically pans and focuses on that specific defect marker.
 
 :::info Viewport Camera Centering vs Object Centering
-In Kritzel, `centerObjectInViewport()` moves the **actual target object** under the hood to align with the viewport center. For static blueprints or stationary marker pins, calling `centerObjectInViewport()` would shift their positions on the canvas, drifting them off their physical location. 
+In Updraw, `centerObjectInViewport()` moves the **actual target object** under the hood to align with the viewport center. For static blueprints or stationary marker pins, calling `centerObjectInViewport()` would shift their positions on the canvas, drifting them off their physical location. 
 
 Instead, to center the camera viewport on a static image background or a stationary pin without mutating its coordinates, use `setViewport(x, y, scale)` to seamlessly adjust the camera matrix.
 :::
@@ -44,6 +44,6 @@ Instead, to center the camera viewport on a static image background or a station
   repoFiles={['src/pages/examples/BlueprintDefectMapperPage.tsx']}
 />
 
-The background image is loaded through `KritzelImage.fromUrl()` the first time `onIsReady` runs, centered at the world origin, and inserted before the defect pins so markers remain above it. Existing canvas objects are checked before seeding, which keeps React development remounts from duplicating the floorplan.
+The background image is loaded through `UpdrawImage.fromUrl()` the first time `onIsReady` runs, centered at the world origin, and inserted before the defect pins so markers remain above it. Existing canvas objects are checked before seeding, which keeps React development remounts from duplicating the floorplan.
 
-To convert a click into canvas units, the page measures it relative to the `<KritzelEditor>` ref and passes the local coordinates to `screenToWorld(x, y)`. The returned world coordinates become the center point for a circular `KritzelShape`. Defect cards live in React state; status changes update both that state and the corresponding pin through `updateObject()`.
+To convert a click into canvas units, the page measures it relative to the `<UpdrawEditor>` ref and passes the local coordinates to `screenToWorld(x, y)`. The returned world coordinates become the center point for a circular `UpdrawShape`. Defect cards live in React state; status changes update both that state and the corresponding pin through `updateObject()`.

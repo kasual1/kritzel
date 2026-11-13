@@ -1,10 +1,10 @@
 ---
 name: lib-builder
-description: "Add features, fix bugs, or edit existing code in the Kritzel engine core library. Covers tools, handlers, objects, components, themes, helpers, providers, and managers. Use when working inside libs/core/src/ or libs/engine/core/src/."
+description: "Add features, fix bugs, or edit existing code in the Updraw engine core library. Covers tools, handlers, objects, components, themes, helpers, providers, and managers. Use when working inside libs/core/src/ or libs/engine/core/src/."
 argument-hint: "Describe the feature, bug fix, or change to make in the stencil core"
 ---
 
-# Lib Builder — Kritzel Engine Core Library
+# Lib Builder — Updraw Engine Core Library
 
 ## When to Use
 
@@ -12,15 +12,15 @@ argument-hint: "Describe the feature, bug fix, or change to make in the stencil 
 - Fixing a bug in the core rendering engine or state management
 - Adding or modifying CSS variables / theming
 - Integrating a new sync or asset provider
-- Extending or wiring the localization system (`KritzelLocalizationManager`, `engine.t()`, resolved UI term props)
+- Extending or wiring the localization system (`UpdrawLocalizationManager`, `engine.t()`, resolved UI term props)
 
 ## Architecture Overview
 
-Logic lives in `libs/core/src/` (`@kritzel/core`, plain TypeScript, no Stencil). Stencil components live in `libs/engine/core/src/components/` and import logic from `'@kritzel/core'`, never by relative path. Locations below are relative to `libs/core/src/`, except components.
+Logic lives in `libs/core/src/` (`@updraw/core`, plain TypeScript, no Stencil). Stencil components live in `libs/engine/core/src/components/` and import logic from `'@updraw/core'`, never by relative path. Locations below are relative to `libs/core/src/`, except components.
 
 | Layer | Location | Responsibility |
 |-------|----------|----------------|
-| Core | `classes/core/` | Orchestration, state (`KritzelStore`), viewport, workspace management |
+| Core | `classes/core/` | Orchestration, state (`UpdrawStore`), viewport, workspace management |
 | Tools | `classes/tools/` | User interaction instruments (brush, eraser, shape, etc.) |
 | Handlers | `classes/handlers/` | Event handling (keyboard, hover, context-menu, resize, move) |
 | Objects | `classes/objects/` | Drawable canvas entities (path, shape, text, image, group) |
@@ -37,11 +37,11 @@ Logic lives in `libs/core/src/` (`@kritzel/core`, plain TypeScript, no Stencil).
 
 ## Dependency Injection
 
-All major classes receive `KritzelCore` via constructor. Core is the service locator:
+All major classes receive `UpdrawCore` via constructor. Core is the service locator:
 
 ```typescript
-protected readonly _core: KritzelCore;
-constructor(core: KritzelCore) { this._core = core; }
+protected readonly _core: UpdrawCore;
+constructor(core: UpdrawCore) { this._core = core; }
 ```
 
 Access through core: `this._core.store`, `this._core.engine`, `this._core.toolRegistry`, `this._core.themeManager`, `this._core.viewport`.
@@ -68,7 +68,7 @@ Select the relevant pattern based on what you're working on:
 
 | Pattern | When to Load |
 |---------|-------------|
-| [core.md](patterns/core.md) | Adding or editing methods on KritzelCore |
+| [core.md](patterns/core.md) | Adding or editing methods on UpdrawCore |
 | [tool.md](patterns/tool.md) | Adding or editing a drawing tool |
 | [handler.md](patterns/handler.md) | Adding or editing an event handler |
 | [object.md](patterns/object.md) | Adding or editing a canvas object type |
@@ -81,7 +81,7 @@ Select the relevant pattern based on what you're working on:
 | [dynamic-objects.md](patterns/dynamic-objects.md) | Maintaining dynamic object rendering, renderer lifecycle, wheel behavior, and wrapper integration |
 | [object-config.md](patterns/object-config.md) | Maintaining the `objectConfig` prop (`hasTitlebar`, `isRotatable`, `isResizable`): resolution rules, enforcement in handles and handlers, adding new options |
 | [object-titlebar.md](patterns/object-titlebar.md) | Maintaining object titlebars: config, owner resolution, world-space render layer, pointer integration, and `titlebar` theme tokens |
-| [iframe-element-bridge.md](patterns/iframe-element-bridge.md) | Maintaining element hover/click/pick events, picking, highlights, queries and agent cursor element targets (`agent.moveTo({ objectId, selector })`) of `KritzelIframeObject`: page script, host bridge, message protocol, untrusted-message validation, and extending `KritzelElementAwareObject` to other objects |
+| [iframe-element-bridge.md](patterns/iframe-element-bridge.md) | Maintaining element hover/click/pick events, picking, highlights, queries and agent cursor element targets (`agent.moveTo({ objectId, selector })`) of `UpdrawIframeObject`: page script, host bridge, message protocol, untrusted-message validation, and extending `UpdrawElementAwareObject` to other objects |
 | [unit-tests.md](patterns/unit-tests.md) | Adding/updating Jest specs, fixing flaky tests, or adapting tests after refactors |
 | [reactivity-and-wrappers.md](patterns/reactivity-and-wrappers.md) | Debugging or preventing prop timing bugs between Stencil core and Angular/React/Vue wrappers |
 
@@ -91,19 +91,19 @@ Select the relevant pattern based on what you're working on:
 
 To expose a class, function, interface, or constant publicly, it must be exported in **seven** places:
 
-1. **`libs/core/src/index.ts`** — the `@kritzel/core` barrel file, which `@kritzel/engine` re-exports
-2. **`libs/editor/angular/projects/lib/src/public-api.ts`** — re-exports from `@kritzel/engine`
-3. **`libs/editor/react/lib/index.ts`** — re-exports from `@kritzel/engine`
-4. **`libs/editor/vue/lib/index.ts`** — re-exports from `@kritzel/engine`
-5. **`libs/engine/angular/projects/lib/src/public-api.ts`** — re-exports from `@kritzel/engine`
-6. **`libs/engine/react/lib/index.ts`** — re-exports from `@kritzel/engine`
-7. **`libs/engine/vue/lib/index.ts`** — re-exports from `@kritzel/engine`
+1. **`libs/core/src/index.ts`** — the `@updraw/core` barrel file, which `@updraw/engine` re-exports
+2. **`libs/editor/angular/projects/lib/src/public-api.ts`** — re-exports from `@updraw/engine`
+3. **`libs/editor/react/lib/index.ts`** — re-exports from `@updraw/engine`
+4. **`libs/editor/vue/lib/index.ts`** — re-exports from `@updraw/engine`
+5. **`libs/engine/angular/projects/lib/src/public-api.ts`** — re-exports from `@updraw/engine`
+6. **`libs/engine/react/lib/index.ts`** — re-exports from `@updraw/engine`
+7. **`libs/engine/vue/lib/index.ts`** — re-exports from `@updraw/engine`
 
-All six framework wrappers (editor and engine, for Angular, React and Vue) explicitly re-export symbols from `@kritzel/engine` so that consuming applications (e.g. the demos) only need a single import source — `@kritzel/angular-editor`, `@kritzel/react-editor`, `@kritzel/vue-editor`, or the matching engine package.
+All six framework wrappers (editor and engine, for Angular, React and Vue) explicitly re-export symbols from `@updraw/engine` so that consuming applications (e.g. the demos) only need a single import source — `@updraw/angular-editor`, `@updraw/react-editor`, `@updraw/vue-editor`, or the matching engine package.
 
 **Keep the export lists consistent across all six wrappers.** When adding a new public symbol, add it to all seven files.
 
-Example (adding `KritzelFoo`):
+Example (adding `UpdrawFoo`):
 
 ```typescript
 // libs/core/src/index.ts
@@ -114,16 +114,16 @@ export * from './classes/objects/foo.class';
 // libs/editor/vue/lib/index.ts (and the engine wrapper)
 export {
     // ... existing exports ...
-    KritzelFoo,
-} from '@kritzel/engine';
+    UpdrawFoo,
+} from '@updraw/engine';
 ```
 
 ## General Rules
 
-1. **No framework code** — `@kritzel/engine` is framework-agnostic; never import Angular/React/Vue
+1. **No framework code** — `@updraw/engine` is framework-agnostic; never import Angular/React/Vue
 2. **Serialization** — objects that persist must implement `serialize()` / `deserialize()` and set `__class__`
-3. **State changes** — go through `KritzelStore`; never mutate state directly
-4. **CSS variables** — prefix all with `--kritzel-`; run `node scripts/generate-theme-interface.js` after adding new ones
+3. **State changes** — go through `UpdrawStore`; never mutate state directly
+4. **CSS variables** — prefix all with `--updraw-`; run `node scripts/generate-theme-interface.js` after adding new ones
 5. **Strict typing** — avoid `any`; use `unknown` at boundaries
 6. **Test coverage** — add/update `*.spec.ts` for logic changes
 7. **Theme contract + tests move together** — when CSS variables are added/removed/renamed, regenerate `interfaces/theme.interface.ts`, update `themes/light-theme.ts` and `themes/dark-theme.ts` with matching keys, and adjust related unit tests (for example theme variable-count assertions)
@@ -131,7 +131,7 @@ export {
 9. **Design for late-bound wrapper inputs** — Angular/React/Vue wrappers may apply prop updates after `componentDidLoad`; component behavior must still reflect latest props
 10. **Test post-initialization updates** — add at least one unit test that updates props after initialization and asserts the runtime collaborator receives new values
 11. **Prefer reusable bug lessons over local patches** — when fixing a lifecycle/prop bug, update the relevant pattern docs so future changes avoid the same class of regression
-12. **Treat sync persistence as opt-in by default** — `kritzel-editor` defaults to `syncConfig.providers = []`, so object state is not persisted across page reloads and not persisted when switching workspaces unless a sync provider is explicitly configured
+12. **Treat sync persistence as opt-in by default** — `updraw-editor` defaults to `syncConfig.providers = []`, so object state is not persisted across page reloads and not persisted when switching workspaces unless a sync provider is explicitly configured
 13. **Choose providers by persistence scope** — use `IndexedDBSyncProvider` for persistent local storage across reloads (and across workspaces), and use `InMemorySyncProvider` when cross-workspace persistence is needed only within the current runtime session
 14. **Keep demos deterministic unless persistence is the concept** — most demos should keep no sync provider so reload resets canvas state; workspace concept demos are the main exception and should use `InMemorySyncProvider`
 15. **Dynamic object renderers must be lifecycle-safe** — always provide mount/unmount symmetry and return normalized renderer state from unmount when state persistence is expected

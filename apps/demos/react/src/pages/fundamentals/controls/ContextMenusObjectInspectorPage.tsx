@@ -1,10 +1,10 @@
 import { useMemo, useRef, useState } from "react";
 import {
-  KritzelEditor,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawWorkspace,
   type ContextMenuItem,
-  HTMLKritzelEditorElement,
-} from "@kritzel/react-editor";
+  HTMLUpdrawEditorElement,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -13,9 +13,9 @@ import { editorStyle, hostStyle } from "../../shared/demo-shared";
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ContextMenusObjectInspectorPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ objects: createSeedObjects() }),
+    new UpdrawWorkspace({ objects: createSeedObjects() }),
   ]);
 
   const globalItems = useMemo<ContextMenuItem[]>(
@@ -106,7 +106,7 @@ export function ContextMenusObjectInspectorPage() {
 
   return (
     <div style={hostStyle}>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="custom-context-menu-object-inspector"
         theme="light"

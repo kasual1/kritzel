@@ -10,8 +10,8 @@ Provide reliable, maintainable Jest tests for core library logic while staying r
 
 ## How to Run Tests
 
-- In this repository, do not rely on targeted single-file spec runs for `@kritzel/core` or `@kritzel/engine` (for example passing specific `*.spec.ts` paths).
-- Core specs run under Jest with `preset: '@stencil/core/testing'`, the same environment as the engine specs. Engine and editor specs resolve `@kritzel/core` to its source; mock a single core module with `jest.mock('@kritzel/core/src/<path>')`.
+- In this repository, do not rely on targeted single-file spec runs for `@updraw/core` or `@updraw/engine` (for example passing specific `*.spec.ts` paths).
+- Core specs run under Jest with `preset: '@stencil/core/testing'`, the same environment as the engine specs. Engine and editor specs resolve `@updraw/core` to its source; mock a single core module with `jest.mock('@updraw/core/src/<path>')`.
 - Run tests from the repository root using `npm run test`.
 - Treat root-level `npm run test` as the authoritative verification path.
 
@@ -27,7 +27,7 @@ Provide reliable, maintainable Jest tests for core library logic while staying r
 - For clipboard/drag-drop tests, use minimal structural payloads like `{ items, files, getData }` instead of relying on mutable `DataTransfer` constructor behavior in jsdom.
 
 4. **Keep orchestrator tests delegation-focused**
-- When logic is extracted from `KritzelCore` into managers, core tests should verify forwarding/delegation.
+- When logic is extracted from `UpdrawCore` into managers, core tests should verify forwarding/delegation.
 - Behavioral correctness should be asserted in manager/tool/helper specs.
 
 5. **Regenerate generated types after API changes**
@@ -46,7 +46,7 @@ Provide reliable, maintainable Jest tests for core library logic while staying r
 - Otherwise prefer assertions on state changes and emitted events.
 
 9. **Keep theming tests aligned with CSS variable changes**
-- When adding/removing/renaming `--kritzel-*` variables, regenerate `interfaces/theme.interface.ts` and update `themes/light-theme.ts` and `themes/dark-theme.ts` first.
+- When adding/removing/renaming `--updraw-*` variables, regenerate `interfaces/theme.interface.ts` and update `themes/light-theme.ts` and `themes/dark-theme.ts` first.
 - Then adjust related tests that assert flattened variable totals or generated theme keys (for example `helpers/theme.helper.spec.ts`).
 
 ## Refactor-Resilient Test Checklist

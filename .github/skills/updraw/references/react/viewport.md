@@ -1,6 +1,6 @@
 # Viewport: Camera, Coordinates, Boundaries
 
-The viewport is the camera over the infinite canvas. State (`KritzelViewportState`): `translateX`, `translateY` (pan, world coords), `scale` (zoom, default 1.0), plus viewport pixel dimensions.
+The viewport is the camera over the infinite canvas. State (`UpdrawViewportState`): `translateX`, `translateY` (pan, world coords), `scale` (zoom, default 1.0), plus viewport pixel dimensions.
 
 ## The one distinction that matters
 
@@ -55,7 +55,7 @@ async function onCanvasClick(ev: React.MouseEvent) {
   const editor = editorRef.current;
   if (!editor) return;
   const { x, y } = await editor.screenToWorld(ev.clientX, ev.clientY);
-  const pin = new KritzelShape({
+  const pin = new UpdrawShape({
     shapeType: ShapeType.Ellipse,
     translateX: x - 25, translateY: y - 25,   // center the 50×50 pin on the click
     width: 50, height: 50,
@@ -72,7 +72,7 @@ Inverse: `await editor.worldToScreen(x, y)` — e.g. to position a React overlay
 ## Limits and constraints (props on the component)
 
 ```tsx
-<KritzelEditor
+<UpdrawEditor
   scaleMin={0.1} scaleMax={10}
   viewportBoundaryLeft={0} 
   viewportBoundaryRight={1920}
@@ -93,9 +93,9 @@ isZoomingEnabled={false}` — wheel no longer pans/zooms (event still bubbles to
 ## Reacting to viewport changes
 
 ```tsx
-const [viewport, setViewport] = useState<KritzelViewportState | null>(null);
+const [viewport, setViewport] = useState<UpdrawViewportState | null>(null);
 
-<KritzelEditor onViewportChange={event => setViewport(event.detail)} />
+<UpdrawEditor onViewportChange={event => setViewport(event.detail)} />
 ```
 
 `onObjectsInViewportChange` (engine event) fires when the set of visible objects changes — useful for virtualized side panels.

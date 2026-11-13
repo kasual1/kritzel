@@ -2,14 +2,14 @@
 import { ref } from 'vue';
 import {
   getEngineRef,
-  KritzelBrushTool,
-  KritzelEngine,
-  KritzelEraserTool,
-  KritzelSelectionTool,
-} from '@kritzel/vue-engine';
+  UpdrawBrushTool,
+  UpdrawEngine,
+  UpdrawEraserTool,
+  UpdrawSelectionTool,
+} from '@updraw/vue-engine';
 
-const editorId = 'kritzel-canvas';
-const engine = getEngineRef('kritzelEngine');
+const editorId = 'updraw-canvas';
+const engine = getEngineRef('updrawEngine');
 const initializationError = ref('');
 let initializationStarted = false;
 
@@ -19,19 +19,19 @@ async function onEngineReady(): Promise<void> {
 
   const instance = engine.value;
   if (!instance) {
-    initializationError.value = 'The Kritzel engine element is not available.';
+    initializationError.value = 'The Updraw engine element is not available.';
     return;
   }
 
   try {
-    if (!(await instance.registerTool('selection', KritzelSelectionTool))) {
-      throw new Error('Kritzel could not register the selection tool.');
+    if (!(await instance.registerTool('selection', UpdrawSelectionTool))) {
+      throw new Error('Updraw could not register the selection tool.');
     }
-    if (!(await instance.registerTool('brush', KritzelBrushTool))) {
-      throw new Error('Kritzel could not register the brush tool.');
+    if (!(await instance.registerTool('brush', UpdrawBrushTool))) {
+      throw new Error('Updraw could not register the brush tool.');
     }
-    if (!(await instance.registerTool('eraser', KritzelEraserTool))) {
-      throw new Error('Kritzel could not register the eraser tool.');
+    if (!(await instance.registerTool('eraser', UpdrawEraserTool))) {
+      throw new Error('Updraw could not register the eraser tool.');
     }
     await instance.setActiveTool('brush');
   } catch (error: unknown) {
@@ -42,12 +42,12 @@ async function onEngineReady(): Promise<void> {
 
 <template>
   <section>
-    <KritzelEngine
-      ref="kritzelEngine"
+    <UpdrawEngine
+      ref="updrawEngine"
       :editorId="editorId"
       @isEngineReady="onEngineReady"
       style="display: block; width: 100%; height: 480px"
-      aria-label="Kritzel canvas"
+      aria-label="Updraw canvas"
     />
     <p v-if="initializationError" role="alert">{{ initializationError }}</p>
   </section>

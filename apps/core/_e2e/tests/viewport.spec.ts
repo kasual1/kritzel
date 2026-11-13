@@ -9,8 +9,8 @@ async function waitForViewportAnimation(page: import('@playwright/test').Page) {
 }
 
 /**
- * Helper: wait for Stencil prop propagation from kritzel-editor to kritzel-engine.
- * setProps sets values on kritzel-editor, but @Watch handlers on kritzel-engine
+ * Helper: wait for Stencil prop propagation from updraw-editor to updraw-engine.
+ * setProps sets values on updraw-editor, but @Watch handlers on updraw-engine
  * only fire after Stencil re-renders the component tree.
  */
 async function waitForPropsPropagation(page: import('@playwright/test').Page) {
@@ -31,9 +31,9 @@ async function dispatchWheelOnEngine(
   options: { deltaX?: number; deltaY?: number; ctrlKey?: boolean } = {}
 ) {
   await page.evaluate(({ deltaX = 0, deltaY = 0, ctrlKey = false }) => {
-    const engine = document.querySelector('kritzel-engine');
+    const engine = document.querySelector('updraw-engine');
     if (!engine) {
-      throw new Error('kritzel-engine not found');
+      throw new Error('updraw-engine not found');
     }
 
     const rect = engine.getBoundingClientRect();

@@ -1,6 +1,6 @@
-import { KritzelIconName, KritzelIconRegistry } from '../classes/registries/icon-registry.class';
+import { UpdrawIconName, UpdrawIconRegistry } from '../classes/registries/icon-registry.class';
 
-export class KritzelCursorHelper {
+export class UpdrawCursorHelper {
   private static _pointerCursor: string | null = null;
 
   /**
@@ -16,11 +16,11 @@ export class KritzelCursorHelper {
 
   /**
    * Returns a custom cursor CSS value with support for rotation.
-   * The icon is retrieved from the KritzelIconRegistry.
+   * The icon is retrieved from the UpdrawIconRegistry.
    */
   static getCursor(
     options: {
-      iconName: KritzelIconName | 'default';
+      iconName: UpdrawIconName | 'default';
       rotation?: number;
       color?: string;
       size?: number;
@@ -28,7 +28,7 @@ export class KritzelCursorHelper {
     }
   ): string {
     const iconName = options.iconName === 'default' ? 'mousePointer' : options.iconName;
-    const iconSvg = KritzelIconRegistry.get(iconName);
+    const iconSvg = UpdrawIconRegistry.get(iconName);
     if (!iconSvg) {
       console.warn(`Icon "${iconName}" not found in registry.`);
       return 'auto';

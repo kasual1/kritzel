@@ -1,12 +1,12 @@
 import { useMemo, useRef, useState } from "react";
 import {
-  KritzelBrushTool,
-  KritzelEditor,
-  KritzelEraserTool,
-  KritzelSelectionTool,
-  type HTMLKritzelEditorElement,
-  type KritzelToolbarItem,
-} from "@kritzel/react-editor";
+  UpdrawBrushTool,
+  UpdrawEditor,
+  UpdrawEraserTool,
+  UpdrawSelectionTool,
+  type HTMLUpdrawEditorElement,
+  type UpdrawToolbarItem,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
@@ -19,26 +19,26 @@ import { Toolbar } from "../../../components/Toolbar";
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ToolsDisablePage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [isEraserDisabled, setIsEraserDisabled] = useState(true);
-  const toolbarItems = useMemo<KritzelToolbarItem[]>(() => [
+  const toolbarItems = useMemo<UpdrawToolbarItem[]>(() => [
     {
       name: "selection",
       type: "tool",
       isDefault: true,
-      tool: KritzelSelectionTool,
+      tool: UpdrawSelectionTool,
       icon: "cursor",
     },
     {
       name: "brush",
       type: "tool",
-      tool: KritzelBrushTool,
+      tool: UpdrawBrushTool,
       icon: "pen",
     },
     {
       name: "eraser",
       type: "tool",
-      tool: KritzelEraserTool,
+      tool: UpdrawEraserTool,
       icon: "eraser",
       isDisabled: () => isEraserDisabled,
     },
@@ -55,7 +55,7 @@ export function ToolsDisablePage() {
           {isEraserDisabled ? "Enable eraser tool" : "Disable eraser tool"}
         </button>
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="tools-disable"
         theme="light"

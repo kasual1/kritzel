@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
 import {
-  KritzelEditor,
-  HTMLKritzelEditorElement,
-  KritzelWorkspace,
-  type KritzelBaseObject,
-} from "@kritzel/react-editor";
+  UpdrawEditor,
+  HTMLUpdrawEditorElement,
+  UpdrawWorkspace,
+  type UpdrawBaseObject,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -26,16 +26,16 @@ function createOverlappingSeedObjects() {
 }
 
 export function ObjectsOrderingPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const infoPanel = useInfoPanel({ hasToolbarToggle: true });
   const [seedObjects] = useState(createOverlappingSeedObjects);
-  const [objects, setObjects] = useState<KritzelBaseObject<HTMLElement | SVGElement>[]>(seedObjects);
-  const [workspaces] = useState(() => [new KritzelWorkspace({ objects: seedObjects })]);
+  const [objects, setObjects] = useState<UpdrawBaseObject<HTMLElement | SVGElement>[]>(seedObjects);
+  const [workspaces] = useState(() => [new UpdrawWorkspace({ objects: seedObjects })]);
 
   async function refreshObjects() {
-    const all = (await editorRef.current?.findObjects((object) => object.__class__ !== "KritzelSelectionBox")) ?? [];
+    const all = (await editorRef.current?.findObjects((object) => object.__class__ !== "UpdrawSelectionBox")) ?? [];
     setObjects([
-      ...(all as KritzelBaseObject<HTMLElement | SVGElement>[]),
+      ...(all as UpdrawBaseObject<HTMLElement | SVGElement>[]),
     ].sort((a, b) => a.zIndex - b.zIndex));
   }
 
@@ -63,7 +63,7 @@ export function ObjectsOrderingPage() {
         <InfoPanelToggle panel={infoPanel} />
       </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        <KritzelEditor
+        <UpdrawEditor
           ref={editorRef}
           editorId="objects-ordering"
           theme="light"

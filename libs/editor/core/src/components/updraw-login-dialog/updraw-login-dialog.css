@@ -2,8 +2,8 @@
   display: contents;
 }
 
-kritzel-dialog {
-  --kritzel-dialog-width-small: 380px;
+updraw-dialog {
+  --updraw-dialog-width-small: 380px;
 }
 
 .login-content {
@@ -14,7 +14,7 @@ kritzel-dialog {
 
 .login-subtitle {
   font-size: 13px;
-  color: var(--kritzel-login-dialog-subtitle-color, #666666);
+  color: var(--updraw-login-dialog-subtitle-color, #666666);
   margin: 0;
   line-height: 1.5;
   text-align: center;
@@ -34,25 +34,25 @@ kritzel-dialog {
   gap: 10px;
   width: 100%;
   padding: 12px 16px;
-  border: 1px solid var(--kritzel-login-dialog-button-border-color, #e0e0e0);
+  border: 1px solid var(--updraw-login-dialog-button-border-color, #e0e0e0);
   border-radius: 8px;
-  background: var(--kritzel-login-dialog-button-background, #ffffff);
-  color: var(--kritzel-login-dialog-button-text-color, #333333);
+  background: var(--updraw-login-dialog-button-background, #ffffff);
+  color: var(--updraw-login-dialog-button-text-color, #333333);
   font-size: 14px;
   font-weight: 500;
   font-family: inherit;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 .provider-button:hover:not(:disabled) {
-  background: var(--kritzel-login-dialog-button-hover-background, #f5f5f5);
-  border-color: var(--kritzel-login-dialog-button-hover-border-color, #cccccc);
+  background: var(--updraw-login-dialog-button-hover-background, #f5f5f5);
+  border-color: var(--updraw-login-dialog-button-hover-border-color, #cccccc);
 }
 
 .provider-button:active:not(:disabled) {
-  background: var(--kritzel-login-dialog-button-active-background, #ebebeb);
+  background: var(--updraw-login-dialog-button-active-background, #ebebeb);
 }
 
 .provider-button:focus-visible {
@@ -79,7 +79,7 @@ kritzel-dialog {
   opacity: 0.7;
 }
 
-@keyframes kritzel-login-spin {
+@keyframes updraw-login-spin {
   to {
     transform: rotate(360deg);
   }
@@ -91,8 +91,8 @@ kritzel-dialog {
   box-sizing: border-box;
   display: block;
   flex-shrink: 0;
-  border: 2px solid var(--kritzel-login-dialog-spinner-color, #cccccc);
-  border-top-color: var(--kritzel-login-dialog-spinner-active-color, #333333);
+  border: 2px solid var(--updraw-login-dialog-spinner-color, #cccccc);
+  border-top-color: var(--updraw-login-dialog-spinner-active-color, #333333);
   border-radius: 50%;
-  animation: kritzel-login-spin 0.6s linear infinite;
+  animation: updraw-login-spin 0.6s linear infinite;
 }

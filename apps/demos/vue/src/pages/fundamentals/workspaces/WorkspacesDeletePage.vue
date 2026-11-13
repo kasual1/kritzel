@@ -3,11 +3,11 @@ import { ref, shallowRef, type CSSProperties } from 'vue'
 import {
   getEditorRef,
   InMemorySyncProvider,
-  KritzelEditor,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawWorkspace,
   type ActiveWorkspaceChangeEvent,
-  type KritzelSyncConfig,
-} from '@kritzel/vue-editor'
+  type UpdrawSyncConfig,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -16,14 +16,14 @@ import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [InMemorySyncProvider],
 }
-const workspaces = shallowRef<KritzelWorkspace[]>(
+const workspaces = shallowRef<UpdrawWorkspace[]>(
   Array.from(
     { length: 6 },
     (_, index) =>
-      new KritzelWorkspace({
+      new UpdrawWorkspace({
         id: `board-${index + 1}`,
         name: `Board ${index + 1}`,
         objects: createSeedObjects(),
@@ -63,11 +63,11 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
   activeWorkspaceId.value = event.detail.id
 }
 
-async function switchTo(workspace: KritzelWorkspace) {
+async function switchTo(workspace: UpdrawWorkspace) {
   await editor.value?.setActiveWorkspace(workspace.id)
 }
 
-async function deleteWorkspace(workspace: KritzelWorkspace, event: MouseEvent) {
+async function deleteWorkspace(workspace: UpdrawWorkspace, event: MouseEvent) {
   event.stopPropagation()
   if (workspaces.value.length <= 1) {
     return
@@ -110,7 +110,7 @@ async function deleteWorkspace(workspace: KritzelWorkspace, event: MouseEvent) {
         </button>
       </div>
     </Toolbar>
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="workspaces-delete"
       theme="light"

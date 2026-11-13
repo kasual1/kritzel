@@ -1,30 +1,30 @@
-import { KritzelGroup } from './group.class';
-import { KritzelBaseObject } from './base-object.class';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawGroup } from './group.class';
+import { UpdrawBaseObject } from './base-object.class';
+import { UpdrawCore } from '../core/core.class';
 
-describe('KritzelGroup', () => {
-  let groupObject: KritzelGroup;
-  let mockCore: jest.Mocked<KritzelCore>;
+describe('UpdrawGroup', () => {
+  let groupObject: UpdrawGroup;
+  let mockCore: jest.Mocked<UpdrawCore>;
   let mockObjectsUpdate: jest.Mock;
   let mockObjectsTransaction: jest.Mock;
   let mockAnchorManagerUpdate: jest.Mock;
-  let mockObjectsStore: KritzelBaseObject<HTMLElement>[];
+  let mockObjectsStore: UpdrawBaseObject<HTMLElement>[];
 
-  const createMockCore = (): jest.Mocked<KritzelCore> => {
+  const createMockCore = (): jest.Mocked<UpdrawCore> => {
     mockObjectsUpdate = jest.fn();
     mockObjectsTransaction = jest.fn((callback: () => void) => callback());
     mockAnchorManagerUpdate = jest.fn();
     mockObjectsStore = [];
 
     const createMockObjectsArray = () => {
-      const arr: KritzelBaseObject<HTMLElement>[] & {
+      const arr: UpdrawBaseObject<HTMLElement>[] & {
         update: jest.Mock;
         transaction: jest.Mock;
-        filter: (predicate: (obj: KritzelBaseObject<HTMLElement>) => boolean) => KritzelBaseObject<HTMLElement>[];
+        filter: (predicate: (obj: UpdrawBaseObject<HTMLElement>) => boolean) => UpdrawBaseObject<HTMLElement>[];
       } = Object.assign([], {
         update: mockObjectsUpdate,
         transaction: mockObjectsTransaction,
-        filter: (predicate: (obj: KritzelBaseObject<HTMLElement>) => boolean) => {
+        filter: (predicate: (obj: UpdrawBaseObject<HTMLElement>) => boolean) => {
           return mockObjectsStore.filter(predicate);
         },
       });
@@ -53,11 +53,11 @@ describe('KritzelGroup', () => {
       anchorManager: {
         updateAnchorsForObject: mockAnchorManagerUpdate,
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
   };
 
-  function createMockChildObject(overrides: Partial<KritzelBaseObject<HTMLElement>> = {}): KritzelBaseObject<HTMLElement> {
-    const obj = new KritzelBaseObject<HTMLElement>();
+  function createMockChildObject(overrides: Partial<UpdrawBaseObject<HTMLElement>> = {}): UpdrawBaseObject<HTMLElement> {
+    const obj = new UpdrawBaseObject<HTMLElement>();
     obj._core = mockCore;
     obj.id = `child-${Math.random().toString(36).substr(2, 9)}`;
     obj.translateX = 0;
@@ -78,7 +78,7 @@ describe('KritzelGroup', () => {
 
   beforeEach(() => {
     mockCore = createMockCore();
-    groupObject = KritzelGroup.create(mockCore);
+    groupObject = UpdrawGroup.create(mockCore);
   });
 
   afterEach(() => {
@@ -87,15 +87,15 @@ describe('KritzelGroup', () => {
 
   describe('constructor', () => {
     it('should create a group with default values', () => {
-      const group = new KritzelGroup();
+      const group = new UpdrawGroup();
 
-      expect(group.__class__).toBe('KritzelGroup');
+      expect(group.__class__).toBe('UpdrawGroup');
       expect(group.childIds).toEqual([]);
     });
 
     it('should generate a unique id on instantiation', () => {
-      const group1 = new KritzelGroup();
-      const group2 = new KritzelGroup();
+      const group1 = new UpdrawGroup();
+      const group2 = new UpdrawGroup();
       expect(group1.id).toBeDefined();
       expect(group2.id).toBeDefined();
       expect(group1.id).not.toBe(group2.id);
@@ -104,40 +104,40 @@ describe('KritzelGroup', () => {
 
   describe('static create', () => {
     it('should create a group with core reference', () => {
-      const group = KritzelGroup.create(mockCore);
+      const group = UpdrawGroup.create(mockCore);
       expect(group._core).toBe(mockCore);
     });
 
     it('should set workspaceId from active workspace', () => {
-      const group = KritzelGroup.create(mockCore);
+      const group = UpdrawGroup.create(mockCore);
       expect(group.workspaceId).toBe('workspace-1');
     });
 
     it('should generate a unique id', () => {
-      const group = KritzelGroup.create(mockCore);
+      const group = UpdrawGroup.create(mockCore);
       expect(group.id).toBeDefined();
       expect(typeof group.id).toBe('string');
       expect(group.id.length).toBeGreaterThan(0);
     });
 
     it('should set scale from core store state', () => {
-      const group = KritzelGroup.create(mockCore);
+      const group = UpdrawGroup.create(mockCore);
       expect(group.scale).toBe(1);
     });
 
     it('should set zIndex from currentZIndex', () => {
-      const group = KritzelGroup.create(mockCore);
+      const group = UpdrawGroup.create(mockCore);
       expect(group.zIndex).toBe(5);
     });
 
     it('should create multiple unique groups', () => {
-      const group1 = KritzelGroup.create(mockCore);
-      const group2 = KritzelGroup.create(mockCore);
+      const group1 = UpdrawGroup.create(mockCore);
+      const group2 = UpdrawGroup.create(mockCore);
       expect(group1.id).not.toBe(group2.id);
     });
 
     it('should convert create rotation from degrees to radians', () => {
-      const group = KritzelGroup.create(mockCore, { rotation: -90 });
+      const group = UpdrawGroup.create(mockCore, { rotation: -90 });
 
       expect(group.rotation).toBeCloseTo(-Math.PI / 2);
     });
@@ -148,7 +148,7 @@ describe('KritzelGroup', () => {
       const child1 = createMockChildObject({ id: 'child-1' });
       const child2 = createMockChildObject({ id: 'child-2' });
 
-      const group = KritzelGroup.createFromObjects(mockCore, [child1, child2]);
+      const group = UpdrawGroup.createFromObjects(mockCore, [child1, child2]);
 
       expect(group.childIds).toContain('child-1');
       expect(group.childIds).toContain('child-2');
@@ -164,7 +164,7 @@ describe('KritzelGroup', () => {
         height: 50,
       });
 
-      const group = KritzelGroup.createFromObjects(mockCore, [child1]);
+      const group = UpdrawGroup.createFromObjects(mockCore, [child1]);
 
       expect(group.translateX).toBeDefined();
       expect(group.translateY).toBeDefined();
@@ -177,10 +177,10 @@ describe('KritzelGroup', () => {
     it('should find parent group containing the object', () => {
       createMockChildObject({ id: 'child-1' });
       groupObject.childIds.push('child-1');
-      groupObject.__class__ = 'KritzelGroup';
+      groupObject.__class__ = 'UpdrawGroup';
       mockObjectsStore.push(groupObject);
 
-      const parent = KritzelGroup.findParentGroup(mockCore, 'child-1');
+      const parent = UpdrawGroup.findParentGroup(mockCore, 'child-1');
 
       expect(parent).toBe(groupObject);
     });
@@ -188,13 +188,13 @@ describe('KritzelGroup', () => {
     it('should return null when object has no parent group', () => {
       createMockChildObject({ id: 'orphan-child' });
 
-      const parent = KritzelGroup.findParentGroup(mockCore, 'orphan-child');
+      const parent = UpdrawGroup.findParentGroup(mockCore, 'orphan-child');
 
       expect(parent).toBeNull();
     });
 
     it('should return null for non-existent object', () => {
-      const parent = KritzelGroup.findParentGroup(mockCore, 'non-existent');
+      const parent = UpdrawGroup.findParentGroup(mockCore, 'non-existent');
 
       expect(parent).toBeNull();
     });
@@ -610,7 +610,7 @@ describe('KritzelGroup', () => {
     it('should create a new group', () => {
       const copied = groupObject.copy();
 
-      expect(copied).toBeInstanceOf(KritzelGroup);
+      expect(copied).toBeInstanceOf(UpdrawGroup);
       expect(copied.id).not.toBe(groupObject.id);
     });
 
@@ -770,7 +770,7 @@ describe('KritzelGroup', () => {
     });
 
     it('should recursively update nested groups', () => {
-      const nestedGroup = KritzelGroup.create(mockCore);
+      const nestedGroup = UpdrawGroup.create(mockCore);
       nestedGroup.workspaceId = 'old-workspace';
       mockObjectsStore.push(nestedGroup);
 
@@ -786,9 +786,9 @@ describe('KritzelGroup', () => {
     });
   });
 
-  describe('inheritance from KritzelBaseObject', () => {
-    it('should inherit default property values from KritzelBaseObject', () => {
-      const group = new KritzelGroup();
+  describe('inheritance from UpdrawBaseObject', () => {
+    it('should inherit default property values from UpdrawBaseObject', () => {
+      const group = new UpdrawGroup();
       expect(group.opacity).toBe(1);
       expect(group.padding).toBe(0);
       expect(group.rotation).toBe(0);
@@ -839,17 +839,17 @@ describe('KritzelGroup', () => {
   // ───────────────────────────────────────────────────────────────────────────
   describe('nested groups', () => {
     /**
-     * Builds a KritzelGroup wrapping the provided children, registers it in
+     * Builds an UpdrawGroup wrapping the provided children, registers it in
      * the mock store, and finalizes it so snapshots match the children.
      */
-    const buildGroup = (children: KritzelBaseObject<HTMLElement>[]): KritzelGroup => {
-      const group = KritzelGroup.create(mockCore);
-      group.__class__ = 'KritzelGroup';
+    const buildGroup = (children: UpdrawBaseObject<HTMLElement>[]): UpdrawGroup => {
+      const group = UpdrawGroup.create(mockCore);
+      group.__class__ = 'UpdrawGroup';
       group.padding = 0;
       group.scale = 1;
       group.rotation = 0;
       children.forEach(c => group.childIds.push(c.id));
-      mockObjectsStore.push(group as unknown as KritzelBaseObject<HTMLElement>);
+      mockObjectsStore.push(group as unknown as UpdrawBaseObject<HTMLElement>);
       return group;
     };
 
@@ -859,7 +859,7 @@ describe('KritzelGroup', () => {
         const c2 = createMockChildObject({ id: 'c-2' });
         const group = buildGroup([c1, c2]);
 
-        const ids = KritzelGroup.collectDescendantIds(group);
+        const ids = UpdrawGroup.collectDescendantIds(group);
 
         expect(ids.has('c-1')).toBe(true);
         expect(ids.has('c-2')).toBe(true);
@@ -870,9 +870,9 @@ describe('KritzelGroup', () => {
         const grandchild = createMockChildObject({ id: 'gc-1' });
         const inner = buildGroup([grandchild]);
         const outerSibling = createMockChildObject({ id: 's-1' });
-        const outer = buildGroup([inner as unknown as KritzelBaseObject<HTMLElement>, outerSibling]);
+        const outer = buildGroup([inner as unknown as UpdrawBaseObject<HTMLElement>, outerSibling]);
 
-        const ids = KritzelGroup.collectDescendantIds(outer);
+        const ids = UpdrawGroup.collectDescendantIds(outer);
 
         expect(ids.has(inner.id)).toBe(true);
         expect(ids.has('gc-1')).toBe(true);
@@ -883,7 +883,7 @@ describe('KritzelGroup', () => {
       it('should return empty set for a group with no children', () => {
         const group = buildGroup([]);
 
-        const ids = KritzelGroup.collectDescendantIds(group);
+        const ids = UpdrawGroup.collectDescendantIds(group);
 
         expect(ids.size).toBe(0);
       });
@@ -893,7 +893,7 @@ describe('KritzelGroup', () => {
         const group = buildGroup([c1]);
         const out = new Set<string>(['preexisting']);
 
-        const result = KritzelGroup.collectDescendantIds(group, out);
+        const result = UpdrawGroup.collectDescendantIds(group, out);
 
         expect(result).toBe(out);
         expect(out.has('preexisting')).toBe(true);
@@ -917,7 +917,7 @@ describe('KritzelGroup', () => {
         // Force stale snapshot on the inner group so we can detect re-capture
         (inner as any).snapshotRotation = 0;
 
-        const outer = buildGroup([inner as unknown as KritzelBaseObject<HTMLElement>]);
+        const outer = buildGroup([inner as unknown as UpdrawBaseObject<HTMLElement>]);
 
         outer.finalize();
 
@@ -934,14 +934,14 @@ describe('KritzelGroup', () => {
         grandchild.copy = jest.fn(() => copiedGrandchild);
 
         const inner = buildGroup([grandchild]);
-        // KritzelGroup.copy() relies on the actual class behavior — keep it real
-        const outer = buildGroup([inner as unknown as KritzelBaseObject<HTMLElement>]);
+        // UpdrawGroup.copy() relies on the actual class behavior — keep it real
+        const outer = buildGroup([inner as unknown as UpdrawBaseObject<HTMLElement>]);
 
         const copiedOuter = outer.copy();
-        const copiedInner = (copiedOuter as any)._pendingChildren[0] as KritzelGroup;
+        const copiedInner = (copiedOuter as any)._pendingChildren[0] as UpdrawGroup;
 
         expect(copiedOuter._pendingChildren).toHaveLength(1);
-        expect(copiedInner).toBeInstanceOf(KritzelGroup);
+        expect(copiedInner).toBeInstanceOf(UpdrawGroup);
         // Critical: the inner group's grandchildren must also be pending,
         // otherwise paste would strand them and they'd never be inserted.
         expect((copiedInner as any)._pendingChildren).toContain(copiedGrandchild);
@@ -972,7 +972,7 @@ describe('KritzelGroup', () => {
         const inner = buildGroup([child]);
         inner.refreshBoundingBox();
 
-        const outer = buildGroup([inner as unknown as KritzelBaseObject<HTMLElement>]);
+        const outer = buildGroup([inner as unknown as UpdrawBaseObject<HTMLElement>]);
         outer.finalize();
 
         return { outer, inner, child };
@@ -1052,7 +1052,7 @@ describe('KritzelGroup', () => {
         const inner = buildGroup([grandchild]);
         inner.refreshBoundingBox();
 
-        const outer = buildGroup([inner as unknown as KritzelBaseObject<HTMLElement>]);
+        const outer = buildGroup([inner as unknown as UpdrawBaseObject<HTMLElement>]);
         outer.finalize();
 
         // Spy on the inner group's rotate to verify it's called with a value

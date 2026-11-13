@@ -1,35 +1,35 @@
 import { useCallback, useRef, useState } from 'react';
 import {
-  KritzelBrushTool,
-  KritzelEngine,
-  KritzelEraserTool,
-  KritzelSelectionTool,
-  type HTMLKritzelEngineElement,
-} from '@kritzel/react-engine';
+  UpdrawBrushTool,
+  UpdrawEngine,
+  UpdrawEraserTool,
+  UpdrawSelectionTool,
+  type HTMLUpdrawEngineElement,
+} from '@updraw/react-engine';
 
-const editorId = 'kritzel-canvas';
+const editorId = 'updraw-canvas';
 const canvasStyle = { display: 'block', width: '100%', height: 480 };
 
-export function KritzelCanvas() {
-  const engineRef = useRef<HTMLKritzelEngineElement>(null);
+export function UpdrawCanvas() {
+  const engineRef = useRef<HTMLUpdrawEngineElement>(null);
   const [initializationError, setInitializationError] = useState('');
 
   const initializeEngine = useCallback(async () => {
     const engine = engineRef.current;
     if (!engine) {
-      setInitializationError('The Kritzel engine element is not available.');
+      setInitializationError('The Updraw engine element is not available.');
       return;
     }
 
     try {
-      if (!(await engine.registerTool('selection', KritzelSelectionTool))) {
-        throw new Error('Kritzel could not register the selection tool.');
+      if (!(await engine.registerTool('selection', UpdrawSelectionTool))) {
+        throw new Error('Updraw could not register the selection tool.');
       }
-      if (!(await engine.registerTool('brush', KritzelBrushTool))) {
-        throw new Error('Kritzel could not register the brush tool.');
+      if (!(await engine.registerTool('brush', UpdrawBrushTool))) {
+        throw new Error('Updraw could not register the brush tool.');
       }
-      if (!(await engine.registerTool('eraser', KritzelEraserTool))) {
-        throw new Error('Kritzel could not register the eraser tool.');
+      if (!(await engine.registerTool('eraser', UpdrawEraserTool))) {
+        throw new Error('Updraw could not register the eraser tool.');
       }
       await engine.setActiveTool('brush');
     } catch (error: unknown) {
@@ -39,12 +39,12 @@ export function KritzelCanvas() {
 
   return (
     <section>
-      <KritzelEngine
+      <UpdrawEngine
         ref={engineRef}
         editorId={editorId}
         onIsEngineReady={() => { void initializeEngine(); }}
         style={canvasStyle}
-        aria-label="Kritzel canvas"
+        aria-label="Updraw canvas"
       />
       {initializationError && <p role="alert">{initializationError}</p>}
     </section>

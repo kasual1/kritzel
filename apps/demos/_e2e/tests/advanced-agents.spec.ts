@@ -17,7 +17,7 @@ type AgentState = {
 
 type ActionOptions = { instant?: boolean; speed?: number };
 
-/** The parts of `KritzelAgent` the tests use. Agents live in the page; only their state is returned. */
+/** The parts of `UpdrawAgent` the tests use. Agents live in the page; only their state is returned. */
 type Agent = {
   id: string;
   state: AgentState;
@@ -49,8 +49,8 @@ type EditorElement = HTMLElement & {
   undo(): Promise<void>;
 };
 
-type KritzelWindow = Window & {
-  __kritzel__: { KritzelShape: new (config: Record<string, unknown>) => unknown; ShapeType: Record<string, string> };
+type UpdrawWindow = Window & {
+  __updraw__: { UpdrawShape: new (config: Record<string, unknown>) => unknown; ShapeType: Record<string, string> };
   agenticMove?: Promise<ActionResult>;
 };
 
@@ -62,7 +62,7 @@ test.describe('Agents', () => {
     await expect
       .poll(() =>
         editorPage.page.evaluate(async () => {
-          const editor = document.querySelector('kritzel-editor') as EditorElement;
+          const editor = document.querySelector('updraw-editor') as EditorElement;
           return (await editor.getAgents()).length;
         }),
       )
@@ -70,7 +70,7 @@ test.describe('Agents', () => {
   });
 
   test('renders the demo cursors with names and status', async ({ editorPage }) => {
-    const host = editorPage.page.locator('kritzel-agentic-cursors');
+    const host = editorPage.page.locator('updraw-agentic-cursors');
     await expect(host.locator('.agentic-cursor')).toHaveCount(2);
     await expect(host.locator('.cursor-label', { hasText: 'Planner' })).toBeVisible();
     await expect(host.locator('.agentic-cursor-status', { hasText: 'Waiting…' })).toBeVisible();
@@ -78,9 +78,9 @@ test.describe('Agents', () => {
 
   test('moves to an object anchor, attaches, and detaches when the object is removed', async ({ editorPage }) => {
     const result = await editorPage.page.evaluate(async () => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const writer = (await editor.getAgent('writer'))!;
-      const [, ellipse] = await editor.findObjects(obj => obj.__class__ === 'KritzelShape');
+      const [, ellipse] = await editor.findObjects(obj => obj.__class__ === 'UpdrawShape');
       const move = await writer.moveTo({ objectId: ellipse.id, anchor: 'bottom-right' }, { duration: 200 });
       const attached = writer.state;
       const box = ellipse.boundingBox;
@@ -109,9 +109,9 @@ test.describe('Agents', () => {
 
   test('moves an object with its own undo history', async ({ editorPage }) => {
     const moved = await editorPage.page.evaluate(async () => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const writer = (await editor.getAgent('writer'))!;
-      const [rectangle, ellipse] = await editor.findObjects(obj => obj.__class__ === 'KritzelShape');
+      const [rectangle, ellipse] = await editor.findObjects(obj => obj.__class__ === 'UpdrawShape');
       // Agent changes keep object instances, so read the starting position before the action.
       const before = rectangle.translateX;
       const sources: unknown[] = [];
@@ -134,7 +134,7 @@ test.describe('Agents', () => {
     // A user edit to another object, then the user's undo: only the user's edit is reverted.
     await editorPage.waitForUndoCapture();
     const ellipseBefore = await editorPage.page.evaluate(async (ellipseId) => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const [ellipse] = await editor.findObjects(obj => obj.id === ellipseId);
       const x = ellipse.translateX;
       await editor.updateObject(ellipse, { translateX: x + 50 });
@@ -143,7 +143,7 @@ test.describe('Agents', () => {
     await editorPage.waitForUndoCapture();
 
     const afterUserUndo = await editorPage.page.evaluate(async ({ rectangleId, ellipseId }) => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       await editor.undo();
       const [rectangle] = await editor.findObjects(obj => obj.id === rectangleId);
       const [ellipse] = await editor.findObjects(obj => obj.id === ellipseId);
@@ -154,7 +154,7 @@ test.describe('Agents', () => {
 
     // The agent's own undo reverts the move.
     const afterAgentUndo = await editorPage.page.evaluate(async (rectangleId) => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const writer = (await editor.getAgent('writer'))!;
       const result = await writer.undo({ instant: true });
       const [rectangle] = await editor.findObjects(obj => obj.id === rectangleId);
@@ -166,15 +166,15 @@ test.describe('Agents', () => {
   });
 
   test('animates an agent move and outlines the target only while running', async ({ editorPage }) => {
-    const host = editorPage.page.locator('kritzel-agentic-cursors');
+    const host = editorPage.page.locator('updraw-agentic-cursors');
     await expect(host.locator('.agentic-selection')).toHaveCount(0);
 
     const ids = await editorPage.page.evaluate(async () => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const planner = (await editor.getAgent('planner'))!;
-      const [rectangle] = await editor.findObjects(obj => obj.__class__ === 'KritzelShape');
+      const [rectangle] = await editor.findObjects(obj => obj.__class__ === 'UpdrawShape');
       const start = rectangle.translateX;
-      (window as unknown as KritzelWindow).agenticMove = planner.moveObject(
+      (window as unknown as UpdrawWindow).agenticMove = planner.moveObject(
         rectangle.id,
         { x: rectangle.boundingBox.x + 300, y: rectangle.boundingBox.y },
         { align: 'top-left', speed: 600 },
@@ -183,12 +183,12 @@ test.describe('Agents', () => {
     });
 
     await expect(host.locator(`.agentic-selection[data-cursor-id="planner"][data-object-id="${ids.id}"]`)).toHaveCount(1);
-    const result = await editorPage.page.evaluate(async () => (window as unknown as KritzelWindow).agenticMove);
+    const result = await editorPage.page.evaluate(async () => (window as unknown as UpdrawWindow).agenticMove);
     expect(result).toEqual({ completed: true, objectIds: [ids.id] });
     await expect(host.locator('.agentic-selection')).toHaveCount(0);
 
     const end = await editorPage.page.evaluate(async (id) => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const [rectangle] = await editor.findObjects(obj => obj.id === id);
       return rectangle.translateX;
     }, ids.id);
@@ -197,7 +197,7 @@ test.describe('Agents', () => {
 
   test('creates, types, transforms, draws and connects', async ({ editorPage }) => {
     const outcome = await editorPage.page.evaluate(async () => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const writer = (await editor.getAgent('writer'))!;
       const instant = { instant: true };
       const byId = async (id: string) => (await editor.findObjects(obj => obj.id === id))[0];
@@ -232,10 +232,10 @@ test.describe('Agents', () => {
     });
 
     expect(outcome.results).toEqual([true, true, true, true, true, true, true]);
-    expect(outcome.shapeClass).toBe('KritzelShape');
+    expect(outcome.shapeClass).toBe('UpdrawShape');
     expect(outcome.shapeRotation).toBeCloseTo(Math.PI / 6, 5);
     expect(outcome.textContent).toContain('Note added');
-    expect(outcome.pathClass).toBe('KritzelPath');
+    expect(outcome.pathClass).toBe('UpdrawPath');
     expect(outcome.pathCompleted).toBe(true);
     expect(outcome.lineAnchors).toEqual(outcome.expectedAnchors);
     expect(outcome.undoLine).toBe(true);
@@ -244,7 +244,7 @@ test.describe('Agents', () => {
 
   test('attributes the objects an agent creates to the agent', async ({ editorPage }) => {
     const outcome = await editorPage.page.evaluate(async () => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const writer = (await editor.getAgent('writer'))!;
       const sources: unknown[] = [];
       const onAdded = (event: Event) => sources.push((event as CustomEvent).detail.source);
@@ -258,7 +258,7 @@ test.describe('Agents', () => {
 
       const ids = [shape, text, path, line].map(result => result.objectIds![0]);
       const objects = await editor.findObjects(obj => ids.includes(obj.id));
-      const [seed] = await editor.findObjects(obj => obj.__class__ === 'KritzelShape');
+      const [seed] = await editor.findObjects(obj => obj.__class__ === 'UpdrawShape');
       return {
         created: ids.map(id => objects.find(obj => obj.id === id)?.userId ?? null),
         seedUserId: seed.userId ?? null,
@@ -276,9 +276,9 @@ test.describe('Agents', () => {
 
   test('restyles a shape with setStyle and restores it with agent.undo', async ({ editorPage }) => {
     const outcome = await editorPage.page.evaluate(async () => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const writer = (await editor.getAgent('writer'))!;
-      const [rectangle] = await editor.findObjects(obj => obj.__class__ === 'KritzelShape');
+      const [rectangle] = await editor.findObjects(obj => obj.__class__ === 'UpdrawShape');
       const styleOf = async () => {
         const [shape] = await editor.findObjects(obj => obj.id === rectangle.id);
         return JSON.parse(JSON.stringify({ fillColor: shape.fillColor, strokeWidth: shape.strokeWidth }));
@@ -304,14 +304,14 @@ test.describe('Agents', () => {
 
   test("places a new shape with addObject and keeps the user's selection", async ({ editorPage }) => {
     const outcome = await editorPage.page.evaluate(async () => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const writer = (await editor.getAgent('writer'))!;
-      const { KritzelShape, ShapeType } = (window as unknown as KritzelWindow).__kritzel__;
-      const [rectangle] = await editor.findObjects(obj => obj.__class__ === 'KritzelShape');
+      const { UpdrawShape, ShapeType } = (window as unknown as UpdrawWindow).__updraw__;
+      const [rectangle] = await editor.findObjects(obj => obj.__class__ === 'UpdrawShape');
       await editor.selectObjects([rectangle]);
       const selectedBefore = (await editor.getSelectedObjects()).map(obj => obj.id);
 
-      const shape = new KritzelShape({
+      const shape = new UpdrawShape({
         translateX: 220,
         translateY: 120,
         width: 120,
@@ -344,18 +344,18 @@ test.describe('Agents', () => {
     expect(outcome.selectedBefore).toEqual([outcome.rectangleId]);
     expect(outcome.result.completed).toBe(true);
     expect(outcome.result.objectIds).toHaveLength(1);
-    expect(outcome.added).toEqual({ class: 'KritzelShape', userId: 'writer', translateX: 220, translateY: 120 });
+    expect(outcome.added).toEqual({ class: 'UpdrawShape', userId: 'writer', translateX: 220, translateY: 120 });
     expect(outcome.selectedAfter).toEqual(outcome.selectedBefore);
     expect(outcome.undo).toBe(true);
     expect(outcome.removedByUndo).toBe(true);
     expect(outcome.selectedAfterUndo).toEqual(outcome.selectedBefore);
   });
 
-  test('throws a KritzelAgentActionError from a task when the user has the target selected', async ({ editorPage }) => {
+  test('throws an UpdrawAgentActionError from a task when the user has the target selected', async ({ editorPage }) => {
     const outcome = await editorPage.page.evaluate(async () => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const writer = (await editor.getAgent('writer'))!;
-      const [rectangle] = await editor.findObjects(obj => obj.__class__ === 'KritzelShape');
+      const [rectangle] = await editor.findObjects(obj => obj.__class__ === 'UpdrawShape');
       const before = rectangle.translateX;
       await editor.selectObjects([rectangle]);
 
@@ -387,7 +387,7 @@ test.describe('Agents', () => {
     expect(outcome).toEqual({
       rectangleId: outcome.rectangleId,
       isError: true,
-      name: 'KritzelAgentActionError',
+      name: 'UpdrawAgentActionError',
       reason: 'user-selected',
       objectIds: [outcome.rectangleId],
       actionType: 'moveObject',
@@ -399,21 +399,21 @@ test.describe('Agents', () => {
 
   test('cancel rolls back a running move', async ({ editorPage }) => {
     test.setTimeout(60_000);
-    const host = editorPage.page.locator('kritzel-agentic-cursors');
+    const host = editorPage.page.locator('updraw-agentic-cursors');
     const translateOf = (id: string) =>
       editorPage.page.evaluate(async (objectId) => {
-        const editor = document.querySelector('kritzel-editor') as EditorElement;
+        const editor = document.querySelector('updraw-editor') as EditorElement;
         const [object] = await editor.findObjects(obj => obj.id === objectId);
         return { x: object.translateX as number, y: object.translateY as number };
       }, id);
 
     const start = await editorPage.page.evaluate(async () => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const writer = (await editor.getAgent('writer'))!;
-      const [rectangle] = await editor.findObjects(obj => obj.__class__ === 'KritzelShape');
+      const [rectangle] = await editor.findObjects(obj => obj.__class__ === 'UpdrawShape');
       const position = { x: rectangle.translateX as number, y: rectangle.translateY as number };
       // Slow enough (a 2 s drag) to cancel well before the drag ends.
-      (window as unknown as KritzelWindow).agenticMove = writer.moveObject(
+      (window as unknown as UpdrawWindow).agenticMove = writer.moveObject(
         rectangle.id,
         { x: rectangle.boundingBox.x + 300, y: rectangle.boundingBox.y },
         { align: 'top-left', speed: 150 },
@@ -426,11 +426,11 @@ test.describe('Agents', () => {
     await expect(host.locator(`.agentic-selection[data-cursor-id="writer"][data-object-id="${start.id}"]`)).toHaveCount(1);
 
     const cancelled = await editorPage.page.evaluate(async () => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const writer = (await editor.getAgent('writer'))!;
       const activeBefore = writer.state.activeAction;
       writer.cancel();
-      const result = await (window as unknown as KritzelWindow).agenticMove;
+      const result = await (window as unknown as UpdrawWindow).agenticMove;
       const { activeAction, queueLength, canUndo } = writer.state;
       return { activeBefore, result, activeAction, queueLength, canUndo };
     });

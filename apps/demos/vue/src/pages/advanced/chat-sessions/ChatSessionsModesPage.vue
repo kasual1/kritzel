@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
-  KritzelAgent,
-  KritzelChatSession,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelBaseObject,
-  type KritzelChatBoxChip,
-  type KritzelChatMessage,
-} from '@kritzel/vue-editor'
+  UpdrawAgent,
+  UpdrawChatSession,
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawBaseObject,
+  type UpdrawChatBoxChip,
+  type UpdrawChatMessage,
+} from '@updraw/vue-editor'
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -22,20 +22,20 @@ const USER = { id: 'demo-user', name: 'Demo User' }
 const SYSTEM = 'You draw on a whiteboard. Keep answers short.'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 
 // One session per mode, created once per page instance: switching the mode binds the other one.
 // Kept as plain consts so Vue never wraps them in reactive proxies.
 const transport = createDemoTransport()
-const agent = new KritzelAgent({ id: 'assistant', name: 'Assistant', color: '#7C3AED' })
-const sessions: Record<Mode, KritzelChatSession> = {
-  user: new KritzelChatSession({ transport, system: SYSTEM }),
-  agent: new KritzelChatSession({ transport, system: SYSTEM, agent }),
+const agent = new UpdrawAgent({ id: 'assistant', name: 'Assistant', color: '#7C3AED' })
+const sessions: Record<Mode, UpdrawChatSession> = {
+  user: new UpdrawChatSession({ transport, system: SYSTEM }),
+  agent: new UpdrawChatSession({ transport, system: SYSTEM, agent }),
 }
 
 const mode = ref<Mode>('user')
-const chips = ref<KritzelChatBoxChip[]>([])
-const messages = shallowRef<readonly KritzelChatMessage[]>([])
+const chips = ref<UpdrawChatBoxChip[]>([])
+const messages = shallowRef<readonly UpdrawChatMessage[]>([])
 const session = computed(() => sessions[mode.value])
 
 const transcriptStyle = {
@@ -48,7 +48,7 @@ const transcriptStyle = {
 }
 
 /** One line of the transcript: who wrote it and what. */
-function describe(message: KritzelChatMessage): string {
+function describe(message: UpdrawChatMessage): string {
   return message.parts
     .map(part => {
       if (part.type === 'text') return part.text
@@ -78,16 +78,16 @@ onBeforeUnmount(() => {
   unsubscribe = null
 })
 
-function onSelectionChange(event: CustomEvent<KritzelBaseObject[]>) {
+function onSelectionChange(event: CustomEvent<UpdrawBaseObject[]>) {
   chips.value = event.detail.map(object => ({
     id: object.id,
     objectId: object.id,
-    label: object.name || object.__class__.replace('Kritzel', ''),
+    label: object.name || object.__class__.replace('Updraw', ''),
     icon: 'cursor',
   }))
 }
 
-function onChipRemove(event: CustomEvent<KritzelChatBoxChip>) {
+function onChipRemove(event: CustomEvent<UpdrawChatBoxChip>) {
   chips.value = chips.value.filter(chip => chip.id !== event.detail.id)
 }
 </script>
@@ -105,7 +105,7 @@ function onChipRemove(event: CustomEvent<KritzelChatBoxChip>) {
       <span class="label">Try “{{ SLOW_PHRASE }}” to stop a response.</span>
     </Toolbar>
     <div style="display: flex; flex: 1; min-height: 0">
-      <KritzelEditor
+      <UpdrawEditor
         editorId="chat-sessions-modes"
         theme="light"
         :themes="themes"

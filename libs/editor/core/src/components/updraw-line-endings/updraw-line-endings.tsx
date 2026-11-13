@@ -1,5 +1,5 @@
 ﻿import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
-import { ArrowHeadStyle, LineArrowConfig } from '@kritzel/core';
+import { ArrowHeadStyle, LineArrowConfig } from '@updraw/core';
 
 export type LineEndingType = 'none' | ArrowHeadStyle;
 
@@ -9,11 +9,11 @@ export interface LineEndingsValue {
 }
 
 @Component({
-  tag: 'kritzel-line-endings',
-  styleUrl: 'kritzel-line-endings.css',
+  tag: 'updraw-line-endings',
+  styleUrl: 'updraw-line-endings.css',
   shadow: true,
 })
-export class KritzelLineEndings {
+export class UpdrawLineEndings {
   /** Available ending styles */
   @Prop() styles: LineEndingType[] = ['none', 'triangle'];
 
@@ -70,7 +70,7 @@ export class KritzelLineEndings {
   }
 
   private renderEndingIcon(type: LineEndingType, isStart: boolean) {
-    const color = 'var(--kritzel-global-text-primary)';
+    const color = 'var(--updraw-global-text-primary)';
     if (type === 'none') {
       return (
         <svg viewBox="0 0 24 12" class="ending-icon">

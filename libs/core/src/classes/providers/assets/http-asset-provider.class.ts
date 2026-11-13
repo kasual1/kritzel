@@ -1,5 +1,5 @@
-import { KritzelAsset } from '../../../interfaces/asset.interface';
-import { IAssetStorageProvider, KritzelAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
+import { UpdrawAsset } from '../../../interfaces/asset.interface';
+import { IAssetStorageProvider, UpdrawAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
 
 /**
  * Response shape expected from the upload endpoint. Fields are optional
@@ -23,7 +23,7 @@ export interface HttpAssetProviderOptions {
    * Returns the URL the asset should be POSTed to.
    * Called once per upload; may be async to support signed endpoints.
    */
-  uploadUrl: (metadata: KritzelAssetPutMetadata) => string | Promise<string>;
+  uploadUrl: (metadata: UpdrawAssetPutMetadata) => string | Promise<string>;
 
   /**
    * Returns the URL from which a given asset id can be loaded.
@@ -50,7 +50,7 @@ export interface HttpAssetProviderOptions {
   upload?: (
     url: string,
     blob: Blob,
-    metadata: KritzelAssetPutMetadata,
+    metadata: UpdrawAssetPutMetadata,
     headers: Record<string, string>,
   ) => Promise<HttpAssetUploadResponse>;
 
@@ -79,7 +79,7 @@ export class HttpAssetProvider implements IAssetStorageProvider {
 
   /**
    * Factory helper enabling use as `HttpAssetProvider.with({ ... })` inside
-   * a `KritzelAssetStorageConfig.providers` array.
+   * an `UpdrawAssetStorageConfig.providers` array.
    */
   static with(options: HttpAssetProviderOptions): { create: () => IAssetStorageProvider } {
     return { create: () => new HttpAssetProvider(options) };
@@ -100,9 +100,9 @@ export class HttpAssetProvider implements IAssetStorageProvider {
     return true;
   }
 
-  async put(blob: Blob, metadata: KritzelAssetPutMetadata): Promise<KritzelAsset> {
+  async put(blob: Blob, metadata: UpdrawAssetPutMetadata): Promise<UpdrawAsset> {
     const id = metadata.id ?? this.generateUuid();
-    const fullMetadata: KritzelAssetPutMetadata = { ...metadata, id };
+    const fullMetadata: UpdrawAssetPutMetadata = { ...metadata, id };
     const headers = (await this._options.headers?.()) ?? {};
     const url = await this._options.uploadUrl(fullMetadata);
 
@@ -152,7 +152,7 @@ export class HttpAssetProvider implements IAssetStorageProvider {
   private defaultUpload = async (
     url: string,
     blob: Blob,
-    metadata: KritzelAssetPutMetadata,
+    metadata: UpdrawAssetPutMetadata,
     headers: Record<string, string>,
   ): Promise<HttpAssetUploadResponse> => {
     const form = new FormData();

@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
-  KritzelEditor,
-  KritzelObjectConfig,
-  KritzelObjectTitlebarConfig,
-  KritzelShape,
-  KritzelTheme,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawObjectConfig,
+  UpdrawObjectTitlebarConfig,
+  UpdrawShape,
+  UpdrawTheme,
+  UpdrawWorkspace,
   ShapeType,
-} from '@kritzel/angular-editor';
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 
@@ -20,12 +20,12 @@ const transparentTitlebar = {
   paddingX: '0',
 };
 
-const transparentTitlebarLightTheme: KritzelTheme = {
+const transparentTitlebarLightTheme: UpdrawTheme = {
   ...angularThemeLight,
   titlebar: { ...angularThemeLight.titlebar, ...transparentTitlebar },
 };
 
-const transparentTitlebarDarkTheme: KritzelTheme = {
+const transparentTitlebarDarkTheme: UpdrawTheme = {
   ...angularThemeDark,
   titlebar: { ...angularThemeDark.titlebar, ...transparentTitlebar },
 };
@@ -39,17 +39,17 @@ const frameConfig = {
 
 function createFrames() {
   return [
-    new KritzelShape({ ...frameConfig, name: 'Landing page', translateX: -270, translateY: -110, width: 300, height: 200 }),
-    new KritzelShape({ ...frameConfig, name: 'Pricing', translateX: 70, translateY: -110, width: 200, height: 200 }),
+    new UpdrawShape({ ...frameConfig, name: 'Landing page', translateX: -270, translateY: -110, width: 300, height: 200 }),
+    new UpdrawShape({ ...frameConfig, name: 'Pricing', translateX: 70, translateY: -110, width: 200, height: 200 }),
   ];
 }
 
 @Component({
   selector: 'app-titlebar-styling',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="titlebar-styling"
       theme="light"
       [themes]="themes"
@@ -60,25 +60,25 @@ function createFrames() {
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="true"
       [isWorkspaceManagerVisible]="false"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    kritzel-editor { flex: 1; }
+    updraw-editor { flex: 1; }
   `],
 })
 export class TitlebarStylingComponent {
-  themes: KritzelTheme[] = [transparentTitlebarLightTheme, transparentTitlebarDarkTheme];
+  themes: UpdrawTheme[] = [transparentTitlebarLightTheme, transparentTitlebarDarkTheme];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createFrames() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createFrames() })]);
 
-  readonly objectConfig: KritzelObjectConfig = {
-    hasTitlebar: object => object.__class__ === 'KritzelShape',
+  readonly objectConfig: UpdrawObjectConfig = {
+    hasTitlebar: object => object.__class__ === 'UpdrawShape',
     isRotatable: false,
     isResizable: false,
   };
 
-  readonly objectTitlebar: KritzelObjectTitlebarConfig = {
+  readonly objectTitlebar: UpdrawObjectTitlebarConfig = {
     left: [{ id: 'title', type: 'title' }],
     right: [
       { id: 'settings', type: 'button', icon: 'settings', tooltip: 'Settings' },

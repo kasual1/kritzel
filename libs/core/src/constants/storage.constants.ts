@@ -1,1 +1,1 @@
-export const APP_STATE_INSTANCE_ID_STORAGE_KEY = 'kritzel-app-state-instance-id';
+export const APP_STATE_INSTANCE_ID_STORAGE_KEY = 'updraw-app-state-instance-id';

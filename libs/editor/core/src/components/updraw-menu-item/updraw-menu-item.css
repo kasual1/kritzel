@@ -4,15 +4,15 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: var(--kritzel-menu-item-padding, 8px);
+  padding: var(--updraw-menu-item-padding, 8px);
   box-sizing: border-box;
   gap: 16px;
-  height: var(--kritzel-menu-item-height, 40px);
-  min-height: var(--kritzel-menu-item-min-height, 40px);
-  font-family: var(--kritzel-menu-font-family, var(--kritzel-global-font-family, sans-serif));
-  font-size: var(--kritzel-menu-item-font-size, 14px);
-  color: var(--kritzel-menu-item-color, #333333);
-  border-radius: var(--kritzel-menu-item-border-radius, 12px);
+  height: var(--updraw-menu-item-height, 40px);
+  min-height: var(--updraw-menu-item-min-height, 40px);
+  font-family: var(--updraw-menu-font-family, var(--updraw-global-font-family, sans-serif));
+  font-size: var(--updraw-menu-item-font-size, 14px);
+  color: var(--updraw-menu-item-color, #333333);
+  border-radius: var(--updraw-menu-item-border-radius, 12px);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -22,47 +22,47 @@
 
 :host(:hover) .menu-item-overlay,
 :host(:focus-within) .menu-item-overlay {
-  background-color: var(--kritzel-menu-item-overlay-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--updraw-menu-item-overlay-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 :host(.selected) {
-  background-color: var(--kritzel-menu-item-selected-background-color, #007aff);
-  color: var(--kritzel-menu-item-selected-color, #ffffff);
+  background-color: var(--updraw-menu-item-selected-background-color, #007aff);
+  color: var(--updraw-menu-item-selected-color, #ffffff);
 }
 
 :host(.selected) .action-button {
-  color: var(--kritzel-menu-item-selected-color, #ffffff);
+  color: var(--updraw-menu-item-selected-color, #ffffff);
 }
 
 :host(.selected.editing) {
-  background-color: var(--kritzel-menu-item-selected-background-color, #007aff);
+  background-color: var(--updraw-menu-item-selected-background-color, #007aff);
 }
 
 :host(.selected) .edit-input {
-  color: var(--kritzel-menu-item-selected-color, #ffffff);
-  caret-color: var(--kritzel-menu-item-input-caret-color-on-selected, #ffffff);
-  border-color: var(--kritzel-menu-item-input-border-color-on-selected, #ffffff);
+  color: var(--updraw-menu-item-selected-color, #ffffff);
+  caret-color: var(--updraw-menu-item-input-caret-color-on-selected, #ffffff);
+  border-color: var(--updraw-menu-item-input-border-color-on-selected, #ffffff);
 }
 
-:host(.selected) .action-button kritzel-icon {
-  --kritzel-icon-color: var(--kritzel-menu-item-selected-color, #ffffff);
+:host(.selected) .action-button updraw-icon {
+  --updraw-icon-color: var(--updraw-menu-item-selected-color, #ffffff);
 }
 
-kritzel-icon {
-  --kritzel-icon-color: var(--kritzel-menu-item-color, #333333);
+updraw-icon {
+  --updraw-icon-color: var(--updraw-menu-item-color, #333333);
 }
 
-:host(.selected) kritzel-icon {
-  --kritzel-icon-color: var(--kritzel-menu-item-selected-color, #ffffff);
+:host(.selected) updraw-icon {
+  --updraw-icon-color: var(--updraw-menu-item-selected-color, #ffffff);
 }
 
 :host(.selected) .edit-input::selection {
-  background-color: var(--kritzel-menu-item-input-selection-color-on-selected, rgba(255, 255, 255, 0.3));
-  color: var(--kritzel-menu-item-input-selection-text-color-on-selected, #ffffff);
+  background-color: var(--updraw-menu-item-input-selection-color-on-selected, rgba(255, 255, 255, 0.3));
+  color: var(--updraw-menu-item-input-selection-text-color-on-selected, #ffffff);
 }
 
 :host(.editing) {
-  background-color: var(--kritzel-menu-item-editing-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--updraw-menu-item-editing-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 :host(.disabled) {
@@ -71,11 +71,11 @@ kritzel-icon {
 }
 
 :host(.child-open) {
-  background-color: var(--kritzel-menu-item-child-open-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--updraw-menu-item-child-open-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 :host(.child-open.selected) {
-  background-color: var(--kritzel-menu-item-selected-background-color, #007aff);
+  background-color: var(--updraw-menu-item-selected-background-color, #007aff);
 }
 
 .menu-item-overlay {
@@ -84,7 +84,7 @@ kritzel-icon {
   background-color: transparent;
   z-index: 0;
   pointer-events: none;
-  border-radius: var(--kritzel-menu-item-border-radius, 12px);
+  border-radius: var(--updraw-menu-item-border-radius, 12px);
 }
 
 .menu-item-content {
@@ -120,13 +120,13 @@ kritzel-icon {
 
 .edit-input {
   flex: 1;
-  height: var(--kritzel-menu-item-input-height, 24px);
+  height: var(--updraw-menu-item-input-height, 24px);
   padding: 0;
   background-color: transparent;
   border-radius: 0;
   border: none;
-  border-bottom: var(--kritzel-menu-item-input-border, 1px solid #ccc);
-  font-size: var(--kritzel-menu-item-font-size, 14px);
+  border-bottom: var(--updraw-menu-item-input-border, 1px solid #ccc);
+  font-size: var(--updraw-menu-item-font-size, 14px);
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
@@ -135,19 +135,19 @@ kritzel-icon {
 }
 
 .edit-input {
-  caret-color: var(--kritzel-menu-item-input-caret-color, currentColor);
+  caret-color: var(--updraw-menu-item-input-caret-color, currentColor);
 }
 
 .edit-input::selection {
-  background-color: var(--kritzel-menu-item-input-selection-color, #007bff);
-  color: var(--kritzel-menu-item-input-selection-text-color, #ffffff);
+  background-color: var(--updraw-menu-item-input-selection-color, #007bff);
+  color: var(--updraw-menu-item-input-selection-text-color, #ffffff);
 }
 
 .action-button {
   padding: 4px;
   border-radius: 8px;
   border: none;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -158,7 +158,7 @@ kritzel-icon {
 
 .action-button:hover,
 .action-button:focus {
-  background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--updraw-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 .action-button.disabled {

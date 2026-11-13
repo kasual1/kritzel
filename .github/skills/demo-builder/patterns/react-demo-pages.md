@@ -50,7 +50,7 @@ Skip only for demos intentionally showing neutral/default theme behavior.
 
 ## Editor / Engine Ref Access
 
-React refs resolve directly to native elements. Use `useRef<HTMLKritzelEditorElement | null>(null)` (or engine equivalent) and call APIs on `ref.current`.
+React refs resolve directly to native elements. Use `useRef<HTMLUpdrawEditorElement | null>(null)` (or engine equivalent) and call APIs on `ref.current`.
 
 ## Seeding Objects
 
@@ -58,7 +58,7 @@ When a demo needs initial object content, use a shared seed helper for consisten
 
 ## Dynamic Objects
 
-When a page uses `KritzelDynamicObject`:
+When a page uses `UpdrawDynamicObject`:
 
 1. Keep renderer setup and object factories in dedicated modules (not inline in the page component).
 2. Register/unregister renderers in page lifecycle hooks.

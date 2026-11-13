@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
-  KritzelEditor,
+  UpdrawEditor,
   EditorIsReadyEvent,
-  KritzelBaseObject,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawBaseObject,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -16,20 +16,20 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-objects-filter',
-  imports: [KritzelEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
+  imports: [UpdrawEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
-      <button (click)="queryByType('KritzelShape')">Shapes</button>
-      <button (click)="queryByType('KritzelPath')">Paths</button>
-      <button (click)="queryByType('KritzelLine')">Lines</button>
+      <button (click)="queryByType('UpdrawShape')">Shapes</button>
+      <button (click)="queryByType('UpdrawPath')">Paths</button>
+      <button (click)="queryByType('UpdrawLine')">Lines</button>
       <button (click)="queryAll()">All</button>
       <button (click)="queryNone()">None</button>
       <button (click)="queryInViewport()">In Viewport</button>
       <app-info-panel-toggle [panel]="infoPanel"></app-info-panel-toggle>
     </app-toolbar>
     <div class="content">
-      <kritzel-editor
+      <updraw-editor
         editorId="objects-filter"
         [theme]="'light'"
         [themes]="themes"
@@ -39,7 +39,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady($event)"
-      ></kritzel-editor>
+      ></updraw-editor>
       <app-info-panel #infoPanel [hasToolbarToggle]="true">
         <h3>Objects</h3>
         <ul>
@@ -59,7 +59,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
     .content { display: flex; flex: 1; min-height: 0; position: relative; }
-    kritzel-editor { flex: 1; }
+    updraw-editor { flex: 1; }
     ul { list-style: none; margin: 0; padding: 0; }
     li { padding: 4px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
     .type { color: #333; font-weight: 500; }
@@ -68,13 +68,13 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   `],
 })
 export class ObjectsFilterComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
-  results = signal<KritzelBaseObject[]>([]);
+  results = signal<UpdrawBaseObject[]>([]);
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
     const objects = await this.editor.getAllObjects();
@@ -108,7 +108,7 @@ export class ObjectsFilterComponent {
     await this.highlightResults(visible);
   }
 
-  private async highlightResults(results: KritzelBaseObject[]) {
+  private async highlightResults(results: UpdrawBaseObject[]) {
     const all = await this.editor.getAllObjects();
     await Promise.all(all.map(obj => this.editor.updateObject(obj, { opacity: 0.5 })));
     await Promise.all(results.map(obj => this.editor.updateObject(obj, { opacity: 1 })));

@@ -1,7 +1,7 @@
-import { KritzelEmbeddedObject } from '../interfaces/embedded-object.interface';
+import { UpdrawEmbeddedObject } from '../interfaces/embedded-object.interface';
 
-export class KritzelWheelHelper {
-  public static shouldKeepWheelInDynamicObject(ev: WheelEvent, dynamicObject: KritzelEmbeddedObject): boolean {
+export class UpdrawWheelHelper {
+  public static shouldKeepWheelInDynamicObject(ev: WheelEvent, dynamicObject: UpdrawEmbeddedObject): boolean {
     // Keep Ctrl+wheel available for viewport zoom gestures.
     if (ev.ctrlKey || dynamicObject.isSelected !== true) {
       return false;
@@ -19,9 +19,9 @@ export class KritzelWheelHelper {
     return this.canElementConsumeWheel(scrollContainer, ev.deltaX, ev.deltaY);
   }
 
-  private static getScrollableContainerFromEventPath(path: EventTarget[], dynamicObject: KritzelEmbeddedObject): HTMLElement | null {
+  private static getScrollableContainerFromEventPath(path: EventTarget[], dynamicObject: UpdrawEmbeddedObject): HTMLElement | null {
     const potentialRoots = dynamicObject.getEmbeddedContentRoots();
-    const legacyElementRef = (dynamicObject as KritzelEmbeddedObject & { elmeentRef?: HTMLElement }).elmeentRef;
+    const legacyElementRef = (dynamicObject as UpdrawEmbeddedObject & { elmeentRef?: HTMLElement }).elmeentRef;
     if (legacyElementRef instanceof HTMLElement) {
       potentialRoots.push(legacyElementRef);
     }

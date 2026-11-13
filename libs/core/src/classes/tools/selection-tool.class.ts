@@ -1,23 +1,23 @@
-import { KritzelHandleType } from '../../enums/handle-type.enum';
-import { KritzelEventHelper } from '../../helpers/event.helper';
+import { UpdrawHandleType } from '../../enums/handle-type.enum';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelColorHelper } from '../../helpers/color.helper';
-import { KritzelMoveHandler } from '../handlers/move.handler';
-import { KritzelResizeHandler } from '../handlers/resize.handler';
-import { KritzelRotationHandler } from '../handlers/rotation.handler';
-import { KritzelSelectionHandler } from '../handlers/selection.handler';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelBaseTool } from './base-tool.class';
-import { KritzelHoverHandler } from '../handlers/hover.handler';
-import { KritzelCore } from '../core/core.class';
-import { KritzelLineHandleHandler, LineHandleType } from '../handlers/line-handle.handler';
-import { KritzelPath } from '../objects/path.class';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelShape } from '../objects/shape.class';
-import { KritzelText } from '../objects/text.class';
-import { KritzelImage } from '../objects/image.class';
+import { UpdrawColorHelper } from '../../helpers/color.helper';
+import { UpdrawMoveHandler } from '../handlers/move.handler';
+import { UpdrawResizeHandler } from '../handlers/resize.handler';
+import { UpdrawRotationHandler } from '../handlers/rotation.handler';
+import { UpdrawSelectionHandler } from '../handlers/selection.handler';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpdrawBaseTool } from './base-tool.class';
+import { UpdrawHoverHandler } from '../handlers/hover.handler';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawLineHandleHandler, LineHandleType } from '../handlers/line-handle.handler';
+import { UpdrawPath } from '../objects/path.class';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawShape } from '../objects/shape.class';
+import { UpdrawText } from '../objects/text.class';
+import { UpdrawImage } from '../objects/image.class';
 import { ToolConfigControl, ToolConfigDefinition } from '../../interfaces/tool-config.interface';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
@@ -33,26 +33,26 @@ const TITLE_EDIT_CLICK_TOLERANCE = 5;
 
 type SelectionToolTitleEditCandidate = { ownerId: string; elementId: string; clientX: number; clientY: number };
 
-export class KritzelSelectionTool extends KritzelBaseTool {
+export class UpdrawSelectionTool extends UpdrawBaseTool {
   override toolType = 'selection' as const;
 
   /** Handler for selection box and object selection logic */
-  selectionHandler: KritzelSelectionHandler;
+  selectionHandler: UpdrawSelectionHandler;
 
   /** Handler for moving selected objects */
-  moveHandler: KritzelMoveHandler;
+  moveHandler: UpdrawMoveHandler;
 
   /** Handler for hover effects on objects */
-  hoverHandler: KritzelHoverHandler;
+  hoverHandler: UpdrawHoverHandler;
 
   /** Handler for resizing selected objects */
-  resizeHandler: KritzelResizeHandler;
+  resizeHandler: UpdrawResizeHandler;
 
   /** Handler for rotating selected objects */
-  rotationHandler: KritzelRotationHandler;
+  rotationHandler: UpdrawRotationHandler;
 
   /** Handler for manipulating line start/end handles */
-  lineHandleHandler: KritzelLineHandleHandler;
+  lineHandleHandler: UpdrawLineHandleHandler;
 
   /** Available color palette for selected objects */
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
@@ -62,12 +62,12 @@ export class KritzelSelectionTool extends KritzelBaseTool {
    * potential pinch-zoom gesture, so it can be restored when the second finger
    * arrives. Cleared when the touch interaction ends.
    */
-  private _savedSelectionGroupForPinch: KritzelSelectionGroup | null = null;
+  private _savedSelectionGroupForPinch: UpdrawSelectionGroup | null = null;
 
   /** Pointer currently pressing an object titlebar, if any. */
   private _titlebarPointerId: number | null = null;
   /** Embedded object whose interactivity is deferred until the titlebar press ends. */
-  private _titlebarDeferredInteractiveObject: KritzelBaseObject<any> | null = null;
+  private _titlebarDeferredInteractiveObject: UpdrawBaseObject<any> | null = null;
   /** Editable title pressed while its object was already the only selected object. */
   private _titlebarTitleEditCandidate: SelectionToolTitleEditCandidate | null = null;
 
@@ -95,7 +95,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   private flattenObjects(objects: any[]): any[] {
     let result: any[] = [];
     for (const obj of objects) {
-      if (obj instanceof KritzelGroup) {
+      if (obj instanceof UpdrawGroup) {
         result = result.concat(this.flattenObjects(obj.children));
       } else {
         result.push(obj);
@@ -112,10 +112,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     const objects = this.flattenObjects(this.getSelectedObjects());
     if (objects.length === 0) return DEFAULT_COLOR_PALETTE[0];
     for (const obj of objects) {
-      if (obj instanceof KritzelPath) return obj.fill;
-      if (obj instanceof KritzelLine) return obj.stroke;
-      if (obj instanceof KritzelText) return obj.fontColor;
-      if (obj instanceof KritzelShape) return obj.strokeColor;
+      if (obj instanceof UpdrawPath) return obj.fill;
+      if (obj instanceof UpdrawLine) return obj.stroke;
+      if (obj instanceof UpdrawText) return obj.fontColor;
+      if (obj instanceof UpdrawShape) return obj.strokeColor;
     }
     return DEFAULT_COLOR_PALETTE[0];
   }
@@ -127,10 +127,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   set color(value: ThemeAwareColor) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
-      if (obj instanceof KritzelPath) this._core.updateObject(obj, { fill: value });
-      if (obj instanceof KritzelLine) this._core.updateObject(obj, { stroke: value });
-      if (obj instanceof KritzelText) this._core.updateObject(obj, { fontColor: value });
-      if (obj instanceof KritzelShape) this._core.updateObject(obj, { strokeColor: value });
+      if (obj instanceof UpdrawPath) this._core.updateObject(obj, { fill: value });
+      if (obj instanceof UpdrawLine) this._core.updateObject(obj, { stroke: value });
+      if (obj instanceof UpdrawText) this._core.updateObject(obj, { fontColor: value });
+      if (obj instanceof UpdrawShape) this._core.updateObject(obj, { strokeColor: value });
     });
     this._core.rerender();
   }
@@ -163,10 +163,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     const objects = this.flattenObjects(this.getSelectedObjects());
     if (objects.length === 0) return 1;
     for (const obj of objects) {
-      if (obj instanceof KritzelPath) return obj.strokeWidth;
-      if (obj instanceof KritzelLine) return obj.strokeWidth;
-      if (obj instanceof KritzelText) return obj.fontSize;
-      if (obj instanceof KritzelShape) return obj.strokeWidth;
+      if (obj instanceof UpdrawPath) return obj.strokeWidth;
+      if (obj instanceof UpdrawLine) return obj.strokeWidth;
+      if (obj instanceof UpdrawText) return obj.fontSize;
+      if (obj instanceof UpdrawShape) return obj.strokeWidth;
     }
     return 1;
   }
@@ -179,10 +179,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   set size(value: number) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
-      if (obj instanceof KritzelPath) this._core.updateObject(obj, { strokeWidth: value });
-      if (obj instanceof KritzelLine) this._core.updateObject(obj, { strokeWidth: value });
-      if (obj instanceof KritzelText) this._core.updateObject(obj, { fontSize: value });
-      if (obj instanceof KritzelShape) this._core.updateObject(obj, { strokeWidth: value });
+      if (obj instanceof UpdrawPath) this._core.updateObject(obj, { strokeWidth: value });
+      if (obj instanceof UpdrawLine) this._core.updateObject(obj, { strokeWidth: value });
+      if (obj instanceof UpdrawText) this._core.updateObject(obj, { fontSize: value });
+      if (obj instanceof UpdrawShape) this._core.updateObject(obj, { strokeWidth: value });
     });
     this._core.rerender();
     this.refreshSelectionGroupDimensions();
@@ -195,7 +195,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   get fillColor(): ThemeAwareColor {
     const objects = this.flattenObjects(this.getSelectedObjects());
     for (const obj of objects) {
-      if (obj instanceof KritzelShape) return obj.fillColor;
+      if (obj instanceof UpdrawShape) return obj.fillColor;
     }
     return { light: 'transparent', dark: 'transparent' };
   }
@@ -207,9 +207,9 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   set fillColor(value: ThemeAwareColor) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
-      if (obj instanceof KritzelShape) {
+      if (obj instanceof UpdrawShape) {
         // Calculate new font color based on fill color
-        const newFontColor = KritzelColorHelper.determineTextColor(value);
+        const newFontColor = UpdrawColorHelper.determineTextColor(value);
         this._core.updateObject(obj, { fillColor: value, fontColor: newFontColor });
         // When switching to fill mode, also update stroke color to match
         const isTransparent = typeof value === 'string' ? value === 'transparent' :
@@ -229,8 +229,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   get fontFamily(): string {
     const objects = this.flattenObjects(this.getSelectedObjects());
     for (const obj of objects) {
-      if (obj instanceof KritzelText) return obj.fontFamily;
-      if (obj instanceof KritzelShape) return obj.fontFamily;
+      if (obj instanceof UpdrawText) return obj.fontFamily;
+      if (obj instanceof UpdrawShape) return obj.fontFamily;
     }
     return 'Arial';
   }
@@ -242,8 +242,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   set fontFamily(value: string) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
-      if (obj instanceof KritzelText) this._core.updateObject(obj, { fontFamily: value });
-      if (obj instanceof KritzelShape) this._core.updateObject(obj, { fontFamily: value });
+      if (obj instanceof UpdrawText) this._core.updateObject(obj, { fontFamily: value });
+      if (obj instanceof UpdrawShape) this._core.updateObject(obj, { fontFamily: value });
     });
     this._core.rerender();
     this.refreshSelectionGroupDimensions();
@@ -256,7 +256,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   get arrows(): LineArrowConfig {
     const objects = this.flattenObjects(this.getSelectedObjects());
     for (const obj of objects) {
-      if (obj instanceof KritzelLine) return obj.arrows ?? { start: { enabled: false }, end: { enabled: false } };
+      if (obj instanceof UpdrawLine) return obj.arrows ?? { start: { enabled: false }, end: { enabled: false } };
     }
     return { start: { enabled: false }, end: { enabled: false } };
   }
@@ -268,7 +268,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   set arrows(value: LineArrowConfig) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
-      if (obj instanceof KritzelLine) this._core.updateObject(obj, { arrows: value });
+      if (obj instanceof UpdrawLine) this._core.updateObject(obj, { arrows: value });
     });
     this._core.rerender();
     this.refreshSelectionGroupDimensions();
@@ -286,12 +286,12 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     const objects = this.flattenObjects(this.getSelectedObjects());
     const controls: ToolConfigControl[] = [];
 
-    const hasShape = objects.some(o => o instanceof KritzelShape);
-    const hasText = objects.some(o => o instanceof KritzelText);
-    const hasLine = objects.some(o => o instanceof KritzelLine);
-    const hasImage = objects.some(o => o instanceof KritzelImage);
+    const hasShape = objects.some(o => o instanceof UpdrawShape);
+    const hasText = objects.some(o => o instanceof UpdrawText);
+    const hasLine = objects.some(o => o instanceof UpdrawLine);
+    const hasImage = objects.some(o => o instanceof UpdrawImage);
     const hasStroke = objects.some(
-      o => o instanceof KritzelPath || o instanceof KritzelLine || o instanceof KritzelShape
+      o => o instanceof UpdrawPath || o instanceof UpdrawLine || o instanceof UpdrawShape
     );
 
     // If only images are selected, return config with opacity only (no palette, no controls)
@@ -352,14 +352,14 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     }
   }
 
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     super(core);
-    this.selectionHandler = new KritzelSelectionHandler(this._core);
-    this.moveHandler = new KritzelMoveHandler(this._core);
-    this.hoverHandler = new KritzelHoverHandler(this._core);
-    this.resizeHandler = new KritzelResizeHandler(this._core);
-    this.rotationHandler = new KritzelRotationHandler(this._core);
-    this.lineHandleHandler = new KritzelLineHandleHandler(this._core);
+    this.selectionHandler = new UpdrawSelectionHandler(this._core);
+    this.moveHandler = new UpdrawMoveHandler(this._core);
+    this.hoverHandler = new UpdrawHoverHandler(this._core);
+    this.resizeHandler = new UpdrawResizeHandler(this._core);
+    this.rotationHandler = new UpdrawRotationHandler(this._core);
+    this.lineHandleHandler = new UpdrawLineHandleHandler(this._core);
   }
 
   /**
@@ -379,7 +379,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.resetTitlebarGesture();
 
     if (event.pointerType === 'mouse') {
-      if (KritzelEventHelper.isLeftClick(event)) {
+      if (UpdrawEventHelper.isLeftClick(event)) {
         this._core.store.state.isResizeHandleSelected = this.isHandleSelected(event);
         this._core.store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
         this._core.store.state.isLineHandleSelected = this.isLineHandleSelected(event);
@@ -409,7 +409,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
         if (selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1) {
           const firstObj = selectedObject.objects[0];
-          if (ObjectHelper.isKritzelEmbeddedObject(firstObj)) {
+          if (ObjectHelper.isUpdrawEmbeddedObject(firstObj)) {
             // Selected embedded objects hand pointer interaction to their content.
             if (firstObj.isSelected && this._core.store.selectionGroup?.objects.length === 1) return;
           } else if (firstObj.isInteractive) {
@@ -646,7 +646,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
    * Clicking the editable title of an object that is already the only selected one renames it,
    * like clicking a selected text object again edits it.
    */
-  private getTitleEditCandidate(event: PointerEvent, owner: KritzelBaseObject<any>): SelectionToolTitleEditCandidate | null {
+  private getTitleEditCandidate(event: PointerEvent, owner: UpdrawBaseObject<any>): SelectionToolTitleEditCandidate | null {
     if (event.shiftKey || event.ctrlKey) {
       return null;
     }
@@ -665,8 +665,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
    * Selecting an embedded object makes its content interactive. During a titlebar press that
    * would let an iframe capture the pointer mid-drag, so interactivity is applied on release.
    */
-  private deferEmbeddedInteractivity(object: KritzelBaseObject<any>): void {
-    if (ObjectHelper.isKritzelEmbeddedObject(object) && object.isInteractive) {
+  private deferEmbeddedInteractivity(object: UpdrawBaseObject<any>): void {
+    if (ObjectHelper.isUpdrawEmbeddedObject(object) && object.isInteractive) {
       object.setIsInteractive(false);
       this._titlebarDeferredInteractiveObject = object;
     }
@@ -683,7 +683,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this._titlebarDeferredInteractiveObject = null;
     this._titlebarTitleEditCandidate = null;
 
-    if (deferred && ObjectHelper.isKritzelEmbeddedObject(deferred) && this._core.store.selectionGroup?.objectIds.includes(deferred.id)) {
+    if (deferred && ObjectHelper.isUpdrawEmbeddedObject(deferred) && this._core.store.selectionGroup?.objectIds.includes(deferred.id)) {
       deferred.setIsInteractive(true);
     }
 
@@ -709,7 +709,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this._titlebarTitleEditCandidate = null;
     this.selectionHandler.skipEditForPointerId = null;
 
-    if (deferred && ObjectHelper.isKritzelEmbeddedObject(deferred) && this._core.store.selectionGroup?.objectIds.includes(deferred.id)) {
+    if (deferred && ObjectHelper.isUpdrawEmbeddedObject(deferred) && this._core.store.selectionGroup?.objectIds.includes(deferred.id)) {
       deferred.setIsInteractive(true);
     }
   }
@@ -718,9 +718,9 @@ export class KritzelSelectionTool extends KritzelBaseTool {
    * Gets the object at the pointer event location and wraps it in a selection group.
    * Performs hit testing to ensure the pointer is actually over the object.
    * @param event - The PointerEvent to get the object from
-   * @returns A KritzelSelectionGroup containing the object, or null if no object at that location
+   * @returns An UpdrawSelectionGroup containing the object, or null if no object at that location
    */
-  private getSelectedObject(event: PointerEvent): KritzelSelectionGroup | null {
+  private getSelectedObject(event: PointerEvent): UpdrawSelectionGroup | null {
     const path = event.composedPath() as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
     const object = objectElement?.id ? this._core.findObjectById(objectElement.id) : null;
@@ -739,10 +739,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       return currentSelectionGroup;
     }
 
-    if (object instanceof KritzelSelectionGroup) {
+    if (object instanceof UpdrawSelectionGroup) {
       return object;
     } else {
-      const group = KritzelSelectionGroup.create(this._core);
+      const group = UpdrawSelectionGroup.create(this._core);
       group.translateX = 0;
       group.translateY = 0;
       group.objectIds = [object.id];
@@ -753,9 +753,9 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   /**
    * Determines the type of resize handle at the pointer location.
    * @param event - The PointerEvent to check for handle type
-   * @returns The KritzelHandleType if a resize handle is at the location, undefined otherwise
+   * @returns The UpdrawHandleType if a resize handle is at the location, undefined otherwise
    */
-  private getHandleType(event: PointerEvent): KritzelHandleType | undefined {
+  private getHandleType(event: PointerEvent): UpdrawHandleType | undefined {
     const shadowRoot = this._core.store.state.host?.shadowRoot;
     if (!shadowRoot) return;
 
@@ -763,7 +763,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
     const handle = elementsAtPoint.find(el => el.classList.contains('resize-handle-overlay'));
 
-    return handle?.classList[1] as KritzelHandleType;
+    return handle?.classList[1] as UpdrawHandleType;
   }
 
   /**

@@ -1,5 +1,5 @@
 // TEMP: mock of a chat backend for the temp chat-modes demo; delete with pages/temp/.
-import type { KritzelChatRequest, KritzelChatResponse, KritzelChatToolCallPart, KritzelChatTransport } from '@kritzel/angular-editor';
+import type { UpdrawChatRequest, UpdrawChatResponse, UpdrawChatToolCallPart, UpdrawChatTransport } from '@updraw/angular-editor';
 
 type Step = { text?: string; calls?: { name: string; input: object }[] };
 
@@ -10,13 +10,13 @@ const wait = (ms: number, signal: AbortSignal) =>
   });
 
 /** Stands in for `fetch('/api/chat')`: answers after a model-like delay. */
-export const mockTransport: KritzelChatTransport = async (request, { signal }) => {
+export const mockTransport: UpdrawChatTransport = async (request, { signal }) => {
   await wait(600 + Math.random() * 600, signal);
   return toResponse(answer(request));
 };
 
 /** Plays the model: one step per request, decided by the prompt and the tool results so far. */
-function answer(request: KritzelChatRequest): Step {
+function answer(request: UpdrawChatRequest): Step {
   const lastUser = request.messages.map(m => m.role).lastIndexOf('user');
   const prompt = request.messages[lastUser].parts.map(p => (p.type === 'text' ? p.text : '')).join('\n');
   const turn = request.messages.slice(lastUser + 1);
@@ -81,8 +81,8 @@ function freeY(snapshot: { objects?: { y: number; height: number }[] }): number 
 
 let callId = 0;
 
-function toResponse(step: Step): KritzelChatResponse {
-  const calls: KritzelChatToolCallPart[] = (step.calls ?? []).map(c => ({ type: 'tool-call', id: `call_${++callId}`, name: c.name, input: c.input }));
+function toResponse(step: Step): UpdrawChatResponse {
+  const calls: UpdrawChatToolCallPart[] = (step.calls ?? []).map(c => ({ type: 'tool-call', id: `call_${++callId}`, name: c.name, input: c.input }));
   return {
     version: 1,
     message: { role: 'assistant', parts: [...(step.text ? [{ type: 'text' as const, text: step.text }] : []), ...calls] },

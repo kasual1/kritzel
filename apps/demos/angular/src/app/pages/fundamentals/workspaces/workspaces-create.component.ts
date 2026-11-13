@@ -7,10 +7,10 @@ import {
 import {
   ActiveWorkspaceChangeEvent,
   InMemorySyncProvider,
-  KritzelEditor,
-  KritzelSyncConfig,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawEditor,
+  UpdrawSyncConfig,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -18,7 +18,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-workspaces-create',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -32,7 +32,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         </button>
       }
     </app-toolbar>
-    <kritzel-editor
+    <updraw-editor
       editorId="workspaces-create"
       [theme]="'light'"
       [themes]="themes"
@@ -44,7 +44,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [
     `
@@ -54,21 +54,21 @@ import { createSeedObjects } from '../../../const/seed-objects';
         height: 100%;
         font-family: Roboto, sans-serif;
       }
-      kritzel-editor {
+      updraw-editor {
         flex: 1;
       }
     `,
   ],
 })
 export class WorkspacesCreateComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-  syncConfig: KritzelSyncConfig = {
+  syncConfig: UpdrawSyncConfig = {
     providers: [InMemorySyncProvider],
   };
-  workspaces = signal<KritzelWorkspace[]>([
-    new KritzelWorkspace({
+  workspaces = signal<UpdrawWorkspace[]>([
+    new UpdrawWorkspace({
       id: 'board-1',
       name: 'Board 1',
       objects: createSeedObjects(),
@@ -83,7 +83,7 @@ export class WorkspacesCreateComponent {
   async addWorkspace() {
     const workspaceNumber = this.workspaces().length + 1;
     const workspace = await this.editor.createWorkspace(
-      new KritzelWorkspace({
+      new UpdrawWorkspace({
         id: `board-${workspaceNumber}`,
         name: `Board ${workspaceNumber}`,
         objects: createSeedObjects(),
@@ -96,7 +96,7 @@ export class WorkspacesCreateComponent {
     }
   }
 
-  async switchTo(workspace: KritzelWorkspace) {
+  async switchTo(workspace: UpdrawWorkspace) {
     await this.editor.setActiveWorkspace(workspace.id);
   }
 }

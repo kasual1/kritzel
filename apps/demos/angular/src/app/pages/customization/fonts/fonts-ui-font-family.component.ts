@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { KritzelEditor, KritzelFontMap, KritzelTheme } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawFontMap, UpdrawTheme } from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 
-const customFonts: KritzelFontMap = {
+const customFonts: UpdrawFontMap = {
   pacifico: {
     family: 'Pacifico',
     label: 'Pacifico Cursive',
@@ -13,11 +13,11 @@ const customFonts: KritzelFontMap = {
 
 @Component({
   selector: 'app-fonts-ui-font-family',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="editor-wrap">
-      <kritzel-editor
+      <updraw-editor
         editorId="fonts-ui-font-family"
         [customFonts]="fonts"
         [theme]="'light'"
@@ -26,7 +26,7 @@ const customFonts: KritzelFontMap = {
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="true"
         (isReady)="onReady()"
-      ></kritzel-editor>
+      ></updraw-editor>
     </div>
   `,
   styles: [`
@@ -35,11 +35,11 @@ const customFonts: KritzelFontMap = {
   `],
 })
 export class FontsUiFontFamilyComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   fonts = customFonts;
 
-  themes: KritzelTheme[] = [{
+  themes: UpdrawTheme[] = [{
     ...angularThemeLight,
     global: {
       ...angularThemeLight.global,

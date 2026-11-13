@@ -1,6 +1,6 @@
-import { KritzelWheelHelper } from './wheel.helper';
+import { UpdrawWheelHelper } from './wheel.helper';
 
-describe('KritzelWheelHelper', () => {
+describe('UpdrawWheelHelper', () => {
   const createEmbeddedObject = (root: HTMLElement, isSelected: boolean = true) => ({
     isSelected,
     getEmbeddedContentRoots: () => [root],
@@ -18,7 +18,7 @@ describe('KritzelWheelHelper', () => {
   it('returns false for Ctrl+wheel', () => {
     const dynamicObject = { isSelected: true } as any;
 
-    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(createWheelEvent({ ctrlKey: true }), dynamicObject);
+    const result = UpdrawWheelHelper.shouldKeepWheelInDynamicObject(createWheelEvent({ ctrlKey: true }), dynamicObject);
 
     expect(result).toBe(false);
   });
@@ -26,7 +26,7 @@ describe('KritzelWheelHelper', () => {
   it('returns false for non-selected dynamic objects', () => {
     const dynamicObject = { isSelected: false } as any;
 
-    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(createWheelEvent({ deltaY: 10 }), dynamicObject);
+    const result = UpdrawWheelHelper.shouldKeepWheelInDynamicObject(createWheelEvent({ deltaY: 10 }), dynamicObject);
 
     expect(result).toBe(false);
   });
@@ -35,7 +35,7 @@ describe('KritzelWheelHelper', () => {
     const root = document.createElement('div');
     const dynamicObject = createEmbeddedObject(root);
 
-    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
+    const result = UpdrawWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
         deltaY: 10,
         composedPath: () => [document.createElement('div')],
@@ -50,7 +50,7 @@ describe('KritzelWheelHelper', () => {
     const root = document.createElement('div');
     const dynamicObject = createEmbeddedObject(root);
 
-    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
+    const result = UpdrawWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
         deltaY: 10,
         composedPath: () => [document.createElement('div'), root],
@@ -73,7 +73,7 @@ describe('KritzelWheelHelper', () => {
 
     const dynamicObject = createEmbeddedObject(root);
 
-    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
+    const result = UpdrawWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
         deltaY: 10,
         composedPath: () => [scrollHost, root],
@@ -96,7 +96,7 @@ describe('KritzelWheelHelper', () => {
 
     const dynamicObject = createEmbeddedObject(root);
 
-    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
+    const result = UpdrawWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
         deltaY: 10,
         composedPath: () => [scrollHost, root],
@@ -119,7 +119,7 @@ describe('KritzelWheelHelper', () => {
 
     const dynamicObject = createEmbeddedObject(root);
 
-    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
+    const result = UpdrawWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
         deltaX: 10,
         composedPath: () => [scrollHost, root],
@@ -142,7 +142,7 @@ describe('KritzelWheelHelper', () => {
 
     const dynamicObject = createEmbeddedObject(root);
 
-    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
+    const result = UpdrawWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
         deltaX: 10,
         composedPath: () => [scrollHost, root],

@@ -1,98 +1,98 @@
 import { Component, Host, h, Listen, Element, Prop, Method, State, Event, EventEmitter, Watch } from '@stencil/core';
 import {
-  KritzelViewport,
-  KritzelPath,
-  KritzelLine,
-  KritzelSelectionTool,
-  KritzelTextTool,
-  KritzelShapeTool,
-  KritzelBrushTool,
-  KritzelLineTool,
-  KritzelImageTool,
-  KritzelImage,
-  KritzelText,
-  KritzelShape,
-  KritzelSelectionGroup,
-  KritzelGroup,
-  KritzelSelectionBox,
-  KritzelKeyHandler,
-  KritzelBaseTool,
-  KritzelToolType,
+  UpdrawViewport,
+  UpdrawPath,
+  UpdrawLine,
+  UpdrawSelectionTool,
+  UpdrawTextTool,
+  UpdrawShapeTool,
+  UpdrawBrushTool,
+  UpdrawLineTool,
+  UpdrawImageTool,
+  UpdrawImage,
+  UpdrawText,
+  UpdrawShape,
+  UpdrawSelectionGroup,
+  UpdrawGroup,
+  UpdrawSelectionBox,
+  UpdrawKeyHandler,
+  UpdrawBaseTool,
+  UpdrawToolType,
   ContextMenuItem,
-  KritzelEraserTool,
-  KritzelBrushToolConfig,
-  KritzelLineToolConfig,
-  KritzelShapeToolConfig,
-  KritzelTextToolConfig,
-  KritzelKeyboardHelper,
-  KritzelContextMenuHandler,
-  KritzelBaseObject,
-  KritzelEventHelper,
+  UpdrawEraserTool,
+  UpdrawBrushToolConfig,
+  UpdrawLineToolConfig,
+  UpdrawShapeToolConfig,
+  UpdrawTextToolConfig,
+  UpdrawKeyboardHelper,
+  UpdrawContextMenuHandler,
+  UpdrawBaseObject,
+  UpdrawEventHelper,
   ABSOLUTE_SCALE_MAX,
   ABSOLUTE_SCALE_MIN,
-  KritzelDynamicObject,
-  KritzelIframeObject,
-  KritzelWorkspace,
+  UpdrawDynamicObject,
+  UpdrawIframeObject,
+  UpdrawWorkspace,
   WORKSPACE_EXPORT_VERSION,
-  KritzelReviver,
-  KritzelEngineState,
-  KritzelDebugInfo,
-  KritzelSettingsConfig,
-  KritzelCore,
-  KritzelDevicesHelper,
-  KritzelSyncConfig,
-  KritzelAssetStorageConfig,
-  KritzelColorHelper,
-  KritzelUndoState,
-  KritzelTheme,
+  UpdrawReviver,
+  UpdrawEngineState,
+  UpdrawDebugInfo,
+  UpdrawSettingsConfig,
+  UpdrawCore,
+  UpdrawDevicesHelper,
+  UpdrawSyncConfig,
+  UpdrawAssetStorageConfig,
+  UpdrawColorHelper,
+  UpdrawUndoState,
+  UpdrawTheme,
   ThemeName,
-  KritzelLocale,
-  KritzelTermKey,
-  KritzelTermVars,
+  UpdrawLocale,
+  UpdrawTermKey,
+  UpdrawTermVars,
   LocaleCode,
-  KritzelShortcut,
-  KritzelAlignment,
-  KritzelViewportState,
-  KritzelAgent,
-  KritzelChatSession,
-  isKritzelChatSession,
-  KritzelAgentsChangeEvent,
-  KritzelRemoteAgentPresence,
-  KritzelObjectChangeSource,
+  UpdrawShortcut,
+  UpdrawAlignment,
+  UpdrawViewportState,
+  UpdrawAgent,
+  UpdrawChatSession,
+  isUpdrawChatSession,
+  UpdrawAgentsChangeEvent,
+  UpdrawRemoteAgentPresence,
+  UpdrawObjectChangeSource,
   ObjectHelper,
-  KritzelWheelHelper,
+  UpdrawWheelHelper,
   ObjectsAddedEvent,
   ObjectsRemovedEvent,
   ObjectsUpdatedEvent,
   ObjectsInViewportChangeEvent,
-  IKritzelUser,
-  KritzelNotification,
+  IUpdrawUser,
+  UpdrawNotification,
   resolveTextToolAvailableFonts,
-  KritzelContextMenuState,
-  KritzelExportable,
-  KritzelObjectExportContext,
-  KritzelObjectExportFormat,
-  KritzelSvgExportHelper,
-  KritzelToolDefinition,
-  KritzelObjectTitlebarActionEvent,
-  KritzelObjectTitlebarConfig,
-  KritzelObjectTitlebarMenuState,
-  KritzelElementAwareObject,
-  KritzelObjectElementClickEvent,
-  KritzelObjectElementHighlight,
-  KritzelObjectElementHoverEvent,
-  KritzelObjectElementInfo,
-  KritzelObjectElementPickEvent,
-  KritzelObjectElementPickingOptions,
-  KritzelTitlebarSection,
-  KritzelObjectConfig,
-  KritzelEngineHost,
-  KRITZEL_ROTATION_HANDLE_DISTANCE,
-  KRITZEL_OBJECT_APPEAR_MAX_BATCH,
-  KritzelObjectAppearTiming,
-  KritzelObjectAppearResolution,
-  KritzelResolvedTitlebar,
-} from '@kritzel/core';
+  UpdrawContextMenuState,
+  UpdrawExportable,
+  UpdrawObjectExportContext,
+  UpdrawObjectExportFormat,
+  UpdrawSvgExportHelper,
+  UpdrawToolDefinition,
+  UpdrawObjectTitlebarActionEvent,
+  UpdrawObjectTitlebarConfig,
+  UpdrawObjectTitlebarMenuState,
+  UpdrawElementAwareObject,
+  UpdrawObjectElementClickEvent,
+  UpdrawObjectElementHighlight,
+  UpdrawObjectElementHoverEvent,
+  UpdrawObjectElementInfo,
+  UpdrawObjectElementPickEvent,
+  UpdrawObjectElementPickingOptions,
+  UpdrawTitlebarSection,
+  UpdrawObjectConfig,
+  UpdrawEngineHost,
+  UPDRAW_ROTATION_HANDLE_DISTANCE,
+  UPDRAW_OBJECT_APPEAR_MAX_BATCH,
+  UpdrawObjectAppearTiming,
+  UpdrawObjectAppearResolution,
+  UpdrawResolvedTitlebar,
+} from '@updraw/core';
 import throttle from 'lodash/throttle';
 import { toPng, toSvg } from 'html-to-image';
 
@@ -109,18 +109,18 @@ interface WorkspaceJsonExportPayload extends Record<string, unknown> {
 const TITLEBAR_CONTROL_KEYS = new Set(['Enter', ' ', 'Spacebar', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']);
 
 @Component({
-  tag: 'kritzel-engine',
-  styleUrl: 'kritzel-engine.css',
+  tag: 'updraw-engine',
+  styleUrl: 'updraw-engine.css',
   shadow: true,
 })
-export class KritzelEngine implements KritzelEngineHost {
+export class UpdrawEngine implements UpdrawEngineHost {
   @Element() host!: HTMLElement;
 
   private activeImportFileInput?: HTMLInputElement;
   private cancelActiveImport?: () => void;
 
   /** Authoritative workspace catalog for this engine instance. When provided, provider-only workspaces are hidden but not deleted. */
-  @Prop() workspaces?: KritzelWorkspace[];
+  @Prop() workspaces?: UpdrawWorkspace[];
   @Watch('workspaces')
   async onWorkspacesPropChange() {
     this._workspacesRevision++;
@@ -162,9 +162,9 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   /** Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket). */
-  @Prop() syncConfig?: KritzelSyncConfig;
+  @Prop() syncConfig?: UpdrawSyncConfig;
   @Watch('syncConfig')
-  async onSyncConfigChange(newValue: KritzelSyncConfig | undefined) {
+  async onSyncConfigChange(newValue: UpdrawSyncConfig | undefined) {
     this._syncConfigRevision++;
 
     // Keep core config in sync immediately so late prop updates are not lost.
@@ -173,7 +173,7 @@ export class KritzelEngine implements KritzelEngineHost {
     // If syncConfig arrives after componentDidLoad, initialize Yjs now.
     // Guard on _isViewportReady to avoid restoring viewport state before
     // viewportWidth/viewportHeight are set (they default to 0 until the
-    // KritzelViewport constructor runs inside componentDidLoad's timeout).
+    // UpdrawViewport constructor runs inside componentDidLoad's timeout).
     if (newValue && !this._isYjsInitialized && this._isViewportReady) {
       await this.initializeSyncAndWorkspace();
     }
@@ -188,9 +188,9 @@ export class KritzelEngine implements KritzelEngineHost {
    * (Hocuspocus, WebSocket), configure at least one remote asset provider
    * such as `HttpAssetProvider` or `PresignedAssetProvider`.
    */
-  @Prop() assetStorageConfig?: KritzelAssetStorageConfig;
+  @Prop() assetStorageConfig?: UpdrawAssetStorageConfig;
   @Watch('assetStorageConfig')
-  async onAssetStorageConfigChange(newValue: KritzelAssetStorageConfig | undefined) {
+  async onAssetStorageConfigChange(newValue: UpdrawAssetStorageConfig | undefined) {
     this._assetStorageConfigRevision++;
 
     // Keep core config in sync immediately so late prop updates are not lost.
@@ -207,9 +207,9 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   /** The current user for awareness broadcasting (name, id, cursor position). */
-  @Prop() user?: IKritzelUser;
+  @Prop() user?: IUpdrawUser;
   @Watch('user')
-  onUserChange(newValue: IKritzelUser | undefined) {
+  onUserChange(newValue: IUpdrawUser | undefined) {
     this.core.setUser(newValue);
   }
 
@@ -217,14 +217,14 @@ export class KritzelEngine implements KritzelEngineHost {
    * A chat session bound to this engine: its tools act on this canvas. With an agent, the agent is added here.
    * A session replaced by another one is unbound once its running prompt ends.
    */
-  @Prop() chatSession?: KritzelChatSession | null;
+  @Prop() chatSession?: UpdrawChatSession | null;
   @Watch('chatSession')
   onChatSessionChange() {
     this.bindChatSession();
   }
 
   /** Tool definitions to register with this engine instance. */
-  @Prop() tools: KritzelToolDefinition[] = [];
+  @Prop() tools: UpdrawToolDefinition[] = [];
   @Watch('tools')
   onToolsChange() {
     this._toolsRevision++;
@@ -253,7 +253,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar`
    * is true. The same configuration applies to all objects. Leave unset to disable titlebars.
    */
-  @Prop() objectTitlebar?: KritzelObjectTitlebarConfig;
+  @Prop() objectTitlebar?: UpdrawObjectTitlebarConfig;
   @Watch('objectTitlebar')
   onObjectTitlebarChange() {
     // The titlebar manager reads this prop live, so only the render needs refreshing.
@@ -265,7 +265,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * Configures how objects behave, in one place for all objects: which objects get a titlebar,
    * and which can be rotated or resized. Each option is a boolean or a function of the object.
    */
-  @Prop() objectConfig?: KritzelObjectConfig;
+  @Prop() objectConfig?: UpdrawObjectConfig;
   @Watch('objectConfig')
   onObjectConfigChange() {
     // The object config manager reads this prop live, so only the render needs refreshing.
@@ -319,13 +319,13 @@ export class KritzelEngine implements KritzelEngineHost {
     this.refreshObjectElementThemes();
   }
 
-  /** Whether the "Powered by Kritzel" watermark is shown. Keeping it visible helps support the project. */
+  /** Whether the "Powered by Updraw" watermark is shown. Keeping it visible helps support the project. */
   @Prop() isWatermarkVisible: boolean = true;
 
   /** An array of available themes for the editor. */
-  @Prop() themes?: KritzelTheme[];
+  @Prop() themes?: UpdrawTheme[];
   @Watch('themes')
-  onThemesChange(newValue?: KritzelTheme[]) {
+  onThemesChange(newValue?: UpdrawTheme[]) {
     if (newValue && newValue.length > 0) {
       this.core.themeManager.registerThemes(newValue);
       this.core.themeManager.applyTheme(this.core.themeManager.currentTheme);
@@ -341,9 +341,9 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   /** An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty. */
-  @Prop() locales?: KritzelLocale[];
+  @Prop() locales?: UpdrawLocale[];
   @Watch('locales')
-  onLocalesChange(newValue?: KritzelLocale[]) {
+  onLocalesChange(newValue?: UpdrawLocale[]) {
     this.core.localizationManager.configureLocales(newValue);
     this.core.localizationManager.setLocale(this.core.localizationManager.resolveActiveLocale(this.locale));
   }
@@ -385,9 +385,9 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   /** Debug info display options controlling which debug overlays are visible */
-  @Prop() debugInfo?: KritzelDebugInfo;
+  @Prop() debugInfo?: UpdrawDebugInfo;
   @Watch('debugInfo')
-  onDebugInfoChange(newValue: KritzelDebugInfo) {
+  onDebugInfoChange(newValue: UpdrawDebugInfo) {
     if (newValue) {
       this.core.store.state.debugInfo = newValue;
       this.core.assetResolver.setShowInfo(newValue.showAssetResolverInfo);
@@ -401,22 +401,22 @@ export class KritzelEngine implements KritzelEngineHost {
   @Prop() isZoomingEnabled: boolean = true;
 
   /** Emitted when the engine has fully initialized and is ready for interaction. */
-  @Event() isEngineReady!: EventEmitter<KritzelEngineState>;
+  @Event() isEngineReady!: EventEmitter<UpdrawEngineState>;
 
   /** Emitted when the active drawing tool changes. */
-  @Event() activeToolChange!: EventEmitter<KritzelBaseTool>;
+  @Event() activeToolChange!: EventEmitter<UpdrawBaseTool>;
 
   /** Emitted when workspaces are created, updated, or deleted. */
-  @Event() workspacesChange!: EventEmitter<KritzelWorkspace[]>;
+  @Event() workspacesChange!: EventEmitter<UpdrawWorkspace[]>;
 
   /** Emitted when the active workspace changes (e.g., after import). */
-  @Event() activeWorkspaceChange!: EventEmitter<KritzelWorkspace>;
+  @Event() activeWorkspaceChange!: EventEmitter<UpdrawWorkspace>;
 
   /** Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile. */
   @Event() longpress!: EventEmitter<PointerEvent>;
 
   /** Emitted when objects on the canvas are added, removed, or modified. */
-  @Event() objectsChange!: EventEmitter<KritzelBaseObject[]>;
+  @Event() objectsChange!: EventEmitter<UpdrawBaseObject[]>;
 
   /** Emitted when one or more objects are added to the canvas. `source` is set when an agent made the change. */
   @Event() objectsAdded!: EventEmitter<ObjectsAddedEvent>;
@@ -428,25 +428,25 @@ export class KritzelEngine implements KritzelEngineHost {
   @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
 
   /** Emitted when the set of selected objects changes. */
-  @Event() objectsSelectionChange!: EventEmitter<KritzelBaseObject[]>;
+  @Event() objectsSelectionChange!: EventEmitter<UpdrawBaseObject[]>;
 
   /** Emitted when the undo/redo state changes, providing current undo availability. */
-  @Event() undoStateChange!: EventEmitter<KritzelUndoState>;
+  @Event() undoStateChange!: EventEmitter<UpdrawUndoState>;
 
   /** Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom). */
   @Event() objectsInViewportChange!: EventEmitter<ObjectsInViewportChangeEvent>;
 
   /** Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize). */
-  @Event() viewportChange!: EventEmitter<KritzelViewportState>;
+  @Event() viewportChange!: EventEmitter<UpdrawViewportState>;
 
   /** Emitted when the awareness state changes (remote user cursors, presence). */
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
 
   /** Emitted when notifications change. */
-  @Event() notificationsChange!: EventEmitter<KritzelNotification>;
+  @Event() notificationsChange!: EventEmitter<UpdrawNotification>;
 
   /** Emitted when context-menu visibility, items, or position changes. */
-  @Event() contextMenuStateChange!: EventEmitter<KritzelContextMenuState>;
+  @Event() contextMenuStateChange!: EventEmitter<UpdrawContextMenuState>;
 
   /** Emitted while the selected workspace's objects are being initialized and synchronized. */
   @Event() isLoadingChange!: EventEmitter<boolean>;
@@ -456,35 +456,35 @@ export class KritzelEngine implements KritzelEngineHost {
    * (name, color, avatar, status, visibility, activity). Lists the local agents first, then the agents of
    * collaborators (`isRemote: true`). Never emitted for plain cursor motion.
    */
-  @Event() agentsChange!: EventEmitter<KritzelAgentsChangeEvent>;
+  @Event() agentsChange!: EventEmitter<UpdrawAgentsChangeEvent>;
 
   /** Emitted when a button or a menu item in an object titlebar is clicked. */
-  @Event() objectTitlebarAction!: EventEmitter<KritzelObjectTitlebarActionEvent>;
+  @Event() objectTitlebarAction!: EventEmitter<UpdrawObjectTitlebarActionEvent>;
 
   /**
    * Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render
    * `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`.
    */
-  @Event() objectTitlebarMenuStateChange!: EventEmitter<KritzelObjectTitlebarMenuState>;
+  @Event() objectTitlebarMenuStateChange!: EventEmitter<UpdrawObjectTitlebarMenuState>;
 
   /**
    * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object,
    * such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
    */
-  @Event() objectElementHover!: EventEmitter<KritzelObjectElementHoverEvent>;
+  @Event() objectElementHover!: EventEmitter<UpdrawObjectElementHoverEvent>;
 
   /** Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual. */
-  @Event() objectElementClick!: EventEmitter<KritzelObjectElementClickEvent>;
+  @Event() objectElementClick!: EventEmitter<UpdrawObjectElementClickEvent>;
 
   /** Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`. */
-  @Event() objectElementPick!: EventEmitter<KritzelObjectElementPickEvent>;
+  @Event() objectElementPick!: EventEmitter<UpdrawObjectElementPickEvent>;
 
   @State() forceUpdate: number = 0;
 
   /** Manually triggers the `objectsSelectionChange` event. */
   @Method()
   async triggerSelectionChange() {
-    const selectedObjects = this.core.store.selectedObjects as KritzelBaseObject[];
+    const selectedObjects = this.core.store.selectedObjects as UpdrawBaseObject[];
     this._lastHadSelectionGroup = this.core.store.selectionGroup !== null;
     this.objectsSelectionChange.emit(selectedObjects);
   }
@@ -535,8 +535,8 @@ export class KritzelEngine implements KritzelEngineHost {
 
     if (
       hoveredObject &&
-      ObjectHelper.isKritzelEmbeddedObject(hoveredObject) &&
-      KritzelWheelHelper.shouldKeepWheelInDynamicObject(ev, hoveredObject)
+      ObjectHelper.isUpdrawEmbeddedObject(hoveredObject) &&
+      UpdrawWheelHelper.shouldKeepWheelInDynamicObject(ev, hoveredObject)
     ) {
       return;
     }
@@ -571,8 +571,8 @@ export class KritzelEngine implements KritzelEngineHost {
       return;
     }
 
-    if (KritzelDevicesHelper.isTouchDevice()) {
-      KritzelEventHelper.onLongPress(ev, (event: PointerEvent) => this.longpress.emit(event));
+    if (UpdrawDevicesHelper.isTouchDevice()) {
+      UpdrawEventHelper.onLongPress(ev, (event: PointerEvent) => this.longpress.emit(event));
     }
 
     this.host.setPointerCapture(ev.pointerId);
@@ -681,7 +681,7 @@ export class KritzelEngine implements KritzelEngineHost {
     }
 
     const object = this.core.store.objects.findById(objectElement.id);
-    if (!object || !ObjectHelper.isKritzelEmbeddedObject(object)) {
+    if (!object || !ObjectHelper.isUpdrawEmbeddedObject(object)) {
       return false;
     }
 
@@ -863,7 +863,7 @@ export class KritzelEngine implements KritzelEngineHost {
     // Check if event path includes a dialog (works across Shadow DOM boundaries)
     const isInsideDialog = path.some((el: EventTarget) => {
       if (!(el instanceof HTMLElement)) return false;
-      return el.tagName === 'DIALOG' || el.tagName === 'KRITZEL-DIALOG' || el.getAttribute?.('role') === 'dialog' || el.getAttribute?.('role') === 'alertdialog';
+      return el.tagName === 'DIALOG' || el.tagName === 'UPDRAW-DIALOG' || el.getAttribute?.('role') === 'dialog' || el.getAttribute?.('role') === 'alertdialog';
     });
 
     if (isInsideDialog) {
@@ -891,7 +891,7 @@ export class KritzelEngine implements KritzelEngineHost {
   /**
    * Registers a new drawing tool with the engine.
    * @param toolName - Unique identifier for the tool (e.g., 'brush', 'eraser').
-   * @param toolClass - Constructor class extending `KritzelBaseTool`.
+   * @param toolClass - Constructor class extending `UpdrawBaseTool`.
    * @param toolConfig - Optional initial configuration to apply to the tool instance.
    * @returns The registered tool instance, or `null` if registration failed.
    */
@@ -899,8 +899,8 @@ export class KritzelEngine implements KritzelEngineHost {
   async registerTool(
     toolName: string,
     toolClass: any,
-    toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
-  ): Promise<KritzelBaseTool | null> {
+    toolConfig?: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig,
+  ): Promise<UpdrawBaseTool | null> {
     if (typeof toolClass !== 'function') {
       console.error(`Failed to register tool "${toolName}": Tool class must be a constructor function`);
       return null;
@@ -925,7 +925,7 @@ export class KritzelEngine implements KritzelEngineHost {
     return Promise.resolve(registeredTool);
   }
 
-  private async activateTool(tool: KritzelBaseTool): Promise<void> {
+  private async activateTool(tool: UpdrawBaseTool): Promise<void> {
     if (this.core.store.state.activeTool === tool) {
       return;
     }
@@ -944,7 +944,7 @@ export class KritzelEngine implements KritzelEngineHost {
   async setActiveTool(toolName: string): Promise<void> {
     const tool = this.core.toolRegistry.getTool(toolName);
     if (!tool) {
-      console.warn(`[KritzelEngine] No tool registered with name: ${toolName}`);
+      console.warn(`[UpdrawEngine] No tool registered with name: ${toolName}`);
       return;
     }
     await this.activateTool(tool);
@@ -996,7 +996,7 @@ export class KritzelEngine implements KritzelEngineHost {
         type: 'error',
         message: 'Clipboard read permission is required to paste content. Please grant permission and try again.',
         id: ObjectHelper.generateUUID(),
-      } as KritzelNotification);
+      } as UpdrawNotification);
 
       return;
     }
@@ -1010,7 +1010,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
-  async bringForward(object?: KritzelBaseObject<any>) {
+  async bringForward(object?: UpdrawBaseObject<any>) {
     this.core.bringForward(object);
   }
 
@@ -1020,7 +1020,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
-  async sendBackward(object?: KritzelBaseObject<any>) {
+  async sendBackward(object?: UpdrawBaseObject<any>) {
     this.core.sendBackward(object);
   }
 
@@ -1031,7 +1031,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
-  async bringToFront(object?: KritzelBaseObject<any>) {
+  async bringToFront(object?: UpdrawBaseObject<any>) {
     this.core.bringToFront(object);
   }
 
@@ -1042,7 +1042,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
-  async sendToBack(object?: KritzelBaseObject<any>) {
+  async sendToBack(object?: UpdrawBaseObject<any>) {
     this.core.sendToBack(object);
   }
 
@@ -1051,12 +1051,12 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param alignment - The alignment direction (e.g., `CenterHorizontal`, `StartVertical`).
    */
   @Method()
-  async alignObjects(alignment: KritzelAlignment) {
+  async alignObjects(alignment: UpdrawAlignment) {
     this.core.alignObjects(alignment);
   }
 
   /**
-   * Creates a group (`KritzelGroup`) from the given objects. Requires at least two objects. The grouped objects
+   * Creates a group (`UpdrawGroup`) from the given objects. Requires at least two objects. The grouped objects
    * become one layer at the position of the topmost object, as a single undoable step.
    *
    * Objects are resolved by id, so stale references work. Objects that are not in the active workspace are
@@ -1070,7 +1070,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns The created group, or `null` (with a console warning) when fewer than two objects could be grouped.
    */
   @Method()
-  async group(objects: KritzelBaseObject<any>[]): Promise<KritzelGroup | null> {
+  async group(objects: UpdrawBaseObject<any>[]): Promise<UpdrawGroup | null> {
     return this.core.group(objects);
   }
 
@@ -1078,16 +1078,16 @@ export class KritzelEngine implements KritzelEngineHost {
    * Ungroups the given groups. Their children become individual objects again and keep their stacking order;
    * the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step.
    *
-   * Groups are resolved by id, so stale references work. Entries that are not a `KritzelGroup` or not in the
+   * Groups are resolved by id, so stale references work. Entries that are not an `UpdrawGroup` or not in the
    * active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their
    * children.
    *
-   * To ungroup the current selection, pass the `KritzelGroup` objects from `await getSelectedObjects()`.
+   * To ungroup the current selection, pass the `UpdrawGroup` objects from `await getSelectedObjects()`.
    * @param groups - The groups to ungroup.
    * @returns The extracted children.
    */
   @Method()
-  async ungroup(groups: KritzelGroup[]): Promise<KritzelBaseObject<any>[]> {
+  async ungroup(groups: UpdrawGroup[]): Promise<UpdrawBaseObject<any>[]> {
     return this.core.ungroup(groups);
   }
 
@@ -1108,7 +1108,7 @@ export class KritzelEngine implements KritzelEngineHost {
   async hideContextMenu() {
     this.core.store.state.pointers.clear();
     this.core.store.state.isContextMenuVisible = false;
-    this.core.store.objects?.remove(o => o instanceof KritzelSelectionBox);
+    this.core.store.objects?.remove(o => o instanceof UpdrawSelectionBox);
     this.core.store.setSelectionBox(null);
     this.core.store.objects?.clearLocalSelectionBox();
     this.core.store.state.isSelecting = false;
@@ -1154,14 +1154,14 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns The matching object, or `null` if not found.
    */
   @Method()
-  async getObjectById<T extends KritzelBaseObject>(id: string): Promise<T | null> {
+  async getObjectById<T extends UpdrawBaseObject>(id: string): Promise<T | null> {
     const object = this.core.store.allObjects.find(obj => obj.id === id) as T | undefined;
     return object || null;
   }
 
   /** Returns all objects on the canvas across all layers. */
   @Method()
-  async getAllObjects<T extends KritzelBaseObject>(): Promise<T[]> {
+  async getAllObjects<T extends UpdrawBaseObject>(): Promise<T[]> {
     return this.core.store.allObjects as T[];
   }
 
@@ -1174,17 +1174,17 @@ export class KritzelEngine implements KritzelEngineHost {
    * @example
    * ```ts
    * // Find all text objects
-   * const texts = await engine.findObjects(obj => obj.__class__ === 'KritzelText');
+   * const texts = await engine.findObjects(obj => obj.__class__ === 'UpdrawText');
    *
    * // Find objects at a point
    * const hits = await engine.findObjects(obj => obj.hitTest(100, 200));
    *
    * // Combine criteria
-   * const filtered = await engine.findObjects(obj => obj.__class__ === 'KritzelPath' && obj.opacity < 0.5);
+   * const filtered = await engine.findObjects(obj => obj.__class__ === 'UpdrawPath' && obj.opacity < 0.5);
    * ```
    */
   @Method()
-  async findObjects<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean): Promise<T[]> {
+  async findObjects<T extends UpdrawBaseObject>(predicate: (obj: UpdrawBaseObject<Element>) => boolean): Promise<T[]> {
     return this.core.store.allNonSelectionObjects.filter(predicate) as T[];
   }
 
@@ -1200,13 +1200,13 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns The added object.
    */
   @Method()
-  async addObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
+  async addObject<T extends UpdrawBaseObject>(object: T): Promise<T | null> {
     this.core.deselectAllObjects();
 
     object._core = this.core;
     object.scale = object.scale ?? this.core.store.state.scale;
 
-    if (object instanceof KritzelImage) {
+    if (object instanceof UpdrawImage) {
       await object.prepareForInsert();
     }
 
@@ -1216,7 +1216,7 @@ export class KritzelEngine implements KritzelEngineHost {
 
     // Wait for the object to be fully rendered and mounted before resolving.
     // First rAF: Stencil processes the render and calls ref callbacks (mount).
-    // Second rAF: mounted objects (e.g. KritzelText) run adjustSizeOnInput
+    // Second rAF: mounted objects (e.g. UpdrawText) run adjustSizeOnInput
     // to compute actual dimensions from the DOM.
     await new Promise<void>(resolve => {
       requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
@@ -1237,20 +1237,20 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns The added objects.
    */
   @Method()
-  async addObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]> {
+  async addObjects<T extends UpdrawBaseObject>(objects: T[]): Promise<T[]> {
     if (objects.length === 0) {
       return [];
     }
 
     for (const object of objects) {
       object._core = this.core;
-      if (object instanceof KritzelImage) {
+      if (object instanceof UpdrawImage) {
         await object.prepareForInsert();
       }
     }
 
     // Objects of one batch appear one after another; big batches appear at once, without the animation.
-    const appears = objects.length <= KRITZEL_OBJECT_APPEAR_MAX_BATCH;
+    const appears = objects.length <= UPDRAW_OBJECT_APPEAR_MAX_BATCH;
     this.core.store.objects.transaction(() => {
       objects.forEach((object, index) => {
         const descendants = this.core.prepareObjectForInsert(object);
@@ -1277,7 +1277,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns The updated object.
    */
   @Method()
-  async updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null> {
+  async updateObject<T extends UpdrawBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null> {
     this.core.deselectAllObjects();
 
     this.core.updateObject(object, updatedProperties);
@@ -1294,7 +1294,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns The removed object.
    */
   @Method()
-  async removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
+  async removeObject<T extends UpdrawBaseObject>(object: T): Promise<T | null> {
     const objectsMap = this.core.store.objects;
     if (!objectsMap) {
       return null;
@@ -1319,7 +1319,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns The removed objects.
    */
   @Method()
-  async removeObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]> {
+  async removeObjects<T extends UpdrawBaseObject>(objects: T[]): Promise<T[]> {
     const objectsMap = this.core.store.objects;
     if (!objectsMap || objects.length === 0) {
       return [];
@@ -1340,14 +1340,14 @@ export class KritzelEngine implements KritzelEngineHost {
 
   /** Returns the currently selected objects. Returns an empty array if nothing is selected. */
   @Method()
-  async getSelectedObjects(): Promise<KritzelBaseObject<any>[]> {
+  async getSelectedObjects(): Promise<UpdrawBaseObject<any>[]> {
     const selectionGroup = this.core.store.selectionGroup;
     return selectionGroup ? selectionGroup.objects : [];
   }
 
   /** Returns all registered keyboard shortcuts (without action/condition) for display in a help UI. */
   @Method()
-  async getDisplayableShortcuts(): Promise<Omit<KritzelShortcut, 'action' | 'condition'>[]> {
+  async getDisplayableShortcuts(): Promise<Omit<UpdrawShortcut, 'action' | 'condition'>[]> {
     return this.keyHandler.getDisplayableShortcuts();
   }
 
@@ -1356,7 +1356,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param objects - The objects to select.
    */
   @Method()
-  async selectObjects(objects: KritzelBaseObject[]) {
+  async selectObjects(objects: UpdrawBaseObject[]) {
     const selectionTool = this.core.toolRegistry.getTool('selection');
     if (!selectionTool) {
       return;
@@ -1394,7 +1394,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns The centered object.
    */
   @Method()
-  async centerObjectInViewport(object: KritzelBaseObject) {
+  async centerObjectInViewport(object: UpdrawBaseObject) {
     object.centerInViewport();
 
     this.core.updateObject(object, object);
@@ -1409,7 +1409,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param object - The object whose center the viewport should pan to.
    */
   @Method()
-  async panToObject(object: KritzelBaseObject): Promise<void> {
+  async panToObject(object: UpdrawBaseObject): Promise<void> {
     this.viewport.panTo(object.centerX, object.centerY);
   }
 
@@ -1442,7 +1442,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns `true` if objects were provided and the viewport was adjusted, `false` otherwise.
    */
   @Method()
-  async centerObjects(objects: KritzelBaseObject[], animate = true): Promise<boolean> {
+  async centerObjects(objects: UpdrawBaseObject[], animate = true): Promise<boolean> {
     return this.viewport.centerFitObjects(objects, animate);
   }
 
@@ -1504,7 +1504,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns The current viewport state.
    */
   @Method()
-  async getViewport(): Promise<KritzelViewportState> {
+  async getViewport(): Promise<UpdrawViewportState> {
     return this.viewport.getViewport();
   }
 
@@ -1532,18 +1532,18 @@ export class KritzelEngine implements KritzelEngineHost {
 
   /** Returns all objects currently visible within the viewport bounds. */
   @Method()
-  async getObjectsInViewport(): Promise<KritzelBaseObject[]> {
+  async getObjectsInViewport(): Promise<UpdrawBaseObject[]> {
     return this.core.getObjectsInViewport();
   }
 
   /**
    * Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to
    * one editor at a time; an agent of an editor that was removed from the page moves here.
-   * @param agent - A `new KritzelAgent({ name })`.
+   * @param agent - A `new UpdrawAgent({ name })`.
    * @returns The same agent.
    */
   @Method()
-  async addAgent(agent: KritzelAgent): Promise<KritzelAgent> {
+  async addAgent(agent: UpdrawAgent): Promise<UpdrawAgent> {
     return this.core.agentManager.add(agent);
   }
 
@@ -1554,7 +1554,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns `false` if the agent was not added.
    */
   @Method()
-  async removeAgent(agent: KritzelAgent | string): Promise<boolean> {
+  async removeAgent(agent: UpdrawAgent | string): Promise<boolean> {
     return this.core.agentManager.remove(agent);
   }
 
@@ -1563,19 +1563,19 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param id - The agent's ID.
    */
   @Method()
-  async getAgent(id: string): Promise<KritzelAgent | null> {
+  async getAgent(id: string): Promise<UpdrawAgent | null> {
     return this.core.agentManager.get(id);
   }
 
   /** Returns the added agents. */
   @Method()
-  async getAgents(): Promise<KritzelAgent[]> {
+  async getAgents(): Promise<UpdrawAgent[]> {
     return this.core.agentManager.getAll();
   }
 
   /** Returns the agents of collaborators, as shared through presence. */
   @Method()
-  async getRemoteAgents(): Promise<KritzelRemoteAgentPresence[]> {
+  async getRemoteAgents(): Promise<UpdrawRemoteAgentPresence[]> {
     return this.core.remoteAgentManager.getPresences();
   }
 
@@ -1588,7 +1588,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param options - `selector` limits picking to matching elements, `color` sets the highlight color.
    */
   @Method()
-  async setObjectElementPicking(objectId: string, enabled: boolean, options: KritzelObjectElementPickingOptions = {}): Promise<void> {
+  async setObjectElementPicking(objectId: string, enabled: boolean, options: UpdrawObjectElementPickingOptions = {}): Promise<void> {
     this.getElementAwareObjectOrThrow(objectId).setElementPicking(enabled, options);
   }
 
@@ -1599,7 +1599,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param highlights - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted.
    */
   @Method()
-  async highlightObjectElements(objectId: string, highlights: KritzelObjectElementHighlight[]): Promise<void> {
+  async highlightObjectElements(objectId: string, highlights: UpdrawObjectElementHighlight[]): Promise<void> {
     this.getElementAwareObjectOrThrow(objectId).setElementHighlights(highlights);
   }
 
@@ -1614,7 +1614,7 @@ export class KritzelEngine implements KritzelEngineHost {
       return;
     }
     this.core.store.objects?.allObjects().forEach(object => {
-      if (ObjectHelper.isKritzelElementAwareObject(object) && object.getElementHighlights().length > 0) {
+      if (ObjectHelper.isUpdrawElementAwareObject(object) && object.getElementHighlights().length > 0) {
         object.setElementHighlights([]);
       }
     });
@@ -1624,13 +1624,13 @@ export class KritzelEngine implements KritzelEngineHost {
    * Describes the elements inside an object's content that match a CSS selector, in document order.
    * The object must be mounted, which it is while it is in or near the viewport.
    * @param objectId - The object ID.
-   * @param selector - A CSS selector, e.g. `'button'` or `'[data-kritzel-id]'`.
+   * @param selector - A CSS selector, e.g. `'button'` or `'[data-updraw-id]'`.
    * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
    * @returns The matching elements, each with a `selector` that can be used to highlight it or point an agent's cursor
    * at it with `agent.moveTo({ objectId, selector })`.
    */
   @Method()
-  async queryObjectElements(objectId: string, selector: string, limit?: number): Promise<KritzelObjectElementInfo[]> {
+  async queryObjectElements(objectId: string, selector: string, limit?: number): Promise<UpdrawObjectElementInfo[]> {
     return this.getElementAwareObjectOrThrow(objectId).queryElements(selector, limit);
   }
 
@@ -1658,14 +1658,14 @@ export class KritzelEngine implements KritzelEngineHost {
     const screenshotOptions: Record<string, unknown> = {
       filter: (node: HTMLElement) => {
         // Exclude the context menu, debug panel, and awareness cursors from the screenshot
-        if (node.tagName === 'KRITZEL-CONTEXT-MENU') {
+        if (node.tagName === 'UPDRAW-CONTEXT-MENU') {
           return false;
         }
-        if (node.tagName === 'KRITZEL-AWARENESS-CURSORS') {
+        if (node.tagName === 'UPDRAW-AWARENESS-CURSORS') {
           return false;
         }
         // Agent cursors and their selections are UI, not content
-        if (node.tagName === 'KRITZEL-AGENTIC-CURSORS') {
+        if (node.tagName === 'UPDRAW-AGENTIC-CURSORS') {
           return false;
         }
         if (node.classList && node.classList.contains('debug-panel')) {
@@ -1753,7 +1753,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * Only returns formats when exactly one object is selected.
    */
   @Method()
-  async getSelectedObjectSupportedExportFormats(): Promise<KritzelObjectExportFormat[]> {
+  async getSelectedObjectSupportedExportFormats(): Promise<UpdrawObjectExportFormat[]> {
     const selected = this.getSingleSelectedExportableObject();
     if (!selected) {
       return [];
@@ -1767,7 +1767,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * Returns false when none or multiple objects are selected.
    */
   @Method()
-  async canExportSelectedObjectAs(format: KritzelObjectExportFormat): Promise<boolean> {
+  async canExportSelectedObjectAs(format: UpdrawObjectExportFormat): Promise<boolean> {
     const selected = this.getSingleSelectedExportableObject();
     if (!selected) {
       return false;
@@ -1781,7 +1781,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * Only supports single selection.
    */
   @Method()
-  async exportSelectedObject(format: KritzelObjectExportFormat): Promise<void> {
+  async exportSelectedObject(format: UpdrawObjectExportFormat): Promise<void> {
     const selected = this.getSingleSelectedExportableObject();
     if (!selected) {
       return;
@@ -1795,7 +1795,7 @@ export class KritzelEngine implements KritzelEngineHost {
       }
 
       const activeWorkspaceName = this.core.store.state?.activeWorkspace?.name || 'workspace';
-      const objectName = selected.__class__.replace(/^Kritzel/, '').toLowerCase() || 'object';
+      const objectName = selected.__class__.replace(/^Updraw/, '').toLowerCase() || 'object';
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const filename = `${activeWorkspaceName}-${objectName}-${timestamp}.${format}`;
 
@@ -1851,7 +1851,7 @@ export class KritzelEngine implements KritzelEngineHost {
     const data = JSON.parse(json) as WorkspaceJsonExportPayload;
 
     // Validate the import data
-    if (!data.__class__ || data.__class__ !== 'KritzelWorkspace') {
+    if (!data.__class__ || data.__class__ !== 'UpdrawWorkspace') {
       throw new Error('Invalid workspace data: missing or incorrect __class__ identifier');
     }
 
@@ -1867,7 +1867,7 @@ export class KritzelEngine implements KritzelEngineHost {
     const importedName = this.getImportedWorkspaceName(data.name);
     const importedViewport = this.getImportedWorkspaceViewport(data.viewport);
 
-    const newWorkspace = new KritzelWorkspace({
+    const newWorkspace = new UpdrawWorkspace({
       id: newWorkspaceId,
       name: importedName,
       viewport: importedViewport,
@@ -1884,9 +1884,9 @@ export class KritzelEngine implements KritzelEngineHost {
 
     // Revive and add objects to the new workspace
     if (data.objects && Array.isArray(data.objects)) {
-      const reviver = new KritzelReviver(this.core);
+      const reviver = new UpdrawReviver(this.core);
       for (const objData of data.objects) {
-        const revivedObj = reviver.revive<KritzelBaseObject>(objData);
+        const revivedObj = reviver.revive<UpdrawBaseObject>(objData);
         if (revivedObj) {
           // Update workspaceId to the new workspace's ID
           revivedObj.workspaceId = newWorkspaceId;
@@ -1915,7 +1915,7 @@ export class KritzelEngine implements KritzelEngineHost {
     const data = JSON.parse(json) as WorkspaceJsonExportPayload;
 
     // Validate the import data
-    if (!data.__class__ || data.__class__ !== 'KritzelWorkspace') {
+    if (!data.__class__ || data.__class__ !== 'UpdrawWorkspace') {
       throw new Error('Invalid workspace data: missing or incorrect __class__ identifier');
     }
 
@@ -1936,12 +1936,12 @@ export class KritzelEngine implements KritzelEngineHost {
 
     // Revive and add objects to the current workspace
     if (data.objects && Array.isArray(data.objects)) {
-      const reviver = new KritzelReviver(this.core);
+      const reviver = new UpdrawReviver(this.core);
       const objectsMap = this.core.store.objects;
 
       const insertRevivedObjects = () => {
         for (const objData of data.objects!) {
-          const revivedObj = reviver.revive<KritzelBaseObject>(objData);
+          const revivedObj = reviver.revive<UpdrawBaseObject>(objData);
           if (!revivedObj) {
             continue;
           }
@@ -1984,7 +1984,7 @@ export class KritzelEngine implements KritzelEngineHost {
       }
 
       const maybeImage = serializedObject as { __class__?: string; assetId?: unknown };
-      if (maybeImage.__class__ === 'KritzelImage' && typeof maybeImage.assetId === 'string' && maybeImage.assetId.length > 0) {
+      if (maybeImage.__class__ === 'UpdrawImage' && typeof maybeImage.assetId === 'string' && maybeImage.assetId.length > 0) {
         assetIds.add(maybeImage.assetId);
       }
     }
@@ -1995,7 +1995,7 @@ export class KritzelEngine implements KritzelEngineHost {
         const blob = await this.core.assetResolver.fetchBlob(assetId);
         assets[assetId] = await this.blobToDataUrl(blob);
       } catch (error) {
-        console.warn(`[Kritzel] Failed to embed asset ${assetId} in portable workspace export:`, error);
+        console.warn(`[Updraw] Failed to embed asset ${assetId} in portable workspace export:`, error);
       }
     }
 
@@ -2021,7 +2021,7 @@ export class KritzelEngine implements KritzelEngineHost {
           kind: 'image',
         });
       } catch (error) {
-        console.warn(`[Kritzel] Failed to restore embedded asset ${assetId} from portable workspace import:`, error);
+        console.warn(`[Updraw] Failed to restore embedded asset ${assetId} from portable workspace import:`, error);
       }
     }
   }
@@ -2047,21 +2047,21 @@ export class KritzelEngine implements KritzelEngineHost {
     link.click();
   }
 
-  private getSingleSelectedExportableObject(): (KritzelBaseObject & KritzelExportable) | null {
+  private getSingleSelectedExportableObject(): (UpdrawBaseObject & UpdrawExportable) | null {
     const selectedObjects = this.core.store.selectionGroup?.objects ?? [];
     if (selectedObjects.length !== 1) {
       return null;
     }
 
     const [selected] = selectedObjects;
-    if (!ObjectHelper.isKritzelExportable(selected)) {
+    if (!ObjectHelper.isUpdrawExportable(selected)) {
       return null;
     }
 
-    return selected as KritzelBaseObject & KritzelExportable;
+    return selected as UpdrawBaseObject & UpdrawExportable;
   }
 
-  private getObjectExportContext(): KritzelObjectExportContext {
+  private getObjectExportContext(): UpdrawObjectExportContext {
     return {
       getObjectAsSvgDataUrl: async (object, options) => {
         const svg = await this.getObjectAsSvgMarkup(object, options?.rasterSafeForCanvas ?? false);
@@ -2074,9 +2074,9 @@ export class KritzelEngine implements KritzelEngineHost {
     };
   }
 
-  private async getObjectAsSvgMarkup(object: KritzelBaseObject, rasterSafeForCanvas: boolean): Promise<string | null> {
-    const imageDataUrls = await KritzelSvgExportHelper.resolveImageDataUrls([object], this.core.assetResolver);
-    const svg = KritzelSvgExportHelper.generateSvg([object], {
+  private async getObjectAsSvgMarkup(object: UpdrawBaseObject, rasterSafeForCanvas: boolean): Promise<string | null> {
+    const imageDataUrls = await UpdrawSvgExportHelper.resolveImageDataUrls([object], this.core.assetResolver);
+    const svg = UpdrawSvgExportHelper.generateSvg([object], {
       theme: this.theme,
       rasterSafeForCanvas,
       imageDataUrls,
@@ -2280,7 +2280,7 @@ export class KritzelEngine implements KritzelEngineHost {
   async setActiveWorkspace(id: string): Promise<void> {
     const workspace = this.findVisibleWorkspace(id);
     if (!workspace) {
-      console.warn(`[KritzelEngine] No workspace found with ID: ${id}`);
+      console.warn(`[UpdrawEngine] No workspace found with ID: ${id}`);
       return;
     }
 
@@ -2294,7 +2294,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns The created workspace.
    */
   @Method()
-  async createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null> {
+  async createWorkspace(workspace: UpdrawWorkspace): Promise<UpdrawWorkspace | null> {
     const createdWorkspace = await this.core.createWorkspace(workspace);
     this.syncVisibleWorkspacesToState();
     this.workspacesChange.emit(this.getVisibleWorkspaces());
@@ -2315,9 +2315,9 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param workspace - The workspace describing the desired state.
    */
   @Method()
-  async updateWorkspace(workspace: KritzelWorkspace): Promise<void> {
+  async updateWorkspace(workspace: UpdrawWorkspace): Promise<void> {
     if (this.isWorkspaceCatalogControlled() && !this.findVisibleWorkspace(workspace.id)) {
-      console.warn(`[KritzelEngine] Cannot update workspace outside the controlled catalog: ${workspace.id}`);
+      console.warn(`[UpdrawEngine] Cannot update workspace outside the controlled catalog: ${workspace.id}`);
       return;
     }
 
@@ -2349,9 +2349,9 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param workspace - The workspace to delete.
    */
   @Method()
-  async deleteWorkspace(workspace: KritzelWorkspace): Promise<void> {
+  async deleteWorkspace(workspace: UpdrawWorkspace): Promise<void> {
     if (this.isWorkspaceCatalogControlled() && !this.findVisibleWorkspace(workspace.id)) {
-      console.warn(`[KritzelEngine] Cannot delete workspace outside the controlled catalog: ${workspace.id}`);
+      console.warn(`[UpdrawEngine] Cannot delete workspace outside the controlled catalog: ${workspace.id}`);
       return;
     }
 
@@ -2362,13 +2362,13 @@ export class KritzelEngine implements KritzelEngineHost {
 
   /** Returns all available workspaces. */
   @Method()
-  async getWorkspaces(): Promise<KritzelWorkspace[]> {
+  async getWorkspaces(): Promise<UpdrawWorkspace[]> {
     return this.getVisibleWorkspaces();
   }
 
   /** Returns the currently active workspace. */
   @Method()
-  async getActiveWorkspace(): Promise<KritzelWorkspace> {
+  async getActiveWorkspace(): Promise<UpdrawWorkspace> {
     const activeWorkspace = this.core.store.state.activeWorkspace;
     if (!activeWorkspace) {
       throw new Error('No active workspace is loaded');
@@ -2399,7 +2399,7 @@ export class KritzelEngine implements KritzelEngineHost {
     let workspace = this.core.getWorkspaces().find(w => w.id === workspaceId);
 
     if (!workspace) {
-      workspace = new KritzelWorkspace({ id: workspaceId, name: 'Shared Workspace' });
+      workspace = new UpdrawWorkspace({ id: workspaceId, name: 'Shared Workspace' });
       workspace.isPublic = true;
       this.core.createWorkspace(workspace);
     } else {
@@ -2410,7 +2410,7 @@ export class KritzelEngine implements KritzelEngineHost {
     this.workspacesChange.emit(this.getVisibleWorkspaces());
 
     if (this.isWorkspaceCatalogControlled() && !this.findVisibleWorkspace(workspace.id)) {
-      console.warn(`[KritzelEngine] Cannot load shared workspace outside the controlled catalog: ${workspace.id}`);
+      console.warn(`[UpdrawEngine] Cannot load shared workspace outside the controlled catalog: ${workspace.id}`);
       return;
     }
 
@@ -2443,8 +2443,8 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param settings - The settings configuration to persist.
    */
   @Method()
-  async saveSettings(settings: KritzelSettingsConfig): Promise<void> {
-    const key = this.core.getStorageKey('kritzel-settings');
+  async saveSettings(settings: UpdrawSettingsConfig): Promise<void> {
+    const key = this.core.getStorageKey('updraw-settings');
     localStorage.setItem(key, JSON.stringify(settings));
   }
 
@@ -2453,14 +2453,14 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns The stored settings, or null if nothing is stored or the value is invalid.
    */
   @Method()
-  async loadSettings(): Promise<Partial<KritzelSettingsConfig> | null> {
-    const key = this.core.getStorageKey('kritzel-settings');
+  async loadSettings(): Promise<Partial<UpdrawSettingsConfig> | null> {
+    const key = this.core.getStorageKey('updraw-settings');
     const stored = localStorage.getItem(key);
     if (!stored) {
       return null;
     }
     try {
-      return JSON.parse(stored) as Partial<KritzelSettingsConfig>;
+      return JSON.parse(stored) as Partial<UpdrawSettingsConfig>;
     } catch {
       return null;
     }
@@ -2471,7 +2471,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param locales - The locale definitions to register.
    */
   @Method()
-  async registerLocales(locales: KritzelLocale[]): Promise<void> {
+  async registerLocales(locales: UpdrawLocale[]): Promise<void> {
     this.core.localizationManager.registerLocales(locales);
     this.core.localizationManager.setLocale(this.core.localizationManager.currentLocale);
   }
@@ -2482,7 +2482,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param locales - The full locale catalog, or `undefined` for built-ins.
    */
   @Method()
-  async configureLocales(locales?: KritzelLocale[]): Promise<void> {
+  async configureLocales(locales?: UpdrawLocale[]): Promise<void> {
     this.core.localizationManager.configureLocales(locales);
     this.core.localizationManager.setLocale(this.core.localizationManager.resolveActiveLocale(this.locale));
   }
@@ -2527,7 +2527,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @param vars - Optional values for `{placeholder}` interpolation.
    */
   @Method()
-  async t(key: KritzelTermKey, vars?: KritzelTermVars): Promise<string> {
+  async t(key: UpdrawTermKey, vars?: UpdrawTermVars): Promise<string> {
     return this.core.localizationManager.translate(key, vars);
   }
 
@@ -2536,14 +2536,14 @@ export class KritzelEngine implements KritzelEngineHost {
    * Useful for UI layers that need to localize many strings at once.
    */
   @Method()
-  async getResolvedTerms(): Promise<Partial<Record<KritzelTermKey, string>>> {
+  async getResolvedTerms(): Promise<Partial<Record<UpdrawTermKey, string>>> {
     return this.core.localizationManager.getAllTerms();
   }
 
-  core: KritzelCore;
-  viewport!: KritzelViewport;
-  contextMenuHandler!: KritzelContextMenuHandler;
-  keyHandler!: KritzelKeyHandler;
+  core: UpdrawCore;
+  viewport!: UpdrawViewport;
+  contextMenuHandler!: UpdrawContextMenuHandler;
+  keyHandler!: UpdrawKeyHandler;
 
   private _lastHadSelectionGroup: boolean = false;
   private _isViewportReady: boolean = false;
@@ -2573,7 +2573,7 @@ export class KritzelEngine implements KritzelEngineHost {
   private _sceneBootstrapOpacity: number = 1;
   private _sceneBootstrapTransitionEnabled: boolean = false;
   private _sceneBootstrapTransitionTimer: ReturnType<typeof setTimeout> | null = null;
-  private readonly _defaultUndoState: KritzelUndoState = {
+  private readonly _defaultUndoState: UpdrawUndoState = {
     canUndo: false,
     canRedo: false,
     undoStackSize: 0,
@@ -2582,7 +2582,7 @@ export class KritzelEngine implements KritzelEngineHost {
 
   /** Returns a tool registered in this engine instance. */
   @Method()
-  async getTool(toolName: string): Promise<KritzelBaseTool | null> {
+  async getTool(toolName: string): Promise<UpdrawBaseTool | null> {
     await this.registerConfiguredTools();
     return this.core.toolRegistry.getTool(toolName);
   }
@@ -2598,7 +2598,7 @@ export class KritzelEngine implements KritzelEngineHost {
         for (const definition of this.tools) {
           let toolClass = definition.tool;
           if (typeof toolClass !== 'function') {
-            toolClass = toolClass.constructor as KritzelToolDefinition['tool'];
+            toolClass = toolClass.constructor as UpdrawToolDefinition['tool'];
           }
 
           await this.registerTool(definition.name, toolClass, definition.config);
@@ -2650,7 +2650,7 @@ export class KritzelEngine implements KritzelEngineHost {
     });
   }
 
-  private applyToolConfig(tool: KritzelBaseTool, toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig): void {
+  private applyToolConfig(tool: UpdrawBaseTool, toolConfig: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig): void {
     const normalizedToolConfig = this.normalizeToolConfig(toolConfig);
 
     Object.entries(normalizedToolConfig).forEach(([key, value]) => {
@@ -2659,8 +2659,8 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   private normalizeToolConfig(
-    toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
-  ): KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig {
+    toolConfig: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig,
+  ): UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig {
     if (!this.isTextToolConfig(toolConfig)) {
       return toolConfig;
     }
@@ -2672,20 +2672,20 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   private isTextToolConfig(
-    toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
-  ): toolConfig is KritzelTextToolConfig {
+    toolConfig: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig,
+  ): toolConfig is UpdrawTextToolConfig {
     return 'fontFamily' in toolConfig && 'size' in toolConfig && 'color' in toolConfig;
   }
 
   /** Built-in tool classes of this bundle keyed by their tool type. */
-  private static readonly BUILT_IN_TOOL_CLASSES: Partial<Record<KritzelToolType, new (core: KritzelCore) => KritzelBaseTool>> = {
-    selection: KritzelSelectionTool,
-    brush: KritzelBrushTool,
-    eraser: KritzelEraserTool,
-    line: KritzelLineTool,
-    shape: KritzelShapeTool,
-    text: KritzelTextTool,
-    image: KritzelImageTool,
+  private static readonly BUILT_IN_TOOL_CLASSES: Partial<Record<UpdrawToolType, new (core: UpdrawCore) => UpdrawBaseTool>> = {
+    selection: UpdrawSelectionTool,
+    brush: UpdrawBrushTool,
+    eraser: UpdrawEraserTool,
+    line: UpdrawLineTool,
+    shape: UpdrawShapeTool,
+    text: UpdrawTextTool,
+    image: UpdrawImageTool,
   };
 
   /**
@@ -2693,26 +2693,26 @@ export class KritzelEngine implements KritzelEngineHost {
    * Classes from another compiled copy of the library (dual-package hazard, e.g. built-ins
    * re-exported by a framework wrapper) would otherwise break `instanceof` checks.
    */
-  private resolveToolClass(toolClass: new (core: KritzelCore) => KritzelBaseTool): new (core: KritzelCore) => KritzelBaseTool {
-    if (toolClass.prototype instanceof KritzelBaseTool) {
+  private resolveToolClass(toolClass: new (core: UpdrawCore) => UpdrawBaseTool): new (core: UpdrawCore) => UpdrawBaseTool {
+    if (toolClass.prototype instanceof UpdrawBaseTool) {
       return toolClass;
     }
 
     try {
       const probe = new toolClass(this.core);
-      return KritzelEngine.BUILT_IN_TOOL_CLASSES[probe.toolType] ?? toolClass;
+      return UpdrawEngine.BUILT_IN_TOOL_CLASSES[probe.toolType] ?? toolClass;
     } catch {
       return toolClass;
     }
   }
 
   /** The session `chatSession` is bound to; binding again is a no-op. */
-  private _boundChatSession: KritzelChatSession | null = null;
+  private _boundChatSession: UpdrawChatSession | null = null;
 
   private bindChatSession(): void {
-    const next = isKritzelChatSession(this.chatSession) ? this.chatSession : null;
+    const next = isUpdrawChatSession(this.chatSession) ? this.chatSession : null;
     if (this.chatSession != null && !next) {
-      console.error('[Kritzel] chatSession expects a KritzelChatSession.');
+      console.error('[Updraw] chatSession expects an UpdrawChatSession.');
     }
     const previous = this._boundChatSession;
     if (next && next === previous && next._owner === this.core) {
@@ -2733,7 +2733,7 @@ export class KritzelEngine implements KritzelEngineHost {
       next._attach(this.core);
     } catch (error) {
       this._boundChatSession = null;
-      console.error('[Kritzel] Failed to bind the chat session:', error);
+      console.error('[Updraw] Failed to bind the chat session:', error);
     }
   }
 
@@ -2751,7 +2751,7 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   constructor() {
-    this.core = new KritzelCore(this);
+    this.core = new UpdrawCore(this);
     const emitAgents = () =>
       this.agentsChange?.emit({ agents: [...this.core.agentManager.getPresences(), ...this.core.remoteAgentManager.getPresences()] });
     this.core.agentManager.onChange(emitAgents);
@@ -2783,7 +2783,7 @@ export class KritzelEngine implements KritzelEngineHost {
     // Unmount all remaining dynamic objects
     if (this.core.store.allObjects) {
       this.core.store.allObjects.forEach(object => {
-        if (object instanceof KritzelDynamicObject) {
+        if (object instanceof UpdrawDynamicObject) {
           (object as any).unmount();
         }
       });
@@ -2817,7 +2817,7 @@ export class KritzelEngine implements KritzelEngineHost {
       this.core.themeManager.registerThemes(this.themes);
     }
 
-    const editorElement = this.host.closest('kritzel-editor') as HTMLElement;
+    const editorElement = this.host.closest('updraw-editor') as HTMLElement;
     this.core.themeManager.injectThemeEarly(editorElement || this.host);
 
     this.core.localizationManager.configureLocales(this.locales);
@@ -2842,9 +2842,9 @@ export class KritzelEngine implements KritzelEngineHost {
     // A chatSession set after componentWillLoad but before @Watch handlers run is bound here.
     this.bindChatSession();
     setTimeout(async () => {
-      this.contextMenuHandler = new KritzelContextMenuHandler(this.core, this.globalContextMenuItems ?? [], this.objectContextMenuItems ?? []);
-      this.keyHandler = new KritzelKeyHandler(this.core);
-      this.viewport = new KritzelViewport(this.core, this.host);
+      this.contextMenuHandler = new UpdrawContextMenuHandler(this.core, this.globalContextMenuItems ?? [], this.objectContextMenuItems ?? []);
+      this.keyHandler = new UpdrawKeyHandler(this.core);
+      this.viewport = new UpdrawViewport(this.core, this.host);
       this._isViewportReady = true;
       window.visualViewport?.addEventListener('resize', this.handleVisualViewportResize);
 
@@ -2854,8 +2854,8 @@ export class KritzelEngine implements KritzelEngineHost {
         this.core.cursorManager.setShadowRoot(this.host.shadowRoot);
       }
 
-      // Initialize theme manager with kritzel-editor as target element
-      const editorElement = this.host.closest('kritzel-editor') as HTMLElement;
+      // Initialize theme manager with updraw-editor as target element
+      const editorElement = this.host.closest('updraw-editor') as HTMLElement;
       this.core.themeManager.setTargetElement(editorElement || this.host);
 
       // Initialize sync config and Yjs
@@ -3016,7 +3016,7 @@ export class KritzelEngine implements KritzelEngineHost {
           return;
         }
 
-        console.warn(`[KritzelEngine] No workspace found with ID: ${this.activeWorkspaceId}`);
+        console.warn(`[UpdrawEngine] No workspace found with ID: ${this.activeWorkspaceId}`);
       }
 
       if (visibleWorkspaces.length > 0) {
@@ -3046,7 +3046,7 @@ export class KritzelEngine implements KritzelEngineHost {
     await this.core.appStateMap.whenNetworkSynced();
   }
 
-  private async resolveStartupWorkspace(): Promise<KritzelWorkspace> {
+  private async resolveStartupWorkspace(): Promise<UpdrawWorkspace> {
     if (this.activeWorkspaceId) {
       const workspaceById = this.core.getWorkspaces().find(ws => ws.id === this.activeWorkspaceId);
 
@@ -3105,11 +3105,11 @@ export class KritzelEngine implements KritzelEngineHost {
     return this.workspaces !== undefined;
   }
 
-  private getProvidedWorkspaces(): KritzelWorkspace[] {
+  private getProvidedWorkspaces(): UpdrawWorkspace[] {
     return this.workspaces ?? [];
   }
 
-  private getVisibleWorkspaces(): KritzelWorkspace[] {
+  private getVisibleWorkspaces(): UpdrawWorkspace[] {
     if (!this.isWorkspaceCatalogControlled()) {
       return this.core.getWorkspaces();
     }
@@ -3119,7 +3119,7 @@ export class KritzelEngine implements KritzelEngineHost {
     return this.getProvidedWorkspaces().map(workspace => providerWorkspaces.find(existing => existing.id === workspace.id) ?? workspace);
   }
 
-  private findVisibleWorkspace(workspaceId: string): KritzelWorkspace | undefined {
+  private findVisibleWorkspace(workspaceId: string): UpdrawWorkspace | undefined {
     return this.getVisibleWorkspaces().find(workspace => workspace.id === workspaceId);
   }
 
@@ -3127,7 +3127,7 @@ export class KritzelEngine implements KritzelEngineHost {
     this.core.store.state.workspaces = this.getVisibleWorkspaces();
   }
 
-  private hasWorkspaceMetadataChanged(existingWorkspace: KritzelWorkspace, providedWorkspace: KritzelWorkspace): boolean {
+  private hasWorkspaceMetadataChanged(existingWorkspace: UpdrawWorkspace, providedWorkspace: UpdrawWorkspace): boolean {
     return (
       existingWorkspace.name !== providedWorkspace.name ||
       existingWorkspace.isPublic !== providedWorkspace.isPublic ||
@@ -3137,7 +3137,7 @@ export class KritzelEngine implements KritzelEngineHost {
     );
   }
 
-  private cloneWorkspaceMetadata(workspace: KritzelWorkspace): KritzelWorkspace {
+  private cloneWorkspaceMetadata(workspace: UpdrawWorkspace): UpdrawWorkspace {
     const clonedWorkspace = workspace.clone();
     clonedWorkspace.objects = undefined;
     return clonedWorkspace;
@@ -3162,7 +3162,7 @@ export class KritzelEngine implements KritzelEngineHost {
     const workspace = this.findVisibleWorkspace(workspaceId);
     if (!workspace) {
       if (logIfMissing) {
-        console.warn(`[KritzelEngine] No workspace found with ID: ${workspaceId}`);
+        console.warn(`[UpdrawEngine] No workspace found with ID: ${workspaceId}`);
       }
       return;
     }
@@ -3176,7 +3176,7 @@ export class KritzelEngine implements KritzelEngineHost {
     this.activeWorkspaceChange.emit(this.core.store.state.activeWorkspace!);
   }
 
-  private async initializeWorkspaceIfNeeded(workspace?: KritzelWorkspace, options?: { skipFallbackCreation?: boolean }): Promise<void> {
+  private async initializeWorkspaceIfNeeded(workspace?: UpdrawWorkspace, options?: { skipFallbackCreation?: boolean }): Promise<void> {
     const targetWorkspaceId = workspace?.id ?? null;
     const targetKey = targetWorkspaceId ?? (options?.skipFallbackCreation ? '__NO_FALLBACK__' : '__AUTO__');
 
@@ -3211,7 +3211,7 @@ export class KritzelEngine implements KritzelEngineHost {
 
   emitObjectsChange() {
     const objectsMap = this.core.store.objects;
-    const selectedObjects = this.core.store.selectedObjects as KritzelBaseObject[];
+    const selectedObjects = this.core.store.selectedObjects as UpdrawBaseObject[];
 
     if (!objectsMap) {
       this.objectsChange.emit([]);
@@ -3225,7 +3225,7 @@ export class KritzelEngine implements KritzelEngineHost {
       return;
     }
 
-    const objects = this.core.store.allObjects as KritzelBaseObject<HTMLElement | SVGElement>[];
+    const objects = this.core.store.allObjects as UpdrawBaseObject<HTMLElement | SVGElement>[];
     const undoState = objectsMap.undoState;
     const hasSelectionGroup = this.core.store.selectionGroup !== null;
 
@@ -3238,15 +3238,15 @@ export class KritzelEngine implements KritzelEngineHost {
     }
   }
 
-  emitObjectsAdded(objects: KritzelBaseObject<any>[], source?: KritzelObjectChangeSource) {
+  emitObjectsAdded(objects: UpdrawBaseObject<any>[], source?: UpdrawObjectChangeSource) {
     this.objectsAdded.emit(source ? { objects, source } : { objects });
   }
 
-  emitObjectsRemoved(objects: KritzelBaseObject<any>[], source?: KritzelObjectChangeSource) {
+  emitObjectsRemoved(objects: UpdrawBaseObject<any>[], source?: UpdrawObjectChangeSource) {
     this.objectsRemoved.emit(source ? { objects, source } : { objects });
   }
 
-  emitObjectsUpdated(objects: { object: KritzelBaseObject<any>; changedProperties: string[] }[], source?: KritzelObjectChangeSource) {
+  emitObjectsUpdated(objects: { object: UpdrawBaseObject<any>; changedProperties: string[] }[], source?: UpdrawObjectChangeSource) {
     this.objectsUpdated.emit(source ? { objects, source } : { objects });
   }
 
@@ -3254,32 +3254,32 @@ export class KritzelEngine implements KritzelEngineHost {
     this.awarenessChange.emit(states);
   }
 
-  emitObjectTitlebarAction(detail: KritzelObjectTitlebarActionEvent) {
+  emitObjectTitlebarAction(detail: UpdrawObjectTitlebarActionEvent) {
     this.objectTitlebarAction.emit(detail);
   }
 
-  emitObjectTitlebarMenuStateChange(detail: KritzelObjectTitlebarMenuState) {
+  emitObjectTitlebarMenuStateChange(detail: UpdrawObjectTitlebarMenuState) {
     this.objectTitlebarMenuStateChange.emit(detail);
   }
 
-  emitObjectElementHover(detail: KritzelObjectElementHoverEvent) {
+  emitObjectElementHover(detail: UpdrawObjectElementHoverEvent) {
     this.objectElementHover.emit(detail);
   }
 
-  emitObjectElementClick(detail: KritzelObjectElementClickEvent) {
+  emitObjectElementClick(detail: UpdrawObjectElementClickEvent) {
     this.objectElementClick.emit(detail);
   }
 
-  emitObjectElementPick(detail: KritzelObjectElementPickEvent) {
+  emitObjectElementPick(detail: UpdrawObjectElementPickEvent) {
     this.objectElementPick.emit(detail);
   }
 
-  private getElementAwareObjectOrThrow(objectId: string): KritzelElementAwareObject {
+  private getElementAwareObjectOrThrow(objectId: string): UpdrawElementAwareObject {
     const object = this.core.store.objects?.findById(objectId);
     if (!object) {
       throw new Error(`Object "${objectId}" not found.`);
     }
-    if (!ObjectHelper.isKritzelElementAwareObject(object)) {
+    if (!ObjectHelper.isUpdrawElementAwareObject(object)) {
       throw new Error(`Object "${objectId}" has no content elements.`);
     }
     return object;
@@ -3288,7 +3288,7 @@ export class KritzelEngine implements KritzelEngineHost {
   /** Element highlights are drawn inside the objects' content, which can't read the engine's CSS variables. */
   private refreshObjectElementThemes() {
     this.core.store.objects?.allObjects().forEach(object => {
-      if (ObjectHelper.isKritzelElementAwareObject(object)) {
+      if (ObjectHelper.isUpdrawElementAwareObject(object)) {
         object.refreshElementTheme();
       }
     });
@@ -3303,10 +3303,10 @@ export class KritzelEngine implements KritzelEngineHost {
     this.core.store.onStateChange('activeTool', this._handleActiveToolChange.bind(this));
   }
 
-  private _handleActiveToolChange(activeTool: KritzelBaseTool | null) {
+  private _handleActiveToolChange(activeTool: UpdrawBaseTool | null) {
     if (activeTool?.toolType !== 'selection') {
       this.core.clearSelection();
-      this.core.store.objects?.remove(o => o instanceof KritzelSelectionBox);
+      this.core.store.objects?.remove(o => o instanceof UpdrawSelectionBox);
       this.core.store.setSelectionBox(null);
       this.core.store.objects?.clearLocalSelectionBox();
       this.core.store.state.isSelecting = false;
@@ -3326,21 +3326,21 @@ export class KritzelEngine implements KritzelEngineHost {
     if (activeTool) {
       this.activeToolChange.emit(activeTool);
     }
-    KritzelKeyboardHelper.forceHideKeyboard();
+    UpdrawKeyboardHelper.forceHideKeyboard();
 
     this.core.rerender();
   }
 
 
   /** Classes of an object's container: card objects and images get a modifier that resolves their theme radius. */
-  private getObjectContainerClass(object: KritzelBaseObject<any>): string {
-    if (object instanceof KritzelIframeObject) {
+  private getObjectContainerClass(object: UpdrawBaseObject<any>): string {
+    if (object instanceof UpdrawIframeObject) {
       return 'object object--iframe';
     }
-    if (object instanceof KritzelDynamicObject) {
+    if (object instanceof UpdrawDynamicObject) {
       return 'object object--dynamic-object';
     }
-    if (object instanceof KritzelImage) {
+    if (object instanceof UpdrawImage) {
       return 'object object--image';
     }
     return 'object';
@@ -3350,7 +3350,7 @@ export class KritzelEngine implements KritzelEngineHost {
   private finishAppearAnimations(): void {
     this.host.shadowRoot?.querySelectorAll('.object--appearing').forEach(element => {
       element.getAnimations?.().forEach(animation => {
-        if ((animation as CSSAnimation).animationName === 'kritzel-object-appear') {
+        if ((animation as CSSAnimation).animationName === 'updraw-object-appear') {
           animation.finish();
         }
       });
@@ -3361,11 +3361,11 @@ export class KritzelEngine implements KritzelEngineHost {
    * Whether an inserted object can be shown, so its appear animation can start: an iframe once its document loaded
    * (it is invisible until then) or while it shows its loading placeholder; other objects at once.
    */
-  private isReadyToAppear(object: KritzelBaseObject<any>): boolean {
-    if (object instanceof KritzelIframeObject) {
+  private isReadyToAppear(object: UpdrawBaseObject<any>): boolean {
+    if (object instanceof UpdrawIframeObject) {
       return object.isLoading || object.isDocumentLoaded;
     }
-    if (object instanceof KritzelGroup && !object.isLoading) {
+    if (object instanceof UpdrawGroup && !object.isLoading) {
       // A group (and its titlebar) appears with its children.
       return object.children.every(child => this.isReadyToAppear(child));
     }
@@ -3377,7 +3377,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * starts to appear. A titlebar shown later (e.g. once its object is selected) shows at once, rather than replaying the
    * animation out of step with its object.
    */
-  private resolveAppearingTitlebarOwners(titlebars: KritzelResolvedTitlebar[], appear: KritzelObjectAppearResolution): Map<string, number> {
+  private resolveAppearingTitlebarOwners(titlebars: UpdrawResolvedTitlebar[], appear: UpdrawObjectAppearResolution): Map<string, number> {
     const owners = new Map<string, number>();
     titlebars.forEach(({ owner }) => {
       const index = appear.appearing.get(owner.id);
@@ -3390,10 +3390,10 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   /** The appear animation's timing from the theme (`objectAppear`), with the stylesheet's defaults. */
-  private getObjectAppearTiming(computedStyle: CSSStyleDeclaration): KritzelObjectAppearTiming {
+  private getObjectAppearTiming(computedStyle: CSSStyleDeclaration): UpdrawObjectAppearTiming {
     return {
-      duration: parseCssTime(computedStyle.getPropertyValue('--kritzel-object-appear-animation-duration'), 600),
-      stagger: parseCssTime(computedStyle.getPropertyValue('--kritzel-object-appear-stagger'), 110),
+      duration: parseCssTime(computedStyle.getPropertyValue('--updraw-object-appear-animation-duration'), 600),
+      stagger: parseCssTime(computedStyle.getPropertyValue('--updraw-object-appear-stagger'), 110),
     };
   }
 
@@ -3401,17 +3401,17 @@ export class KritzelEngine implements KritzelEngineHost {
    * The radius a card object or image sets itself, as the inline style that overrides the theme's; empty to use the
    * theme's.
    */
-  private getOwnBorderRadiusStyle(object: KritzelBaseObject<any>): Record<string, string> {
-    if (!(object instanceof KritzelIframeObject) && !(object instanceof KritzelDynamicObject) && !(object instanceof KritzelImage)) {
+  private getOwnBorderRadiusStyle(object: UpdrawBaseObject<any>): Record<string, string> {
+    if (!(object instanceof UpdrawIframeObject) && !(object instanceof UpdrawDynamicObject) && !(object instanceof UpdrawImage)) {
       return {};
     }
     const radius = object.borderRadius;
     if (radius === undefined || radius === '') {
       return {};
     }
-    return { '--kritzel-content-border-radius': typeof radius === 'number' ? `${radius}px` : radius };
+    return { '--updraw-content-border-radius': typeof radius === 'number' ? `${radius}px` : radius };
   }
-  private getObjectEffectiveOpacity(object: KritzelBaseObject<any>): { multiplied: number; overridden: string } {
+  private getObjectEffectiveOpacity(object: UpdrawBaseObject<any>): { multiplied: number; overridden: string } {
     const safeObjectOpacity = Number.isFinite(object.opacity) ? object.opacity : 1;
     const multiplied = (object.markedForRemoval ? 0.5 : 1) * safeObjectOpacity;
     const overridden = (object.markedForRemoval ? 0.5 : safeObjectOpacity).toString();
@@ -3419,7 +3419,7 @@ export class KritzelEngine implements KritzelEngineHost {
     return { multiplied, overridden };
   }
 
-  private readonly handleTitlebarElementClick = (ownerId: string, section: KritzelTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement) => {
+  private readonly handleTitlebarElementClick = (ownerId: string, section: UpdrawTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement) => {
     this.core.objectTitlebarManager.invokeElement(ownerId, section, elementId, event, anchor);
     this.core.rerender();
   };
@@ -3440,14 +3440,14 @@ export class KritzelEngine implements KritzelEngineHost {
     return state.activeTool?.toolType === 'selection' || isEditing ? 'auto' : 'none';
   }
 
-  private getSelectionHandleCapabilities(object: KritzelBaseObject<any>): { canRenderResizeHandles: boolean; canRenderRotationHandle: boolean } {
+  private getSelectionHandleCapabilities(object: UpdrawBaseObject<any>): { canRenderResizeHandles: boolean; canRenderRotationHandle: boolean } {
     return {
       canRenderResizeHandles: this.core.objectConfigManager.isResizable(object),
       canRenderRotationHandle: this.core.objectConfigManager.isRotatable(object),
     };
   }
 
-  private getImageRevealKey(image: KritzelImage): string | null {
+  private getImageRevealKey(image: UpdrawImage): string | null {
     if (image.assetId) {
       return `asset:${image.assetId}`;
     }
@@ -3459,7 +3459,7 @@ export class KritzelEngine implements KritzelEngineHost {
     return null;
   }
 
-  private shouldAnimateImageFirstReveal(image: KritzelImage): boolean {
+  private shouldAnimateImageFirstReveal(image: UpdrawImage): boolean {
     if (image.loadState !== 'ready') {
       return false;
     }
@@ -3484,7 +3484,7 @@ export class KritzelEngine implements KritzelEngineHost {
 
     const currentTheme = this.core.themeManager.getStoredTheme();
     const computedStyle = window.getComputedStyle(this.host);
-    const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
+    const baseHandleSizePx = computedStyle.getPropertyValue('--updraw-selection-handle-size').trim() || '6px';
     const baseHandleSize = parseFloat(baseHandleSizePx);
     const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
@@ -3508,14 +3508,14 @@ export class KritzelEngine implements KritzelEngineHost {
     const selectionGroup = this.core.store.selectionGroup;
     const rotationHandleDistance = selectionGroup
       ? titlebarManager.getRotationHandleDistance(selectionGroup, { titlebars, metrics: titlebarMetrics })
-      : KRITZEL_ROTATION_HANDLE_DISTANCE;
+      : UPDRAW_ROTATION_HANDLE_DISTANCE;
 
-    const getObjectWrapperPointerEvents = (object: KritzelBaseObject<any>): 'none' | 'auto' => {
+    const getObjectWrapperPointerEvents = (object: UpdrawBaseObject<any>): 'none' | 'auto' => {
       if (this.core.store.state.isScaling) {
         return 'none';
       }
 
-      if (object instanceof KritzelSelectionGroup) {
+      if (object instanceof UpdrawSelectionGroup) {
         return 'none';
       }
 
@@ -3526,21 +3526,21 @@ export class KritzelEngine implements KritzelEngineHost {
     // A group contains its children, so it is in the viewport whenever one of them is.
     const hiddenByLoadingGroup = new Set<string>();
     visibleObjects.forEach(object => {
-      if (object instanceof KritzelGroup && object.isLoading) {
-        KritzelGroup.collectDescendantIds(object, hiddenByLoadingGroup);
+      if (object instanceof UpdrawGroup && object.isLoading) {
+        UpdrawGroup.collectDescendantIds(object, hiddenByLoadingGroup);
       }
     });
 
-    const getSelectionGroupOverlayPointerEvents = (object: KritzelBaseObject<any>): 'none' | 'auto' => {
+    const getSelectionGroupOverlayPointerEvents = (object: UpdrawBaseObject<any>): 'none' | 'auto' => {
       if (object.markedForRemoval) {
         return 'none';
       }
 
-      if (!(object instanceof KritzelSelectionGroup)) {
+      if (!(object instanceof UpdrawSelectionGroup)) {
         return 'auto';
       }
 
-      if (object.objects.length === 1 && ObjectHelper.isKritzelEmbeddedObject(object.objects[0])) {
+      if (object.objects.length === 1 && ObjectHelper.isUpdrawEmbeddedObject(object.objects[0])) {
         return 'none';
       }
 
@@ -3550,7 +3550,7 @@ export class KritzelEngine implements KritzelEngineHost {
     // Track visible dynamic objects and unmount culled ones
     const currentVisibleDynamicObjects = new Map<string, { unmount(): void }>();
     visibleObjects.forEach(object => {
-      if (ObjectHelper.isKritzelEmbeddedObject(object)) {
+      if (ObjectHelper.isUpdrawEmbeddedObject(object)) {
         currentVisibleDynamicObjects.set(object.id, object);
       }
     });
@@ -3560,7 +3560,7 @@ export class KritzelEngine implements KritzelEngineHost {
     this._previousVisibleDynamicObjects.forEach((previous, id) => {
       if (!currentVisibleDynamicObjects.has(id)) {
         const object = this.core.store.objects.findById(id) ?? previous;
-        if (object && ObjectHelper.isKritzelEmbeddedObject(object)) {
+        if (object && ObjectHelper.isUpdrawEmbeddedObject(object)) {
           object.unmount();
         }
       }
@@ -3584,7 +3584,7 @@ export class KritzelEngine implements KritzelEngineHost {
           <div
             class="debug-panel"
             style={{
-              color: 'var(--kritzel-global-text-primary)',
+              color: 'var(--updraw-global-text-primary)',
             }}
           >
             <div>ActiveWorkspaceId: {this.core.store.state?.activeWorkspace?.id}</div>
@@ -3643,7 +3643,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   // Left out when unset, so the variable is removed rather than set to an empty value.
                   ...this.getOwnBorderRadiusStyle(object),
                   // Its place in its batch, which delays its appear animation (`.object--appearing`).
-                  ...(appearingObjects.has(object.id) ? { '--kritzel-object-appear-index': String(appearingObjects.get(object.id)) } : {}),
+                  ...(appearingObjects.has(object.id) ? { '--updraw-object-appear-index': String(appearingObjects.get(object.id)) } : {}),
                   transform: object?.transformationMatrix,
                   transformOrigin: 'top left',
                   position: 'absolute',
@@ -3657,7 +3657,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   visibility: hiddenByLoadingGroup.has(object.id) ? 'hidden' : undefined,
                 }}
               >
-                {object instanceof KritzelPath && (
+                {object instanceof UpdrawPath && (
                   <svg
                     ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
@@ -3676,14 +3676,14 @@ export class KritzelEngine implements KritzelEngineHost {
                   >
                     <path
                       d={object?.d}
-                      fill={KritzelColorHelper.applyOpacity(object.fill, effectiveOpacity, currentTheme)}
-                      stroke={KritzelColorHelper.applyOpacity(object?.stroke, effectiveOpacity, currentTheme)}
+                      fill={UpdrawColorHelper.applyOpacity(object.fill, effectiveOpacity, currentTheme)}
+                      stroke={UpdrawColorHelper.applyOpacity(object?.stroke, effectiveOpacity, currentTheme)}
                       shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'}
                     />
                   </svg>
                 )}
 
-                {object instanceof KritzelLine && (
+                {object instanceof UpdrawLine && (
                   <svg
                     ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
@@ -3714,7 +3714,7 @@ export class KritzelEngine implements KritzelEngineHost {
                           >
                             <path
                               d={object.getArrowPath(object.arrows?.start?.style)}
-                              fill={KritzelColorHelper.applyOpacity(object.getArrowFill('start'), effectiveOpacity)}
+                              fill={UpdrawColorHelper.applyOpacity(object.getArrowFill('start'), effectiveOpacity)}
                               transform={`scale(${object.getArrowSize('start') / 10})`}
                             />
                           </marker>
@@ -3731,7 +3731,7 @@ export class KritzelEngine implements KritzelEngineHost {
                           >
                             <path
                               d={object.getArrowPath(object.arrows?.end?.style)}
-                              fill={KritzelColorHelper.applyOpacity(object.getArrowFill('end'), effectiveOpacity)}
+                              fill={UpdrawColorHelper.applyOpacity(object.getArrowFill('end'), effectiveOpacity)}
                               transform={`scale(${object.getArrowSize('end') / 10})`}
                             />
                           </marker>
@@ -3748,7 +3748,7 @@ export class KritzelEngine implements KritzelEngineHost {
                     <path
                       d={this.core.anchorManager.computeClippedLinePath(object)}
                       fill="none"
-                      stroke={KritzelColorHelper.applyOpacity(object?.stroke, effectiveOpacity, currentTheme)}
+                      stroke={UpdrawColorHelper.applyOpacity(object?.stroke, effectiveOpacity, currentTheme)}
                       stroke-width={object?.strokeWidth}
                       stroke-linecap="round"
                       marker-start={object.hasStartArrow ? `url(#${object.startMarkerId})` : undefined}
@@ -3757,10 +3757,10 @@ export class KritzelEngine implements KritzelEngineHost {
                   </svg>
                 )}
 
-                {object instanceof KritzelImage && object.loadState === 'ready' && (
+                {object instanceof UpdrawImage && object.loadState === 'ready' && (
                   <img
                     ref={el => el && object.mount(el)}
-                    class={this.shouldAnimateImageFirstReveal(object) ? 'kritzel-image-object kritzel-image-object--first-reveal' : 'kritzel-image-object'}
+                    class={this.shouldAnimateImageFirstReveal(object) ? 'updraw-image-object updraw-image-object--first-reveal' : 'updraw-image-object'}
                     src={object.resolvedSrc || object.src}
                     style={{
                       position: 'absolute',
@@ -3772,14 +3772,14 @@ export class KritzelEngine implements KritzelEngineHost {
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: effectiveOpacityString,
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
-                      backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
-                      borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
+                      backgroundColor: UpdrawColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
+                      borderColor: UpdrawColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
                       overflow: 'visible',
                       userSelect: 'none',
-                      // Overrides the theme's drop shadow (`.kritzel-image-object`).
+                      // Overrides the theme's drop shadow (`.updraw-image-object`).
                       filter: object.dropShadow,
                       imageRendering: this.core.store.state.isScaling || this.core.store.state.isPanning ? 'pixelated' : 'auto',
                     }}
@@ -3790,10 +3790,10 @@ export class KritzelEngine implements KritzelEngineHost {
                   />
                 )}
 
-                {object instanceof KritzelImage && object.loadState !== 'ready' && (
+                {object instanceof UpdrawImage && object.loadState !== 'ready' && (
                   <div
                     ref={() => object.ensureLoaded()}
-                    class="kritzel-image-placeholder"
+                    class="updraw-image-placeholder"
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -3804,11 +3804,11 @@ export class KritzelEngine implements KritzelEngineHost {
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: effectiveOpacityString,
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
-                      backgroundColor: KritzelColorHelper.resolveThemeColor({ light: '#e5e7eb', dark: '#2a2a2a' }, currentTheme),
+                      backgroundColor: UpdrawColorHelper.resolveThemeColor({ light: '#e5e7eb', dark: '#2a2a2a' }, currentTheme),
                       borderColor:
                         object.loadState === 'error'
-                          ? KritzelColorHelper.resolveThemeColor({ light: '#9ca3af', dark: '#6b7280' }, currentTheme)
-                          : KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
+                          ? UpdrawColorHelper.resolveThemeColor({ light: '#9ca3af', dark: '#6b7280' }, currentTheme)
+                          : UpdrawColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.loadState === 'error' ? '1px' : object.borderWidth + 'px',
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
@@ -3819,20 +3819,20 @@ export class KritzelEngine implements KritzelEngineHost {
                       justifyContent: 'center',
                     }}
                   >
-                    <kritzel-icon
+                    <updraw-icon
                       name={object.loadState === 'error' ? 'imageOff' : 'image'}
                       size={Math.max(16, Math.min(object.totalWidth, object.totalHeight) * 0.3)}
                       style={{
-                        color: KritzelColorHelper.resolveThemeColor({ light: '#9ca3af', dark: '#6b7280' }, currentTheme),
+                        color: UpdrawColorHelper.resolveThemeColor({ light: '#9ca3af', dark: '#6b7280' }, currentTheme),
                       }}
-                    ></kritzel-icon>
+                    ></updraw-icon>
                   </div>
                 )}
 
-                {object instanceof KritzelDynamicObject && (
+                {object instanceof UpdrawDynamicObject && (
                   <div
                     ref={el => el && object.mount(el)}
-                    class="kritzel-dynamic-object"
+                    class="updraw-dynamic-object"
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -3843,12 +3843,12 @@ export class KritzelEngine implements KritzelEngineHost {
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: effectiveOpacityString,
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
-                      backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
-                      borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
+                      backgroundColor: UpdrawColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
+                      borderColor: UpdrawColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
-                      // Overrides the theme's shadow (`.kritzel-dynamic-object`).
+                      // Overrides the theme's shadow (`.updraw-dynamic-object`).
                       boxShadow: object.boxShadow,
                       // Content is clipped to the rounded box unless the object lets it overflow.
                       overflow: object.clipContent === false ? 'visible' : undefined,
@@ -3857,11 +3857,11 @@ export class KritzelEngine implements KritzelEngineHost {
                   ></div>
                 )}
 
-                {object instanceof KritzelIframeObject && (
+                {object instanceof UpdrawIframeObject && (
                   <div
                     // Invisible until the iframe has loaded its first document, then it fades in with its content
                     // instead of showing an empty frame first.
-                    class={object.isDocumentLoaded ? 'kritzel-iframe-object kritzel-iframe-object--revealed' : 'kritzel-iframe-object'}
+                    class={object.isDocumentLoaded ? 'updraw-iframe-object updraw-iframe-object--revealed' : 'updraw-iframe-object'}
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -3871,11 +3871,11 @@ export class KritzelEngine implements KritzelEngineHost {
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: object.isDocumentLoaded ? effectiveOpacityString : '0',
-                      backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
-                      borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
+                      backgroundColor: UpdrawColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
+                      borderColor: UpdrawColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
-                      // Overrides the theme's shadow (`.kritzel-iframe-object`).
+                      // Overrides the theme's shadow (`.updraw-iframe-object`).
                       boxShadow: object.boxShadow,
                       overflow: 'hidden',
                       display: 'block',
@@ -3904,7 +3904,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   </div>
                 )}
 
-                {object instanceof KritzelSelectionGroup && !this.core.displaySelectionLineUI(object) && (
+                {object instanceof UpdrawSelectionGroup && !this.core.displaySelectionLineUI(object) && (
                   <div
                     ref={el => el && object.mount(el)}
                     style={{
@@ -3921,7 +3921,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   ></div>
                 )}
 
-                {object instanceof KritzelSelectionBox && (
+                {object instanceof UpdrawSelectionBox && (
                   <div
                     ref={el => el && object.mount(el)}
                     style={{
@@ -3934,15 +3934,15 @@ export class KritzelEngine implements KritzelEngineHost {
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
-                      backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
-                      borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
+                      backgroundColor: UpdrawColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
+                      borderColor: UpdrawColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
                     }}
                   ></div>
                 )}
 
-                {object instanceof KritzelText && (
+                {object instanceof UpdrawText && (
                   <div
                     style={{
                       position: 'absolute',
@@ -3970,17 +3970,17 @@ export class KritzelEngine implements KritzelEngineHost {
                         width: 'max-content',
                         transformOrigin: 'top left',
                         transform: `scale(${object.scaleFactor})`,
-                        backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
+                        backgroundColor: UpdrawColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
                         overflow: 'visible',
                       }}
                     ></div>
                   </div>
                 )}
 
-                {object instanceof KritzelShape &&
+                {object instanceof UpdrawShape &&
                   (() => {
-                    const fillResolved = KritzelColorHelper.resolveThemeColor(object.fillColor, currentTheme);
-                    const strokeResolved = KritzelColorHelper.resolveThemeColor(object.strokeColor, currentTheme);
+                    const fillResolved = UpdrawColorHelper.resolveThemeColor(object.fillColor, currentTheme);
+                    const strokeResolved = UpdrawColorHelper.resolveThemeColor(object.strokeColor, currentTheme);
                     const isFilled = !!fillResolved && fillResolved !== 'transparent';
                     const strokeMatchesFill = isFilled && strokeResolved === fillResolved;
 
@@ -4018,8 +4018,8 @@ export class KritzelEngine implements KritzelEngineHost {
                         >
                           <path
                             d={object.getSvgPath()}
-                            fill={KritzelColorHelper.applyOpacity(object.fillColor, effectiveOpacity, currentTheme)}
-                            stroke={strokeMatchesFill ? 'none' : KritzelColorHelper.applyOpacity(object.strokeColor, effectiveOpacity, currentTheme)}
+                            fill={UpdrawColorHelper.applyOpacity(object.fillColor, effectiveOpacity, currentTheme)}
+                            stroke={strokeMatchesFill ? 'none' : UpdrawColorHelper.applyOpacity(object.strokeColor, effectiveOpacity, currentTheme)}
                             stroke-width={strokeMatchesFill ? 0 : object.strokeWidth}
                           />
                         </svg>
@@ -4043,11 +4043,11 @@ export class KritzelEngine implements KritzelEngineHost {
                     );
                   })()}
 
-                {object.isLoading && !(object instanceof KritzelSelectionGroup) && !(object instanceof KritzelSelectionBox) && (
+                {object.isLoading && !(object instanceof UpdrawSelectionGroup) && !(object instanceof UpdrawSelectionBox) && (
                   <div
                     // Drawn over the object's content, which stays mounted underneath so it can keep loading.
-                    class="kritzel-loading-placeholder"
-                    data-testid="kritzel-loading-placeholder"
+                    class="updraw-loading-placeholder"
+                    data-testid="updraw-loading-placeholder"
                     style={{
                       width: object.totalWidth + 'px',
                       height: object.totalHeight + 'px',
@@ -4067,7 +4067,7 @@ export class KritzelEngine implements KritzelEngineHost {
                       left: `${object.totalWidth}px`,
                       top: '0',
                       zIndex: (object.zIndex + 2).toString(),
-                      color: 'var(--kritzel-global-text-primary)',
+                      color: 'var(--updraw-global-text-primary)',
                     }}
                   >
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>Id: {object.id}</div>
@@ -4081,13 +4081,13 @@ export class KritzelEngine implements KritzelEngineHost {
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>zIndex: {object.zIndex}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>isSelected: {object.isSelected ? 'true' : 'false'}</div>
 
-                    {object instanceof KritzelDynamicObject && (
+                    {object instanceof UpdrawDynamicObject && (
                       <div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>isInteractive: {object.isInteractive ? 'true' : 'false'}</div>
                       </div>
                     )}
 
-                    {object instanceof KritzelImage && (
+                    {object instanceof UpdrawImage && (
                       <div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>assetId: {object.assetId}</div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>mimeType: {object.mimeType}</div>
@@ -4098,7 +4098,7 @@ export class KritzelEngine implements KritzelEngineHost {
 
                 {(this.core.displaySelectionGroupUI(object) || this.core.displaySelectionLineUI(object)) &&
                   (() => {
-                    const isSelectionGroup = object instanceof KritzelSelectionGroup;
+                    const isSelectionGroup = object instanceof UpdrawSelectionGroup;
                     const localClientId = this.core.store.objects?.localClientId;
 
                     const awarenessStates = this.core.store.objects?.awareness?.getStates();
@@ -4135,10 +4135,10 @@ export class KritzelEngine implements KritzelEngineHost {
                     }
 
                     const selectionBorderColor =
-                      remoteUserColor ?? (KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme) || 'var(--kritzel-selection-border-color, #007AFF)');
+                      remoteUserColor ?? (UpdrawColorHelper.resolveThemeColor(object.borderColor, currentTheme) || 'var(--updraw-selection-border-color, #007AFF)');
 
-                    const selectionHandleStrokeColor = remoteUserColor ?? 'var(--kritzel-selection-handle-stroke-color, #007AFF)';
-                    const lineObject = object as KritzelLine;
+                    const selectionHandleStrokeColor = remoteUserColor ?? 'var(--updraw-selection-handle-stroke-color, #007AFF)';
+                    const lineObject = object as UpdrawLine;
                     const activeSnapCandidate = this.core.store.state.snapCandidate;
                     const previewSnapCandidate = this.core.store.state.snapPreviewCandidate;
                     const isStartHandleSnapped = lineObject.startAnchor != null;
@@ -4173,10 +4173,10 @@ export class KritzelEngine implements KritzelEngineHost {
                             {(() => {
                               const remoteLineObject =
                                 isRemoteSelection &&
-                                object instanceof KritzelSelectionGroup &&
+                                object instanceof UpdrawSelectionGroup &&
                                 object.objects.length === 1 &&
-                                object.objects[0] instanceof KritzelLine
-                                  ? (object.objects[0] as KritzelLine)
+                                object.objects[0] instanceof UpdrawLine
+                                  ? (object.objects[0] as UpdrawLine)
                                   : null;
 
                               if (remoteLineObject) {
@@ -4187,7 +4187,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                       d={this.core.anchorManager.computeClippedLinePath(remoteLineObject, true)}
                                       style={{
                                         stroke: selectionBorderColor,
-                                        strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                                        strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                                         strokeLinecap: 'round',
                                         fill: 'none',
                                       }}
@@ -4205,7 +4205,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                     y2="0"
                                     style={{
                                       stroke: selectionBorderColor,
-                                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                                      strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                                       strokeLinecap: 'square',
                                     }}
                                   />
@@ -4216,7 +4216,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                     y2={object.totalHeight}
                                     style={{
                                       stroke: selectionBorderColor,
-                                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                                      strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                                       strokeLinecap: 'square',
                                     }}
                                   />
@@ -4227,7 +4227,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                     y2={object.totalHeight}
                                     style={{
                                       stroke: selectionBorderColor,
-                                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                                      strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                                       strokeLinecap: 'square',
                                     }}
                                   />
@@ -4238,7 +4238,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                     y2={object.totalHeight}
                                     style={{
                                       stroke: selectionBorderColor,
-                                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                                      strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                                       strokeLinecap: 'square',
                                     }}
                                   />
@@ -4257,11 +4257,11 @@ export class KritzelEngine implements KritzelEngineHost {
                                       width={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       height={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       style={{
-                                        fill: 'var(--kritzel-selection-handle-color, #ffffff)',
+                                        fill: 'var(--updraw-selection-handle-color, #ffffff)',
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
-                                        visibility: 'var(--kritzel-selection-resize-handle-visibility, visible)',
+                                        visibility: 'var(--updraw-selection-resize-handle-visibility, visible)',
                                       }}
                                     />
                                     <rect
@@ -4283,11 +4283,11 @@ export class KritzelEngine implements KritzelEngineHost {
                                       width={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       height={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       style={{
-                                        fill: 'var(--kritzel-selection-handle-color, #ffffff)',
+                                        fill: 'var(--updraw-selection-handle-color, #ffffff)',
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
-                                        visibility: 'var(--kritzel-selection-resize-handle-visibility, visible)',
+                                        visibility: 'var(--updraw-selection-resize-handle-visibility, visible)',
                                       }}
                                     />
                                     <rect
@@ -4309,11 +4309,11 @@ export class KritzelEngine implements KritzelEngineHost {
                                       width={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       height={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       style={{
-                                        fill: 'var(--kritzel-selection-handle-color, #ffffff)',
+                                        fill: 'var(--updraw-selection-handle-color, #ffffff)',
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
-                                        visibility: 'var(--kritzel-selection-resize-handle-visibility, visible)',
+                                        visibility: 'var(--updraw-selection-resize-handle-visibility, visible)',
                                       }}
                                     />
                                     <rect
@@ -4335,11 +4335,11 @@ export class KritzelEngine implements KritzelEngineHost {
                                       width={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       height={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       style={{
-                                        fill: 'var(--kritzel-selection-handle-color, #ffffff)',
+                                        fill: 'var(--updraw-selection-handle-color, #ffffff)',
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
-                                        visibility: 'var(--kritzel-selection-resize-handle-visibility, visible)',
+                                        visibility: 'var(--updraw-selection-resize-handle-visibility, visible)',
                                       }}
                                     />
                                     <rect
@@ -4365,7 +4365,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                       y2={-((rotationHandleDistance * handleScale) / this.core.store.state?.scale)}
                                       style={{
                                         stroke: selectionBorderColor,
-                                        strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${handleScale} / ${this.core.store.state?.scale})`,
+                                        strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${handleScale} / ${this.core.store.state?.scale})`,
                                       }}
                                     />
                                     <circle
@@ -4374,7 +4374,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                       cy={-((rotationHandleDistance * handleScale) / this.core.store.state?.scale)}
                                       r={`${((baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
                                       style={{
-                                        fill: 'var(--kritzel-selection-handle-color, #ffffff)',
+                                        fill: 'var(--updraw-selection-handle-color, #ffffff)',
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
@@ -4397,7 +4397,7 @@ export class KritzelEngine implements KritzelEngineHost {
                           </g>
                         )}
 
-                        {this.core.displaySelectionLineUI(object) && object instanceof KritzelLine && (
+                        {this.core.displaySelectionLineUI(object) && object instanceof UpdrawLine && (
                           <g class="selection-line-ui" style={{ pointerEvents: 'none' }}>
                             <g class="selection-line-borders">
                               <path
@@ -4405,7 +4405,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                 d={this.core.anchorManager.computeClippedLinePath(object, true)}
                                 style={{
                                   stroke: selectionBorderColor,
-                                  strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                                  strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                                   strokeLinecap: 'round',
                                   fill: 'none',
                                 }}
@@ -4420,7 +4420,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                   cy={object.startY - object.y}
                                   r={`${((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
                                   style={{
-                                    fill: isStartHandleHighlighted ? selectionHandleStrokeColor : 'var(--kritzel-selection-handle-color, #000000)',
+                                    fill: isStartHandleHighlighted ? selectionHandleStrokeColor : 'var(--updraw-selection-handle-color, #000000)',
                                     stroke: selectionHandleStrokeColor,
                                     strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
                                     paintOrder: 'fill',
@@ -4452,7 +4452,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                   }
                                   r={`${((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
                                   style={{
-                                    fill: 'var(--kritzel-selection-handle-color, #000000)',
+                                    fill: 'var(--updraw-selection-handle-color, #000000)',
                                     stroke: selectionHandleStrokeColor,
                                     strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
                                     paintOrder: 'fill',
@@ -4484,7 +4484,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                   cy={object.endY - object.y}
                                   r={`${((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
                                   style={{
-                                    fill: isEndHandleHighlighted ? selectionHandleStrokeColor : 'var(--kritzel-selection-handle-color, #000000)',
+                                    fill: isEndHandleHighlighted ? selectionHandleStrokeColor : 'var(--updraw-selection-handle-color, #000000)',
                                     stroke: selectionHandleStrokeColor,
                                     strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
                                     paintOrder: 'fill',
@@ -4513,7 +4513,7 @@ export class KritzelEngine implements KritzelEngineHost {
           })}
 
           {this.core.objectTitlebarManager.isEnabled && (
-            <kritzel-object-titlebar-layer
+            <updraw-object-titlebar-layer
               titlebars={titlebars}
               appearingOwners={appearingTitlebarOwners}
               surfacePointerEvents={this.getTitlebarSurfacePointerEvents()}
@@ -4552,7 +4552,7 @@ export class KritzelEngine implements KritzelEngineHost {
                       d={data.snapLinePath}
                       fill="none"
                       style={{
-                        stroke: isActiveSnap ? 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))' : 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.12))',
+                        stroke: isActiveSnap ? 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.2))' : 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.12))',
                         strokeWidth: data.lineStrokeWidth,
                         strokeDasharray: data.dashArray,
                         strokeLinecap: 'round',
@@ -4567,7 +4567,7 @@ export class KritzelEngine implements KritzelEngineHost {
                         x2={data.centerX}
                         y2={data.centerY}
                         style={{
-                          stroke: isActiveSnap ? 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))' : 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.12))',
+                          stroke: isActiveSnap ? 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.2))' : 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.12))',
                           strokeWidth: data.lineStrokeWidth,
                           strokeDasharray: data.dashArray,
                           strokeLinecap: 'round',
@@ -4582,11 +4582,11 @@ export class KritzelEngine implements KritzelEngineHost {
                     r={data.indicatorRadius}
                     style={{
                       fill: isActiveSnap
-                        ? 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))'
-                        : 'var(--kritzel-snap-indicator-fill-inactive, var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.18)))',
+                        ? 'var(--updraw-snap-indicator-fill, rgba(59, 130, 246, 0.3))'
+                        : 'var(--updraw-snap-indicator-fill-inactive, var(--updraw-snap-indicator-fill, rgba(59, 130, 246, 0.18)))',
                       stroke: isActiveSnap
-                        ? 'var(--kritzel-snap-indicator-stroke, #007bff)'
-                        : 'var(--kritzel-snap-indicator-stroke-inactive, var(--kritzel-snap-indicator-stroke, rgba(59, 130, 246, 0.5)))',
+                        ? 'var(--updraw-snap-indicator-stroke, #007bff)'
+                        : 'var(--updraw-snap-indicator-stroke-inactive, var(--updraw-snap-indicator-stroke, rgba(59, 130, 246, 0.5)))',
                       strokeWidth: data.indicatorStrokeWidth,
                     }}
                   />
@@ -4621,7 +4621,7 @@ export class KritzelEngine implements KritzelEngineHost {
                       <path
                         d={data.startAnchorViz.pathD}
                         style={{
-                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.3))',
+                          stroke: 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.3))',
                           strokeWidth: `${data.lineStrokeWidth}`,
                           strokeDasharray: data.dashArray,
                           strokeLinecap: 'round',
@@ -4635,7 +4635,7 @@ export class KritzelEngine implements KritzelEngineHost {
                         x2={data.startAnchorViz.centerX}
                         y2={data.startAnchorViz.centerY}
                         style={{
-                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.3))',
+                          stroke: 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.3))',
                           strokeWidth: `${data.lineStrokeWidth}`,
                           strokeDasharray: data.dashArray,
                           strokeLinecap: 'round',
@@ -4647,9 +4647,9 @@ export class KritzelEngine implements KritzelEngineHost {
                       cy={data.startAnchorViz.centerY}
                       r={data.indicatorRadius}
                       style={{
-                        fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                        fill: 'var(--updraw-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
 
-                        stroke: 'var(--kritzel-snap-indicator-stroke, #007bff)',
+                        stroke: 'var(--updraw-snap-indicator-stroke, #007bff)',
                         strokeWidth: data.indicatorStrokeWidth,
                       }}
                     />
@@ -4661,7 +4661,7 @@ export class KritzelEngine implements KritzelEngineHost {
                       <path
                         d={data.endAnchorViz.pathD}
                         style={{
-                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          stroke: 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.2))',
                           strokeWidth: `${data.lineStrokeWidth}`,
                           strokeDasharray: data.dashArray,
                           strokeLinecap: 'round',
@@ -4675,7 +4675,7 @@ export class KritzelEngine implements KritzelEngineHost {
                         x2={data.endAnchorViz.centerX}
                         y2={data.endAnchorViz.centerY}
                         style={{
-                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          stroke: 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.2))',
                           strokeWidth: `${data.lineStrokeWidth}`,
                           strokeDasharray: data.dashArray,
                           strokeLinecap: 'round',
@@ -4687,8 +4687,8 @@ export class KritzelEngine implements KritzelEngineHost {
                       cy={data.endAnchorViz.centerY}
                       r={data.indicatorRadius}
                       style={{
-                        fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
-                        stroke: 'var(--kritzel-snap-indicator-stroke, #007bff)',
+                        fill: 'var(--updraw-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                        stroke: 'var(--updraw-snap-indicator-stroke, #007bff)',
                         strokeWidth: data.indicatorStrokeWidth,
                       }}
                     />
@@ -4699,13 +4699,13 @@ export class KritzelEngine implements KritzelEngineHost {
           })()}
         </div>
 
-        {this.core.store.objects?.hasAwareness && <kritzel-awareness-cursors core={this.core}></kritzel-awareness-cursors>}
+        {this.core.store.objects?.hasAwareness && <updraw-awareness-cursors core={this.core}></updraw-awareness-cursors>}
 
-        <kritzel-agentic-cursors core={this.core}></kritzel-agentic-cursors>
+        <updraw-agentic-cursors core={this.core}></updraw-agentic-cursors>
 
-        {this.core.store.state?.activeTool?.toolType === 'eraser' && !this.core.store.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
+        {this.core.store.state?.activeTool?.toolType === 'eraser' && !this.core.store.state.isScaling && <updraw-cursor-trail core={this.core}></updraw-cursor-trail>}
 
-        {this.isWatermarkVisible && <kritzel-watermark core={this.core} label={this.core.localizationManager.translate('watermark.poweredBy')}></kritzel-watermark>}
+        {this.isWatermarkVisible && <updraw-watermark core={this.core} label={this.core.localizationManager.translate('watermark.poweredBy')}></updraw-watermark>}
       </Host>
     );
   }

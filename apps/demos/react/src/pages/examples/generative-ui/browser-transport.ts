@@ -1,15 +1,15 @@
 import type {
-  KritzelChatMessage,
-  KritzelChatPart,
-  KritzelChatRequest,
-  KritzelChatStopReason,
-  KritzelChatStreamEvent,
-  KritzelChatTransport,
-} from "@kritzel/react-editor";
+  UpdrawChatMessage,
+  UpdrawChatPart,
+  UpdrawChatRequest,
+  UpdrawChatStopReason,
+  UpdrawChatStreamEvent,
+  UpdrawChatTransport,
+} from "@updraw/react-editor";
 
 /**
  * A chat transport that calls the model provider straight from the browser, with the API key the user typed in. It
- * translates Kritzel's chat protocol to the provider's API and streams the answer back, so tool calls run while the
+ * translates Updraw's chat protocol to the provider's API and streams the answer back, so tool calls run while the
  * model still writes. A real app sends the requests through its own backend instead, with `createHttpTransport()`, so
  * that no key ever reaches the browser.
  */
@@ -73,7 +73,7 @@ export function detectProvider(apiKey: string): ProviderId | undefined {
 
 /** A transport, and the key it sends to the provider. */
 export interface BrowserTransport {
-  transport: KritzelChatTransport;
+  transport: UpdrawChatTransport;
   /** Connects a key, or disconnects with `null`. The next request uses it. */
   setCredentials(credentials: Credentials | null): void;
 }
@@ -131,7 +131,7 @@ interface AnthropicEvent {
   error?: { message?: string };
 }
 
-async function* streamAnthropic(provider: Provider, apiKey: string, request: KritzelChatRequest, signal: AbortSignal): AsyncGenerator<KritzelChatStreamEvent> {
+async function* streamAnthropic(provider: Provider, apiKey: string, request: UpdrawChatRequest, signal: AbortSignal): AsyncGenerator<UpdrawChatStreamEvent> {
   const response = await post(provider, "https://api.anthropic.com/v1/messages", signal, {
     headers: {
       "x-api-key": apiKey,
@@ -163,7 +163,7 @@ async function* streamAnthropic(provider: Provider, apiKey: string, request: Kri
   const closed = new Set<number>();
   const inputs = new Map<number, string>();
   // A call whose input is not valid JSON waits for the stop reason: a refusal can cut it off, and then it must not run.
-  let held: KritzelChatStreamEvent | undefined;
+  let held: UpdrawChatStreamEvent | undefined;
   let stopReason: string | undefined;
   let explanation: string | null | undefined;
   let ended = false;
@@ -202,7 +202,7 @@ async function* streamAnthropic(provider: Provider, apiKey: string, request: Kri
         const input = parseToolInput(inputs.get(index) ?? "");
         // Claude needs an object back; input that was cut off is answered by the tool with an error anyway.
         block.input = toInputObject(input);
-        const part: KritzelChatStreamEvent = { type: "part", part: { type: "tool-call", id: String(block.id), name: String(block.name), input } };
+        const part: UpdrawChatStreamEvent = { type: "part", part: { type: "tool-call", id: String(block.id), name: String(block.name), input } };
         if (typeof input === "string") {
           held = part;
         } else {
@@ -237,7 +237,7 @@ async function* streamAnthropic(provider: Provider, apiKey: string, request: Kri
 }
 
 /** Anthropic has no tool role: tool results are sent as user content. */
-function toAnthropicMessages(messages: KritzelChatMessage[]): unknown[] {
+function toAnthropicMessages(messages: UpdrawChatMessage[]): unknown[] {
   return messages.flatMap((message) => {
     const original = (message.providerData?.["anthropic"] as { content?: unknown[] } | undefined)?.content;
     if (message.role === "assistant" && original?.length) {
@@ -248,7 +248,7 @@ function toAnthropicMessages(messages: KritzelChatMessage[]): unknown[] {
   });
 }
 
-function toAnthropicBlock(part: KritzelChatPart): unknown[] {
+function toAnthropicBlock(part: UpdrawChatPart): unknown[] {
   switch (part.type) {
     case "text":
       return part.text ? [{ type: "text", text: part.text }] : [];
@@ -282,7 +282,7 @@ interface OpenAiCall {
   done: boolean;
 }
 
-async function* streamOpenAi(provider: Provider, apiKey: string, request: KritzelChatRequest, signal: AbortSignal): AsyncGenerator<KritzelChatStreamEvent> {
+async function* streamOpenAi(provider: Provider, apiKey: string, request: UpdrawChatRequest, signal: AbortSignal): AsyncGenerator<UpdrawChatStreamEvent> {
   const response = await post(provider, "https://api.openai.com/v1/chat/completions", signal, {
     headers: { authorization: `Bearer ${apiKey}` },
     body: {
@@ -347,7 +347,7 @@ async function* streamOpenAi(provider: Provider, apiKey: string, request: Kritze
   yield { type: "finish", stopReason: calls.length ? "tool-calls" : toStopReason(finishReason === "length") };
 }
 
-function* finishOpenAiCalls(calls: OpenAiCall[]): Generator<KritzelChatStreamEvent> {
+function* finishOpenAiCalls(calls: OpenAiCall[]): Generator<UpdrawChatStreamEvent> {
   for (const call of calls) {
     if (call && !call.done) {
       call.done = true;
@@ -357,7 +357,7 @@ function* finishOpenAiCalls(calls: OpenAiCall[]): Generator<KritzelChatStreamEve
 }
 
 /** OpenAI has a message per tool result, and takes the input of a tool call as JSON text. */
-function toOpenAiMessages(messages: KritzelChatMessage[]): unknown[] {
+function toOpenAiMessages(messages: UpdrawChatMessage[]): unknown[] {
   return messages.flatMap((message): unknown[] => {
     if (message.role === "tool") {
       return message.parts.flatMap((part) => (part.type === "tool-result" ? [{ role: "tool", tool_call_id: part.toolCallId, content: part.output }] : []));
@@ -393,7 +393,7 @@ interface GeminiChunk {
 }
 
 /** Gemini doesn't always name its calls, so the transport does. The prefix tells these IDs apart from Gemini's own. */
-const GEMINI_CALL_ID_PREFIX = "kritzel-call-";
+const GEMINI_CALL_ID_PREFIX = "updraw-call-";
 
 /**
  * Gemini wants a thought signature on the first call of every model turn. A turn that Gemini didn't write in one piece,
@@ -401,7 +401,7 @@ const GEMINI_CALL_ID_PREFIX = "kritzel-call-";
  */
 const GEMINI_SKIP_SIGNATURE = "skip_thought_signature_validator";
 
-async function* streamGemini(provider: Provider, apiKey: string, request: KritzelChatRequest, signal: AbortSignal): AsyncGenerator<KritzelChatStreamEvent> {
+async function* streamGemini(provider: Provider, apiKey: string, request: UpdrawChatRequest, signal: AbortSignal): AsyncGenerator<UpdrawChatStreamEvent> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${provider.model}:streamGenerateContent?alt=sse`;
   const response = await post(provider, url, signal, {
     headers: { "x-goog-api-key": apiKey },
@@ -455,7 +455,7 @@ async function* streamGemini(provider: Provider, apiKey: string, request: Kritze
 }
 
 /** Gemini calls the assistant "model" and takes tool results as user content. */
-function toGeminiContents(messages: KritzelChatMessage[]): { role: string; parts: unknown[] }[] {
+function toGeminiContents(messages: UpdrawChatMessage[]): { role: string; parts: unknown[] }[] {
   const contents: { role: string; parts: unknown[] }[] = [];
   for (const message of messages) {
     const original = (message.providerData?.["gemini"] as { parts?: unknown[] } | undefined)?.parts;
@@ -476,7 +476,7 @@ function toGeminiContents(messages: KritzelChatMessage[]): { role: string; parts
 }
 
 /** The parts of a message that Gemini didn't send in one piece. */
-function toGeminiParts(message: KritzelChatMessage): GeminiPart[] {
+function toGeminiParts(message: UpdrawChatMessage): GeminiPart[] {
   const parts = message.parts.flatMap((part) => toGeminiPart(part));
   const firstCall = parts.find((part) => part.functionCall);
   if (message.role === "assistant" && firstCall && !firstCall.thoughtSignature) {
@@ -485,7 +485,7 @@ function toGeminiParts(message: KritzelChatMessage): GeminiPart[] {
   return parts;
 }
 
-function toGeminiPart(part: KritzelChatPart): GeminiPart[] {
+function toGeminiPart(part: UpdrawChatPart): GeminiPart[] {
   switch (part.type) {
     case "text":
       return part.text ? [{ text: part.text }] : [];
@@ -651,6 +651,6 @@ function toInputObject(input: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
 }
 
-function toStopReason(cutOff: boolean): KritzelChatStopReason {
+function toStopReason(cutOff: boolean): UpdrawChatStopReason {
   return cutOff ? "max-tokens" : "end";
 }

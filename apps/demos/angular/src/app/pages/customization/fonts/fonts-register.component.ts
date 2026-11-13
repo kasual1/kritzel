@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, KritzelFontMap, KritzelTheme, KritzelText, KritzelWorkspace } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawFontMap, UpdrawTheme, UpdrawText, UpdrawWorkspace } from '@updraw/angular-editor';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 
-const customFontConfig: KritzelFontMap = {
+const customFontConfig: UpdrawFontMap = {
   'pacifico': {
     family: 'Pacifico',
     label: 'Pacifico Cursive',
@@ -14,14 +14,14 @@ const customFontConfig: KritzelFontMap = {
 
 @Component({
   selector: 'app-fonts-register',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
       <button (click)="addPacificoText()">Add Pacifico Text</button>
     </app-toolbar>
     <div class="editor-wrap">
-      <kritzel-editor
+      <updraw-editor
         editorId="fonts-register"
         [customFonts]="fonts"
         [workspaces]="workspaces()"
@@ -30,7 +30,7 @@ const customFontConfig: KritzelFontMap = {
         [isPanningEnabled]="false"
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="true"
-      ></kritzel-editor>
+      ></updraw-editor>
     </div>
   `,
   styles: [`
@@ -40,9 +40,9 @@ const customFontConfig: KritzelFontMap = {
   `],
 })
 export class FontsRegisterComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
-  themes: KritzelTheme[] = [{
+  themes: UpdrawTheme[] = [{
     ...angularThemeLight,
     name: 'custom',
     global: {
@@ -50,14 +50,14 @@ export class FontsRegisterComponent {
     }
   }];
 
-  fonts: KritzelFontMap = customFontConfig;
+  fonts: UpdrawFontMap = customFontConfig;
 
   workspaces = signal([
-    new KritzelWorkspace({
+    new UpdrawWorkspace({
       id: 'fonts-register',
       name: 'Custom Fonts',
       objects: [
-        new KritzelText({
+        new UpdrawText({
           text: 'Handwritten Pacifico Font',
           translateX: -180,
           translateY: -50,
@@ -71,7 +71,7 @@ export class FontsRegisterComponent {
 
   async addPacificoText() {
     const position = await this.randomViewportPosition();
-    const textObj = new KritzelText({
+    const textObj = new UpdrawText({
       text: 'Handwritten Pacifico Font',
       translateX: position.x,
       translateY: position.y,

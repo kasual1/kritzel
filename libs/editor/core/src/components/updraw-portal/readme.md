@@ -1,4 +1,4 @@
-# kritzel-portal
+# updraw-portal
 
 
 
@@ -33,19 +33,19 @@
 
 ### Used by
 
- - [kritzel-editor](../kritzel-editor)
- - [kritzel-menu-item](../kritzel-menu-item)
- - [kritzel-more-menu](../kritzel-more-menu)
- - [kritzel-split-button](../kritzel-split-button)
+ - [updraw-editor](../updraw-editor)
+ - [updraw-menu-item](../updraw-menu-item)
+ - [updraw-more-menu](../updraw-more-menu)
+ - [updraw-split-button](../updraw-split-button)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-editor --> kritzel-portal
-  kritzel-menu-item --> kritzel-portal
-  kritzel-more-menu --> kritzel-portal
-  kritzel-split-button --> kritzel-portal
-  style kritzel-portal fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-editor --> updraw-portal
+  updraw-menu-item --> updraw-portal
+  updraw-more-menu --> updraw-portal
+  updraw-split-button --> updraw-portal
+  style updraw-portal fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

@@ -1,11 +1,11 @@
-// Injected into every page of the recording context. Draws a small "Powered by kritzel.io" badge in the
+// Injected into every page of the recording context. Draws a small "Powered by updraw.io" badge in the
 // bottom right corner of the page, above everything else, so it ends up in the video.
 function installRecorderWatermark({ text }) {
 	// Only the top page gets the badge, not every iframe inside it.
-	if (window.top !== window || window.__kritzelRecorderWatermark) {
+	if (window.top !== window || window.__updrawRecorderWatermark) {
 		return;
 	}
-	window.__kritzelRecorderWatermark = true;
+	window.__updrawRecorderWatermark = true;
 
 	const STYLE = `
 		#__recorder-watermark {

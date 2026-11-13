@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, KritzelLoginConfig, KritzelWorkspace } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawLoginConfig, UpdrawWorkspace } from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -17,10 +17,10 @@ const providerIcons: Record<string, string> = {
 
 @Component({
   selector: 'app-user-management-providers',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="user-management-providers"
       [loginConfig]="loginConfig"
       [customSvgIcons]="providerIcons"
@@ -32,7 +32,7 @@ const providerIcons: Record<string, string> = {
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady()"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [
     `
@@ -56,7 +56,7 @@ const providerIcons: Record<string, string> = {
       .toolbar-note span {
         color: #555;
       }
-      kritzel-editor {
+      updraw-editor {
         flex: 1;
         min-height: 0;
       }
@@ -64,16 +64,16 @@ const providerIcons: Record<string, string> = {
   ],
 })
 export class UserManagementProvidersComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
   providerIcons = providerIcons;
 
-  loginConfig: KritzelLoginConfig = {
-    title: 'Sign in to Kritzel',
+  loginConfig: UpdrawLoginConfig = {
+    title: 'Sign in to Updraw',
     providers: [
       { name: 'google', icon: 'google', label: 'Continue with Google' },
       { name: 'facebook', icon: 'facebook', label: 'Continue with Facebook' },

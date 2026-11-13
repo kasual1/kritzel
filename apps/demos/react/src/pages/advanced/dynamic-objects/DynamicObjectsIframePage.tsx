@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { KritzelEditor, KritzelIframeObject, KritzelWorkspace } from "@kritzel/react-editor";
+import { UpdrawEditor, UpdrawIframeObject, UpdrawWorkspace } from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { mockChatPrompts, mockComponentDefinitions } from "./iframe-calculator-definitions";
@@ -21,9 +21,9 @@ function NavButton({ label, disabled, onClick, children }: { label: string; disa
   );
 }
 
-function createRuntimeObject(): KritzelIframeObject {
+function createRuntimeObject(): UpdrawIframeObject {
   const definition = mockComponentDefinitions[0];
-  const object = new KritzelIframeObject({
+  const object = new UpdrawIframeObject({
     content: definition.content,
     state: definition.initialState,
     title: definition.name,
@@ -40,7 +40,7 @@ function createRuntimeObject(): KritzelIframeObject {
 
 export function DynamicObjectsIframePage() {
   const runtimeObject = useMemo(() => createRuntimeObject(), []);
-  const workspaces = useMemo(() => [new KritzelWorkspace({ objects: [runtimeObject] })], [runtimeObject]);
+  const workspaces = useMemo(() => [new UpdrawWorkspace({ objects: [runtimeObject] })], [runtimeObject]);
   const [promptIndex, setPromptIndex] = useState(0);
   const [promptText, setPromptText] = useState(mockChatPrompts[0]);
   const responseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -69,7 +69,7 @@ export function DynamicObjectsIframePage() {
 
   return (
     <div style={{ position: "relative", height: "100%" }}>
-      <KritzelEditor
+      <UpdrawEditor
         editorId="dynamic-objects-iframe"
         theme="light"
         themes={[reactThemeLight, reactThemeDark]}

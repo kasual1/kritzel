@@ -1,29 +1,29 @@
-import type { KritzelAgenticInteractWithElementAction } from '../../interfaces/agentic-action.interface';
-import type { KritzelAgenticElementTarget } from '../../interfaces/agentic-cursor.interface';
+import type { UpdrawAgenticInteractWithElementAction } from '../../interfaces/agentic-action.interface';
+import type { UpdrawAgenticElementTarget } from '../../interfaces/agentic-cursor.interface';
 import type {
-  KritzelElementAwareObject,
-  KritzelObjectElementInteraction,
-  KritzelObjectElementInteractionResult,
+  UpdrawElementAwareObject,
+  UpdrawObjectElementInteraction,
+  UpdrawObjectElementInteractionResult,
 } from '../../interfaces/object-element.interface';
-import type { KritzelAgenticActionExecutor, KritzelAgenticPreparation, KritzelAgenticRefusal } from '../../types/agentic-action.types';
-import type { KritzelAgenticActionRun } from '../managers/agentic-action-run.class';
+import type { UpdrawAgenticActionExecutor, UpdrawAgenticPreparation, UpdrawAgenticRefusal } from '../../types/agentic-action.types';
+import type { UpdrawAgenticActionRun } from '../managers/agentic-action-run.class';
 import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor } from '../../helpers/agentic-geometry.helper';
 import { assertElementTarget } from '../../helpers/agentic-validation.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { readElementInteraction } from '../objects/iframe-element-bridge.class';
-import { KritzelAgenticAbortError } from '../agent/agentic-abort-error.class';
+import { UpdrawAgenticAbortError } from '../agent/agentic-abort-error.class';
 
 /** An object whose content elements can be interacted with. */
-type KritzelInteractiveElementObject = KritzelElementAwareObject & Required<Pick<KritzelElementAwareObject, 'interactWithElement'>>;
+type UpdrawInteractiveElementObject = UpdrawElementAwareObject & Required<Pick<UpdrawElementAwareObject, 'interactWithElement'>>;
 
-/** Whether an object's content elements can be interacted with (see `KritzelElementAwareObject.interactWithElement`). */
-export function isInteractiveElementObject(object: unknown): object is KritzelInteractiveElementObject {
-  return ObjectHelper.isKritzelElementAwareObject(object) && typeof object.interactWithElement === 'function';
+/** Whether an object's content elements can be interacted with (see `UpdrawElementAwareObject.interactWithElement`). */
+export function isInteractiveElementObject(object: unknown): object is UpdrawInteractiveElementObject {
+  return ObjectHelper.isUpdrawElementAwareObject(object) && typeof object.interactWithElement === 'function';
 }
 
 /** Throws a `TypeError` unless `interaction` is a valid element interaction. */
-export function assertElementInteraction(interaction: unknown, field: string): asserts interaction is KritzelObjectElementInteraction {
+export function assertElementInteraction(interaction: unknown, field: string): asserts interaction is UpdrawObjectElementInteraction {
   try {
     readElementInteraction(interaction);
   } catch (error) {
@@ -33,9 +33,9 @@ export function assertElementInteraction(interaction: unknown, field: string): a
 
 /** Preparation of an action on an element: the object must exist and have elements; it is only read. */
 export function prepareElementTarget(
-  run: KritzelAgenticActionRun,
-  target: KritzelAgenticElementTarget,
-): KritzelAgenticPreparation | KritzelAgenticRefusal {
+  run: UpdrawAgenticActionRun,
+  target: UpdrawAgenticElementTarget,
+): UpdrawAgenticPreparation | UpdrawAgenticRefusal {
   const object = run.map!.findById(target.objectId);
   if (!object || isSelectionObject(object) || !isInteractiveElementObject(object)) {
     return { reason: 'invalid-target', objectIds: [target.objectId] };
@@ -52,12 +52,12 @@ export function prepareElementTarget(
  * `'element-interaction-failed'` when the content refuses the interaction.
  */
 export async function performElementInteraction(
-  run: KritzelAgenticActionRun,
-  target: KritzelAgenticElementTarget,
-  interaction: KritzelObjectElementInteraction,
+  run: UpdrawAgenticActionRun,
+  target: UpdrawAgenticElementTarget,
+  interaction: UpdrawObjectElementInteraction,
 ): Promise<string[]> {
   const { objectId, selector } = target;
-  const currentObject = (): KritzelInteractiveElementObject => {
+  const currentObject = (): UpdrawInteractiveElementObject => {
     const object = run.map?.findById(objectId);
     if (!object || !isInteractiveElementObject(object)) {
       run.stop('object-removed', [objectId]);
@@ -66,11 +66,11 @@ export async function performElementInteraction(
   };
   const hasCursor = run.actorKind !== 'user';
   // An object that throws (an implementation that rejects the selector, for example) fails the action like a refusal.
-  const ask = async (options?: { trial: true }): Promise<KritzelObjectElementInteractionResult> => {
+  const ask = async (options?: { trial: true }): Promise<UpdrawObjectElementInteractionResult> => {
     try {
       return await currentObject().interactWithElement(selector, interaction, ...(options ? [options] : []));
     } catch (error) {
-      if (error instanceof KritzelAgenticAbortError) {
+      if (error instanceof UpdrawAgenticAbortError) {
         throw error;
       }
       return { completed: false, reason: 'invalid-value', message: error instanceof Error ? error.message : String(error) };
@@ -85,7 +85,7 @@ export async function performElementInteraction(
       currentObject().trackElement(selector);
       tracking = true;
     } catch (error) {
-      if (error instanceof KritzelAgenticAbortError) {
+      if (error instanceof UpdrawAgenticAbortError) {
         throw error;
       }
     }
@@ -93,7 +93,7 @@ export async function performElementInteraction(
     // replacement takes the tracking over.
     run.onSettle(() => {
       const current = tracking ? run.core.store.objects?.findById(objectId) : null;
-      if (ObjectHelper.isKritzelElementAwareObject(current)) {
+      if (ObjectHelper.isUpdrawElementAwareObject(current)) {
         current.untrackElement(selector);
       }
     });
@@ -140,7 +140,7 @@ export async function performElementInteraction(
 }
 
 /** Where the cursor flies: the target's anchor on the visible part of the element, as the trial reported it. */
-function destinationOf(object: KritzelInteractiveElementObject, target: KritzelAgenticElementTarget, trial: KritzelObjectElementInteractionResult) {
+function destinationOf(object: UpdrawInteractiveElementObject, target: UpdrawAgenticElementTarget, trial: UpdrawObjectElementInteractionResult) {
   const rect = trial.element?.visibleRect ?? trial.element?.rect;
   if (!rect) {
     return { objectId: target.objectId, anchor: 'center' as const, ...(target.offset ? { offset: target.offset } : {}) };
@@ -158,7 +158,7 @@ function destinationOf(object: KritzelInteractiveElementObject, target: KritzelA
 }
 
 /** Stops the run because the content refused the interaction, keeping what it reported for the result. */
-function failElementInteraction(run: KritzelAgenticActionRun, target: KritzelAgenticElementTarget, result: KritzelObjectElementInteractionResult): never {
+function failElementInteraction(run: UpdrawAgenticActionRun, target: UpdrawAgenticElementTarget, result: UpdrawObjectElementInteractionResult): never {
   let message = `Element "${target.selector}": ${result.message ?? 'the interaction could not be performed.'}`;
   if (result.coveredBy) {
     message += ` It is covered by "${result.coveredBy.selector}"${result.coveredBy.text ? ` (${JSON.stringify(result.coveredBy.text)})` : ''}.`;
@@ -172,7 +172,7 @@ function failElementInteraction(run: KritzelAgenticActionRun, target: KritzelAge
 }
 
 /** `interactWithElement`: performs an interaction with an element inside an object. */
-export const interactWithElementExecutor: KritzelAgenticActionExecutor<KritzelAgenticInteractWithElementAction> = {
+export const interactWithElementExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticInteractWithElementAction> = {
   mutates: false,
 
   validate(action) {

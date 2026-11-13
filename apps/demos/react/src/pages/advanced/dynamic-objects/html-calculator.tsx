@@ -1,4 +1,4 @@
-import { KritzelDynamicObject } from "@kritzel/react-editor";
+import { UpdrawDynamicObject } from "@updraw/react-editor";
 
 export const HTML_CALCULATOR_RENDERER_KEY = "react-dynamic-object-html-calculator";
 
@@ -144,10 +144,10 @@ export function createHtmlCalculator(initialState: CalculatorState): HtmlCalcula
   return { element: root, destroy: () => cleanup.forEach((callback) => callback()), getState: () => ({ ...state }) };
 }
 
-export function createHtmlCalculatorObject(): KritzelDynamicObject {
+export function createHtmlCalculatorObject(): UpdrawDynamicObject {
   const placeholder = document.createElement("div");
   placeholder.textContent = "Loading Calculator...";
-  const object = new KritzelDynamicObject({
+  const object = new UpdrawDynamicObject({
     element: placeholder,
     rendererKey: HTML_CALCULATOR_RENDERER_KEY,
     rendererData: createCalculatorInitialState(),

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getEditorRef, KritzelEditor, KritzelWorkspace } from '@kritzel/vue-editor'
+import { getEditorRef, UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -8,7 +8,7 @@ import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 
 async function notify(type: 'info' | 'warning' | 'error') {
   await editor.value?.triggerNotification({
@@ -25,7 +25,7 @@ async function notify(type: 'info' | 'warning' | 'error') {
       <button @click="notify('warning')">Show warning</button>
       <button @click="notify('error')">Show error</button>
     </Toolbar>
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="notifications-trigger"
       theme="light"

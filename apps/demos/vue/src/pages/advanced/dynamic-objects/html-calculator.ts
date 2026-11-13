@@ -1,4 +1,4 @@
-import { KritzelDynamicObject } from '@kritzel/vue-editor'
+import { UpdrawDynamicObject } from '@updraw/vue-editor'
 import {
   calculatorOperatorLabels,
   createCalculatorInitialState,
@@ -123,10 +123,10 @@ export function createHtmlCalculator(initialState: CalculatorState): HtmlCalcula
   }
 }
 
-export function createHtmlCalculatorObject(): KritzelDynamicObject {
+export function createHtmlCalculatorObject(): UpdrawDynamicObject {
   const placeholder = document.createElement('div')
   placeholder.textContent = 'Loading Calculator...'
-  const object = new KritzelDynamicObject({
+  const object = new UpdrawDynamicObject({
     element: placeholder,
     rendererKey: HTML_CALCULATOR_RENDERER_KEY,
     rendererData: createCalculatorInitialState(),

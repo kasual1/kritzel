@@ -1,23 +1,23 @@
 ---
 sidebar_label: Icons
-title: "Icons | Kritzel for React"
-description: "Reference for the default Kritzel icon names available to Kritzel React applications."
+title: "Icons | Updraw for React"
+description: "Reference for the default Updraw icon names available to Updraw React applications."
 toc_max_heading_level: 2
 ---
 
 # Icons
 
-Kritzel registers the following default SVG icons through `KritzelIconRegistry`. Use these names anywhere an API accepts a `KritzelIconName`, such as toolbar items, menu items, login providers, cursor configuration, or the `customSvgIcons` map.
+Updraw registers the following default SVG icons through `UpdrawIconRegistry`. Use these names anywhere an API accepts an `UpdrawIconName`, such as toolbar items, menu items, login providers, cursor configuration, or the `customSvgIcons` map.
 
-Custom icon names are still supported. Register them through the `customSvgIcons` prop or `KritzelIconRegistry.register()` and then reference the same string where an icon name is accepted.
+Custom icon names are still supported. Register them through the `customSvgIcons` prop or `UpdrawIconRegistry.register()` and then reference the same string where an icon name is accepted.
 
 ```ts
-import { KritzelDefaultIconName, KritzelIconName, KritzelSvgIconMap } from '@kritzel/react-editor';
+import { UpdrawDefaultIconName, UpdrawIconName, UpdrawSvgIconMap } from '@updraw/react-editor';
 
-const builtInIcon: KritzelDefaultIconName = 'shapeRectangle';
-const customIcon: KritzelIconName = 'brandExport';
+const builtInIcon: UpdrawDefaultIconName = 'shapeRectangle';
+const customIcon: UpdrawIconName = 'brandExport';
 
-const customSvgIcons: KritzelSvgIconMap = {
+const customSvgIcons: UpdrawSvgIconMap = {
   shapeRectangle: '<svg><!-- replacement SVG --></svg>',
   brandExport: '<svg><!-- custom SVG --></svg>',
 };

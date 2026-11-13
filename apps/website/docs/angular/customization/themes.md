@@ -1,8 +1,8 @@
 ---
 sidebar_label: Themes
 displayed_sidebar: tutorialSidebar
-title: "Themes | Kritzel for Angular"
-description: "Understand how to customize Kritzel with themes."
+title: "Themes | Updraw for Angular"
+description: "Understand how to customize Updraw with themes."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,9 +11,9 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel allows you to fully customize the appearance of the editor by providing a dedicated theming interface. A theme is a JSON-like structure containing the editor's configurable properties. You can either choose one of the built-in themes or create your own.
+Updraw allows you to fully customize the appearance of the editor by providing a dedicated theming interface. A theme is a JSON-like structure containing the editor's configurable properties. You can either choose one of the built-in themes or create your own.
 
-Kritzel comes with two built-in themes, `lightTheme` and `darkTheme`, and offers the `KritzelTheme` interface for creating custom themes.
+Updraw comes with two built-in themes, `lightTheme` and `darkTheme`, and offers the `UpdrawTheme` interface for creating custom themes.
 
 The full list of customizable properties can be found in the [API Reference](../api-reference/theming.md).
 
@@ -41,7 +41,7 @@ Listen for the `themeChange` event to react whenever the active theme changes. T
 
 ## Creating a Custom Theme
 
-Create a custom theme by overriding the groups and properties of `KritzelTheme`, and providing it as part of the editor's `[themes]` array . Similar to toggling the default themes, activate it by setting its name through the `[theme]` binding.
+Create a custom theme by overriding the groups and properties of `UpdrawTheme`, and providing it as part of the editor's `[themes]` array . Similar to toggling the default themes, activate it by setting its name through the `[theme]` binding.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"

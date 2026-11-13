@@ -2,16 +2,16 @@
 
 sidebar_label: Engine
 displayed_sidebar: tutorialSidebar
-title: "Engine API Reference | Kritzel for Vue"
-description: "Complete API reference for the headless Kritzel engine: rendering, viewport, pointer events, and workspace management."
+title: "Engine API Reference | Updraw for Vue"
+description: "Complete API reference for the headless Updraw engine: rendering, viewport, pointer events, and workspace management."
 toc_max_heading_level: 2
 ---
 
 # Engine
 
-The `<KritzelEngine>` is the low-level headless canvas primitive. It handles rendering, viewport management, pointer events, undo/redo, and workspace management with no built-in controls.
+The `<UpdrawEngine>` is the low-level headless canvas primitive. It handles rendering, viewport management, pointer events, undo/redo, and workspace management with no built-in controls.
 
-All methods are async and return Promises. The `<KritzelEditor>` exposes all the same methods.
+All methods are async and return Promises. The `<UpdrawEditor>` exposes all the same methods.
 
 **Common props**
 
@@ -23,30 +23,30 @@ All methods are async and return Promises. The `<KritzelEditor>` exposes all the
 | lockDrawingScale | boolean | true | Fixed visual size for drawn objects regardless of zoom |
 | scaleMax | number | ABSOLUTE_SCALE_MAX | Maximum zoom scale |
 | scaleMin | number | ABSOLUTE_SCALE_MIN | Minimum zoom scale |
-| syncConfig | KritzelSyncConfig | undefined | Sync provider configuration |
+| syncConfig | UpdrawSyncConfig | undefined | Sync provider configuration |
 | theme | 'light' \| 'dark' | 'light' | Active theme |
 | viewportBoundaryLeft | number | -Infinity | Left pan boundary |
 | viewportBoundaryRight | number | Infinity | Right pan boundary |
 | viewportBoundaryTop | number | -Infinity | Top pan boundary |
 | viewportBoundaryBottom | number | Infinity | Bottom pan boundary |
-| workspaces | KritzelWorkspace[] | undefined | Optional authoritative workspace catalog for this engine instance. Provider-only workspaces are hidden but not deleted. |
+| workspaces | UpdrawWorkspace[] | undefined | Optional authoritative workspace catalog for this engine instance. Provider-only workspaces are hidden but not deleted. |
 
 **Common events**
 
 | Event | Payload Type | Description |
 |-------|-------------|-------------|
-| isEngineReady | KritzelEngineState | Emitted when the engine is fully initialized |
-| activeToolChange | KritzelBaseTool | Emitted when the active tool changes |
+| isEngineReady | UpdrawEngineState | Emitted when the engine is fully initialized |
+| activeToolChange | UpdrawBaseTool | Emitted when the active tool changes |
 | longpress | PointerEvent | Emitted on long-press (useful for mobile context menus) |
-| objectsChange | KritzelBaseObject[] | Emitted when objects are added, removed, or modified |
+| objectsChange | UpdrawBaseObject[] | Emitted when objects are added, removed, or modified |
 | objectsAdded | ObjectsAddedEvent | Emitted when objects are added. `source` is set when an agent made the change. |
 | objectsRemoved | ObjectsRemovedEvent | Emitted when objects are removed. `source` is set when an agent made the change. |
 | objectsUpdated | ObjectsUpdatedEvent | Emitted when objects are updated. `source` is set when an agent made the change. |
-| objectsInViewportChange | KritzelBaseObject[] | Emitted when visible objects change (after pan/zoom) |
+| objectsInViewportChange | UpdrawBaseObject[] | Emitted when visible objects change (after pan/zoom) |
 | objectsSelectionChange | void | Emitted when selected objects change |
-| undoStateChange | KritzelUndoState | Emitted when undo/redo availability changes |
-| viewportChange | KritzelViewportState | Emitted on pan, zoom, or resize |
-| workspacesChange | KritzelWorkspace[] | Emitted when workspaces are created, updated, or deleted |
+| undoStateChange | UpdrawUndoState | Emitted when undo/redo availability changes |
+| viewportChange | UpdrawViewportState | Emitted on pan, zoom, or resize |
+| workspacesChange | UpdrawWorkspace[] | Emitted when workspaces are created, updated, or deleted |
 
 ---
 
@@ -56,7 +56,7 @@ All methods are async and return Promises. The `<KritzelEditor>` exposes all the
 
 | Property | Type | Description |
 |----------|------|-------------|
-| objectConfig | KritzelObjectConfig | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object. See [Configuring Objects](../fundamentals/objects.md#configuring-objects). |
+| objectConfig | UpdrawObjectConfig | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object. See [Configuring Objects](../fundamentals/objects.md#configuring-objects). |
 
 ### Methods
 
@@ -65,7 +65,7 @@ All methods are async and return Promises. The `<KritzelEditor>` exposes all the
 Adds a new object to the canvas. The object is automatically assigned an ID, core reference, and z-index.
 
 ```ts
-addObject<T extends KritzelBaseObject>(object: T): Promise<T | null>
+addObject<T extends UpdrawBaseObject>(object: T): Promise<T | null>
 ```
 
 #### addObjects
@@ -73,7 +73,7 @@ addObject<T extends KritzelBaseObject>(object: T): Promise<T | null>
 Adds multiple objects in one undo step and render cycle.
 
 ```ts
-addObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]>
+addObjects<T extends UpdrawBaseObject>(objects: T[]): Promise<T[]>
 ```
 
 #### removeObject
@@ -81,7 +81,7 @@ addObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]>
 Removes an object from the canvas.
 
 ```ts
-removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null>
+removeObject<T extends UpdrawBaseObject>(object: T): Promise<T | null>
 ```
 
 #### removeObjects
@@ -89,7 +89,7 @@ removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null>
 Removes multiple objects in one batch operation.
 
 ```ts
-removeObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]>
+removeObjects<T extends UpdrawBaseObject>(objects: T[]): Promise<T[]>
 ```
 
 #### updateObject
@@ -97,7 +97,7 @@ removeObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]>
 Updates properties of an existing canvas object.
 
 ```ts
-updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null>
+updateObject<T extends UpdrawBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null>
 ```
 
 #### getObjectById
@@ -105,7 +105,7 @@ updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<
 Retrieves a canvas object by its unique ID.
 
 ```ts
-getObjectById<T extends KritzelBaseObject>(id: string): Promise<T | null>
+getObjectById<T extends UpdrawBaseObject>(id: string): Promise<T | null>
 ```
 
 #### getAllObjects
@@ -113,7 +113,7 @@ getObjectById<T extends KritzelBaseObject>(id: string): Promise<T | null>
 Returns all objects on the canvas across all layers.
 
 ```ts
-getAllObjects<T extends KritzelBaseObject>: Promise<T[]>
+getAllObjects<T extends UpdrawBaseObject>: Promise<T[]>
 ```
 
 #### findObjects
@@ -121,7 +121,7 @@ getAllObjects<T extends KritzelBaseObject>: Promise<T[]>
 Returns all objects matching the given predicate. Excludes internal selection-related objects.
 
 ```ts
-findObjects<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject) => boolean): Promise<T[]>
+findObjects<T extends UpdrawBaseObject>(predicate: (obj: UpdrawBaseObject) => boolean): Promise<T[]>
 ```
 
 #### getObjectsTotalCount
@@ -137,7 +137,7 @@ getObjectsTotalCount: Promise<number>
 Returns all objects currently visible within the viewport bounds.
 
 ```ts
-getObjectsInViewport: Promise<KritzelBaseObject[]>
+getObjectsInViewport: Promise<UpdrawBaseObject[]>
 ```
 
 ---
@@ -149,7 +149,7 @@ getObjectsInViewport: Promise<KritzelBaseObject[]>
 Returns the currently selected objects. Returns an empty array if nothing is selected.
 
 ```ts
-getSelectedObjects: Promise<KritzelBaseObject[]>
+getSelectedObjects: Promise<UpdrawBaseObject[]>
 ```
 
 #### selectObjects
@@ -157,7 +157,7 @@ getSelectedObjects: Promise<KritzelBaseObject[]>
 Programmatically selects the given objects. Switches to the selection tool automatically.
 
 ```ts
-selectObjects(objects: KritzelBaseObject[]): Promise<void>
+selectObjects(objects: UpdrawBaseObject[]): Promise<void>
 ```
 
 #### selectAllObjectsInViewport
@@ -193,7 +193,7 @@ triggerSelectionChange: Promise<void>
 Returns the current viewport state including position, scale, and dimensions.
 
 ```ts
-getViewport: Promise<KritzelViewportState>
+getViewport: Promise<UpdrawViewportState>
 ```
 
 #### setViewport
@@ -217,7 +217,7 @@ panTo(x: number, y: number): Promise<void>
 Pans to an object without changing scale.
 
 ```ts
-panToObject(object: KritzelBaseObject): Promise<void>
+panToObject(object: UpdrawBaseObject): Promise<void>
 ```
 
 #### zoomTo
@@ -241,12 +241,12 @@ Zooms out by one configured step: `zoomOut(): Promise<void>`.
 Pans and zooms the viewport to center on the given object.
 
 ```ts
-centerObjectInViewport(object: KritzelBaseObject): Promise<KritzelBaseObject>
+centerObjectInViewport(object: UpdrawBaseObject): Promise<UpdrawBaseObject>
 ```
 
 #### centerObjects
 
-Centers the combined bounds of supplied objects: `centerObjects(objects: KritzelBaseObject[]): Promise<void>`.
+Centers the combined bounds of supplied objects: `centerObjects(objects: UpdrawBaseObject[]): Promise<void>`.
 
 #### centerAllObjects
 
@@ -292,10 +292,10 @@ setActiveWorkspace(id: string): Promise<void>
 
 #### createWorkspace
 
-Creates a new workspace and emits a `workspacesChange` event. Accepts a `KritzelWorkspace` instance.
+Creates a new workspace and emits a `workspacesChange` event. Accepts an `UpdrawWorkspace` instance.
 
 ```ts
-createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null>
+createWorkspace(workspace: UpdrawWorkspace): Promise<UpdrawWorkspace | null>
 ```
 
 #### updateWorkspace
@@ -303,7 +303,7 @@ createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null>
 Applies a workspace as declared and emits a `workspacesChange` event. Metadata and viewport are always applied. When `workspace.objects` is set it is treated as the complete desired object set: objects are matched by ID, unknown IDs are added, known IDs are updated, and objects missing from the list are removed. Leave `objects` `undefined` to keep the current objects, or pass `[]` to remove them all. Updating the objects of a workspace that is not currently active requires a configured sync provider.
 
 ```ts
-updateWorkspace(workspace: KritzelWorkspace): Promise<void>
+updateWorkspace(workspace: UpdrawWorkspace): Promise<void>
 ```
 
 #### deleteWorkspace
@@ -311,7 +311,7 @@ updateWorkspace(workspace: KritzelWorkspace): Promise<void>
 Deletes a workspace and emits a `workspacesChange` event.
 
 ```ts
-deleteWorkspace(workspace: KritzelWorkspace): Promise<void>
+deleteWorkspace(workspace: UpdrawWorkspace): Promise<void>
 ```
 
 #### getWorkspaces
@@ -319,7 +319,7 @@ deleteWorkspace(workspace: KritzelWorkspace): Promise<void>
 Returns all available workspaces.
 
 ```ts
-getWorkspaces: Promise<KritzelWorkspace[]>
+getWorkspaces: Promise<UpdrawWorkspace[]>
 ```
 
 #### getActiveWorkspace
@@ -327,7 +327,7 @@ getWorkspaces: Promise<KritzelWorkspace[]>
 Returns the currently active workspace.
 
 ```ts
-getActiveWorkspace: Promise<KritzelWorkspace>
+getActiveWorkspace: Promise<UpdrawWorkspace>
 ```
 
 #### getIsPublic
@@ -354,8 +354,8 @@ Registers a new drawing tool with the engine.
 registerTool(
   toolName: string,
   toolClass: any,
-  toolConfig?: KritzelBrushToolConfig | KritzelLineToolConfig | KritzelTextToolConfig | KritzelShapeToolConfig
-): Promise<KritzelBaseTool>
+  toolConfig?: UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawTextToolConfig | UpdrawShapeToolConfig
+): Promise<UpdrawBaseTool>
 ```
 
 #### setActiveTool
@@ -427,7 +427,7 @@ delete: Promise<void>
 Moves an object one layer forward in the z-order, past the next layer above it. If omitted, applies to the current selection and moves each selected layer. A group is one layer, so all of its children move together; a grouped object moves within its group.
 
 ```ts
-bringForward(object?: KritzelBaseObject): Promise<void>
+bringForward(object?: UpdrawBaseObject): Promise<void>
 ```
 
 #### sendBackward
@@ -435,7 +435,7 @@ bringForward(object?: KritzelBaseObject): Promise<void>
 Moves an object one layer backward in the z-order, past the next layer below it. If omitted, applies to the current selection and moves each selected layer. A group is one layer, so all of its children move together; a grouped object moves within its group.
 
 ```ts
-sendBackward(object?: KritzelBaseObject): Promise<void>
+sendBackward(object?: UpdrawBaseObject): Promise<void>
 ```
 
 #### bringToFront
@@ -443,7 +443,7 @@ sendBackward(object?: KritzelBaseObject): Promise<void>
 Moves an object to the very front of the z-order. If omitted, applies to the current selection, keeping the relative order of the selected layers. A group moves together with all of its children; a grouped object moves to the front of its group.
 
 ```ts
-bringToFront(object?: KritzelBaseObject): Promise<void>
+bringToFront(object?: UpdrawBaseObject): Promise<void>
 ```
 
 #### sendToBack
@@ -451,7 +451,7 @@ bringToFront(object?: KritzelBaseObject): Promise<void>
 Moves an object to the very back of the z-order. If omitted, applies to the current selection, keeping the relative order of the selected layers. A group moves together with all of its children; a grouped object moves to the back of its group.
 
 ```ts
-sendToBack(object?: KritzelBaseObject): Promise<void>
+sendToBack(object?: UpdrawBaseObject): Promise<void>
 ```
 
 ---
@@ -463,7 +463,7 @@ sendToBack(object?: KritzelBaseObject): Promise<void>
 Aligns the currently selected objects according to the specified alignment.
 
 ```ts
-alignObjects(alignment: KritzelAlignment): Promise<void>
+alignObjects(alignment: UpdrawAlignment): Promise<void>
 ```
 
 Alignment values: `StartHorizontal`, `CenterHorizontal`, `EndHorizontal`, `StartVertical`, `CenterVertical`, `EndVertical`.
@@ -474,18 +474,18 @@ Alignment values: `StartHorizontal`, `CenterHorizontal`, `EndHorizontal`, `Start
 
 #### group
 
-Creates a group (`KritzelGroup`) from the given objects. Requires at least two objects. They become one layer at the position of the topmost object, in a single undoable step. Objects are resolved by id, so stale references work; objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. Selected objects that end up in the group are replaced by the group in the selection. Resolves to the created group, or `null` (with a console warning) when fewer than two objects could be grouped. To group the current selection, pass `await getSelectedObjects()`.
+Creates a group (`UpdrawGroup`) from the given objects. Requires at least two objects. They become one layer at the position of the topmost object, in a single undoable step. Objects are resolved by id, so stale references work; objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. Selected objects that end up in the group are replaced by the group in the selection. Resolves to the created group, or `null` (with a console warning) when fewer than two objects could be grouped. To group the current selection, pass `await getSelectedObjects()`.
 
 ```ts
-group(objects: KritzelBaseObject[]): Promise<KritzelGroup | null>
+group(objects: UpdrawBaseObject[]): Promise<UpdrawGroup | null>
 ```
 
 #### ungroup
 
-Ungroups the given groups. Their children become individual objects again and keep their stacking order; the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step. Groups are resolved by id, so stale references work; entries that are not a `KritzelGroup` or not in the active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their children. Resolves to the extracted children. To ungroup the current selection, pass the `KritzelGroup` objects from `await getSelectedObjects()`.
+Ungroups the given groups. Their children become individual objects again and keep their stacking order; the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step. Groups are resolved by id, so stale references work; entries that are not an `UpdrawGroup` or not in the active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their children. Resolves to the extracted children. To ungroup the current selection, pass the `UpdrawGroup` objects from `await getSelectedObjects()`.
 
 ```ts
-ungroup(groups: KritzelGroup[]): Promise<KritzelBaseObject[]>
+ungroup(groups: UpdrawGroup[]): Promise<UpdrawBaseObject[]>
 ```
 
 ---
@@ -538,15 +538,15 @@ exportViewportAsSvg: Promise<void>
 
 #### canExportSelectedObjectAs
 
-Checks whether the selected object supports a format: `canExportSelectedObjectAs(format: KritzelExportFormat): Promise<boolean>`.
+Checks whether the selected object supports a format: `canExportSelectedObjectAs(format: UpdrawExportFormat): Promise<boolean>`.
 
 #### exportSelectedObject
 
-Exports the selected object: `exportSelectedObject(format: KritzelExportFormat): Promise<void>`.
+Exports the selected object: `exportSelectedObject(format: UpdrawExportFormat): Promise<void>`.
 
 #### getSelectedObjectSupportedExportFormats
 
-Returns supported selected-object formats: `getSelectedObjectSupportedExportFormats(): Promise<KritzelExportFormat[]>`.
+Returns supported selected-object formats: `getSelectedObjectSupportedExportFormats(): Promise<UpdrawExportFormat[]>`.
 
 #### exportAsJson
 
@@ -578,15 +578,15 @@ Opens a file picker and imports a workspace: `importFromFile(): Promise<void>`.
 |----------|------|-------------|
 | fallbackLocale | LocaleCode | Locale used to resolve terms missing from the active locale. |
 | locale | LocaleCode | Current locale code applied to the engine. |
-| locales | KritzelLocale[] | Available locale definitions with optional term overrides. |
+| locales | UpdrawLocale[] | Available locale definitions with optional term overrides. |
 | theme | ThemeCode | Current theme applied to the engine. |
-| themes | KritzelTheme[] | Available themes for the engine. |
+| themes | UpdrawTheme[] | Available themes for the engine. |
 
 ### Methods
 
 #### registerLocales
 
-Registers locale definitions: `registerLocales(locales: KritzelLocale[]): Promise<void>`.
+Registers locale definitions: `registerLocales(locales: UpdrawLocale[]): Promise<void>`.
 
 #### setLocale
 
@@ -606,19 +606,19 @@ Returns available code/label options: `getAvailableLocaleOptions(): Promise<{ co
 
 #### t
 
-Resolves a localized term: `t(key: KritzelTermKey, vars?: KritzelTermVars): Promise<string>`.
+Resolves a localized term: `t(key: UpdrawTermKey, vars?: UpdrawTermVars): Promise<string>`.
 
 #### getResolvedTerms
 
-Returns all resolved terms: `getResolvedTerms(): Promise<Partial<Record<KritzelTermKey, string>>>`.
+Returns all resolved terms: `getResolvedTerms(): Promise<Partial<Record<UpdrawTermKey, string>>>`.
 
 #### saveSettings
 
-Persists settings: `saveSettings(settings: KritzelSettingsConfig): Promise<void>`.
+Persists settings: `saveSettings(settings: UpdrawSettingsConfig): Promise<void>`.
 
 #### loadSettings
 
-Loads persisted settings: `loadSettings(): Promise<Partial<KritzelSettingsConfig> | null>`.
+Loads persisted settings: `loadSettings(): Promise<Partial<UpdrawSettingsConfig> | null>`.
 
 ## Context Menu & Lifecycle
 
@@ -626,12 +626,12 @@ Loads persisted settings: `loadSettings(): Promise<Partial<KritzelSettingsConfig
 
 | Property | Type | Description |
 |----------|------|-------------|
-| assetStorageConfig | KritzelAssetStorageConfig | Configuration for binary asset storage providers. |
+| assetStorageConfig | UpdrawAssetStorageConfig | Configuration for binary asset storage providers. |
 | cursorTarget | HTMLElement | Element to apply cursor styles to. |
-| debugInfo | KritzelDebugInfo | Controls visible debug overlays. |
+| debugInfo | UpdrawDebugInfo | Controls visible debug overlays. |
 | editorId | string | Identifier for namespacing storage keys across engine instances. |
 | globalContextMenuItems | ContextMenuItem[] | Items shown on the canvas background context menu. |
-| isWatermarkVisible | boolean | Show or hide the "Powered by Kritzel" watermark (default `true`). Keeping it visible helps support the project. |
+| isWatermarkVisible | boolean | Show or hide the "Powered by Updraw" watermark (default `true`). Keeping it visible helps support the project. |
 | lockDrawingScale | boolean | Keeps drawn objects at a fixed visual size across zoom levels. |
 | objectContextMenuItems | ContextMenuItem[] | Items shown for selected objects. |
 
@@ -639,10 +639,10 @@ Loads persisted settings: `loadSettings(): Promise<Partial<KritzelSettingsConfig
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| contextMenuStateChange | KritzelContextMenuState | Emitted when context-menu state changes. |
-| isEngineReady | KritzelEngineState | Emitted when the engine is ready for interaction. |
+| contextMenuStateChange | UpdrawContextMenuState | Emitted when context-menu state changes. |
+| isEngineReady | UpdrawEngineState | Emitted when the engine is ready for interaction. |
 | longpress | PointerEvent | Emitted on touch or pen long-press. |
-| notificationsChange | KritzelNotification | Emitted when notifications change. |
+| notificationsChange | UpdrawNotification | Emitted when notifications change. |
 
 ### Methods
 
@@ -656,7 +656,7 @@ Hides the context menu: `hideContextMenu(): Promise<void>`.
 
 #### getDisplayableShortcuts
 
-Returns shortcuts without actions or conditions: `getDisplayableShortcuts(): Promise<Omit<KritzelShortcut, "action" | "condition">[]>`.
+Returns shortcuts without actions or conditions: `getDisplayableShortcuts(): Promise<Omit<UpdrawShortcut, "action" | "condition">[]>`.
 
 #### beginSceneBootstrap
 
@@ -668,28 +668,28 @@ Ends scene bootstrap: `endSceneBootstrap(): Promise<void>`.
 
 ## Agents
 
-Agents are participants on the canvas that are driven by code, for example an AI assistant. Each agent is a [`KritzelAgent`](./agent.md) with its own cursor, actions, and undo history. See [Agents](../advanced/agents.md) for a guide. When the editor shares presence, collaborators see its agents, and it shows theirs; see [Collaboration](../advanced/agents.md#collaboration).
+Agents are participants on the canvas that are driven by code, for example an AI assistant. Each agent is a [`UpdrawAgent`](./agent.md) with its own cursor, actions, and undo history. See [Agents](../advanced/agents.md) for a guide. When the editor shares presence, collaborators see its agents, and it shows theirs; see [Collaboration](../advanced/agents.md#collaboration).
 
 ### Props
 
 | Property | Type | Description |
 |----------|------|-------------|
-| chatSession | KritzelChatSession | A [chat session](./chat-session.md) whose tools act on this canvas. Its agent, if any, is added here. A session that is replaced finishes its running prompt first. See [Agents](../advanced/agents.md). |
+| chatSession | UpdrawChatSession | A [chat session](./chat-session.md) whose tools act on this canvas. Its agent, if any, is added here. A session that is replaced finishes its running prompt first. See [Agents](../advanced/agents.md). |
 
 ### Events
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| agentsChange | KritzelAgentsChangeEvent | Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes, in this editor or in the editor of a collaborator. Lists the agents of this editor first, then the agents of collaborators (`isRemote: true`). Never emitted for plain cursor motion. |
+| agentsChange | UpdrawAgentsChangeEvent | Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes, in this editor or in the editor of a collaborator. Lists the agents of this editor first, then the agents of collaborators (`isRemote: true`). Never emitted for plain cursor motion. |
 
 ### Methods
 
 #### addAgent
 
-Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to one editor at a time; an agent of an editor that was removed from the page moves here. Call it after the engine emitted `isEngineReady`. Rejects for a value that is not a `KritzelAgent`, for a second agent with the same ID, and for an agent of another editor.
+Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to one editor at a time; an agent of an editor that was removed from the page moves here. Call it after the engine emitted `isEngineReady`. Rejects for a value that is not an `UpdrawAgent`, for a second agent with the same ID, and for an agent of another editor.
 
 ```ts
-addAgent(agent: KritzelAgent): Promise<KritzelAgent>
+addAgent(agent: UpdrawAgent): Promise<UpdrawAgent>
 ```
 
 #### removeAgent
@@ -697,7 +697,7 @@ addAgent(agent: KritzelAgent): Promise<KritzelAgent>
 Removes an agent, given the agent or its ID: its running action is rolled back, its queued actions resolve with `'agent-removed'`, and its cursor and history are dropped. The agent can be added again. Resolves with `false` if the agent was not added.
 
 ```ts
-removeAgent(agent: KritzelAgent | string): Promise<boolean>
+removeAgent(agent: UpdrawAgent | string): Promise<boolean>
 ```
 
 #### getAgent
@@ -705,7 +705,7 @@ removeAgent(agent: KritzelAgent | string): Promise<boolean>
 Returns an agent added to this editor by its ID, or `null` if there is none. Agents of collaborators are never returned; see `getRemoteAgents`.
 
 ```ts
-getAgent(id: string): Promise<KritzelAgent | null>
+getAgent(id: string): Promise<UpdrawAgent | null>
 ```
 
 #### getAgents
@@ -713,15 +713,15 @@ getAgent(id: string): Promise<KritzelAgent | null>
 Returns the agents added to this editor.
 
 ```ts
-getAgents(): Promise<KritzelAgent[]>
+getAgents(): Promise<UpdrawAgent[]>
 ```
 
 #### getRemoteAgents
 
-Returns the agents of collaborators, as they share them through presence. They are descriptions, not `KritzelAgent` objects, and cannot be controlled from here. Empty without a sync provider that shares presence. See [`KritzelRemoteAgentPresence`](./agent.md#kritzelremoteagentpresence).
+Returns the agents of collaborators, as they share them through presence. They are descriptions, not `UpdrawAgent` objects, and cannot be controlled from here. Empty without a sync provider that shares presence. See [`UpdrawRemoteAgentPresence`](./agent.md#updrawremoteagentpresence).
 
 ```ts
-getRemoteAgents(): Promise<KritzelRemoteAgentPresence[]>
+getRemoteAgents(): Promise<UpdrawRemoteAgentPresence[]>
 ```
 
 ---
@@ -732,14 +732,14 @@ getRemoteAgents(): Promise<KritzelRemoteAgentPresence[]>
 
 | Property | Type | Description |
 |----------|------|-------------|
-| objectTitlebar | KritzelObjectTitlebarConfig | Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars. See [Object Titlebar](../fundamentals/controls.md#object-titlebar). |
+| objectTitlebar | UpdrawObjectTitlebarConfig | Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars. See [Object Titlebar](../fundamentals/controls.md#object-titlebar). |
 
 ### Events
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked or a menu item of a titlebar menu is selected, in addition to calling the optional `action` callback of the button or menu item. |
-| objectTitlebarMenuStateChange | KritzelObjectTitlebarMenuState | Emitted when a titlebar menu opens or closes. Contains the resolved menu items and the menu button as `anchor`, so that a host can render the menu. `<KritzelEditor>` renders titlebar menus itself and does not re-emit this event. |
+| objectTitlebarAction | UpdrawObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked or a menu item of a titlebar menu is selected, in addition to calling the optional `action` callback of the button or menu item. |
+| objectTitlebarMenuStateChange | UpdrawObjectTitlebarMenuState | Emitted when a titlebar menu opens or closes. Contains the resolved menu items and the menu button as `anchor`, so that a host can render the menu. `<UpdrawEditor>` renders titlebar menus itself and does not re-emit this event. |
 
 ### Methods
 
@@ -765,7 +765,7 @@ Use [updateObject](#updateobject) to change the `name` of an existing object.
 
 ## Object Elements
 
-Elements inside the content of objects such as `KritzelIframeObject`. See [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content).
+Elements inside the content of objects such as `UpdrawIframeObject`. See [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content).
 
 ### Props
 
@@ -775,9 +775,9 @@ No object-element-specific props.
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| objectElementHover | KritzelObjectElementHoverEvent | Emitted when the mouse or pen pointer moves onto another element inside the content of a selected object, such as an iframe object, and with `element: null` when it leaves the content or the object is deselected. |
-| objectElementClick | KritzelObjectElementClickEvent | Emitted when the user clicks an element inside the content of a selected object. The click works as usual. |
-| objectElementPick | KritzelObjectElementPickEvent | Emitted when the user picks an element inside an object that is picking elements. The click doesn't reach the content. See [setObjectElementPicking](#setobjectelementpicking). |
+| objectElementHover | UpdrawObjectElementHoverEvent | Emitted when the mouse or pen pointer moves onto another element inside the content of a selected object, such as an iframe object, and with `element: null` when it leaves the content or the object is deselected. |
+| objectElementClick | UpdrawObjectElementClickEvent | Emitted when the user clicks an element inside the content of a selected object. The click works as usual. |
+| objectElementPick | UpdrawObjectElementPickEvent | Emitted when the user picks an element inside an object that is picking elements. The click doesn't reach the content. See [setObjectElementPicking](#setobjectelementpicking). |
 
 ### Methods
 
@@ -786,7 +786,7 @@ No object-element-specific props.
 Turns element picking on or off for an object whose content has elements, such as an iframe object. While picking, the element under the pointer is highlighted, and a press or click emits `objectElementPick` instead of reaching the content. Picking works while the object is selected and stays on until it is turned off. `selector` limits picking to the closest matching ancestor of the element under the pointer, `color` sets the highlight color.
 
 ```ts
-setObjectElementPicking(objectId: string, enabled: boolean, options?: KritzelObjectElementPickingOptions): Promise<void>
+setObjectElementPicking(objectId: string, enabled: boolean, options?: UpdrawObjectElementPickingOptions): Promise<void>
 ```
 
 #### highlightObjectElements
@@ -794,7 +794,7 @@ setObjectElementPicking(objectId: string, enabled: boolean, options?: KritzelObj
 Highlights elements inside an object's content, replacing the object's previous highlights. Each entry is `{ selector, color?, label? }`, and every element that matches its selector is highlighted, up to 100 per selector. Highlights are local: they are neither saved nor shown to collaborators.
 
 ```ts
-highlightObjectElements(objectId: string, highlights: KritzelObjectElementHighlight[]): Promise<void>
+highlightObjectElements(objectId: string, highlights: UpdrawObjectElementHighlight[]): Promise<void>
 ```
 
 #### clearObjectElementHighlights
@@ -807,10 +807,10 @@ clearObjectElementHighlights(objectId?: string): Promise<void>
 
 #### queryObjectElements
 
-Describes the elements inside an object's content that match a CSS selector, in document order. Each result has a `selector` that can be used to highlight the element or point an agent's cursor at it (`agent.moveTo({ objectId, selector })`, see [KritzelAgenticTarget](./agent.md#kritzelagentictarget)). `limit` defaults to 100 and can be at most 500. The object must be mounted, which it is while it is in or near the viewport. Rejects when the content does not answer within 3 seconds, or within 15 seconds while it is still loading.
+Describes the elements inside an object's content that match a CSS selector, in document order. Each result has a `selector` that can be used to highlight the element or point an agent's cursor at it (`agent.moveTo({ objectId, selector })`, see [UpdrawAgenticTarget](./agent.md#updrawagentictarget)). `limit` defaults to 100 and can be at most 500. The object must be mounted, which it is while it is in or near the viewport. Rejects when the content does not answer within 3 seconds, or within 15 seconds while it is still loading.
 
 ```ts
-queryObjectElements(objectId: string, selector: string, limit?: number): Promise<KritzelObjectElementInfo[]>
+queryObjectElements(objectId: string, selector: string, limit?: number): Promise<UpdrawObjectElementInfo[]>
 ```
 
 All object element methods reject for invalid selectors and for objects that don't exist or have no content elements.

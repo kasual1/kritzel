@@ -1,6 +1,6 @@
-import { lightTheme, KritzelTheme } from "@kritzel/angular-editor";
+import { lightTheme, UpdrawTheme } from "@updraw/angular-editor";
 
-export const angularThemeLight: KritzelTheme = {
+export const angularThemeLight: UpdrawTheme = {
   ...lightTheme,
   name: 'light',
   global: {

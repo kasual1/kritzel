@@ -1,4 +1,4 @@
-name: kritzel-app
+name: updraw-app
 
 services:
   postgres:
@@ -71,7 +71,7 @@ services:
       - "8080:80"
     volumes:
       - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
-    # The Angular client runs on the host (npm run app:client) so it can use the local kritzel libs.
+    # The Angular client runs on the host (npm run app:client) so it can use the local updraw libs.
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

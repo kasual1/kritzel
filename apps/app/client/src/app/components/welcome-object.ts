@@ -1,6 +1,6 @@
-import { KritzelDynamicObject } from '@kritzel/angular-editor';
+import { UpdrawDynamicObject } from '@updraw/angular-editor';
 
-export function createWelcomeObject(): KritzelDynamicObject {
+export function createWelcomeObject(): UpdrawDynamicObject {
   const element = document.createElement('div');
   element.style.width = '100%';
   element.style.height = '100%';
@@ -23,7 +23,7 @@ export function createWelcomeObject(): KritzelDynamicObject {
     path.parentNode!.appendChild(nextPath);
   }
 
-  return new KritzelDynamicObject({
+  return new UpdrawDynamicObject({
     element,
     width: 480,
     height: 480 * 72 / 253,
@@ -33,8 +33,8 @@ export function createWelcomeObject(): KritzelDynamicObject {
 }
 
 export function getWelcomeBoundsUpdate(
-  object: KritzelDynamicObject,
-): Partial<KritzelDynamicObject> | null {
+  object: UpdrawDynamicObject,
+): Partial<UpdrawDynamicObject> | null {
   const svg = object.element.querySelector('svg[aria-label="Welcome"]');
   if (svg?.getAttribute('viewBox') !== '0 0 280 120') {
     return null;
@@ -67,7 +67,7 @@ export function getWelcomeBoundsUpdate(
   };
 }
 
-export function animateWelcomeObject(object: Pick<KritzelDynamicObject, 'element'>): void {
+export function animateWelcomeObject(object: Pick<UpdrawDynamicObject, 'element'>): void {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return;
   }

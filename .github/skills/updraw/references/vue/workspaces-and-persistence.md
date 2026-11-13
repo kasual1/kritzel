@@ -5,7 +5,7 @@
 A workspace is a complete document: its objects, view state, and metadata. The editor always has one active workspace (one is created automatically on first run).
 
 ```ts
-import { getEditorRef, KritzelWorkspace } from '@kritzel/vue-editor';
+import { getEditorRef, UpdrawWorkspace } from '@updraw/vue-editor';
 
 const editor = getEditorRef('editor'); // top level of <script setup>; 'editor' = template ref name
 
@@ -13,7 +13,7 @@ const workspaces = await editor.value?.getWorkspaces();
 const active = await editor.value?.getActiveWorkspace();
 
 // Create — constructor takes (id, name)
-const ws = new KritzelWorkspace(crypto.randomUUID(), 'Board 2');
+const ws = new UpdrawWorkspace(crypto.randomUUID(), 'Board 2');
 await editor.value?.createWorkspace(ws);
 
 await editor.value?.updateWorkspace(ws);  // rename etc. (mutate metadata, then update)
@@ -27,11 +27,11 @@ Drive the active workspace via the `:activeWorkspaceId` prop backed by a `ref`, 
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { KritzelEditor, type ActiveWorkspaceChangeEvent, type KritzelWorkspace } from '@kritzel/vue-editor';
+import { UpdrawEditor, type ActiveWorkspaceChangeEvent, type UpdrawWorkspace } from '@updraw/vue-editor';
 
 const activeWorkspaceId = ref<string | undefined>(undefined);
 
-function onReady(event: CustomEvent<{ activeWorkspace: KritzelWorkspace }>) {
+function onReady(event: CustomEvent<{ activeWorkspace: UpdrawWorkspace }>) {
   activeWorkspaceId.value = event.detail.activeWorkspace.id;
 }
 
@@ -41,7 +41,7 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
 </script>
 
 <template>
-  <KritzelEditor
+  <UpdrawEditor
     ref="editor"
     :activeWorkspaceId="activeWorkspaceId"
     @isReady="onReady"
@@ -50,29 +50,29 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
 </template>
 ```
 
-Your own workspace switcher buttons just set `activeWorkspaceId.value = ws.id` — the prop change activates the workspace. Keep a `workspaces = ref<KritzelWorkspace[]>([])` mirror and refresh it from `getWorkspaces()` after create/delete (the `@workspacesChange` event also fires when the collection changes). The built-in workspace manager UI handles all of this; hide it with `:isWorkspaceManagerVisible="false"` if you build your own.
+Your own workspace switcher buttons just set `activeWorkspaceId.value = ws.id` — the prop change activates the workspace. Keep a `workspaces = ref<UpdrawWorkspace[]>([])` mirror and refresh it from `getWorkspaces()` after create/delete (the `@workspacesChange` event also fires when the collection changes). The built-in workspace manager UI handles all of this; hide it with `:isWorkspaceManagerVisible="false"` if you build your own.
 
 ## Persistence & sync providers
 
-Kritzel state lives in a Yjs document; sync providers decide where it goes. **Default is `{ providers: [] }` — nothing persists across reloads.**
+Updraw state lives in a Yjs document; sync providers decide where it goes. **Default is `{ providers: [] }` — nothing persists across reloads.**
 
 ```vue
 <script setup lang="ts">
-import { KritzelEditor, IndexedDBSyncProvider, type KritzelSyncConfig } from '@kritzel/vue-editor';
+import { UpdrawEditor, IndexedDBSyncProvider, type UpdrawSyncConfig } from '@updraw/vue-editor';
 
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [IndexedDBSyncProvider],   // local persistence, restored on reload
 };
 </script>
 
 <template>
-  <KritzelEditor ref="editor" editorId="my-board" :syncConfig="syncConfig" />
+  <UpdrawEditor ref="editor" editorId="my-board" :syncConfig="syncConfig" />
 </template>
 ```
 
 **Always define `syncConfig` as a const in `<script setup>` (or module scope)** — never inline an object literal in the template, which would create a new object every render and churn the prop on the web component.
 
-Available providers (all exported from `@kritzel/vue-editor`):
+Available providers (all exported from `@updraw/vue-editor`):
 
 | Provider | Persists/Syncs to | Use |
 |---|---|---|
@@ -85,7 +85,7 @@ Available providers (all exported from `@kritzel/vue-editor`):
 Providers are additive — combine for offline + realtime:
 
 ```ts
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [
     IndexedDBSyncProvider,
     HocuspocusSyncProvider.with({ url: 'wss://collab.example.com', token: () => auth.getToken() }),
@@ -97,7 +97,7 @@ If you change `syncConfig` after init (e.g. after login), call `await editor.val
 
 ## Collaboration extras
 
-- Pass the current user for presence: `:user="currentUser"` with `IKritzelUser` shape `{ id, displayName?, firstName?, lastName?, email?, profileImageUrl?, color?, isGuest? }`; show others via `activeUsers`. The editor treats `isGuest: true` (or no user) as logged out.
+- Pass the current user for presence: `:user="currentUser"` with `IUpdrawUser` shape `{ id, displayName?, firstName?, lastName?, email?, profileImageUrl?, color?, isGuest? }`; show others via `activeUsers`. The editor treats `isGuest: true` (or no user) as logged out.
 - Live remote cursors/presence arrive on `@awarenessChange` → `(event as CustomEvent<Map<number, Record<string, any>>>).detail`.
 - Shared/public workspaces: `await editor.value?.loadSharedWorkspace(token)`; observe `@isPublicChange`.
 - Image/file binaries are stored via the `:assetStorageConfig` prop; default is IndexedDB-backed. HTTP/presigned-URL providers exist for server storage.

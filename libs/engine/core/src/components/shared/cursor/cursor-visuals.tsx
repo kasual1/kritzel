@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from '@stencil/core';
-import { KritzelOverlayEdge } from '@kritzel/core';
+import { UpdrawOverlayEdge } from '@updraw/core';
 
 /** Arrow-shaped pointer used by remote and agentic cursors. */
 export const CursorArrow: FunctionalComponent<{ color: string }> = ({ color }) => (
@@ -22,7 +22,7 @@ interface EdgeIndicatorProps {
   y: number;
   /** Direction towards the off-screen cursor, in radians. */
   angle: number;
-  edge: KritzelOverlayEdge;
+  edge: UpdrawOverlayEdge;
   color: string;
   label: string;
   classes?: Record<string, boolean>;

@@ -2,16 +2,16 @@
 import { computed, ref, shallowRef, type CSSProperties } from 'vue'
 import {
   InMemorySyncProvider,
-  KritzelEditor,
-  KritzelLine,
-  KritzelPath,
-  KritzelShape,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawLine,
+  UpdrawPath,
+  UpdrawShape,
+  UpdrawWorkspace,
   ShapeType,
   type ActiveWorkspaceChangeEvent,
-  type KritzelBaseObject,
-  type KritzelSyncConfig,
-} from '@kritzel/vue-editor'
+  type UpdrawBaseObject,
+  type UpdrawSyncConfig,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
@@ -27,9 +27,9 @@ interface WorkspacePalette {
   accent: string
 }
 
-function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] {
+function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
   return [
-    new KritzelShape({
+    new UpdrawShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -39,7 +39,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] 
       strokeColor: { light: palette.stroke, dark: palette.stroke },
       strokeWidth: 3,
     }),
-    new KritzelShape({
+    new UpdrawShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -49,7 +49,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] 
       strokeColor: { light: palette.accent, dark: palette.accent },
       strokeWidth: 3,
     }),
-    new KritzelLine({
+    new UpdrawLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -57,7 +57,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] 
       stroke: { light: palette.accent, dark: palette.accent },
       strokeWidth: 3,
     }),
-    new KritzelPath({
+    new UpdrawPath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -78,11 +78,11 @@ function createWorkspaceObjects(palette: WorkspacePalette): KritzelBaseObject[] 
 }
 
 const themes = [vueThemeLight, vueThemeDark]
-const syncConfig: KritzelSyncConfig = {
+const syncConfig: UpdrawSyncConfig = {
   providers: [InMemorySyncProvider],
 }
-const workspaces = shallowRef<KritzelWorkspace[]>([
-  new KritzelWorkspace({
+const workspaces = shallowRef<UpdrawWorkspace[]>([
+  new UpdrawWorkspace({
     id: 'coral',
     name: 'Coral',
     objects: createWorkspaceObjects({
@@ -91,7 +91,7 @@ const workspaces = shallowRef<KritzelWorkspace[]>([
       accent: '#ff9800',
     }),
   }),
-  new KritzelWorkspace({
+  new UpdrawWorkspace({
     id: 'ocean',
     name: 'Ocean',
     objects: createWorkspaceObjects({
@@ -100,7 +100,7 @@ const workspaces = shallowRef<KritzelWorkspace[]>([
       accent: '#00bcd4',
     }),
   }),
-  new KritzelWorkspace({
+  new UpdrawWorkspace({
     id: 'violet',
     name: 'Violet',
     objects: createWorkspaceObjects({
@@ -109,7 +109,7 @@ const workspaces = shallowRef<KritzelWorkspace[]>([
       accent: '#e91e63',
     }),
   }),
-  new KritzelWorkspace({
+  new UpdrawWorkspace({
     id: 'meadow',
     name: 'Meadow',
     objects: createWorkspaceObjects({
@@ -118,7 +118,7 @@ const workspaces = shallowRef<KritzelWorkspace[]>([
       accent: '#8bc34a',
     }),
   }),
-  new KritzelWorkspace({
+  new UpdrawWorkspace({
     id: 'amber',
     name: 'Amber',
     objects: createWorkspaceObjects({
@@ -127,7 +127,7 @@ const workspaces = shallowRef<KritzelWorkspace[]>([
       accent: '#795548',
     }),
   }),
-  new KritzelWorkspace({
+  new UpdrawWorkspace({
     id: 'lagoon',
     name: 'Lagoon',
     objects: createWorkspaceObjects({
@@ -179,7 +179,7 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
   activeWorkspaceId.value = event.detail.id
 }
 
-function switchTo(workspace: KritzelWorkspace) {
+function switchTo(workspace: UpdrawWorkspace) {
   activeWorkspaceId.value = workspace.id
 }
 </script>
@@ -197,7 +197,7 @@ function switchTo(workspace: KritzelWorkspace) {
       </button>
     </Toolbar>
     <div :style="contentStyle">
-      <KritzelEditor
+      <UpdrawEditor
         editorId="workspaces-switch"
         theme="light"
         :themes="themes"

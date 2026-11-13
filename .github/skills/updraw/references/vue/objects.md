@@ -1,19 +1,19 @@
 # Objects: Create, Update, Query, Organize
 
-All canvas content is a `KritzelBaseObject` subclass. Import all classes from `@kritzel/vue-editor`:
-`KritzelPath`, `KritzelLine`, `KritzelShape`, `KritzelText`, `KritzelImage`, `KritzelGroup`, plus `ShapeType` and `KritzelAlignment` enums.
+All canvas content is an `UpdrawBaseObject` subclass. Import all classes from `@updraw/vue-editor`:
+`UpdrawPath`, `UpdrawLine`, `UpdrawShape`, `UpdrawText`, `UpdrawImage`, `UpdrawGroup`, plus `ShapeType` and `UpdrawAlignment` enums.
 
 In the snippets below, `editor` is the computed ref to the native element, resolved once at the top level of `<script setup>`:
 
 ```vue
 <script setup lang="ts">
-import { KritzelEditor, getEditorRef } from '@kritzel/vue-editor'
+import { UpdrawEditor, getEditorRef } from '@updraw/vue-editor'
 
 const editor = getEditorRef('editor') // argument = template-ref NAME
 </script>
 
 <template>
-  <KritzelEditor ref="editor" @isReady="onReady" />
+  <UpdrawEditor ref="editor" @isReady="onReady" />
 </template>
 ```
 
@@ -33,7 +33,7 @@ Every call goes through `editor.value` (may be `null` before mount) — e.g. `aw
 | `isVisible`, `isSelected`, `isEditable`, `isInteractive` | State flags |
 | `centerX`, `centerY` | Computed center (read-only getters) |
 | `boundingBox`, `rotatedBoundingBox`, `rotatedPolygon` | Computed bounds |
-| `__class__` | Type discriminator string, e.g. `'KritzelShape'` |
+| `__class__` | Type discriminator string, e.g. `'UpdrawShape'` |
 | `workspaceId` | Set automatically when added |
 | `name` | Optional user-facing name; the default title of the object's titlebar. Persisted and synced |
 | `isRotatable`, `isResizable` | Per-object flags (default `true`), persisted and synced. Combine with the editor's `objectConfig` (see below): either can forbid |
@@ -46,7 +46,7 @@ Colors everywhere are **theme-aware**: `{ light: '#hex', dark: '#hex', label?: s
 ### Text
 
 ```ts
-const text = new KritzelText({
+const text = new UpdrawText({
   text: 'Programmatic text!',          // NOTE: property is `text`
   translateX: 0,
   translateY: 0,
@@ -60,9 +60,9 @@ await editor.value?.addObject(text);
 ### Shape (rectangle / ellipse / triangle)
 
 ```ts
-import { ShapeType } from '@kritzel/vue-editor';
+import { ShapeType } from '@updraw/vue-editor';
 
-const shape = new KritzelShape({
+const shape = new UpdrawShape({
   translateX: 20,
   translateY: -150,
   width: 120,
@@ -83,7 +83,7 @@ Property names are `fillColor`/`strokeColor` — NOT `backgroundColor`/`borderCo
 ### Path (freehand stroke)
 
 ```ts
-const path = new KritzelPath({
+const path = new UpdrawPath({
   points: [[0, 0, 0.5], [15, -20, 0.5], [30, -40, 0.5]], // [x, y, pressure?]
   translateX: -75,
   translateY: 125,
@@ -97,7 +97,7 @@ await editor.value?.addObject(path);
 ### Line (straight or curved, optional arrowheads)
 
 ```ts
-const line = new KritzelLine({
+const line = new UpdrawLine({
   startX: -170, startY: 10,
   endX: 130,   endY: 10,
   // controlX / controlY: optional quadratic-bezier control point for curves
@@ -114,7 +114,7 @@ Properties are `stroke`/`strokeWidth`/`arrows` — NOT `color`/`size`/`startArro
 
 ```ts
 // From a URL or data URI — async factory, scales to fit maxWidth/maxHeight
-const img = await KritzelImage.fromUrl('https://example.com/photo.jpg', {
+const img = await UpdrawImage.fromUrl('https://example.com/photo.jpg', {
   maxWidth: 300,
   maxHeight: 300,
 });
@@ -124,7 +124,7 @@ img.isEditable = false; // optional: lock as background scenery
 await editor.value?.addObject(img);
 ```
 
-`fromUrl(src, config?: Partial<KritzelImage>)` — the second argument is a partial config object, not separate width/height arguments. `maxWidth`/`maxHeight` (default 300) constrain the rendered size while keeping aspect ratio.
+`fromUrl(src, config?: Partial<UpdrawImage>)` — the second argument is a partial config object, not separate width/height arguments. `maxWidth`/`maxHeight` (default 300) constrain the rendered size while keeping aspect ratio.
 
 ## CRUD operations
 
@@ -142,11 +142,11 @@ await editor.value?.removeObject(obj);
 await editor.value?.removeObjects([a, b]);
 
 // Read
-const one = await editor.value?.getObjectById<KritzelShape>('some-id');   // null if missing
+const one = await editor.value?.getObjectById<UpdrawShape>('some-id');   // null if missing
 const all = (await editor.value?.getAllObjects()) ?? [];
 const count = (await editor.value?.getObjectsTotalCount()) ?? 0;
 const visible = (await editor.value?.getObjectsInViewport()) ?? [];
-const shapes = (await editor.value?.findObjects(o => o.__class__ === 'KritzelShape')) ?? [];
+const shapes = (await editor.value?.findObjects(o => o.__class__ === 'UpdrawShape')) ?? [];
 ```
 
 Batch updates run concurrently fine:
@@ -163,13 +163,13 @@ Mirror query results into Vue state for templates:
 
 ```ts
 import { ref } from 'vue';
-import type { KritzelBaseObject } from '@kritzel/vue-editor';
+import type { UpdrawBaseObject } from '@updraw/vue-editor';
 
-const objects = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([]);
+const objects = ref<UpdrawBaseObject<HTMLElement | SVGElement>[]>([]);
 
 async function refreshObjects() {
   const all = (await editor.value?.getAllObjects()) ?? [];
-  objects.value = all as KritzelBaseObject<HTMLElement | SVGElement>[];
+  objects.value = all as UpdrawBaseObject<HTMLElement | SVGElement>[];
 }
 ```
 
@@ -190,20 +190,20 @@ Switching the active tool clears the selection by design. To preserve it: read `
 
 ```ts
 const selected = (await editor.value?.getSelectedObjects()) ?? [];
-const group = await editor.value?.group(selected);  // pass the objects explicitly (needs ≥ 2); resolves to the KritzelGroup or null
-const groups = selected.filter((o): o is KritzelGroup => o.__class__ === 'KritzelGroup');
-await editor.value?.ungroup(groups);       // only KritzelGroup entries
+const group = await editor.value?.group(selected);  // pass the objects explicitly (needs ≥ 2); resolves to the UpdrawGroup or null
+const groups = selected.filter((o): o is UpdrawGroup => o.__class__ === 'UpdrawGroup');
+await editor.value?.ungroup(groups);       // only UpdrawGroup entries
 
 await editor.value?.bringToFront(obj);        // omit obj → applies to selection
 await editor.value?.sendToBack();
 await editor.value?.bringForward();
 await editor.value?.sendBackward();
 
-import { KritzelAlignment } from '@kritzel/vue-editor';
-await editor.value?.alignObjects(KritzelAlignment.CenterHorizontal); // needs ≥ 2 selected
+import { UpdrawAlignment } from '@updraw/vue-editor';
+await editor.value?.alignObjects(UpdrawAlignment.CenterHorizontal); // needs ≥ 2 selected
 ```
 
-`KritzelAlignment` values: `StartHorizontal`, `CenterHorizontal`, `EndHorizontal`, `StartVertical`, `CenterVertical`, `EndVertical`.
+`UpdrawAlignment` values: `StartHorizontal`, `CenterHorizontal`, `EndHorizontal`, `StartVertical`, `CenterVertical`, `EndVertical`.
 
 Groups expose their children via `childIds: string[]`; resolve children with `getObjectById`.
 
@@ -213,18 +213,18 @@ The `:objectConfig` prop (on the editor and the engine) configures how objects b
 
 ```vue
 <script setup lang="ts">
-import { KritzelEditor, type KritzelObjectConfig } from '@kritzel/vue-editor'
+import { UpdrawEditor, type UpdrawObjectConfig } from '@updraw/vue-editor'
 
 // A const in <script setup> (or a computed), never an inline template literal.
-const objectConfig: KritzelObjectConfig = {
-  hasTitlebar: object => object.__class__ === 'KritzelGroup',
-  isRotatable: object => object.__class__ !== 'KritzelText',
+const objectConfig: UpdrawObjectConfig = {
+  hasTitlebar: object => object.__class__ === 'UpdrawGroup',
+  isRotatable: object => object.__class__ !== 'UpdrawText',
   isResizable: true,
 }
 </script>
 
 <template>
-  <KritzelEditor :objectConfig="objectConfig" />
+  <UpdrawEditor :objectConfig="objectConfig" />
 </template>
 ```
 
@@ -238,7 +238,7 @@ const objectConfig: KritzelObjectConfig = {
 - Groups and multi-selections can be rotated / resized only when every selected object and everything nested inside groups allows it; the function is called for each of them. `hasTitlebar` is only asked about the top-level object or group itself.
 - A forbidden handle is hidden and dragging it does nothing. Line endpoint handles are not covered by `isResizable`. Programmatic API calls (`updateObject`, alignment, …) are not restricted.
 - Functions run **synchronously while rendering and handling input**: keep them pure and cheap. A non-boolean result, a throw or a returned promise resolves to the option's default; a throw or promise warns once per option (re-armed when a new config object is passed).
-- Check types with `instanceof` against the classes your Kritzel package exports, or compare `object.__class__` (e.g. `'KritzelGroup'`). To inspect a group's children, read `childIds` rather than the `children` getter.
+- Check types with `instanceof` against the classes your Updraw package exports, or compare `object.__class__` (e.g. `'UpdrawGroup'`). To inspect a group's children, read `childIds` rather than the `children` getter.
 - The config is read live, belongs to this editor instance and is neither persisted nor synced. Functions are re-evaluated on every render; when they depend on app state, pass a **new** config object after that state changes (derive it with `computed()`) so the canvas rerenders.
 
 ## Names and titlebars
@@ -246,7 +246,7 @@ const objectConfig: KritzelObjectConfig = {
 Every object constructor accepts `name`, the default title of its titlebar. Which objects get a bar is decided by `objectConfig.hasTitlebar` (see above); the bar's content comes from the `:objectTitlebar` prop (see the titlebar section of theming-and-context-menus.md). Without both, nothing is rendered.
 
 ```ts
-const frame = new KritzelShape({
+const frame = new UpdrawShape({
   translateX: 0,
   translateY: 0,
   width: 400,
@@ -279,12 +279,12 @@ await editor.value?.delete();                 // deletes selection
 await editor.value?.undo();
 await editor.value?.redo();
 // availability: listen via @undoStateChange →
-// (event as CustomEvent<KritzelUndoState>).detail
+// (event as CustomEvent<UpdrawUndoState>).detail
 ```
 
 ## Elements inside iframe objects
 
-The page of a `KritzelIframeObject` can be observed and controlled per element by CSS selector: `setObjectElementPicking`, `highlightObjectElements`, `clearObjectElementHighlights`, `queryObjectElements`, and agents that point their cursor at an element with `agent.moveTo({ objectId, selector })`. Hover, click and pick events and the rules for these methods are in the "Elements inside iframe objects" section of events.md.
+The page of an `UpdrawIframeObject` can be observed and controlled per element by CSS selector: `setObjectElementPicking`, `highlightObjectElements`, `clearObjectElementHighlights`, `queryObjectElements`, and agents that point their cursor at an element with `agent.moveTo({ objectId, selector })`. Hover, click and pick events and the rules for these methods are in the "Elements inside iframe objects" section of events.md.
 
 ## Pitfalls
 
@@ -292,5 +292,5 @@ The page of a `KritzelIframeObject` can be observed and controlled per element b
 - `centerObjectInViewport(obj)` **moves the object**; to look at it instead, move the camera (see viewport.md).
 - New objects land where you put them in world space — content at far coordinates may be off-screen; follow up with `backToContent()` or `centerAllObjects()`.
 - Plain string colors (`'#ff0000'`) lose dark-mode support; always pass `{ light, dark }`.
-- Don't keep live `KritzelBaseObject` references in Vue `ref()`s for long-lived UI; store `id`s and re-fetch with `getObjectById` when acting (objects can be replaced by sync/undo).
+- Don't keep live `UpdrawBaseObject` references in Vue `ref()`s for long-lived UI; store `id`s and re-fetch with `getObjectById` when acting (objects can be replaced by sync/undo).
 - `getEditorRef('editor')` must be called at the top level of `<script setup>` (it wraps `useTemplateRef`), and `editor.value` is `null` until the component mounts — do initial work in the `@isReady` handler.

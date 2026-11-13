@@ -1,8 +1,8 @@
 ---
 sidebar_label: Collaboration
 displayed_sidebar: tutorialSidebar
-title: "Collaboration Concept | Kritzel for Vue"
-description: "Understand the core concept of Collaboration in Kritzel - cross-tab sync and multi-user editing using Yjs providers."
+title: "Collaboration Concept | Updraw for Vue"
+description: "Understand the core concept of Collaboration in Updraw - cross-tab sync and multi-user editing using Yjs providers."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,9 +11,9 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Collaboration in Kritzel is built on sync providers, the same mechanism used for persistence. Register collaboration providers through the editor's `syncConfig` prop to control *where* and *how* document state is shared across tabs and users. Providers are composable and can combine local browser channels with network transport.
+Collaboration in Updraw is built on sync providers, the same mechanism used for persistence. Register collaboration providers through the editor's `syncConfig` prop to control *where* and *how* document state is shared across tabs and users. Providers are composable and can combine local browser channels with network transport.
 
-Kritzel comes with the following built-in collaboration providers:
+Updraw comes with the following built-in collaboration providers:
 
 - [Broadcast Provider](../api-reference/providers.md#broadcast-provider)
 - [WebSocket Provider](../api-reference/providers.md#websocket-provider)

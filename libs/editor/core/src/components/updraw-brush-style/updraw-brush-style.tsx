@@ -1,14 +1,14 @@
 import { Component, Host, h, Prop, EventEmitter, Event } from '@stencil/core';
-import { DropdownOption } from '../kritzel-dropdown/kritzel-dropdown'; // Import DropdownOption
+import { DropdownOption } from '../updraw-dropdown/updraw-dropdown'; // Import DropdownOption
 
 export interface BrushStyleOption extends DropdownOption {}
 
 @Component({
-  tag: 'kritzel-brush-style',
-  styleUrl: 'kritzel-brush-style.css',
+  tag: 'updraw-brush-style',
+  styleUrl: 'updraw-brush-style.css',
   shadow: true,
 })
-export class KritzelBrushStyle {
+export class UpdrawBrushStyle {
   @Prop() type: 'pen' | 'highlighter' = 'pen';
   @Prop() brushOptions: BrushStyleOption[] = [
     { value: 'pen', label: 'Pen' },
@@ -29,11 +29,11 @@ export class KritzelBrushStyle {
 
     return (
       <Host>
-        <kritzel-dropdown options={dropdownOptions} value={this.type} onValueChanged={event => this.handleDropdownValueChange(event)}>
+        <updraw-dropdown options={dropdownOptions} value={this.type} onValueChanged={event => this.handleDropdownValueChange(event)}>
           <button class="brush-style-button" slot="prefix">
-            <kritzel-icon name={this.type} size={16}></kritzel-icon>
+            <updraw-icon name={this.type} size={16}></updraw-icon>
           </button>
-        </kritzel-dropdown>
+        </updraw-dropdown>
       </Host>
     );
   }

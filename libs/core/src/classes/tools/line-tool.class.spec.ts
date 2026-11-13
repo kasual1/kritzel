@@ -1,8 +1,8 @@
-import { KritzelLineTool } from './line-tool.class';
-import { KritzelCore } from '../core/core.class';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawLineTool } from './line-tool.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 jest.mock('../core/core.class');
@@ -10,8 +10,8 @@ jest.mock('../objects/line.class');
 jest.mock('../../helpers/event.helper');
 jest.mock('../objects/selection-group.class');
 
-describe('KritzelLineTool', () => {
-  let tool: KritzelLineTool;
+describe('UpdrawLineTool', () => {
+  let tool: UpdrawLineTool;
   let mockCore: any;
   let mockObjectsMap: any;
   let mockState: any;
@@ -82,7 +82,7 @@ describe('KritzelLineTool', () => {
       isSelected: false,
       rotation: 0,
     };
-    (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(mockSelectionGroup);
+    (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(mockSelectionGroup);
 
     mockCreatedLine = {
       id: 'line-1',
@@ -92,8 +92,8 @@ describe('KritzelLineTool', () => {
       rotation: 0,
     };
 
-    (KritzelLine.create as jest.Mock).mockReturnValue(mockCreatedLine);
-    (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpdrawLine.create as jest.Mock).mockReturnValue(mockCreatedLine);
+    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockCore = {
       store: {
@@ -112,9 +112,9 @@ describe('KritzelLineTool', () => {
       addSelectionGroup: jest.fn(),
       rerender: jest.fn(),
       toolRegistry: { getTool: jest.fn().mockReturnValue(mockSelectionTool) },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    tool = new KritzelLineTool(mockCore);
+    tool = new UpdrawLineTool(mockCore);
   });
 
   afterEach(() => {
@@ -173,7 +173,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: 150,
         startY: 250,
         endX: 150,
@@ -196,12 +196,12 @@ describe('KritzelLineTool', () => {
     });
 
     it('should not create a line on non-left click', () => {
-      (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+      (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
       const event = createMouseEvent({ button: 2 });
 
       tool.handlePointerDown(event);
 
-      expect(KritzelLine.create).not.toHaveBeenCalled();
+      expect(UpdrawLine.create).not.toHaveBeenCalled();
       expect(mockState.isDrawing).toBe(false);
     });
 
@@ -212,7 +212,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: 200 - 50,
         startY: 300 - 30,
         endX: 200 - 50,
@@ -229,7 +229,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: 200 / 2,
         startY: 300 / 2,
         translateX: -100 / 2,
@@ -247,7 +247,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: 200,
         startY: 300,
         translateX: -100,
@@ -263,7 +263,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         arrows,
       }));
     });
@@ -280,7 +280,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: 120,
         startY: 220,
         endX: 120,
@@ -305,7 +305,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelLine.create).toHaveBeenCalled();
+      expect(UpdrawLine.create).toHaveBeenCalled();
       expect(mockState.isDrawing).toBe(true);
     });
 
@@ -333,7 +333,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: 121,
         startY: 220,
         endX: 121,
@@ -349,7 +349,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: Math.round((200 - 50) / 1),
         startY: Math.round((300 - 30) / 1),
       }));
@@ -365,7 +365,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: Math.round(200 / 2),
         startY: Math.round(300 / 2),
         translateX: -100 / 2,
@@ -382,7 +382,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(KritzelLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         arrows,
       }));
     });
@@ -415,12 +415,12 @@ describe('KritzelLineTool', () => {
 
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
       const updatedLine = { id: 'new-id', workspaceId: 'new-ws', zIndex: 99, isCompleted: true };
-      (KritzelLine.create as jest.Mock).mockReturnValue(updatedLine);
+      (UpdrawLine.create as jest.Mock).mockReturnValue(updatedLine);
 
       const moveEvent = createMouseEvent({ clientX: 150, clientY: 260 });
       tool.handlePointerMove(moveEvent);
 
-      expect(KritzelLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         startX: 50,
         startY: 60,
         endX: 150,
@@ -436,7 +436,7 @@ describe('KritzelLineTool', () => {
       mockObjectsMap.findById.mockReturnValue(currentLine);
 
       const updatedLine = { id: 'new-id', workspaceId: 'new-ws', zIndex: 99, isCompleted: true };
-      (KritzelLine.create as jest.Mock).mockReturnValue(updatedLine);
+      (UpdrawLine.create as jest.Mock).mockReturnValue(updatedLine);
 
       tool.handlePointerMove(createMouseEvent({ clientX: 150, clientY: 260 }));
 
@@ -467,11 +467,11 @@ describe('KritzelLineTool', () => {
       tool.handlePointerDown(createMouseEvent({ clientX: 200, clientY: 300 }));
 
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
-      (KritzelLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
+      (UpdrawLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
 
       tool.handlePointerMove(createMouseEvent({ clientX: 400, clientY: 500 }));
 
-      expect(KritzelLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         startX: 200 - 50,
         startY: 300 - 30,
         endX: 400 - 50,
@@ -488,11 +488,11 @@ describe('KritzelLineTool', () => {
       tool.handlePointerDown(createMouseEvent({ clientX: 200, clientY: 300 }));
 
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
-      (KritzelLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
+      (UpdrawLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
 
       tool.handlePointerMove(createMouseEvent({ clientX: 400, clientY: 500 }));
 
-      expect(KritzelLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         startX: 200 / 2,
         startY: 300 / 2,
         endX: 400 / 2,
@@ -514,13 +514,13 @@ describe('KritzelLineTool', () => {
       tool.handlePointerDown(createTouchEvent());
 
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
-      (KritzelLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
+      (UpdrawLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
 
       mockState.pointers.clear();
       mockState.pointers.set(1, { clientX: 150, clientY: 260 });
       tool.handlePointerMove(createTouchEvent());
 
-      expect(KritzelLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         startX: 50,
         startY: 60,
         endX: 150,
@@ -545,13 +545,13 @@ describe('KritzelLineTool', () => {
       tool.handlePointerDown(createTouchEvent());
 
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
-      (KritzelLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
+      (UpdrawLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
 
       mockState.pointers.clear();
       mockState.pointers.set(1, { clientX: 150.7, clientY: 260.3 });
       tool.handlePointerMove(createTouchEvent());
 
-      expect(KritzelLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         endX: 151,
         endY: 260,
       }));
@@ -619,7 +619,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerUp(createMouseEvent());
 
-      expect(KritzelSelectionGroup.create).toHaveBeenCalledWith(mockCore);
+      expect(UpdrawSelectionGroup.create).toHaveBeenCalledWith(mockCore);
       expect(mockSelectionGroup.addOrRemove).toHaveBeenCalledWith(mockCreatedLine);
       expect(mockSelectionGroup.isSelected).toBe(true);
       expect(mockSelectionGroup.rotation).toBe(mockCreatedLine.rotation);
@@ -634,7 +634,7 @@ describe('KritzelLineTool', () => {
 
       expect(mockObjectsMap.update).not.toHaveBeenCalled();
       expect(mockCore.engine.emitObjectsChange).not.toHaveBeenCalled();
-      expect(KritzelSelectionGroup.create).not.toHaveBeenCalled();
+      expect(UpdrawSelectionGroup.create).not.toHaveBeenCalled();
     });
 
     it('should handle case where current line is not found by findById', () => {
@@ -645,7 +645,7 @@ describe('KritzelLineTool', () => {
 
       expect(mockState.isDrawing).toBe(false);
       expect(mockCore.engine.emitObjectsChange).not.toHaveBeenCalled();
-      expect(KritzelSelectionGroup.create).not.toHaveBeenCalled();
+      expect(UpdrawSelectionGroup.create).not.toHaveBeenCalled();
     });
   });
 
@@ -695,7 +695,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerUp(createTouchEvent());
 
-      expect(KritzelSelectionGroup.create).toHaveBeenCalledWith(mockCore);
+      expect(UpdrawSelectionGroup.create).toHaveBeenCalledWith(mockCore);
       expect(mockSelectionGroup.addOrRemove).toHaveBeenCalledWith(mockCreatedLine);
       expect(mockSelectionGroup.isSelected).toBe(true);
       expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(mockSelectionGroup);
@@ -737,11 +737,11 @@ describe('KritzelLineTool', () => {
       // 2. Pointer move - extend line end point
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
       const updatedLine = { ...mockCreatedLine };
-      (KritzelLine.create as jest.Mock).mockReturnValue(updatedLine);
+      (UpdrawLine.create as jest.Mock).mockReturnValue(updatedLine);
 
       const moveEvent = createMouseEvent({ clientX: 300, clientY: 400 });
       tool.handlePointerMove(moveEvent);
-      expect(KritzelLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpdrawLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         startX: 10,
         startY: 20,
         endX: 300,
@@ -754,7 +754,7 @@ describe('KritzelLineTool', () => {
       expect(mockState.isDrawing).toBe(false);
       expect(mockCreatedLine.isCompleted).toBe(true);
       expect(mockCore.engine.emitObjectsChange).toHaveBeenCalledTimes(1);
-      expect(KritzelSelectionGroup.create).toHaveBeenCalled();
+      expect(UpdrawSelectionGroup.create).toHaveBeenCalled();
       expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockSelectionTool);
     });
 
@@ -766,7 +766,7 @@ describe('KritzelLineTool', () => {
 
       // 2. Pointer move
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
-      (KritzelLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
+      (UpdrawLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
       mockState.pointers.clear();
       mockState.pointers.set(1, { clientX: 300, clientY: 400 });
       tool.handlePointerMove(createTouchEvent());
@@ -776,7 +776,7 @@ describe('KritzelLineTool', () => {
       tool.handlePointerUp(createTouchEvent());
       expect(mockState.isDrawing).toBe(false);
       expect(mockCreatedLine.isCompleted).toBe(true);
-      expect(KritzelSelectionGroup.create).toHaveBeenCalled();
+      expect(UpdrawSelectionGroup.create).toHaveBeenCalled();
     });
   });
 });

@@ -1,6 +1,6 @@
 // Mock Stencil decorators so the @Component class can be instantiated as a
 // plain class in unit tests. Mirrors the pattern used in other component specs
-// (e.g. kritzel-awareness-cursors.spec.ts).
+// (e.g. updraw-awareness-cursors.spec.ts).
 jest.mock('@stencil/core', () => ({
   ...jest.requireActual('@stencil/core/internal/testing'),
   Component: () => (cls: any) => cls,
@@ -13,86 +13,86 @@ jest.mock('@stencil/core', () => ({
   Element: () => () => {},
 }));
 
-// KritzelEngine's constructor instantiates `new KritzelCore(this)`. Replace
+// UpdrawEngine's constructor instantiates `new UpdrawCore(this)`. Replace
 // it with a lightweight mock so we don't pull in Yjs, IndexedDB, etc.
 const mockCoreInstance: any = {};
-jest.mock('@kritzel/core/src/classes/core/core.class', () => ({
-  KritzelCore: jest.fn().mockImplementation(() => mockCoreInstance),
+jest.mock('@updraw/core/src/classes/core/core.class', () => ({
+  UpdrawCore: jest.fn().mockImplementation(() => mockCoreInstance),
 }));
 
 // Avoid heavy class graphs the engine module imports at top-level.
-jest.mock('@kritzel/core/src/classes/core/viewport.class', () => ({ KritzelViewport: jest.fn() }));
-jest.mock('@kritzel/core/src/classes/handlers/key.handler', () => ({ KritzelKeyHandler: jest.fn() }));
-jest.mock('@kritzel/core/src/classes/handlers/context-menu.handler', () => ({ KritzelContextMenuHandler: jest.fn() }));
+jest.mock('@updraw/core/src/classes/core/viewport.class', () => ({ UpdrawViewport: jest.fn() }));
+jest.mock('@updraw/core/src/classes/handlers/key.handler', () => ({ UpdrawKeyHandler: jest.fn() }));
+jest.mock('@updraw/core/src/classes/handlers/context-menu.handler', () => ({ UpdrawContextMenuHandler: jest.fn() }));
 
-class MockKritzelSelectionTool {
+class MockUpdrawSelectionTool {
   toolType = 'selection';
 }
-class MockKritzelTextTool {
+class MockUpdrawTextTool {
   toolType = 'text';
 }
-class MockKritzelShapeTool {
+class MockUpdrawShapeTool {
   toolType = 'shape';
 }
-class MockKritzelEraserTool {
+class MockUpdrawEraserTool {
   toolType = 'eraser';
 }
-class MockKritzelBrushTool {
+class MockUpdrawBrushTool {
   toolType = 'brush';
 }
-class MockKritzelLineTool {
+class MockUpdrawLineTool {
   toolType = 'line';
 }
-class MockKritzelImageTool {
+class MockUpdrawImageTool {
   toolType = 'image';
 }
-class MockKritzelBaseTool {}
-class MockKritzelSelectionBox {}
-class MockKritzelSelectionGroup {}
-class MockKritzelGroup {}
+class MockUpdrawBaseTool {}
+class MockUpdrawSelectionBox {}
+class MockUpdrawSelectionGroup {}
+class MockUpdrawGroup {}
 
-jest.mock('@kritzel/core/src/classes/tools/selection-tool.class', () => ({ KritzelSelectionTool: MockKritzelSelectionTool }));
-jest.mock('@kritzel/core/src/classes/tools/text-tool.class', () => ({ KritzelTextTool: MockKritzelTextTool }));
-jest.mock('@kritzel/core/src/classes/tools/shape-tool.class', () => ({ KritzelShapeTool: MockKritzelShapeTool }));
-jest.mock('@kritzel/core/src/classes/tools/eraser-tool.class', () => ({ KritzelEraserTool: MockKritzelEraserTool }));
-jest.mock('@kritzel/core/src/classes/tools/brush-tool.class', () => ({ KritzelBrushTool: MockKritzelBrushTool }));
-jest.mock('@kritzel/core/src/classes/tools/line-tool.class', () => ({ KritzelLineTool: MockKritzelLineTool }));
-jest.mock('@kritzel/core/src/classes/tools/image-tool.class', () => ({ KritzelImageTool: MockKritzelImageTool }));
-jest.mock('@kritzel/core/src/classes/tools/base-tool.class', () => ({ KritzelBaseTool: MockKritzelBaseTool }));
-jest.mock('@kritzel/core/src/classes/objects/selection-box.class', () => ({ KritzelSelectionBox: MockKritzelSelectionBox }));
-jest.mock('@kritzel/core/src/classes/objects/selection-group.class', () => ({ KritzelSelectionGroup: MockKritzelSelectionGroup }));
-jest.mock('@kritzel/core/src/classes/objects/group.class', () => ({ KritzelGroup: MockKritzelGroup }));
+jest.mock('@updraw/core/src/classes/tools/selection-tool.class', () => ({ UpdrawSelectionTool: MockUpdrawSelectionTool }));
+jest.mock('@updraw/core/src/classes/tools/text-tool.class', () => ({ UpdrawTextTool: MockUpdrawTextTool }));
+jest.mock('@updraw/core/src/classes/tools/shape-tool.class', () => ({ UpdrawShapeTool: MockUpdrawShapeTool }));
+jest.mock('@updraw/core/src/classes/tools/eraser-tool.class', () => ({ UpdrawEraserTool: MockUpdrawEraserTool }));
+jest.mock('@updraw/core/src/classes/tools/brush-tool.class', () => ({ UpdrawBrushTool: MockUpdrawBrushTool }));
+jest.mock('@updraw/core/src/classes/tools/line-tool.class', () => ({ UpdrawLineTool: MockUpdrawLineTool }));
+jest.mock('@updraw/core/src/classes/tools/image-tool.class', () => ({ UpdrawImageTool: MockUpdrawImageTool }));
+jest.mock('@updraw/core/src/classes/tools/base-tool.class', () => ({ UpdrawBaseTool: MockUpdrawBaseTool }));
+jest.mock('@updraw/core/src/classes/objects/selection-box.class', () => ({ UpdrawSelectionBox: MockUpdrawSelectionBox }));
+jest.mock('@updraw/core/src/classes/objects/selection-group.class', () => ({ UpdrawSelectionGroup: MockUpdrawSelectionGroup }));
+jest.mock('@updraw/core/src/classes/objects/group.class', () => ({ UpdrawGroup: MockUpdrawGroup }));
 
 jest.mock('html-to-image', () => ({
   toPng: jest.fn().mockResolvedValue('data:image/png;base64,xxx'),
   toSvg: jest.fn().mockResolvedValue('data:image/svg+xml;base64,xxx'),
 }));
 
-jest.mock('@kritzel/core/src/helpers/keyboard.helper', () => ({
-  KritzelKeyboardHelper: {
+jest.mock('@updraw/core/src/helpers/keyboard.helper', () => ({
+  UpdrawKeyboardHelper: {
     forceHideKeyboard: jest.fn(),
   },
 }));
 
-import { KritzelEngine } from './kritzel-engine';
+import { UpdrawEngine } from './updraw-engine';
 import {
-  KritzelAlignment,
-  KritzelWorkspace,
-  KritzelBaseObject,
-  KritzelDynamicObject,
-  KritzelIframeObject,
-  KritzelImage,
-  KritzelObjectAppearManager,
-  KRITZEL_OBJECT_APPEAR_MAX_BATCH,
+  UpdrawAlignment,
+  UpdrawWorkspace,
+  UpdrawBaseObject,
+  UpdrawDynamicObject,
+  UpdrawIframeObject,
+  UpdrawImage,
+  UpdrawObjectAppearManager,
+  UPDRAW_OBJECT_APPEAR_MAX_BATCH,
   DEFAULT_TEXT_TOOL_AVAILABLE_FONTS,
-} from '@kritzel/core';
+} from '@updraw/core';
 
 /** Builds a fake object whose prototype makes `instanceof` checks in the engine pass. */
 const withPrototype = <T = any>(cls: { prototype: object }, fields: Record<string, unknown>): T =>
   Object.assign(Object.create(cls.prototype), fields);
 
-describe('KritzelEngine', () => {
-  let engine: KritzelEngine;
+describe('UpdrawEngine', () => {
+  let engine: UpdrawEngine;
   let core: any;
 
   /** Builds a fresh mock core for the engine to delegate to. */
@@ -102,7 +102,7 @@ describe('KritzelEngine', () => {
       isRotatable: jest.fn().mockReturnValue(true),
       resetWarnings: jest.fn(),
     },
-    objectAppearManager: new KritzelObjectAppearManager(),
+    objectAppearManager: new UpdrawObjectAppearManager(),
     objectTitlebarManager: {
       config: undefined,
       getOwnerFromEvent: jest.fn().mockReturnValue(null),
@@ -256,8 +256,8 @@ describe('KritzelEngine', () => {
         debugInfo: {},
         pointers: new Map(),
         activeTool: null as any,
-        activeWorkspace: null as KritzelWorkspace | null,
-        workspaces: [] as KritzelWorkspace[],
+        activeWorkspace: null as UpdrawWorkspace | null,
+        workspaces: [] as UpdrawWorkspace[],
       },
       setState: jest.fn(),
       setSelectionBox: jest.fn(),
@@ -278,7 +278,7 @@ describe('KritzelEngine', () => {
     core = createMockCore();
     Object.assign(mockCoreInstance, core);
 
-    engine = new KritzelEngine();
+    engine = new UpdrawEngine();
 
     // Wire up event emitters (decorators are mocked, so @Event fields are undefined).
     const emitterFields = [
@@ -352,7 +352,7 @@ describe('KritzelEngine', () => {
           frameCallbacks.push(callback);
           return frameCallbacks.length;
         });
-      const workspace = new KritzelWorkspace({ id: 'seeded-workspace' });
+      const workspace = new UpdrawWorkspace({ id: 'seeded-workspace' });
       const seedObject = { id: 'seed-object' };
       let resolveReady!: () => void;
       const readyPromise = new Promise<void>(resolve => {
@@ -393,8 +393,8 @@ describe('KritzelEngine', () => {
 
   describe('workspace syncing state', () => {
     it('uses provided workspaces as the visible catalog when controlled', async () => {
-      const workspace = new KritzelWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
-      const providerOnlyWorkspace = new KritzelWorkspace({ id: 'provider-only', name: 'Provider Only' });
+      const workspace = new UpdrawWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
+      const providerOnlyWorkspace = new UpdrawWorkspace({ id: 'provider-only', name: 'Provider Only' });
       engine.workspaces = [workspace];
       core.getWorkspaces.mockReturnValue([workspace, providerOnlyWorkspace]);
 
@@ -402,7 +402,7 @@ describe('KritzelEngine', () => {
     });
 
     it('creates provided workspaces that are missing from provider state', async () => {
-      const workspace = new KritzelWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
+      const workspace = new UpdrawWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
       engine.workspaces = [workspace];
       core.getWorkspaces.mockReturnValue([]);
 
@@ -412,7 +412,7 @@ describe('KritzelEngine', () => {
     });
 
     it('reconciles and activates workspaces provided after initialization', async () => {
-      const workspace = new KritzelWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
+      const workspace = new UpdrawWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
       engine.workspaces = [workspace];
       core.getWorkspaces.mockReturnValue([]);
       (engine as any)._isYjsInitialized = true;
@@ -425,9 +425,9 @@ describe('KritzelEngine', () => {
     });
 
     it('updates provider metadata when a provided workspace differs', async () => {
-      const existingWorkspace = new KritzelWorkspace({ id: 'workspace-1', name: 'Old Name' });
-      const providedWorkspace = new KritzelWorkspace({ id: 'workspace-1', name: 'New Name' });
-      providedWorkspace.objects = [{ id: 'seed-object' }] as KritzelBaseObject<any>[];
+      const existingWorkspace = new UpdrawWorkspace({ id: 'workspace-1', name: 'Old Name' });
+      const providedWorkspace = new UpdrawWorkspace({ id: 'workspace-1', name: 'New Name' });
+      providedWorkspace.objects = [{ id: 'seed-object' }] as UpdrawBaseObject<any>[];
       engine.workspaces = [providedWorkspace];
       core.getWorkspaces.mockReturnValue([existingWorkspace]);
 
@@ -443,8 +443,8 @@ describe('KritzelEngine', () => {
     });
 
     it('prefers activeWorkspaceId over the first provided workspace during startup', async () => {
-      const firstWorkspace = new KritzelWorkspace({ id: 'first-workspace', name: 'First Workspace' });
-      const activeWorkspace = new KritzelWorkspace({ id: 'active-workspace', name: 'Active Workspace' });
+      const firstWorkspace = new UpdrawWorkspace({ id: 'first-workspace', name: 'First Workspace' });
+      const activeWorkspace = new UpdrawWorkspace({ id: 'active-workspace', name: 'Active Workspace' });
       engine.workspaces = [firstWorkspace, activeWorkspace];
       engine.activeWorkspaceId = activeWorkspace.id;
       core.getWorkspaces.mockReturnValue([firstWorkspace, activeWorkspace]);
@@ -463,8 +463,8 @@ describe('KritzelEngine', () => {
     });
 
     it('rejects active workspace ids outside the controlled catalog', async () => {
-      const visibleWorkspace = new KritzelWorkspace({ id: 'visible-workspace', name: 'Visible Workspace' });
-      const hiddenWorkspace = new KritzelWorkspace({ id: 'hidden-workspace', name: 'Hidden Workspace' });
+      const visibleWorkspace = new UpdrawWorkspace({ id: 'visible-workspace', name: 'Visible Workspace' });
+      const hiddenWorkspace = new UpdrawWorkspace({ id: 'hidden-workspace', name: 'Hidden Workspace' });
       engine.workspaces = [visibleWorkspace];
       core.getWorkspaces.mockReturnValue([visibleWorkspace, hiddenWorkspace]);
       const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
@@ -472,7 +472,7 @@ describe('KritzelEngine', () => {
       await engine.setActiveWorkspace(hiddenWorkspace.id);
 
       expect(core.initializeWorkspace).not.toHaveBeenCalled();
-      expect(warnSpy).toHaveBeenCalledWith(`[KritzelEngine] No workspace found with ID: ${hiddenWorkspace.id}`);
+      expect(warnSpy).toHaveBeenCalledWith(`[UpdrawEngine] No workspace found with ID: ${hiddenWorkspace.id}`);
 
       warnSpy.mockRestore();
     });
@@ -500,7 +500,7 @@ describe('KritzelEngine', () => {
       const networkSyncPromise = new Promise<void>(resolve => {
         resolveNetworkSync = resolve;
       });
-      const remoteWorkspace = new KritzelWorkspace({ id: 'remote-workspace', name: 'Remote' });
+      const remoteWorkspace = new UpdrawWorkspace({ id: 'remote-workspace', name: 'Remote' });
 
       core.appStateMap.hasNetworkSyncProvider = true;
       core.appStateMap.whenNetworkSynced.mockReturnValue(networkSyncPromise);
@@ -523,7 +523,7 @@ describe('KritzelEngine', () => {
     it('does not wait when workspaces are already available locally', async () => {
       core.appStateMap.hasNetworkSyncProvider = true;
       core.getWorkspaces.mockReturnValue([
-        new KritzelWorkspace({ id: 'cached-workspace', name: 'Cached' }),
+        new UpdrawWorkspace({ id: 'cached-workspace', name: 'Cached' }),
       ]);
 
       await withNavigatorOnline(true, async () => {
@@ -585,7 +585,7 @@ describe('KritzelEngine', () => {
       });
       core.store.objects.whenNetworkSynced.mockReturnValue(objectSyncPromise);
 
-      const initializationPromise = (engine as any).initializeWorkspaceIfNeeded(new KritzelWorkspace({ id: 'workspace-1', name: 'Workspace 1' }));
+      const initializationPromise = (engine as any).initializeWorkspaceIfNeeded(new UpdrawWorkspace({ id: 'workspace-1', name: 'Workspace 1' }));
 
       await Promise.resolve();
       expect((engine as any).isLoadingChange.emit).toHaveBeenCalledWith(true);
@@ -629,8 +629,8 @@ describe('KritzelEngine', () => {
           });
         });
 
-      const initializationA = (engine as any).initializeWorkspaceIfNeeded(new KritzelWorkspace({ id: 'workspace-a', name: 'Workspace A' }));
-      const initializationB = (engine as any).initializeWorkspaceIfNeeded(new KritzelWorkspace({ id: 'workspace-b', name: 'Workspace B' }));
+      const initializationA = (engine as any).initializeWorkspaceIfNeeded(new UpdrawWorkspace({ id: 'workspace-a', name: 'Workspace A' }));
+      const initializationB = (engine as any).initializeWorkspaceIfNeeded(new UpdrawWorkspace({ id: 'workspace-b', name: 'Workspace B' }));
 
       resolveInitializationA();
       await Promise.resolve();
@@ -652,7 +652,7 @@ describe('KritzelEngine', () => {
 
   describe('chatSession', () => {
     const createSession = (agent: unknown = null) => ({
-      [Symbol.for('kritzel.chatSession')]: true,
+      [Symbol.for('updraw.chatSession')]: true,
       agent,
       _attach: jest.fn(),
       _detach: jest.fn(),
@@ -703,7 +703,7 @@ describe('KritzelEngine', () => {
       const error = jest.spyOn(console, 'error').mockImplementation(() => undefined);
       (engine as any).chatSession = { send: () => undefined };
       engine.onChatSessionChange();
-      expect(error).toHaveBeenCalledWith('[Kritzel] chatSession expects a KritzelChatSession.');
+      expect(error).toHaveBeenCalledWith('[Updraw] chatSession expects an UpdrawChatSession.');
       error.mockRestore();
     });
   });
@@ -812,12 +812,12 @@ describe('KritzelEngine', () => {
       await engine.getScreenshot('png');
 
       const { filter } = (toPng as jest.Mock).mock.calls[0][1];
-      expect(filter({ tagName: 'KRITZEL-AGENTIC-CURSORS' })).toBe(false);
+      expect(filter({ tagName: 'UPDRAW-AGENTIC-CURSORS' })).toBe(false);
     });
 
     it('emits titlebar actions', () => {
       (engine as any).objectTitlebarAction = { emit: jest.fn() };
-      const detail = { itemId: 'play', section: 'left', objectId: 'a', objectType: 'KritzelShape', workspaceId: 'w', anchorRect: {} } as any;
+      const detail = { itemId: 'play', section: 'left', objectId: 'a', objectType: 'UpdrawShape', workspaceId: 'w', anchorRect: {} } as any;
 
       engine.emitObjectTitlebarAction(detail);
 
@@ -902,7 +902,7 @@ describe('KritzelEngine', () => {
     it('canExportSelectedObjectAs checks supported formats for a single exportable object', async () => {
       const exportableObject = {
         id: 'a',
-        __class__: 'KritzelPath',
+        __class__: 'UpdrawPath',
         getSupportedExportFormats: () => ['svg'],
         exportAs: jest.fn(),
       } as any;
@@ -913,7 +913,7 @@ describe('KritzelEngine', () => {
     });
 
     it('exportSelectedObject no-ops when object is not exportable', async () => {
-      core.store.selectionGroup = { objects: [{ id: 'a', __class__: 'KritzelText' }] };
+      core.store.selectionGroup = { objects: [{ id: 'a', __class__: 'UpdrawText' }] };
       const createElementSpy = jest.spyOn(document, 'createElement');
 
       await engine.exportSelectedObject('png');
@@ -926,7 +926,7 @@ describe('KritzelEngine', () => {
       const exportAs = jest.fn().mockResolvedValue('data:image/png;base64,abc');
       const exportableObject = {
         id: 'a',
-        __class__: 'KritzelImage',
+        __class__: 'UpdrawImage',
         getSupportedExportFormats: () => ['png'],
         exportAs,
       } as any;
@@ -1024,7 +1024,7 @@ describe('KritzelEngine', () => {
       const embeddedRoot = document.createElement('div');
       embeddedRoot.appendChild(target);
 
-      const dynamicObjectObject = withPrototype(KritzelDynamicObject, {
+      const dynamicObjectObject = withPrototype(UpdrawDynamicObject, {
         id: 'custom-1',
         isInteractive: true,
         isSelected: true,
@@ -1052,7 +1052,7 @@ describe('KritzelEngine', () => {
       objectElement.classList.add('object');
 
       const createEmbeddedObject = (id: string) =>
-        withPrototype(KritzelDynamicObject, {
+        withPrototype(UpdrawDynamicObject, {
           id,
           isInteractive: true,
           isSelected: true,
@@ -1150,7 +1150,7 @@ describe('KritzelEngine', () => {
       const input = document.createElement('input');
       rendererContainer.appendChild(input);
 
-      const dynamicObjectObject = withPrototype(KritzelDynamicObject, {
+      const dynamicObjectObject = withPrototype(UpdrawDynamicObject, {
         id: 'custom-3',
         isInteractive: true,
         isSelected: true,
@@ -1195,7 +1195,7 @@ describe('KritzelEngine', () => {
       shadowRoot.appendChild(input);
       rendererContainer.appendChild(shadowHost);
 
-      const dynamicObjectObject = withPrototype(KritzelDynamicObject, {
+      const dynamicObjectObject = withPrototype(UpdrawDynamicObject, {
         id: 'custom-4',
         isInteractive: true,
         isSelected: true,
@@ -1231,7 +1231,7 @@ describe('KritzelEngine', () => {
 
   describe('selection handle capabilities', () => {
     it('allows both handles when the object config manager allows both', () => {
-      const object = {} as KritzelBaseObject<any>;
+      const object = {} as UpdrawBaseObject<any>;
 
       const result = (engine as any).getSelectionHandleCapabilities(object);
 
@@ -1243,7 +1243,7 @@ describe('KritzelEngine', () => {
     it('hides the handles the object config manager forbids', () => {
       core.objectConfigManager.isResizable.mockReturnValue(false);
 
-      const result = (engine as any).getSelectionHandleCapabilities({} as KritzelBaseObject<any>);
+      const result = (engine as any).getSelectionHandleCapabilities({} as UpdrawBaseObject<any>);
 
       expect(result).toEqual({ canRenderResizeHandles: false, canRenderRotationHandle: true });
     });
@@ -1369,8 +1369,8 @@ describe('KritzelEngine', () => {
     });
 
     it('alignObjects forwards the alignment to core', async () => {
-      await engine.alignObjects(KritzelAlignment.CenterHorizontal);
-      expect(core.alignObjects).toHaveBeenCalledWith(KritzelAlignment.CenterHorizontal);
+      await engine.alignObjects(UpdrawAlignment.CenterHorizontal);
+      expect(core.alignObjects).toHaveBeenCalledWith(UpdrawAlignment.CenterHorizontal);
     });
 
     it('group passes explicit objects to core.group and returns the created group', async () => {
@@ -1545,7 +1545,7 @@ describe('KritzelEngine', () => {
 
       const hoveredDynamicObject = {
         ...createEmbeddedObject([objectElement]),
-        __class__: 'KritzelDynamicObject',
+        __class__: 'UpdrawDynamicObject',
         elementRef: objectElement,
       } as any;
 
@@ -1570,7 +1570,7 @@ describe('KritzelEngine', () => {
 
       const hoveredDynamicObject = {
         ...createEmbeddedObject([objectElement]),
-        __class__: 'KritzelDynamicObject',
+        __class__: 'UpdrawDynamicObject',
         elementRef: objectElement,
       } as any;
 
@@ -1593,7 +1593,7 @@ describe('KritzelEngine', () => {
       engine.isZoomingEnabled = true;
 
       const hoveredDynamicObject = {
-        __class__: 'KritzelDynamicObject',
+        __class__: 'UpdrawDynamicObject',
       } as any;
 
       (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredDynamicObject);
@@ -1619,7 +1619,7 @@ describe('KritzelEngine', () => {
       objectElement.appendChild(scrollHost);
 
       const hoveredDynamicObject = {
-        __class__: 'KritzelDynamicObject',
+        __class__: 'UpdrawDynamicObject',
         isSelected: true,
         elementRef: objectElement,
       } as any;
@@ -1652,7 +1652,7 @@ describe('KritzelEngine', () => {
 
       const hoveredDynamicObject = {
         ...createEmbeddedObject([objectElement]),
-        __class__: 'KritzelDynamicObject',
+        __class__: 'UpdrawDynamicObject',
         elementRef: objectElement,
       } as any;
 
@@ -1684,7 +1684,7 @@ describe('KritzelEngine', () => {
       objectElement.appendChild(scrollHost);
 
       const hoveredDynamicObject = {
-        __class__: 'KritzelDynamicObject',
+        __class__: 'UpdrawDynamicObject',
         isSelected: true,
         elementRef: objectElement,
       } as any;
@@ -1716,7 +1716,7 @@ describe('KritzelEngine', () => {
 
       const hoveredDynamicObject = {
         ...createEmbeddedObject([]),
-        __class__: 'KritzelDynamicObject',
+        __class__: 'UpdrawDynamicObject',
         elmeentRef: typoRefContainer,
       } as any;
 
@@ -1743,7 +1743,7 @@ describe('KritzelEngine', () => {
 
       const hoveredDynamicObject = {
         ...createEmbeddedObject([objectElement]),
-        __class__: 'KritzelDynamicObject',
+        __class__: 'UpdrawDynamicObject',
         elementRef: objectElement,
       } as any;
 
@@ -1777,7 +1777,7 @@ describe('KritzelEngine', () => {
 
       const hoveredDynamicObject = {
         ...createEmbeddedObject([objectElement]),
-        __class__: 'KritzelDynamicObject',
+        __class__: 'UpdrawDynamicObject',
         elementRef: objectElement,
       } as any;
 
@@ -1810,7 +1810,7 @@ describe('KritzelEngine', () => {
 
       const hoveredDynamicObject = {
         ...createEmbeddedObject([objectElement]),
-        __class__: 'KritzelDynamicObject',
+        __class__: 'UpdrawDynamicObject',
         elementRef: objectElement,
       } as any;
 
@@ -1843,7 +1843,7 @@ describe('KritzelEngine', () => {
       objectElement.appendChild(scrollHost);
 
       const hoveredDynamicObject = {
-        __class__: 'KritzelDynamicObject',
+        __class__: 'UpdrawDynamicObject',
         isSelected: true,
         elementRef: objectElement,
       } as any;
@@ -2029,11 +2029,11 @@ describe('KritzelEngine', () => {
     });
 
     it('findObjects filters non-selection objects by the predicate', async () => {
-      const a: any = { id: 'a', __class__: 'KritzelText' };
-      const b: any = { id: 'b', __class__: 'KritzelPath' };
+      const a: any = { id: 'a', __class__: 'UpdrawText' };
+      const b: any = { id: 'b', __class__: 'UpdrawPath' };
       core.store.allNonSelectionObjects = [a, b];
 
-      const result = await engine.findObjects(o => (o as any).__class__ === 'KritzelText');
+      const result = await engine.findObjects(o => (o as any).__class__ === 'UpdrawText');
 
       expect(result).toEqual([a]);
     });
@@ -2106,7 +2106,7 @@ describe('KritzelEngine', () => {
     });
 
     it('centerObjects delegates to viewport.centerFitObjects', async () => {
-      const objects = [{ id: 'obj-1' }] as unknown as KritzelBaseObject[];
+      const objects = [{ id: 'obj-1' }] as unknown as UpdrawBaseObject[];
       const result = await engine.centerObjects(objects, false);
 
       expect(engine.viewport.centerFitObjects).toHaveBeenCalledWith(objects, false);
@@ -2116,9 +2116,9 @@ describe('KritzelEngine', () => {
 
   describe('workspace management', () => {
     it('setActiveWorkspace initializes a visible workspace and emits activeWorkspaceChange', async () => {
-      const workspace = new KritzelWorkspace({ id: 'w1', name: 'Test' });
+      const workspace = new UpdrawWorkspace({ id: 'w1', name: 'Test' });
       core.getWorkspaces.mockReturnValue([workspace]);
-      core.initializeWorkspace.mockImplementation(async (nextWorkspace: KritzelWorkspace) => {
+      core.initializeWorkspace.mockImplementation(async (nextWorkspace: UpdrawWorkspace) => {
         core.store.state.activeWorkspace = nextWorkspace;
       });
 
@@ -2130,7 +2130,7 @@ describe('KritzelEngine', () => {
     });
 
     it('createWorkspace delegates to core and emits workspacesChange', async () => {
-      const workspace = { id: 'w1', name: 'Test' } as KritzelWorkspace;
+      const workspace = { id: 'w1', name: 'Test' } as UpdrawWorkspace;
       core.store.state.workspaces = [workspace];
       core.getWorkspaces.mockReturnValue([workspace]);
 
@@ -2142,7 +2142,7 @@ describe('KritzelEngine', () => {
     });
 
     it('updateWorkspace delegates to core and emits workspacesChange', async () => {
-      const workspace = { id: 'w1', name: 'Updated' } as KritzelWorkspace;
+      const workspace = { id: 'w1', name: 'Updated' } as UpdrawWorkspace;
       core.store.state.workspaces = [workspace];
       core.getWorkspaces.mockReturnValue([workspace]);
 
@@ -2153,7 +2153,7 @@ describe('KritzelEngine', () => {
     });
 
     it('deleteWorkspace delegates to core and emits workspacesChange', async () => {
-      const workspace = { id: 'w1', name: 'Doomed' } as KritzelWorkspace;
+      const workspace = { id: 'w1', name: 'Doomed' } as UpdrawWorkspace;
       core.store.state.workspaces = [];
       core.getWorkspaces.mockReturnValue([]);
 
@@ -2164,7 +2164,7 @@ describe('KritzelEngine', () => {
     });
 
     it('getWorkspaces returns the list from core', async () => {
-      const workspaces = [{ id: 'w1', name: 'A' }] as KritzelWorkspace[];
+      const workspaces = [{ id: 'w1', name: 'A' }] as UpdrawWorkspace[];
       core.getWorkspaces.mockReturnValue(workspaces);
 
       const result = await engine.getWorkspaces();
@@ -2173,7 +2173,7 @@ describe('KritzelEngine', () => {
     });
 
     it('getActiveWorkspace returns the active workspace', async () => {
-      const workspace = { id: 'active' } as KritzelWorkspace;
+      const workspace = { id: 'active' } as UpdrawWorkspace;
       core.store.state.activeWorkspace = workspace;
 
       const result = await engine.getActiveWorkspace();
@@ -2361,7 +2361,7 @@ describe('KritzelEngine', () => {
 
     it('restores embedded portable assets before importing', async () => {
       const payload = {
-        __class__: 'KritzelWorkspace',
+        __class__: 'UpdrawWorkspace',
         name: 'Imported Workspace',
         viewport: { centerWorldX: 0, centerWorldY: 0, scale: 1 },
         objects: [],
@@ -2387,7 +2387,7 @@ describe('KritzelEngine', () => {
   describe('loadObjectsFromJson validation', () => {
     it('throws when no workspace is currently loaded', async () => {
       core.store.state.activeWorkspace = null;
-      const json = JSON.stringify({ __class__: 'KritzelWorkspace', objects: [] });
+      const json = JSON.stringify({ __class__: 'UpdrawWorkspace', objects: [] });
 
       await expect(engine.loadObjectsFromJson(json)).rejects.toThrow(
         /no active workspace/,
@@ -2395,7 +2395,7 @@ describe('KritzelEngine', () => {
     });
 
     it('throws when the JSON is not a workspace export', async () => {
-      core.store.state.activeWorkspace = { id: 'w1' } as KritzelWorkspace;
+      core.store.state.activeWorkspace = { id: 'w1' } as UpdrawWorkspace;
       const invalid = JSON.stringify({ foo: 'bar' });
 
       await expect(engine.loadObjectsFromJson(invalid)).rejects.toThrow(
@@ -2404,8 +2404,8 @@ describe('KritzelEngine', () => {
     });
 
     it('returns 0 when the export contains no objects array', async () => {
-      core.store.state.activeWorkspace = { id: 'w1' } as KritzelWorkspace;
-      const json = JSON.stringify({ __class__: 'KritzelWorkspace' });
+      core.store.state.activeWorkspace = { id: 'w1' } as UpdrawWorkspace;
+      const json = JSON.stringify({ __class__: 'UpdrawWorkspace' });
 
       const result = await engine.loadObjectsFromJson(json);
 
@@ -2421,10 +2421,10 @@ describe('KritzelEngine', () => {
     });
 
     it('serializes the active workspace including its objects', async () => {
-      const serialized = { __class__: 'KritzelWorkspace', id: 'w1', objects: [] };
+      const serialized = { __class__: 'UpdrawWorkspace', id: 'w1', objects: [] };
       core.store.state.activeWorkspace = {
         serialize: jest.fn().mockReturnValue(serialized),
-      } as unknown as KritzelWorkspace;
+      } as unknown as UpdrawWorkspace;
 
       const json = await engine.exportAsJson();
 
@@ -2437,11 +2437,11 @@ describe('KritzelEngine', () => {
     });
 
     it('uses lightweight export mode when a remote asset provider exists', async () => {
-      const serialized = { __class__: 'KritzelWorkspace', id: 'w1', objects: [] };
+      const serialized = { __class__: 'UpdrawWorkspace', id: 'w1', objects: [] };
       core.assetResolver.hasRemoteProvider = true;
       core.store.state.activeWorkspace = {
         serialize: jest.fn().mockReturnValue(serialized),
-      } as unknown as KritzelWorkspace;
+      } as unknown as UpdrawWorkspace;
 
       const json = await engine.exportAsJson();
 
@@ -2454,11 +2454,11 @@ describe('KritzelEngine', () => {
 
     it('embeds image assets for portable exports when no remote provider exists', async () => {
       const serialized = {
-        __class__: 'KritzelWorkspace',
+        __class__: 'UpdrawWorkspace',
         id: 'w1',
         objects: [
-          { __class__: 'KritzelImage', assetId: 'asset-1' },
-          { __class__: 'KritzelImage', assetId: 'asset-1' },
+          { __class__: 'UpdrawImage', assetId: 'asset-1' },
+          { __class__: 'UpdrawImage', assetId: 'asset-1' },
         ],
       };
       core.assetResolver.hasRemoteProvider = false;
@@ -2468,7 +2468,7 @@ describe('KritzelEngine', () => {
         .mockResolvedValue('data:image/png;base64,cG5nLWJ5dGVz');
       core.store.state.activeWorkspace = {
         serialize: jest.fn().mockReturnValue(serialized),
-      } as unknown as KritzelWorkspace;
+      } as unknown as UpdrawWorkspace;
 
       const json = await engine.exportAsJson();
 
@@ -2508,7 +2508,7 @@ describe('KritzelEngine', () => {
       core.store.state.isResizeHandleSelected = true;
       core.store.state.isRotationHandleSelected = true;
 
-      const eraserTool = new MockKritzelEraserTool();
+      const eraserTool = new MockUpdrawEraserTool();
       invokeHandler(eraserTool);
 
       expect(core.clearSelection).toHaveBeenCalledTimes(1);
@@ -2523,7 +2523,7 @@ describe('KritzelEngine', () => {
     it('preserves selection state when switching to the selection tool', () => {
       core.store.state.isSelecting = true;
 
-      const selectionTool = new MockKritzelSelectionTool();
+      const selectionTool = new MockUpdrawSelectionTool();
       invokeHandler(selectionTool);
 
       expect(core.clearSelection).not.toHaveBeenCalled();
@@ -2532,28 +2532,28 @@ describe('KritzelEngine', () => {
     });
 
     it('resets active text when switching to a non-text tool', () => {
-      const eraserTool = new MockKritzelEraserTool();
+      const eraserTool = new MockUpdrawEraserTool();
       invokeHandler(eraserTool);
 
       expect(core.resetActiveText).toHaveBeenCalledTimes(1);
     });
 
     it('does not reset active text when switching to the text tool', () => {
-      const textTool = new MockKritzelTextTool();
+      const textTool = new MockUpdrawTextTool();
       invokeHandler(textTool);
 
       expect(core.resetActiveText).not.toHaveBeenCalled();
     });
 
     it('resets active shape when switching to a non-shape tool', () => {
-      const eraserTool = new MockKritzelEraserTool();
+      const eraserTool = new MockUpdrawEraserTool();
       invokeHandler(eraserTool);
 
       expect(core.resetActiveShape).toHaveBeenCalledTimes(1);
     });
 
     it('does not reset active shape when switching to the shape tool', () => {
-      const shapeTool = new MockKritzelShapeTool();
+      const shapeTool = new MockUpdrawShapeTool();
       invokeHandler(shapeTool);
 
       expect(core.resetActiveShape).not.toHaveBeenCalled();
@@ -2562,7 +2562,7 @@ describe('KritzelEngine', () => {
     it('resets transient flags and rerenders', () => {
       core.store.state.skipContextMenu = true;
 
-      const eraserTool = new MockKritzelEraserTool();
+      const eraserTool = new MockUpdrawEraserTool();
       invokeHandler(eraserTool);
 
       expect(core.store.state.skipContextMenu).toBe(false);
@@ -2570,7 +2570,7 @@ describe('KritzelEngine', () => {
     });
 
     it('emits activeToolChange when a tool is provided', () => {
-      const eraserTool = new MockKritzelEraserTool();
+      const eraserTool = new MockUpdrawEraserTool();
       invokeHandler(eraserTool);
 
       expect((engine as any).activeToolChange.emit).toHaveBeenCalledWith(eraserTool);
@@ -2589,7 +2589,7 @@ describe('KritzelEngine', () => {
       (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
       (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(registeredTool);
 
-      class CustomTool extends MockKritzelBaseTool {}
+      class CustomTool extends MockUpdrawBaseTool {}
       engine.tools = [{ name: 'custom', tool: CustomTool as unknown as typeof engine.tools[number]['tool'] }];
       (engine as any)._toolsRevision++;
 
@@ -2693,14 +2693,14 @@ describe('KritzelEngine', () => {
       (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
 
       // Simulates a built-in tool class from another compiled copy of the library
-      // (dual-package hazard): does not extend the local KritzelBaseTool but
+      // (dual-package hazard): does not extend the local UpdrawBaseTool but
       // identifies itself via the toolType discriminator.
       class ForeignSelectionTool {
         toolType = 'selection';
       }
       const result = await engine.registerTool('selection', ForeignSelectionTool, undefined);
 
-      expect(core.toolRegistry.registerTool).toHaveBeenCalledWith('selection', MockKritzelSelectionTool);
+      expect(core.toolRegistry.registerTool).toHaveBeenCalledWith('selection', MockUpdrawSelectionTool);
       expect(result).toBe(newTool);
     });
 
@@ -2709,7 +2709,7 @@ describe('KritzelEngine', () => {
       (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
       (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
 
-      class LocalCustomTool extends MockKritzelBaseTool {
+      class LocalCustomTool extends MockUpdrawBaseTool {
         toolType = 'selection';
       }
       await engine.registerTool('custom', LocalCustomTool, undefined);
@@ -2894,7 +2894,7 @@ describe('KritzelEngine', () => {
     });
 
     beforeEach(() => {
-      core.store.state.activeWorkspace = { id: 'ws1' } as KritzelWorkspace;
+      core.store.state.activeWorkspace = { id: 'ws1' } as UpdrawWorkspace;
       jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(cb => { cb(0); return 0; });
     });
 
@@ -2942,8 +2942,8 @@ describe('KritzelEngine', () => {
       expect(object.scale).toBe(1);
     });
 
-    it('addObject calls prepareForInsert for KritzelImage objects', async () => {
-      const imageObject = withPrototype(KritzelImage, {
+    it('addObject calls prepareForInsert for UpdrawImage objects', async () => {
+      const imageObject = withPrototype(UpdrawImage, {
         ...makeObject(1),
         prepareForInsert: jest.fn().mockResolvedValue(undefined),
       });
@@ -2953,12 +2953,12 @@ describe('KritzelEngine', () => {
       expect(imageObject.prepareForInsert).toHaveBeenCalledTimes(1);
     });
 
-    it('addObjects calls prepareForInsert for each KritzelImage object before transaction insert', async () => {
-      const a = withPrototype(KritzelImage, {
+    it('addObjects calls prepareForInsert for each UpdrawImage object before transaction insert', async () => {
+      const a = withPrototype(UpdrawImage, {
         ...makeObject(1),
         prepareForInsert: jest.fn().mockResolvedValue(undefined),
       });
-      const b = withPrototype(KritzelImage, {
+      const b = withPrototype(UpdrawImage, {
         ...makeObject(2),
         prepareForInsert: jest.fn().mockResolvedValue(undefined),
       });
@@ -2981,7 +2981,7 @@ describe('KritzelEngine', () => {
     });
 
     beforeEach(() => {
-      core.store.state.activeWorkspace = { id: 'ws1' } as KritzelWorkspace;
+      core.store.state.activeWorkspace = { id: 'ws1' } as UpdrawWorkspace;
       core.store.allObjects = [];
       jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(cb => { cb(0); return 0; });
     });
@@ -3068,7 +3068,7 @@ describe('KritzelEngine', () => {
     });
 
     beforeEach(() => {
-      core.store.state.activeWorkspace = { id: 'ws1' } as KritzelWorkspace;
+      core.store.state.activeWorkspace = { id: 'ws1' } as UpdrawWorkspace;
       jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(cb => { cb(0); return 0; });
     });
 
@@ -3110,7 +3110,7 @@ describe('KritzelEngine', () => {
     });
 
     it('addObjects skips the appear animation for big batches', async () => {
-      const objects = Array.from({ length: KRITZEL_OBJECT_APPEAR_MAX_BATCH + 1 }, (_, index) => makeObject(`o${index}`));
+      const objects = Array.from({ length: UPDRAW_OBJECT_APPEAR_MAX_BATCH + 1 }, (_, index) => makeObject(`o${index}`));
 
       await engine.addObjects(objects);
 
@@ -3182,15 +3182,15 @@ describe('KritzelEngine', () => {
       typeof node.$attrs$?.class === 'string' && node.$attrs$.class.split(/\s+/).includes(className);
 
     /** The object's `.object` wrapper in the rendered tree. */
-    const renderObjectWrapper = (object: KritzelBaseObject): VNode => {
+    const renderObjectWrapper = (object: UpdrawBaseObject): VNode => {
       const wrappers = findVNodes(engine.render() as VNode, node => hasClass(node, 'object') && node.$attrs$?.id === object.id);
       expect(wrappers).toHaveLength(1);
       return wrappers[0];
     };
 
-    const findPlaceholders = (node: VNode) => findVNodes(node, child => hasClass(child, 'kritzel-loading-placeholder'));
+    const findPlaceholders = (node: VNode) => findVNodes(node, child => hasClass(child, 'updraw-loading-placeholder'));
 
-    let object: KritzelBaseObject;
+    let object: UpdrawBaseObject;
 
     beforeEach(() => {
       // The parts of the core that render() reads but no other test needs.
@@ -3215,7 +3215,7 @@ describe('KritzelEngine', () => {
       });
       core.store.objects.update = jest.fn();
 
-      object = new KritzelBaseObject();
+      object = new UpdrawBaseObject();
       object.id = 'object-1';
       object.width = 200;
       object.height = 120;
@@ -3234,7 +3234,7 @@ describe('KritzelEngine', () => {
 
       const placeholders = findPlaceholders(renderObjectWrapper(object));
       expect(placeholders).toHaveLength(1);
-      expect(placeholders[0].$attrs$?.['data-testid']).toBe('kritzel-loading-placeholder');
+      expect(placeholders[0].$attrs$?.['data-testid']).toBe('updraw-loading-placeholder');
       expect(placeholders[0].$attrs$?.style).toEqual(
         expect.objectContaining({
           width: `${object.totalWidth}px`,
@@ -3276,7 +3276,7 @@ describe('KritzelEngine', () => {
     const classes = (node: VNode) => (typeof node.$attrs$?.class === 'string' ? node.$attrs$.class.split(/\s+/) : []);
 
     /** The container (`.object`) of an object, and the element with `className` inside it. */
-    const renderParts = (object: KritzelBaseObject<any>, className: string) => {
+    const renderParts = (object: UpdrawBaseObject<any>, className: string) => {
       core.store.getObjectsInViewport = jest.fn().mockReturnValue([object]);
       const [container] = findVNodes(engine.render() as VNode, node => classes(node).includes('object') && node.$attrs$?.id === object.id);
       const [card] = findVNodes(container, node => classes(node).includes(className));
@@ -3305,44 +3305,44 @@ describe('KritzelEngine', () => {
     });
 
     it('uses the theme radius unless the object sets its own, as a variable its content can read', () => {
-      const themed = new KritzelIframeObject({ width: 200, height: 120 });
+      const themed = new UpdrawIframeObject({ width: 200, height: 120 });
       themed.id = 'iframe-1';
-      const themedParts = renderParts(themed, 'kritzel-iframe-object');
+      const themedParts = renderParts(themed, 'updraw-iframe-object');
       expect(classes(themedParts.container)).toContain('object--iframe');
-      expect(themedParts.container.$attrs$?.style).not.toHaveProperty('--kritzel-content-border-radius');
+      expect(themedParts.container.$attrs$?.style).not.toHaveProperty('--updraw-content-border-radius');
 
-      const own = new KritzelIframeObject({ width: 200, height: 120, borderRadius: 20 });
+      const own = new UpdrawIframeObject({ width: 200, height: 120, borderRadius: 20 });
       own.id = 'iframe-2';
-      expect(renderParts(own, 'kritzel-iframe-object').container.$attrs$?.style).toEqual(
-        expect.objectContaining({ '--kritzel-content-border-radius': '20px' }),
+      expect(renderParts(own, 'updraw-iframe-object').container.$attrs$?.style).toEqual(
+        expect.objectContaining({ '--updraw-content-border-radius': '20px' }),
       );
     });
 
     it('clips the content of a dynamic object to its box unless clipContent is off', () => {
-      const clipped = new KritzelDynamicObject({ width: 200, height: 120, borderRadius: '1rem' });
+      const clipped = new UpdrawDynamicObject({ width: 200, height: 120, borderRadius: '1rem' });
       clipped.id = 'dynamic-1';
-      const parts = renderParts(clipped, 'kritzel-dynamic-object');
+      const parts = renderParts(clipped, 'updraw-dynamic-object');
       expect(classes(parts.container)).toContain('object--dynamic-object');
-      expect(parts.container.$attrs$?.style).toEqual(expect.objectContaining({ '--kritzel-content-border-radius': '1rem' }));
+      expect(parts.container.$attrs$?.style).toEqual(expect.objectContaining({ '--updraw-content-border-radius': '1rem' }));
       // No inline overflow: the stylesheet clips.
       expect(parts.card.$attrs$?.style?.overflow).toBeUndefined();
 
-      const overflowing = new KritzelDynamicObject({ width: 200, height: 120, clipContent: false });
+      const overflowing = new UpdrawDynamicObject({ width: 200, height: 120, clipContent: false });
       overflowing.id = 'dynamic-2';
-      expect(renderParts(overflowing, 'kritzel-dynamic-object').card.$attrs$?.style?.overflow).toBe('visible');
+      expect(renderParts(overflowing, 'updraw-dynamic-object').card.$attrs$?.style?.overflow).toBe('visible');
     });
 
     it('lets an image set its own radius, falling back to the theme image radius', () => {
-      const themed = new KritzelImage({ width: 200, height: 120 });
+      const themed = new UpdrawImage({ width: 200, height: 120 });
       themed.id = 'image-1';
-      const themedContainer = renderParts(themed, 'kritzel-image-placeholder').container;
+      const themedContainer = renderParts(themed, 'updraw-image-placeholder').container;
       expect(classes(themedContainer)).toContain('object--image');
-      expect(themedContainer.$attrs$?.style).not.toHaveProperty('--kritzel-content-border-radius');
+      expect(themedContainer.$attrs$?.style).not.toHaveProperty('--updraw-content-border-radius');
 
-      const own = new KritzelImage({ width: 200, height: 120, borderRadius: 16 });
+      const own = new UpdrawImage({ width: 200, height: 120, borderRadius: 16 });
       own.id = 'image-2';
-      expect(renderParts(own, 'kritzel-image-object').container.$attrs$?.style).toEqual(
-        expect.objectContaining({ '--kritzel-content-border-radius': '16px' }),
+      expect(renderParts(own, 'updraw-image-object').container.$attrs$?.style).toEqual(
+        expect.objectContaining({ '--updraw-content-border-radius': '16px' }),
       );
     });
 
@@ -3363,20 +3363,20 @@ describe('KritzelEngine', () => {
 
       it('plays on objects marked by an insert, with their stagger index, also on their titlebars', () => {
         withTitlebars('image-appear');
-        const image = new KritzelImage({ width: 200, height: 120 });
+        const image = new UpdrawImage({ width: 200, height: 120 });
         image.id = 'image-appear';
         core.objectAppearManager.mark([image], 2);
 
-        const { container } = renderParts(image, 'kritzel-image-placeholder');
+        const { container } = renderParts(image, 'updraw-image-placeholder');
         expect(classes(container)).toContain('object--appearing');
-        expect(container.$attrs$?.style).toEqual(expect.objectContaining({ '--kritzel-object-appear-index': '2' }));
+        expect(container.$attrs$?.style).toEqual(expect.objectContaining({ '--updraw-object-appear-index': '2' }));
 
         expect(renderTitlebarLayer()?.$attrs$?.appearingOwners.get('image-appear')).toBe(2);
       });
 
       it('hides the titlebar of an object waiting to appear, then lets it appear with the object', () => {
         withTitlebars('iframe-waiting');
-        const iframe = new KritzelIframeObject({ width: 200, height: 120 });
+        const iframe = new UpdrawIframeObject({ width: 200, height: 120 });
         iframe.id = 'iframe-waiting';
         core.objectAppearManager.mark([iframe]);
         core.store.getObjectsInViewport = jest.fn().mockReturnValue([iframe]);
@@ -3392,7 +3392,7 @@ describe('KritzelEngine', () => {
 
       it('shows a titlebar that comes up while its object appears at once, without the animation', () => {
         withTitlebars();
-        const image = new KritzelImage({ width: 200, height: 120 });
+        const image = new UpdrawImage({ width: 200, height: 120 });
         image.id = 'image-late-titlebar';
         core.objectAppearManager.mark([image]);
         core.store.getObjectsInViewport = jest.fn().mockReturnValue([image]);
@@ -3405,8 +3405,8 @@ describe('KritzelEngine', () => {
       });
 
       it('lets a group appear once its children can', () => {
-        const iframe = new KritzelIframeObject({ width: 200, height: 120 });
-        const group = withPrototype(MockKritzelGroup, { isLoading: false, children: [iframe] });
+        const iframe = new UpdrawIframeObject({ width: 200, height: 120 });
+        const group = withPrototype(MockUpdrawGroup, { isLoading: false, children: [iframe] });
         expect((engine as any).isReadyToAppear(group)).toBe(false);
 
         Object.defineProperty(iframe, 'isDocumentLoaded', { get: () => true });
@@ -3414,51 +3414,51 @@ describe('KritzelEngine', () => {
       });
 
       it('does not play on objects that were not marked', () => {
-        const image = new KritzelImage({ width: 200, height: 120 });
+        const image = new UpdrawImage({ width: 200, height: 120 });
         image.id = 'image-plain';
 
-        const { container } = renderParts(image, 'kritzel-image-placeholder');
+        const { container } = renderParts(image, 'updraw-image-placeholder');
         expect(classes(container)).not.toContain('object--appearing');
-        expect(container.$attrs$?.style).not.toHaveProperty('--kritzel-object-appear-index');
+        expect(container.$attrs$?.style).not.toHaveProperty('--updraw-object-appear-index');
       });
 
       it('waits for an iframe to load, unless it shows its loading placeholder', () => {
-        const iframe = new KritzelIframeObject({ width: 200, height: 120 });
+        const iframe = new UpdrawIframeObject({ width: 200, height: 120 });
         iframe.id = 'iframe-appear';
         core.objectAppearManager.mark([iframe]);
-        expect(classes(renderParts(iframe, 'kritzel-iframe-object').container)).not.toContain('object--appearing');
+        expect(classes(renderParts(iframe, 'updraw-iframe-object').container)).not.toContain('object--appearing');
 
         Object.defineProperty(iframe, 'isDocumentLoaded', { get: () => true });
-        expect(classes(renderParts(iframe, 'kritzel-iframe-object').container)).toContain('object--appearing');
+        expect(classes(renderParts(iframe, 'updraw-iframe-object').container)).toContain('object--appearing');
 
-        const placeholder = new KritzelIframeObject({ width: 200, height: 120 });
+        const placeholder = new UpdrawIframeObject({ width: 200, height: 120 });
         placeholder.id = 'iframe-placeholder';
         placeholder.isLoading = true;
         core.objectAppearManager.mark([placeholder]);
-        expect(classes(renderParts(placeholder, 'kritzel-iframe-object').container)).toContain('object--appearing');
+        expect(classes(renderParts(placeholder, 'updraw-iframe-object').container)).toContain('object--appearing');
       });
 
       it('does not play when the theme sets a zero duration', () => {
         const computed = window.getComputedStyle(engine.host);
         jest.spyOn(window, 'getComputedStyle').mockReturnValue({
-          getPropertyValue: (name: string) => (name === '--kritzel-object-appear-animation-duration' ? ' 0s' : computed.getPropertyValue(name)),
+          getPropertyValue: (name: string) => (name === '--updraw-object-appear-animation-duration' ? ' 0s' : computed.getPropertyValue(name)),
         } as CSSStyleDeclaration);
-        const image = new KritzelImage({ width: 200, height: 120 });
+        const image = new UpdrawImage({ width: 200, height: 120 });
         image.id = 'image-off';
         core.objectAppearManager.mark([image]);
 
-        expect(classes(renderParts(image, 'kritzel-image-placeholder').container)).not.toContain('object--appearing');
+        expect(classes(renderParts(image, 'updraw-image-placeholder').container)).not.toContain('object--appearing');
         expect(core.objectAppearManager.has('image-off')).toBe(false);
       });
     });
 
     it('gives other objects no card radius', () => {
-      const plain = new KritzelBaseObject();
+      const plain = new UpdrawBaseObject();
       plain.id = 'plain-1';
       core.store.getObjectsInViewport = jest.fn().mockReturnValue([plain]);
       const [container] = findVNodes(engine.render() as VNode, node => node.$attrs$?.id === plain.id);
       expect(classes(container)).toEqual(['object']);
-      expect(container.$attrs$?.style).not.toHaveProperty('--kritzel-content-border-radius');
+      expect(container.$attrs$?.style).not.toHaveProperty('--updraw-content-border-radius');
     });
   });
 });

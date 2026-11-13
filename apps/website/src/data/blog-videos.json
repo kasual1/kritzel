@@ -1,16 +1,16 @@
 {
-  "/videos/2026_10_10_Kritzel_Welcome.mp4": {
-    "poster": "/videos/2026_10_10_Kritzel_Welcome.jpg",
-    "thumbnail": "/videos/2026_10_10_Kritzel_Welcome.thumbnail.jpg",
+  "/videos/2026_10_10_Updraw_Welcome.mp4": {
+    "poster": "/videos/2026_10_10_Updraw_Welcome.jpg",
+    "thumbnail": "/videos/2026_10_10_Updraw_Welcome.thumbnail.jpg",
     "thumbnailTime": 3.45,
     "width": 1280,
     "height": 720,
     "duration": 5.53,
     "sha256": "f31ba5312fc1f3638337335245b32cff1814e3984eb31b34ed62f13e264425b7"
   },
-  "/videos/2026_10_22_Kritzel_Open_Source.mp4": {
-    "poster": "/videos/2026_10_22_Kritzel_Open_Source.jpg",
-    "thumbnail": "/videos/2026_10_22_Kritzel_Open_Source.thumbnail.jpg",
+  "/videos/2026_10_22_Updraw_Open_Source.mp4": {
+    "poster": "/videos/2026_10_22_Updraw_Open_Source.jpg",
+    "thumbnail": "/videos/2026_10_22_Updraw_Open_Source.thumbnail.jpg",
     "thumbnailTime": 2.98,
     "width": 1280,
     "height": 720,

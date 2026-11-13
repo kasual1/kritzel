@@ -1,50 +1,50 @@
-import type { KritzelEasing } from './easing.interface';
-import type { KritzelAgenticAnchor, KritzelAgenticElementTarget, KritzelAgenticObjectTarget, KritzelAgenticPointTarget } from './agentic-cursor.interface';
+import type { UpdrawEasing } from './easing.interface';
+import type { UpdrawAgenticAnchor, UpdrawAgenticElementTarget, UpdrawAgenticObjectTarget, UpdrawAgenticPointTarget } from './agentic-cursor.interface';
 import type {
-  KritzelObjectElementInfo,
-  KritzelObjectElementInteraction,
-  KritzelObjectElementInteractionFailureReason,
+  UpdrawObjectElementInfo,
+  UpdrawObjectElementInteraction,
+  UpdrawObjectElementInteractionFailureReason,
 } from './object-element.interface';
-import type { KritzelPoint } from './point.interface';
+import type { UpdrawPoint } from './point.interface';
 import type { LineArrowConfig } from './arrow-head.interface';
 import type { ThemeAwareColor } from '../constants/color-palette.constants';
 import type { ShapeType } from '../enums/shape-type.enum';
-import type { KritzelBaseObject } from '../classes/objects/base-object.class';
+import type { UpdrawBaseObject } from '../classes/objects/base-object.class';
 
 /** Any CSS color (used for light and dark themes) or a theme-aware color. */
-export type KritzelAgenticColor = string | ThemeAwareColor;
+export type UpdrawAgenticColor = string | ThemeAwareColor;
 
 /** Corner dragged by `resizeObject`; the opposite corner stays in place. */
-export type KritzelAgenticResizeHandle = 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left';
+export type UpdrawAgenticResizeHandle = 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left';
 
 /** Style of shapes created by agents. Unset fields use the shape tool's current settings. */
-export interface KritzelAgenticShapeStyle {
-  fillColor?: KritzelAgenticColor;
-  strokeColor?: KritzelAgenticColor;
+export interface UpdrawAgenticShapeStyle {
+  fillColor?: UpdrawAgenticColor;
+  strokeColor?: UpdrawAgenticColor;
   strokeWidth?: number;
   opacity?: number;
   fontSize?: number;
   fontFamily?: string;
-  fontColor?: KritzelAgenticColor;
+  fontColor?: UpdrawAgenticColor;
 }
 
 /** Style of text created by agents. Unset fields use the text tool's defaults. */
-export interface KritzelAgenticTextStyle {
+export interface UpdrawAgenticTextStyle {
   fontSize?: number;
   fontFamily?: string;
-  fontColor?: KritzelAgenticColor;
+  fontColor?: UpdrawAgenticColor;
   opacity?: number;
 }
 
 /** Style of freehand paths drawn by agents. Unset fields use the brush tool's current settings. */
-export interface KritzelAgenticStrokeStyle {
-  strokeColor?: KritzelAgenticColor;
+export interface UpdrawAgenticStrokeStyle {
+  strokeColor?: UpdrawAgenticColor;
   strokeWidth?: number;
   opacity?: number;
 }
 
 /** Style of lines drawn by agents. Unset fields use the line tool's current settings. */
-export interface KritzelAgenticLineStyle extends KritzelAgenticStrokeStyle {
+export interface UpdrawAgenticLineStyle extends UpdrawAgenticStrokeStyle {
   arrows?: LineArrowConfig;
 }
 
@@ -53,32 +53,32 @@ export interface KritzelAgenticLineStyle extends KritzelAgenticStrokeStyle {
  * only: nothing is selected or changed. On an element (`{ objectId, selector }`), the element is really clicked,
  * like `interactWithElement` with `{ type: 'click' }`.
  */
-export interface KritzelAgenticClickAction {
+export interface UpdrawAgenticClickAction {
   type: 'click';
   /** World point, an anchor on an object (the anchor rotates with the object), or an element inside an object. */
-  target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget | KritzelAgenticElementTarget;
+  target: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget | UpdrawAgenticElementTarget;
   /** `2` plays a double press. Defaults to `1`. */
   count?: 1 | 2;
 }
 
 /**
- * Interacts with an element inside an object's content, e.g. a button in a `KritzelIframeObject`: the agent's
+ * Interacts with an element inside an object's content, e.g. a button in an `UpdrawIframeObject`: the agent's
  * cursor flies to the element and the interaction is performed as a user would (see
- * `KritzelObjectElementInteraction`). Works for actors working as the user too. The content's own state changes,
+ * `UpdrawObjectElementInteraction`). Works for actors working as the user too. The content's own state changes,
  * not the object, so the action has no undo step. The object must be mounted (in or near the viewport).
  */
-export interface KritzelAgenticInteractWithElementAction {
+export interface UpdrawAgenticInteractWithElementAction {
   type: 'interactWithElement';
   /** The element: `{ objectId, selector }`; the first element that matches the selector is used. */
-  target: KritzelAgenticElementTarget;
-  interaction: KritzelObjectElementInteraction;
+  target: UpdrawAgenticElementTarget;
+  interaction: UpdrawObjectElementInteraction;
 }
 
 /**
  * Selects top-level objects for this agent. Agent selections are never synced as objects (collaborators see them only as
  * presence) and never change the user's selection.
  */
-export interface KritzelAgenticSelectAction {
+export interface UpdrawAgenticSelectAction {
   type: 'select';
   /** Non-empty list of IDs of top-level objects (not inside a group, not selections). */
   objectIds: string[];
@@ -87,30 +87,30 @@ export interface KritzelAgenticSelectAction {
 }
 
 /** Clears this agent's selection. */
-export interface KritzelAgenticClearSelectionAction {
+export interface UpdrawAgenticClearSelectionAction {
   type: 'clearSelection';
 }
 
 /** Drags a top-level object so that its `align` point ends up at `to`. */
-export interface KritzelAgenticMoveObjectAction {
+export interface UpdrawAgenticMoveObjectAction {
   type: 'moveObject';
   /** ID of a top-level object. */
   objectId: string;
   /** World point, or an anchor (with an optional offset in world units) on another object. Resolved once when the drag starts. */
-  to: KritzelAgenticPointTarget | KritzelAgenticObjectTarget;
+  to: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget;
   /** Point of the moved object that lands on `to`. Defaults to `'center'`. */
-  align?: KritzelAgenticAnchor;
+  align?: UpdrawAgenticAnchor;
 }
 
 /** Deletes top-level objects. Children of a group are deleted with their group. */
-export interface KritzelAgenticDeleteObjectsAction {
+export interface UpdrawAgenticDeleteObjectsAction {
   type: 'deleteObjects';
   /** Non-empty list of IDs of top-level objects. */
   objectIds: string[];
 }
 
 /** Resizes a top-level object by dragging a corner handle. Sizes are world units of the unrotated box. */
-export interface KritzelAgenticResizeObjectAction {
+export interface UpdrawAgenticResizeObjectAction {
   type: 'resizeObject';
   /** ID of a top-level object. */
   objectId: string;
@@ -121,11 +121,11 @@ export interface KritzelAgenticResizeObjectAction {
   /** Defaults to `true` when only one of `width` / `height` is given, otherwise `false`. */
   keepAspectRatio?: boolean;
   /** The dragged corner. Defaults to `'bottom-right'`. */
-  handle?: KritzelAgenticResizeHandle;
+  handle?: UpdrawAgenticResizeHandle;
 }
 
 /** Rotates a top-level object with the rotation handle. */
-export interface KritzelAgenticRotateObjectAction {
+export interface UpdrawAgenticRotateObjectAction {
   type: 'rotateObject';
   /** ID of a top-level object. */
   objectId: string;
@@ -140,19 +140,19 @@ export interface KritzelAgenticRotateObjectAction {
  * their center lands on `to`. Group children and lines between copied objects are copied along. The copies take
  * the place of the originals in the agent's selection.
  */
-export interface KritzelAgenticCopyObjectsAction {
+export interface UpdrawAgenticCopyObjectsAction {
   type: 'copyObjects';
   /** Non-empty list of IDs of top-level objects. */
   objectIds: string[];
   /** Where the center of the copies lands. Defaults to right next to the originals. */
-  to?: KritzelAgenticPointTarget | KritzelAgenticObjectTarget;
+  to?: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget;
 }
 
 /**
  * Groups top-level objects into one group, which takes their place in the stacking order (at the topmost object)
  * and in the agent's selection. `objectIds` of the result holds the group's ID.
  */
-export interface KritzelAgenticGroupObjectsAction {
+export interface UpdrawAgenticGroupObjectsAction {
   type: 'groupObjects';
   /** IDs of at least two top-level objects. */
   objectIds: string[];
@@ -162,26 +162,26 @@ export interface KritzelAgenticGroupObjectsAction {
  * Dissolves top-level groups. Their children keep their place in the stacking order and take the group's place in
  * the agent's selection. `objectIds` of the result holds the children's IDs.
  */
-export interface KritzelAgenticUngroupObjectsAction {
+export interface UpdrawAgenticUngroupObjectsAction {
   type: 'ungroupObjects';
   /** Non-empty list of IDs of top-level groups. */
   objectIds: string[];
 }
 
 /** Where `orderObjects` moves objects in the stacking order. */
-export type KritzelAgenticOrder = 'front' | 'back' | 'forward' | 'backward';
+export type UpdrawAgenticOrder = 'front' | 'back' | 'forward' | 'backward';
 
 /** Moves top-level objects in the stacking order; a group moves with all of its children. */
-export interface KritzelAgenticOrderObjectsAction {
+export interface UpdrawAgenticOrderObjectsAction {
   type: 'orderObjects';
   /** Non-empty list of IDs of top-level objects. */
   objectIds: string[];
   /** `'front'` and `'back'` move them above or below all other objects, `'forward'` and `'backward'` one layer. */
-  order: KritzelAgenticOrder;
+  order: UpdrawAgenticOrder;
 }
 
 /** Drags out a new shape. */
-export interface KritzelAgenticCreateShapeAction {
+export interface UpdrawAgenticCreateShapeAction {
   type: 'createShape';
   /** Defaults to the shape tool's current type. */
   shapeType?: ShapeType | `${ShapeType}`;
@@ -193,22 +193,22 @@ export interface KritzelAgenticCreateShapeAction {
   height: number;
   /** Text typed into the shape after it is drawn (same undo step). */
   text?: string;
-  style?: KritzelAgenticShapeStyle;
+  style?: UpdrawAgenticShapeStyle;
 }
 
 /** Clicks to create a text object and types into it. */
-export interface KritzelAgenticCreateTextAction {
+export interface UpdrawAgenticCreateTextAction {
   type: 'createText';
   /** Top-left corner in world coordinates. */
   x: number;
   y: number;
   /** Non-empty text. `\n` starts a new paragraph. */
   text: string;
-  style?: KritzelAgenticTextStyle;
+  style?: UpdrawAgenticTextStyle;
 }
 
 /** Types into an existing text or shape. */
-export interface KritzelAgenticTypeTextAction {
+export interface UpdrawAgenticTypeTextAction {
   type: 'typeText';
   /** ID of a text or shape object. */
   objectId: string;
@@ -219,56 +219,56 @@ export interface KritzelAgenticTypeTextAction {
 }
 
 /** Draws a freehand path through the points, in order. */
-export interface KritzelAgenticDrawPathAction {
+export interface UpdrawAgenticDrawPathAction {
   type: 'drawPath';
   /** At least two world points. */
-  points: KritzelPoint[];
-  style?: KritzelAgenticStrokeStyle;
+  points: UpdrawPoint[];
+  style?: UpdrawAgenticStrokeStyle;
 }
 
 /** Draws a line from one object to another and anchors both ends, so it follows them. */
-export interface KritzelAgenticConnectAction {
+export interface UpdrawAgenticConnectAction {
   type: 'connect';
   /** ID of the start object. Lines, selections and hidden objects can't be connected. */
   from: string;
   /** ID of the end object; must differ from `from`. */
   to: string;
-  style?: KritzelAgenticLineStyle;
+  style?: UpdrawAgenticLineStyle;
 }
 
 /**
  * One end of a line: a free world point, or an object. An end on an object sits at the object's center and
  * follows it when it moves (the line is anchored there).
  */
-export type KritzelAgenticLineEnd = KritzelAgenticPointTarget | { objectId: string };
+export type UpdrawAgenticLineEnd = UpdrawAgenticPointTarget | { objectId: string };
 
 /**
  * Draws a line (or arrow) like the line tool: from `from` to `to`, each a free point or an object, optionally
  * bent through a point. Lines, selections and hidden objects can't be ends; both ends can't be the same object.
  */
-export interface KritzelAgenticDrawLineAction {
+export interface UpdrawAgenticDrawLineAction {
   type: 'drawLine';
-  from: KritzelAgenticLineEnd;
-  to: KritzelAgenticLineEnd;
+  from: UpdrawAgenticLineEnd;
+  to: UpdrawAgenticLineEnd;
   /** A world point the line curves through, halfway along it (where the line's middle handle sits). */
-  through?: KritzelPoint;
-  style?: KritzelAgenticLineStyle;
+  through?: UpdrawPoint;
+  style?: UpdrawAgenticLineStyle;
 }
 
 /**
  * Changes an existing top-level line like its handles do: moves an end to a free point (detaching it) or onto an
  * object (anchoring it there), and bends the line through a point or straightens it. At least one change.
  */
-export interface KritzelAgenticEditLineAction {
+export interface UpdrawAgenticEditLineAction {
   type: 'editLine';
   /** ID of a top-level line. */
   lineId: string;
   /** New start. */
-  from?: KritzelAgenticLineEnd;
+  from?: UpdrawAgenticLineEnd;
   /** New end. */
-  to?: KritzelAgenticLineEnd;
+  to?: UpdrawAgenticLineEnd;
   /** A world point the line curves through, halfway along it. Can't be combined with `straight`. */
-  through?: KritzelPoint;
+  through?: UpdrawPoint;
   /** Removes the curve. */
   straight?: boolean;
 }
@@ -279,34 +279,34 @@ export interface KritzelAgenticEditLineAction {
  * `fontSize`, `fontFamily` and `fontColor` to shapes and texts; `arrows` to lines (per end: an end left out
  * keeps its arrow head); `opacity` to all.
  */
-export interface KritzelAgenticObjectStyle {
-  fillColor?: KritzelAgenticColor;
-  strokeColor?: KritzelAgenticColor;
+export interface UpdrawAgenticObjectStyle {
+  fillColor?: UpdrawAgenticColor;
+  strokeColor?: UpdrawAgenticColor;
   strokeWidth?: number;
   opacity?: number;
   fontSize?: number;
   fontFamily?: string;
-  fontColor?: KritzelAgenticColor;
+  fontColor?: UpdrawAgenticColor;
   arrows?: LineArrowConfig;
 }
 
 /** Restyles top-level objects; groups style their children. */
-export interface KritzelAgenticSetStyleAction {
+export interface UpdrawAgenticSetStyleAction {
   type: 'setStyle';
   /** Non-empty list of IDs of top-level objects. */
   objectIds: string[];
   /** At least one field. */
-  style: KritzelAgenticObjectStyle;
+  style: UpdrawAgenticObjectStyle;
 }
 
 /**
- * Places an object built by the app, e.g. `new KritzelIframeObject(...)`: the cursor hops to it and
+ * Places an object built by the app, e.g. `new UpdrawIframeObject(...)`: the cursor hops to it and
  * the object appears as the agent's change. The object gets a fresh ID, which `objectIds` reports.
  */
-export interface KritzelAgenticAddObjectAction {
+export interface UpdrawAgenticAddObjectAction {
   type: 'addObject';
   /** A new object that is not on the canvas yet. Selections can't be added. */
-  object: KritzelBaseObject<any>;
+  object: UpdrawBaseObject<any>;
   /**
    * Places `object` as a loading placeholder (`isLoading`) and keeps the action open until this resolves with
    * what fills it in, e.g. once a model has written a widget's code. While it waits, the user can move, resize or
@@ -314,22 +314,22 @@ export interface KritzelAgenticAddObjectAction {
    * `apply` copies it onto the placeholder and loading ends, all in the same step of the history. A rejection, a
    * stop or a deleted placeholder rolls the whole action back.
    */
-  fill?: Promise<KritzelAgenticFill>;
+  fill?: Promise<UpdrawAgenticFill>;
 }
 
 /** What fills in an `addObject` placeholder. */
-export interface KritzelAgenticFill {
+export interface UpdrawAgenticFill {
   /** The object the placeholder stands in for. It is prepared like an added object, but never inserted. */
-  content: KritzelBaseObject<any>;
+  content: UpdrawBaseObject<any>;
   /** Copies `content` onto the placeholder, e.g. a widget's code. Runs synchronously inside the action. */
-  apply(placeholder: KritzelBaseObject<any>, content: KritzelBaseObject<any>): void;
+  apply(placeholder: UpdrawBaseObject<any>, content: UpdrawBaseObject<any>): void;
 }
 
 /**
- * Changes the code or name of an iframe (`KritzelIframeObject`), also inside a group: the given parts replace the
+ * Changes the code or name of an iframe (`UpdrawIframeObject`), also inside a group: the given parts replace the
  * current ones, parts left out stay. The iframe reloads with the new code.
  */
-export interface KritzelAgenticUpdateIframeAction {
+export interface UpdrawAgenticUpdateIframeAction {
   type: 'updateIframe';
   /** ID of an iframe. */
   objectId: string;
@@ -347,54 +347,54 @@ export interface KritzelAgenticUpdateIframeAction {
    * changes resolved with (`name`, `html`, `css`, `script`; the `objectId` must match) replace the ones given
    * here, and loading ends in the same step of the history. A rejection or a stop rolls the whole action back.
    */
-  fill?: () => Promise<KritzelAgenticIframeChanges>;
+  fill?: () => Promise<UpdrawAgenticIframeChanges>;
 }
 
 /** The changes that fill in a loading `updateIframe` action. */
-export type KritzelAgenticIframeChanges = Omit<KritzelAgenticUpdateIframeAction, 'type' | 'fill'>;
+export type UpdrawAgenticIframeChanges = Omit<UpdrawAgenticUpdateIframeAction, 'type' | 'fill'>;
 
 /** Undoes this agent's last completed action. Never touches the user's or other agents' history. */
-export interface KritzelAgenticUndoAction {
+export interface UpdrawAgenticUndoAction {
   type: 'undo';
 }
 
 /** Redoes this agent's last undone action. */
-export interface KritzelAgenticRedoAction {
+export interface UpdrawAgenticRedoAction {
   type: 'redo';
 }
 
-/** An action performed by a `KritzelAgent` (`agent.perform(action)`). */
-export type KritzelAgenticAction =
-  | KritzelAgenticClickAction
-  | KritzelAgenticInteractWithElementAction
-  | KritzelAgenticSelectAction
-  | KritzelAgenticClearSelectionAction
-  | KritzelAgenticMoveObjectAction
-  | KritzelAgenticDeleteObjectsAction
-  | KritzelAgenticUndoAction
-  | KritzelAgenticRedoAction
-  | KritzelAgenticResizeObjectAction
-  | KritzelAgenticRotateObjectAction
-  | KritzelAgenticCopyObjectsAction
-  | KritzelAgenticGroupObjectsAction
-  | KritzelAgenticUngroupObjectsAction
-  | KritzelAgenticOrderObjectsAction
-  | KritzelAgenticCreateShapeAction
-  | KritzelAgenticCreateTextAction
-  | KritzelAgenticTypeTextAction
-  | KritzelAgenticUpdateIframeAction
-  | KritzelAgenticDrawPathAction
-  | KritzelAgenticConnectAction
-  | KritzelAgenticDrawLineAction
-  | KritzelAgenticEditLineAction
-  | KritzelAgenticSetStyleAction
-  | KritzelAgenticAddObjectAction;
+/** An action performed by an `UpdrawAgent` (`agent.perform(action)`). */
+export type UpdrawAgenticAction =
+  | UpdrawAgenticClickAction
+  | UpdrawAgenticInteractWithElementAction
+  | UpdrawAgenticSelectAction
+  | UpdrawAgenticClearSelectionAction
+  | UpdrawAgenticMoveObjectAction
+  | UpdrawAgenticDeleteObjectsAction
+  | UpdrawAgenticUndoAction
+  | UpdrawAgenticRedoAction
+  | UpdrawAgenticResizeObjectAction
+  | UpdrawAgenticRotateObjectAction
+  | UpdrawAgenticCopyObjectsAction
+  | UpdrawAgenticGroupObjectsAction
+  | UpdrawAgenticUngroupObjectsAction
+  | UpdrawAgenticOrderObjectsAction
+  | UpdrawAgenticCreateShapeAction
+  | UpdrawAgenticCreateTextAction
+  | UpdrawAgenticTypeTextAction
+  | UpdrawAgenticUpdateIframeAction
+  | UpdrawAgenticDrawPathAction
+  | UpdrawAgenticConnectAction
+  | UpdrawAgenticDrawLineAction
+  | UpdrawAgenticEditLineAction
+  | UpdrawAgenticSetStyleAction
+  | UpdrawAgenticAddObjectAction;
 
 /** The `type` of an agentic action. */
-export type KritzelAgenticActionType = KritzelAgenticAction['type'];
+export type UpdrawAgenticActionType = UpdrawAgenticAction['type'];
 
-/** Options for `agent.perform()` and the action shortcuts of `KritzelAgent`. */
-export interface KritzelAgenticActionOptions {
+/** Options for `agent.perform()` and the action shortcuts of `UpdrawAgent`. */
+export interface UpdrawAgenticActionOptions {
   /**
    * Speed in screen pixels per second. Defaults to 1200.
    * Cursor flights use the same rule as `agent.moveTo()`; presses, drags, rotation, drawing and typing
@@ -406,11 +406,11 @@ export interface KritzelAgenticActionOptions {
   /** Aborts the action, also while it waits in the queue. Changes made so far are rolled back. */
   signal?: AbortSignal;
   /** Easing of the cursor flight and of drag phases. Defaults to `'ease-in-out'`. */
-  easing?: KritzelEasing;
+  easing?: UpdrawEasing;
 }
 
 /** Why an agentic action did not complete. */
-export type KritzelAgenticActionFailureReason =
+export type UpdrawAgenticActionFailureReason =
   /** `options.signal` was aborted. */
   | 'aborted'
   /** `agent.moveTo()` was called while the action was running. */
@@ -447,12 +447,12 @@ export type KritzelAgenticActionFailureReason =
    */
   | 'element-interaction-failed';
 
-/** Result of `agent.perform()` and the action shortcuts of `KritzelAgent`. */
-export interface KritzelAgenticActionResult {
+/** Result of `agent.perform()` and the action shortcuts of `UpdrawAgent`. */
+export interface UpdrawAgenticActionResult {
   /** `true` when the action ran to the end. */
   completed: boolean;
   /** Set only when `completed` is `false`. */
-  reason?: KritzelAgenticActionFailureReason;
+  reason?: UpdrawAgenticActionFailureReason;
   /**
    * On success: the created or added object, the new agent selection, the changed or deleted IDs, the
    * object under a click (empty on a miss), or the objects changed by undo/redo. On failure: the objects that
@@ -463,9 +463,9 @@ export interface KritzelAgenticActionResult {
    * For interactions with elements: the element as it is afterwards (or the element that refused the interaction),
    * as described by the object's content, which may be untrusted.
    */
-  element?: KritzelObjectElementInfo;
+  element?: UpdrawObjectElementInfo;
   /** For `'element-interaction-failed'`: why the element refused the interaction. */
-  elementReason?: KritzelObjectElementInteractionFailureReason;
+  elementReason?: UpdrawObjectElementInteractionFailureReason;
   /** For `'element-interaction-failed'`: what went wrong, in words. */
   message?: string;
 }

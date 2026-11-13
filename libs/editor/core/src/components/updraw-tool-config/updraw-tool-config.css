@@ -1,7 +1,7 @@
 .expand-toggle {
   background: none;
   border: none;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   padding: 0;
   margin: 0;
   display: flex;
@@ -9,7 +9,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  color: var(--kritzel-icon-color, currentColor);
+  color: var(--updraw-icon-color, currentColor);
   transition: transform 0.2s ease;
 }
 
@@ -22,7 +22,7 @@
 }
 
 .expand-toggle:focus-visible {
-  outline: 2px solid var(--kritzel-focus-color, #007acc);
+  outline: 2px solid var(--updraw-focus-color, #007acc);
   outline-offset: 2px;
 }
 
@@ -32,7 +32,7 @@
 
 .divider {
   height: 1px;
-  background-color: var(--kritzel-divider-color, #e0e0e0);
+  background-color: var(--updraw-divider-color, #e0e0e0);
   margin: 4px 0;
   width: 100%;
 }

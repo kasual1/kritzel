@@ -1,4 +1,4 @@
-# kritzel-shape-fill
+# updraw-shape-fill
 
 A component for selecting shape fill style (transparent or filled background).
 
@@ -23,13 +23,13 @@ A component for selecting shape fill style (transparent or filled background).
 
 ### Used by
 
- - [kritzel-tool-config](../kritzel-tool-config)
+ - [updraw-tool-config](../updraw-tool-config)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-tool-config --> kritzel-shape-fill
-  style kritzel-shape-fill fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-tool-config --> updraw-shape-fill
+  style updraw-shape-fill fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

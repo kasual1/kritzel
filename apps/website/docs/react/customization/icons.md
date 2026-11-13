@@ -1,8 +1,8 @@
 ---
 sidebar_label: Icons
 displayed_sidebar: tutorialSidebar
-title: "Custom Icons Concept | Kritzel for React"
-description: "Understand how to register and use custom SVG icons in Kritzel."
+title: "Custom Icons Concept | Updraw for React"
+description: "Understand how to register and use custom SVG icons in Updraw."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,13 +11,13 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel has a dedicated system for the icons used throughout the editor UI. You can replace built-in icons or add new names for application-specific tools and actions.
+Updraw has a dedicated system for the icons used throughout the editor UI. You can replace built-in icons or add new names for application-specific tools and actions.
 
 See the [Icons API reference](../api-reference/icons.md) for the complete list of built-in icon names.
 
 ## Overriding Existing Icons
 
-Override built-in icons by mapping existing names to your own SVG markup and passing the map to the `customSvgIcons` prop on `<KritzelEditor>`.
+Override built-in icons by mapping existing names to your own SVG markup and passing the map to the `customSvgIcons` prop on `<UpdrawEditor>`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
@@ -27,7 +27,7 @@ Override built-in icons by mapping existing names to your own SVG markup and pas
 
 ## Registering New Icons
 
-You can also register new icon names and reference them wherever Kritzel accepts an `icon`, including `KritzelToolbarItem` and `ContextMenuItem` definitions. Keep `customSvgIcons`, toolbar items, and context-menu arrays at module scope so their references stay stable.
+You can also register new icon names and reference them wherever Updraw accepts an `icon`, including `UpdrawToolbarItem` and `ContextMenuItem` definitions. Keep `customSvgIcons`, toolbar items, and context-menu arrays at module scope so their references stay stable.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"

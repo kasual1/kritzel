@@ -1,23 +1,23 @@
-import { KritzelIframeObject } from '../objects/iframe.class';
-import { KritzelCore } from './core.class';
-import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelSelectionBox } from '../objects/selection-box.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelPath } from '../objects/path.class';
-import { KritzelText } from '../objects/text.class';
-import { KritzelImage } from '../objects/image.class';
-import { KritzelShape } from '../objects/shape.class';
-import { KritzelDynamicObject } from '../objects/dynamic-object.class';
-import { KritzelBaseTool } from '../tools/base-tool.class';
-import { KritzelWorkspace } from './workspace.class';
-import { KritzelStore } from './store.class';
-import { KritzelObjectMap } from '../structures/object-map.structure';
-import { KritzelAppStateMap } from '../structures/app-state-map.structure';
-import { KritzelAnchorManager } from '../managers/anchor.manager';
-import { KritzelCursorManager } from '../managers/cursor.manager';
-import { KritzelThemeManager } from '../managers/theme.manager';
+import { UpdrawIframeObject } from '../objects/iframe.class';
+import { UpdrawCore } from './core.class';
+import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpdrawSelectionBox } from '../objects/selection-box.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawPath } from '../objects/path.class';
+import { UpdrawText } from '../objects/text.class';
+import { UpdrawImage } from '../objects/image.class';
+import { UpdrawShape } from '../objects/shape.class';
+import { UpdrawDynamicObject } from '../objects/dynamic-object.class';
+import { UpdrawBaseTool } from '../tools/base-tool.class';
+import { UpdrawWorkspace } from './workspace.class';
+import { UpdrawStore } from './store.class';
+import { UpdrawObjectMap } from '../structures/object-map.structure';
+import { UpdrawAppStateMap } from '../structures/app-state-map.structure';
+import { UpdrawAnchorManager } from '../managers/anchor.manager';
+import { UpdrawCursorManager } from '../managers/cursor.manager';
+import { UpdrawThemeManager } from '../managers/theme.manager';
 import { ShapeType } from '../../enums/shape-type.enum';
 // Mock the asset resolver so `initializeYjs` doesn't hit the real IndexedDB
 // provider during unit tests (jsdom does not expose a global `indexedDB`).
@@ -40,8 +40,8 @@ const createWithPrototype = <T>(cls: abstract new (...args: any[]) => T, fields:
   return obj;
 };
 
-describe('KritzelCore', () => {
-  let core: KritzelCore;
+describe('UpdrawCore', () => {
+  let core: UpdrawCore;
   let mockEngine: any;
   let mockStore: any;
   let mockAppStateMap: any;
@@ -103,7 +103,7 @@ describe('KritzelCore', () => {
       setLocalUser: jest.fn(),
     };
 
-    jest.mocked(KritzelObjectMap).mockImplementation(() => mockObjectsMap);
+    jest.mocked(UpdrawObjectMap).mockImplementation(() => mockObjectsMap);
 
     // Setup mock app state map
     mockAppStateMap = {
@@ -118,7 +118,7 @@ describe('KritzelCore', () => {
       destroy: jest.fn(),
     };
 
-    jest.mocked(KritzelAppStateMap).mockImplementation(() => mockAppStateMap);
+    jest.mocked(UpdrawAppStateMap).mockImplementation(() => mockAppStateMap);
 
     // Setup mock anchor manager
     mockAnchorManager = {
@@ -128,8 +128,8 @@ describe('KritzelCore', () => {
       updateAnchorsForObject: jest.fn(),
     };
 
-    jest.mocked(KritzelAnchorManager).mockImplementation(() => mockAnchorManager);
-    jest.mocked(KritzelCursorManager).mockImplementation(function (this: KritzelCursorManager) {
+    jest.mocked(UpdrawAnchorManager).mockImplementation(() => mockAnchorManager);
+    jest.mocked(UpdrawCursorManager).mockImplementation(function (this: UpdrawCursorManager) {
       Object.assign(this, {
         setTargetElement: jest.fn(),
         setShadowRoot: jest.fn(),
@@ -139,7 +139,7 @@ describe('KritzelCore', () => {
       });
       return this;
     });
-    jest.mocked(KritzelThemeManager).mockImplementation(function (this: KritzelThemeManager) {
+    jest.mocked(UpdrawThemeManager).mockImplementation(function (this: UpdrawThemeManager) {
       Object.assign(this, {
         setTheme: jest.fn(),
         setTargetElement: jest.fn(),
@@ -188,12 +188,12 @@ describe('KritzelCore', () => {
       onStateChange: jest.fn(),
     };
 
-    jest.mocked(KritzelStore).mockImplementation(() => mockStore);
-    const selectionTool = new KritzelBaseTool(Object.create(KritzelCore.prototype));
+    jest.mocked(UpdrawStore).mockImplementation(() => mockStore);
+    const selectionTool = new UpdrawBaseTool(Object.create(UpdrawCore.prototype));
     selectionTool.name = 'selection';
 
     mockEngine = createMockEngine();
-    core = new KritzelCore(mockEngine);
+    core = new UpdrawCore(mockEngine);
     (core.toolRegistry.getTool as jest.Mock).mockReturnValue(selectionTool);
   });
 
@@ -202,28 +202,28 @@ describe('KritzelCore', () => {
   });
 
   describe('constructor', () => {
-    it('should create a KritzelCore instance', () => {
+    it('should create an UpdrawCore instance', () => {
       expect(core).toBeDefined();
     });
 
     it('should initialize the store', () => {
-      expect(KritzelStore).toHaveBeenCalled();
+      expect(UpdrawStore).toHaveBeenCalled();
     });
 
     it('should initialize the app state map', () => {
-      expect(KritzelAppStateMap).toHaveBeenCalled();
+      expect(UpdrawAppStateMap).toHaveBeenCalled();
     });
 
     it('should initialize the anchor manager', () => {
-      expect(KritzelAnchorManager).toHaveBeenCalledWith(core);
+      expect(UpdrawAnchorManager).toHaveBeenCalledWith(core);
     });
 
     it('should initialize the cursor manager', () => {
-      expect(KritzelCursorManager).toHaveBeenCalledWith(core);
+      expect(UpdrawCursorManager).toHaveBeenCalledWith(core);
     });
 
     it('should initialize the theme manager', () => {
-      expect(KritzelThemeManager).toHaveBeenCalledWith(core);
+      expect(UpdrawThemeManager).toHaveBeenCalledWith(core);
     });
 
     it('should have undefined editorId by default', () => {
@@ -231,7 +231,7 @@ describe('KritzelCore', () => {
     });
 
     it('should accept an editorId parameter', () => {
-      const coreWithId = new KritzelCore(mockEngine, 'my-editor');
+      const coreWithId = new UpdrawCore(mockEngine, 'my-editor');
       expect(coreWithId.editorId).toBe('my-editor');
     });
   });
@@ -264,17 +264,17 @@ describe('KritzelCore', () => {
 
   describe('getStorageKey', () => {
     it('should return the base key when no editorId is set', () => {
-      expect(core.getStorageKey('kritzel-settings')).toBe('kritzel-settings');
+      expect(core.getStorageKey('updraw-settings')).toBe('updraw-settings');
     });
 
     it('should append editorId to the base key when set', () => {
-      const coreWithId = new KritzelCore(mockEngine, 'homepage');
-      expect(coreWithId.getStorageKey('kritzel-settings')).toBe('kritzel-settings-homepage');
+      const coreWithId = new UpdrawCore(mockEngine, 'homepage');
+      expect(coreWithId.getStorageKey('updraw-settings')).toBe('updraw-settings-homepage');
     });
 
     it('should work with different base keys', () => {
-      const coreWithId = new KritzelCore(mockEngine, 'demo');
-      expect(coreWithId.getStorageKey('kritzel-active-workspace-id')).toBe('kritzel-active-workspace-id-demo');
+      const coreWithId = new UpdrawCore(mockEngine, 'demo');
+      expect(coreWithId.getStorageKey('updraw-active-workspace-id')).toBe('updraw-active-workspace-id-demo');
     });
   });
 
@@ -286,20 +286,20 @@ describe('KritzelCore', () => {
 
     it('should update getStorageKey results', () => {
       core.setEditorId('instance-1');
-      expect(core.getStorageKey('kritzel-theme')).toBe('kritzel-theme-instance-1');
+      expect(core.getStorageKey('updraw-theme')).toBe('updraw-theme-instance-1');
     });
 
     it('should re-create the theme manager', () => {
-      const callCountBefore = jest.mocked(KritzelThemeManager).mock.calls.length;
+      const callCountBefore = jest.mocked(UpdrawThemeManager).mock.calls.length;
       core.setEditorId('new-id');
-      expect(jest.mocked(KritzelThemeManager).mock.calls.length).toBe(callCountBefore + 1);
+      expect(jest.mocked(UpdrawThemeManager).mock.calls.length).toBe(callCountBefore + 1);
     });
 
     it('should clear editorId when called with undefined', () => {
       core.setEditorId('temp-id');
       core.setEditorId(undefined);
       expect(core.editorId).toBeUndefined();
-      expect(core.getStorageKey('kritzel-theme')).toBe('kritzel-theme');
+      expect(core.getStorageKey('updraw-theme')).toBe('updraw-theme');
     });
   });
 
@@ -334,7 +334,7 @@ describe('KritzelCore', () => {
 
   describe('findObjectById', () => {
     it('should return the object when found', () => {
-      const obj = { id: 'obj-1' } as KritzelBaseObject<any>;
+      const obj = { id: 'obj-1' } as UpdrawBaseObject<any>;
       mockStore.allObjects = [obj];
 
       expect(core.findObjectById('obj-1')).toBe(obj);
@@ -346,8 +346,8 @@ describe('KritzelCore', () => {
     });
 
     it('should return the first match among multiple objects', () => {
-      const obj1 = { id: 'obj-1' } as KritzelBaseObject<any>;
-      const obj2 = { id: 'obj-2' } as KritzelBaseObject<any>;
+      const obj1 = { id: 'obj-1' } as UpdrawBaseObject<any>;
+      const obj2 = { id: 'obj-2' } as UpdrawBaseObject<any>;
       mockStore.allObjects = [obj1, obj2];
 
       expect(core.findObjectById('obj-2')).toBe(obj2);
@@ -356,7 +356,7 @@ describe('KritzelCore', () => {
 
   describe('getWorkspaces', () => {
     it('should return workspaces from app state map', () => {
-      const ws = [new KritzelWorkspace({ id: 'ws-1', name: 'Workspace 1' })];
+      const ws = [new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace 1' })];
       mockAppStateMap.allWorkspaces.mockReturnValue(ws);
 
       expect(core.getWorkspaces()).toBe(ws);
@@ -365,7 +365,7 @@ describe('KritzelCore', () => {
 
   describe('createWorkspace', () => {
     it('should set core reference and dates on the workspace', async () => {
-      const ws = new KritzelWorkspace({ id: 'ws-new', name: 'New Workspace' });
+      const ws = new UpdrawWorkspace({ id: 'ws-new', name: 'New Workspace' });
       const before = new Date();
 
       await core.createWorkspace(ws);
@@ -376,7 +376,7 @@ describe('KritzelCore', () => {
     });
 
     it('should save workspace to app state and refresh workspace list', async () => {
-      const ws = new KritzelWorkspace({ id: 'ws-new', name: 'New Workspace' });
+      const ws = new UpdrawWorkspace({ id: 'ws-new', name: 'New Workspace' });
 
       await core.createWorkspace(ws);
 
@@ -388,7 +388,7 @@ describe('KritzelCore', () => {
 
   describe('setActiveWorkspace', () => {
     it('should switch to workspace by ID', async () => {
-      const ws = new KritzelWorkspace({ id: 'ws-target', name: 'Target Workspace' });
+      const ws = new UpdrawWorkspace({ id: 'ws-target', name: 'Target Workspace' });
       jest.spyOn(core, 'getWorkspaces').mockReturnValue([ws]);
       const initSpy = jest.spyOn(core, 'initializeWorkspace').mockResolvedValue(undefined);
 
@@ -418,13 +418,13 @@ describe('KritzelCore', () => {
         isMounted: true,
         workspaceId: 'ws-1',
         generateId: jest.fn().mockReturnValue(`generated-${id}`),
-      }) as unknown as KritzelBaseObject<any>;
+      }) as unknown as UpdrawBaseObject<any>;
 
-    const removeCallsFor = (object: KritzelBaseObject<any>) =>
+    const removeCallsFor = (object: UpdrawBaseObject<any>) =>
       (mockObjectsMap.remove.mock.calls as [(o: any) => boolean][]).filter(([predicate]) => predicate(object));
 
     it('should update the updatedAt timestamp', async () => {
-      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace' });
+      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace' });
       const oldDate = new Date(2020, 0, 1);
       ws.updatedAt = oldDate;
 
@@ -436,7 +436,7 @@ describe('KritzelCore', () => {
     });
 
     it('should update the workspace in the workspaces array', async () => {
-      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Old Name' });
+      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Old Name' });
       mockStore.state.workspaces = [ws];
 
       ws.name = 'New Name';
@@ -446,7 +446,7 @@ describe('KritzelCore', () => {
     });
 
     it('should update the active workspace metadata when the active workspace is updated', async () => {
-      mockStore.state.activeWorkspace = new KritzelWorkspace({ id: 'ws-1', name: 'Old Name' });
+      mockStore.state.activeWorkspace = new UpdrawWorkspace({ id: 'ws-1', name: 'Old Name' });
       mockStore.state.workspaces = [mockStore.state.activeWorkspace];
       const ws = mockStore.state.activeWorkspace.clone();
 
@@ -460,7 +460,7 @@ describe('KritzelCore', () => {
     it('should leave objects untouched when no object set is declared', async () => {
       const existing = createStubObject('obj-1');
       mockObjectsMap.allObjects.mockReturnValue([existing]);
-      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Renamed' });
+      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Renamed' });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -472,7 +472,7 @@ describe('KritzelCore', () => {
     it('should remove all objects when an empty object set is declared', async () => {
       const existing = createStubObject('obj-1');
       mockObjectsMap.allObjects.mockReturnValue([existing]);
-      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [] });
+      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [] });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -483,7 +483,7 @@ describe('KritzelCore', () => {
     it('should add declared objects that are missing, preserving their ids', async () => {
       mockObjectsMap.allObjects.mockReturnValue([]);
       const incoming = createStubObject('obj-new');
-      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
+      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -496,7 +496,7 @@ describe('KritzelCore', () => {
     it('should update objects passed by the same instance reference', async () => {
       const existing = createStubObject('obj-1');
       mockObjectsMap.allObjects.mockReturnValue([existing]);
-      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [existing] });
+      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [existing] });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -509,7 +509,7 @@ describe('KritzelCore', () => {
       const existing = createStubObject('obj-1');
       const incoming = createStubObject('obj-1', 7);
       mockObjectsMap.allObjects.mockReturnValue([existing]);
-      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
+      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -520,14 +520,14 @@ describe('KritzelCore', () => {
     });
 
     it('should hand local element state to the instance that replaces an iframe object', async () => {
-      const existing = new KritzelIframeObject({ html: '<button id="run">Run</button>' });
+      const existing = new UpdrawIframeObject({ html: '<button id="run">Run</button>' });
       existing.id = 'frame-1';
       existing.setElementHighlights([{ selector: '#run', label: 'Run' }]);
       existing.trackElement('#run');
-      const incoming = new KritzelIframeObject({ html: '<button id="run">Run!</button>' });
+      const incoming = new UpdrawIframeObject({ html: '<button id="run">Run!</button>' });
       incoming.id = 'frame-1';
       mockObjectsMap.allObjects.mockReturnValue([existing]);
-      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
+      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
 
       await core.updateWorkspace(ws);
 
@@ -538,7 +538,7 @@ describe('KritzelCore', () => {
 
     it('should rebuild the anchor index after reconciling the active workspace', async () => {
       mockObjectsMap.allObjects.mockReturnValue([]);
-      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [createStubObject('obj-new')] });
+      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [createStubObject('obj-new')] });
 
       await core.updateWorkspace(ws);
 
@@ -547,7 +547,7 @@ describe('KritzelCore', () => {
 
     it('should clear the declared object set so it is not re-seeded later', async () => {
       mockObjectsMap.allObjects.mockReturnValue([]);
-      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [createStubObject('obj-new')] });
+      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [createStubObject('obj-new')] });
 
       await core.updateWorkspace(ws);
 
@@ -556,7 +556,7 @@ describe('KritzelCore', () => {
 
     it('should apply the declared viewport to the active workspace', async () => {
       mockStore.state.workspaces = [];
-      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', viewport: { centerWorldX: 100, centerWorldY: 50, scale: 2 } });
+      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', viewport: { centerWorldX: 100, centerWorldY: 50, scale: 2 } });
 
       await core.updateWorkspace(ws);
 
@@ -567,7 +567,7 @@ describe('KritzelCore', () => {
     });
 
     it('should not touch the viewport when the workspace is passed back unchanged', async () => {
-      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', viewport: { centerWorldX: 0, centerWorldY: 0, scale: 1 } });
+      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', viewport: { centerWorldX: 0, centerWorldY: 0, scale: 1 } });
 
       await core.updateWorkspace(ws);
 
@@ -576,7 +576,7 @@ describe('KritzelCore', () => {
 
     it('should warn and skip object changes for a non-active workspace without a sync provider', async () => {
       const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      const ws = new KritzelWorkspace({ id: 'ws-other', name: 'Other', objects: [createStubObject('obj-new')] });
+      const ws = new UpdrawWorkspace({ id: 'ws-other', name: 'Other', objects: [createStubObject('obj-new')] });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -591,10 +591,10 @@ describe('KritzelCore', () => {
       core.setSyncConfig(syncConfig);
 
       const headlessMap = { ...mockObjectsMap, whenNetworkSynced: jest.fn().mockResolvedValue(undefined) };
-      jest.mocked(KritzelObjectMap).mockImplementationOnce(() => headlessMap);
+      jest.mocked(UpdrawObjectMap).mockImplementationOnce(() => headlessMap);
 
       const incoming = createStubObject('obj-new');
-      const ws = new KritzelWorkspace({ id: 'ws-other', name: 'Other', objects: [incoming] });
+      const ws = new UpdrawWorkspace({ id: 'ws-other', name: 'Other', objects: [incoming] });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -607,7 +607,7 @@ describe('KritzelCore', () => {
 
   describe('deleteWorkspace', () => {
     it('should remove workspace from app state', () => {
-      const ws = new KritzelWorkspace({ id: 'ws-del', name: 'Delete Me' });
+      const ws = new UpdrawWorkspace({ id: 'ws-del', name: 'Delete Me' });
       mockStore.state.activeWorkspace = { id: 'ws-other' };
 
       core.deleteWorkspace(ws);
@@ -616,7 +616,7 @@ describe('KritzelCore', () => {
     });
 
     it('should destroy objects and cancel updates when deleting the active workspace', () => {
-      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Active WS' });
+      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Active WS' });
       mockStore.state.activeWorkspace = { id: 'ws-1' };
 
       core.deleteWorkspace(ws);
@@ -626,24 +626,24 @@ describe('KritzelCore', () => {
     });
 
     it('should delete the IndexedDB database for the workspace', () => {
-      const ws = new KritzelWorkspace({ id: 'ws-db', name: 'DB Test' });
+      const ws = new UpdrawWorkspace({ id: 'ws-db', name: 'DB Test' });
       mockStore.state.activeWorkspace = { id: 'ws-other' };
 
       core.deleteWorkspace(ws);
 
-      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('kritzel-workspace-ws-db');
+      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('updraw-workspace-ws-db');
     });
 
     it('should use editorId-namespaced database name when editorId is set', () => {
-      const coreWithId = new KritzelCore(mockEngine, 'homepage');
+      const coreWithId = new UpdrawCore(mockEngine, 'homepage');
       // Point the new core at the same mock store
       (coreWithId as any)._store = mockStore;
       mockStore.state.activeWorkspace = { id: 'ws-other' };
 
-      const ws = new KritzelWorkspace({ id: 'ws-db', name: 'DB Test' });
+      const ws = new UpdrawWorkspace({ id: 'ws-db', name: 'DB Test' });
       coreWithId.deleteWorkspace(ws);
 
-      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('kritzel-workspace-homepage-ws-db');
+      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('updraw-workspace-homepage-ws-db');
     });
   });
 
@@ -686,7 +686,7 @@ describe('KritzelCore', () => {
 
   describe('addObject', () => {
     it('should insert object into the objects map', () => {
-      const obj = { id: 'obj-1' } as KritzelBaseObject<any>;
+      const obj = { id: 'obj-1' } as UpdrawBaseObject<any>;
 
       core.addObject(obj);
 
@@ -694,7 +694,7 @@ describe('KritzelCore', () => {
     });
 
     it('should add a rotated path object', () => {
-      const obj = new KritzelPath({
+      const obj = new UpdrawPath({
         points: [[0, 0], [10, 10]],
         rotation: -90,
       });
@@ -706,7 +706,7 @@ describe('KritzelCore', () => {
     });
 
     it('should add a rotated line object', () => {
-      const obj = new KritzelLine({
+      const obj = new UpdrawLine({
         startX: 0,
         startY: 0,
         endX: 100,
@@ -721,7 +721,7 @@ describe('KritzelCore', () => {
     });
 
     it('should add a rotated text object', () => {
-      const obj = new KritzelText({
+      const obj = new UpdrawText({
         rotation: -90,
       });
 
@@ -732,7 +732,7 @@ describe('KritzelCore', () => {
     });
 
     it('should add a rotated image object', () => {
-      const obj = new KritzelImage({
+      const obj = new UpdrawImage({
         rotation: -90,
       });
 
@@ -743,7 +743,7 @@ describe('KritzelCore', () => {
     });
 
     it('should add a rotated shape object', () => {
-      const obj = new KritzelShape({
+      const obj = new UpdrawShape({
         shapeType: ShapeType.Rectangle,
         rotation: -90,
       });
@@ -756,7 +756,7 @@ describe('KritzelCore', () => {
 
     it('should add a rotated dynamic object object', () => {
       const element = document.createElement('div');
-      const obj = new KritzelDynamicObject({
+      const obj = new UpdrawDynamicObject({
         element,
         rotation: -90,
       });
@@ -768,7 +768,7 @@ describe('KritzelCore', () => {
     });
 
     it('should add a rotated group object', () => {
-      const obj = new KritzelGroup({
+      const obj = new UpdrawGroup({
         rotation: -90,
       });
 
@@ -779,7 +779,7 @@ describe('KritzelCore', () => {
     });
 
     it('should add a rotated selection group object', () => {
-      const obj = new KritzelSelectionGroup({
+      const obj = new UpdrawSelectionGroup({
         rotation: -90,
       });
 
@@ -807,7 +807,7 @@ describe('KritzelCore', () => {
     it('gives a plain object a fresh ID, the core, the viewport scale, z-index and workspace', () => {
       mockStore.state.scale = 2;
       mockStore.currentZIndex = 7;
-      const shape = new KritzelShape({ shapeType: ShapeType.Rectangle });
+      const shape = new UpdrawShape({ shapeType: ShapeType.Rectangle });
       shape.scale = undefined; // only an unset scale falls back to the viewport scale
       const originalId = shape.id;
 
@@ -824,7 +824,7 @@ describe('KritzelCore', () => {
 
     it('keeps an explicit scale', () => {
       mockStore.state.scale = 3;
-      const shape = new KritzelShape({ shapeType: ShapeType.Rectangle, scale: 0.5 });
+      const shape = new UpdrawShape({ shapeType: ShapeType.Rectangle, scale: 0.5 });
 
       core.prepareObjectForInsert(shape);
 
@@ -832,7 +832,7 @@ describe('KritzelCore', () => {
     });
 
     it('recreates the text editor with the pending content', () => {
-      const text = new KritzelText({});
+      const text = new UpdrawText({});
       const content = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hi' }] }] };
       text.content = content as any;
       const setContent = jest.spyOn(text, 'setContent');
@@ -844,14 +844,14 @@ describe('KritzelCore', () => {
     });
 
     it('flushes pending group children with new IDs and remaps line anchors, nested groups included', () => {
-      const a = new KritzelShape({ shapeType: ShapeType.Rectangle });
-      const b = new KritzelShape({ shapeType: ShapeType.Ellipse });
-      const line = new KritzelLine({ startX: 0, startY: 0, endX: 10, endY: 10 });
+      const a = new UpdrawShape({ shapeType: ShapeType.Rectangle });
+      const b = new UpdrawShape({ shapeType: ShapeType.Ellipse });
+      const line = new UpdrawLine({ startX: 0, startY: 0, endX: 10, endY: 10 });
       line.startAnchor = { objectId: a.id };
       line.endAnchor = { objectId: b.id };
-      const inner = new KritzelGroup();
+      const inner = new UpdrawGroup();
       inner.addChild(b);
-      const group = new KritzelGroup();
+      const group = new UpdrawGroup();
       group.addChild(a);
       group.addChild(inner);
       group.addChild(line);
@@ -875,8 +875,8 @@ describe('KritzelCore', () => {
     });
 
     it('inserts descendants first, finalizes the group, rebuilds anchors, then inserts the group', () => {
-      const a = new KritzelShape({ shapeType: ShapeType.Rectangle });
-      const group = new KritzelGroup();
+      const a = new UpdrawShape({ shapeType: ShapeType.Rectangle });
+      const group = new UpdrawGroup();
       group.addChild(a);
       const descendants = core.prepareObjectForInsert(group);
       const finalize = jest.spyOn(group, 'finalize').mockImplementation(() => undefined);
@@ -889,8 +889,8 @@ describe('KritzelCore', () => {
     });
 
     it('lets the object and its descendants appear, with the given stagger index, unless it is null', () => {
-      const a = new KritzelShape({ shapeType: ShapeType.Rectangle });
-      const group = new KritzelGroup();
+      const a = new UpdrawShape({ shapeType: ShapeType.Rectangle });
+      const group = new UpdrawGroup();
       group.addChild(a);
       jest.spyOn(group, 'finalize').mockImplementation(() => undefined);
       const mark = jest.spyOn(core.objectAppearManager, 'mark');
@@ -899,32 +899,32 @@ describe('KritzelCore', () => {
       expect(mark).toHaveBeenCalledWith([a, group], 2);
 
       mark.mockClear();
-      const b = new KritzelShape({ shapeType: ShapeType.Rectangle });
+      const b = new UpdrawShape({ shapeType: ShapeType.Rectangle });
       core.insertPreparedObject(b, core.prepareObjectForInsert(b), null);
       expect(mark).not.toHaveBeenCalled();
     });
 
     describe('z-order of flushed groups', () => {
       /** zIndex of every object at the moment it was inserted. */
-      let stored: Map<KritzelBaseObject<any> | string, number>;
+      let stored: Map<UpdrawBaseObject<any> | string, number>;
 
       beforeEach(() => {
-        jest.spyOn(KritzelGroup.prototype, 'finalize').mockImplementation(() => undefined);
+        jest.spyOn(UpdrawGroup.prototype, 'finalize').mockImplementation(() => undefined);
         // Like the real store, currentZIndex is one above the highest stored zIndex.
-        stored = new Map<KritzelBaseObject<any> | string, number>([['existing', 4]]);
-        mockObjectsMap.insert.mockImplementation((object: KritzelBaseObject<any>) => stored.set(object, object.zIndex));
+        stored = new Map<UpdrawBaseObject<any> | string, number>([['existing', 4]]);
+        mockObjectsMap.insert.mockImplementation((object: UpdrawBaseObject<any>) => stored.set(object, object.zIndex));
         Object.defineProperty(mockStore, 'currentZIndex', { get: () => Math.max(0, ...stored.values()) + 1, configurable: true });
       });
 
-      const shape = () => new KritzelShape({ shapeType: ShapeType.Rectangle });
-      const insert = (object: KritzelBaseObject<any>) => core.insertPreparedObject(object, core.prepareObjectForInsert(object));
+      const shape = () => new UpdrawShape({ shapeType: ShapeType.Rectangle });
+      const insert = (object: UpdrawBaseObject<any>) => core.insertPreparedObject(object, core.prepareObjectForInsert(object));
 
       it('stacks pending children bottom to top in the order they were added; groups take their top child', () => {
         const [r1, r2, r3, r4] = [shape(), shape(), shape(), shape()];
-        const inner = new KritzelGroup();
+        const inner = new UpdrawGroup();
         inner.addChild(r2);
         inner.addChild(r3);
-        const group = new KritzelGroup();
+        const group = new UpdrawGroup();
         group.addChild(r1);
         group.addChild(inner);
         group.addChild(r4);
@@ -936,7 +936,7 @@ describe('KritzelCore', () => {
 
       it('places a plain object inserted after a group above the group band', () => {
         const [a, b, plain] = [shape(), shape(), shape()];
-        const group = new KritzelGroup();
+        const group = new UpdrawGroup();
         group.addChild(a);
         group.addChild(b);
 
@@ -948,7 +948,7 @@ describe('KritzelCore', () => {
     });
 
     it('inserts a plain object without touching the anchor index', () => {
-      const shape = new KritzelShape({ shapeType: ShapeType.Rectangle });
+      const shape = new UpdrawShape({ shapeType: ShapeType.Rectangle });
 
       core.insertPreparedObject(shape, core.prepareObjectForInsert(shape));
 
@@ -968,8 +968,8 @@ describe('KritzelCore', () => {
     });
 
     it('should cleanup anchors for line objects', () => {
-      const line = Object.create(KritzelLine.prototype);
-      line.__class__ = 'KritzelLine';
+      const line = Object.create(UpdrawLine.prototype);
+      line.__class__ = 'UpdrawLine';
       line.id = 'line-1';
       line.isMounted = true;
 
@@ -990,8 +990,8 @@ describe('KritzelCore', () => {
       const child1 = { id: 'child-1', isMounted: true } as any;
       const child2 = { id: 'child-2', isMounted: true } as any;
 
-      const group = Object.create(KritzelGroup.prototype);
-      group.__class__ = 'KritzelGroup';
+      const group = Object.create(UpdrawGroup.prototype);
+      group.__class__ = 'UpdrawGroup';
       group.id = 'group-1';
       group.isMounted = true;
       Object.defineProperty(group, 'children', { get: () => [child1, child2] });
@@ -1005,8 +1005,8 @@ describe('KritzelCore', () => {
     it('should preserve children when preserveChildren is true', () => {
       const child = { id: 'child-1', isMounted: true } as any;
 
-      const group = Object.create(KritzelGroup.prototype);
-      group.__class__ = 'KritzelGroup';
+      const group = Object.create(UpdrawGroup.prototype);
+      group.__class__ = 'UpdrawGroup';
       group.id = 'group-1';
       group.isMounted = true;
       Object.defineProperty(group, 'children', { get: () => [child] });
@@ -1064,7 +1064,7 @@ describe('KritzelCore', () => {
       mockStore.selectionGroup = existingGroup;
       mockStore.selectionBox = existingBox;
 
-      const newGroup = { id: 'new-sg' } as KritzelSelectionGroup;
+      const newGroup = { id: 'new-sg' } as UpdrawSelectionGroup;
 
       core.addSelectionGroup(newGroup);
 
@@ -1076,7 +1076,7 @@ describe('KritzelCore', () => {
     it('should enable interactivity for selected embedded objects', () => {
       const embeddedObject = {
         id: 'custom-1',
-        __class__: 'KritzelIframeObject',
+        __class__: 'UpdrawIframeObject',
         isInteractive: false,
         isSelected: false,
         mount: jest.fn(),
@@ -1086,17 +1086,17 @@ describe('KritzelCore', () => {
         },
         hasFocusedInputElement: jest.fn(),
         getEmbeddedContentRoots: jest.fn(() => []),
-      } as unknown as KritzelBaseObject<any>;
+      } as unknown as UpdrawBaseObject<any>;
       const regularObject = {
         id: 'shape-1',
-        __class__: 'KritzelShape',
+        __class__: 'UpdrawShape',
         isInteractive: false,
-      } as unknown as KritzelBaseObject<any>;
+      } as unknown as UpdrawBaseObject<any>;
 
       const newGroup = {
         id: 'new-sg',
         objects: [embeddedObject, regularObject],
-      } as unknown as KritzelSelectionGroup;
+      } as unknown as UpdrawSelectionGroup;
 
       core.addSelectionGroup(newGroup);
 
@@ -1107,13 +1107,13 @@ describe('KritzelCore', () => {
     it('should remove orphaned local selection groups before adding a new one', () => {
       const orphanChild = {
         id: 'orphan-child',
-        __class__: 'KritzelShape',
+        __class__: 'UpdrawShape',
         isSelected: true,
-      } as unknown as KritzelBaseObject<any>;
+      } as unknown as UpdrawBaseObject<any>;
 
-      const orphanGroup = createWithPrototype(KritzelSelectionGroup, {
+      const orphanGroup = createWithPrototype(UpdrawSelectionGroup, {
         id: 'orphan-sg',
-        __class__: 'KritzelSelectionGroup',
+        __class__: 'UpdrawSelectionGroup',
         userId: undefined,
         objects: [orphanChild],
         deselectAllChildren: jest.fn(() => {
@@ -1123,7 +1123,7 @@ describe('KritzelCore', () => {
 
       mockObjectsMap.allObjects.mockReturnValue([orphanGroup]);
 
-      const newGroup = { id: 'new-sg', objects: [] } as unknown as KritzelSelectionGroup;
+      const newGroup = { id: 'new-sg', objects: [] } as unknown as UpdrawSelectionGroup;
 
       core.addSelectionGroup(newGroup);
 
@@ -1158,7 +1158,7 @@ describe('KritzelCore', () => {
     it('should disable interactivity for deselected embedded objects', () => {
       const embeddedObject = {
         id: 'custom-1',
-        __class__: 'KritzelIframeObject',
+        __class__: 'UpdrawIframeObject',
         isInteractive: true,
         isSelected: true,
         mount: jest.fn(),
@@ -1168,17 +1168,17 @@ describe('KritzelCore', () => {
         },
         hasFocusedInputElement: jest.fn(),
         getEmbeddedContentRoots: jest.fn(() => []),
-      } as unknown as KritzelBaseObject<any>;
+      } as unknown as UpdrawBaseObject<any>;
       const regularObject = {
         id: 'shape-1',
-        __class__: 'KritzelShape',
+        __class__: 'UpdrawShape',
         isInteractive: true,
-      } as unknown as KritzelBaseObject<any>;
+      } as unknown as UpdrawBaseObject<any>;
 
       const sg = {
         id: 'sg-1',
         objects: [embeddedObject, regularObject],
-      } as unknown as KritzelSelectionGroup;
+      } as unknown as UpdrawSelectionGroup;
       mockStore.selectionGroup = sg;
 
       core.removeSelectionGroup();
@@ -1190,13 +1190,13 @@ describe('KritzelCore', () => {
     it('should remove orphaned local selection groups that are not in store.selectionGroup', () => {
       const selectedChild = {
         id: 'obj-1',
-        __class__: 'KritzelShape',
+        __class__: 'UpdrawShape',
         isSelected: true,
-      } as unknown as KritzelBaseObject<any>;
+      } as unknown as UpdrawBaseObject<any>;
 
-      const referencedGroup = createWithPrototype(KritzelSelectionGroup, {
+      const referencedGroup = createWithPrototype(UpdrawSelectionGroup, {
         id: 'sg-1',
-        __class__: 'KritzelSelectionGroup',
+        __class__: 'UpdrawSelectionGroup',
         userId: undefined,
         objects: [selectedChild],
         deselectAllChildren: jest.fn(() => {
@@ -1206,13 +1206,13 @@ describe('KritzelCore', () => {
 
       const orphanChild = {
         id: 'obj-2',
-        __class__: 'KritzelShape',
+        __class__: 'UpdrawShape',
         isSelected: true,
-      } as unknown as KritzelBaseObject<any>;
+      } as unknown as UpdrawBaseObject<any>;
 
-      const orphanGroup = createWithPrototype(KritzelSelectionGroup, {
+      const orphanGroup = createWithPrototype(UpdrawSelectionGroup, {
         id: 'sg-2',
-        __class__: 'KritzelSelectionGroup',
+        __class__: 'UpdrawSelectionGroup',
         userId: undefined,
         objects: [orphanChild],
         deselectAllChildren: jest.fn(() => {
@@ -1326,7 +1326,7 @@ describe('KritzelCore', () => {
   // Plain store objects for the z-order tests; groups reference their children via childIds.
   const createObj = (id: string, zIndex: number) => ({ id, zIndex, onAfterUpdate: jest.fn() }) as any;
   const createGroup = (id: string, zIndex: number, childIds: string[], fields: Record<string, any> = {}) =>
-    createWithPrototype(KritzelGroup, { ...createObj(id, zIndex), __class__: 'KritzelGroup', childIds, ...fields }) as any;
+    createWithPrototype(UpdrawGroup, { ...createObj(id, zIndex), __class__: 'UpdrawGroup', childIds, ...fields }) as any;
   const zIndices = (...objs: any[]) => objs.map(obj => obj.zIndex);
 
   /** Sets the objects of the whole workspace (store order), independent of the viewport. */
@@ -1653,7 +1653,7 @@ describe('KritzelCore', () => {
   });
 
   describe('group', () => {
-    // KritzelGroup.createFromObjects is real and needs the children's polygons for its bounding box.
+    // UpdrawGroup.createFromObjects is real and needs the children's polygons for its bounding box.
     const createShape = (id: string, zIndex: number) =>
       ({
         ...createObj(id, zIndex),
@@ -1664,13 +1664,13 @@ describe('KritzelCore', () => {
     let createSelectionGroupSpy: jest.SpyInstance;
     let createFromObjectsSpy: jest.SpyInstance;
 
-    const createdGroup = (): KritzelGroup => createFromObjectsSpy.mock.results[0]?.value;
+    const createdGroup = (): UpdrawGroup => createFromObjectsSpy.mock.results[0]?.value;
 
     beforeEach(() => {
       newSelectionGroup = { id: 'new-selection', objects: [], isSelected: false, rotation: 0 };
       newSelectionGroup.addOrRemove = jest.fn((obj: any) => newSelectionGroup.objects.push(obj));
-      createSelectionGroupSpy = jest.spyOn(KritzelSelectionGroup, 'create').mockReturnValue(newSelectionGroup);
-      createFromObjectsSpy = jest.spyOn(KritzelGroup, 'createFromObjects');
+      createSelectionGroupSpy = jest.spyOn(UpdrawSelectionGroup, 'create').mockReturnValue(newSelectionGroup);
+      createFromObjectsSpy = jest.spyOn(UpdrawGroup, 'createFromObjects');
     });
 
     afterEach(() => {
@@ -1915,8 +1915,8 @@ describe('KritzelCore', () => {
   });
 
   describe('ungroup', () => {
-    // A real KritzelGroup, because ungroup() reads the children through group.ungroup().
-    const createKritzelGroup = (id: string, zIndex: number, childIds: string[]) => Object.assign(new KritzelGroup(), { _core: core, id, zIndex, childIds, isMounted: true });
+    // A real UpdrawGroup, because ungroup() reads the children through group.ungroup().
+    const createUpdrawGroup = (id: string, zIndex: number, childIds: string[]) => Object.assign(new UpdrawGroup(), { _core: core, id, zIndex, childIds, isMounted: true });
     const createChild = (id: string, zIndex: number) => ({ ...createObj(id, zIndex), isMounted: true }) as any;
 
     let newSelectionGroup: any;
@@ -1925,7 +1925,7 @@ describe('KritzelCore', () => {
     beforeEach(() => {
       newSelectionGroup = { id: 'new-selection', objects: [], isSelected: false, rotation: 0 };
       newSelectionGroup.addOrRemove = jest.fn((obj: any) => newSelectionGroup.objects.push(obj));
-      createSelectionGroupSpy = jest.spyOn(KritzelSelectionGroup, 'create').mockReturnValue(newSelectionGroup);
+      createSelectionGroupSpy = jest.spyOn(UpdrawSelectionGroup, 'create').mockReturnValue(newSelectionGroup);
     });
 
     afterEach(() => {
@@ -1935,13 +1935,13 @@ describe('KritzelCore', () => {
     it('removes the group, keeps its children and selects them', () => {
       const c1 = createChild('c1', 1);
       const c2 = createChild('c2', 2);
-      const group = createKritzelGroup('group', 2, ['c1', 'c2']);
+      const group = createUpdrawGroup('group', 2, ['c1', 'c2']);
       const objs = [c1, c2, group];
       setStoreObjects(...objs);
       const store = trackStoreWrites(objs);
       select(group);
 
-      core.ungroup(selection().filter(obj => obj instanceof KritzelGroup));
+      core.ungroup(selection().filter(obj => obj instanceof UpdrawGroup));
 
       expect(group.isMounted).toBe(false);
       expect([c1.isMounted, c2.isMounted]).toEqual([true, true]);
@@ -1954,20 +1954,20 @@ describe('KritzelCore', () => {
     it('writes no zIndex for a well-formed group', () => {
       const c1 = createChild('c1', 1);
       const c2 = createChild('c2', 2);
-      const group = createKritzelGroup('group', 2, ['c1', 'c2']);
+      const group = createUpdrawGroup('group', 2, ['c1', 'c2']);
       // Ties outside of the group are left alone.
       const p = createChild('p', 4);
       const q = createChild('q', 4);
       setStoreObjects(c1, c2, group, p, q);
       select(group);
 
-      core.ungroup(selection().filter(obj => obj instanceof KritzelGroup));
+      core.ungroup(selection().filter(obj => obj instanceof UpdrawGroup));
 
       expect(zIndices(c1, c2, p, q)).toEqual([1, 2, 4, 4]);
       expect(mockObjectsMap.update).not.toHaveBeenCalled();
     });
 
-    /** A store whose remove() drops objects right away, like KritzelObjectMap. */
+    /** A store whose remove() drops objects right away, like UpdrawObjectMap. */
     const setMutableStoreObjects = (...objs: any[]) => {
       const live = [...objs];
       mockObjectsMap.allObjects.mockImplementation(() => [...live]);
@@ -1984,13 +1984,13 @@ describe('KritzelCore', () => {
       const x = createChild('x', 1);
       const c = createChild('c', 2);
       const d = createChild('d', 3);
-      const inner = createKritzelGroup('inner', 3, ['c', 'd']);
+      const inner = createUpdrawGroup('inner', 3, ['c', 'd']);
       const y = createChild('y', 4);
       const parent = createGroup('parent', 4, ['x', 'inner', 'y'], { finalize: jest.fn() });
       const live = setMutableStoreObjects(x, c, d, inner, y, parent);
       select(inner);
 
-      core.ungroup(selection().filter(obj => obj instanceof KritzelGroup));
+      core.ungroup(selection().filter(obj => obj instanceof UpdrawGroup));
 
       expect(parent.childIds).toEqual(['x', 'c', 'd', 'y']);
       expect(parent.finalize).toHaveBeenCalled();
@@ -2004,12 +2004,12 @@ describe('KritzelCore', () => {
       const a = createChild('a', 1);
       const b = createChild('b', 2);
       const c = createChild('c', 3);
-      const inner = createKritzelGroup('inner', 3, ['b', 'c']);
-      const outer = createKritzelGroup('outer', 3, ['a', 'inner']);
+      const inner = createUpdrawGroup('inner', 3, ['b', 'c']);
+      const outer = createUpdrawGroup('outer', 3, ['a', 'inner']);
       setMutableStoreObjects(a, b, c, inner, outer);
       select(outer, inner, a, b, c);
 
-      core.ungroup(selection().filter(obj => obj instanceof KritzelGroup));
+      core.ungroup(selection().filter(obj => obj instanceof UpdrawGroup));
 
       expect(newSelectionGroup.objects.map((obj: any) => obj.id).sort()).toEqual(['a', 'b', 'c']);
     });
@@ -2018,14 +2018,14 @@ describe('KritzelCore', () => {
       // Pasted by older versions: tied members and a tie across the two groups.
       const a = createChild('a', 2);
       const b = createChild('b', 2);
-      const g1 = createKritzelGroup('g1', 2, ['a', 'b']);
+      const g1 = createUpdrawGroup('g1', 2, ['a', 'b']);
       const c = createChild('c', 3);
       const d = createChild('d', 3);
-      const g2 = createKritzelGroup('g2', 3, ['c', 'd']);
+      const g2 = createUpdrawGroup('g2', 3, ['c', 'd']);
       setMutableStoreObjects(a, b, g1, c, d, g2);
       select(g1, g2);
 
-      core.ungroup(selection().filter(obj => obj instanceof KritzelGroup));
+      core.ungroup(selection().filter(obj => obj instanceof UpdrawGroup));
 
       const values = zIndices(a, b, c, d);
       expect(new Set(values).size).toBe(4);
@@ -2039,14 +2039,14 @@ describe('KritzelCore', () => {
       const c1 = createChild('c1', 2);
       const c2 = createChild('c2', 2);
       const c3 = createChild('c3', 2);
-      const group = createKritzelGroup('group', 2, ['c1', 'c2', 'c3']);
+      const group = createUpdrawGroup('group', 2, ['c1', 'c2', 'c3']);
       const x = createChild('x', 5);
       const objs = [c1, c2, c3, group, x];
       setStoreObjects(...objs);
       const store = trackStoreWrites(objs);
       select(group);
 
-      core.ungroup(selection().filter(obj => obj instanceof KritzelGroup));
+      core.ungroup(selection().filter(obj => obj instanceof UpdrawGroup));
 
       expect(c1.zIndex).toBeLessThan(c2.zIndex);
       expect(c2.zIndex).toBeLessThan(c3.zIndex);
@@ -2072,10 +2072,10 @@ describe('KritzelCore', () => {
       it('ungroups several groups in one undo step, returns the children and leaves the selection alone', () => {
         const a = createChild('a', 1);
         const b = createChild('b', 2);
-        const g1 = createKritzelGroup('g1', 2, ['a', 'b']);
+        const g1 = createUpdrawGroup('g1', 2, ['a', 'b']);
         const c = createChild('c', 3);
         const d = createChild('d', 4);
-        const g2 = createKritzelGroup('g2', 4, ['c', 'd']);
+        const g2 = createUpdrawGroup('g2', 4, ['c', 'd']);
         const other = createChild('other', 5);
         const objs = [a, b, g1, c, d, g2, other];
         setMutableStoreObjects(...objs);
@@ -2096,9 +2096,9 @@ describe('KritzelCore', () => {
       it('resolves stale references by id', () => {
         const a = createChild('a', 1);
         const b = createChild('b', 2);
-        const group = createKritzelGroup('group', 2, ['a', 'b']);
+        const group = createUpdrawGroup('group', 2, ['a', 'b']);
         setMutableStoreObjects(a, b, group);
-        const stale = Object.assign(new KritzelGroup(), { id: 'group', childIds: [] });
+        const stale = Object.assign(new UpdrawGroup(), { id: 'group', childIds: [] });
 
         expect(core.ungroup([stale])).toEqual([a, b]);
         expect(group.isMounted).toBe(false);
@@ -2107,22 +2107,22 @@ describe('KritzelCore', () => {
       it('skips non-group entries and unknown groups with a warning', () => {
         const a = createChild('a', 1);
         const b = createChild('b', 2);
-        const group = createKritzelGroup('group', 2, ['a', 'b']);
+        const group = createUpdrawGroup('group', 2, ['a', 'b']);
         const loose = createChild('loose', 3);
         setMutableStoreObjects(a, b, group, loose);
 
-        const children = core.ungroup([loose, group, createKritzelGroup('missing', 9, [])] as any);
+        const children = core.ungroup([loose, group, createUpdrawGroup('missing', 9, [])] as any);
 
         expect(children).toEqual([a, b]);
         expect(loose.isMounted).toBe(true);
-        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("'loose': it is not a KritzelGroup"));
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("'loose': it is not an UpdrawGroup"));
         expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("'missing': it is not in the active workspace"));
       });
 
       it('does nothing for an empty array even when groups are selected', () => {
         const a = createChild('a', 1);
         const b = createChild('b', 2);
-        const group = createKritzelGroup('group', 2, ['a', 'b']);
+        const group = createUpdrawGroup('group', 2, ['a', 'b']);
         setMutableStoreObjects(a, b, group);
         select(group);
 
@@ -2134,7 +2134,7 @@ describe('KritzelCore', () => {
       it('replaces a selected dissolved group by its children and keeps other selected objects', () => {
         const a = createChild('a', 1);
         const b = createChild('b', 2);
-        const group = createKritzelGroup('group', 2, ['a', 'b']);
+        const group = createUpdrawGroup('group', 2, ['a', 'b']);
         const other = createChild('other', 3);
         setMutableStoreObjects(a, b, group, other);
         select(other, group);
@@ -2148,7 +2148,7 @@ describe('KritzelCore', () => {
         const x = createChild('x', 1);
         const c = createChild('c', 2);
         const d = createChild('d', 3);
-        const inner = createKritzelGroup('inner', 3, ['c', 'd']);
+        const inner = createUpdrawGroup('inner', 3, ['c', 'd']);
         const parent = createGroup('parent', 3, ['x', 'inner'], { finalize: jest.fn() });
         setMutableStoreObjects(x, c, d, inner, parent);
 
@@ -2173,7 +2173,7 @@ describe('KritzelCore', () => {
         objects: [{ rotation: 0.5 }],
         rotation: 0,
       };
-      jest.spyOn(KritzelSelectionGroup, 'create').mockReturnValue(mockSG);
+      jest.spyOn(UpdrawSelectionGroup, 'create').mockReturnValue(mockSG);
 
       const obj = { id: 'obj-1', isSelected: true } as any;
 
@@ -2297,9 +2297,9 @@ describe('KritzelCore', () => {
 
     it('should exclude selection group and selection box', () => {
       const obj = { zIndex: 1 } as any;
-      const selGroup = Object.create(KritzelSelectionGroup.prototype);
+      const selGroup = Object.create(UpdrawSelectionGroup.prototype);
       selGroup.zIndex = 99999;
-      const selBox = Object.create(KritzelSelectionBox.prototype);
+      const selBox = Object.create(UpdrawSelectionBox.prototype);
       selBox.zIndex = 99999;
 
       mockObjectsMap.query.mockReturnValue([obj, selGroup, selBox]);
@@ -2324,7 +2324,7 @@ describe('KritzelCore', () => {
     it('should sort a group above its tied top member regardless of query order', () => {
       const below = { id: 'below', zIndex: 1 } as any;
       const member = { id: 'member', zIndex: 2 } as any;
-      const group = createWithPrototype(KritzelGroup, { id: 'group', zIndex: 2, __class__: 'KritzelGroup' }) as any;
+      const group = createWithPrototype(UpdrawGroup, { id: 'group', zIndex: 2, __class__: 'UpdrawGroup' }) as any;
 
       mockObjectsMap.query.mockReturnValue([group, member, below]);
       expect(core.getObjectsInViewport()).toEqual([below, member, group]);
@@ -2348,9 +2348,9 @@ describe('KritzelCore', () => {
       expect(core.displaySelectionGroupUI(obj)).toBe(true);
     });
 
-    it('should return false for selected KritzelLine when no selection group', () => {
-      const line = Object.create(KritzelLine.prototype);
-      line.__class__ = 'KritzelLine';
+    it('should return false for selected UpdrawLine when no selection group', () => {
+      const line = Object.create(UpdrawLine.prototype);
+      line.__class__ = 'UpdrawLine';
       line.isSelected = true;
       mockStore.selectionGroup = null;
 
@@ -2359,7 +2359,7 @@ describe('KritzelCore', () => {
 
     it('should render group UI only on the local selection group when multiple objects are selected', () => {
       const obj = { id: 'obj-1', isSelected: true } as any;
-      const localGroup = Object.create(KritzelSelectionGroup.prototype);
+      const localGroup = Object.create(UpdrawSelectionGroup.prototype);
       localGroup.id = 'sg-1';
       localGroup.isSelected = true;
       Object.defineProperty(localGroup, 'objects', { value: [{}, {}], writable: true });
@@ -2369,12 +2369,12 @@ describe('KritzelCore', () => {
       expect(core.displaySelectionGroupUI(localGroup)).toBe(true);
     });
 
-    it('should return false when local selection group contains a single KritzelLine', () => {
-      const localGroup = Object.create(KritzelSelectionGroup.prototype);
+    it('should return false when local selection group contains a single UpdrawLine', () => {
+      const localGroup = Object.create(UpdrawSelectionGroup.prototype);
       localGroup.id = 'sg-1';
       localGroup.isSelected = true;
-      const line = Object.create(KritzelLine.prototype);
-      line.__class__ = 'KritzelLine';
+      const line = Object.create(UpdrawLine.prototype);
+      line.__class__ = 'UpdrawLine';
       Object.defineProperty(localGroup, 'objects', { value: [line], writable: true });
       mockStore.selectionGroup = localGroup;
 
@@ -2382,7 +2382,7 @@ describe('KritzelCore', () => {
     });
 
     it('should return true when local selection group contains a single non-line object', () => {
-      const localGroup = Object.create(KritzelSelectionGroup.prototype);
+      const localGroup = Object.create(UpdrawSelectionGroup.prototype);
       localGroup.id = 'sg-1';
       localGroup.isSelected = true;
       const rect = { id: 'rect-1' };
@@ -2393,11 +2393,11 @@ describe('KritzelCore', () => {
     });
 
     it('should return true for a remote selection group regardless of content', () => {
-      const remoteGroup = Object.create(KritzelSelectionGroup.prototype);
+      const remoteGroup = Object.create(UpdrawSelectionGroup.prototype);
       remoteGroup.isSelected = true;
       remoteGroup.userId = 'remote-user';
-      const line = Object.create(KritzelLine.prototype);
-      line.__class__ = 'KritzelLine';
+      const line = Object.create(UpdrawLine.prototype);
+      line.__class__ = 'UpdrawLine';
       Object.defineProperty(remoteGroup, 'objects', { value: [line], writable: true });
       core.setUser({ id: 'local-user', displayName: 'Local' } as any);
 
@@ -2413,8 +2413,8 @@ describe('KritzelCore', () => {
     });
 
     it('should show line UI and hide group UI for a single selected line in a local selection group', () => {
-      const line = createWithPrototype(KritzelLine, { __class__: 'KritzelLine', id: 'line-1', isSelected: true }) as any;
-      const localGroup = Object.create(KritzelSelectionGroup.prototype);
+      const line = createWithPrototype(UpdrawLine, { __class__: 'UpdrawLine', id: 'line-1', isSelected: true }) as any;
+      const localGroup = Object.create(UpdrawSelectionGroup.prototype);
       localGroup.id = 'group-1';
       localGroup.isSelected = true;
       Object.defineProperty(localGroup, 'objects', { value: [line], writable: true });
@@ -2425,8 +2425,8 @@ describe('KritzelCore', () => {
     });
 
     it('should return true for selected line when no selection group', () => {
-      const line = Object.create(KritzelLine.prototype);
-      line.__class__ = 'KritzelLine';
+      const line = Object.create(UpdrawLine.prototype);
+      line.__class__ = 'UpdrawLine';
       line.isSelected = true;
       line.id = 'line-1';
       mockStore.selectionGroup = null;
@@ -2435,8 +2435,8 @@ describe('KritzelCore', () => {
     });
 
     it('should return false for unselected line when no selection group', () => {
-      const line = Object.create(KritzelLine.prototype);
-      line.__class__ = 'KritzelLine';
+      const line = Object.create(UpdrawLine.prototype);
+      line.__class__ = 'UpdrawLine';
       line.isSelected = false;
       mockStore.selectionGroup = null;
 
@@ -2444,8 +2444,8 @@ describe('KritzelCore', () => {
     });
 
     it('should return false when selection group is not selected', () => {
-      const line = Object.create(KritzelLine.prototype);
-      line.__class__ = 'KritzelLine';
+      const line = Object.create(UpdrawLine.prototype);
+      line.__class__ = 'UpdrawLine';
       line.isSelected = true;
       line.id = 'line-1';
       mockStore.selectionGroup = { isSelected: false, objects: [line] };
@@ -2454,8 +2454,8 @@ describe('KritzelCore', () => {
     });
 
     it('should return true for a single selected line in selection group', () => {
-      const line = Object.create(KritzelLine.prototype);
-      line.__class__ = 'KritzelLine';
+      const line = Object.create(UpdrawLine.prototype);
+      line.__class__ = 'UpdrawLine';
       line.isSelected = true;
       line.id = 'line-1';
       mockStore.selectionGroup = { isSelected: true, objects: [line] };
@@ -2464,8 +2464,8 @@ describe('KritzelCore', () => {
     });
 
     it('should return false when selection group has multiple objects', () => {
-      const line = Object.create(KritzelLine.prototype);
-      line.__class__ = 'KritzelLine';
+      const line = Object.create(UpdrawLine.prototype);
+      line.__class__ = 'UpdrawLine';
       line.isSelected = true;
       line.id = 'line-1';
       const otherObj = { id: 'other' };
@@ -2665,10 +2665,10 @@ describe('KritzelCore', () => {
   });
 
   describe('initializeWorkspace', () => {
-    const STORAGE_KEY = 'kritzel-active-workspace-id';
+    const STORAGE_KEY = 'updraw-active-workspace-id';
 
-    function createWorkspace(id: string, name: string, createdAt: Date, updatedAt?: Date): KritzelWorkspace {
-      const ws = new KritzelWorkspace({ id, name });
+    function createWorkspace(id: string, name: string, createdAt: Date, updatedAt?: Date): UpdrawWorkspace {
+      const ws = new UpdrawWorkspace({ id, name });
       ws.createdAt = createdAt;
       ws.updatedAt = updatedAt ?? createdAt;
       return ws;
@@ -2779,8 +2779,8 @@ describe('KritzelCore', () => {
     });
 
     it('should seed configured objects into an empty workspace object map', async () => {
-      const object = { id: 'seed-object', workspaceId: 'other-workspace' } as KritzelBaseObject<any>;
-      const ws = new KritzelWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
+      const object = { id: 'seed-object', workspaceId: 'other-workspace' } as UpdrawBaseObject<any>;
+      const ws = new UpdrawWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
       mockAppStateMap.allWorkspaces.mockReturnValue([]);
       mockAppStateMap.has.mockReturnValue(false);
 
@@ -2791,8 +2791,8 @@ describe('KritzelCore', () => {
     });
 
     it('should initialize runtime fields on seeded objects like addObject does', async () => {
-      const object = { id: 'seed-object' } as KritzelBaseObject<any>;
-      const ws = new KritzelWorkspace({ id: 'ws-seeded', name: 'Seeded', viewport: { scale: 2 }, objects: [object] });
+      const object = { id: 'seed-object' } as UpdrawBaseObject<any>;
+      const ws = new UpdrawWorkspace({ id: 'ws-seeded', name: 'Seeded', viewport: { scale: 2 }, objects: [object] });
       mockAppStateMap.allWorkspaces.mockReturnValue([]);
       mockAppStateMap.has.mockReturnValue(false);
 
@@ -2804,8 +2804,8 @@ describe('KritzelCore', () => {
     });
 
     it('should preserve an explicit scale on seeded objects', async () => {
-      const object = { id: 'seed-object', scale: 0.5 } as KritzelBaseObject<any>;
-      const ws = new KritzelWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
+      const object = { id: 'seed-object', scale: 0.5 } as UpdrawBaseObject<any>;
+      const ws = new UpdrawWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
       mockAppStateMap.allWorkspaces.mockReturnValue([]);
       mockAppStateMap.has.mockReturnValue(false);
       mockStore.state.scale = 2;
@@ -2816,8 +2816,8 @@ describe('KritzelCore', () => {
     });
 
     it('should not insert a configured object that already exists in the workspace map', async () => {
-      const object = { id: 'seed-object', workspaceId: 'ws-seeded' } as KritzelBaseObject<any>;
-      const ws = new KritzelWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
+      const object = { id: 'seed-object', workspaceId: 'ws-seeded' } as UpdrawBaseObject<any>;
+      const ws = new UpdrawWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
       mockAppStateMap.allWorkspaces.mockReturnValue([]);
       mockAppStateMap.has.mockReturnValue(false);
       mockObjectsMap.findById.mockReturnValue(object);

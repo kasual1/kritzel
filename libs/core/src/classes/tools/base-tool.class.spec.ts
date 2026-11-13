@@ -1,10 +1,10 @@
-import { KritzelBaseTool } from './base-tool.class';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawBaseTool } from './base-tool.class';
+import { UpdrawCore } from '../core/core.class';
 
 jest.mock('../core/core.class');
 
-describe('KritzelBaseTool', () => {
-  let tool: KritzelBaseTool;
+describe('UpdrawBaseTool', () => {
+  let tool: UpdrawBaseTool;
   let mockCore: any;
 
   const createPointerEvent = (overrides: Partial<PointerEvent> = {}): PointerEvent => {
@@ -26,8 +26,8 @@ describe('KritzelBaseTool', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockCore = {} as jest.Mocked<KritzelCore>;
-    tool = new KritzelBaseTool(mockCore);
+    mockCore = {} as jest.Mocked<UpdrawCore>;
+    tool = new UpdrawBaseTool(mockCore);
   });
 
   describe('constructor', () => {
@@ -36,7 +36,7 @@ describe('KritzelBaseTool', () => {
     });
 
     it('should set __class__ to the constructor name', () => {
-      expect(tool.__class__).toBe('KritzelBaseTool');
+      expect(tool.__class__).toBe('UpdrawBaseTool');
     });
   });
 
@@ -81,7 +81,7 @@ describe('KritzelBaseTool', () => {
       const result = tool.serialize();
 
       expect(result).toEqual({
-        __class__: 'KritzelBaseTool',
+        __class__: 'UpdrawBaseTool',
         name: 'base-tool',
       });
     });

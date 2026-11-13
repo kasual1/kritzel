@@ -110,7 +110,7 @@ type FrameProps = {
   children: React.ReactNode;
 };
 
-/** A frame on the mock canvas, with a titlebar like Kritzel's object titlebar above it. */
+/** A frame on the mock canvas, with a titlebar like Updraw's object titlebar above it. */
 function Frame({ device, title, width, active, hidden, pressed, addRef, pageRef, children }: FrameProps) {
   return (
     <div

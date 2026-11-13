@@ -339,11 +339,11 @@
   pointer-events: auto;
   touch-action: none;
   user-select: none;
-  cursor: var(--kritzel-site-hand-cursor) !important;
+  cursor: var(--updraw-site-hand-cursor) !important;
 }
 
 .canvasLayer .draggableItem[data-dragging] {
-  cursor: var(--kritzel-site-grab-cursor) !important;
+  cursor: var(--updraw-site-grab-cursor) !important;
 }
 
 .draggableItem:focus-visible {
@@ -607,7 +607,7 @@
   color: #ffffff;
   border: 0;
   padding: 0;
-  cursor: var(--kritzel-site-pointer-cursor);
+  cursor: var(--updraw-site-pointer-cursor);
   pointer-events: auto;
 }
 
@@ -1093,7 +1093,7 @@
   position: relative;
   z-index: 1;
   box-sizing: border-box;
-  width: min(var(--kritzel-nav-max-width), calc(100% - 1.75rem));
+  width: min(var(--updraw-nav-max-width), calc(100% - 1.75rem));
   min-height: 346px;
   margin: 0 auto;
   padding: 52px 32px 28px;

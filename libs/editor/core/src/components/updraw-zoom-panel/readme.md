@@ -1,4 +1,4 @@
-# kritzel-zoom-panel
+# updraw-zoom-panel
 
 
 
@@ -27,18 +27,18 @@
 
 ### Used by
 
- - [kritzel-editor](../kritzel-editor)
+ - [updraw-editor](../updraw-editor)
 
 ### Depends on
 
-- kritzel-icon
+- updraw-icon
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-zoom-panel --> kritzel-icon
-  kritzel-editor --> kritzel-zoom-panel
-  style kritzel-zoom-panel fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-zoom-panel --> updraw-icon
+  updraw-editor --> updraw-zoom-panel
+  style updraw-zoom-panel fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

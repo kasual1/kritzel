@@ -6,26 +6,26 @@
 
 ## Purpose
 
-Managers handle cross-cutting concerns that span multiple components or tools. They are singleton-per-editor instances owned by `KritzelCore`.
+Managers handle cross-cutting concerns that span multiple components or tools. They are singleton-per-editor instances owned by `UpdrawCore`.
 
 ## Existing Managers
 
 | Manager | Responsibility |
 |---------|---------------|
-| `KritzelThemeManager` | Theme registry, CSS variable application, theme switching |
-| `KritzelCursorManager` | Cursor style changes based on state/tool |
-| `KritzelAnchorManager` | Anchor point management for transforms |
-| `KritzelLocalizationManager` | Locale registration, term resolution, interpolation, and fallback selection |
+| `UpdrawThemeManager` | Theme registry, CSS variable application, theme switching |
+| `UpdrawCursorManager` | Cursor style changes based on state/tool |
+| `UpdrawAnchorManager` | Anchor point management for transforms |
+| `UpdrawLocalizationManager` | Locale registration, term resolution, interpolation, and fallback selection |
 
 ## Structure
 
 ```typescript
-import { KritzelCore } from '../core/core.class';
+import { UpdrawCore } from '../core/core.class';
 
 export class MyManager {
-  private readonly _core: KritzelCore;
+  private readonly _core: UpdrawCore;
 
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     this._core = core;
     // initialization
   }
@@ -44,7 +44,7 @@ export class MyManager {
 
 ## Lifecycle
 
-1. Instantiated by `KritzelCore` during initialization
+1. Instantiated by `UpdrawCore` during initialization
 2. Available via `core.<managerName>` (e.g., `core.themeManager`)
 3. Active for the lifetime of the editor
 4. `destroy()` called when editor is torn down
@@ -52,10 +52,10 @@ export class MyManager {
 ## Conventions
 
 - File name: `<domain>.manager.ts`
-- Class name: `Kritzel<Domain>Manager`
+- Class name: `Updraw<Domain>Manager`
 - One manager per cross-cutting concern
-- Receives `KritzelCore` via constructor
-- May hold private state, but shared state goes through `KritzelStore`
+- Receives `UpdrawCore` via constructor
+- May hold private state, but shared state goes through `UpdrawStore`
 - Must provide a `destroy()` method for cleanup
 - Should not directly manipulate DOM — delegate to helpers or the engine
 - Localization managers should keep fallback resolution deterministic and expose bulk resolution helpers only when the editor or UI layer needs many terms at once

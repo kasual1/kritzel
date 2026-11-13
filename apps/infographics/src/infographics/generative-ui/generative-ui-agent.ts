@@ -1,13 +1,13 @@
 import Anthropic from '@anthropic-ai/sdk';
 import {
-  KritzelIframeObject,
-  type HTMLKritzelEditorElement,
-  type KritzelAgent,
-  type KritzelAgentTool,
-  type KritzelBaseObject,
-  type KritzelIframeContent,
-  type KritzelObjectElementInfo,
-} from '@kritzel/react-editor';
+  UpdrawIframeObject,
+  type HTMLUpdrawEditorElement,
+  type UpdrawAgent,
+  type UpdrawAgentTool,
+  type UpdrawBaseObject,
+  type UpdrawIframeContent,
+  type UpdrawObjectElementInfo,
+} from '@updraw/react-editor';
 
 /**
  * `ANTHROPIC_API_KEY` from the `.env` file at the repository root (see `.env.example`); `vite.config.ts` exposes it.
@@ -26,7 +26,7 @@ elements of the page, the request is about those elements.
 
 Pages are self-contained: no external scripts, stylesheets or images, except Google Fonts. Use inline SVG for icons and \
 illustrations. Design modern, polished pages and size them so the content fits. Give every meaningful element a short, \
-unique data-kritzel-id, for example data-kritzel-id="hero-title", so the user can point at it.
+unique data-updraw-id, for example data-updraw-id="hero-title", so the user can point at it.
 
 You can also look at the canvas with observe_canvas and move, resize or delete the pages you added.
 
@@ -95,23 +95,23 @@ const EDIT_PAGE_TOOL: Anthropic.Beta.BetaTool = {
   },
 };
 
-/** The Kritzel tools Claude may use next to add_page and edit_page: look at the canvas and arrange the pages. */
-const KRITZEL_TOOLS = ['observe_canvas', 'move_object', 'resize_object', 'delete_objects'];
+/** The Updraw tools Claude may use next to add_page and edit_page: look at the canvas and arrange the pages. */
+const UPDRAW_TOOLS = ['observe_canvas', 'move_object', 'resize_object', 'delete_objects'];
 
-/** Kritzel tools are provider-neutral; Anthropic calls the schema `input_schema`. */
-function toAnthropicTool(tool: KritzelAgentTool): Anthropic.Beta.BetaTool {
+/** Updraw tools are provider-neutral; Anthropic calls the schema `input_schema`. */
+function toAnthropicTool(tool: UpdrawAgentTool): Anthropic.Beta.BetaTool {
   return { name: tool.name, description: tool.description, input_schema: tool.inputSchema, eager_input_streaming: true };
 }
 
-type PagePart = keyof KritzelIframeContent;
+type PagePart = keyof UpdrawIframeContent;
 
 /** Pages are iframe objects. */
-export function isIframe(object: KritzelBaseObject): object is KritzelIframeObject {
-  return object.__class__ === 'KritzelIframeObject';
+export function isIframe(object: UpdrawBaseObject): object is UpdrawIframeObject {
+  return object.__class__ === 'UpdrawIframeObject';
 }
 
 /** A page as Claude writes it with add_page. */
-export interface PageInput extends KritzelIframeContent {
+export interface PageInput extends UpdrawIframeContent {
   title: string;
   width: number;
   height: number;
@@ -120,12 +120,12 @@ export interface PageInput extends KritzelIframeContent {
 /** The page a prompt is about, and the elements of it the user picked, if any. */
 export interface PageReference {
   objectId: string;
-  elements: KritzelObjectElementInfo[];
+  elements: UpdrawObjectElementInfo[];
 }
 
 /** A page object at the given position in world units, with the look every page on the canvas shares. */
-export function createPageObject({ title, width, height, html, css, script }: PageInput, x: number, y: number): KritzelIframeObject {
-  return new KritzelIframeObject({
+export function createPageObject({ title, width, height, html, css, script }: PageInput, x: number, y: number): UpdrawIframeObject {
+  return new UpdrawIframeObject({
     name: title,
     title,
     content: { html, css, script },
@@ -139,7 +139,7 @@ export function createPageObject({ title, width, height, html, css, script }: Pa
 }
 
 /** Centers a page in the viewport, zooming out when it does not fit but never zooming in past 100 %. */
-export async function revealPage(editor: HTMLKritzelEditorElement, page: KritzelIframeObject): Promise<void> {
+export async function revealPage(editor: HTMLUpdrawEditorElement, page: UpdrawIframeObject): Promise<void> {
   const box = page.boundingBox;
   const viewport = await editor.getViewport();
   const scale = Math.min(
@@ -173,7 +173,7 @@ function readPage(input: unknown): PageInput {
 }
 
 /** Returns the content with every edit applied, or throws without changing anything. */
-function applyEdits(content: KritzelIframeContent, input: unknown): KritzelIframeContent {
+function applyEdits(content: UpdrawIframeContent, input: unknown): UpdrawIframeContent {
   const { edits } = (input ?? {}) as Record<string, unknown>;
   if (!Array.isArray(edits) || !edits.length) {
     throw new ToolInputError('"edits" must be a non-empty array. No edit was applied.');
@@ -209,7 +209,7 @@ function applyEdits(content: KritzelIframeContent, input: unknown): KritzelIfram
 }
 
 /** The user's request with the source of the page it is about and the elements they picked. */
-function createEditRequest(prompt: string, page: KritzelIframeObject, elements: KritzelObjectElementInfo[]): string {
+function createEditRequest(prompt: string, page: UpdrawIframeObject, elements: UpdrawObjectElementInfo[]): string {
   const { html, css, script } = page.content;
   const lines = [
     `<selected_page title=${JSON.stringify(page.name || page.title)}>`,
@@ -231,7 +231,7 @@ function createEditRequest(prompt: string, page: KritzelIframeObject, elements: 
 /**
  * Turns prompts into pages. A prompt adds a new page, or changes the page it references with small edits.
  * Prompts don't share a conversation: the pages on the canvas are the state, so every edit starts from their current source.
- * Claude works as a KritzelAgent with its own cursor, status and history: it places new pages through the agent, and
+ * Claude works as an UpdrawAgent with its own cursor, status and history: it places new pages through the agent, and
  * its cursor points at the page, or at the first picked element, that a prompt changes.
  */
 export class GenerativeUiAgent {
@@ -239,13 +239,13 @@ export class GenerativeUiAgent {
 
   private readonly client = new Anthropic({ apiKey: API_KEY, dangerouslyAllowBrowser: true });
 
-  private readonly kritzelTools: KritzelAgentTool[];
+  private readonly updrawTools: UpdrawAgentTool[];
 
   constructor(
-    private readonly editor: HTMLKritzelEditorElement,
-    private readonly agent: KritzelAgent,
+    private readonly editor: HTMLUpdrawEditorElement,
+    private readonly agent: UpdrawAgent,
   ) {
-    this.kritzelTools = agent.tools({ only: KRITZEL_TOOLS });
+    this.updrawTools = agent.tools({ only: UPDRAW_TOOLS });
   }
 
   async send(prompt: string, reference: PageReference | null, signal: AbortSignal): Promise<void> {
@@ -271,7 +271,7 @@ export class GenerativeUiAgent {
    * page itself. Only the cursor moves, so the request doesn't wait for it, and an element that can't be found right
    * now (e.g. scrolled out of view) leaves the cursor where it is.
    */
-  private pointAt(page: KritzelIframeObject, elements: KritzelObjectElementInfo[]): void {
+  private pointAt(page: UpdrawIframeObject, elements: UpdrawObjectElementInfo[]): void {
     const [element] = elements;
     this.agent
       .moveTo(element ? { objectId: page.id, selector: element.selector } : { objectId: page.id })
@@ -280,8 +280,8 @@ export class GenerativeUiAgent {
 
   private async runLoop(
     prompt: string,
-    page: KritzelIframeObject | undefined,
-    elements: KritzelObjectElementInfo[],
+    page: UpdrawIframeObject | undefined,
+    elements: UpdrawObjectElementInfo[],
     signal: AbortSignal,
   ): Promise<void> {
     const messages: Anthropic.Beta.BetaMessageParam[] = [
@@ -298,7 +298,7 @@ export class GenerativeUiAgent {
               model: MODEL,
               max_tokens: 64000,
               system: SYSTEM_PROMPT,
-              tools: [ADD_PAGE_TOOL, EDIT_PAGE_TOOL, ...this.kritzelTools.map(toAnthropicTool)],
+              tools: [ADD_PAGE_TOOL, EDIT_PAGE_TOOL, ...this.updrawTools.map(toAnthropicTool)],
               messages,
               output_config: { effort: 'medium' },
               cache_control: { type: 'ephemeral' },
@@ -345,10 +345,10 @@ export class GenerativeUiAgent {
     pageId: string | undefined,
     signal: AbortSignal,
   ): Promise<Anthropic.Beta.BetaToolResultBlockParam> {
-    const kritzelTool = this.kritzelTools.find(tool => tool.name === toolUse.name);
-    if (kritzelTool) {
+    const updrawTool = this.updrawTools.find(tool => tool.name === toolUse.name);
+    if (updrawTool) {
       // Refusals (e.g. the user has the page selected) are ordinary results; only rejected input is an error.
-      const content = await kritzelTool.run(toolUse.input, { signal });
+      const content = await updrawTool.run(toolUse.input, { signal });
       const isError = (JSON.parse(content) as { reason?: string }).reason === 'invalid-input';
       return { type: 'tool_result', tool_use_id: toolUse.id, content, ...(isError ? { is_error: true } : {}) };
     }
@@ -372,7 +372,7 @@ export class GenerativeUiAgent {
     }
   }
 
-  private async getPage(id: string): Promise<KritzelIframeObject | undefined> {
+  private async getPage(id: string): Promise<UpdrawIframeObject | undefined> {
     const object = await this.editor.getObjectById(id);
     return object && isIframe(object) ? object : undefined;
   }
@@ -393,7 +393,7 @@ export class GenerativeUiAgent {
    * Places the page to the right of the existing ones as the agent's change (its cursor hops there, and the user's
    * selection and undo history stay untouched), then moves the viewport to it.
    */
-  private async addPage(input: PageInput, signal: AbortSignal): Promise<KritzelIframeObject> {
+  private async addPage(input: PageInput, signal: AbortSignal): Promise<UpdrawIframeObject> {
     const boxes = (await this.editor.getAllObjects()).filter(isIframe).map(object => object.boundingBox);
     const x = boxes.length ? Math.max(...boxes.map(box => box.x + box.width)) + GAP : 0;
     const y = boxes.length ? Math.min(...boxes.map(box => box.y)) : 0;

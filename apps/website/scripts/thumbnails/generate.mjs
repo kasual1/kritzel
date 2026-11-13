@@ -4,7 +4,7 @@
 //   npm run thumbnails -- --force          # regenerate all of them
 //   npm run thumbnails -- --slug my-post   # only this post (combine with --force to redo it)
 //   npm run thumbnails -- --seed 5b1192ef [--scale 4] [--out file.png]   # one seed, e.g. in high res
-//   npm run thumbnails -- --seed "hello kritzel"                         # any text works as a seed
+//   npm run thumbnails -- --seed "hello updraw"                         # any text works as a seed
 //   npm run thumbnails -- --seed random [--scale 2]                      # a fresh random seed
 //   npm run thumbnails -- --seed 5b1192ef --logo-mask dim                # experiment: artwork inside the logo
 //                                                     (backgrounds: white, dark, dim, transparent or a color)

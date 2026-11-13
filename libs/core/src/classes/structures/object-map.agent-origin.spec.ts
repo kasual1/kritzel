@@ -1,7 +1,7 @@
 import * as Y from 'yjs';
-import { KritzelObjectMap } from './object-map.structure';
-import { KritzelAgentOrigin } from './agent-origin.class';
-import type { KritzelCore } from '../core/core.class';
+import { UpdrawObjectMap } from './object-map.structure';
+import { UpdrawAgentOrigin } from './agent-origin.class';
+import type { UpdrawCore } from '../core/core.class';
 
 // Real Yjs on purpose: these tests pin the Yjs behaviour per-agent undo relies on.
 
@@ -24,7 +24,7 @@ class FakeObject {
 }
 
 jest.mock('../core/reviver.class', () => ({
-  KritzelReviver: jest.fn().mockImplementation(() => ({
+  UpdrawReviver: jest.fn().mockImplementation(() => ({
     revive: (data: { id: string; x: number; label: string }) => new FakeObject(data.id, data.x, data.label),
   })),
 }));
@@ -58,22 +58,22 @@ type Core = ReturnType<typeof createCore>;
 
 const createMap = async () => {
   const core = createCore();
-  const map = new KritzelObjectMap<any>();
-  await map.initialize(core as unknown as KritzelCore, 'ws', { providers: [] });
+  const map = new UpdrawObjectMap<any>();
+  await map.initialize(core as unknown as UpdrawCore, 'ws', { providers: [] });
   return { map, core };
 };
 
-const ydocOf = (map: KritzelObjectMap<any>): Y.Doc => (map as unknown as { _ydoc: Y.Doc })._ydoc;
+const ydocOf = (map: UpdrawObjectMap<any>): Y.Doc => (map as unknown as { _ydoc: Y.Doc })._ydoc;
 
 /** Writes the object as an agent, inside one transaction (like an action's mutate). */
-const agentWrite = (map: KritzelObjectMap<any>, origin: KritzelAgentOrigin, fn: () => void) => {
+const agentWrite = (map: UpdrawObjectMap<any>, origin: UpdrawAgentOrigin, fn: () => void) => {
   map.withOrigin(origin, () => map.transaction(fn));
 };
 
-const xOf = (map: KritzelObjectMap<any>, id: string) => (map.findById(id) as FakeObject | undefined)?.x;
+const xOf = (map: UpdrawObjectMap<any>, id: string) => (map.findById(id) as FakeObject | undefined)?.x;
 
-describe('KritzelObjectMap agent origins (real Yjs)', () => {
-  let map: KritzelObjectMap<any>;
+describe('UpdrawObjectMap agent origins (real Yjs)', () => {
+  let map: UpdrawObjectMap<any>;
   let core: Core;
 
   beforeEach(async () => {
@@ -395,7 +395,7 @@ describe('KritzelObjectMap agent origins (real Yjs)', () => {
   describe('moveActorStepToUser', () => {
     const userStack = () => map.undoManager!.undoStack;
 
-    const actorMoveA = (origin: KritzelAgentOrigin, x: number) =>
+    const actorMoveA = (origin: UpdrawAgentOrigin, x: number) =>
       agentWrite(map, origin, () => {
         const a = map.findById('a');
         a.x = x;

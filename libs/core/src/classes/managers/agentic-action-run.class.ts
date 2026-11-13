@@ -1,17 +1,17 @@
-import type { KritzelCore } from '../core/core.class';
-import type { KritzelObjectMap } from '../structures/object-map.structure';
-import type { KritzelAgentOrigin } from '../structures/agent-origin.class';
-import type { KritzelBaseObject } from '../objects/base-object.class';
-import type { KritzelAgenticCursorManager } from './agentic-cursor.manager';
+import type { UpdrawCore } from '../core/core.class';
+import type { UpdrawObjectMap } from '../structures/object-map.structure';
+import type { UpdrawAgentOrigin } from '../structures/agent-origin.class';
+import type { UpdrawBaseObject } from '../objects/base-object.class';
+import type { UpdrawAgenticCursorManager } from './agentic-cursor.manager';
 import type {
-  KritzelAgenticAction,
-  KritzelAgenticActionFailureReason,
-  KritzelAgenticActionOptions,
-  KritzelAgenticActionResult,
+  UpdrawAgenticAction,
+  UpdrawAgenticActionFailureReason,
+  UpdrawAgenticActionOptions,
+  UpdrawAgenticActionResult,
 } from '../../interfaces/agentic-action.interface';
-import type { KritzelAgenticElementTarget, KritzelAgenticObjectTarget, KritzelAgenticTarget } from '../../interfaces/agentic-cursor.interface';
-import { KritzelEasingHelper } from '../../helpers/easing.helper';
-import { KritzelEventHelper } from '../../helpers/event.helper';
+import type { UpdrawAgenticElementTarget, UpdrawAgenticObjectTarget, UpdrawAgenticTarget } from '../../interfaces/agentic-cursor.interface';
+import { UpdrawEasingHelper } from '../../helpers/easing.helper';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
 import {
   AGENTIC_ACTION_DEFAULT_SPEED,
   AGENTIC_ACTION_DRAG_MAX_MS,
@@ -21,25 +21,25 @@ import {
   AGENTIC_ACTION_PRESS_MS,
   AGENTIC_ACTION_RELEASE_MS,
 } from '../../constants/agentic-action.constants';
-import { KritzelAgenticAbortError } from '../agent/agentic-abort-error.class';
-import type { KritzelAgenticActionExecutor, KritzelAgenticPreparation } from '../../types/agentic-action.types';
+import { UpdrawAgenticAbortError } from '../agent/agentic-abort-error.class';
+import type { UpdrawAgenticActionExecutor, UpdrawAgenticPreparation } from '../../types/agentic-action.types';
 import { collectAnchoredLines } from '../../helpers/agentic-conflict.helper';
 import { isObjectTarget } from '../../helpers/agentic-geometry.helper';
 
-type AnyObject = KritzelBaseObject<any>;
-type ObjectMap = KritzelObjectMap<AnyObject>;
+type AnyObject = UpdrawBaseObject<any>;
+type ObjectMap = UpdrawObjectMap<AnyObject>;
 
 /** Who performs an action: an agent with its own cursor, or an actor working as the local user (no cursor). */
-export type KritzelActorKind = 'agent' | 'user';
+export type UpdrawActorKind = 'agent' | 'user';
 
 /** Reads and writes the selection an action works with: the agent's own one, or the user's real selection. @internal */
-export interface KritzelActorSelection {
+export interface UpdrawActorSelection {
   get(): string[];
   set(objectIds: string[]): void;
 }
 
 /** Options of a run beyond the public action options. @internal */
-export interface KritzelActorActionOptions extends KritzelAgenticActionOptions {
+export interface UpdrawActorActionOptions extends UpdrawAgenticActionOptions {
   /**
    * User actors only: kept changes of consecutive actions with the same group become one step in the user's
    * history (e.g. all actions of one chat prompt).
@@ -48,21 +48,21 @@ export interface KritzelActorActionOptions extends KritzelAgenticActionOptions {
 }
 
 /** How a run ended. */
-export type KritzelAgenticRunOutcome =
+export type UpdrawAgenticRunOutcome =
   | { kind: 'commit'; objectIds: string[] }
-  | { kind: 'abort'; reason: KritzelAgenticActionFailureReason; objectIds?: string[] }
+  | { kind: 'abort'; reason: UpdrawAgenticActionFailureReason; objectIds?: string[] }
   | { kind: 'fail'; error: unknown };
 
 /** Services of the action manager a run uses. @internal */
-export interface KritzelAgenticRunHost {
+export interface UpdrawAgenticRunHost {
   /** Timestamp of the current or last frame. */
   readonly lastFrameTime: number | null;
   /** Settles a run: persists or rolls back, releases claims, emits events and resolves the promise. */
-  finishRun(run: KritzelAgenticActionRun, outcome: KritzelAgenticRunOutcome, options?: { sync?: boolean }): void;
+  finishRun(run: UpdrawAgenticActionRun, outcome: UpdrawAgenticRunOutcome, options?: { sync?: boolean }): void;
   /** Runs the conflict checks now with fresh state and aborts the run on a conflict. */
-  checkpoint(run: KritzelAgenticActionRun): void;
+  checkpoint(run: UpdrawAgenticActionRun): void;
   /** Claims an additional object for the run. */
-  claim(run: KritzelAgenticActionRun, objectId: string): void;
+  claim(run: UpdrawAgenticActionRun, objectId: string): void;
   /** Sets the explicit (`select`) selection of the run's cursor. */
   setSelection(cursorId: string, objectIds: string[]): void;
   /** The explicit selection of a cursor. */
@@ -86,11 +86,11 @@ interface Waiter {
  * Executors drive it; the action manager starts, checks and settles it.
  * @internal
  */
-export class KritzelAgenticActionRun {
+export class UpdrawAgenticActionRun {
   /** The object map the action works on; set when the action starts. */
   map: ObjectMap | null = null;
   /** The agent origin of mutating actions. */
-  origin: KritzelAgentOrigin | null = null;
+  origin: UpdrawAgentOrigin | null = null;
   /** Host move generation of the cursor when the action started. */
   hostMoveGeneration = 0;
   /** Length of the agent's undo stack when the action started. */
@@ -106,7 +106,7 @@ export class KritzelAgenticActionRun {
   /** Set while an agent undo/redo step is applied; aborts arriving then are held until it returns. */
   applyingHistory = false;
   /** An abort that arrived while `applyingHistory` was set. */
-  heldAbort: { reason: KritzelAgenticActionFailureReason; objectIds?: string[] } | null = null;
+  heldAbort: { reason: UpdrawAgenticActionFailureReason; objectIds?: string[] } | null = null;
   /** Whether the action changed anything. */
   hasMutated = false;
   /** Whether the outcome is decided. */
@@ -138,12 +138,12 @@ export class KritzelAgenticActionRun {
   /** Changed properties per object, for `objectsUpdated`. */
   readonly changedProperties = new Map<string, string[]>();
   /** Where the cursor attaches when the action completes. */
-  finalAttachment: KritzelAgenticObjectTarget | KritzelAgenticElementTarget | null = null;
+  finalAttachment: UpdrawAgenticObjectTarget | UpdrawAgenticElementTarget | null = null;
   /** What an element reported about an interaction, added to the action's result. */
-  elementOutcome: Pick<KritzelAgenticActionResult, 'element' | 'elementReason' | 'message'> | null = null;
+  elementOutcome: Pick<UpdrawAgenticActionResult, 'element' | 'elementReason' | 'message'> | null = null;
 
   /** The promise returned to the caller. */
-  readonly promise: Promise<KritzelAgenticActionResult>;
+  readonly promise: Promise<UpdrawAgenticActionResult>;
   /** Resolves once the run is fully cleaned up (rollback, claims, events). */
   readonly done: Promise<void>;
   /** Abort listener registered on `options.signal`. */
@@ -153,20 +153,20 @@ export class KritzelAgenticActionRun {
   private readonly _settleHooks: (() => void)[] = [];
   private _flying = false;
   private _lastPersistAt = -Infinity;
-  private _resolve!: (result: KritzelAgenticActionResult) => void;
+  private _resolve!: (result: UpdrawAgenticActionResult) => void;
   private _reject!: (error: unknown) => void;
   private _resolveDone!: () => void;
 
   constructor(
-    readonly host: KritzelAgenticRunHost,
-    readonly core: KritzelCore,
+    readonly host: UpdrawAgenticRunHost,
+    readonly core: UpdrawCore,
     readonly cursorId: string,
-    readonly action: KritzelAgenticAction,
-    readonly options: KritzelActorActionOptions,
-    readonly executor: KritzelAgenticActionExecutor,
-    readonly actorKind: KritzelActorKind = 'agent',
+    readonly action: UpdrawAgenticAction,
+    readonly options: UpdrawActorActionOptions,
+    readonly executor: UpdrawAgenticActionExecutor,
+    readonly actorKind: UpdrawActorKind = 'agent',
   ) {
-    this.promise = new Promise<KritzelAgenticActionResult>((resolve, reject) => {
+    this.promise = new Promise<UpdrawAgenticActionResult>((resolve, reject) => {
       this._resolve = resolve;
       this._reject = reject;
     });
@@ -175,7 +175,7 @@ export class KritzelAgenticActionRun {
     });
   }
 
-  get cursorManager(): KritzelAgenticCursorManager {
+  get cursorManager(): UpdrawAgenticCursorManager {
     return this.core.agenticCursorManager;
   }
 
@@ -190,7 +190,7 @@ export class KritzelAgenticActionRun {
   }
 
   /** The selection the action works with; set by the action manager. */
-  selection: KritzelActorSelection = {
+  selection: UpdrawActorSelection = {
     get: () => this.host.getSelection(this.cursorId),
     set: objectIds => this.host.setSelection(this.cursorId, objectIds),
   };
@@ -207,7 +207,7 @@ export class KritzelAgenticActionRun {
   }
 
   /** Applies the executor's preparation. `expandedTargets` includes group relatives. */
-  applyPreparation(preparation: KritzelAgenticPreparation, expandedTargets: Set<string>): void {
+  applyPreparation(preparation: UpdrawAgenticPreparation, expandedTargets: Set<string>): void {
     this.displayIds = [...preparation.targetIds];
     this.targetIds = Array.from(expandedTargets);
     this.referenceIds = [...preparation.referenceIds];
@@ -230,14 +230,14 @@ export class KritzelAgenticActionRun {
   /** Throws once the run has settled. */
   assertActive(): void {
     if (this.settled) {
-      throw new KritzelAgenticAbortError();
+      throw new UpdrawAgenticAbortError();
     }
   }
 
   /** Aborts the run and throws, for use inside executors. */
-  stop(reason: KritzelAgenticActionFailureReason, objectIds?: string[]): never {
+  stop(reason: UpdrawAgenticActionFailureReason, objectIds?: string[]): never {
     this.abort(reason, objectIds);
-    throw new KritzelAgenticAbortError();
+    throw new UpdrawAgenticAbortError();
   }
 
   // ─── Timing ─────────────────────────────────────────────────────────────────
@@ -273,13 +273,13 @@ export class KritzelAgenticActionRun {
   }
 
   /** Calls `step` every frame for `durationMs`, ending with `isLast = true`. Instant runs call it once. */
-  animate(durationMs: number, step: (eased: number, raw: number, isLast: boolean) => void, easing?: KritzelAgenticActionOptions['easing']): Promise<void> {
+  animate(durationMs: number, step: (eased: number, raw: number, isLast: boolean) => void, easing?: UpdrawAgenticActionOptions['easing']): Promise<void> {
     this.assertActive();
     if (this.instant) {
       step(1, 1, true);
       return Promise.resolve();
     }
-    return this.wait({ kind: 'animate', duration: Math.max(0, durationMs), step, easing: KritzelEasingHelper.resolve(easing ?? 'linear') });
+    return this.wait({ kind: 'animate', duration: Math.max(0, durationMs), step, easing: UpdrawEasingHelper.resolve(easing ?? 'linear') });
   }
 
   /** Resolves on the next frame (immediately for instant runs). */
@@ -305,7 +305,7 @@ export class KritzelAgenticActionRun {
   }
 
   /** Flies the cursor to a target, like `agent.moveTo()`. Instant runs jump. */
-  async fly(target: KritzelAgenticTarget, attach = false): Promise<void> {
+  async fly(target: UpdrawAgenticTarget, attach = false): Promise<void> {
     this.assertActive();
     const cursors = this.cursorManager;
     if (this.instant) {
@@ -496,7 +496,7 @@ export class KritzelAgenticActionRun {
   }
 
   /** Stops the action with a reason. */
-  abort(reason: KritzelAgenticActionFailureReason, objectIds?: string[], options?: { sync?: boolean }): void {
+  abort(reason: UpdrawAgenticActionFailureReason, objectIds?: string[], options?: { sync?: boolean }): void {
     this.host.finishRun(this, { kind: 'abort', reason, objectIds }, options);
   }
 
@@ -509,12 +509,12 @@ export class KritzelAgenticActionRun {
   rejectWaiters(): void {
     const waiters = Array.from(this._waiters);
     this._waiters.clear();
-    waiters.forEach(waiter => waiter.reject(new KritzelAgenticAbortError()));
+    waiters.forEach(waiter => waiter.reject(new UpdrawAgenticAbortError()));
   }
 
   /** Runs the settle hooks once. @internal */
   runSettleHooks(): void {
-    this._settleHooks.splice(0).forEach(hook => KritzelEventHelper.callListener(hook, 'Agentic action settle hook'));
+    this._settleHooks.splice(0).forEach(hook => UpdrawEventHelper.callListener(hook, 'Agentic action settle hook'));
   }
 
   /** Removes the abort listener. @internal */
@@ -526,7 +526,7 @@ export class KritzelAgenticActionRun {
   }
 
   /** Resolves or rejects the caller's promise and marks the run as done. @internal */
-  settleWith(result: KritzelAgenticActionResult | { error: unknown }): void {
+  settleWith(result: UpdrawAgenticActionResult | { error: unknown }): void {
     if ('error' in result) {
       this._reject(result.error);
     } else {

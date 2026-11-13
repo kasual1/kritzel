@@ -1,5 +1,5 @@
-import { KritzelAppStateMap } from './app-state-map.structure';
-import type { KritzelCore } from '../core/core.class';
+import { UpdrawAppStateMap } from './app-state-map.structure';
+import type { UpdrawCore } from '../core/core.class';
 
 // --- Mock Yjs ---
 const mockMapObserve = jest.fn();
@@ -30,9 +30,9 @@ jest.mock('yjs', () => ({
   })),
 }));
 
-// --- Mock KritzelWorkspace ---
+// --- Mock UpdrawWorkspace ---
 jest.mock('../core/workspace.class', () => ({
-  KritzelWorkspace: jest.fn().mockImplementation((config: any) => ({
+  UpdrawWorkspace: jest.fn().mockImplementation((config: any) => ({
     id: config?.id ?? 'generated-id',
     name: config?.name ?? 'New Workspace',
     viewport: config?.viewport ?? { centerWorldX: 0, centerWorldY: 0, scale: 1 },
@@ -90,7 +90,7 @@ const setTestLocalStorage = (storage: unknown): void => {
   });
 };
 
-type MockCore = jest.Mocked<Pick<KritzelCore, 'rerender' | 'editorId' | 'getStorageKey'>> & {
+type MockCore = jest.Mocked<Pick<UpdrawCore, 'rerender' | 'editorId' | 'getStorageKey'>> & {
   store: {
     state: {
       workspaces: unknown[];
@@ -152,8 +152,8 @@ const createMockWorkspace = (id: string, name: string = `Workspace ${id}`) => ({
   }),
 });
 
-describe('KritzelAppStateMap', () => {
-  let appStateMap: KritzelAppStateMap;
+describe('UpdrawAppStateMap', () => {
+  let appStateMap: UpdrawAppStateMap;
   let mockCore: MockCore;
 
   beforeAll(() => {
@@ -168,7 +168,7 @@ describe('KritzelAppStateMap', () => {
     jest.clearAllMocks();
     localStorageData.clear();
     setTestLocalStorage(mockLocalStorage);
-    appStateMap = new KritzelAppStateMap();
+    appStateMap = new UpdrawAppStateMap();
     mockCore = createMockCore();
   });
 
@@ -188,7 +188,7 @@ describe('KritzelAppStateMap', () => {
     });
 
     it('should resolve immediately when no network providers are configured', async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
 
       await expect(appStateMap.whenNetworkSynced()).resolves.toBeUndefined();
     });
@@ -202,7 +202,7 @@ describe('KritzelAppStateMap', () => {
       );
       const provider = createMockNetworkProvider(connect);
 
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [{ create: () => provider as never }] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [{ create: () => provider as never }] });
 
       let isSynced = false;
       const syncPromise = appStateMap.whenNetworkSynced().then(() => {
@@ -221,7 +221,7 @@ describe('KritzelAppStateMap', () => {
     it('should settle even when the network provider fails to connect', async () => {
       const provider = createMockNetworkProvider(jest.fn().mockRejectedValue(new Error('connection timeout')));
 
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [{ create: () => provider as never }] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [{ create: () => provider as never }] });
 
       await expect(appStateMap.whenNetworkSynced()).resolves.toBeUndefined();
     });
@@ -229,21 +229,21 @@ describe('KritzelAppStateMap', () => {
 
   describe('initialize', () => {
     it('should set isReady to true after initialization', async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
 
       expect(appStateMap.isReady).toBe(true);
     });
 
     it('should create Y.Doc and get workspaces map', async () => {
       const Y = require('yjs');
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
 
       expect(Y.Doc).toHaveBeenCalled();
       expect(mockYdocGetMap).toHaveBeenCalledWith('workspaces');
     });
 
     it('should observe the workspaces map', async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
 
       expect(mockMapObserve).toHaveBeenCalledWith(expect.any(Function));
     });
@@ -252,9 +252,9 @@ describe('KritzelAppStateMap', () => {
       const provider = createMockProvider();
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [factory] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [factory] });
 
-      expect(factory.create).toHaveBeenCalledWith('kritzel-app-state-test-uuid-1234', expect.anything(), expect.anything());
+      expect(factory.create).toHaveBeenCalledWith('updraw-app-state-test-uuid-1234', expect.anything(), expect.anything());
       expect(provider.connect).toHaveBeenCalled();
     });
 
@@ -265,9 +265,9 @@ describe('KritzelAppStateMap', () => {
         doc: unknown
       ) => MockProvider;
 
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [ProviderClass] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [ProviderClass] });
 
-      expect(ProviderClass).toHaveBeenCalledWith('kritzel-app-state-test-uuid-1234', expect.anything(), expect.anything());
+      expect(ProviderClass).toHaveBeenCalledWith('updraw-app-state-test-uuid-1234', expect.anything(), expect.anything());
       expect(provider.connect).toHaveBeenCalled();
     });
 
@@ -276,9 +276,9 @@ describe('KritzelAppStateMap', () => {
       const provider = createMockProvider();
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      await appStateMap.initialize(coreWithId as unknown as KritzelCore, { providers: [factory] });
+      await appStateMap.initialize(coreWithId as unknown as UpdrawCore, { providers: [factory] });
 
-      expect(factory.create).toHaveBeenCalledWith('kritzel-app-state-homepage-test-uuid-1234', expect.anything(), expect.anything());
+      expect(factory.create).toHaveBeenCalledWith('updraw-app-state-homepage-test-uuid-1234', expect.anything(), expect.anything());
     });
 
     it('should use default doc name when editorId is undefined', async () => {
@@ -286,9 +286,9 @@ describe('KritzelAppStateMap', () => {
       const provider = createMockProvider();
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      await appStateMap.initialize(coreNoId as unknown as KritzelCore, { providers: [factory] });
+      await appStateMap.initialize(coreNoId as unknown as UpdrawCore, { providers: [factory] });
 
-      expect(factory.create).toHaveBeenCalledWith('kritzel-app-state-test-uuid-1234', expect.anything(), expect.anything());
+      expect(factory.create).toHaveBeenCalledWith('updraw-app-state-test-uuid-1234', expect.anything(), expect.anything());
     });
 
     it('should reuse persisted instance id across app state map re-initialization', async () => {
@@ -296,14 +296,14 @@ describe('KritzelAppStateMap', () => {
       const secondProvider = createMockProvider();
       const firstFactory = { create: jest.fn().mockReturnValue(firstProvider) };
       const secondFactory = { create: jest.fn().mockReturnValue(secondProvider) };
-      const firstMap = new KritzelAppStateMap();
-      const secondMap = new KritzelAppStateMap();
+      const firstMap = new UpdrawAppStateMap();
+      const secondMap = new UpdrawAppStateMap();
 
-      await firstMap.initialize(mockCore as unknown as KritzelCore, { providers: [firstFactory] });
-      await secondMap.initialize(mockCore as unknown as KritzelCore, { providers: [secondFactory] });
+      await firstMap.initialize(mockCore as unknown as UpdrawCore, { providers: [firstFactory] });
+      await secondMap.initialize(mockCore as unknown as UpdrawCore, { providers: [secondFactory] });
 
-      expect(firstFactory.create).toHaveBeenCalledWith('kritzel-app-state-test-uuid-1234', expect.anything(), expect.anything());
-      expect(secondFactory.create).toHaveBeenCalledWith('kritzel-app-state-test-uuid-1234', expect.anything(), expect.anything());
+      expect(firstFactory.create).toHaveBeenCalledWith('updraw-app-state-test-uuid-1234', expect.anything(), expect.anything());
+      expect(secondFactory.create).toHaveBeenCalledWith('updraw-app-state-test-uuid-1234', expect.anything(), expect.anything());
 
       const { ObjectHelper } = require('../../helpers/object.helper');
       expect(ObjectHelper.generateUUID).toHaveBeenCalledTimes(1);
@@ -312,8 +312,8 @@ describe('KritzelAppStateMap', () => {
     it('should throw when localStorage is unavailable', async () => {
       setTestLocalStorage(undefined);
 
-      await expect(appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] })).rejects.toThrow(
-        '[KritzelAppStateMap] localStorage is unavailable. Cannot persist app-state document identity.'
+      await expect(appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] })).rejects.toThrow(
+        '[UpdrawAppStateMap] localStorage is unavailable. Cannot persist app-state document identity.'
       );
     });
 
@@ -328,8 +328,8 @@ describe('KritzelAppStateMap', () => {
       };
       setTestLocalStorage(writeFailingStorage);
 
-      await expect(appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] })).rejects.toThrow(
-        '[KritzelAppStateMap] Failed to persist app-state instance id to localStorage.'
+      await expect(appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] })).rejects.toThrow(
+        '[UpdrawAppStateMap] Failed to persist app-state instance id to localStorage.'
       );
     });
 
@@ -337,12 +337,12 @@ describe('KritzelAppStateMap', () => {
       const provider = createMockProvider();
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, {
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, {
         providers: [factory],
         appStateId: 'shared-tenant-42',
       });
 
-      expect(factory.create).toHaveBeenCalledWith('kritzel-app-state-shared-tenant-42', expect.anything(), expect.anything());
+      expect(factory.create).toHaveBeenCalledWith('updraw-app-state-shared-tenant-42', expect.anything(), expect.anything());
     });
 
     it('should combine editorId with explicit appStateId', async () => {
@@ -350,19 +350,19 @@ describe('KritzelAppStateMap', () => {
       const provider = createMockProvider();
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      await appStateMap.initialize(coreWithId as unknown as KritzelCore, {
+      await appStateMap.initialize(coreWithId as unknown as UpdrawCore, {
         providers: [factory],
         appStateId: 'user-abc',
       });
 
-      expect(factory.create).toHaveBeenCalledWith('kritzel-app-state-sidebar-user-abc', expect.anything(), expect.anything());
+      expect(factory.create).toHaveBeenCalledWith('updraw-app-state-sidebar-user-abc', expect.anything(), expect.anything());
     });
 
     it('should not require localStorage when appStateId is provided', async () => {
       setTestLocalStorage(undefined);
 
       await expect(
-        appStateMap.initialize(mockCore as unknown as KritzelCore, {
+        appStateMap.initialize(mockCore as unknown as UpdrawCore, {
           providers: [],
           appStateId: 'explicit-id',
         })
@@ -375,19 +375,19 @@ describe('KritzelAppStateMap', () => {
       const provider = createMockProvider();
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [factory] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [factory] });
 
-      expect(factory.create).toHaveBeenCalledWith('kritzel-app-state-test-uuid-1234', expect.anything(), expect.anything());
+      expect(factory.create).toHaveBeenCalledWith('updraw-app-state-test-uuid-1234', expect.anything(), expect.anything());
     });
 
     it('should load workspaces from Yjs after connecting', async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
 
       expect(mockMapForEach).toHaveBeenCalled();
     });
 
     it('should use default sync config when none provided', async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore);
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore);
 
       // Should not throw - uses DEFAULT_SYNC_CONFIG with empty providers
       expect(appStateMap.isReady).toBe(true);
@@ -396,7 +396,7 @@ describe('KritzelAppStateMap', () => {
 
   describe('insert', () => {
     beforeEach(async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
     });
 
     it('should insert workspace into local map and Yjs', () => {
@@ -428,7 +428,7 @@ describe('KritzelAppStateMap', () => {
 
   describe('update', () => {
     beforeEach(async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
     });
 
     it('should update an existing workspace', () => {
@@ -463,7 +463,7 @@ describe('KritzelAppStateMap', () => {
 
   describe('remove', () => {
     beforeEach(async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
     });
 
     it('should remove a workspace matching the predicate', () => {
@@ -487,7 +487,7 @@ describe('KritzelAppStateMap', () => {
 
   describe('get / has / allWorkspaces / filter / find', () => {
     beforeEach(async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
       appStateMap.insert(createMockWorkspace('ws-1', 'First') as any);
       appStateMap.insert(createMockWorkspace('ws-2', 'Second') as any);
     });
@@ -531,7 +531,7 @@ describe('KritzelAppStateMap', () => {
 
   describe('transaction', () => {
     beforeEach(async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
     });
 
     it('should run callback inside a Y.Doc transaction with local origin', () => {
@@ -546,7 +546,7 @@ describe('KritzelAppStateMap', () => {
 
   describe('reset', () => {
     beforeEach(async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
       appStateMap.insert(createMockWorkspace('ws-1') as any);
     });
 
@@ -571,7 +571,7 @@ describe('KritzelAppStateMap', () => {
         cb(serialized, 'ws-loaded');
       });
 
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
 
       const ws = appStateMap.get('ws-loaded');
       expect(ws).toBeDefined();
@@ -581,7 +581,7 @@ describe('KritzelAppStateMap', () => {
 
   describe('onRemoteChange', () => {
     it('should store callback for remote change notifications', async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
       const callback = jest.fn();
 
       appStateMap.onRemoteChange(callback);
@@ -602,7 +602,7 @@ describe('KritzelAppStateMap', () => {
     let observer: (event: any) => void;
 
     beforeEach(async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
       observer = mockMapObserve.mock.calls[0][0];
     });
 
@@ -706,7 +706,7 @@ describe('KritzelAppStateMap', () => {
 
   describe('schema migrations', () => {
     it('should call runMigrations during initialization', async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
 
       expect(mockRunMigrations).toHaveBeenCalledWith(
         expect.anything(), // ydoc
@@ -721,7 +721,7 @@ describe('KritzelAppStateMap', () => {
     it('should set schemaVersion in metadata for new documents', async () => {
       mockMapGet.mockReturnValue(undefined);
 
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
 
       // initializeMetadata should set schemaVersion
       expect(mockMapSet).toHaveBeenCalledWith('schemaVersion', expect.any(Number));
@@ -736,7 +736,7 @@ describe('KritzelAppStateMap', () => {
         return undefined;
       });
 
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
 
       // schemaVersion should not be re-set if it already exists
       const schemaVersionCalls = mockMapSet.mock.calls.filter(
@@ -748,7 +748,7 @@ describe('KritzelAppStateMap', () => {
 
   describe('destroy', () => {
     beforeEach(async () => {
-      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+      await appStateMap.initialize(mockCore as unknown as UpdrawCore, { providers: [] });
     });
 
     it('should unobserve the workspaces map', () => {
@@ -775,8 +775,8 @@ describe('KritzelAppStateMap', () => {
       const provider = createMockProvider();
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
-      const map2 = new KritzelAppStateMap();
-      await map2.initialize(mockCore as unknown as KritzelCore, { providers: [factory] });
+      const map2 = new UpdrawAppStateMap();
+      await map2.initialize(mockCore as unknown as UpdrawCore, { providers: [factory] });
 
       map2.destroy();
 

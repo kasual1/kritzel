@@ -1,19 +1,19 @@
-import type { KritzelCore } from '../classes/core/core.class';
-import type { KritzelObjectMap } from '../classes/structures/object-map.structure';
-import type { KritzelBaseObject } from '../classes/objects/base-object.class';
-import { KritzelGroup } from '../classes/objects/group.class';
-import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
-import { KritzelSelectionBox } from '../classes/objects/selection-box.class';
-import type { KritzelAgenticActionFailureReason } from '../interfaces/agentic-action.interface';
+import type { UpdrawCore } from '../classes/core/core.class';
+import type { UpdrawObjectMap } from '../classes/structures/object-map.structure';
+import type { UpdrawBaseObject } from '../classes/objects/base-object.class';
+import { UpdrawGroup } from '../classes/objects/group.class';
+import { UpdrawSelectionGroup } from '../classes/objects/selection-group.class';
+import { UpdrawSelectionBox } from '../classes/objects/selection-box.class';
+import type { UpdrawAgenticActionFailureReason } from '../interfaces/agentic-action.interface';
 
-type AnyObject = KritzelBaseObject<any>;
-type ObjectMap = KritzelObjectMap<AnyObject>;
+type AnyObject = UpdrawBaseObject<any>;
+type ObjectMap = UpdrawObjectMap<AnyObject>;
 
 /** Who owns a stored selection group. `'stale'` groups (left behind by a closed tab) are ignored. */
-export type KritzelSelectionGroupOwner = 'human' | 'collaborator' | 'stale';
+export type UpdrawSelectionGroupOwner = 'human' | 'collaborator' | 'stale';
 
 /** Selection and interaction state of the user and collaborators, computed once per frame. */
-export interface KritzelAgenticFrameCache {
+export interface UpdrawAgenticFrameCache {
   /** Objects (with relatives) in the local user's selection. */
   humanSelectedIds: Set<string>;
   /** Whether the local user is dragging, resizing, rotating or pressing a handle right now. */
@@ -26,16 +26,16 @@ export interface KritzelAgenticFrameCache {
 
 /** Whether an object is a selection group or the marquee box. */
 export function isSelectionObject(object: unknown): boolean {
-  return object instanceof KritzelSelectionGroup || object instanceof KritzelSelectionBox;
+  return object instanceof UpdrawSelectionGroup || object instanceof UpdrawSelectionBox;
 }
 
 /** Child ID -> the group directly containing it. */
-export type KritzelParentIndex = Map<string, KritzelGroup>;
+export type UpdrawParentIndex = Map<string, UpdrawGroup>;
 
 /** Builds the child-to-parent index of all groups with one scan of the map. */
-export function buildParentIndex(map: ObjectMap): KritzelParentIndex {
-  const index: KritzelParentIndex = new Map();
-  const groups = map.filter(o => o instanceof KritzelGroup) as unknown as KritzelGroup[];
+export function buildParentIndex(map: ObjectMap): UpdrawParentIndex {
+  const index: UpdrawParentIndex = new Map();
+  const groups = map.filter(o => o instanceof UpdrawGroup) as unknown as UpdrawGroup[];
   for (const group of groups) {
     for (const childId of group.childIds) {
       // First group wins, like a linear search.
@@ -48,11 +48,11 @@ export function buildParentIndex(map: ObjectMap): KritzelParentIndex {
 }
 
 /** The group directly containing an object, if any. */
-export function findParentGroup(map: ObjectMap, objectId: string, parents?: KritzelParentIndex): KritzelGroup | null {
+export function findParentGroup(map: ObjectMap, objectId: string, parents?: UpdrawParentIndex): UpdrawGroup | null {
   if (parents) {
     return parents.get(objectId) ?? null;
   }
-  const groups = map.filter(o => o instanceof KritzelGroup) as unknown as KritzelGroup[];
+  const groups = map.filter(o => o instanceof UpdrawGroup) as unknown as UpdrawGroup[];
   for (const group of groups) {
     if (group.childIds.includes(objectId)) {
       return group;
@@ -67,13 +67,13 @@ export function isTopLevel(map: ObjectMap, objectId: string): boolean {
 }
 
 /** The IDs plus all group descendants and ancestors. */
-export function expandWithRelatives(map: ObjectMap, ids: Iterable<string>, parents: KritzelParentIndex = buildParentIndex(map)): Set<string> {
+export function expandWithRelatives(map: ObjectMap, ids: Iterable<string>, parents: UpdrawParentIndex = buildParentIndex(map)): Set<string> {
   const result = new Set<string>();
   for (const id of ids) {
     result.add(id);
     const object = map.findById(id);
-    if (object instanceof KritzelGroup) {
-      KritzelGroup.collectDescendantIds(object, result);
+    if (object instanceof UpdrawGroup) {
+      UpdrawGroup.collectDescendantIds(object, result);
     }
     let parent = parents.get(id) ?? null;
     const seen = new Set<string>();
@@ -92,15 +92,15 @@ export function collectWithDescendants(map: ObjectMap, ids: Iterable<string>): S
   for (const id of ids) {
     result.add(id);
     const object = map.findById(id);
-    if (object instanceof KritzelGroup) {
-      KritzelGroup.collectDescendantIds(object, result);
+    if (object instanceof UpdrawGroup) {
+      UpdrawGroup.collectDescendantIds(object, result);
     }
   }
   return result;
 }
 
 /** IDs of lines anchored to any of the objects. */
-export function collectAnchoredLines(core: KritzelCore, ids: Iterable<string>): Set<string> {
+export function collectAnchoredLines(core: UpdrawCore, ids: Iterable<string>): Set<string> {
   const lines = new Set<string>();
   for (const id of ids) {
     for (const entry of core.anchorManager.getLinesAnchoredTo(id)) {
@@ -114,7 +114,7 @@ export function collectAnchoredLines(core: KritzelCore, ids: Iterable<string>): 
  * Decides who owns a stored selection group. Groups carry the doc client ID of the tab that created
  * them; `store.selectionGroup` is not used because without a user it can return another tab's group.
  */
-export function classifySelectionGroup(map: ObjectMap, core: KritzelCore, group: KritzelSelectionGroup): KritzelSelectionGroupOwner {
+export function classifySelectionGroup(map: ObjectMap, core: UpdrawCore, group: UpdrawSelectionGroup): UpdrawSelectionGroupOwner {
   if (group.clientId != null) {
     if (group.clientId === map.docClientId) {
       return 'human';
@@ -142,24 +142,24 @@ export function classifySelectionGroup(map: ObjectMap, core: KritzelCore, group:
 }
 
 /** Top-level IDs in the local user's selection, by the same rule as the conflict checks. */
-export function collectHumanSelection(core: KritzelCore, map: ObjectMap): string[] {
-  const groups = map.filter(o => o instanceof KritzelSelectionGroup) as unknown as KritzelSelectionGroup[];
+export function collectHumanSelection(core: UpdrawCore, map: ObjectMap): string[] {
+  const groups = map.filter(o => o instanceof UpdrawSelectionGroup) as unknown as UpdrawSelectionGroup[];
   return Array.from(new Set(groups.filter(group => classifySelectionGroup(map, core, group) === 'human').flatMap(group => group.objectIds)));
 }
 
 /** IDs of the selection groups that belong to the local user. */
-export function collectHumanSelectionGroupIds(core: KritzelCore, map: ObjectMap): string[] {
-  const groups = map.filter(o => o instanceof KritzelSelectionGroup) as unknown as KritzelSelectionGroup[];
+export function collectHumanSelectionGroupIds(core: UpdrawCore, map: ObjectMap): string[] {
+  const groups = map.filter(o => o instanceof UpdrawSelectionGroup) as unknown as UpdrawSelectionGroup[];
   return groups.filter(group => classifySelectionGroup(map, core, group) === 'human').map(group => group.id);
 }
 
 /** Computes the selection and interaction state of the user and collaborators. */
-export function buildFrameCache(core: KritzelCore, map: ObjectMap): KritzelAgenticFrameCache {
+export function buildFrameCache(core: UpdrawCore, map: ObjectMap): UpdrawAgenticFrameCache {
   const state = core.store.state;
   const humanSelected: string[] = [];
   const collaborator: string[] = [];
 
-  const groups = map.filter(o => o instanceof KritzelSelectionGroup) as unknown as KritzelSelectionGroup[];
+  const groups = map.filter(o => o instanceof UpdrawSelectionGroup) as unknown as UpdrawSelectionGroup[];
   for (const group of groups) {
     const owner = classifySelectionGroup(map, core, group);
     if (owner === 'human') {
@@ -208,7 +208,7 @@ interface EditableObject {
 }
 
 /** Whether the local user is interacting with the object outside of selection gestures. */
-function isLocalEdit(core: KritzelCore, map: ObjectMap, object: AnyObject): boolean {
+function isLocalEdit(core: UpdrawCore, map: ObjectMap, object: AnyObject): boolean {
   const state = core.store.state;
   const editable = object as unknown as EditableObject;
   if (editable.isEditing && editable.uneditedObject) {
@@ -234,14 +234,14 @@ function isLocalEdit(core: KritzelCore, map: ObjectMap, object: AnyObject): bool
  *   counts while a gesture runs.
  */
 export function detectObjectConflict(
-  core: KritzelCore,
+  core: UpdrawCore,
   map: ObjectMap,
-  cache: KritzelAgenticFrameCache,
+  cache: UpdrawAgenticFrameCache,
   id: string,
   knownInstance: AnyObject | undefined,
   isClaimedByOtherAgent: boolean,
   options: { ownSelection?: boolean } = {},
-): KritzelAgenticActionFailureReason | null {
+): UpdrawAgenticActionFailureReason | null {
   const object = map.findById(id);
   if (!object) {
     return 'object-removed';

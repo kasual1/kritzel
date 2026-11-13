@@ -152,7 +152,7 @@ test.describe('Object loading state', () => {
     await editorPage.group();
     await editorPage.clearSelection();
 
-    const group = (await editorPage.getAllObjects<Record<string, unknown>>()).find(object => object.__class__ === 'KritzelGroup');
+    const group = (await editorPage.getAllObjects<Record<string, unknown>>()).find(object => object.__class__ === 'UpdrawGroup');
     expect(group).toBeDefined();
 
     await editorPage.setObjectLoading(group!, true);

@@ -1,8 +1,8 @@
 {
-  "name": "@kritzel/core",
+  "name": "@updraw/core",
   "version": "0.6.2",
-  "homepage": "https://kritzel.io/",
-  "description": "Framework-agnostic core of Kritzel: objects, tools, sync, themes, locales and helpers shared by @kritzel/engine and @kritzel/editor.",
+  "homepage": "https://updraw.io/",
+  "description": "Framework-agnostic core of Updraw: objects, tools, sync, themes, locales and helpers shared by @updraw/engine and @updraw/editor.",
   "keywords": [
     "infinite canvas",
     "collaboration",

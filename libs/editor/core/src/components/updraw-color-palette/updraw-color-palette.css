@@ -29,18 +29,18 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
   border: 2px solid transparent;
   box-sizing: border-box;
 }
 
 .color-container:hover {
-  background-color: var(--kritzel-color-palette-hover-background-color, #ebebeb);
+  background-color: var(--updraw-color-palette-hover-background-color, #ebebeb);
 }
 
 .color-container.selected {
-  border-color: var(--kritzel-selection-border-color, #007AFF);
-  background-color: var(--kritzel-color-palette-selected-background-color);
+  border-color: var(--updraw-selection-border-color, #007AFF);
+  background-color: var(--updraw-color-palette-selected-background-color);
 }
 
 

@@ -1,4 +1,4 @@
-import { KritzelAgent, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
+import { UpdrawAgent, type HTMLUpdrawEditorElement } from '@updraw/react-editor';
 import { RECORDER, STUDIO_AGENT, frame, generatePage, removeAgents, typePrompt, wait, type Box } from '../agentic-canvas/hero-scene';
 
 /**
@@ -26,7 +26,7 @@ const WIDGET_BOX: Box = { x: -WIDGET_WIDTH / 2, y: -WIDGET_HEIGHT / 2, width: WI
 
 /** Plays the scene once. `setWorking` drives the chat box's loading ring while the widget is generated. */
 export async function playRecorderScene(
-  editor: HTMLKritzelEditorElement,
+  editor: HTMLUpdrawEditorElement,
   setWorking: (isWorking: boolean) => void,
   signal: AbortSignal,
 ): Promise<void> {
@@ -37,9 +37,9 @@ export async function playRecorderScene(
 
   await typePrompt(editor, PROMPT, signal);
   setWorking(true);
-  // The widget appears (Kritzel's appear animation), and its content shows once the loading placeholder is gone. The
+  // The widget appears (Updraw's appear animation), and its content shows once the loading placeholder is gone. The
   // cursor is hidden, so the action runs without the cursor's animation.
-  const studio = await editor.addAgent(new KritzelAgent({ ...STUDIO_AGENT, visible: false }));
+  const studio = await editor.addAgent(new UpdrawAgent({ ...STUDIO_AGENT, visible: false }));
   await generatePage(
     studio,
     { box: WIDGET_BOX, content: RECORDER, writingTime: WRITING_TIME, title: STUDIO_AGENT.name, borderRadius: 14 },

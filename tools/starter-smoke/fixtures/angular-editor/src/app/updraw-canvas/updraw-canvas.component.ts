@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { KritzelEditor } from '@kritzel/angular-editor';
+import { UpdrawEditor } from '@updraw/angular-editor';
 
 @Component({
-  selector: 'kritzel-canvas',
+  selector: 'updraw-canvas',
   standalone: true,
-  imports: [KritzelEditor],
-  templateUrl: './kritzel-canvas.component.html',
-  styleUrls: ['./kritzel-canvas.component.scss'],
+  imports: [UpdrawEditor],
+  templateUrl: './updraw-canvas.component.html',
+  styleUrls: ['./updraw-canvas.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class KritzelCanvasComponent {
-  readonly editorId = 'kritzel-canvas';
+export class UpdrawCanvasComponent {
+  readonly editorId = 'updraw-canvas';
   isReady = false;
 
   onReady(): void {

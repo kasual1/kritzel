@@ -12,7 +12,7 @@ jest.mock('@stencil/core', () => ({
   h: (tag: any, props: any, ...children: any[]) => ({ type: tag, props, children }),
 }));
 
-import { KritzelExport } from './kritzel-export';
+import { UpdrawExport } from './updraw-export';
 
 function findNode(node: any, predicate: (value: any) => boolean): any {
   if (!node || typeof node !== 'object') {
@@ -50,9 +50,9 @@ function collectText(node: any): string {
   return collectText(node.props?.children) + collectText(node.children);
 }
 
-describe('kritzel-export', () => {
+describe('updraw-export', () => {
   it('renders the export button in the dialog footer', async () => {
-    const component = new KritzelExport();
+    const component = new UpdrawExport();
 
     await component.open();
     const tree = component.render() as any;

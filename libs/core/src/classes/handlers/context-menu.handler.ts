@@ -1,19 +1,19 @@
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelBaseHandler } from './base.handler';
-import { KritzelCore } from '../core/core.class';
-import { KritzelSelectionTool } from '../tools/selection-tool.class';
-import { KritzelSelectionBox } from '../objects/selection-box.class';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelBaseObject } from '../objects/base-object.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawBaseHandler } from './base.handler';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawSelectionTool } from '../tools/selection-tool.class';
+import { UpdrawSelectionBox } from '../objects/selection-box.class';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawBaseObject } from '../objects/base-object.class';
 import { ContextMenuItem } from '../../interfaces/context-menu-item.interface';
-import { KritzelTermKey } from '../../interfaces/localization.interface';
+import { UpdrawTermKey } from '../../interfaces/localization.interface';
 
 /**
- * Handles context menu interactions on the Kritzel canvas.
+ * Handles context menu interactions on the Updraw canvas.
  * Manages the display and positioning of context menus, selecting appropriate menu items
  * based on whether an object is targeted or the canvas background is right-clicked.
  */
-export class KritzelContextMenuHandler extends KritzelBaseHandler {
+export class UpdrawContextMenuHandler extends UpdrawBaseHandler {
   /**
    * Menu items to display when the context menu is opened on the canvas background
    * (i.e., when no object is selected).
@@ -27,11 +27,11 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
 
   /**
    * Creates a new instance of the context menu handler.
-   * @param core - The KritzelCore instance that provides access to canvas state and operations.
+   * @param core - The UpdrawCore instance that provides access to canvas state and operations.
    * @param globalContextMenuItems - Array of menu items to show for canvas-level context menus.
    * @param objectContextMenuItems - Array of menu items to show when right-clicking on objects.
    */
-  constructor(core: KritzelCore, globalContextMenuItems: any[], objectContextMenuItems: any[]) {
+  constructor(core: UpdrawCore, globalContextMenuItems: any[], objectContextMenuItems: any[]) {
     super(core);
     this.globalContextMenuItems = globalContextMenuItems;
     this.objectContextMenuItems = objectContextMenuItems;
@@ -40,7 +40,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
   /**
    * Resolves the active context menu items for display, translating each item's
    * `label` through the current locale. When the label is a known
-   * {@link KritzelTermKey} the translation is used; any other string is passed
+   * {@link UpdrawTermKey} the translation is used; any other string is passed
    * through unchanged. Runs at menu-open time so the labels reflect the locale
    * active at that moment.
    * @returns A new array of items with resolved labels.
@@ -48,7 +48,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
   private resolveLabels(items: ContextMenuItem[]): ContextMenuItem[] {
     return items.map(item => ({
       ...item,
-      label: this._core.localizationManager.translate(item.label as KritzelTermKey),
+      label: this._core.localizationManager.translate(item.label as UpdrawTermKey),
       children: item.children ? this.resolveLabels(item.children) : undefined,
     }));
   }
@@ -67,8 +67,8 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
    * @param object - The right-clicked object.
    * @returns The parent group, or the object itself when it is not grouped.
    */
-  private resolveSelectableObject(object: KritzelBaseObject<any>): KritzelBaseObject<any> {
-    const parentGroup = KritzelGroup.findParentGroup(this._core, object.id);
+  private resolveSelectableObject(object: UpdrawBaseObject<any>): UpdrawBaseObject<any> {
+    const parentGroup = UpdrawGroup.findParentGroup(this._core, object.id);
     if (!parentGroup) {
       return object;
     }
@@ -102,12 +102,12 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
       return;
     }
 
-    const selectionTool = this._core.store.state.activeTool as KritzelSelectionTool;
+    const selectionTool = this._core.store.state.activeTool as UpdrawSelectionTool;
     selectionTool?.moveHandler?.cancelPendingDrag();
     selectionTool?.cancelTitlebarGesture?.();
 
     if (this._core.store.selectionBox) {
-      this._core.store.objects.remove(object => object instanceof KritzelSelectionBox);
+      this._core.store.objects.remove(object => object instanceof UpdrawSelectionBox);
       this._core.store.setSelectionBox(null);
       this._core.store.state.isSelecting = false;
     }
@@ -117,9 +117,9 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     const isTitlebarOwnerSelected = !!titlebarOwner && !!this._core.store.selectionGroup?.objectIds.includes(titlebarOwner.id);
     const hitObject = titlebarOwner ?? this._core.getObjectFromPointerEvent(event, '.object');
 
-    if (hitObject && !isTitlebarOwnerSelected && !(hitObject instanceof KritzelSelectionGroup) && !(hitObject instanceof KritzelSelectionBox)) {
+    if (hitObject && !isTitlebarOwnerSelected && !(hitObject instanceof UpdrawSelectionGroup) && !(hitObject instanceof UpdrawSelectionBox)) {
       const selectedObject = this.resolveSelectableObject(hitObject);
-      const selectionGroup = KritzelSelectionGroup.create(this._core);
+      const selectionGroup = UpdrawSelectionGroup.create(this._core);
       selectionGroup.addOrRemove(selectedObject);
       selectionGroup.isSelected = true;
       selectionGroup.rotation = selectedObject.rotation;
@@ -178,21 +178,21 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     const { x, y, objectId } = options;
 
     if (this._core.store.state.activeTool?.toolType === 'selection') {
-      const selectionTool = this._core.store.state.activeTool as KritzelSelectionTool;
+      const selectionTool = this._core.store.state.activeTool as UpdrawSelectionTool;
       selectionTool?.moveHandler?.cancelPendingDrag();
       selectionTool?.cancelTitlebarGesture?.();
     }
 
     if (this._core.store.selectionBox) {
-      this._core.store.objects.remove(object => object instanceof KritzelSelectionBox);
+      this._core.store.objects.remove(object => object instanceof UpdrawSelectionBox);
       this._core.store.setSelectionBox(null);
       this._core.store.state.isSelecting = false;
     }
 
     if (objectId) {
       const targetObject = this._core.store.allObjects.find(obj => obj.id === objectId);
-      if (targetObject && !(targetObject instanceof KritzelSelectionGroup) && !(targetObject instanceof KritzelSelectionBox)) {
-        const selectionGroup = KritzelSelectionGroup.create(this._core);
+      if (targetObject && !(targetObject instanceof UpdrawSelectionGroup) && !(targetObject instanceof UpdrawSelectionBox)) {
+        const selectionGroup = UpdrawSelectionGroup.create(this._core);
         selectionGroup.addOrRemove(targetObject);
         selectionGroup.isSelected = true;
         selectionGroup.rotation = targetObject.rotation;

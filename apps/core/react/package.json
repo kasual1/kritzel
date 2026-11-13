@@ -1,5 +1,5 @@
 {
-  "name": "@kritzel/react-e2e-app",
+  "name": "@updraw/react-e2e-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,7 +11,7 @@
     "start:e2e:prod": "npm run build:e2e:prod && vite preview --port 5273 --strictPort"
   },
   "dependencies": {
-    "@kritzel/react-editor": "file:../../../libs/editor/react/dist",
+    "@updraw/react-editor": "file:../../../libs/editor/react/dist",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-router-dom": "^7.15.1"

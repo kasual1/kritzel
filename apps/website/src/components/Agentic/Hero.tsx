@@ -7,7 +7,7 @@ import ImageCard from "../Landing/ImageCard";
 import MenuButton from "../Landing/MenuButton";
 import PieChart from "./PieChart";
 import { CallToActionBar } from "./CallToActionBar";
-import { KRITZEL_LOGO_PATH } from "../Landing/paths";
+import { UPDRAW_LOGO_PATH } from "../Landing/paths";
 import styles from "./styles.module.css";
 
 // On phones the canvas items can't be selected by hand (see styles.module.css), so a tap anywhere in the
@@ -453,9 +453,9 @@ function HeroScene({
       <div ref={canvasRef} className={styles.heroCanvas}>
         <Link to="/" className={styles.brand}>
           <svg width="40" height="35" viewBox="0 0 321.05759 277.97299" aria-hidden="true">
-            <path fill="currentColor" d={KRITZEL_LOGO_PATH} />
+            <path fill="currentColor" d={UPDRAW_LOGO_PATH} />
           </svg>
-          Kritzel
+          Updraw
         </Link>
         <nav ref={navRef} aria-label="Main" className={styles.topNav}>
           <Link to="/blog" className={styles.topNavLink}>
@@ -486,7 +486,7 @@ function HeroScene({
               accentClassName={styles.heroTitleAccent}
             />
             <p className={styles.heroSubtitle} hidden={shoeFocused && !compactViewport}>
-              Kritzel is a framework-agnostic canvas library that helps you build agentic whiteboard
+              Updraw is a framework-agnostic canvas library that helps you build agentic whiteboard
               experiences with React, Vue and Angular.
             </p>
             <CallToActionBar docsPath={docsPath} />

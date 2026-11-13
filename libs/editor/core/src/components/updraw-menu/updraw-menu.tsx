@@ -1,22 +1,22 @@
 ﻿import { Component, Host, Prop, h, State, Event, EventEmitter, Element, Method } from '@stencil/core';
-import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from '@kritzel/core';
+import { IUpdrawMenuItem, IUpdrawMenuItemSelectEvent, IUpdrawMenuItemToggleChildMenuEvent } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-menu',
-  styleUrl: 'kritzel-menu.css',
+  tag: 'updraw-menu',
+  styleUrl: 'updraw-menu.css',
   shadow: true,
 })
-export class KritzelMenu {
+export class UpdrawMenu {
   @Element() host: HTMLElement;
 
-  @Prop() items: IKritzelMenuItem[];
-  @Prop() parent: IKritzelMenuItem = null;
+  @Prop() items: IUpdrawMenuItem[];
+  @Prop() parent: IUpdrawMenuItem = null;
 
-  @Event() itemSelect: EventEmitter<IKritzelMenuItemSelectEvent>;
-  @Event() itemSave: EventEmitter<IKritzelMenuItem>;
-  @Event() itemCancel: EventEmitter<IKritzelMenuItem>;
-  @Event() itemToggleChildMenu: EventEmitter<IKritzelMenuItemToggleChildMenuEvent>;
-  @Event() itemCloseChildMenu: EventEmitter<IKritzelMenuItem>;
+  @Event() itemSelect: EventEmitter<IUpdrawMenuItemSelectEvent>;
+  @Event() itemSave: EventEmitter<IUpdrawMenuItem>;
+  @Event() itemCancel: EventEmitter<IUpdrawMenuItem>;
+  @Event() itemToggleChildMenu: EventEmitter<IUpdrawMenuItemToggleChildMenuEvent>;
+  @Event() itemCloseChildMenu: EventEmitter<IUpdrawMenuItem>;
   @Event() close: EventEmitter<void>;
 
   @State() selectedIndex: number | null = null;
@@ -29,7 +29,7 @@ export class KritzelMenu {
 
   @Method()
   async setFocus() {
-    const firstItem = this.host.shadowRoot.querySelector('kritzel-menu-item');
+    const firstItem = this.host.shadowRoot.querySelector('updraw-menu-item');
     if (firstItem) {
       firstItem.focus();
     }
@@ -48,27 +48,27 @@ export class KritzelMenu {
     this.itemCloseChildMenu.emit(this.openChildMenuItem);
   };
 
-  private handleItemSelect = (event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => {
+  private handleItemSelect = (event: CustomEvent<{ item: IUpdrawMenuItem; parent: IUpdrawMenuItem }>) => {
     event.stopPropagation();
     this.itemSelect.emit(event.detail);
   };
 
-  private handleSave = (event: CustomEvent<IKritzelMenuItem>) => {
+  private handleSave = (event: CustomEvent<IUpdrawMenuItem>) => {
     event.stopPropagation();
     this.itemSave.emit(event.detail);
   };
 
-  private handleCancel = (event: CustomEvent<IKritzelMenuItem>) => {
+  private handleCancel = (event: CustomEvent<IUpdrawMenuItem>) => {
     event.stopPropagation();
     this.itemCancel.emit(event.detail);
   };
 
-  private handleToggleChildMenu = (event: CustomEvent<{ item: IKritzelMenuItem; childMenuAnchor: HTMLElement }>) => {
+  private handleToggleChildMenu = (event: CustomEvent<{ item: IUpdrawMenuItem; childMenuAnchor: HTMLElement }>) => {
     event.stopPropagation();
     this.itemToggleChildMenu.emit(event.detail);
   };
 
-  private handleCloseChildMenu = (event: CustomEvent<IKritzelMenuItem>) => {
+  private handleCloseChildMenu = (event: CustomEvent<IUpdrawMenuItem>) => {
     event.stopPropagation();
     this.itemCloseChildMenu.emit(event.detail);
   };
@@ -78,7 +78,7 @@ export class KritzelMenu {
       <Host tabIndex={0} onClick={e => e.stopPropagation()}>
         {this.openChildMenuItem && <div class="has-open-child-overlay" onClick={this.onOverlayClick}></div>}
         {this.items.map(item => (
-          <kritzel-menu-item
+          <updraw-menu-item
             key={item.id}
             data-testid={`menu-item-${item.id}`}
             item={item}
@@ -89,7 +89,7 @@ export class KritzelMenu {
             onItemCancel={this.handleCancel}
             onItemToggleChildMenu={this.handleToggleChildMenu}
             onItemCloseChildMenu={this.handleCloseChildMenu}
-          ></kritzel-menu-item>
+          ></updraw-menu-item>
         ))}
       </Host>
     );

@@ -1,6 +1,6 @@
 ---
 title: "What Is an Agentic Canvas? And How to Build One"
-description: "Agentic canvases let AI agents work alongside people on an infinite canvas. Learn what they are, who builds them, and how to create your own with Kritzel."
+description: "Agentic canvases let AI agents work alongside people on an infinite canvas. Learn what they are, who builds them, and how to create your own with Updraw."
 date: 2026-11-01
 thumbnail: /videos/2026_11_04_Agentic_Canvas.mp4
 thumbnailSeed: "e5315435"
@@ -9,7 +9,7 @@ image: /img/blog/what-is-an-agentic-canvas.png
 
 import BlogVideo from '@site/src/components/BlogVideo';
 
-In this article we cover what an agentic canvas is and give you a short overview how you can build one using the Kritzel library.
+In this article we cover what an agentic canvas is and give you a short overview how you can build one using the Updraw library.
 
 ## From chat window to canvas
 
@@ -34,47 +34,47 @@ An agentic canvas usually consists of a DOM based canvas at its core that render
 Those canvases usually come with agentic utility components such as cursors, a chatbox and configurable object titlebars, that makes it easy to hook up an LLM and give it full control over the canvas space.
 Often the API provided by such canvases is declaratively configurable and can easily be used to adjust the canvas state by simply manipulating JSON objects. This allows not only humans but also agents to easily interact with the canvas in a programmatic way.
 
-## Building one with Kritzel
+## Building one with Updraw
 
 While it is feasible to start building an agentic canvas from scratch on your own, using a library that is specifically designed for this and takes out the tedious part of building a solid DOM based rendering engine, gives your development a jumpstart.
 
-In the following sections we are going to use the Kritzel library to quickly setup an agentic canvas and run through its two most common use cases. This is intended to only give you a rough overview and both parts of the setup are covered in more detail in dedicated blog posts.
+In the following sections we are going to use the Updraw library to quickly setup an agentic canvas and run through its two most common use cases. This is intended to only give you a rough overview and both parts of the setup are covered in more detail in dedicated blog posts.
 
-This guide assumes you are using React as the framework of your choice. But since Kritzel is framework agnostic, the same concepts apply to Angular and Vue as well.
+This guide assumes you are using React as the framework of your choice. But since Updraw is framework agnostic, the same concepts apply to Angular and Vue as well.
 
-To get started, you first have to install the Kritzel library. Since we want to use ready made UI components such as the chatbox, we install the React editor package.
+To get started, you first have to install the Updraw library. Since we want to use ready made UI components such as the chatbox, we install the React editor package.
 
 ```bash
-npm install @kritzel/react-editor
+npm install @updraw/react-editor
 ```
 
 Since the underlying basis of an agentic canvas is an infinite canvas, we are first going to configure a simple editor setup, that we extend step by step with agentic capabilities.
 
-Lets go ahead and integrate the `<KritzelEditor>` component in our app and make it fill the entire viewport.
+Lets go ahead and integrate the `<UpdrawEditor>` component in our app and make it fill the entire viewport.
 
 ```typescript
-import { KritzelEditor } from '@kritzel/react-editor';
+import { UpdrawEditor } from '@updraw/react-editor';
 
 export function Editor() {
-  return <KritzelEditor style={{ display: 'block', width: '100%', height: '100vh' }} />;
+  return <UpdrawEditor style={{ display: 'block', width: '100%', height: '100vh' }} />;
 }
 ```
 
 This provides us with a default editor, but it renders a tool panel instead of a chat interface at the bottom of the editor. To replace the tools with a chatbox, we simply set `isChatBoxVisible` on the editor to true.
 
-While the editor now already very much looks like an agentic canvas, typing any commands in the chatbox does nothing. For this to work we need to hookup a new `KritzelChatSession` and configure a new http transport as depicted below. This guide assumes that you have a server running that can handle llm requests via an endpoint called "/api/chat".
+While the editor now already very much looks like an agentic canvas, typing any commands in the chatbox does nothing. For this to work we need to hookup a new `UpdrawChatSession` and configure a new http transport as depicted below. This guide assumes that you have a server running that can handle llm requests via an endpoint called "/api/chat".
 
 ```typescript
 export function GenerativeUi() {
   const [session] = useState(
     () =>
-      new KritzelChatSession({
+      new UpdrawChatSession({
         transport: createHttpTransport("/api/chat"),
       }),
   );
 
   return (
-    <KritzelEditor
+    <UpdrawEditor
       chatSession={session}
       isChatBoxVisible={true}
       style={{ display: "block", width: "100%", height: "100vh" }}
@@ -85,16 +85,16 @@ export function GenerativeUi() {
 
 Now the chatbox is hooked up to the server and can interact with all tools on the canvas. To make sure everything works as expected, type the command "Please draw a rectangle" into the chatbox and send it off by hitting enter. The chatbox should switch into it's loading state automatically and after a brief moment a rectangle should appear at the center of the screen.
 
-<BlogVideo src="/videos/2026_11_12_Agentic_Canvas_Rectangle.mp4" label="LLM creating a rectangle on the Kritzel canvas" />
+<BlogVideo src="/videos/2026_11_12_Agentic_Canvas_Rectangle.mp4" label="LLM creating a rectangle on the Updraw canvas" />
 
 
 ### Generative UI
 
-While the setup above gives you a pretty cool way to interact with Kritzel already, it gets even more powerful if you enable the LLM to generate arbitrary UI components on the canvas. In order to do so, just set `canvasTools: { iframes: true }` when configuring the `KritzelChatSession`.
+While the setup above gives you a pretty cool way to interact with Updraw already, it gets even more powerful if you enable the LLM to generate arbitrary UI components on the canvas. In order to do so, just set `canvasTools: { iframes: true }` when configuring the `UpdrawChatSession`.
 
 As you now type: "Please generate a modern looking recording widget that helps me to record my new Jazz album called: 'Full Control'", you should get a similar output to the one depicted below.
 
-<BlogVideo src="/videos/2026_11_04_Agentic_Canvas_Generative_UI.mp4" label="An agent generating UI on the Kritzel canvas" />
+<BlogVideo src="/videos/2026_11_04_Agentic_Canvas_Generative_UI.mp4" label="An agent generating UI on the Updraw canvas" />
 
 While the output certainly depends on the capabilities of the used LLM, there are some ways to fine tune the query and send general rules to improve the results. While the best way to do this is on the server where you pass the command on to the LLM, for this guide we configure the system prompt on the client as follows.
 
@@ -108,22 +108,22 @@ When the user asks for something interactive, build it as a widget with create_i
 - To change an existing widget, read its code first and update it instead of creating a new one.
 `;
 ```
- You can pass those rules when creating the `KritzelChatSession` by setting `system: SYSTEM_PROMPT` in the constructors config. While those rules are obviously very general and fitted to the use case, this is a great first step to make the results more consistent and tune generated UI components more to your liking.
+ You can pass those rules when creating the `UpdrawChatSession` by setting `system: SYSTEM_PROMPT` in the constructors config. While those rules are obviously very general and fitted to the use case, this is a great first step to make the results more consistent and tune generated UI components more to your liking.
 
 ### Agentic Work
 
-In all the examples above, the LLM model has worked as the current user when interacting with the canvas. As this suits smaller workflows well, more demanding tasks or an entire workflow may require to actually see what the model is doing. For this, Kritzel uses the concept of Agents. It allows you to add agents to the board that come with their own cursors and also with their own history. Tasks performed via the LLM are handed off to an agent and you can see them perform the assigned work on the canvas.
+In all the examples above, the LLM model has worked as the current user when interacting with the canvas. As this suits smaller workflows well, more demanding tasks or an entire workflow may require to actually see what the model is doing. For this, Updraw uses the concept of Agents. It allows you to add agents to the board that come with their own cursors and also with their own history. Tasks performed via the LLM are handed off to an agent and you can see them perform the assigned work on the canvas.
 
-In order to unlock the so called "agent mode" you only have to configure a `KritzelAgent` and add it to the `KritzelChatSession` in the constructor. The example below adds an agent called "Assistant" with a cursor and an avatar in the color *#663399*.
+In order to unlock the so called "agent mode" you only have to configure an `UpdrawAgent` and add it to the `UpdrawChatSession` in the constructor. The example below adds an agent called "Assistant" with a cursor and an avatar in the color *#663399*.
 
 ```typescript
  const [session] = useState(
     () =>
-      new KritzelChatSession({
+      new UpdrawChatSession({
         transport: chatTransport,
         system: SYSTEM_PROMPT,
         canvasTools: { iframes: true },
-        agent: new KritzelAgent({ name: "Assistant", color: "#663399" }),
+        agent: new UpdrawAgent({ name: "Assistant", color: "#663399" }),
       }),
   );
 ```
@@ -131,10 +131,10 @@ In order to unlock the so called "agent mode" you only have to configure a `Krit
 We can now enter a command in the chatbox and watch the cursor perform the task. As depicted in the example below, we could prompt: "Please start recording for 2.5 seconds, then stop and give the recorded track a star". Since the LLM now controls the agents cursor, it joins together several tool calls and performs the instructed task.
 Underneath it uses tools like *read_iframe* to understand the content of the recorder widget and locate the elements to click on. The full choreography can be seen below.
 
-<BlogVideo src="/videos/2026_11_04_Agentic_Canvas_Cursors.mp4" label="Agentic cursors working on the Kritzel canvas" />
+<BlogVideo src="/videos/2026_11_04_Agentic_Canvas_Cursors.mp4" label="Agentic cursors working on the Updraw canvas" />
 
 ## Wrapping up
 
-An agentic canvas gives agents the same tools people have on an infinite canvas and makes their work visible as it happens. With Kritzel you get there in a few steps: render the `KritzelEditor`, connect a `KritzelChatSession` to your backend, enable iframes for generative UI, and add a `KritzelAgent` so the model works through its own cursor.
+An agentic canvas gives agents the same tools people have on an infinite canvas and makes their work visible as it happens. With Updraw you get there in a few steps: render the `UpdrawEditor`, connect an `UpdrawChatSession` to your backend, enable iframes for generative UI, and add an `UpdrawAgent` so the model works through its own cursor.
 
 This post only gave a rough overview. Upcoming posts will take a closer look at generative UI and agentic workflows on the canvas, so stay tuned.

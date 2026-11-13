@@ -1,14 +1,14 @@
-import { KritzelClipboardPayload, CLIPBOARD_PAYLOAD_PREFIX, PasteIntent } from '../../managers/clipboard.types';
-import { KritzelPasteIntentProvider, KritzelPasteIntentProviderContext } from '../../../interfaces/paste-intent-provider.interface';
+import { UpdrawClipboardPayload, CLIPBOARD_PAYLOAD_PREFIX, PasteIntent } from '../../managers/clipboard.types';
+import { UpdrawPasteIntentProvider, UpdrawPasteIntentProviderContext } from '../../../interfaces/paste-intent-provider.interface';
 
 type BrowserClipboardItems = ClipboardItem[];
 
-export class KritzelNavigatorPasteIntentProvider implements KritzelPasteIntentProvider {
-  canHandle(context: KritzelPasteIntentProviderContext): boolean {
+export class UpdrawNavigatorPasteIntentProvider implements UpdrawPasteIntentProvider {
+  canHandle(context: UpdrawPasteIntentProviderContext): boolean {
     return !context.event?.clipboardData && typeof navigator !== 'undefined' && !!navigator.clipboard;
   }
 
-  async getPasteIntent(context: KritzelPasteIntentProviderContext): Promise<PasteIntent> {
+  async getPasteIntent(context: UpdrawPasteIntentProviderContext): Promise<PasteIntent> {
     if (typeof navigator === 'undefined' || !navigator.clipboard) {
       return { type: 'unknown' };
     }
@@ -77,13 +77,13 @@ export class KritzelNavigatorPasteIntentProvider implements KritzelPasteIntentPr
     return { imageFiles, text };
   }
 
-  private parseClipboardPayload(text: string | null | undefined): KritzelClipboardPayload | null {
+  private parseClipboardPayload(text: string | null | undefined): UpdrawClipboardPayload | null {
     if (!text || !text.startsWith(CLIPBOARD_PAYLOAD_PREFIX)) {
       return null;
     }
 
     try {
-      const parsed = JSON.parse(text.slice(CLIPBOARD_PAYLOAD_PREFIX.length)) as KritzelClipboardPayload;
+      const parsed = JSON.parse(text.slice(CLIPBOARD_PAYLOAD_PREFIX.length)) as UpdrawClipboardPayload;
       if (parsed?.version !== 1 || !Array.isArray(parsed.objects)) {
         return null;
       }
@@ -97,7 +97,7 @@ export class KritzelNavigatorPasteIntentProvider implements KritzelPasteIntentPr
   private determineTextPasteIntent(text: string | null | undefined): PasteIntent | null {
     const payload = this.parseClipboardPayload(text);
     if (payload) {
-      return { type: 'kritzel_objects', payload };
+      return { type: 'updraw_objects', payload };
     }
 
     if (text && text.trim().length > 0) {

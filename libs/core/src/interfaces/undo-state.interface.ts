@@ -1,4 +1,4 @@
-export interface KritzelUndoState {
+export interface UpdrawUndoState {
   canUndo: boolean;
   canRedo: boolean;
   undoStackSize: number;

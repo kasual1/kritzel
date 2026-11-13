@@ -1,7 +1,7 @@
 ---
 sidebar_label: Object Explorer
 displayed_sidebar: tutorialSidebar
-title: "Object Explorer Example | Kritzel for React"
+title: "Object Explorer Example | Updraw for React"
 description: "Build a structured tree-based object explorer with filtering, visibility toggles, and a live inspector for canvas objects."
 ---
 
@@ -9,11 +9,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 # Object Explorer
 
-This page demonstrates how to build a full object explorer experience on top of the Kritzel library, including hierarchical group navigation, multi-criteria filtering, object creation actions, and direct property editing in a live inspector.
+This page demonstrates how to build a full object explorer experience on top of the Updraw library, including hierarchical group navigation, multi-criteria filtering, object creation actions, and direct property editing in a live inspector.
 
 ## Prerequisites
 
-Complete the [Quick Start](../getting-started/quick-start.md) guide to have a working `<KritzelEditor>` rendered in your application. This example builds on that setup.
+Complete the [Quick Start](../getting-started/quick-start.md) guide to have a working `<UpdrawEditor>` rendered in your application. This example builds on that setup.
 
 ---
 
@@ -37,6 +37,6 @@ A presentation-style explorer layout with a dashboard header, grouped tree navig
   repoFiles={['src/pages/examples/ObjectExplorerPage.tsx']}
 />
 
-The object list is seeded from `onIsReady` and mirrored into React state through `onObjectsAdded`, `onObjectsRemoved`, and `onObjectsUpdated`. Each event payload is read from `event.detail`. Root objects are derived with `useMemo()` by filtering out IDs that appear as children inside `KritzelGroup` objects, while inspector edits call `updateObject()` through a typed editor ref.
+The object list is seeded from `onIsReady` and mirrored into React state through `onObjectsAdded`, `onObjectsRemoved`, and `onObjectsUpdated`. Each event payload is read from `event.detail`. Root objects are derived with `useMemo()` by filtering out IDs that appear as children inside `UpdrawGroup` objects, while inspector edits call `updateObject()` through a typed editor ref.
 
 Clicking a tree entry selects the corresponding canvas object and brings it into view with `panToObject()`. The tree supports expand/collapse for groups, text search across IDs and types, and type chips, all derived from local React state. A native `objectsSelectionChange` listener keeps the inspector synchronized with canvas selection and is removed in the effect cleanup.

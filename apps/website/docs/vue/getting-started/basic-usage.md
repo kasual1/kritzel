@@ -1,8 +1,8 @@
 ---
 sidebar_label: Basic Usage
 displayed_sidebar: tutorialSidebar
-title: "Basic Usage | Kritzel for Vue"
-description: "Learn the main ways to interact with Kritzel from Vue: set props, listen to events, and call public methods."
+title: "Basic Usage | Updraw for Vue"
+description: "Learn the main ways to interact with Updraw from Vue: set props, listen to events, and call public methods."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,25 +11,25 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-For most use cases `<KritzelEditor>` is the preferred choice. It gives you a ready-made whiteboard experience and includes customizable controls that can be further tuned to your needs. Only use `<KritzelEngine>` when you want to build the entire UI yourself.
+For most use cases `<UpdrawEditor>` is the preferred choice. It gives you a ready-made whiteboard experience and includes customizable controls that can be further tuned to your needs. Only use `<UpdrawEngine>` when you want to build the entire UI yourself.
 
-Once `<KritzelEditor>` or `<KritzelEngine>` is rendering in your application, you can interact with the canvas in three complementary ways:
+Once `<UpdrawEditor>` or `<UpdrawEngine>` is rendering in your application, you can interact with the canvas in three complementary ways:
 
 - **Setting props** to configure the component declaratively.
 - **Listening to events** to react to changes from the editor or engine.
 - **Calling methods** to make imperative changes or query state.
 
-While `<KritzelEditor>` is the main way to integrate Kritzel into your application, the same APIs also apply to `<KritzelEngine>`. The examples below focus on `<KritzelEditor>`, but the concepts carry over to the engine as well.
+While `<UpdrawEditor>` is the main way to integrate Updraw into your application, the same APIs also apply to `<UpdrawEngine>`. The examples below focus on `<UpdrawEditor>`, but the concepts carry over to the engine as well.
 
 For the full documentation, see the API reference for the [Editor](../api-reference/editor.md) or the [Engine](../api-reference/engine.md).
 
 ## Waiting for Initialization
 
-Before interacting with an editor instance through its public API, wait for the editor's `isReady` event. `<KritzelEditor>` emits `isReady` after the engine is mounted, the internal rendering context is created, and the initial workspace state is available.
+Before interacting with an editor instance through its public API, wait for the editor's `isReady` event. `<UpdrawEditor>` emits `isReady` after the engine is mounted, the internal rendering context is created, and the initial workspace state is available.
 
 ```html
 <script setup lang="ts">
-import { KritzelEditor, getEditorRef } from '@kritzel/vue-editor'
+import { UpdrawEditor, getEditorRef } from '@updraw/vue-editor'
 
 const editor = getEditorRef('editor')
 
@@ -39,7 +39,7 @@ async function onReady() {
 </script>
 
 <template>
-  <KritzelEditor ref="editor" @isReady="onReady" style="display: block; width: 100%; height: 100vh" />
+  <UpdrawEditor ref="editor" @isReady="onReady" style="display: block; width: 100%; height: 100vh" />
 </template>
 ```
 
@@ -52,13 +52,13 @@ Props are the declarative way to configure the editor. Use props such as `theme`
 ```html
 <script setup lang="ts">
 import { ref } from 'vue'
-import { KritzelEditor } from '@kritzel/vue-editor'
+import { UpdrawEditor } from '@updraw/vue-editor'
 
 const isToolbarVisible = ref(false)
 </script>
 
 <template>
-  <KritzelEditor :isToolbarVisible="isToolbarVisible" />
+  <UpdrawEditor :isToolbarVisible="isToolbarVisible" />
 </template>
 ```
 
@@ -71,24 +71,24 @@ Events report editor state changes. Bind camelCase custom-element events with `@
 ```html
 <script setup lang="ts">
 import {
-  KritzelEditor,
-  type KritzelBaseObject,
-  type KritzelViewportState,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  type UpdrawBaseObject,
+  type UpdrawViewportState,
+} from '@updraw/vue-editor'
 
 function onObjectsChange(event: Event) {
-  const objects = (event as CustomEvent<KritzelBaseObject[]>).detail
+  const objects = (event as CustomEvent<UpdrawBaseObject[]>).detail
   console.log('Canvas objects updated:', objects.length)
 }
 
 function onViewportChange(event: Event) {
-  const viewport = (event as CustomEvent<KritzelViewportState>).detail
+  const viewport = (event as CustomEvent<UpdrawViewportState>).detail
   console.log('Viewport updated:', viewport)
 }
 </script>
 
 <template>
-<KritzelEditor
+<UpdrawEditor
   @objectsChange="onObjectsChange"
   @viewportChange="onViewportChange"
 />
@@ -99,16 +99,16 @@ The `isReady` event is also an event you can listen to. Treat it as the point at
 
 ## Calling Methods
 
-Public methods are the imperative way to control the editor canvas and query its state. Kritzel methods are asynchronous and return promises, so call them from an `async` function and `await` their results. Resolve the native editor element with `getEditorRef`; a raw Vue template ref points to the wrapper component instance.
+Public methods are the imperative way to control the editor canvas and query its state. Updraw methods are asynchronous and return promises, so call them from an `async` function and `await` their results. Resolve the native editor element with `getEditorRef`; a raw Vue template ref points to the wrapper component instance.
 
 ```html
 <script setup lang="ts">
-import { KritzelEditor, KritzelText, getEditorRef } from '@kritzel/vue-editor'
+import { UpdrawEditor, UpdrawText, getEditorRef } from '@updraw/vue-editor'
 
 const editor = getEditorRef('editor')
 
 async function addText() {
-  await editor.value?.addObject(new KritzelText({
+  await editor.value?.addObject(new UpdrawText({
     text: 'Programmatic text!',
     translateX: 0,
     translateY: 0,
@@ -120,7 +120,7 @@ async function addText() {
 </script>
 
 <template>
-  <KritzelEditor ref="editor" @isReady="addText" />
+  <UpdrawEditor ref="editor" @isReady="addText" />
 </template>
 ```
 

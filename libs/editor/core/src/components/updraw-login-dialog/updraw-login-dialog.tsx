@@ -1,22 +1,22 @@
 ﻿import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop } from '@stencil/core';
-import { KritzelLoginProvider } from '@kritzel/core';
-import { LoginEvent } from '@kritzel/core';
+import { UpdrawLoginProvider } from '@updraw/core';
+import { LoginEvent } from '@updraw/core';
 
 /**
  * Login dialog component for displaying authentication provider buttons.
  * This is a presentational component that emits events for all actions.
- * The parent component (kritzel-editor) handles the actual authentication flow.
+ * The parent component (updraw-editor) handles the actual authentication flow.
  */
 @Component({
-  tag: 'kritzel-login-dialog',
-  styleUrl: 'kritzel-login-dialog.css',
+  tag: 'updraw-login-dialog',
+  styleUrl: 'updraw-login-dialog.css',
   shadow: true,
 })
-export class KritzelLoginDialog {
+export class UpdrawLoginDialog {
   @Element() host!: HTMLElement;
 
   /** Array of authentication provider buttons to render */
-  @Prop() providers: KritzelLoginProvider[] = [];
+  @Prop() providers: UpdrawLoginProvider[] = [];
 
   /** Dialog title */
   @Prop() dialogTitle: string = 'Sign in';
@@ -53,7 +53,7 @@ export class KritzelLoginDialog {
     this.loadingProvider = provider;
   }
 
-  private handleProviderClick = (provider: KritzelLoginProvider): void => {
+  private handleProviderClick = (provider: UpdrawLoginProvider): void => {
     if (this.loadingProvider) return;
     this.loadingProvider = provider.name;
     this.providerLogin.emit({ provider: provider.name });
@@ -68,7 +68,7 @@ export class KritzelLoginDialog {
   render() {
     return (
       <Host>
-        <kritzel-dialog
+        <updraw-dialog
           dialogTitle={this.dialogTitle}
           isOpen={this.isDialogOpen}
           onDialogClose={this.closeDialog}
@@ -95,14 +95,14 @@ export class KritzelLoginDialog {
                   {this.loadingProvider === provider.name ? (
                     <span class="spinner"></span>
                   ) : (
-                    provider.icon && <kritzel-icon name={provider.icon} size={20} />
+                    provider.icon && <updraw-icon name={provider.icon} size={20} />
                   )}
                   <span class="provider-label">{provider.label}</span>
                 </button>
               ))}
             </div>
           </div>
-        </kritzel-dialog>
+        </updraw-dialog>
       </Host>
     );
   }

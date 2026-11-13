@@ -32,7 +32,7 @@ Register every new demo route in `apps/demos/vue/src/router.ts`.
 
 ## Component Tag Rule
 
-Use `<KritzelEditor>` from `@kritzel/vue-editor`. Do not use `<kritzel-editor>` directly in Vue demo pages.
+Use `<UpdrawEditor>` from `@updraw/vue-editor`. Do not use `<updraw-editor>` directly in Vue demo pages.
 
 ## Component Baseline
 
@@ -53,9 +53,9 @@ Skip only for intentionally neutral/theming-baseline demos.
 
 ## Editor / Engine Ref Access (Vue-specific)
 
-Use `getEditorRef` / `getEngineRef` from `@kritzel/vue-editor`.
+Use `getEditorRef` / `getEngineRef` from `@updraw/vue-editor`.
 
-Vue template refs on wrapper components point at component instances, not directly at native custom elements. The composables resolve native `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement` safely.
+Vue template refs on wrapper components point at component instances, not directly at native custom elements. The composables resolve native `HTMLUpdrawEditorElement` / `HTMLUpdrawEngineElement` safely.
 
 ## Seeding Objects
 
@@ -63,7 +63,7 @@ Use shared seed helpers when demos need initial canvas content to keep visuals a
 
 ## Dynamic Objects
 
-When a page uses `KritzelDynamicObject`:
+When a page uses `UpdrawDynamicObject`:
 
 1. Keep renderer setup and object factory logic in dedicated modules, not inline in the page SFC.
 2. Register/unregister renderers in lifecycle hooks.

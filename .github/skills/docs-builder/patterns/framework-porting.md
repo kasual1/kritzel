@@ -23,8 +23,8 @@ Angular remains the source of truth. React and Vue pages should preserve meaning
 - Replace Angular-specific phrasing with React/Vue equivalents.
 
 3. Use framework-specific component naming in React/Vue docs.
-- In React and Vue markdown files, refer to the editor as <KritzelEditor>.
-- Do not use <kritzel-editor> in React/Vue docs.
+- In React and Vue markdown files, refer to the editor as <UpdrawEditor>.
+- Do not use <updraw-editor> in React/Vue docs.
 
 4. Convert code snippets to framework-appropriate syntax.
 - React snippets: JSX/TSX patterns and React event/listener idioms.
@@ -84,23 +84,23 @@ When adding or porting <LiveDemo> blocks:
 ## Quick Mapping Reference
 
 - Package imports:
-  - Angular: @kritzel/angular-editor
-  - React: @kritzel/react-editor
-  - Vue: @kritzel/vue-editor
+  - Angular: @updraw/angular-editor
+  - React: @updraw/react-editor
+  - Vue: @updraw/vue-editor
 
 - Root app container in quick-start CSS examples:
   - React: #root
   - Vue: #app
 
 - Component mention style in docs text:
-  - React/Vue: <KritzelEditor>
+  - React/Vue: <UpdrawEditor>
 
 ## Validation Checklist
 
 After porting, verify:
 
 1. No Angular-only naming remains in target docs where it is framework-specific.
-2. React/Vue docs do not contain <kritzel-editor>.
+2. React/Vue docs do not contain <updraw-editor>.
 3. Vue docs do not contain vue-fenced embedded snippets; use html for those snippets.
 4. All intra-doc links resolve to existing pages.
 5. <LiveDemo> blocks use correct framework repo URLs and file extensions.
@@ -112,8 +112,8 @@ After porting, verify:
 ## Suggested Search Checks
 
 - Find lowercase tag usage in React/Vue docs:
-  - <kritzel-editor
+  - <updraw-editor
 - Find Vue fence usage in Vue docs:
   - ```vue
 - Find Angular package references in React/Vue docs:
-  - @kritzel/angular-editor
+  - @updraw/angular-editor

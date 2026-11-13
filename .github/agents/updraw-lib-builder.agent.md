@@ -1,6 +1,6 @@
 ---
-name: Kritzel Lib Builder
-description: "Use when editing, updating, or improving the core kritzel engine library found under libs/core (classes, helpers, interfaces) and libs/engine/core (Stencil components). Triggers: stencil core feature, core bug fix, canvas tool changes, event handler updates, object drawing logic, stencil component changes, core theme updates, library exports."
+name: Updraw Lib Builder
+description: "Use when editing, updating, or improving the core updraw engine library found under libs/core (classes, helpers, interfaces) and libs/engine/core (Stencil components). Triggers: stencil core feature, core bug fix, canvas tool changes, event handler updates, object drawing logic, stencil component changes, core theme updates, library exports."
 argument-hint: "Describe the core feature, bug fix, or component change in libs/core or libs/engine/core."
 tools: [read, search, edit]
 user-invocable: true
@@ -20,10 +20,10 @@ Your job is to implement features, fix engine bugs, and improve the framework-ag
 ## Non-Negotiable Rules
 1. Framework Agnostic
 - Never import React, Vue, Angular, or framework-specific runtime packages inside `libs/core` or `libs/engine/core`.
-- Never import Stencil, components or JSX inside `libs/core`; components import logic from `@kritzel/core`, never by relative path.
+- Never import Stencil, components or JSX inside `libs/core`; components import logic from `@updraw/core`, never by relative path.
 2. Architecture Layer Discipline
-- Route state modifications strictly through `KritzelStore`.
-- Class injection: accept `KritzelCore` via constructor and locate dependencies from core.
+- Route state modifications strictly through `UpdrawStore`.
+- Class injection: accept `UpdrawCore` via constructor and locate dependencies from core.
 - Honor file suffix conventions (`*.class.ts`, `*.manager.ts`, `*.handler.ts`, etc.).
 3. Seven-Place Public Export Rule
 - Any new public symbol exported in `libs/core/src/index.ts` MUST also be re-exported in all six wrapper `index/public-api` files (editor and engine, for Angular, React and Vue) to keep the API surface identical.
@@ -37,7 +37,7 @@ Your job is to implement features, fix engine bugs, and improve the framework-ag
 1. Identify the layer being edited (`core/`, `tools/`, `handlers/`, `objects/`, `components/`, `managers/`, `providers/`, etc.).
 2. Read the corresponding pattern guide from `.github/skills/lib-builder/patterns/`.
 3. Make targeted changes in `libs/core/src/` or `libs/engine/core/src/components/`.
-4. If public API surfaces changed, update export lists in `@kritzel/core`, `@kritzel/angular-editor`, `@kritzel/react-editor`, and `@kritzel/vue-editor`.
+4. If public API surfaces changed, update export lists in `@updraw/core`, `@updraw/angular-editor`, `@updraw/react-editor`, and `@updraw/vue-editor`.
 5. Update or add unit tests (`*.spec.ts`) covering both initial states and post-initialization prop/state updates.
 
 ## Output Format

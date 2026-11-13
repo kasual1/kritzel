@@ -1,7 +1,7 @@
-import type { KritzelAgenticDrawLineAction } from '../../interfaces/agentic-action.interface';
-import type { KritzelPoint } from '../../interfaces/point.interface';
-import { KritzelLine } from '../objects/line.class';
-import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpdrawAgenticDrawLineAction } from '../../interfaces/agentic-action.interface';
+import type { UpdrawPoint } from '../../interfaces/point.interface';
+import { UpdrawLine } from '../objects/line.class';
+import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
 import { resolveLineStyle } from '../../helpers/agentic-style.helper';
 import { AGENTIC_LINE_STYLE_KEYS, assertStyle } from '../../helpers/agentic-validation.helper';
 import { assertLineEnd, assertOptionalPoint, bendLine, isObjectEnd, lerpPoint, refuseUnanchorable, resolveLineEnd } from './line-handles';
@@ -10,7 +10,7 @@ import { assertLineEnd, assertOptionalPoint, bendLine, isObjectEnd, lerpPoint, r
  * `drawLine`: draws a line like the line tool (press at `from`, drag to `to`), bends it through `through` with
  * the middle handle, and attaches the ends that are objects.
  */
-export const drawLineExecutor: KritzelAgenticActionExecutor<KritzelAgenticDrawLineAction> = {
+export const drawLineExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticDrawLineAction> = {
   mutates: true,
 
   validate(action) {
@@ -43,8 +43,8 @@ export const drawLineExecutor: KritzelAgenticActionExecutor<KritzelAgenticDrawLi
     const style = resolveLineStyle(core, action.style);
     const scale = state.lockDrawingScale ? 1 : state.scale || 1;
 
-    const build = (start: KritzelPoint, end: KritzelPoint) => {
-      const line = KritzelLine.create(core, {
+    const build = (start: UpdrawPoint, end: UpdrawPoint) => {
+      const line = UpdrawLine.create(core, {
         startX: start.x * scale,
         startY: start.y * scale,
         endX: end.x * scale,

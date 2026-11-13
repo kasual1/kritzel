@@ -1,4 +1,4 @@
-export interface KritzelSelectionState {
+export interface UpdrawSelectionState {
   	isSelecting: boolean;
 	isResizing: boolean;
 	isRotating: boolean;

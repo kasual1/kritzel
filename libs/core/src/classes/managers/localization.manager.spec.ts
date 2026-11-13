@@ -1,5 +1,5 @@
-import { KritzelLocalizationManager } from './localization.manager';
-import { KritzelCore } from '../core/core.class';
+import { UpdrawLocalizationManager } from './localization.manager';
+import { UpdrawCore } from '../core/core.class';
 import { EN_LOCALE } from '../../locales/en-locale';
 import { DE_LOCALE } from '../../locales/de-locale';
 import { FR_LOCALE } from '../../locales/fr-locale';
@@ -11,8 +11,8 @@ import { IT_LOCALE } from '../../locales/it-locale';
 
 jest.mock('../core/core.class');
 
-describe('KritzelLocalizationManager', () => {
-  let manager: KritzelLocalizationManager;
+describe('UpdrawLocalizationManager', () => {
+  let manager: UpdrawLocalizationManager;
   let mockCore: any;
 
   beforeEach(() => {
@@ -22,9 +22,9 @@ describe('KritzelLocalizationManager', () => {
     mockCore = {
       editorId: undefined,
       rerender: jest.fn(),
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    manager = new KritzelLocalizationManager(mockCore);
+    manager = new UpdrawLocalizationManager(mockCore);
   });
 
   afterEach(() => {
@@ -38,18 +38,18 @@ describe('KritzelLocalizationManager', () => {
     });
 
     it('should restore the stored locale from the settings object', () => {
-      localStorage.setItem('kritzel-settings', JSON.stringify({ locale: 'de' }));
+      localStorage.setItem('updraw-settings', JSON.stringify({ locale: 'de' }));
 
-      const freshManager = new KritzelLocalizationManager(mockCore);
+      const freshManager = new UpdrawLocalizationManager(mockCore);
 
       expect(freshManager.currentLocale).toBe('de');
     });
 
     it('should use a namespaced storage key when editorId is set', () => {
       mockCore.editorId = 'homepage';
-      localStorage.setItem('kritzel-settings-homepage', JSON.stringify({ locale: 'fr' }));
+      localStorage.setItem('updraw-settings-homepage', JSON.stringify({ locale: 'fr' }));
 
-      const freshManager = new KritzelLocalizationManager(mockCore);
+      const freshManager = new UpdrawLocalizationManager(mockCore);
 
       expect(freshManager.currentLocale).toBe('fr');
     });

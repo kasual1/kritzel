@@ -115,7 +115,7 @@ h3 { margin: 0; font-size: clamp(12px, 5cqh, 16px); line-height: 1.2; white-spac
 header strong { color: #42b883; font-size: 13px; }
 output { display: flex; align-items: center; justify-content: flex-end; min-height: 0; padding: 0 12px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; color: #202124; font-size: clamp(16px, 8cqh, 24px); font-weight: 700; overflow: hidden; }
 .keypad { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); gap: clamp(4px, 1.5cqh, 6px); min-height: 0; overflow: hidden; }
-button { min-width: 0; min-height: 0; border: 1px solid #dadce0; border-radius: 6px; background: #ffffff; color: #202124; cursor: var(--kritzel-global-pointer-cursor, pointer); font-size: clamp(11px, 5cqh, 15px); font-weight: 600; }
+button { min-width: 0; min-height: 0; border: 1px solid #dadce0; border-radius: 6px; background: #ffffff; color: #202124; cursor: var(--updraw-global-pointer-cursor, pointer); font-size: clamp(11px, 5cqh, 15px); font-weight: 600; }
 .operator { border-color: #42b883; color: #167a55; }
 .equals { grid-row: span 2; background: #42b883; border-color: #42b883; color: #ffffff; }
 .zero { grid-column: span 2; }

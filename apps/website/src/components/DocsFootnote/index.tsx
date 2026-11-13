@@ -7,7 +7,7 @@ const REPO_URL = "https://github.com/kasual1/kritzel";
 const SOCIAL_LINKS = [
   {
     label: "NPM",
-    href: "https://www.npmjs.com/package/@kritzel/engine",
+    href: "https://www.npmjs.com/package/@updraw/engine",
     path: "M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.04 19.17H5.113z",
   },
   {
@@ -32,7 +32,7 @@ export default function DocsFootnote() {
     <footer className="docs-footnote">
       <h2 className="docs-footnote__title">Support us</h2>
       <p className="docs-footnote__text">
-        Kritzel is an MIT-licensed open source project. If you like the idea of a framework-agnostic
+        Updraw is an MIT-licensed open source project. If you like the idea of a framework-agnostic
         infinite canvas library and want to support our work, leave us a{" "}
         <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
           star
@@ -72,7 +72,7 @@ export default function DocsFootnote() {
           ))}
         </div>
         <p className="docs-footnote__copyright">
-          Copyright © {new Date().getFullYear()} Kritzel by{" "}
+          Copyright © {new Date().getFullYear()} Updraw by{" "}
           <a href="https://github.com/kasual1" target="_blank" rel="noopener noreferrer">
             Lukas Mühlenbeck
           </a>

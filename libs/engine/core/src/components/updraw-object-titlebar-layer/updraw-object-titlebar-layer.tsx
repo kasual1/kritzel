@@ -1,19 +1,19 @@
 import { Component, Host, Prop, h } from '@stencil/core';
 import {
-  KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE,
-  KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE,
-  KRITZEL_TITLEBAR_OWNER_ATTRIBUTE,
-  KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE,
-  KritzelResolvedTitlebar,
-  KritzelResolvedTitlebarElement,
-  KritzelTitlebarSection,
-} from '@kritzel/core';
+  UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE,
+  UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE,
+  UPDRAW_TITLEBAR_OWNER_ATTRIBUTE,
+  UPDRAW_TITLEBAR_TITLE_INPUT_ATTRIBUTE,
+  UpdrawResolvedTitlebar,
+  UpdrawResolvedTitlebarElement,
+  UpdrawTitlebarSection,
+} from '@updraw/core';
 
 /** Handles a click on a titlebar button or menu button. */
-export type KritzelTitlebarElementClickHandler = (ownerId: string, section: KritzelTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement) => void;
+export type UpdrawTitlebarElementClickHandler = (ownerId: string, section: UpdrawTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement) => void;
 
 /** Callbacks of the input used to rename an object. */
-export interface KritzelTitlebarTitleEditHandlers {
+export interface UpdrawTitlebarTitleEditHandlers {
   input: (value: string) => void;
   commit: (value: string) => void;
   cancel: () => void;
@@ -26,17 +26,17 @@ const parts = (...names: (string | undefined | false)[]): string => names.filter
  * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
  *
  * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
- * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+ * `updraw-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
  * Must never use the `object` class: pointer handling treats `.object` elements as objects.
  */
 @Component({
-  tag: 'kritzel-object-titlebar-layer',
-  styleUrl: 'kritzel-object-titlebar-layer.css',
+  tag: 'updraw-object-titlebar-layer',
+  styleUrl: 'updraw-object-titlebar-layer.css',
   shadow: false,
 })
-export class KritzelObjectTitlebarLayer {
+export class UpdrawObjectTitlebarLayer {
   /** The titlebars to render, resolved by the engine for the current frame. */
-  @Prop() titlebars: KritzelResolvedTitlebar[] = [];
+  @Prop() titlebars: UpdrawResolvedTitlebar[] = [];
 
   /**
    * The objects playing their appear animation, with their stagger index, by object ID. Their titlebars appear with
@@ -48,14 +48,14 @@ export class KritzelObjectTitlebarLayer {
   @Prop() surfacePointerEvents: 'auto' | 'none' = 'none';
 
   /** Called when a titlebar button or menu button is clicked. */
-  @Prop() elementClick?: KritzelTitlebarElementClickHandler;
+  @Prop() elementClick?: UpdrawTitlebarElementClickHandler;
 
   /** Called while a title is edited to rename its object. */
-  @Prop() titleEdit?: KritzelTitlebarTitleEditHandlers;
+  @Prop() titleEdit?: UpdrawTitlebarTitleEditHandlers;
 
-  private readonly handleElementClick: KritzelTitlebarElementClickHandler = (...args) => this.elementClick?.(...args);
+  private readonly handleElementClick: UpdrawTitlebarElementClickHandler = (...args) => this.elementClick?.(...args);
 
-  private readonly titleEditHandlers: KritzelTitlebarTitleEditHandlers = {
+  private readonly titleEditHandlers: UpdrawTitlebarTitleEditHandlers = {
     input: value => this.titleEdit?.input(value),
     commit: value => this.titleEdit?.commit(value),
     cancel: () => this.titleEdit?.cancel(),
@@ -80,7 +80,7 @@ export class KritzelObjectTitlebarLayer {
               style={{
                 transform: titlebar.transform,
                 width: `${titlebar.width}px`,
-                ...(appearing ? { '--kritzel-object-appear-index': String(appearIndex) } : {}),
+                ...(appearing ? { '--updraw-object-appear-index': String(appearIndex) } : {}),
               }}
             >
               <div
@@ -95,13 +95,13 @@ export class KritzelObjectTitlebarLayer {
                 aria-label={titlebar.context.title}
                 data-state={titlebar.isActive ? 'active' : 'inactive'}
                 data-object-type={titlebar.owner.__class__}
-                data-kritzel-titlebar-surface=""
-                {...{ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: titlebar.owner.id }}
+                data-updraw-titlebar-surface=""
+                {...{ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: titlebar.owner.id }}
                 style={{ pointerEvents: this.surfacePointerEvents }}
               >
                 {editedTitle
                   ? renderTitleInput(titlebar, editedTitle, this.titleEditHandlers)
-                  : (['left', 'center', 'right'] as KritzelTitlebarSection[]).map(section =>
+                  : (['left', 'center', 'right'] as UpdrawTitlebarSection[]).map(section =>
                       section === 'center' && titlebar.sections.center.length === 0 ? null : (
                         <div key={section} class={`object-titlebar-section object-titlebar-${section}`} part={`titlebar-${section}`}>
                           {titlebar.sections[section].map(resolved => renderElement(titlebar, resolved, this.handleElementClick))}
@@ -117,7 +117,7 @@ export class KritzelObjectTitlebarLayer {
   }
 }
 
-function renderElement(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolvedTitlebarElement, onElementClick: KritzelTitlebarElementClickHandler) {
+function renderElement(titlebar: UpdrawResolvedTitlebar, resolved: UpdrawResolvedTitlebarElement, onElementClick: UpdrawTitlebarElementClickHandler) {
   const { element } = resolved;
 
   switch (element.type) {
@@ -128,7 +128,7 @@ function renderElement(titlebar: KritzelResolvedTitlebar, resolved: KritzelResol
           class={{ 'object-titlebar-title': true, 'is-editable': !!resolved.isEditable }}
           part={parts('titlebar-title', element.part)}
           data-element-id={element.id}
-          {...(resolved.isEditable ? { [KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: element.id } : {})}
+          {...(resolved.isEditable ? { [UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: element.id } : {})}
           dir="auto"
         >
           {resolved.text}
@@ -142,7 +142,7 @@ function renderElement(titlebar: KritzelResolvedTitlebar, resolved: KritzelResol
       );
     case 'icon':
       return resolved.icon ? (
-        <kritzel-icon key={element.id} class="object-titlebar-icon" part={parts('titlebar-icon', element.part)} data-element-id={element.id} name={resolved.icon} size={16}></kritzel-icon>
+        <updraw-icon key={element.id} class="object-titlebar-icon" part={parts('titlebar-icon', element.part)} data-element-id={element.id} name={resolved.icon} size={16}></updraw-icon>
       ) : null;
     case 'button':
     case 'menu': {
@@ -161,7 +161,7 @@ function renderElement(titlebar: KritzelResolvedTitlebar, resolved: KritzelResol
           }}
           part={parts('titlebar-button', isPressed && 'titlebar-button-pressed', isMenu && 'titlebar-menu-button', element.part)}
           data-element-id={element.id}
-          {...{ [KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE]: '' }}
+          {...{ [UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE]: '' }}
           title={resolved.tooltip}
           aria-label={accessibleLabel}
           aria-pressed={isMenu || element.isPressed === undefined ? undefined : String(isPressed)}
@@ -178,7 +178,7 @@ function renderElement(titlebar: KritzelResolvedTitlebar, resolved: KritzelResol
             onElementClick(titlebar.owner.id, resolved.section, element.id, event, button);
           }}
         >
-          {resolved.icon && <kritzel-icon name={resolved.icon} size={16}></kritzel-icon>}
+          {resolved.icon && <updraw-icon name={resolved.icon} size={16}></updraw-icon>}
           {resolved.label && <span class="object-titlebar-button-label">{resolved.label}</span>}
         </button>
       );
@@ -196,7 +196,7 @@ function renderElement(titlebar: KritzelResolvedTitlebar, resolved: KritzelResol
  * Renders the input used to rename an object. Its value is only set when the input is created, so
  * the per-frame renders of the layer never overwrite what the user is typing.
  */
-function renderTitleInput(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolvedTitlebarElement, titleEdit: KritzelTitlebarTitleEditHandlers) {
+function renderTitleInput(titlebar: UpdrawResolvedTitlebar, resolved: UpdrawResolvedTitlebarElement, titleEdit: UpdrawTitlebarTitleEditHandlers) {
   const { element } = resolved;
   const name = titlebar.owner.name ?? '';
 
@@ -207,7 +207,7 @@ function renderTitleInput(titlebar: KritzelResolvedTitlebar, resolved: KritzelRe
       class="object-titlebar-title-input"
       part={parts('titlebar-title-input', element.part)}
       data-element-id={element.id}
-      {...{ [KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE]: '', [KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE]: '' }}
+      {...{ [UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE]: '', [UPDRAW_TITLEBAR_TITLE_INPUT_ATTRIBUTE]: '' }}
       placeholder={name ? undefined : resolved.text}
       aria-label={titlebar.context.title}
       dir="auto"

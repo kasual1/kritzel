@@ -1,11 +1,11 @@
 <script setup lang="ts">
 
 import {
-  KritzelEditor,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawWorkspace,
   lightTheme,
-  type KritzelTheme,
-} from '@kritzel/vue-editor'
+  type UpdrawTheme,
+} from '@updraw/vue-editor'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 
 const brandPurple = '#7c3aed'
@@ -14,7 +14,7 @@ const brandPurpleActive = '#5b21b6'
 const brandPurpleLight = 'rgba(124, 58, 237, 0.1)'
 const brandPurpleMedium = 'rgba(124, 58, 237, 0.2)'
 
-const brandedPurpleFlatTheme: KritzelTheme = {
+const brandedPurpleFlatTheme: UpdrawTheme = {
   ...lightTheme,
   name: 'branded-purple-flat',
   global: {
@@ -258,7 +258,7 @@ const brandedPurpleFlatTheme: KritzelTheme = {
 }
 
 const themes = [brandedPurpleFlatTheme]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 </script>
 
 <template>
@@ -269,7 +269,7 @@ const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
       background: 'linear-gradient(180deg, #fbf8ff 0%, #f3ebff 100%)',
     }"
   >
-    <KritzelEditor
+    <UpdrawEditor
       editorId="theming-custom"
       theme="branded-purple-flat"
       :themes="themes"

@@ -1,4 +1,4 @@
-# kritzel-pill-tabs
+# updraw-pill-tabs
 
 
 
@@ -9,7 +9,7 @@
 
 | Property | Attribute | Description                        | Type               | Default     |
 | -------- | --------- | ---------------------------------- | ------------------ | ----------- |
-| `tabs`   | --        | Array of tab definitions to render | `KritzelPillTab[]` | `[]`        |
+| `tabs`   | --        | Array of tab definitions to render | `UpdrawPillTab[]` | `[]`        |
 | `value`  | `value`   | Currently selected tab ID          | `string`           | `undefined` |
 
 
@@ -24,18 +24,18 @@
 
 ### Used by
 
- - [kritzel-export](../kritzel-export)
+ - [updraw-export](../updraw-export)
 
 ### Depends on
 
-- kritzel-icon
+- updraw-icon
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-pill-tabs --> kritzel-icon
-  kritzel-export --> kritzel-pill-tabs
-  style kritzel-pill-tabs fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-pill-tabs --> updraw-icon
+  updraw-export --> updraw-pill-tabs
+  style updraw-pill-tabs fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

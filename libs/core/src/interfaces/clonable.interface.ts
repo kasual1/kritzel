@@ -1,3 +1,3 @@
-export interface KritzelClonable<T> {
+export interface UpdrawClonable<T> {
   clone(): T;
 }

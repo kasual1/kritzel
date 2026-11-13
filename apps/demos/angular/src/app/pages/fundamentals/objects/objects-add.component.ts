@@ -5,14 +5,14 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  KritzelEditor,
+  UpdrawEditor,
   EditorIsReadyEvent,
-  KritzelBaseObject,
-  KritzelShape,
-  KritzelPath,
-  KritzelWorkspace,
+  UpdrawBaseObject,
+  UpdrawShape,
+  UpdrawPath,
+  UpdrawWorkspace,
   ShapeType,
-} from '@kritzel/angular-editor';
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -20,7 +20,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-objects-add',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -28,7 +28,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       <button (click)="addEllipse()">Add Ellipse</button>
       <button (click)="addPath()">Add Path</button>
     </app-toolbar>
-    <kritzel-editor
+    <updraw-editor
       editorId="objects-add"
       [theme]="'light'"
       [themes]="themes"
@@ -38,7 +38,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady($event)"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [
     `
@@ -48,27 +48,27 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         height: 100%;
         font-family: Roboto, sans-serif;
       }
-      kritzel-editor {
+      updraw-editor {
         flex: 1;
       }
     `,
   ],
 })
 export class ObjectsAddComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
-  objects = signal<KritzelBaseObject[]>([]);
+  objects = signal<UpdrawBaseObject[]>([]);
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
     this.objects.set(await this.editor.getAllObjects());
   }
 
   async addRectangle() {
-    const shape = new KritzelShape({
+    const shape = new UpdrawShape({
       translateX: this.randomOffset(),
       translateY: this.randomOffset(),
       width: 120,
@@ -83,7 +83,7 @@ export class ObjectsAddComponent {
   }
 
   async addEllipse() {
-    const shape = new KritzelShape({
+    const shape = new UpdrawShape({
       translateX: this.randomOffset(),
       translateY: this.randomOffset(),
       width: 100,
@@ -98,7 +98,7 @@ export class ObjectsAddComponent {
   }
 
   async addPath() {
-    const path = new KritzelPath({
+    const path = new UpdrawPath({
       points: [
         [0, 0, 0.5],
         [20, -15, 0.5],

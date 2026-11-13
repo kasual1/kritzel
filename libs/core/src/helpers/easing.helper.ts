@@ -1,6 +1,6 @@
-import { KritzelEasing } from '../interfaces/easing.interface';
+import { UpdrawEasing } from '../interfaces/easing.interface';
 
-export class KritzelEasingHelper {
+export class UpdrawEasingHelper {
   static linear(t: number): number {
     return t;
   }
@@ -21,20 +21,20 @@ export class KritzelEasingHelper {
    * Resolves a named easing or custom easing function to a function.
    * Unknown names fall back to `ease-in-out`.
    */
-  static resolve(easing: KritzelEasing | undefined): (t: number) => number {
+  static resolve(easing: UpdrawEasing | undefined): (t: number) => number {
     if (typeof easing === 'function') {
       return easing;
     }
     switch (easing) {
       case 'linear':
-        return KritzelEasingHelper.linear;
+        return UpdrawEasingHelper.linear;
       case 'ease-in':
-        return KritzelEasingHelper.easeInCubic;
+        return UpdrawEasingHelper.easeInCubic;
       case 'ease-out':
-        return KritzelEasingHelper.easeOutCubic;
+        return UpdrawEasingHelper.easeOutCubic;
       case 'ease-in-out':
       default:
-        return KritzelEasingHelper.easeInOutCubic;
+        return UpdrawEasingHelper.easeInOutCubic;
     }
   }
 }

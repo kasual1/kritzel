@@ -9,17 +9,17 @@ import {
   SnapPreviewCandidate,
   SnapTarget,
 } from '../../interfaces/anchor.interface';
-import { KritzelCore } from '../core/core.class';
-import { KritzelLine } from '../objects/line.class';
-import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelSelectionBox } from '../objects/selection-box.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelShape } from '../objects/shape.class';
-import { KritzelPath } from '../objects/path.class';
-import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelPoint } from '../../interfaces/point.interface';
-import { KritzelPolygon } from '../../interfaces/polygon.interface';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawLine } from '../objects/line.class';
+import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpdrawSelectionBox } from '../objects/selection-box.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawShape } from '../objects/shape.class';
+import { UpdrawPath } from '../objects/path.class';
+import { UpdrawGeometryHelper } from '../../helpers/geometry.helper';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawPoint } from '../../interfaces/point.interface';
+import { UpdrawPolygon } from '../../interfaces/polygon.interface';
 
 type AnchorClipInfo = {
   localX: number;
@@ -42,8 +42,8 @@ type QuadraticSegment = {
  * Maintains a runtime index for efficient reverse lookups and handles
  * snap detection during line endpoint dragging.
  */
-export class KritzelAnchorManager {
-  private readonly _core: KritzelCore;
+export class UpdrawAnchorManager {
+  private readonly _core: UpdrawCore;
 
   /**
    * Runtime index mapping objectId to the lines anchored to it.
@@ -52,10 +52,10 @@ export class KritzelAnchorManager {
   private readonly _anchorIndex: Map<string, Set<AnchorIndexEntry>> = new Map();
 
   /**
-   * Creates a new KritzelAnchorManager instance.
-   * @param core - The KritzelCore instance that provides access to the store and other managers.
+   * Creates a new UpdrawAnchorManager instance.
+   * @param core - The UpdrawCore instance that provides access to the store and other managers.
    */
-  constructor(core: KritzelCore) {
+  constructor(core: UpdrawCore) {
     this._core = core;
   }
 
@@ -214,11 +214,11 @@ export class KritzelAnchorManager {
    * Snaps a line endpoint to an object's center position.
    * Converts world coordinates to the line's local coordinate system before updating.
    * 
-   * @param line - The KritzelLine object to update.
+   * @param line - The UpdrawLine object to update.
    * @param endpoint - Which endpoint to snap ('start' or 'end').
    * @param targetObjectId - The unique identifier of the target object to snap to.
    */
-  private snapEndpointToObject(line: KritzelLine, endpoint: 'start' | 'end', targetObjectId: string): void {
+  private snapEndpointToObject(line: UpdrawLine, endpoint: 'start' | 'end', targetObjectId: string): void {
     const targetObject = this.getObjectById(targetObjectId);
     if (!targetObject) {
       return;
@@ -240,12 +240,12 @@ export class KritzelAnchorManager {
    * Applies inverse rotation and scale transformations to translate
    * from global canvas coordinates to the line's internal SVG coordinates.
    * 
-   * @param line - The KritzelLine object providing the transformation context.
+   * @param line - The UpdrawLine object providing the transformation context.
    * @param worldX - The X coordinate in world/canvas space.
    * @param worldY - The Y coordinate in world/canvas space.
    * @returns An object containing the local x and y coordinates.
    */
-  private worldToLineLocal(line: KritzelLine, worldX: number, worldY: number): { x: number; y: number } {
+  private worldToLineLocal(line: UpdrawLine, worldX: number, worldY: number): { x: number; y: number } {
     // Get line center in world coordinates
     const cx = line.centerX;
     const cy = line.centerY;
@@ -323,10 +323,10 @@ export class KritzelAnchorManager {
     worldY: number,
     excludeLineId: string,
     otherEndpointAnchorId: string | undefined,
-    predicate: (object: KritzelBaseObject<Element>) => boolean
+    predicate: (object: UpdrawBaseObject<Element>) => boolean
   ): SnapTarget | null {
     let bestTarget: SnapTarget | null = null;
-    let bestObject: KritzelBaseObject<Element> | null = null;
+    let bestObject: UpdrawBaseObject<Element> | null = null;
     let highestZIndex = -Infinity;
 
     const objects = this._core.store.allNonSelectionObjects;
@@ -351,7 +351,7 @@ export class KritzelAnchorManager {
       const polygon = object.rotatedPolygon;
       const points = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
 
-      if (!KritzelGeometryHelper.isPointInPolygon({ x: worldX, y: worldY }, points)) {
+      if (!UpdrawGeometryHelper.isPointInPolygon({ x: worldX, y: worldY }, points)) {
         continue;
       }
 
@@ -374,7 +374,7 @@ export class KritzelAnchorManager {
     return bestTarget;
   }
 
-  private getSnapRadius(object: KritzelBaseObject<Element>, pointerType: string): number {
+  private getSnapRadius(object: UpdrawBaseObject<Element>, pointerType: string): number {
     const baseRadius = Math.min(object.width, object.height) / 5;
     const safeScale = this.getSafeScale(this._core.store.state.scale);
     if (pointerType === 'touch' || pointerType === 'pen') {
@@ -459,9 +459,9 @@ export class KritzelAnchorManager {
     if (!selectionGroup || selectionGroup.objects.length !== 1) return null;
 
     const selectedObject = selectionGroup.objects[0];
-    if (!(selectedObject instanceof KritzelLine)) return null;
+    if (!(selectedObject instanceof UpdrawLine)) return null;
 
-    const line = selectedObject as KritzelLine;
+    const line = selectedObject as UpdrawLine;
 
 
 
@@ -700,7 +700,7 @@ export class KritzelAnchorManager {
 
   /**
    * Rebuilds the anchor index from all lines in the object map.
-   * Iterates through all KritzelLine objects and indexes their anchor connections.
+   * Iterates through all UpdrawLine objects and indexes their anchor connections.
    * Should be called after loading/deserializing objects or when the index may be stale.
    */
   rebuildIndex(): void {
@@ -709,7 +709,7 @@ export class KritzelAnchorManager {
     const objects = this._core.store.allObjects;
 
     for (const object of objects) {
-      if (object instanceof KritzelLine) {
+      if (object instanceof UpdrawLine) {
         if (object.startAnchor) {
           this.addToIndex(object.startAnchor.objectId, object.id, 'start');
         }
@@ -778,27 +778,27 @@ export class KritzelAnchorManager {
   // ============================================
 
   /**
-   * Gets a KritzelLine object by its unique identifier.
+   * Gets an UpdrawLine object by its unique identifier.
    * 
    * @param lineId - The unique identifier of the line to retrieve.
-   * @returns The KritzelLine object if found and is a line, null otherwise.
+   * @returns The UpdrawLine object if found and is a line, null otherwise.
    */
-  private getLineById(lineId: string): KritzelLine | null {
+  private getLineById(lineId: string): UpdrawLine | null {
     const objects = this._core.store.objects.filter(o => o.id === lineId);
     if (objects.length === 0) {
       return null;
     }
     const object = objects[0];
-    return object instanceof KritzelLine ? object : null;
+    return object instanceof UpdrawLine ? object : null;
   }
 
   /**
-   * Gets any KritzelBaseObject by its unique identifier.
+   * Gets any UpdrawBaseObject by its unique identifier.
    * 
    * @param objectId - The unique identifier of the object to retrieve.
-   * @returns The KritzelBaseObject if found, null otherwise.
+   * @returns The UpdrawBaseObject if found, null otherwise.
    */
-  private getObjectById(objectId: string): KritzelBaseObject<Element> | null {
+  private getObjectById(objectId: string): UpdrawBaseObject<Element> | null {
     const objects = this._core.store.objects.filter(o => o.id === objectId);
     return objects.length > 0 ? objects[0] : null;
   }
@@ -807,11 +807,11 @@ export class KritzelAnchorManager {
    * Finds the target object that a line endpoint is anchored to.
    * Searches among all non-selection objects in the store.
    * 
-   * @param line - The KritzelLine object to check.
+   * @param line - The UpdrawLine object to check.
    * @param endpoint - Which endpoint to check ('start' or 'end').
-   * @returns The target KritzelBaseObject if the anchor exists and target is found, null otherwise.
+   * @returns The target UpdrawBaseObject if the anchor exists and target is found, null otherwise.
    */
-  public findAnchorTarget(line: KritzelLine, endpoint: 'start' | 'end'): KritzelBaseObject<Element> | null {
+  public findAnchorTarget(line: UpdrawLine, endpoint: 'start' | 'end'): UpdrawBaseObject<Element> | null {
     const anchor = endpoint === 'start' ? line.startAnchor : line.endAnchor;
     if (!anchor) {
       return null;
@@ -827,12 +827,12 @@ export class KritzelAnchorManager {
    * Computes anchor visualization data for a specific endpoint of a line with anchors.
    * Calculates edge intersection points for rendering dashed lines from edge to center.
    * 
-   * @param line - The KritzelLine object to compute visualization for.
+   * @param line - The UpdrawLine object to compute visualization for.
    * @param endpoint - Which endpoint to compute visualization for ('start' or 'end').
    * @returns AnchorVisualization object containing edge and center coordinates plus
    *          optional path data for curved lines, or null if no anchor exists.
    */
-  computeAnchorVisualization(line: KritzelLine, endpoint: 'start' | 'end'): AnchorVisualization | null {
+  computeAnchorVisualization(line: UpdrawLine, endpoint: 'start' | 'end'): AnchorVisualization | null {
     const anchor = endpoint === 'start' ? line.startAnchor : line.endAnchor;
     if (!anchor) return null;
 
@@ -868,11 +868,11 @@ export class KritzelAnchorManager {
    * When arrows are present on anchored ends, the line is shortened so the arrow tip appears at the edge.
    * Handles both straight lines and curved (quadratic Bezier) lines.
    * 
-   * @param line - The KritzelLine object to compute the clipped path for.
+   * @param line - The UpdrawLine object to compute the clipped path for.
    * @param offsetByViewBox - If true, subtracts line.x and line.y from coordinates (for selection UI).
    * @returns The SVG path 'd' attribute string, or the original path if no clipping is needed.
    */
-  computeClippedLinePath(line: KritzelLine, offsetByViewBox: boolean = false): string {
+  computeClippedLinePath(line: UpdrawLine, offsetByViewBox: boolean = false): string {
     // Check for snap candidate first - this applies during drag operations even without anchors
     const snapCandidate = this.getSnapCandidate();
     const selectionGroup = this._core.store.selectionGroup;
@@ -1003,13 +1003,13 @@ export class KritzelAnchorManager {
    * Computes anchor clipping information for a line endpoint connected to a target object.
    * Dispatches to either curved or straight line computation based on line type.
    * 
-   * @param line - The KritzelLine object.
+   * @param line - The UpdrawLine object.
    * @param endpoint - Which endpoint to compute clip info for ('start' or 'end').
    * @param targetObject - The object the line is anchored to.
    * @returns AnchorClipInfo containing local and world coordinates of the clip point,
    *          plus parameter t for curved lines, or null if computation fails.
    */
-  public computeAnchorClipInfo(line: KritzelLine, endpoint: 'start' | 'end', targetObject: KritzelBaseObject<Element>): AnchorClipInfo | null {
+  public computeAnchorClipInfo(line: UpdrawLine, endpoint: 'start' | 'end', targetObject: UpdrawBaseObject<Element>): AnchorClipInfo | null {
     if (line.controlX !== undefined && line.controlY !== undefined) {
       return this.computeCurvedClipInfo(line, endpoint, targetObject);
     }
@@ -1020,12 +1020,12 @@ export class KritzelAnchorManager {
    * Computes clip information for a straight line anchored to a target object.
    * Uses ray-casting from the opposite endpoint through the target's edge.
    * 
-   * @param line - The KritzelLine object (must be a straight line, no control point).
+   * @param line - The UpdrawLine object (must be a straight line, no control point).
    * @param endpoint - Which endpoint is anchored ('start' or 'end').
    * @param targetObject - The object the line is anchored to.
    * @returns AnchorClipInfo with intersection coordinates and parameter t, or null if no intersection.
    */
-  private computeStraightClipInfo(line: KritzelLine, endpoint: 'start' | 'end', targetObject: KritzelBaseObject<Element>): AnchorClipInfo | null {
+  private computeStraightClipInfo(line: UpdrawLine, endpoint: 'start' | 'end', targetObject: UpdrawBaseObject<Element>): AnchorClipInfo | null {
     const reference = endpoint === 'start'
       ? this.lineLocalToWorld(line, line.endX, line.endY)
       : this.lineLocalToWorld(line, line.startX, line.startY);
@@ -1055,17 +1055,17 @@ export class KritzelAnchorManager {
     // Check for custom clip polygon (ellipse, triangle shapes)
     const customClipPolygon = this.getClipPolygonForObject(targetObject);
 
-    let edgeIntersection: KritzelPoint | null;
+    let edgeIntersection: UpdrawPoint | null;
     if (customClipPolygon) {
       // Use custom polygon for non-rectangular shapes
-      edgeIntersection = KritzelGeometryHelper.getLinePointsArrayIntersection(
+      edgeIntersection = UpdrawGeometryHelper.getLinePointsArrayIntersection(
         reference,
         { x: targetObject.centerX, y: targetObject.centerY },
         customClipPolygon
       );
     } else {
       // Fall back to bounding box for rectangles and other objects
-      edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+      edgeIntersection = UpdrawGeometryHelper.getLinePolygonIntersection(
         reference,
         { x: targetObject.centerX, y: targetObject.centerY },
         targetObject.rotatedPolygon
@@ -1100,16 +1100,16 @@ export class KritzelAnchorManager {
    * Computes clip information for a curved (quadratic Bezier) line anchored to a target object.
    * Samples along the curve to find where it exits the target object's bounds.
    * 
-   * @param line - The KritzelLine object (must have controlX and controlY defined).
+   * @param line - The UpdrawLine object (must have controlX and controlY defined).
    * @param endpoint - Which endpoint is anchored ('start' or 'end').
    * @param targetObject - The object the line is anchored to.
    * @returns AnchorClipInfo with intersection coordinates and parameter t, or null if no intersection.
    */
-  private computeCurvedClipInfo(line: KritzelLine, endpoint: 'start' | 'end', targetObject: KritzelBaseObject<Element>): AnchorClipInfo | null {
+  private computeCurvedClipInfo(line: UpdrawLine, endpoint: 'start' | 'end', targetObject: UpdrawBaseObject<Element>): AnchorClipInfo | null {
     // Check for path object (uses stroke edge detection via sampling)
-    if (targetObject instanceof KritzelPath) {
+    if (targetObject instanceof UpdrawPath) {
       // For curved lines to paths, sample along the curve to find stroke edge
-      const path = targetObject as KritzelPath;
+      const path = targetObject as UpdrawPath;
       return this.findCurveExitPointForPath(line, endpoint, path);
     }
 
@@ -1126,15 +1126,15 @@ export class KritzelAnchorManager {
       ? this.lineLocalToWorld(line, line.endX, line.endY)
       : this.lineLocalToWorld(line, line.startX, line.startY);
 
-    let fallbackIntersection: KritzelPoint | null;
+    let fallbackIntersection: UpdrawPoint | null;
     if (customClipPolygon) {
-      fallbackIntersection = KritzelGeometryHelper.getLinePointsArrayIntersection(
+      fallbackIntersection = UpdrawGeometryHelper.getLinePointsArrayIntersection(
         reference,
         { x: targetObject.centerX, y: targetObject.centerY },
         customClipPolygon
       );
     } else {
-      fallbackIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+      fallbackIntersection = UpdrawGeometryHelper.getLinePolygonIntersection(
         reference,
         { x: targetObject.centerX, y: targetObject.centerY },
         targetObject.rotatedPolygon
@@ -1161,22 +1161,22 @@ export class KritzelAnchorManager {
    * Samples along the curve from the anchored endpoint outward, detecting
    * the transition from inside to outside the polygon, then refines the result.
    * 
-   * @param line - The KritzelLine object (curved line with control point).
+   * @param line - The UpdrawLine object (curved line with control point).
    * @param endpoint - Which endpoint is anchored inside the polygon ('start' or 'end').
    * @param polygonPoints - Array of points defining the polygon boundary.
    * @returns AnchorClipInfo with the exit point coordinates and parameter t, or null if no exit found.
    */
-  private findCurveExitPoint(line: KritzelLine, endpoint: 'start' | 'end', polygonPoints: KritzelPoint[]): AnchorClipInfo | null {
+  private findCurveExitPoint(line: UpdrawLine, endpoint: 'start' | 'end', polygonPoints: UpdrawPoint[]): AnchorClipInfo | null {
     const steps = 64;
     const initialT = endpoint === 'start' ? 0 : 1;
     const initialSample = this.evaluateLineAtT(line, initialT);
-    let prevInside = KritzelGeometryHelper.isPointInPolygon({ x: initialSample.worldX, y: initialSample.worldY }, polygonPoints);
+    let prevInside = UpdrawGeometryHelper.isPointInPolygon({ x: initialSample.worldX, y: initialSample.worldY }, polygonPoints);
     let prevT = initialT;
 
     for (let i = 1; i <= steps; i++) {
       const t = endpoint === 'start' ? i / steps : 1 - i / steps;
       const sample = this.evaluateLineAtT(line, t);
-      const inside = KritzelGeometryHelper.isPointInPolygon({ x: sample.worldX, y: sample.worldY }, polygonPoints);
+      const inside = UpdrawGeometryHelper.isPointInPolygon({ x: sample.worldX, y: sample.worldY }, polygonPoints);
 
       if (prevInside && !inside) {
         const refinedT = this.refineCurveExitParameter(line, polygonPoints, prevT, t);
@@ -1202,12 +1202,12 @@ export class KritzelAnchorManager {
    * Uses distance-to-stroke sampling instead of polygon containment
    * to detect when the line exits the path's stroke width boundary.
    * 
-   * @param line - The KritzelLine object (curved line with control point).
+   * @param line - The UpdrawLine object (curved line with control point).
    * @param endpoint - Which endpoint is anchored to the path ('start' or 'end').
-   * @param path - The KritzelPath object the line is anchored to.
+   * @param path - The UpdrawPath object the line is anchored to.
    * @returns AnchorClipInfo with the exit point coordinates and parameter t, or null if no exit found.
    */
-  private findCurveExitPointForPath(line: KritzelLine, endpoint: 'start' | 'end', path: KritzelPath): AnchorClipInfo | null {
+  private findCurveExitPointForPath(line: UpdrawLine, endpoint: 'start' | 'end', path: UpdrawPath): AnchorClipInfo | null {
     const steps = 64;
     const initialT = endpoint === 'start' ? 0 : 1;
     const halfStroke = path.strokeWidth / path.scale / 2;
@@ -1252,7 +1252,7 @@ export class KritzelAnchorManager {
    * Refines the curve exit parameter for a Path object using binary search.
    * Narrows down the exact parameter t where the curve exits the path's stroke.
    * 
-   * @param line - The KritzelLine object being evaluated.
+   * @param line - The UpdrawLine object being evaluated.
    * @param pathPoints - Array of adjusted path points [[x, y], ...].
    * @param halfStroke - Half of the path's stroke width for distance checks.
    * @param insideT - Parameter t known to be inside the stroke.
@@ -1260,7 +1260,7 @@ export class KritzelAnchorManager {
    * @returns The refined parameter t at the stroke boundary.
    */
   private refineCurveExitParameterForPath(
-    line: KritzelLine,
+    line: UpdrawLine,
     pathPoints: number[][],
     halfStroke: number,
     insideT: number,
@@ -1287,10 +1287,10 @@ export class KritzelAnchorManager {
    * Gets the adjusted world-space points for a Path object.
    * Wrapper that delegates to computePathAdjustedPoints.
    * 
-   * @param path - The KritzelPath object to get points for.
+   * @param path - The UpdrawPath object to get points for.
    * @returns Array of [x, y] coordinate pairs in world space.
    */
-  private getPathAdjustedPoints(path: KritzelPath): number[][] {
+  private getPathAdjustedPoints(path: UpdrawPath): number[][] {
     // Access the path's adjusted points through its internal computation
     // We'll need to manually compute them since they're private
     return this.computePathAdjustedPoints(path);
@@ -1301,10 +1301,10 @@ export class KritzelAnchorManager {
    * Applies rotation and scale transformations to convert the path's
    * internal points to world coordinates.
    * 
-   * @param path - The KritzelPath object to compute points for.
+   * @param path - The UpdrawPath object to compute points for.
    * @returns Array of [x, y] coordinate pairs in world space, or empty array if path has no points.
    */
-  private computePathAdjustedPoints(path: KritzelPath): number[][] {
+  private computePathAdjustedPoints(path: UpdrawPath): number[][] {
     if (!path.points?.length) {
       return [];
     }
@@ -1399,20 +1399,20 @@ export class KritzelAnchorManager {
    * Refines the curve exit parameter using binary search.
    * Narrows down the exact parameter t where the curve exits a polygon.
    * 
-   * @param line - The KritzelLine object being evaluated.
+   * @param line - The UpdrawLine object being evaluated.
    * @param polygonPoints - Array of points defining the polygon boundary.
    * @param insideT - Parameter t known to be inside the polygon.
    * @param outsideT - Parameter t known to be outside the polygon.
    * @returns The refined parameter t at the polygon boundary.
    */
-  private refineCurveExitParameter(line: KritzelLine, polygonPoints: KritzelPoint[], insideT: number, outsideT: number): number {
+  private refineCurveExitParameter(line: UpdrawLine, polygonPoints: UpdrawPoint[], insideT: number, outsideT: number): number {
     let tInside = insideT;
     let tOutside = outsideT;
 
     for (let i = 0; i < 8; i++) {
       const mid = (tInside + tOutside) / 2;
       const sample = this.evaluateLineAtT(line, mid);
-      const inside = KritzelGeometryHelper.isPointInPolygon({ x: sample.worldX, y: sample.worldY }, polygonPoints);
+      const inside = UpdrawGeometryHelper.isPointInPolygon({ x: sample.worldX, y: sample.worldY }, polygonPoints);
       if (inside) {
         tInside = mid;
       } else {
@@ -1427,11 +1427,11 @@ export class KritzelAnchorManager {
    * Approximates the curve parameter t for a given world point by sampling.
    * Finds the t value that produces a point closest to the target.
    * 
-   * @param line - The KritzelLine object to evaluate.
+   * @param line - The UpdrawLine object to evaluate.
    * @param target - The target point with x and y coordinates in world space.
    * @returns The parameter t (0 to 1) that produces the closest point on the line.
    */
-  private approximateParameterForWorldPoint(line: KritzelLine, target: { x: number; y: number }): number {
+  private approximateParameterForWorldPoint(line: UpdrawLine, target: { x: number; y: number }): number {
     const steps = 80;
     let bestT = 0;
     let bestDistance = Infinity;
@@ -1454,12 +1454,12 @@ export class KritzelAnchorManager {
    * For curved lines, uses quadratic Bezier interpolation.
    * For straight lines, uses linear interpolation.
    * 
-   * @param line - The KritzelLine object to evaluate.
+   * @param line - The UpdrawLine object to evaluate.
    * @param t - The parameter value (0 = start, 1 = end).
    * @returns Object containing clamped t, local coordinates, and world coordinates.
    */
   private evaluateLineAtT(
-    line: KritzelLine,
+    line: UpdrawLine,
     t: number
   ): { t: number; localX: number; localY: number; worldX: number; worldY: number } {
     const clampedT = Math.max(0, Math.min(1, t));
@@ -1484,11 +1484,11 @@ export class KritzelAnchorManager {
    * For quadratic Bezier: |B'(t)| = |2(1-t)(P1-P0) + 2t(P2-P1)|
    * For straight lines: constant length of the line segment.
    * 
-   * @param line - The KritzelLine object to evaluate.
+   * @param line - The UpdrawLine object to evaluate.
    * @param t - The parameter value (0 to 1).
    * @returns The magnitude of the derivative (units per parameter unit).
    */
-  private evaluateDerivativeSpeedAtT(line: KritzelLine, t: number): number {
+  private evaluateDerivativeSpeedAtT(line: UpdrawLine, t: number): number {
     const clampedT = Math.max(0, Math.min(1, t));
 
     if (line.controlX !== undefined && line.controlY !== undefined) {
@@ -1599,17 +1599,17 @@ export class KritzelAnchorManager {
    * For straight lines, returns a simple line path. For curved lines, extracts and
    * transforms the appropriate Bezier segment.
    * 
-   * @param line - The KritzelLine object.
+   * @param line - The UpdrawLine object.
    * @param endpoint - Which endpoint is anchored ('start' or 'end').
    * @param clipInfo - The computed clip information including coordinates and parameter t.
    * @param targetObject - The target object the line is anchored to.
    * @returns SVG path 'd' attribute string, or null if path cannot be built.
    */
   private buildAnchorPath(
-    line: KritzelLine,
+    line: UpdrawLine,
     endpoint: 'start' | 'end',
     clipInfo: AnchorClipInfo,
-    targetObject: KritzelBaseObject<Element>
+    targetObject: UpdrawBaseObject<Element>
   ): string | null {
     if (line.controlX === undefined || line.controlY === undefined || clipInfo.t === undefined) {
       return `M ${clipInfo.worldX} ${clipInfo.worldY} L ${targetObject.centerX} ${targetObject.centerY}`;
@@ -1638,12 +1638,12 @@ export class KritzelAnchorManager {
    * Builds an SVG quadratic Bezier path in world coordinates from a segment.
    * Applies line transformations to convert local segment coordinates to world space.
    * 
-   * @param line - The KritzelLine providing transformation context.
+   * @param line - The UpdrawLine providing transformation context.
    * @param segment - The QuadraticSegment to convert to a path.
    * @param reverse - If true, draws the path from end to start.
    * @returns SVG path 'd' attribute string with M and Q commands.
    */
-  private buildWorldQuadraticPath(line: KritzelLine, segment: QuadraticSegment, reverse: boolean = false): string {
+  private buildWorldQuadraticPath(line: UpdrawLine, segment: QuadraticSegment, reverse: boolean = false): string {
     const startPoint = reverse ? segment.end : segment.start;
     const endPoint = reverse ? segment.start : segment.end;
     const controlPoint = segment.control;
@@ -1656,12 +1656,12 @@ export class KritzelAnchorManager {
   }
 
   /**
-   * Converts a KritzelPolygon to an array of corner points.
+   * Converts an UpdrawPolygon to an array of corner points.
    * 
-   * @param polygon - The KritzelPolygon with topLeft, topRight, bottomRight, bottomLeft corners.
-   * @returns Array of KritzelPoint in clockwise order starting from topLeft.
+   * @param polygon - The UpdrawPolygon with topLeft, topRight, bottomRight, bottomLeft corners.
+   * @returns Array of UpdrawPoint in clockwise order starting from topLeft.
    */
-  private getPolygonPoints(polygon: KritzelPolygon): KritzelPoint[] {
+  private getPolygonPoints(polygon: UpdrawPolygon): UpdrawPoint[] {
     return [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
   }
 
@@ -1671,12 +1671,12 @@ export class KritzelAnchorManager {
    * special edge detection instead of using the default bounding box.
    * 
    * @param object - The object to check for a custom clip polygon.
-   * @returns Array of KritzelPoint defining the clip boundary, or null for default behavior.
+   * @returns Array of UpdrawPoint defining the clip boundary, or null for default behavior.
    */
-  private getClipPolygonForObject(object: KritzelBaseObject<Element>): KritzelPoint[] | null {
-    // Check if the object is a KritzelShape with a custom clip polygon
-    if (object instanceof KritzelShape) {
-      const shape = object as KritzelShape;
+  private getClipPolygonForObject(object: UpdrawBaseObject<Element>): UpdrawPoint[] | null {
+    // Check if the object is an UpdrawShape with a custom clip polygon
+    if (object instanceof UpdrawShape) {
+      const shape = object as UpdrawShape;
       return shape.getClipPolygon();
     }
     // Path objects use getPathClipPoint instead of polygon
@@ -1687,13 +1687,13 @@ export class KritzelAnchorManager {
    * Gets the clip point for a Path object by finding the stroke edge intersection.
    * Path objects don't use polygon-based clipping; they use distance-to-stroke calculations.
    * 
-   * @param object - The object to check (only processes KritzelPath objects).
+   * @param object - The object to check (only processes UpdrawPath objects).
    * @param outsidePoint - A reference point outside the path to cast a ray from.
    * @returns The intersection point on the path's stroke edge, or null if not a path or no intersection.
    */
-  private getPathClipPoint(object: KritzelBaseObject<Element>, outsidePoint: KritzelPoint): KritzelPoint | null {
-    if (object instanceof KritzelPath) {
-      const path = object as KritzelPath;
+  private getPathClipPoint(object: UpdrawBaseObject<Element>, outsidePoint: UpdrawPoint): UpdrawPoint | null {
+    if (object instanceof UpdrawPath) {
+      const path = object as UpdrawPath;
       return path.getClipPoint(outsidePoint);
     }
     return null;
@@ -1704,12 +1704,12 @@ export class KritzelAnchorManager {
    * Applies the line's rotation, scale, and translation transformations
    * to convert from internal SVG coordinates to canvas world space.
    * 
-   * @param line - The KritzelLine providing transformation context.
+   * @param line - The UpdrawLine providing transformation context.
    * @param localX - X coordinate in the line's local SVG space.
    * @param localY - Y coordinate in the line's local SVG space.
    * @returns Object with x and y coordinates in world space.
    */
-  lineLocalToWorld(line: KritzelLine, localX: number, localY: number): { x: number; y: number } {
+  lineLocalToWorld(line: UpdrawLine, localX: number, localY: number): { x: number; y: number } {
     const px = localX - line.x;
     const py = localY - line.y;
 
@@ -1735,12 +1735,12 @@ export class KritzelAnchorManager {
    * Applies inverse transformations (scale, rotation, translation) to convert
    * from canvas world space to the line's internal SVG coordinate system.
    * 
-   * @param line - The KritzelLine providing transformation context.
+   * @param line - The UpdrawLine providing transformation context.
    * @param worldX - X coordinate in world/canvas space.
    * @param worldY - Y coordinate in world/canvas space.
    * @returns Object with x and y coordinates in the line's local SVG space.
    */
-  private lineWorldToLocal(line: KritzelLine, worldX: number, worldY: number): { x: number; y: number } {
+  private lineWorldToLocal(line: UpdrawLine, worldX: number, worldY: number): { x: number; y: number } {
     const safeLineScale = this.getSafeScale(line.scale);
     const dx = (worldX - line.translateX) * safeLineScale;
     const dy = (worldY - line.translateY) * safeLineScale;
@@ -1796,8 +1796,8 @@ export class KritzelAnchorManager {
    * @param object - The potential ancestor group.
    * @param descendant - The potential descendant.
    */
-  private containsDescendant(object: KritzelBaseObject<Element> | undefined, descendant: KritzelBaseObject<Element>, visited = new Set<string>()): boolean {
-    if (!(object instanceof KritzelGroup) || visited.has(object.id)) {
+  private containsDescendant(object: UpdrawBaseObject<Element> | undefined, descendant: UpdrawBaseObject<Element>, visited = new Set<string>()): boolean {
+    if (!(object instanceof UpdrawGroup) || visited.has(object.id)) {
       return false;
     }
     visited.add(object.id);
@@ -1812,14 +1812,14 @@ export class KritzelAnchorManager {
    * @param object - The object to check for anchorability.
    * @returns True if the object can be anchored to, false otherwise.
    */
-  isAnchorable(object: KritzelBaseObject<Element>): boolean {
+  isAnchorable(object: UpdrawBaseObject<Element>): boolean {
     // Exclude selection-related objects
-    if (object instanceof KritzelSelectionBox || object instanceof KritzelSelectionGroup) {
+    if (object instanceof UpdrawSelectionBox || object instanceof UpdrawSelectionGroup) {
       return false;
     }
 
     // Exclude line objects - lines cannot be anchored to other lines
-    if (object instanceof KritzelLine) {
+    if (object instanceof UpdrawLine) {
       return false;
     }
 

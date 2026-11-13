@@ -1,31 +1,31 @@
-# Kritzel Engine for Angular
+# Updraw Engine for Angular
 
-Build infinite canvas and collaborative whiteboard experiences in Angular with Kritzel's native wrapper and TypeScript-first API.
+Build infinite canvas and collaborative whiteboard experiences in Angular with Updraw's native wrapper and TypeScript-first API.
 
-Kritzel is a framework-agnostic infinite canvas and collaborative whiteboard engine. It provides web components that work natively in any framework, with a first-class Angular wrapper for idiomatic template integration.
+Updraw is a framework-agnostic infinite canvas and collaborative whiteboard engine. It provides web components that work natively in any framework, with a first-class Angular wrapper for idiomatic template integration.
 
-Kritzel handles the hard parts of canvas-based applications — infinite pan/zoom, hit-testing, CRDT-based collaboration, undo/redo, and cross-browser rendering — so you can focus on your product's domain logic.
+Updraw handles the hard parts of canvas-based applications — infinite pan/zoom, hit-testing, CRDT-based collaboration, undo/redo, and cross-browser rendering — so you can focus on your product's domain logic.
 
-**Full documentation:** [kritzel.io/docs/angular/getting-started/quick-start](https://kritzel.io/docs/angular/getting-started/quick-start)
+**Full documentation:** [updraw.io/docs/angular/getting-started/quick-start](https://updraw.io/docs/angular/getting-started/quick-start)
 
 ## Installation
 
 ```bash
-npm install @kritzel/angular-engine
+npm install @updraw/angular-engine
 ```
 
 ## Setup
 
-Register Kritzel in your application config:
+Register Updraw in your application config:
 
 ```ts
 import { ApplicationConfig } from '@angular/core';
-import { provideKritzel } from '@kritzel/angular-engine';
+import { provideUpdraw } from '@updraw/angular-engine';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     // ... other providers
-    provideKritzel(),
+    provideUpdraw(),
   ],
 };
 ```
@@ -34,13 +34,13 @@ Then use the component in your template:
 
 ```ts
 import { Component } from '@angular/core';
-import { KritzelEngine } from '@kritzel/angular-engine';
+import { UpdrawEngine } from '@updraw/angular-engine';
 
 @Component({
   selector: 'app-editor',
-  imports: [KritzelEngine],
-  template: `<kritzel-engine></kritzel-engine>`,
-  styles: [`kritzel-engine { display: block; width: 100%; height: 100vh; }`],
+  imports: [UpdrawEngine],
+  template: `<updraw-engine></updraw-engine>`,
+  styles: [`updraw-engine { display: block; width: 100%; height: 100vh; }`],
 })
 export class EditorComponent {}
 ```
@@ -55,16 +55,16 @@ By default, the engine uses an empty sync provider list, so canvas state is rese
 
 ```ts
 import { Component } from '@angular/core';
-import { IndexedDBSyncProvider, KritzelEngine, KritzelSyncConfig } from '@kritzel/angular-engine';
+import { IndexedDBSyncProvider, UpdrawEngine, UpdrawSyncConfig } from '@updraw/angular-engine';
 
 @Component({
   selector: 'app-editor',
-  imports: [KritzelEngine],
-  template: `<kritzel-engine [syncConfig]="syncConfig"></kritzel-engine>`,
-  styles: [`kritzel-engine { display: block; width: 100%; height: 100vh; }`],
+  imports: [UpdrawEngine],
+  template: `<updraw-engine [syncConfig]="syncConfig"></updraw-engine>`,
+  styles: [`updraw-engine { display: block; width: 100%; height: 100vh; }`],
 })
 export class EditorComponent {
-  readonly syncConfig: KritzelSyncConfig = {
+  readonly syncConfig: UpdrawSyncConfig = {
     providers: [IndexedDBSyncProvider],
   };
 }
@@ -72,7 +72,7 @@ export class EditorComponent {
 
 ### Apply Full Viewport Styling
 
-To ensure the Kritzel engine occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g. `styles.css`):
+To ensure the Updraw engine occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g. `styles.css`):
 
 ```css
 html,
@@ -100,17 +100,17 @@ For optimal rendering and responsiveness on mobile devices, add this meta tag wi
 
 ## Fundamentals
 
-Kritzel is composed of a small set of core concepts that work together to power your canvas experience:
+Updraw is composed of a small set of core concepts that work together to power your canvas experience:
 
-- **[Components](https://kritzel.io/docs/angular/getting-started/basic-usage)** — Two entry points, a batteries-included editor and a headless engine, to match any integration style.
-- **[Tools](https://kritzel.io/docs/angular/fundamentals/tools)** — State-machine interaction handlers that define how users draw, select, and manipulate the canvas.
-- **[Objects](https://kritzel.io/docs/angular/fundamentals/objects)** — The visual building blocks on the canvas — paths, shapes, text, and images with shared spatial properties.
-- **[Workspaces](https://kritzel.io/docs/angular/fundamentals/workspaces)** — Containers that manage an entire canvas collection, view state, and editor configuration.
-- **[Theming](https://kritzel.io/docs/angular/customization/themes)** — Built-in light and dark themes with full CSS variable customization to match your brand.
-- **[Collaboration](https://kritzel.io/docs/angular/advanced/collaboration)** — Real-time multi-user sync powered by Yjs CRDTs with pluggable transport providers.
+- **[Components](https://updraw.io/docs/angular/getting-started/basic-usage)** — Two entry points, a batteries-included editor and a headless engine, to match any integration style.
+- **[Tools](https://updraw.io/docs/angular/fundamentals/tools)** — State-machine interaction handlers that define how users draw, select, and manipulate the canvas.
+- **[Objects](https://updraw.io/docs/angular/fundamentals/objects)** — The visual building blocks on the canvas — paths, shapes, text, and images with shared spatial properties.
+- **[Workspaces](https://updraw.io/docs/angular/fundamentals/workspaces)** — Containers that manage an entire canvas collection, view state, and editor configuration.
+- **[Theming](https://updraw.io/docs/angular/customization/themes)** — Built-in light and dark themes with full CSS variable customization to match your brand.
+- **[Collaboration](https://updraw.io/docs/angular/advanced/collaboration)** — Real-time multi-user sync powered by Yjs CRDTs with pluggable transport providers.
 
-Learn more in the [full documentation](https://kritzel.io/docs/angular/getting-started/basic-usage).
+Learn more in the [full documentation](https://updraw.io/docs/angular/getting-started/basic-usage).
 
 ## License
 
-Kritzel is released under the [MIT License](./LICENSE.md).
+Updraw is released under the [MIT License](./LICENSE.md).

@@ -1,24 +1,24 @@
 ﻿import { Component, Host, h, State, Event, EventEmitter, Method, Prop } from '@stencil/core';
-import { DropdownOption } from '../kritzel-dropdown/kritzel-dropdown';
-import { KritzelPillTab } from '../kritzel-pill-tabs/kritzel-pill-tabs';
-import { KritzelTermKey } from '@kritzel/core';
+import { DropdownOption } from '../updraw-dropdown/updraw-dropdown';
+import { UpdrawPillTab } from '../updraw-pill-tabs/updraw-pill-tabs';
+import { UpdrawTermKey } from '@updraw/core';
 
 type ExportTab = 'viewport' | 'workspace';
 type ViewportExportFormat = 'png' | 'svg';
 
 @Component({
-  tag: 'kritzel-export',
-  styleUrl: 'kritzel-export.css',
+  tag: 'updraw-export',
+  styleUrl: 'updraw-export.css',
   shadow: true,
 })
-export class KritzelExport {
+export class UpdrawExport {
   /**
    * The name of the current workspace, used as default filename
    */
   @Prop() workspaceName: string = 'workspace';
 
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
 
   @State() isDialogOpen: boolean = false;
   @State() previewUrl: string;
@@ -31,7 +31,7 @@ export class KritzelExport {
   @Event() exportSvg: EventEmitter<void>;
   @Event() exportJson: EventEmitter<string>;
 
-  private get tabs(): KritzelPillTab[] {
+  private get tabs(): UpdrawPillTab[] {
     return [
       { id: 'viewport', label: this.terms['export.tabs.viewport'] ?? 'Export Viewport' },
       { id: 'workspace', label: this.terms['export.tabs.workspace'] ?? 'Export Workspace' },
@@ -99,21 +99,21 @@ export class KritzelExport {
             <img src={this.previewUrl} alt="Viewport Preview" />
           </div>
         )}
-        <kritzel-input
+        <updraw-input
           label={this.terms['export.filename.label'] ?? 'Filename'}
           value={this.exportFilename}
           placeholder={this.terms['export.filename.placeholder'] ?? 'Enter filename'}
           suffix={`.${this.viewportExportFormat}`}
           onValueChange={this.handleFilenameChange}
-        ></kritzel-input>
+        ></updraw-input>
         <div class="format-selection">
           <label>{this.terms['export.format.label'] ?? 'Format'}</label>
-          <kritzel-dropdown
+          <updraw-dropdown
             options={this.viewportFormatOptions}
             value={this.viewportExportFormat}
             forceOpenDirection="up"
             onValueChanged={this.handleViewportFormatChange}
-          ></kritzel-dropdown>
+          ></updraw-dropdown>
         </div>
       </div>
     );
@@ -122,13 +122,13 @@ export class KritzelExport {
   private renderWorkspaceExport() {
     return (
       <div class="export-tab-content">
-        <kritzel-input
+        <updraw-input
           label={this.terms['export.filename.label'] ?? 'Filename'}
           value={this.exportFilename}
           placeholder={this.terms['export.filename.placeholder'] ?? 'Enter filename'}
           suffix=".json"
           onValueChange={this.handleFilenameChange}
-        ></kritzel-input>
+        ></updraw-input>
       </div>
     );
   }
@@ -136,7 +136,7 @@ export class KritzelExport {
   render() {
     return (
       <Host>
-        <kritzel-dialog
+        <updraw-dialog
           isOpen={this.isDialogOpen}
           dialogTitle={this.terms['export.dialogTitle'] ?? 'Export'}
           closable={true}
@@ -144,11 +144,11 @@ export class KritzelExport {
           onDialogClose={this.closeDialog}
         >
           <div class="export-content">
-            <kritzel-pill-tabs
+            <updraw-pill-tabs
               tabs={this.tabs}
               value={this.activeTab}
               onValueChange={this.handleTabChange}
-            ></kritzel-pill-tabs>
+            ></updraw-pill-tabs>
 
             {this.activeTab === 'viewport' && this.renderViewportExport()}
             {this.activeTab === 'workspace' && this.renderWorkspaceExport()}
@@ -158,7 +158,7 @@ export class KritzelExport {
               {this.terms['export.exportButton'] ?? 'Export'}
             </button>
           </div>
-        </kritzel-dialog>
+        </updraw-dialog>
       </Host>
     );
   }

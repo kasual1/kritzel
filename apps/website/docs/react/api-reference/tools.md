@@ -1,24 +1,24 @@
 ---
 sidebar_label: Tools
-title: "Tools | Kritzel for React"
-description: "Reference for all drawing tool classes and tool configuration interfaces in Kritzel: base tool, selection, brush, line, shape, text, image, and eraser."
+title: "Tools | Updraw for React"
+description: "Reference for all drawing tool classes and tool configuration interfaces in Updraw: base tool, selection, brush, line, shape, text, image, and eraser."
 toc_max_heading_level: 2
 ---
 # Tools
 
-This is the API reference for all drawing tool classes and tool configurations in Kritzel.
+This is the API reference for all drawing tool classes and tool configurations in Updraw.
 Every tool handles user interactions on the canvas and can be registered and configured via the editor.
 
 ## Base Tool
 
-`KritzelBaseTool` is the abstract base class for all tools in Kritzel. All specific tool implementations extend this class and inherit its properties and lifecycle hooks.
+`UpdrawBaseTool` is the abstract base class for all tools in Updraw. All specific tool implementations extend this class and inherit its properties and lifecycle hooks.
 
 ### Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
 | __class__ | string | Identifier used for object serialization and deserialization |
-| toolType | KritzelToolType | Type key identifying the tool type across builds ('base', 'selection', 'brush', 'line', 'shape', 'text', 'image', 'eraser') |
+| toolType | UpdrawToolType | Type key identifying the tool type across builds ('base', 'selection', 'brush', 'line', 'shape', 'text', 'image', 'eraser') |
 | name | string | Human-readable name of the tool |
 
 ### Methods
@@ -91,19 +91,19 @@ deserialize(object: any)
 
 ## Selection Tool
 
-`KritzelSelectionTool` enables selecting, moving, resizing, and rotating objects on the canvas. It manages selection handles, multi-selection bounding boxes, and object transformations.
+`UpdrawSelectionTool` enables selecting, moving, resizing, and rotating objects on the canvas. It manages selection handles, multi-selection bounding boxes, and object transformations.
 
 ### Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
 | toolType | 'selection' | Type identifier for the selection tool |
-| selectionHandler | KritzelSelectionHandler | Handler for selection box and multi-select logic |
-| moveHandler | KritzelMoveHandler | Handler for dragging and moving selected objects |
-| resizeHandler | KritzelResizeHandler | Handler for resizing selected objects |
-| rotationHandler | KritzelRotationHandler | Handler for rotating selected objects |
-| hoverHandler | KritzelHoverHandler | Handler for object hover highlighting |
-| lineHandleHandler | KritzelLineHandleHandler | Handler for manipulating line endpoint anchors |
+| selectionHandler | UpdrawSelectionHandler | Handler for selection box and multi-select logic |
+| moveHandler | UpdrawMoveHandler | Handler for dragging and moving selected objects |
+| resizeHandler | UpdrawResizeHandler | Handler for resizing selected objects |
+| rotationHandler | UpdrawRotationHandler | Handler for rotating selected objects |
+| hoverHandler | UpdrawHoverHandler | Handler for object hover highlighting |
+| lineHandleHandler | UpdrawLineHandleHandler | Handler for manipulating line endpoint anchors |
 | palette | ThemeAwareColor[] | Active color palette available for modifying selected objects |
 
 ### Methods
@@ -128,7 +128,7 @@ getSelectedObjects()
 
 ## Brush Tool
 
-`KritzelBrushTool` handles freehand drawing on the canvas, creating vector `KritzelPath` objects as the pointer moves.
+`UpdrawBrushTool` handles freehand drawing on the canvas, creating vector `UpdrawPath` objects as the pointer moves.
 
 ### Properties
 
@@ -143,7 +143,7 @@ getSelectedObjects()
 
 ### Configuration
 
-Toolbar items can configure initial settings for the brush tool using `KritzelBrushToolConfig`:
+Toolbar items can configure initial settings for the brush tool using `UpdrawBrushToolConfig`:
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -157,7 +157,7 @@ Toolbar items can configure initial settings for the brush tool using `KritzelBr
 
 ## Line Tool
 
-`KritzelLineTool` creates straight or curved `KritzelLine` objects with optional arrowheads by dragging from a start point to an end point.
+`UpdrawLineTool` creates straight or curved `UpdrawLine` objects with optional arrowheads by dragging from a start point to an end point.
 
 ### Properties
 
@@ -173,7 +173,7 @@ Toolbar items can configure initial settings for the brush tool using `KritzelBr
 
 ### Configuration
 
-Toolbar items configure initial line settings using `KritzelLineToolConfig`:
+Toolbar items configure initial line settings using `UpdrawLineToolConfig`:
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -188,7 +188,7 @@ Toolbar items configure initial line settings using `KritzelLineToolConfig`:
 
 ## Shape Tool
 
-`KritzelShapeTool` creates geometric `KritzelShape` objects (rectangles, ellipses, triangles) by dragging across the canvas.
+`UpdrawShapeTool` creates geometric `UpdrawShape` objects (rectangles, ellipses, triangles) by dragging across the canvas.
 
 ### Properties
 
@@ -208,7 +208,7 @@ Toolbar items configure initial line settings using `KritzelLineToolConfig`:
 
 ### Configuration
 
-Toolbar items configure initial shape settings using `KritzelShapeToolConfig`:
+Toolbar items configure initial shape settings using `UpdrawShapeToolConfig`:
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -227,7 +227,7 @@ Toolbar items configure initial shape settings using `KritzelShapeToolConfig`:
 
 ## Text Tool
 
-`KritzelTextTool` places and edits rich text `KritzelText` objects on the canvas using an inline ProseMirror editor.
+`UpdrawTextTool` places and edits rich text `UpdrawText` objects on the canvas using an inline ProseMirror editor.
 
 ### Properties
 
@@ -243,7 +243,7 @@ Toolbar items configure initial shape settings using `KritzelShapeToolConfig`:
 
 ### Configuration
 
-Toolbar items configure initial text tool settings using `KritzelTextToolConfig`:
+Toolbar items configure initial text tool settings using `UpdrawTextToolConfig`:
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -251,7 +251,7 @@ Toolbar items configure initial text tool settings using `KritzelTextToolConfig`
 | size | number | Initial font size in points |
 | opacity | number | Optional initial opacity (0–1) |
 | fontFamily | string | Initial font family name |
-| availableFonts | KritzelFontRegistration[] | Optional array of registered fonts available in the tool UI |
+| availableFonts | UpdrawFontRegistration[] | Optional array of registered fonts available in the tool UI |
 | palette | ThemeAwareColor[] | Color palette options |
 | sizes | number[] | Optional font size presets |
 
@@ -259,7 +259,7 @@ Toolbar items configure initial text tool settings using `KritzelTextToolConfig`
 
 ## Image Tool
 
-`KritzelImageTool` handles uploading and inserting raster `KritzelImage` objects onto the canvas via a native file picker dialog.
+`UpdrawImageTool` handles uploading and inserting raster `UpdrawImage` objects onto the canvas via a native file picker dialog.
 
 ### Properties
 
@@ -274,7 +274,7 @@ Toolbar items configure initial text tool settings using `KritzelTextToolConfig`
 
 ## Eraser Tool
 
-`KritzelEraserTool` removes objects or path segments touched by the eraser during drag gestures.
+`UpdrawEraserTool` removes objects or path segments touched by the eraser during drag gestures.
 
 ### Properties
 

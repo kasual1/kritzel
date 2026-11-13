@@ -1,16 +1,16 @@
-import { KritzelContextMenuHandler } from './context-menu.handler';
-import { KritzelCore } from '../core/core.class';
-import { KritzelSelectionTool } from '../tools/selection-tool.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelSelectionBox } from '../objects/selection-box.class';
-import { KritzelGroup } from '../objects/group.class';
+import { UpdrawContextMenuHandler } from './context-menu.handler';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawSelectionTool } from '../tools/selection-tool.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawSelectionBox } from '../objects/selection-box.class';
+import { UpdrawGroup } from '../objects/group.class';
 
 jest.mock('../objects/selection-group.class');
 
-describe('KritzelContextMenuHandler', () => {
-  let contextMenuHandler: KritzelContextMenuHandler;
-  let mockCore: jest.Mocked<KritzelCore>;
-  let mockSelectionTool: jest.Mocked<KritzelSelectionTool>;
+describe('UpdrawContextMenuHandler', () => {
+  let contextMenuHandler: UpdrawContextMenuHandler;
+  let mockCore: jest.Mocked<UpdrawCore>;
+  let mockSelectionTool: jest.Mocked<UpdrawSelectionTool>;
   let mockSelectionGroup: {
     addOrRemove: jest.Mock;
     isSelected: boolean;
@@ -53,15 +53,15 @@ describe('KritzelContextMenuHandler', () => {
     } as PointerEvent;
   };
 
-  const createGroup = (id: string, childIds: string[], rotation = 0): KritzelGroup => {
-    const group = new KritzelGroup();
+  const createGroup = (id: string, childIds: string[], rotation = 0): UpdrawGroup => {
+    const group = new UpdrawGroup();
     group.id = id;
     group.childIds = childIds;
     group.rotation = rotation;
     return group;
   };
 
-  // Selection group returned by the next KritzelSelectionGroup.create call; records what gets selected.
+  // Selection group returned by the next UpdrawSelectionGroup.create call; records what gets selected.
   const stubSelectionGroup = () => {
     const selectionGroup = {
       addOrRemove: jest.fn(),
@@ -70,7 +70,7 @@ describe('KritzelContextMenuHandler', () => {
       objects: [] as unknown[],
     };
     selectionGroup.addOrRemove.mockImplementation((object: unknown) => selectionGroup.objects.push(object));
-    (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
+    (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
     return selectionGroup;
   };
 
@@ -89,10 +89,10 @@ describe('KritzelContextMenuHandler', () => {
         cancelPendingDrag: jest.fn(),
       },
       cancelTitlebarGesture: jest.fn(),
-    } as unknown as jest.Mocked<KritzelSelectionTool>;
+    } as unknown as jest.Mocked<UpdrawSelectionTool>;
 
-    // Make mockSelectionTool an instance of KritzelSelectionTool
-    Object.setPrototypeOf(mockSelectionTool, KritzelSelectionTool.prototype);
+    // Make mockSelectionTool an instance of UpdrawSelectionTool
+    Object.setPrototypeOf(mockSelectionTool, UpdrawSelectionTool.prototype);
 
     mockState = {
       activeTool: mockSelectionTool,
@@ -150,9 +150,9 @@ describe('KritzelContextMenuHandler', () => {
       localizationManager: {
         translate: jest.fn((key: string) => key),
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    (KritzelSelectionGroup.create as jest.Mock).mockImplementation(() => {
+    (UpdrawSelectionGroup.create as jest.Mock).mockImplementation(() => {
       const group = {
         addOrRemove: jest.fn(),
         isSelected: false,
@@ -162,7 +162,7 @@ describe('KritzelContextMenuHandler', () => {
       return group;
     });
 
-    contextMenuHandler = new KritzelContextMenuHandler(mockCore, globalContextMenuItems, objectContextMenuItems);
+    contextMenuHandler = new UpdrawContextMenuHandler(mockCore, globalContextMenuItems, objectContextMenuItems);
   });
 
   describe('constructor', () => {
@@ -242,7 +242,7 @@ describe('KritzelContextMenuHandler', () => {
     describe('selection box cleanup', () => {
       it('should remove selection box if present', () => {
         const mockSelectionBox = { id: 'selection-box' };
-        Object.setPrototypeOf(mockSelectionBox, KritzelSelectionBox.prototype);
+        Object.setPrototypeOf(mockSelectionBox, UpdrawSelectionBox.prototype);
 
         Object.defineProperty(mockCore.store, 'selectionBox', {
           get: () => mockSelectionBox,
@@ -283,7 +283,7 @@ describe('KritzelContextMenuHandler', () => {
 
         contextMenuHandler.handleContextMenu(event);
 
-        expect(KritzelSelectionGroup.create).toHaveBeenCalledWith(mockCore);
+        expect(UpdrawSelectionGroup.create).toHaveBeenCalledWith(mockCore);
         expect(mockCore.addSelectionGroup).toHaveBeenCalled();
       });
 
@@ -296,7 +296,7 @@ describe('KritzelContextMenuHandler', () => {
           objects: [],
         };
 
-        (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(createdGroup);
+        (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(createdGroup);
         (mockCore.getObjectFromPointerEvent as jest.Mock).mockReturnValue(mockObject);
 
         const event = createPointerEvent();
@@ -329,7 +329,7 @@ describe('KritzelContextMenuHandler', () => {
 
       it('should not create selection group when clicking on SelectionGroup', () => {
         const mockSelectionGroupObj = { id: 'sel-group' };
-        Object.setPrototypeOf(mockSelectionGroupObj, KritzelSelectionGroup.prototype);
+        Object.setPrototypeOf(mockSelectionGroupObj, UpdrawSelectionGroup.prototype);
 
         (mockCore.getObjectFromPointerEvent as jest.Mock).mockReturnValue(mockSelectionGroupObj);
 
@@ -337,12 +337,12 @@ describe('KritzelContextMenuHandler', () => {
 
         contextMenuHandler.handleContextMenu(event);
 
-        expect(KritzelSelectionGroup.create).not.toHaveBeenCalled();
+        expect(UpdrawSelectionGroup.create).not.toHaveBeenCalled();
       });
 
       it('should not create selection group when clicking on SelectionBox', () => {
         const mockSelectionBoxObj = { id: 'sel-box' };
-        Object.setPrototypeOf(mockSelectionBoxObj, KritzelSelectionBox.prototype);
+        Object.setPrototypeOf(mockSelectionBoxObj, UpdrawSelectionBox.prototype);
 
         (mockCore.getObjectFromPointerEvent as jest.Mock).mockReturnValue(mockSelectionBoxObj);
 
@@ -350,7 +350,7 @@ describe('KritzelContextMenuHandler', () => {
 
         contextMenuHandler.handleContextMenu(event);
 
-        expect(KritzelSelectionGroup.create).not.toHaveBeenCalled();
+        expect(UpdrawSelectionGroup.create).not.toHaveBeenCalled();
       });
 
       it('should not create selection group when no object clicked', () => {
@@ -360,7 +360,7 @@ describe('KritzelContextMenuHandler', () => {
 
         contextMenuHandler.handleContextMenu(event);
 
-        expect(KritzelSelectionGroup.create).not.toHaveBeenCalled();
+        expect(UpdrawSelectionGroup.create).not.toHaveBeenCalled();
       });
 
       it('should set isSelecting to false when selecting object', () => {
@@ -667,7 +667,7 @@ describe('KritzelContextMenuHandler', () => {
     it('opens the object menu for the owner of a right-clicked titlebar', () => {
       const owner = { id: 'owner-1', rotation: 0 };
       const createdGroup = { addOrRemove: jest.fn(), isSelected: false, rotation: 0, objects: [] };
-      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(createdGroup);
+      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(createdGroup);
       (mockCore.objectTitlebarManager.getOwnerFromEvent as jest.Mock).mockReturnValue(owner);
 
       contextMenuHandler.handleContextMenu(createPointerEvent());
@@ -695,7 +695,7 @@ describe('KritzelContextMenuHandler', () => {
 
       contextMenuHandler.handleContextMenu(createPointerEvent());
 
-      expect(KritzelSelectionGroup.create).not.toHaveBeenCalled();
+      expect(UpdrawSelectionGroup.create).not.toHaveBeenCalled();
       expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
       expect(mockCore.addSelectionGroup).not.toHaveBeenCalled();
     });

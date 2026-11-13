@@ -1,14 +1,14 @@
 ﻿import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
-import { KritzelNotification } from '@kritzel/core';
+import { UpdrawNotification } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-notification-card',
-  styleUrl: 'kritzel-notification-card.css',
+  tag: 'updraw-notification-card',
+  styleUrl: 'updraw-notification-card.css',
   shadow: true,
 })
-export class KritzelNotificationCard {
+export class UpdrawNotificationCard {
   /** Notification data rendered by this card. */
-  @Prop() notification?: KritzelNotification;
+  @Prop() notification?: UpdrawNotification;
 
   /** Whether a formatted timestamp should be displayed when available. */
   @Prop() showTimestamp: boolean = true;
@@ -35,7 +35,7 @@ export class KritzelNotificationCard {
     this.hoverChange.emit(false);
   };
 
-  private get type(): KritzelNotification['type'] {
+  private get type(): UpdrawNotification['type'] {
     return this.notification?.type ?? 'info';
   }
 
@@ -43,7 +43,7 @@ export class KritzelNotificationCard {
     return this.type === 'error' ? 'alert' : 'status';
   }
 
-  private getTypeLabel(type: KritzelNotification['type']): string {
+  private getTypeLabel(type: UpdrawNotification['type']): string {
     switch (type) {
       case 'warning':
         return 'Warning';
@@ -91,7 +91,7 @@ export class KritzelNotificationCard {
                 </time>
               )}
               <button class="dismiss-button" type="button" aria-label="Dismiss notification" onClick={this.handleDismissClick}>
-                <kritzel-icon name="x" size={16}></kritzel-icon>
+                <updraw-icon name="x" size={16}></updraw-icon>
               </button>
             </div>
           </header>

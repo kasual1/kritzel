@@ -3,7 +3,7 @@ import {
   provideZoneChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideKritzel } from '@kritzel/angular-editor';
+import { provideUpdraw } from '@updraw/angular-editor';
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 
@@ -13,6 +13,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes),
     provideHttpClient(),
-    provideKritzel(),
+    provideUpdraw(),
   ]
 };

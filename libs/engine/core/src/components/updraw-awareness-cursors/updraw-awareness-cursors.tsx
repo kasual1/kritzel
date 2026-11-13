@@ -1,5 +1,5 @@
 import { Component, Host, Prop, State, h } from '@stencil/core';
-import { KritzelCore, KritzelPath, KritzelLine, KritzelRemoteCursorState, IKritzelUser, KritzelViewportOverlayHelper } from '@kritzel/core';
+import { UpdrawCore, UpdrawPath, UpdrawLine, UpdrawRemoteCursorState, IUpdrawUser, UpdrawViewportOverlayHelper } from '@updraw/core';
 import { CursorArrow, CursorLabel, EdgeIndicator } from '../shared/cursor/cursor-visuals';
 
 const STALE_THRESHOLD_MS = 10_000;
@@ -7,16 +7,16 @@ const REMOVE_THRESHOLD_MS = 30_000;
 const CLEANUP_INTERVAL_MS = 3_000;
 
 @Component({
-  tag: 'kritzel-awareness-cursors',
-  styleUrls: ['../shared/cursor/cursor-visuals.css', 'kritzel-awareness-cursors.css'],
+  tag: 'updraw-awareness-cursors',
+  styleUrls: ['../shared/cursor/cursor-visuals.css', 'updraw-awareness-cursors.css'],
   shadow: true,
 })
-export class KritzelAwarenessCursors {
-  @Prop() core!: KritzelCore;
+export class UpdrawAwarenessCursors {
+  @Prop() core!: UpdrawCore;
   @Prop() showEdgeIndicators: boolean = true;
   @Prop() edgeIndicatorPadding: number = 8;
 
-  @State() remoteCursors: Map<number, KritzelRemoteCursorState> = new Map();
+  @State() remoteCursors: Map<number, UpdrawRemoteCursorState> = new Map();
   @State() objectVersion: number = 0;
 
   private cleanupIntervalId: ReturnType<typeof setInterval> | undefined;
@@ -75,7 +75,7 @@ export class KritzelAwarenessCursors {
 
       activeClientIds.add(clientId);
 
-      const user = state.user as IKritzelUser;
+      const user = state.user as IUpdrawUser;
       const cursor = state.cursor as { x: number; y: number } | null;
       const activeObjectId = (state.activeObjectId as string) || null;
       const selectionBox = (state.selectionBox as { x: number; y: number; width: number; height: number }) || null;
@@ -126,7 +126,7 @@ export class KritzelAwarenessCursors {
     }
   }
 
-  private isStale(cursor: KritzelRemoteCursorState): boolean {
+  private isStale(cursor: UpdrawRemoteCursorState): boolean {
     return Date.now() - cursor.lastCursorMove > STALE_THRESHOLD_MS;
   }
 
@@ -152,7 +152,7 @@ export class KritzelAwarenessCursors {
     const obj = this.core.store.objects?.findById(objectId);
     if (!obj) return null;
 
-    if (obj instanceof KritzelPath && !obj.isCompleted) {
+    if (obj instanceof UpdrawPath && !obj.isCompleted) {
       const lastPoint = obj.points[obj.points.length - 1];
       if (!lastPoint) return null;
       return {
@@ -161,7 +161,7 @@ export class KritzelAwarenessCursors {
       };
     }
 
-    if (obj instanceof KritzelLine && !obj.isCompleted) {
+    if (obj instanceof UpdrawLine && !obj.isCompleted) {
       return {
         x: (obj.endX - obj.x) / obj.scale + obj.translateX,
         y: (obj.endY - obj.y) / obj.scale + obj.translateY,
@@ -176,14 +176,14 @@ export class KritzelAwarenessCursors {
   }
 
   private worldToScreen(worldX: number, worldY: number): { x: number; y: number } {
-    return KritzelViewportOverlayHelper.worldToScreen(this.core.store.state, worldX, worldY);
+    return UpdrawViewportOverlayHelper.worldToScreen(this.core.store.state, worldX, worldY);
   }
 
   private isInViewport(screenX: number, screenY: number): boolean {
-    return KritzelViewportOverlayHelper.isInViewport(this.core.store.state, screenX, screenY);
+    return UpdrawViewportOverlayHelper.isInViewport(this.core.store.state, screenX, screenY);
   }
 
-  private getUserDisplayName(user: IKritzelUser): string {
+  private getUserDisplayName(user: IUpdrawUser): string {
     if (user.displayName) return user.displayName;
     if (user.firstName || user.lastName) {
       return [user.firstName, user.lastName].filter(Boolean).join(' ');
@@ -270,7 +270,7 @@ export class KritzelAwarenessCursors {
   }
 
   private renderCursor(
-    cursor: KritzelRemoteCursorState,
+    cursor: UpdrawRemoteCursorState,
     screenX: number,
     screenY: number,
     color: string,
@@ -290,14 +290,14 @@ export class KritzelAwarenessCursors {
   }
 
   private renderEdgeIndicator(
-    cursor: KritzelRemoteCursorState,
+    cursor: UpdrawRemoteCursorState,
     screenX: number,
     screenY: number,
     color: string,
     stale: boolean,
     trackingObject: boolean,
   ) {
-    const clamped = KritzelViewportOverlayHelper.clampToEdge(this.core.store.state, screenX, screenY, this.edgeIndicatorPadding);
+    const clamped = UpdrawViewportOverlayHelper.clampToEdge(this.core.store.state, screenX, screenY, this.edgeIndicatorPadding);
     const displayName = this.getUserDisplayName(cursor.user);
 
     return (
@@ -308,7 +308,7 @@ export class KritzelAwarenessCursors {
         angle={clamped.angle}
         edge={clamped.edge}
         color={color}
-        label={KritzelViewportOverlayHelper.getInitials(displayName)}
+        label={UpdrawViewportOverlayHelper.getInitials(displayName)}
         classes={{ stale, 'tracking-object': trackingObject }}
       />
     );

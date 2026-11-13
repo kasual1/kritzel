@@ -1,13 +1,13 @@
-// TEMP: demo of the two modes of KritzelChatSession against a mocked server; delete with pages/temp/.
+// TEMP: demo of the two modes of UpdrawChatSession against a mocked server; delete with pages/temp/.
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import {
-  KritzelAgent,
-  KritzelBaseObject,
-  KritzelChatBoxChip,
-  KritzelChatSession,
-  KritzelEditor,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawAgent,
+  UpdrawBaseObject,
+  UpdrawChatBoxChip,
+  UpdrawChatSession,
+  UpdrawEditor,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { ToolbarComponent } from '../../components/toolbar.component';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
@@ -20,7 +20,7 @@ const SYSTEM = 'You draw on a whiteboard. Look at the canvas before you change i
 
 @Component({
   selector: 'app-temp-chat-modes',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -38,7 +38,7 @@ const SYSTEM = 'You draw on a whiteboard. Look at the canvas before you change i
       <span class="answer" aria-live="polite">{{ answer() ? 'Assistant: ' + answer() : '' }}</span>
     </p>
     <div class="editor">
-      <kritzel-editor
+      <updraw-editor
         editorId="temp-chat-modes"
         [theme]="'light'"
         [themes]="themes"
@@ -51,7 +51,7 @@ const SYSTEM = 'You draw on a whiteboard. Look at the canvas before you change i
         [isWorkspaceManagerVisible]="false"
         (objectsSelectionChange)="onSelectionChange($event.detail)"
         (chatChipRemove)="onChipRemove($event.detail)"
-      ></kritzel-editor>
+      ></updraw-editor>
     </div>
   `,
   styles: [
@@ -89,21 +89,21 @@ export class TempChatModesComponent {
 
   themes = [angularThemeLight, angularThemeDark];
   // Zoomed out and shifted down, so the builds below the seed objects (and the agent's cursor) stay in view.
-  workspaces = [new KritzelWorkspace({ objects: createSeedObjects(), viewport: { centerWorldX: 200, centerWorldY: 280, scale: 0.7 } })];
+  workspaces = [new UpdrawWorkspace({ objects: createSeedObjects(), viewport: { centerWorldX: 200, centerWorldY: 280, scale: 0.7 } })];
   user = { id: 'demo-user', name: 'Demo User' };
 
   // One session per mode, created once; the toggle binds the other one.
-  readonly sessions: Record<Mode, KritzelChatSession> = {
-    command: new KritzelChatSession({ transport: mockTransport, system: SYSTEM }),
-    agent: new KritzelChatSession({
+  readonly sessions: Record<Mode, UpdrawChatSession> = {
+    command: new UpdrawChatSession({ transport: mockTransport, system: SYSTEM }),
+    agent: new UpdrawChatSession({
       transport: mockTransport,
       system: SYSTEM,
-      agent: new KritzelAgent({ id: 'assistant', name: 'Assistant', color: '#7C3AED' }),
+      agent: new UpdrawAgent({ id: 'assistant', name: 'Assistant', color: '#7C3AED' }),
     }),
   };
 
   mode = signal<Mode>('command');
-  chips = signal<KritzelChatBoxChip[]>([]);
+  chips = signal<UpdrawChatBoxChip[]>([]);
   answer = signal('');
 
   constructor() {
@@ -121,18 +121,18 @@ export class TempChatModesComponent {
     }
   }
 
-  onSelectionChange(objects: KritzelBaseObject[]): void {
+  onSelectionChange(objects: UpdrawBaseObject[]): void {
     this.chips.set(
       objects.map(object => ({
         id: object.id,
         objectId: object.id,
-        label: object.name || object.__class__.replace('Kritzel', ''),
+        label: object.name || object.__class__.replace('Updraw', ''),
         icon: 'cursor',
       })),
     );
   }
 
-  onChipRemove(chip: KritzelChatBoxChip): void {
+  onChipRemove(chip: UpdrawChatBoxChip): void {
     this.chips.update(chips => chips.filter(item => item.id !== chip.id));
   }
 }

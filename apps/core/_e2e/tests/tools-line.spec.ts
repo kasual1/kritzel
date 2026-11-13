@@ -22,7 +22,7 @@ test.describe('Line tool', () => {
     expect(count).toBe(1);
   });
 
-  test('drawn line should create a KritzelLine object', async ({ editorPage }) => {
+  test('drawn line should create an UpdrawLine object', async ({ editorPage }) => {
     await editorPage.prepareWaitForObjectsAdded();
 
     await editorPage.dragFromTo({ x: 100, y: 100 }, { x: 300, y: 200 });
@@ -36,7 +36,7 @@ test.describe('Line tool', () => {
 
     expect(objects).toHaveLength(1);
     expect(objects[0].id).toBeDefined();
-    // KritzelLine objects have startX, startY, endX, endY
+    // UpdrawLine objects have startX, startY, endX, endY
     expect(objects[0].startX).toBeDefined();
     expect(objects[0].startY).toBeDefined();
     expect(objects[0].endX).toBeDefined();

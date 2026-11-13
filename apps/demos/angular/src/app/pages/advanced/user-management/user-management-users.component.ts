@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { IKritzelUser, KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
+import { IUpdrawUser, UpdrawEditor, UpdrawWorkspace } from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
-const currentUser: IKritzelUser = {
+const currentUser: IUpdrawUser = {
   id: 'user-current-1',
   displayName: 'Ada Lovelace',
   email: 'ada@example.com',
@@ -13,7 +13,7 @@ const currentUser: IKritzelUser = {
   isGuest: false,
 };
 
-const collaborators: IKritzelUser[] = [
+const collaborators: IUpdrawUser[] = [
   {
     id: 'user-collaborator-1',
     displayName: 'Grace Hopper',
@@ -42,10 +42,10 @@ const collaborators: IKritzelUser[] = [
 
 @Component({
   selector: 'app-user-management-users',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="user-management-users"
       [user]="user()"
       [activeUsers]="activeUsers()"
@@ -56,7 +56,7 @@ const collaborators: IKritzelUser[] = [
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [
     `
@@ -92,7 +92,7 @@ const collaborators: IKritzelUser[] = [
       .toolbar-note button:first-of-type {
         margin-left: auto;
       }
-      kritzel-editor {
+      updraw-editor {
         flex: 1;
         min-height: 0;
       }
@@ -102,11 +102,11 @@ const collaborators: IKritzelUser[] = [
 export class UserManagementUsersComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
-  user = signal<IKritzelUser | undefined>(currentUser);
+  user = signal<IUpdrawUser | undefined>(currentUser);
 
-  activeUsers = signal<IKritzelUser[]>(collaborators);
+  activeUsers = signal<IUpdrawUser[]>(collaborators);
 
   visibleUserCount = computed(() => this.activeUsers().length + (this.user() ? 1 : 0));
 

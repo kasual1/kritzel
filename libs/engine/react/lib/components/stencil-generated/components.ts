@@ -11,39 +11,39 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type KritzelAgentsChangeEvent, type KritzelBaseObject, type KritzelBaseTool, type KritzelContextMenuState, type KritzelEngineCustomEvent, type KritzelEngineState, type KritzelNotification, type KritzelObjectElementClickEvent, type KritzelObjectElementHoverEvent, type KritzelObjectElementPickEvent, type KritzelObjectTitlebarActionEvent, type KritzelObjectTitlebarMenuState, type KritzelUndoState, type KritzelViewportState, type KritzelWorkspace, type ObjectsAddedEvent, type ObjectsInViewportChangeEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent } from "@kritzel/engine";
-import type { Components } from "@kritzel/engine/dist/components";
-import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "@kritzel/engine/dist/components/kritzel-engine.js";
+import { type UpdrawAgentsChangeEvent, type UpdrawBaseObject, type UpdrawBaseTool, type UpdrawContextMenuState, type UpdrawEngineCustomEvent, type UpdrawEngineState, type UpdrawNotification, type UpdrawObjectElementClickEvent, type UpdrawObjectElementHoverEvent, type UpdrawObjectElementPickEvent, type UpdrawObjectTitlebarActionEvent, type UpdrawObjectTitlebarMenuState, type UpdrawUndoState, type UpdrawViewportState, type UpdrawWorkspace, type ObjectsAddedEvent, type ObjectsInViewportChangeEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent } from "@updraw/engine";
+import type { Components } from "@updraw/engine/dist/components";
+import { UpdrawEngine as UpdrawEngineElement, defineCustomElement as defineUpdrawEngine } from "@updraw/engine/dist/components/updraw-engine.js";
 
-export type KritzelEngineEvents = {
-    onIsEngineReady: EventName<KritzelEngineCustomEvent<KritzelEngineState>>,
-    onActiveToolChange: EventName<KritzelEngineCustomEvent<KritzelBaseTool>>,
-    onWorkspacesChange: EventName<KritzelEngineCustomEvent<KritzelWorkspace[]>>,
-    onActiveWorkspaceChange: EventName<KritzelEngineCustomEvent<KritzelWorkspace>>,
-    onLongpress: EventName<KritzelEngineCustomEvent<PointerEvent>>,
-    onObjectsChange: EventName<KritzelEngineCustomEvent<KritzelBaseObject[]>>,
-    onObjectsAdded: EventName<KritzelEngineCustomEvent<ObjectsAddedEvent>>,
-    onObjectsRemoved: EventName<KritzelEngineCustomEvent<ObjectsRemovedEvent>>,
-    onObjectsUpdated: EventName<KritzelEngineCustomEvent<ObjectsUpdatedEvent>>,
-    onObjectsSelectionChange: EventName<KritzelEngineCustomEvent<KritzelBaseObject[]>>,
-    onUndoStateChange: EventName<KritzelEngineCustomEvent<KritzelUndoState>>,
-    onObjectsInViewportChange: EventName<KritzelEngineCustomEvent<ObjectsInViewportChangeEvent>>,
-    onViewportChange: EventName<KritzelEngineCustomEvent<KritzelViewportState>>,
-    onAwarenessChange: EventName<KritzelEngineCustomEvent<Map<number, Record<string, any>>>>,
-    onNotificationsChange: EventName<KritzelEngineCustomEvent<KritzelNotification>>,
-    onContextMenuStateChange: EventName<KritzelEngineCustomEvent<KritzelContextMenuState>>,
-    onIsLoadingChange: EventName<KritzelEngineCustomEvent<boolean>>,
-    onAgentsChange: EventName<KritzelEngineCustomEvent<KritzelAgentsChangeEvent>>,
-    onObjectTitlebarAction: EventName<KritzelEngineCustomEvent<KritzelObjectTitlebarActionEvent>>,
-    onObjectTitlebarMenuStateChange: EventName<KritzelEngineCustomEvent<KritzelObjectTitlebarMenuState>>,
-    onObjectElementHover: EventName<KritzelEngineCustomEvent<KritzelObjectElementHoverEvent>>,
-    onObjectElementClick: EventName<KritzelEngineCustomEvent<KritzelObjectElementClickEvent>>,
-    onObjectElementPick: EventName<KritzelEngineCustomEvent<KritzelObjectElementPickEvent>>
+export type UpdrawEngineEvents = {
+    onIsEngineReady: EventName<UpdrawEngineCustomEvent<UpdrawEngineState>>,
+    onActiveToolChange: EventName<UpdrawEngineCustomEvent<UpdrawBaseTool>>,
+    onWorkspacesChange: EventName<UpdrawEngineCustomEvent<UpdrawWorkspace[]>>,
+    onActiveWorkspaceChange: EventName<UpdrawEngineCustomEvent<UpdrawWorkspace>>,
+    onLongpress: EventName<UpdrawEngineCustomEvent<PointerEvent>>,
+    onObjectsChange: EventName<UpdrawEngineCustomEvent<UpdrawBaseObject[]>>,
+    onObjectsAdded: EventName<UpdrawEngineCustomEvent<ObjectsAddedEvent>>,
+    onObjectsRemoved: EventName<UpdrawEngineCustomEvent<ObjectsRemovedEvent>>,
+    onObjectsUpdated: EventName<UpdrawEngineCustomEvent<ObjectsUpdatedEvent>>,
+    onObjectsSelectionChange: EventName<UpdrawEngineCustomEvent<UpdrawBaseObject[]>>,
+    onUndoStateChange: EventName<UpdrawEngineCustomEvent<UpdrawUndoState>>,
+    onObjectsInViewportChange: EventName<UpdrawEngineCustomEvent<ObjectsInViewportChangeEvent>>,
+    onViewportChange: EventName<UpdrawEngineCustomEvent<UpdrawViewportState>>,
+    onAwarenessChange: EventName<UpdrawEngineCustomEvent<Map<number, Record<string, any>>>>,
+    onNotificationsChange: EventName<UpdrawEngineCustomEvent<UpdrawNotification>>,
+    onContextMenuStateChange: EventName<UpdrawEngineCustomEvent<UpdrawContextMenuState>>,
+    onIsLoadingChange: EventName<UpdrawEngineCustomEvent<boolean>>,
+    onAgentsChange: EventName<UpdrawEngineCustomEvent<UpdrawAgentsChangeEvent>>,
+    onObjectTitlebarAction: EventName<UpdrawEngineCustomEvent<UpdrawObjectTitlebarActionEvent>>,
+    onObjectTitlebarMenuStateChange: EventName<UpdrawEngineCustomEvent<UpdrawObjectTitlebarMenuState>>,
+    onObjectElementHover: EventName<UpdrawEngineCustomEvent<UpdrawObjectElementHoverEvent>>,
+    onObjectElementClick: EventName<UpdrawEngineCustomEvent<UpdrawObjectElementClickEvent>>,
+    onObjectElementPick: EventName<UpdrawEngineCustomEvent<UpdrawObjectElementPickEvent>>
 };
 
-export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelEngineEvents, Components.KritzelEngine> = /*@__PURE__*/ createComponent<KritzelEngineElement, KritzelEngineEvents, Components.KritzelEngine>({
-    tagName: 'kritzel-engine',
-    elementClass: KritzelEngineElement,
+export const UpdrawEngine: StencilReactComponent<UpdrawEngineElement, UpdrawEngineEvents, Components.UpdrawEngine> = /*@__PURE__*/ createComponent<UpdrawEngineElement, UpdrawEngineEvents, Components.UpdrawEngine>({
+    tagName: 'updraw-engine',
+    elementClass: UpdrawEngineElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
@@ -70,6 +70,6 @@ export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelE
         onObjectElementHover: 'objectElementHover',
         onObjectElementClick: 'objectElementClick',
         onObjectElementPick: 'objectElementPick'
-    } as KritzelEngineEvents,
-    defineCustomElement: defineKritzelEngine
+    } as UpdrawEngineEvents,
+    defineCustomElement: defineUpdrawEngine
 });

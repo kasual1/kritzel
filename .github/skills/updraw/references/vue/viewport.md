@@ -1,6 +1,6 @@
 # Viewport: Camera, Coordinates, Boundaries
 
-The viewport is the camera over the infinite canvas. State (`KritzelViewportState`): `translateX`, `translateY` (pan, world coords), `scale` (zoom, default 1.0), plus viewport pixel dimensions.
+The viewport is the camera over the infinite canvas. State (`UpdrawViewportState`): `translateX`, `translateY` (pan, world coords), `scale` (zoom, default 1.0), plus viewport pixel dimensions.
 
 ## The one distinction that matters
 
@@ -61,7 +61,7 @@ Pointer/DOM events give **screen pixels**; the canvas uses **world coordinates**
 
 ```vue
 <script setup lang="ts">
-import { KritzelEditor, KritzelShape, ShapeType, getEditorRef } from '@kritzel/vue-editor';
+import { UpdrawEditor, UpdrawShape, ShapeType, getEditorRef } from '@updraw/vue-editor';
 
 const editor = getEditorRef('editor');
 
@@ -69,7 +69,7 @@ async function onCanvasClick(ev: MouseEvent) {
   if (!editor.value) return;
   const rect = editor.value.getBoundingClientRect();
   const { x, y } = await editor.value.screenToWorld(ev.clientX - rect.left, ev.clientY - rect.top);
-  const pin = new KritzelShape({
+  const pin = new UpdrawShape({
     shapeType: ShapeType.Ellipse,
     translateX: x - 25, translateY: y - 25,   // center the 50×50 pin on the click
     width: 50, height: 50,
@@ -83,7 +83,7 @@ async function onCanvasClick(ev: MouseEvent) {
 
 <template>
   <div @click="onCanvasClick">
-    <KritzelEditor ref="editor" />
+    <UpdrawEditor ref="editor" />
   </div>
 </template>
 ```
@@ -95,7 +95,7 @@ Inverse: `await editor.value?.worldToScreen(x, y)` — e.g. to position a Vue ov
 Numbers and booleans need the `:` binding:
 
 ```vue
-<KritzelEditor
+<UpdrawEditor
   ref="editor"
   :scaleMin="0.1" :scaleMax="10"
   :viewportBoundaryLeft="0"
@@ -120,23 +120,23 @@ Mirror viewport state into a Vue `ref()` from the `@viewportChange` event; the p
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { KritzelEditor, getEditorRef, type KritzelViewportState } from '@kritzel/vue-editor';
+import { UpdrawEditor, getEditorRef, type UpdrawViewportState } from '@updraw/vue-editor';
 
 const editor = getEditorRef('editor');
-const viewport = ref<KritzelViewportState | null>(null);
+const viewport = ref<UpdrawViewportState | null>(null);
 
-function onViewportChange(event: CustomEvent<KritzelViewportState>) {
+function onViewportChange(event: CustomEvent<UpdrawViewportState>) {
   viewport.value = event.detail;
 }
 </script>
 
 <template>
-  <KritzelEditor ref="editor" @viewportChange="onViewportChange" />
+  <UpdrawEditor ref="editor" @viewportChange="onViewportChange" />
   <span>Zoom: {{ Math.round((viewport?.scale ?? 1) * 100) }}%</span>
 </template>
 ```
 
-`@objectsInViewportChange` (on `<KritzelEngine>`, not the editor) fires when the set of visible objects changes — useful for virtualized side panels.
+`@objectsInViewportChange` (on `<UpdrawEngine>`, not the editor) fires when the set of visible objects changes — useful for virtualized side panels.
 
 ## Defaults & pitfalls
 

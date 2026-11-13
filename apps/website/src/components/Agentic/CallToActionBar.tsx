@@ -8,7 +8,7 @@ export function CallToActionBar({ docsPath }: { docsPath: string }) {
     <div className={styles.ctaAnchor}>
       <InstallCommand />
       <div className={styles.ctaBar}>
-        <Link href="https://app.kritzel.io" className={styles.ctaPrimary}>
+        <Link href="https://app.updraw.io" className={styles.ctaPrimary}>
           Demo <ArrowIcon />
         </Link>
         <Link to={docsPath} className={styles.ctaSecondary}>

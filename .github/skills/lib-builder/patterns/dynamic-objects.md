@@ -6,14 +6,14 @@ Use this pattern when maintaining dynamic object behavior across core and wrappe
 
 Primary touchpoints:
 - `libs/core/src/classes/objects/dynamic-object.class.ts`
-- `libs/engine/core/src/components/core/kritzel-engine/kritzel-engine.tsx`
+- `libs/engine/core/src/components/core/updraw-engine/updraw-engine.tsx`
 - `libs/core/src/helpers/wheel.helper.ts`
 - `libs/core/src/classes/registries/dynamic-object-renderer.registry.ts`
 - Wrapper helpers such as `libs/editor/vue/lib/vue-dynamic-object-renderer.ts`
 
 ## Maintainer Mental Model
 
-A Kritzel dynamic object is a persisted canvas object whose visual content is mounted into an engine-managed container.
+An Updraw dynamic object is a persisted canvas object whose visual content is mounted into an engine-managed container.
 
 Supported hosting modes:
 - Pure HTML hosting: object mounts its `element` directly (no renderer required).
@@ -21,7 +21,7 @@ Supported hosting modes:
 
 Flow:
 1. Object stores `rendererKey` + optional `rendererData`
-2. Engine resolves renderer via `KritzelDynamicObjectRendererRegistry`
+2. Engine resolves renderer via `UpdrawDynamicObjectRendererRegistry`
 3. Renderer mounts framework/runtime content into the object container
 4. Renderer serialization/unmount returns latest serializable state for persistence
 

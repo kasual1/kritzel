@@ -17,7 +17,7 @@ export function CallToActionBar({ docsPath }: { docsPath: string }) {
     <div className={styles.ctaAnchor}>
       <InstallCommand />
       <div className={styles.ctaBar}>
-        <Link href="https://app.kritzel.io" target="_blank" rel="noopener noreferrer" className={styles.ctaPrimary}>
+        <Link href="https://app.updraw.io" target="_blank" rel="noopener noreferrer" className={styles.ctaPrimary}>
           Demo <ArrowIcon />
         </Link>
         <Link to={docsPath} className={styles.ctaSecondary}>
@@ -33,7 +33,7 @@ type Feature = { title: string; description: string; icon: ReactNode };
 const FEATURES: ReadonlyArray<Feature> = [
   {
     title: "Open Source",
-    description: "Kritzel is 100% open source and meant for everyone to use, modify, and build upon. Contributions, feedback, and new ideas are always welcome!",
+    description: "Updraw is 100% open source and meant for everyone to use, modify, and build upon. Contributions, feedback, and new ideas are always welcome!",
     icon: (
       <>
         <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
@@ -57,7 +57,7 @@ const FEATURES: ReadonlyArray<Feature> = [
   {
     title: "Framework Agnostic",
     description:
-      "Kritzel integrates seamlessly with any modern JavaScript framework like React, Vue or Angular. Focus on creativity, not compatibility.",
+      "Updraw integrates seamlessly with any modern JavaScript framework like React, Vue or Angular. Focus on creativity, not compatibility.",
     icon: (
       <>
         <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
@@ -68,13 +68,13 @@ const FEATURES: ReadonlyArray<Feature> = [
   },
   {
     title: "Customizable",
-    description: "Tailor Kritzel to your needs with a wide range of customizable tools, brushes, and settings.",
+    description: "Tailor Updraw to your needs with a wide range of customizable tools, brushes, and settings.",
     icon: <path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4" />,
   },
   {
     title: "Cross-Platform",
     description:
-      "Kritzel features native support for desktop, tablet, and mobile devices. Build once and deliver a responsive canvas experience across all platforms.",
+      "Updraw features native support for desktop, tablet, and mobile devices. Build once and deliver a responsive canvas experience across all platforms.",
     icon: (
       <>
         <path d="M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8" />
@@ -99,7 +99,7 @@ const FEATURES: ReadonlyArray<Feature> = [
 const AGENTIC_FEATURES: ReadonlyArray<Feature> = [
   {
     title: "Open Source",
-    description: "Kritzel is 100% open source and meant for everyone to use, modify, and build upon. Contributions, feedback, and new ideas are always welcome!",
+    description: "Updraw is 100% open source and meant for everyone to use, modify, and build upon. Contributions, feedback, and new ideas are always welcome!",
     icon: (
       <>
         <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
@@ -116,7 +116,7 @@ const AGENTIC_FEATURES: ReadonlyArray<Feature> = [
   {
     title: "WebMCP ready",
     description:
-      "Kritzel exposes the canvas as WebMCP tools, so browser agents can read, draw on and edit the whiteboard directly.",
+      "Updraw exposes the canvas as WebMCP tools, so browser agents can read, draw on and edit the whiteboard directly.",
     icon: (
       <>
         <path d="M12 22v-5" />
@@ -127,9 +127,9 @@ const AGENTIC_FEATURES: ReadonlyArray<Feature> = [
     ),
   },
   {
-    title: "Dedicated Kritzel Skill",
+    title: "Dedicated Updraw Skill",
     description:
-      "Install the Kritzel skill with one command and your coding agent knows the Kritzel API, so it can build and extend your canvas for you.",
+      "Install the Updraw skill with one command and your coding agent knows the Updraw API, so it can build and extend your canvas for you.",
     icon: (
       <>
         <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
@@ -252,7 +252,7 @@ export function DomCanvasSection() {
     <Showcase
       headingId="dom-canvas-heading"
       title="DOM based canvas"
-      description="Unlike a classic HTML canvas, Kritzel renders real DOM nodes. Place full HTML elements like forms, videos or entire web apps on the board, and your users can interact with them just like anywhere else on the page."
+      description="Unlike a classic HTML canvas, Updraw renders real DOM nodes. Place full HTML elements like forms, videos or entire web apps on the board, and your users can interact with them just like anywhere else on the page."
       media={<DomCanvasDemo />}
       link={{ label: "Dynamic Objects", to: dynamicObjectsPath }}
     />
@@ -266,7 +266,7 @@ export function PerformanceSection() {
     <Showcase
       headingId="performance-heading"
       title="Optimized for performance"
-      description="Kritzel is designed from the ground up to handle hundreds of objects. It only renders what is currently in the viewport, so the board stays fast as your canvas grows."
+      description="Updraw is designed from the ground up to handle hundreds of objects. It only renders what is currently in the viewport, so the board stays fast as your canvas grows."
       media={<PerformanceDemo />}
       link={{ label: "Full Demo", to: performanceShowcasePath }}
     />
@@ -294,14 +294,14 @@ export function CustomizationSection() {
     <Showcase
       headingId="customization-heading"
       title="Highly customizable"
-      description="Adjust Kritzel's components to fit your product, down to their fonts, icons and labels. Start from the built-in light and dark themes or create your own, so the editor looks like part of your app."
+      description="Adjust Updraw's components to fit your product, down to their fonts, icons and labels. Start from the built-in light and dark themes or create your own, so the editor looks like part of your app."
       media={<ThemesDemo />}
       link={{ label: "Themes", to: themesPath }}
     />
   );
 }
 
-const KRITZEL_ASCII =`██╗  ██╗██████╗ ██╗████████╗███████╗███████╗██╗
+const UPDRAW_ASCII =`██╗  ██╗██████╗ ██╗████████╗███████╗███████╗██╗
 ██║ ██╔╝██╔══██╗██║╚══██╔══╝╚══███╔╝██╔════╝██║
 █████╔╝ ██████╔╝██║   ██║     ███╔╝ █████╗  ██║
 ██╔═██╗ ██╔══██╗██║   ██║    ███╔╝  ██╔══╝  ██║
@@ -310,7 +310,7 @@ const KRITZEL_ASCII =`██╗  ██╗██████╗ ██╗██�
 
 const SKILL_SESSION = {
   command: "npx skills add kasual1/kritzel",
-  question: "Install the kritzel skill for your agent?",
+  question: "Install the updraw skill for your agent?",
 } as const;
 
 type CliVariant = "frameworks" | "skill";
@@ -323,10 +323,10 @@ const CODE_FRAMEWORKS = [
     logo: "/img/logo-react.svg",
     color: "#4a7dff",
     file: "Editor.tsx",
-    code: `import { KritzelEditor } from '@kritzel/react-editor';
+    code: `import { UpdrawEditor } from '@updraw/react-editor';
 
 export function Editor() {
-  return <KritzelEditor />;
+  return <UpdrawEditor />;
 }`,
   },
   {
@@ -336,11 +336,11 @@ export function Editor() {
     color: "#42b883",
     file: "Editor.vue",
     code: `<script setup lang="ts">
-import { KritzelEditor } from '@kritzel/vue-editor';
+import { UpdrawEditor } from '@updraw/vue-editor';
 </script>
 
 <template>
-  <KritzelEditor />
+  <UpdrawEditor />
 </template>`,
   },
   {
@@ -350,12 +350,12 @@ import { KritzelEditor } from '@kritzel/vue-editor';
     color: "#dd0031",
     file: "editor.component.ts",
     code: `import { Component } from '@angular/core';
-import { KritzelEditor } from '@kritzel/angular-editor';
+import { UpdrawEditor } from '@updraw/angular-editor';
 
 @Component({
   selector: 'app-editor',
-  imports: [KritzelEditor],
-  template: \`<kritzel-editor />\`,
+  imports: [UpdrawEditor],
+  template: \`<updraw-editor />\`,
 })
 export class EditorComponent {}`,
   },
@@ -719,7 +719,7 @@ function BotIcon() {
   );
 }
 
-/** The mocked editor typing how Kritzel is added to a React, Vue or Angular app, framework by framework. */
+/** The mocked editor typing how Updraw is added to a React, Vue or Angular app, framework by framework. */
 function CodeWindow() {
   const bodyRef = useRef<HTMLDivElement | null>(null);
   const state = useCodeTyping(bodyRef);
@@ -792,11 +792,11 @@ function SkillTerminal() {
         </div>
         {state.banner && (
           <div className={styles.terminalBanner}>
-            <div aria-label="Kritzel" className={styles.terminalAscii}>
-              {KRITZEL_ASCII}
+            <div aria-label="Updraw" className={styles.terminalAscii}>
+              {UPDRAW_ASCII}
             </div>
             <div className={styles.terminalWelcome}>
-              Welcome to <span className={styles.terminalStrong}>kritzel.io</span>
+              Welcome to <span className={styles.terminalStrong}>updraw.io</span>
             </div>
           </div>
         )}
@@ -814,7 +814,7 @@ function SkillTerminal() {
         )}
         {state.added && (
           <div className={styles.terminalSuccess}>
-            ✔ Added the <span className={styles.terminalStrong}>kritzel</span> skill to your agent
+            ✔ Added the <span className={styles.terminalStrong}>updraw</span> skill to your agent
           </div>
         )}
         {state.prompt && (
@@ -837,16 +837,16 @@ function SkillTerminal() {
 }
 
 /**
- * How to add Kritzel to an app (`frameworks`) or to a coding agent (`skill`), either centered below its heading
+ * How to add Updraw to an app (`frameworks`) or to a coding agent (`skill`), either centered below its heading
  * (`stacked`) or as the media of a showcase row with the heading on the left (`split`).
  */
 export function CliSection({ variant = "frameworks", layout = "stacked" }: { variant?: CliVariant; layout?: "stacked" | "split" }) {
   const isSkill = variant === "skill";
   const quickStartPath = useDocsPath("getting-started/quick-start");
-  const title = isSkill ? "Agents love Kritzel" : "Easy to get started";
+  const title = isSkill ? "Agents love Updraw" : "Easy to get started";
   const description = isSkill
-    ? "Add the Kritzel skill to your coding agent, so it knows how to build and extend your canvas right away."
-    : "Kritzel comes with detailed documentation and extensive examples to ensure a quick and effortless integration into your app.";
+    ? "Add the Updraw skill to your coding agent, so it knows how to build and extend your canvas right away."
+    : "Updraw comes with detailed documentation and extensive examples to ensure a quick and effortless integration into your app.";
   const terminal = isSkill ? <SkillTerminal /> : <CodeWindow />;
 
   if (layout === "split") {
@@ -877,29 +877,29 @@ export function CliSection({ variant = "frameworks", layout = "stacked" }: { var
 
 const FAQ_ITEMS = [
   {
-    question: "Which frameworks does Kritzel support?",
+    question: "Which frameworks does Updraw support?",
     answer:
-      "Kritzel works seamlessly with React, Vue, Angular, and Vanilla JavaScript. Built on native Web Components with first-class TypeScript support, it provides dedicated framework wrappers so you can use native props and event handlers in your stack.",
+      "Updraw works seamlessly with React, Vue, Angular, and Vanilla JavaScript. Built on native Web Components with first-class TypeScript support, it provides dedicated framework wrappers so you can use native props and event handlers in your stack.",
   },
   {
-    question: "Can Kritzel handle large, complex boards?",
+    question: "Can Updraw handle large, complex boards?",
     answer:
-      "Yes. Kritzel is designed to handle large, complex boards. Using spatial indexing and viewport optimizations under the hood, it keeps panning and zooming responsive as your canvas grows.",
+      "Yes. Updraw is designed to handle large, complex boards. Using spatial indexing and viewport optimizations under the hood, it keeps panning and zooming responsive as your canvas grows.",
   },
   {
-    question: "Is Kritzel an alternative to tldraw or Excalidraw?",
+    question: "Is Updraw an alternative to tldraw or Excalidraw?",
     answer:
-      "Yes. Kritzel is a lightweight alternative to tldraw and Excalidraw, giving you a core canvas experience without the bloat of heavier engines.",
+      "Yes. Updraw is a lightweight alternative to tldraw and Excalidraw, giving you a core canvas experience without the bloat of heavier engines.",
   },
   {
-    question: "Does Kritzel support mobile devices, tablets, and trackpads?",
+    question: "Does Updraw support mobile devices, tablets, and trackpads?",
     answer:
-      "Yes. Kritzel includes native gesture handling out of the box. It smoothly manages trackpad pinch-to-zoom, touch gestures on mobile/tablet screens, and traditional mouse wheel inputs across all major browsers.",
+      "Yes. Updraw includes native gesture handling out of the box. It smoothly manages trackpad pinch-to-zoom, touch gestures on mobile/tablet screens, and traditional mouse wheel inputs across all major browsers.",
   },
   {
-    question: "Is Kritzel free to use?",
+    question: "Is Updraw free to use?",
     answer:
-      "Yes. Kritzel is open source under the MIT License, so you can use it for free in personal and commercial projects. The editor shows a small \"Powered by Kritzel\" badge by default; keeping it helps the project grow, but you can hide it with the isWatermarkVisible prop.",
+      "Yes. Updraw is open source under the MIT License, so you can use it for free in personal and commercial projects. The editor shows a small \"Powered by Updraw\" badge by default; keeping it helps the project grow, but you can hide it with the isWatermarkVisible prop.",
   },
 ];
 
@@ -907,27 +907,27 @@ const AGENTIC_FAQ_ITEMS = [
   {
     question: "What makes a canvas agentic?",
     answer:
-      "An agentic canvas lets your application give an AI agent control of the board. With Kritzel, your app can create, move, and delete objects, control the viewport, and respond to canvas changes through code.",
+      "An agentic canvas lets your application give an AI agent control of the board. With Updraw, your app can create, move, and delete objects, control the viewport, and respond to canvas changes through code.",
   },
   {
     question: "Can people see what an AI agent is doing?",
     answer:
-      "Yes. Each agent is a KritzelAgent with its own name, color, status message, and avatar. Its cursor flies to what it works on and animates every change, so people can watch it select, draw, and edit. Collaborators see your agents too: they are shared through presence, with their cursor, selection, and avatar.",
+      "Yes. Each agent is an UpdrawAgent with its own name, color, status message, and avatar. Its cursor flies to what it works on and animates every change, so people can watch it select, draw, and edit. Collaborators see your agents too: they are shared through presence, with their cursor, selection, and avatar.",
   },
   {
     question: "Can people and agents work on the same canvas?",
     answer:
-      "Yes. People can interact with the board while your application and agents make changes through Kritzel's API, so both can work with the same canvas objects.",
+      "Yes. People can interact with the board while your application and agents make changes through Updraw's API, so both can work with the same canvas objects.",
   },
   {
     question: "Which frameworks can I use to build an agentic canvas?",
     answer:
-      "Kritzel supports React, Vue, Angular, and Vanilla JavaScript. Its Web Component-based engine and framework wrappers let you integrate an agentic canvas into your existing app.",
+      "Updraw supports React, Vue, Angular, and Vanilla JavaScript. Its Web Component-based engine and framework wrappers let you integrate an agentic canvas into your existing app.",
   },
   {
-    question: "Is Kritzel free to use?",
+    question: "Is Updraw free to use?",
     answer:
-      "Yes. Kritzel is open source under the MIT License, including its agentic features, so you can build agentic canvases for free in personal and commercial projects. The \"Powered by Kritzel\" badge can be hidden with the isWatermarkVisible prop.",
+      "Yes. Updraw is open source under the MIT License, including its agentic features, so you can build agentic canvases for free in personal and commercial projects. The \"Powered by Updraw\" badge can be hidden with the isWatermarkVisible prop.",
   },
 ];
 
@@ -943,8 +943,8 @@ export function Faq({ variant = "default" }: { variant?: "default" | "agentic" }
         </h2>
         <p className={styles.sectionText}>
           {variant === "agentic"
-            ? "Answers to common questions about building agentic canvases with Kritzel."
-            : "Answers to common questions about adopting Kritzel in production projects."}
+            ? "Answers to common questions about building agentic canvases with Updraw."
+            : "Answers to common questions about adopting Updraw in production projects."}
         </p>
       </div>
       <div className={styles.faqList}>
@@ -996,8 +996,8 @@ export function Faq({ variant = "default" }: { variant?: "default" | "agentic" }
 
 export function Wordmark() {
   return (
-    <section aria-label="Kritzel" className={styles.wordmark}>
-      <svg viewBox="-0.3 -0.3 51.6 10.6" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Kritzel" className={styles.wordmarkSvg}>
+    <section aria-label="Updraw" className={styles.wordmark}>
+      <svg viewBox="-0.3 -0.3 51.6 10.6" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Updraw" className={styles.wordmarkSvg}>
         <g fill="none" stroke="#0a0a0a" strokeWidth="1.5" strokeLinecap="square">
           {WORDMARK_LETTERS.map((letter) => (
             <g key={letter.x} className={styles.wordmarkLetter}>

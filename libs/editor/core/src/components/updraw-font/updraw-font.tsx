@@ -1,11 +1,11 @@
 import { Component, Host, Prop, h } from '@stencil/core';
 
 @Component({
-  tag: 'kritzel-font',
-  styleUrl: 'kritzel-font.css',
+  tag: 'updraw-font',
+  styleUrl: 'updraw-font.css',
   shadow: true,
 })
-export class KritzelFont {
+export class UpdrawFont {
   @Prop() fontFamily: string = 'Arial, sans-serif';
   @Prop() size: number = 24;
   @Prop() color: string = '#000000';

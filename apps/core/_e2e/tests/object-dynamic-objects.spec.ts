@@ -10,9 +10,9 @@ async function wheelOverDynamicObjectContent(
   options: { deltaX?: number; deltaY?: number } = {}
 ) {
   const center = await page.evaluate(({ id }) => {
-    const engine = document.querySelector('kritzel-engine');
+    const engine = document.querySelector('updraw-engine');
     if (!engine?.shadowRoot) {
-      throw new Error('kritzel-engine shadow root not found');
+      throw new Error('updraw-engine shadow root not found');
     }
 
     const target = engine.shadowRoot.querySelector(`[data-testid="${id}"]`) as HTMLElement | null;
@@ -65,7 +65,7 @@ test.describe('Dynamic objects', () => {
 
     const object = await editorPage.getObjectById<any>(created.id);
     expect(object).not.toBeNull();
-    expect(object.__class__).toBe('KritzelDynamicObject');
+    expect(object.__class__).toBe('UpdrawDynamicObject');
     expect(object.translateX).toBe(210);
     expect(object.translateY).toBe(170);
     expect(object.width).toBe(320);
@@ -89,7 +89,7 @@ test.describe('Dynamic objects', () => {
     expect(await editorPage.getObjectElementCount()).toBe(1);
 
     const text = await editorPage.page.evaluate(() => {
-      const engine = document.querySelector('kritzel-engine');
+      const engine = document.querySelector('updraw-engine');
       if (!engine?.shadowRoot) return null;
       const content = engine.shadowRoot.querySelector('[data-testid="custom-content-render"]');
       return content?.textContent?.trim() ?? null;

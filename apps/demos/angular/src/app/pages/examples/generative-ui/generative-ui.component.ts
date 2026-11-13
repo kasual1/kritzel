@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, effect, signal, ViewChild } from '@angular/core';
 import {
-  KritzelBaseObject,
-  KritzelChatBoxChip,
-  KritzelChatSession,
-  KritzelEditor,
-  KritzelObjectTitlebarActionEvent,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawBaseObject,
+  UpdrawChatBoxChip,
+  UpdrawChatSession,
+  UpdrawEditor,
+  UpdrawObjectTitlebarActionEvent,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createBrowserTransport, type Credentials } from './browser-transport';
@@ -28,7 +28,7 @@ import { WelcomePanelComponent } from './welcome-panel.component';
 
 @Component({
   selector: 'app-generative-ui',
-  imports: [KritzelEditor, UiPreviewComponent, WelcomePanelComponent],
+  imports: [UpdrawEditor, UiPreviewComponent, WelcomePanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   // The welcome guide takes its accent from the theme, like the editor's own controls.
   host: {
@@ -36,7 +36,7 @@ import { WelcomePanelComponent } from './welcome-panel.component';
     '[style.--gen-ui-accent-hover]': 'accentHoverColor',
   },
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="generative-ui"
       [theme]="'light'"
       [themes]="themes"
@@ -52,7 +52,7 @@ import { WelcomePanelComponent } from './welcome-panel.component';
       (objectsSelectionChange)="onSelectionChange($event)"
       (chatChipRemove)="onChipRemove($event)"
       (objectTitlebarAction)="onTitlebarAction($event)"
-    ></kritzel-editor>
+    ></updraw-editor>
 
     <app-welcome-panel
       [isVisible]="!hasUis() && !isWorking()"
@@ -76,10 +76,10 @@ import { WelcomePanelComponent } from './welcome-panel.component';
       height: 100%;
       font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       /* UIs resize from their corners like frames in a design tool, without the corner squares. */
-      --kritzel-selection-resize-handle-visibility: hidden;
+      --updraw-selection-resize-handle-visibility: hidden;
     }
 
-    kritzel-editor {
+    updraw-editor {
       display: block;
       width: 100%;
       height: 100%;
@@ -87,12 +87,12 @@ import { WelcomePanelComponent } from './welcome-panel.component';
   `],
 })
 export class GenerativeUiComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   readonly themes = [withUiFrames(angularThemeLight), withUiFrames(angularThemeDark)];
   readonly accentColor = angularThemeLight.global?.primaryColor;
   readonly accentHoverColor = angularThemeLight.global?.primaryHoverColor;
-  readonly workspaces = [new KritzelWorkspace({ name: 'Generative UI', objects: [] })];
+  readonly workspaces = [new UpdrawWorkspace({ name: 'Generative UI', objects: [] })];
   readonly objectConfig = objectConfig;
   readonly objectTitlebar = objectTitlebar;
 
@@ -100,14 +100,14 @@ export class GenerativeUiComponent {
   readonly credentials = signal<Credentials | null>(null);
   // One session per mode, created once: choosing a mode binds its session to the editor.
   private readonly browser = createBrowserTransport();
-  private readonly sessions: Record<RequestMode, KritzelChatSession> = {
+  private readonly sessions: Record<RequestMode, UpdrawChatSession> = {
     live: createGenerativeUiSession(this.browser.transport),
     mock: createGenerativeUiSession(createMockTransport()),
   };
   readonly mode = signal<RequestMode | null>(null);
   readonly keyError = signal('');
   readonly hasUis = signal(false);
-  readonly chips = signal<KritzelChatBoxChip[]>([]);
+  readonly chips = signal<UpdrawChatBoxChip[]>([]);
   readonly preview = signal<{ title: string; document: string } | null>(null);
   readonly session = computed(() => {
     const mode = this.mode();
@@ -160,19 +160,19 @@ export class GenerativeUiComponent {
     this.keyError.set('');
   }
 
-  onObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
+  onObjectsChange(event: CustomEvent<UpdrawBaseObject[]>) {
     this.hasUis.set(event.detail.some(isUi));
   }
 
-  onSelectionChange(event: CustomEvent<KritzelBaseObject[]>) {
+  onSelectionChange(event: CustomEvent<UpdrawBaseObject[]>) {
     this.chips.set(getUiChips(event.detail));
   }
 
-  onChipRemove(event: CustomEvent<KritzelChatBoxChip>) {
+  onChipRemove(event: CustomEvent<UpdrawChatBoxChip>) {
     this.chips.update(chips => chips.filter(chip => chip.id !== event.detail.id));
   }
 
-  async onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEvent>) {
+  async onTitlebarAction(event: CustomEvent<UpdrawObjectTitlebarActionEvent>) {
     const { elementId, objectId } = event.detail;
     const ui = await this.editor.getObjectById(objectId);
     if (elementId === 'play' && ui && isUi(ui) && !ui.isLoading) {

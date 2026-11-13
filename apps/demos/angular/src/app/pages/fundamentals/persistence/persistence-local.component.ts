@@ -1,21 +1,21 @@
 import { Component, ChangeDetectionStrategy,  ViewChild } from '@angular/core';
 import {
   EditorIsReadyEvent,
-  KritzelEditor,
+  UpdrawEditor,
   IndexedDBSyncProvider,
-  KritzelSyncConfig,
-} from '@kritzel/angular-editor';
+  UpdrawSyncConfig,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-persistence-local',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="editor-wrap">
-      <kritzel-editor
+      <updraw-editor
         editorId="persistence-local"
         [syncConfig]="syncConfig"
         [theme]="'light'"
@@ -26,7 +26,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady($event)"
-      ></kritzel-editor>
+      ></updraw-editor>
     </div>
   `,
   styles: [
@@ -81,11 +81,11 @@ import { createSeedObjects } from '../../../const/seed-objects';
   ],
 })
 export class PersistenceLocalComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
+  syncConfig: UpdrawSyncConfig = {
     providers: [IndexedDBSyncProvider],
     appStateId: 'persistence-local',
   };

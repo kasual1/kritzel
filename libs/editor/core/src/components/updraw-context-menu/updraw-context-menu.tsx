@@ -1,6 +1,6 @@
 import { Component, Host, h, Prop, Event, EventEmitter, State, Watch, Listen, Element } from '@stencil/core';
-import { ContextMenuItem } from '@kritzel/core';
-import { KritzelBaseObject } from '@kritzel/core';
+import { ContextMenuItem } from '@updraw/core';
+import { UpdrawBaseObject } from '@updraw/core';
 
 interface ProcessedMenuItem {
   item: ContextMenuItem;
@@ -13,11 +13,11 @@ const SUBMENU_DELAY = 150;
 const ESTIMATED_SUBMENU_WIDTH = 160; // Estimated width for pre-calculation
 
 @Component({
-  tag: 'kritzel-context-menu',
-  styleUrl: 'kritzel-context-menu.css',
+  tag: 'updraw-context-menu',
+  styleUrl: 'updraw-context-menu.css',
   shadow: true,
 })
-export class KritzelContextMenu {
+export class UpdrawContextMenu {
   @Element() host: HTMLElement;
 
   @Prop() items: ContextMenuItem[];
@@ -26,7 +26,7 @@ export class KritzelContextMenu {
     this.updateMenuItems();
   }
 
-  @Prop() objects: KritzelBaseObject[];
+  @Prop() objects: UpdrawBaseObject[];
 
   @Event() actionSelected: EventEmitter<ContextMenuItem>;
   @Event() close: EventEmitter<void>;
@@ -259,7 +259,7 @@ export class KritzelContextMenu {
     return processed;
   }
 
-  private async evaluateProperty(value: boolean | ((obj: KritzelBaseObject, objs: KritzelBaseObject[]) => boolean | Promise<boolean>), defaultValue: boolean): Promise<boolean> {
+  private async evaluateProperty(value: boolean | ((obj: UpdrawBaseObject, objs: UpdrawBaseObject[]) => boolean | Promise<boolean>), defaultValue: boolean): Promise<boolean> {
     if (typeof value === 'boolean') {
       return value;
     }
@@ -291,9 +291,9 @@ export class KritzelContextMenu {
             onClick={() => this.handleItemClick(item, isDisabled, hasChildren)}
             disabled={isDisabled && !hasChildren}
           >
-            {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}
+            {item.icon && <updraw-icon name={item.icon} size={16}></updraw-icon>}
             <span class="label">{item.label}</span>
-            {hasChildren && <kritzel-icon name="chevronRight" size={12} class="submenu-arrow"></kritzel-icon>}
+            {hasChildren && <updraw-icon name="chevronRight" size={12} class="submenu-arrow"></updraw-icon>}
           </button>
           {hasChildren && submenuOpen && this.renderSubmenu(processedChildren!, path)}
         </div>,

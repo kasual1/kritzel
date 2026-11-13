@@ -2,10 +2,10 @@
   display: contents;
 }
 
-kritzel-dialog {
-  --kritzel-dialog-body-padding: 0;
-  --kritzel-dialog-width-large: 800px;
-  --kritzel-dialog-height-large: 500px;
+updraw-dialog {
+  --updraw-dialog-body-padding: 0;
+  --updraw-dialog-width-large: 800px;
+  --updraw-dialog-height-large: 500px;
 }
 
 
@@ -43,13 +43,13 @@ kritzel-dialog {
   margin: 0 0 16px 0;
   font-size: 18px;
   font-weight: 600;
-  color: var(--kritzel-settings-content-heading-color, #333333);
+  color: var(--updraw-settings-content-heading-color, #333333);
 }
 
 .settings-content p {
   margin: 0;
   font-size: 14px;
-  color: var(--kritzel-settings-content-text-color, #666666);
+  color: var(--updraw-settings-content-text-color, #666666);
   line-height: 1.5;
 }
 
@@ -75,13 +75,13 @@ kritzel-dialog {
 .settings-label {
   font-size: 14px;
   font-weight: 600;
-  color: var(--kritzel-settings-label-color, #333333);
+  color: var(--updraw-settings-label-color, #333333);
   margin: 0 0 4px 0;
 }
 
 .settings-description {
   font-size: 12px;
-  color: var(--kritzel-settings-description-color, #888888);
+  color: var(--updraw-settings-description-color, #888888);
   margin: 0;
   line-height: 1.4;
 }
@@ -102,7 +102,7 @@ kritzel-dialog {
 .shortcuts-category-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--kritzel-settings-label-color, #333333);
+  color: var(--updraw-settings-label-color, #333333);
   margin: 0 0 4px 0;
 }
 
@@ -118,12 +118,12 @@ kritzel-dialog {
   align-items: center;
   padding: 6px 8px;
   border-radius: 4px;
-  background: var(--kritzel-settings-shortcut-item-bg, rgba(0, 0, 0, 0.02));
+  background: var(--updraw-settings-shortcut-item-bg, rgba(0, 0, 0, 0.02));
 }
 
 .shortcut-label {
   font-size: 14px;
-  color: var(--kritzel-settings-content-text-color, #666666);
+  color: var(--updraw-settings-content-text-color, #666666);
 }
 
 .shortcut-key {
@@ -131,7 +131,7 @@ kritzel-dialog {
   font-size: 12px;
   padding: 2px 8px;
   border-radius: 4px;
-  background: var(--kritzel-settings-shortcut-key-bg, #f0f0f0);
-  color: var(--kritzel-settings-shortcut-key-color, #333333);
-  border: 1px solid var(--kritzel-settings-shortcut-key-border, #ddd);
+  background: var(--updraw-settings-shortcut-key-bg, #f0f0f0);
+  color: var(--updraw-settings-shortcut-key-color, #333333);
+  border: 1px solid var(--updraw-settings-shortcut-key-border, #ddd);
 }

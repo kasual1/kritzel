@@ -1,12 +1,12 @@
-import { KritzelRotationHandler } from './rotation.handler';
-import { KritzelCore } from '../core/core.class';
-import { KritzelEventHelper } from '../../helpers/event.helper';
+import { UpdrawRotationHandler } from './rotation.handler';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawEventHelper } from '../../helpers/event.helper';
 
 jest.mock('../../helpers/event.helper');
 
-describe('KritzelRotationHandler', () => {
-  let rotationHandler: KritzelRotationHandler;
-  let mockCore: jest.Mocked<KritzelCore>;
+describe('UpdrawRotationHandler', () => {
+  let rotationHandler: UpdrawRotationHandler;
+  let mockCore: jest.Mocked<UpdrawCore>;
   let mockSelectionGroup: {
     width: number;
     height: number;
@@ -51,7 +51,7 @@ describe('KritzelRotationHandler', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockSelectionGroup = null;
     mockState = {
@@ -86,9 +86,9 @@ describe('KritzelRotationHandler', () => {
         emitObjectsRemoved: jest.fn(),
         emitObjectsUpdated: jest.fn(),
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
 
-    rotationHandler = new KritzelRotationHandler(mockCore);
+    rotationHandler = new UpdrawRotationHandler(mockCore);
   });
 
   describe('handlePointerDown', () => {
@@ -120,7 +120,7 @@ describe('KritzelRotationHandler', () => {
       });
 
       it('should not start rotation on non-left click', () => {
-        (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+        (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
         mockSelectionGroup = {
           width: 100,
           height: 100,

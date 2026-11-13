@@ -1,14 +1,14 @@
-import { KritzelWorkspace } from '@kritzel/core';
-import { IKritzelMenuItem } from '@kritzel/core';
-import { KritzelTermKey } from '@kritzel/core';
+import { UpdrawWorkspace } from '@updraw/core';
+import { IUpdrawMenuItem } from '@updraw/core';
+import { UpdrawTermKey } from '@updraw/core';
 import { Host, h, Component, State, Prop, Event, EventEmitter, Element, Listen, Method } from '@stencil/core';
 
 @Component({
-  tag: 'kritzel-workspace-manager',
-  styleUrl: 'kritzel-workspace-manager.css',
+  tag: 'updraw-workspace-manager',
+  styleUrl: 'updraw-workspace-manager.css',
   shadow: true,
 })
-export class KritzelWorkspaceManager {
+export class UpdrawWorkspaceManager {
   @Element() host!: HTMLElement;
 
   /**
@@ -16,18 +16,18 @@ export class KritzelWorkspaceManager {
    */
   @Prop() visible: boolean = false;
 
-  @Prop({ mutable: true }) activeWorkspace: KritzelWorkspace;
-  @Prop() workspaces: KritzelWorkspace[] = [];
+  @Prop({ mutable: true }) activeWorkspace: UpdrawWorkspace;
+  @Prop() workspaces: UpdrawWorkspace[] = [];
 
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
 
   @Event() isWorkspaceManagerReady: EventEmitter<void>;
-  @Event() workspaceChange: EventEmitter<KritzelWorkspace>;
+  @Event() workspaceChange: EventEmitter<UpdrawWorkspace>;
 
   @State() childMenuAnchor: HTMLElement = null;
-  @State() openChildMenuItem: IKritzelMenuItem = null;
-  @State() newWorkspace: KritzelWorkspace | null = null;
+  @State() openChildMenuItem: IUpdrawMenuItem = null;
+  @State() newWorkspace: UpdrawWorkspace | null = null;
   @State() editingItemId: string | null = null;
 
   @Listen('wheel', { target: 'window', passive: false })
@@ -37,8 +37,8 @@ export class KritzelWorkspaceManager {
     }
   }
 
-  kritzelEngineRef: HTMLKritzelEngineElement | null = null;
-  splitButtonRef!: HTMLKritzelSplitButtonElement;
+  updrawEngineRef: HTMLUpdrawEngineElement | null = null;
+  splitButtonRef!: HTMLUpdrawSplitButtonElement;
 
   get sortedWorkspaces() {
     return [this.newWorkspace, ...this.workspaces].filter(ws => ws != null).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -64,17 +64,17 @@ export class KritzelWorkspaceManager {
   }
 
   private async initializeEngine() {
-    await customElements.whenDefined('kritzel-engine');
-    // Search for kritzel-engine in the closest kritzel-editor ancestor
-    const editor = this.host.closest('kritzel-editor');
-    this.kritzelEngineRef = editor?.querySelector('kritzel-engine') ?? null;
+    await customElements.whenDefined('updraw-engine');
+    // Search for updraw-engine in the closest updraw-editor ancestor
+    const editor = this.host.closest('updraw-editor');
+    this.updrawEngineRef = editor?.querySelector('updraw-engine') ?? null;
 
-    if (!this.kritzelEngineRef) {
-      console.warn('kritzel-engine not found in kritzel-editor.');
+    if (!this.updrawEngineRef) {
+      console.warn('updraw-engine not found in updraw-editor.');
     }
   }
 
-  private async select(item: IKritzelMenuItem, parent: IKritzelMenuItem) {
+  private async select(item: IUpdrawMenuItem, parent: IUpdrawMenuItem) {
     if (this.editingItemId) {
       return;
     }
@@ -89,11 +89,11 @@ export class KritzelWorkspaceManager {
 
   private async add() {
     await this.splitButtonRef.open();
-    this.newWorkspace = new KritzelWorkspace({ name: 'New Workspace' });
+    this.newWorkspace = new UpdrawWorkspace({ name: 'New Workspace' });
     this.editingItemId = this.newWorkspace.id;
   }
 
-  private edit(item: IKritzelMenuItem) {
+  private edit(item: IUpdrawMenuItem) {
     this.openChildMenuItem = null;
     this.childMenuAnchor = null;
     requestAnimationFrame(() => {
@@ -101,15 +101,15 @@ export class KritzelWorkspaceManager {
     });
   }
 
-  private async save(item: IKritzelMenuItem) {
+  private async save(item: IUpdrawMenuItem) {
     if (this.newWorkspace) {
       this.newWorkspace.name = item.label;
-      await this.kritzelEngineRef?.createWorkspace(this.newWorkspace);
+      await this.updrawEngineRef?.createWorkspace(this.newWorkspace);
       this.workspaceChange.emit(this.newWorkspace);
     } else {
       const workspace = item.value;
       workspace.name = item.label;
-      await this.kritzelEngineRef?.updateWorkspace(workspace);
+      await this.updrawEngineRef?.updateWorkspace(workspace);
     }
 
     this.editingItemId = null;
@@ -121,11 +121,11 @@ export class KritzelWorkspaceManager {
     this.editingItemId = null;
   }
 
-  private async delete(item: IKritzelMenuItem) {
+  private async delete(item: IUpdrawMenuItem) {
     this.openChildMenuItem = null;
     this.childMenuAnchor = null;
 
-    await this.kritzelEngineRef?.deleteWorkspace(item.value);
+    await this.updrawEngineRef?.deleteWorkspace(item.value);
 
     if (item.value.id === this.activeWorkspace?.id) {
       this.activeWorkspace = this.sortedWorkspaces.find(ws => ws.id !== item.value.id) || null;
@@ -135,7 +135,7 @@ export class KritzelWorkspaceManager {
     await this.splitButtonRef.focusMenu();
   }
 
-  private toggleChildMenu(item: IKritzelMenuItem, anchor: HTMLElement) {
+  private toggleChildMenu(item: IUpdrawMenuItem, anchor: HTMLElement) {
     this.openChildMenuItem = item;
     this.childMenuAnchor = anchor;
   }
@@ -191,7 +191,7 @@ export class KritzelWorkspaceManager {
     return (
       <Host style={{ display: this.visible ? '' : 'none' }}>
         <div class={{ manager: true, visible: this.visible }}>
-          <kritzel-split-button
+          <updraw-split-button
             ref={el => (this.splitButtonRef = el)}
             items={menuItems}
             mainButtonDisabled={this.editingItemId != null}
@@ -203,7 +203,7 @@ export class KritzelWorkspaceManager {
             onItemCloseChildMenu={() => this.closeChildMenu()}
             onMenuOpen={() => this.handleMenuOpen()}
             onMenuClose={() => this.handleMenuClose()}
-          ></kritzel-split-button>
+          ></updraw-split-button>
         </div>
       </Host>
     );

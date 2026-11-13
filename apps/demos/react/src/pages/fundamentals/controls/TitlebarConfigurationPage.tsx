@@ -1,14 +1,14 @@
 import { useRef, useState } from "react";
 import {
-  HTMLKritzelEditorElement,
-  KritzelEditor,
-  KritzelShape,
-  KritzelWorkspace,
+  HTMLUpdrawEditorElement,
+  UpdrawEditor,
+  UpdrawShape,
+  UpdrawWorkspace,
   ShapeType,
-  type KritzelObjectConfig,
-  type KritzelObjectTitlebarActionEvent,
-  type KritzelObjectTitlebarConfig,
-} from "@kritzel/react-editor";
+  type UpdrawObjectConfig,
+  type UpdrawObjectTitlebarActionEvent,
+  type UpdrawObjectTitlebarConfig,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle } from "../../shared/demo-shared";
@@ -16,7 +16,7 @@ import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 
-const objectConfig: KritzelObjectConfig = {
+const objectConfig: UpdrawObjectConfig = {
   // Only named frames get a titlebar.
   hasTitlebar: (object) => !!object.name,
   isRotatable: false,
@@ -24,7 +24,7 @@ const objectConfig: KritzelObjectConfig = {
 };
 
 // Declared once and shared by every object accepted by `objectConfig.hasTitlebar`.
-const objectTitlebar: KritzelObjectTitlebarConfig = {
+const objectTitlebar: UpdrawObjectTitlebarConfig = {
   left: [
     { id: "preview", type: "button", icon: "play", tooltip: "Preview", variant: "filled" },
     { id: "title", type: "title" },
@@ -51,20 +51,20 @@ const frameConfig = {
 
 function createFrames() {
   return [
-    new KritzelShape({ ...frameConfig, name: "Desktop", translateX: -268, translateY: -130, width: 1200, height: 800 }),
-    new KritzelShape({ ...frameConfig, name: "Tablet", translateX: 4, translateY: -130, width: 768, height: 1024 }),
-    new KritzelShape({ ...frameConfig, name: "Phone", translateX: 190, translateY: -130, width: 390, height: 844 }),
+    new UpdrawShape({ ...frameConfig, name: "Desktop", translateX: -268, translateY: -130, width: 1200, height: 800 }),
+    new UpdrawShape({ ...frameConfig, name: "Tablet", translateX: 4, translateY: -130, width: 768, height: 1024 }),
+    new UpdrawShape({ ...frameConfig, name: "Phone", translateX: 190, translateY: -130, width: 390, height: 844 }),
   ];
 }
 
 export function TitlebarConfigurationPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
   const [lastAction, setLastAction] = useState("Click a titlebar button");
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ objects: createFrames() }),
+    new UpdrawWorkspace({ objects: createFrames() }),
   ]);
 
-  async function onTitlebarAction(detail: KritzelObjectTitlebarActionEvent) {
+  async function onTitlebarAction(detail: UpdrawObjectTitlebarActionEvent) {
     const object = await editorRef.current?.getObjectById(detail.objectId);
     const label = actionLabels[detail.elementId] ?? detail.elementId;
     setLastAction(`${label} · ${object?.name ?? detail.objectType}`);
@@ -76,7 +76,7 @@ export function TitlebarConfigurationPage() {
         <span className="label">Last action:</span>
         <span className="status">{lastAction}</span>
       </Toolbar>
-      <KritzelEditor
+      <UpdrawEditor
         ref={editorRef}
         editorId="titlebar-configuration"
         theme="light"

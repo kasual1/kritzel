@@ -3,18 +3,18 @@
 /* auto-generated vue proxies */
 import { defineContainer, type StencilVueComponent } from '@stencil/vue-output-target/runtime';
 
-import type { JSX } from '@kritzel/editor/dist/components';
+import type { JSX } from '@updraw/editor/dist/components';
 
-import { defineCustomElement as defineKritzelChatBox } from '@kritzel/editor/dist/components/kritzel-chat-box.js';
-import { defineCustomElement as defineKritzelEditor } from '@kritzel/editor/dist/components/kritzel-editor.js';
-import { defineCustomElement as defineKritzelSettings } from '@kritzel/editor/dist/components/kritzel-settings.js';
-import { defineCustomElement as defineKritzelShapeFill } from '@kritzel/editor/dist/components/kritzel-shape-fill.js';
-import { defineCustomElement as defineKritzelShareDialog } from '@kritzel/editor/dist/components/kritzel-share-dialog.js';
-import { defineCustomElement as defineKritzelSplitButton } from '@kritzel/editor/dist/components/kritzel-split-button.js';
-import { defineCustomElement as defineKritzelStrokeSize } from '@kritzel/editor/dist/components/kritzel-stroke-size.js';
+import { defineCustomElement as defineUpdrawChatBox } from '@updraw/editor/dist/components/updraw-chat-box.js';
+import { defineCustomElement as defineUpdrawEditor } from '@updraw/editor/dist/components/updraw-editor.js';
+import { defineCustomElement as defineUpdrawSettings } from '@updraw/editor/dist/components/updraw-settings.js';
+import { defineCustomElement as defineUpdrawShapeFill } from '@updraw/editor/dist/components/updraw-shape-fill.js';
+import { defineCustomElement as defineUpdrawShareDialog } from '@updraw/editor/dist/components/updraw-share-dialog.js';
+import { defineCustomElement as defineUpdrawSplitButton } from '@updraw/editor/dist/components/updraw-split-button.js';
+import { defineCustomElement as defineUpdrawStrokeSize } from '@updraw/editor/dist/components/updraw-stroke-size.js';
 
 
-export const KritzelChatBox: StencilVueComponent<JSX.KritzelChatBox> = /*@__PURE__*/ defineContainer<JSX.KritzelChatBox>('kritzel-chat-box', defineKritzelChatBox, [
+export const UpdrawChatBox: StencilVueComponent<JSX.UpdrawChatBox> = /*@__PURE__*/ defineContainer<JSX.UpdrawChatBox>('updraw-chat-box', defineUpdrawChatBox, [
   'value',
   'mode',
   'placeholder',
@@ -34,7 +34,7 @@ export const KritzelChatBox: StencilVueComponent<JSX.KritzelChatBox> = /*@__PURE
 ]);
 
 
-export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__*/ defineContainer<JSX.KritzelEditor>('kritzel-editor', defineKritzelEditor, [
+export const UpdrawEditor: StencilVueComponent<JSX.UpdrawEditor> = /*@__PURE__*/ defineContainer<JSX.UpdrawEditor>('updraw-editor', defineUpdrawEditor, [
   'scaleMax',
   'scaleMin',
   'lockDrawingScale',
@@ -129,7 +129,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
 ]);
 
 
-export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PURE__*/ defineContainer<JSX.KritzelSettings>('kritzel-settings', defineKritzelSettings, [
+export const UpdrawSettings: StencilVueComponent<JSX.UpdrawSettings> = /*@__PURE__*/ defineContainer<JSX.UpdrawSettings>('updraw-settings', defineUpdrawSettings, [
   'availableThemes',
   'availableLocales',
   'shortcuts',
@@ -141,7 +141,7 @@ export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PU
 ]);
 
 
-export const KritzelShapeFill: StencilVueComponent<JSX.KritzelShapeFill> = /*@__PURE__*/ defineContainer<JSX.KritzelShapeFill>('kritzel-shape-fill', defineKritzelShapeFill, [
+export const UpdrawShapeFill: StencilVueComponent<JSX.UpdrawShapeFill> = /*@__PURE__*/ defineContainer<JSX.UpdrawShapeFill>('updraw-shape-fill', defineUpdrawShapeFill, [
   'value',
   'valueChange'
 ], [
@@ -149,7 +149,7 @@ export const KritzelShapeFill: StencilVueComponent<JSX.KritzelShapeFill> = /*@__
 ]);
 
 
-export const KritzelShareDialog: StencilVueComponent<JSX.KritzelShareDialog> = /*@__PURE__*/ defineContainer<JSX.KritzelShareDialog>('kritzel-share-dialog', defineKritzelShareDialog, [
+export const UpdrawShareDialog: StencilVueComponent<JSX.UpdrawShareDialog> = /*@__PURE__*/ defineContainer<JSX.UpdrawShareDialog>('updraw-share-dialog', defineUpdrawShareDialog, [
   'isPublic',
   'workspaceId',
   'terms',
@@ -161,7 +161,7 @@ export const KritzelShareDialog: StencilVueComponent<JSX.KritzelShareDialog> = /
 ]);
 
 
-export const KritzelSplitButton: StencilVueComponent<JSX.KritzelSplitButton> = /*@__PURE__*/ defineContainer<JSX.KritzelSplitButton>('kritzel-split-button', defineKritzelSplitButton, [
+export const UpdrawSplitButton: StencilVueComponent<JSX.UpdrawSplitButton> = /*@__PURE__*/ defineContainer<JSX.UpdrawSplitButton>('updraw-split-button', defineUpdrawSplitButton, [
   'buttonIcon',
   'dropdownIcon',
   'items',
@@ -187,7 +187,7 @@ export const KritzelSplitButton: StencilVueComponent<JSX.KritzelSplitButton> = /
 ]);
 
 
-export const KritzelStrokeSize: StencilVueComponent<JSX.KritzelStrokeSize> = /*@__PURE__*/ defineContainer<JSX.KritzelStrokeSize>('kritzel-stroke-size', defineKritzelStrokeSize, [
+export const UpdrawStrokeSize: StencilVueComponent<JSX.UpdrawStrokeSize> = /*@__PURE__*/ defineContainer<JSX.UpdrawStrokeSize>('updraw-stroke-size', defineUpdrawStrokeSize, [
   'sizes',
   'selectedSize',
   'sizeChange'

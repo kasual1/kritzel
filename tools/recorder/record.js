@@ -11,9 +11,9 @@ const DEFAULT_HEIGHT = 360;
 const DEFAULT_OUT_DIR = path.join(__dirname, 'recordings');
 const PROFILE_DIR = path.join(__dirname, '.profile');
 const ICON_REGISTRY = path.join(__dirname, '../../libs/core/src/classes/registries/icon-registry.class.ts');
-// Same hotspot KritzelCursorHelper.getCursor() uses for the default cursor.
+// Same hotspot UpdrawCursorHelper.getCursor() uses for the default cursor.
 const CURSOR_HOTSPOT = { x: 4, y: 4 };
-const WATERMARK_TEXT = 'Powered by kritzel.io';
+const WATERMARK_TEXT = 'Powered by updraw.io';
 
 function getArgValue(name) {
 	const prefix = `--${name}=`;
@@ -40,7 +40,7 @@ function toDimension(value, fallback, label) {
 
 function toUrl(value) {
 	if (!value) {
-		throw new Error('Missing --url. Example: npm run record -- --url=https://app.kritzel.io');
+		throw new Error('Missing --url. Example: npm run record -- --url=https://app.updraw.io');
 	}
 
 	try {
@@ -51,7 +51,7 @@ function toUrl(value) {
 }
 
 // Reads the engine's default cursor (the `mousePointer` icon) so the recording
-// shows the same cursor as the Kritzel engine.
+// shows the same cursor as the Updraw engine.
 function loadEngineCursorSvg() {
 	const source = fs.readFileSync(ICON_REGISTRY, 'utf8');
 	const match = source.match(/^\s*mousePointer:\s*'([^']*)'/m);
@@ -81,7 +81,7 @@ function defaultName() {
 		const fresh = hasFlag('fresh');
 		const headless = hasFlag('headless');
 
-		tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kritzel-recorder-'));
+		tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'updraw-recorder-'));
 		const profileDir = fresh ? path.join(tempDir, 'profile') : PROFILE_DIR;
 		const videoDir = path.join(tempDir, 'video');
 

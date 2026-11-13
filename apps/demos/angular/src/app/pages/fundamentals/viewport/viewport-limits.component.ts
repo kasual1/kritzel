@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
+import { UpdrawEditor, UpdrawWorkspace } from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -7,7 +7,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-viewport-limits',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [UpdrawEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -15,7 +15,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       <button (click)="zoomOut()">Zoom Out</button>
     </app-toolbar>
 
-    <kritzel-editor
+    <updraw-editor
       editorId="viewport-limits"
       [theme]="'light'"
       [themes]="themes"
@@ -26,21 +26,21 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    kritzel-editor { flex: 1; }
+    updraw-editor { flex: 1; }
   `],
 })
 export class ViewportLimitsComponent {
   private readonly zoomFactor = 1.1;
 
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
   async zoomIn() {
     await this.editor.zoomIn(this.zoomFactor, 200);

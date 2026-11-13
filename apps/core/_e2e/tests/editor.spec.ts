@@ -1,14 +1,14 @@
 import { test, expect } from '../fixtures/editor.fixture';
 
 test.describe('Editor', () => {
-  test('should render the kritzel-editor element', async ({ editorPage }) => {
+  test('should render the updraw-editor element', async ({ editorPage }) => {
     await editorPage.goto();
     await editorPage.waitForReady();
 
     await expect(editorPage.editor).toBeAttached();
   });
 
-  test('should render the kritzel-engine', async ({ editorPage }) => {
+  test('should render the updraw-engine', async ({ editorPage }) => {
     await editorPage.goto();
     await editorPage.waitForReady();
 
@@ -249,7 +249,7 @@ test.describe('Editor', () => {
     await page.getByTestId('menu-item-settings').click();
 
     // Wait for the settings dialog to be visible inside the editor.
-    const settingsDialog = page.locator('kritzel-settings kritzel-dialog[is-open]');
+    const settingsDialog = page.locator('updraw-settings updraw-dialog[is-open]');
     await settingsDialog.waitFor({ state: 'attached' });
 
     // The backdrop must be positioned within the editor bounds.
@@ -273,7 +273,7 @@ test.describe('Editor', () => {
     await page.getByTestId('menu-item-settings').click();
 
     // Wait for the settings dialog to be attached.
-    const settingsDialog = page.locator('kritzel-settings kritzel-dialog[is-open]');
+    const settingsDialog = page.locator('updraw-settings updraw-dialog[is-open]');
     await settingsDialog.waitFor({ state: 'attached' });
 
     // Allow the contained-dialog's ResizeObserver to compute the container rect.
@@ -300,7 +300,7 @@ test.describe('Editor', () => {
     await page.getByTestId('menu-item-settings').click();
 
     // Wait for the settings dialog to be attached.
-    const settingsDialog = page.locator('kritzel-settings kritzel-dialog[is-open]');
+    const settingsDialog = page.locator('updraw-settings updraw-dialog[is-open]');
     await settingsDialog.waitFor({ state: 'attached' });
 
     // Allow the contained-dialog's ResizeObserver to compute the container rect.

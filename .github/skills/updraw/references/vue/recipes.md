@@ -1,6 +1,6 @@
 # Recipes â€” proven end-to-end patterns
 
-Composable patterns distilled from the official Vue examples. All assume the golden rules: seeding happens in the `@isReady` handler, every call awaited, Kritzel state mirrored into `ref()`s, methods called through `editor.value` (the computed ref from `getEditorRef('editor')`, resolved at the top level of `<script setup>`).
+Composable patterns distilled from the official Vue examples. All assume the golden rules: seeding happens in the `@isReady` handler, every call awaited, Updraw state mirrored into `ref()`s, methods called through `editor.value` (the computed ref from `getEditorRef('editor')`, resolved at the top level of `<script setup>`).
 
 ## 1. Image annotation studio (locked image + color-locked brushes)
 
@@ -9,7 +9,7 @@ Hide the built-in toolbar, load a background image users can't move, register on
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { getEditorRef, KritzelBrushTool, KritzelEditor, KritzelImage } from '@kritzel/vue-editor';
+import { getEditorRef, UpdrawBrushTool, UpdrawEditor, UpdrawImage } from '@updraw/vue-editor';
 
 const COLORS = [
   { name: 'red',    hex: '#ff0000', dark: '#ff6666' },
@@ -22,7 +22,7 @@ const activeBrush = ref('red');
 async function onReady() {
   if (!editor.value) return;
 
-  const img = await KritzelImage.fromUrl('/assets/photo.jpg', { maxWidth: 800, maxHeight: 600 });
+  const img = await UpdrawImage.fromUrl('/assets/photo.jpg', { maxWidth: 800, maxHeight: 600 });
   img.translateX = -img.width / 2;
   img.translateY = -img.height / 2;
   img.isEditable = false;                            // background stays put
@@ -30,7 +30,7 @@ async function onReady() {
   await editor.value.centerAllObjects(false);
 
   for (const c of COLORS) {
-    await editor.value.registerTool(`brush-${c.name}`, KritzelBrushTool, {
+    await editor.value.registerTool(`brush-${c.name}`, UpdrawBrushTool, {
       color: { light: c.hex, dark: c.dark },
       size: 16,
       palette: [],                                  // locked color, no picker
@@ -55,7 +55,7 @@ async function activateBrush(name: string) {
         @click="activateBrush(c.name)"
       ></button>
     </div>
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="annotation"
       :isToolbarVisible="false" :isMoreMenuVisible="false"
@@ -72,19 +72,19 @@ async function activateBrush(name: string) {
 ```ts
 async function onReady() {
   if (!editor.value) return;
-  const plan = await KritzelImage.fromUrl('/assets/floorplan.png', { maxWidth: 2000, maxHeight: 2000 });
+  const plan = await UpdrawImage.fromUrl('/assets/floorplan.png', { maxWidth: 2000, maxHeight: 2000 });
   plan.isEditable = false;
   await editor.value.addObject(plan);
   await editor.value.centerAllObjects(false);
 }
 
-// template: <div @click="onCanvasClick"><KritzelEditor ref="editor" ... /></div>
+// template: <div @click="onCanvasClick"><UpdrawEditor ref="editor" ... /></div>
 async function onCanvasClick(ev: MouseEvent) {
   if (!editor.value) return;
   // subtract the element offset when the editor doesn't fill the page
   const rect = editor.value.getBoundingClientRect();
   const { x, y } = await editor.value.screenToWorld(ev.clientX - rect.left, ev.clientY - rect.top);
-  const pin = new KritzelShape({
+  const pin = new UpdrawShape({
     shapeType: ShapeType.Ellipse,
     translateX: x - 25, translateY: y - 25,        // center 50Ã—50 pin on click
     width: 50, height: 50,
@@ -115,14 +115,14 @@ await editor.value?.updateObject(pin, { fillColor: { light: '#10b981', dark: '#1
 <script setup lang="ts">
 // Only the selection tool in the toolbar â†’ users can pan/zoom/inspect but not draw.
 // Define the array as a const in <script setup> â€” never inline in the template.
-const toolbarItems: KritzelToolbarItem[] = [
-  { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
+const toolbarItems: UpdrawToolbarItem[] = [
+  { name: 'select', type: 'tool', isDefault: true, tool: UpdrawSelectionTool, icon: 'cursor' },
 ];
 
 async function onReady() {
   if (!editor.value) return;
   const items = await Promise.all(
-    artworks.map(a => KritzelImage.fromUrl(a.url, { maxWidth: 300, maxHeight: 300 })),
+    artworks.map(a => UpdrawImage.fromUrl(a.url, { maxWidth: 300, maxHeight: 300 })),
   );
   items.forEach((img, i) => {
     img.translateX = artworks[i].x;
@@ -135,11 +135,11 @@ async function onReady() {
 </script>
 
 <template>
-  <KritzelEditor ref="editor" :toolbarItems="toolbarItems" @isReady="onReady" />
+  <UpdrawEditor ref="editor" :toolbarItems="toolbarItems" @isReady="onReady" />
 </template>
 ```
 
-For a hard read-only canvas, call `await editor.value?.disable()` (re-enable with `enable()`). For huge datasets, virtualize: keep all `KritzelImage` instances in plain Maps, listen to `@viewportChange`, compute the visible world rect via `screenToWorld(0, 0)` / `screenToWorld(viewport.width, viewport.height)`, then `addObjects`/`removeObjects` the diff.
+For a hard read-only canvas, call `await editor.value?.disable()` (re-enable with `enable()`). For huge datasets, virtualize: keep all `UpdrawImage` instances in plain Maps, listen to `@viewportChange`, compute the visible world rect via `screenToWorld(0, 0)` / `screenToWorld(viewport.width, viewport.height)`, then `addObjects`/`removeObjects` the diff.
 
 ## 4. Slide deck with clamped camera
 
@@ -154,7 +154,7 @@ const bounds = ref({ left: 0, right: SLIDE_W, top: -500, bottom: SLIDE_H + 500 }
 
 async function onReady() {
   if (!editor.value) return;
-  const slides = Array.from({ length: 5 }, (_, i) => new KritzelShape({
+  const slides = Array.from({ length: 5 }, (_, i) => new UpdrawShape({
     shapeType: ShapeType.Rectangle,
     translateX: i * SLIDE_W, translateY: 0,
     width: SLIDE_W, height: SLIDE_H,
@@ -174,7 +174,7 @@ async function goToSlide(i: number) {
 </script>
 
 <template>
-  <KritzelEditor
+  <UpdrawEditor
     ref="editor"
     :viewportBoundaryLeft="bounds.left"  :viewportBoundaryRight="bounds.right"
     :viewportBoundaryTop="bounds.top"    :viewportBoundaryBottom="bounds.bottom"
@@ -189,10 +189,10 @@ async function goToSlide(i: number) {
 Mirror the canvas into your own model via the granular events; navigate and edit from the panel:
 
 ```ts
-import type { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from '@kritzel/vue-editor';
+import type { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from '@updraw/vue-editor';
 
 // template: @objectsAdded / @objectsRemoved / @objectsUpdated â†’ update your tree ref
-const allObjects = ref<KritzelBaseObject[]>([]);
+const allObjects = ref<UpdrawBaseObject[]>([]);
 
 function onObjectsAdded(event: CustomEvent<ObjectsAddedEvent>) {
   allObjects.value = [...allObjects.value, ...event.detail.objects];
@@ -217,7 +217,7 @@ async function onPropertyEdit(id: string, prop: string, value: unknown) {
 }
 
 // filter by type:
-const onlyShapes = await editor.value.findObjects(o => o.__class__ === 'KritzelShape');
+const onlyShapes = await editor.value.findObjects(o => o.__class__ === 'UpdrawShape');
 ```
 
 ## 6. Seed content factory
@@ -225,17 +225,17 @@ const onlyShapes = await editor.value.findObjects(o => o.__class__ === 'KritzelS
 Keep demo/seed content in a pure factory and batch-insert once on ready. Guard against double-seeding when persistence is on:
 
 ```ts
-export function createSeedObjects(): KritzelBaseObject[] {
+export function createSeedObjects(): UpdrawBaseObject[] {
   return [
-    new KritzelShape({ translateX: 20, translateY: -150, width: 120, height: 120,
+    new UpdrawShape({ translateX: 20, translateY: -150, width: 120, height: 120,
       shapeType: ShapeType.Rectangle,
       rotation: 10,
       fillColor: { light: '#fce4ec', dark: '#880e4f' },
       strokeColor: { light: '#c62828', dark: '#ef9a9a' }, strokeWidth: 3 }),
-    new KritzelLine({ startX: -170, startY: 10, endX: 130, endY: 10,
+    new UpdrawLine({ startX: -170, startY: 10, endX: 130, endY: 10,
       rotation: -5,
       stroke: { light: '#4caf50', dark: '#81c784' }, strokeWidth: 3 }),
-    new KritzelText({ text: 'Welcome!', translateX: -60, translateY: -40, fontSize: 24,
+    new UpdrawText({ text: 'Welcome!', translateX: -60, translateY: -40, fontSize: 24,
       rotation: -90,
       fontColor: { light: '#1f2937', dark: '#f3f4f6' } }),
   ];
@@ -254,23 +254,23 @@ await editor.value.centerAllObjects(false);
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { getEditorRef, KritzelEditor,
-  type KritzelUndoState, type KritzelViewportState } from '@kritzel/vue-editor';
+import { getEditorRef, UpdrawEditor,
+  type UpdrawUndoState, type UpdrawViewportState } from '@updraw/vue-editor';
 
 const editor = getEditorRef('editor');
-const undoState = ref<KritzelUndoState | null>(null);
-const viewport = ref<KritzelViewportState | null>(null);
+const undoState = ref<UpdrawUndoState | null>(null);
+const viewport = ref<UpdrawViewportState | null>(null);
 </script>
 
 <template>
   <button :disabled="!undoState?.canUndo" @click="editor?.undo()">Undo</button>
   <button :disabled="!undoState?.canRedo" @click="editor?.redo()">Redo</button>
   <span>Zoom: {{ Math.round((viewport?.scale ?? 1) * 100) }}%</span>
-  <KritzelEditor
+  <UpdrawEditor
     ref="editor"
     :isUtilityPanelVisible="false"
-    @undoStateChange="(e: CustomEvent<KritzelUndoState>) => undoState = e.detail"
-    @viewportChange="(e: CustomEvent<KritzelViewportState>) => viewport = e.detail"
+    @undoStateChange="(e: CustomEvent<UpdrawUndoState>) => undoState = e.detail"
+    @viewportChange="(e: CustomEvent<UpdrawViewportState>) => viewport = e.detail"
   />
 </template>
 ```

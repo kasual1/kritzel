@@ -1,6 +1,6 @@
-import { KritzelBaseObject } from '../classes/objects/base-object.class';
-import { KritzelIconName } from '../classes/registries/icon-registry.class';
-import { KritzelTermKey, KritzelTermVars } from './localization.interface';
+import { UpdrawBaseObject } from '../classes/objects/base-object.class';
+import { UpdrawIconName } from '../classes/registries/icon-registry.class';
+import { UpdrawTermKey, UpdrawTermVars } from './localization.interface';
 
 /**
  * A static value or a function resolving it from the titlebar context.
@@ -8,19 +8,19 @@ import { KritzelTermKey, KritzelTermVars } from './localization.interface';
  * Functions are evaluated synchronously on every render, so they must be pure and cheap.
  * Unlike {@link ContextMenuItem} predicates, promises are not supported.
  */
-export type KritzelTitlebarValue<T> = T | ((context: KritzelObjectTitlebarContext) => T);
+export type UpdrawTitlebarValue<T> = T | ((context: UpdrawObjectTitlebarContext) => T);
 
 /** Section of the titlebar an element is rendered in. */
-export type KritzelTitlebarSection = 'left' | 'center' | 'right';
+export type UpdrawTitlebarSection = 'left' | 'center' | 'right';
 
 /** Information about the object a titlebar belongs to, passed to dynamic element values and actions. */
-export interface KritzelObjectTitlebarContext {
+export interface UpdrawObjectTitlebarContext {
   /** The owner of the titlebar: a top-level object or group for which `objectConfig.hasTitlebar` is true. */
-  object: KritzelBaseObject;
-  /** The owner's class name, e.g. `'KritzelGroup'`. */
+  object: UpdrawBaseObject;
+  /** The owner's class name, e.g. `'UpdrawGroup'`. */
   objectType: string;
   /** The owner's children when it is a group, otherwise an empty array. */
-  children: KritzelBaseObject[];
+  children: UpdrawBaseObject[];
   /** Whether the owner, or something inside it, is part of the local selection. */
   isActive: boolean;
   /** The resolved title (item text, config resolver, object name, or localized type label). */
@@ -32,13 +32,13 @@ export interface KritzelObjectTitlebarContext {
   /** Width of the titlebar in screen pixels. */
   barWidth: number;
   /** Translates a term key through the engine's active locale; other strings are returned verbatim. */
-  t: (key: KritzelTermKey | (string & NonNullable<unknown>), vars?: KritzelTermVars) => string;
+  t: (key: UpdrawTermKey | (string & NonNullable<unknown>), vars?: UpdrawTermVars) => string;
 }
 
-interface KritzelTitlebarElementBase {
+interface UpdrawTitlebarElementBase {
   /** Stable identifier, used as render key, `data-element-id` and in `objectTitlebarAction` events. */
   id: string;
-  isVisible?: KritzelTitlebarValue<boolean>;
+  isVisible?: UpdrawTitlebarValue<boolean>;
   /** Restricts the element to the active or inactive state. Defaults to `'always'`. */
   showWhen?: 'always' | 'active' | 'inactive';
   /** Hides the element while the titlebar is narrower than this many screen pixels. */
@@ -48,105 +48,105 @@ interface KritzelTitlebarElementBase {
 }
 
 /** Displays the resolved title of the owner. */
-export interface KritzelTitlebarTitle extends KritzelTitlebarElementBase {
+export interface UpdrawTitlebarTitle extends UpdrawTitlebarElementBase {
   type: 'title';
   /** Overrides the resolved title for this element. A title with `text` cannot be edited. */
-  text?: KritzelTitlebarValue<string>;
+  text?: UpdrawTitlebarValue<string>;
   /**
    * Lets users rename the object by clicking the title of its active titlebar again.
    * The new name is stored in the object's `name`; an empty name falls back to the default title.
    * Defaults to `false`.
    */
-  isEditable?: KritzelTitlebarValue<boolean>;
+  isEditable?: UpdrawTitlebarValue<boolean>;
 }
 
 /** Displays arbitrary text, e.g. the object's width. */
-export interface KritzelTitlebarText extends KritzelTitlebarElementBase {
+export interface UpdrawTitlebarText extends UpdrawTitlebarElementBase {
   type: 'text';
-  text: KritzelTitlebarValue<string>;
+  text: UpdrawTitlebarValue<string>;
   tone?: 'default' | 'muted' | 'strong';
 }
 
 /** Displays a non-interactive icon from the icon registry. */
-export interface KritzelTitlebarIcon extends KritzelTitlebarElementBase {
+export interface UpdrawTitlebarIcon extends UpdrawTitlebarElementBase {
   type: 'icon';
-  icon: KritzelTitlebarValue<KritzelIconName>;
+  icon: UpdrawTitlebarValue<UpdrawIconName>;
 }
 
 /** An interactive button. Clicking it never starts a drag or changes the selection. */
-export interface KritzelTitlebarButton extends KritzelTitlebarElementBase {
+export interface UpdrawTitlebarButton extends UpdrawTitlebarElementBase {
   type: 'button';
-  icon?: KritzelTitlebarValue<KritzelIconName>;
+  icon?: UpdrawTitlebarValue<UpdrawIconName>;
   /** Button text. Term keys are translated through the active locale, other strings are used verbatim. */
-  label?: KritzelTermKey | (string & NonNullable<unknown>);
+  label?: UpdrawTermKey | (string & NonNullable<unknown>);
   /** Tooltip and accessible label. Term keys are translated through the active locale. */
-  tooltip?: KritzelTermKey | (string & NonNullable<unknown>);
+  tooltip?: UpdrawTermKey | (string & NonNullable<unknown>);
   variant?: 'ghost' | 'filled' | 'outlined';
-  isDisabled?: KritzelTitlebarValue<boolean>;
-  isPressed?: KritzelTitlebarValue<boolean>;
+  isDisabled?: UpdrawTitlebarValue<boolean>;
+  isPressed?: UpdrawTitlebarValue<boolean>;
   /** Called on click. The `objectTitlebarAction` event is emitted either way. */
-  action?: (context: KritzelObjectTitlebarContext, event: MouseEvent) => void;
+  action?: (context: UpdrawObjectTitlebarContext, event: MouseEvent) => void;
 }
 
-/** An entry of a {@link KritzelTitlebarMenu}. */
-export interface KritzelTitlebarMenuItem {
+/** An entry of a {@link UpdrawTitlebarMenu}. */
+export interface UpdrawTitlebarMenuItem {
   /** Stable identifier, reported as `menuItemId` in `objectTitlebarAction` events. */
   id: string;
   /** Term keys are translated through the active locale, other strings are used verbatim. */
-  label: KritzelTermKey | (string & NonNullable<unknown>);
-  icon?: KritzelIconName;
-  isVisible?: KritzelTitlebarValue<boolean>;
-  isDisabled?: KritzelTitlebarValue<boolean>;
+  label: UpdrawTermKey | (string & NonNullable<unknown>);
+  icon?: UpdrawIconName;
+  isVisible?: UpdrawTitlebarValue<boolean>;
+  isDisabled?: UpdrawTitlebarValue<boolean>;
   /** Called when the menu item is selected. The `objectTitlebarAction` event is emitted either way. */
-  action?: (context: KritzelObjectTitlebarContext, menuItem: KritzelTitlebarMenuItem) => void;
+  action?: (context: UpdrawObjectTitlebarContext, menuItem: UpdrawTitlebarMenuItem) => void;
 }
 
 /**
  * A button that opens a menu. The engine only tracks which menu is open and emits
- * `objectTitlebarMenuStateChange`; rendering the menu is up to the host, e.g. `kritzel-editor`.
+ * `objectTitlebarMenuStateChange`; rendering the menu is up to the host, e.g. `updraw-editor`.
  * The menu closes when the camera moves, the object is deselected or its titlebar is hidden.
  */
-export interface KritzelTitlebarMenu extends KritzelTitlebarElementBase {
+export interface UpdrawTitlebarMenu extends UpdrawTitlebarElementBase {
   type: 'menu';
-  icon?: KritzelTitlebarValue<KritzelIconName>;
+  icon?: UpdrawTitlebarValue<UpdrawIconName>;
   /** Button text. Term keys are translated through the active locale, other strings are used verbatim. */
-  label?: KritzelTermKey | (string & NonNullable<unknown>);
+  label?: UpdrawTermKey | (string & NonNullable<unknown>);
   /** Tooltip and accessible label. Term keys are translated through the active locale. */
-  tooltip?: KritzelTermKey | (string & NonNullable<unknown>);
+  tooltip?: UpdrawTermKey | (string & NonNullable<unknown>);
   variant?: 'ghost' | 'filled' | 'outlined';
-  isDisabled?: KritzelTitlebarValue<boolean>;
+  isDisabled?: UpdrawTitlebarValue<boolean>;
   /** Menu items, resolved when the menu opens. */
-  items: KritzelTitlebarValue<KritzelTitlebarMenuItem[]>;
+  items: UpdrawTitlebarValue<UpdrawTitlebarMenuItem[]>;
 }
 
 /** Flexible empty space (`spacer`) or a thin divider (`separator`). */
-export interface KritzelTitlebarSpacer extends KritzelTitlebarElementBase {
+export interface UpdrawTitlebarSpacer extends UpdrawTitlebarElementBase {
   type: 'spacer' | 'separator';
 }
 
-export type KritzelTitlebarElement =
-  | KritzelTitlebarTitle
-  | KritzelTitlebarText
-  | KritzelTitlebarIcon
-  | KritzelTitlebarButton
-  | KritzelTitlebarMenu
-  | KritzelTitlebarSpacer;
+export type UpdrawTitlebarElement =
+  | UpdrawTitlebarTitle
+  | UpdrawTitlebarText
+  | UpdrawTitlebarIcon
+  | UpdrawTitlebarButton
+  | UpdrawTitlebarMenu
+  | UpdrawTitlebarSpacer;
 
 /**
  * Content and appearance of the titlebar rendered above the objects for which
  * `objectConfig.hasTitlebar` is true. The same configuration applies to every object.
  */
-export interface KritzelObjectTitlebarConfig {
+export interface UpdrawObjectTitlebarConfig {
   /** Elements in the left section. Defaults to a single title element. */
-  left?: KritzelTitlebarElement[];
-  center?: KritzelTitlebarElement[];
-  right?: KritzelTitlebarElement[];
+  left?: UpdrawTitlebarElement[];
+  center?: UpdrawTitlebarElement[];
+  right?: UpdrawTitlebarElement[];
   /** Show titlebars always (default) or only while their object is selected. */
   visibility?: 'always' | 'active';
   /** Follow the object's rotation (default) or stay upright above its rotated bounding box. */
   rotation?: 'follow' | 'upright';
   /** Resolves the title of an object. Falls back to the object's name, then to a localized type label. */
-  title?: (object: KritzelBaseObject) => string | undefined;
+  title?: (object: UpdrawBaseObject) => string | undefined;
   /** Whether dragging the titlebar moves its object. Defaults to `true`. */
   draggable?: boolean;
   /** Hides titlebars whose object is narrower than this many screen pixels. Defaults to 40. */
@@ -154,12 +154,12 @@ export interface KritzelObjectTitlebarConfig {
 }
 
 /** Payload of the `objectTitlebarAction` event emitted when a titlebar button or menu item is clicked. */
-export interface KritzelObjectTitlebarActionEvent {
+export interface UpdrawObjectTitlebarActionEvent {
   /** Id of the clicked button, or of the menu the selected menu item belongs to. */
   elementId: string;
   /** Id of the selected menu item, when a menu item was selected. */
   menuItemId?: string;
-  section: KritzelTitlebarSection;
+  section: UpdrawTitlebarSection;
   objectId: string;
   objectType: string;
   workspaceId: string;
@@ -168,18 +168,18 @@ export interface KritzelObjectTitlebarActionEvent {
 }
 
 /** Payload of the `objectTitlebarMenuStateChange` event, emitted when a titlebar menu opens or closes. */
-export interface KritzelObjectTitlebarMenuState {
+export interface UpdrawObjectTitlebarMenuState {
   isVisible: boolean;
   /** Owner of the titlebar whose menu is open. */
   objectId?: string;
   /** Id of the open menu element. */
   elementId?: string;
-  section?: KritzelTitlebarSection;
+  section?: UpdrawTitlebarSection;
   /**
    * Visible menu items with their values resolved: labels translated and `isDisabled` evaluated.
    * Select one through the engine's `selectObjectTitlebarMenuItem` method.
    */
-  items: KritzelTitlebarMenuItem[];
+  items: UpdrawTitlebarMenuItem[];
   /** The menu button, for anchoring and returning focus to. Lives in the engine's shadow root. */
   anchor?: HTMLElement;
   /** Client rect of the menu button when the menu opened. */

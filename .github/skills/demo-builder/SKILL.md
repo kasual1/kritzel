@@ -1,10 +1,10 @@
 ---
 name: demo-builder
-description: "Create, edit, and maintain runnable Kritzel demo pages in apps/demos/angular, apps/demos/react, and apps/demos/vue. Covers routing, framework themes, editor/engine refs, and docs LiveDemo compatibility. Use when implementing demo components under apps/demos/."
+description: "Create, edit, and maintain runnable Updraw demo pages in apps/demos/angular, apps/demos/react, and apps/demos/vue. Covers routing, framework themes, editor/engine refs, and docs LiveDemo compatibility. Use when implementing demo components under apps/demos/."
 argument-hint: "Describe the demo page or demo feature to create or update"
 ---
 
-# Demo Builder - Kritzel Framework Demos
+# Demo Builder - Updraw Framework Demos
 
 ## When to Use
 
@@ -62,6 +62,6 @@ names stay unique and greppable while routes stay short and mirror the docs URLs
 2. Load the framework pattern and scaffold/update the demo page.
 3. Register the route in the framework router.
 4. Verify editor id uniqueness, theme wiring, and iframe-safe panning/zoom behavior.
-5. If the page uses `KritzelDynamicObject`, load and apply `patterns/dynamic-objects.md`.
+5. If the page uses `UpdrawDynamicObject`, load and apply `patterns/dynamic-objects.md`.
 6. If docs `<LiveDemo>` references this demo, validate route and repo file path parity.
 7. If porting, run cross-framework checks from `patterns/cross-framework-demo-reliability.md`.

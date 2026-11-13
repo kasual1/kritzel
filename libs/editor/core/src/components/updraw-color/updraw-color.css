@@ -4,8 +4,8 @@
 
 .checkerboard-bg {
   background: repeating-conic-gradient(
-      var(--kritzel-checkerboard-color-dark, #ccc) 0% 25%,
-      var(--kritzel-checkerboard-color-light, #fff) 0% 50%
+      var(--updraw-checkerboard-color-dark, #ccc) 0% 25%,
+      var(--updraw-checkerboard-color-light, #fff) 0% 50%
     )
     50% / 8px 8px;
   position: relative;
@@ -21,5 +21,5 @@
 }
 
 .color-circle.white {
-  border: 1px solid var(--kritzel-color-palette-circle-border-color, #dddcdc);
+  border: 1px solid var(--updraw-color-palette-circle-border-color, #dddcdc);
 }

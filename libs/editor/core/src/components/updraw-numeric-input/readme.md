@@ -1,4 +1,4 @@
-# kritzel-numeric-input
+# updraw-numeric-input
 
 
 
@@ -28,13 +28,13 @@
 
 ### Used by
 
- - [kritzel-settings](../kritzel-settings)
+ - [updraw-settings](../updraw-settings)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-settings --> kritzel-numeric-input
-  style kritzel-numeric-input fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-settings --> updraw-numeric-input
+  style updraw-numeric-input fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

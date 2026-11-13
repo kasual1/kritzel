@@ -1,6 +1,6 @@
-import { KritzelDynamicObject } from '@kritzel/react-editor';
+import { UpdrawDynamicObject } from '@updraw/react-editor';
 
-export function createOpenSourceObject(): KritzelDynamicObject {
+export function createOpenSourceObject(): UpdrawDynamicObject {
   const element = document.createElement('div');
   element.style.width = '100%';
   element.style.height = '100%';
@@ -14,7 +14,7 @@ export function createOpenSourceObject(): KritzelDynamicObject {
         d="M 71.4,185.3 A 90,90 0 1 1 128.6,185.3 L 108.7,127.6 A 28,28 0 1 0 91.3,127.6 Z" />
     </svg>`;
 
-  return new KritzelDynamicObject({
+  return new UpdrawDynamicObject({
     element,
     width: 180,
     height: 180 * 182 / 186,

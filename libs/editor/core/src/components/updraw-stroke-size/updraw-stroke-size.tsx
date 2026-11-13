@@ -1,11 +1,11 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 
 @Component({
-  tag: 'kritzel-stroke-size',
-  styleUrl: 'kritzel-stroke-size.css',
+  tag: 'updraw-stroke-size',
+  styleUrl: 'updraw-stroke-size.css',
   shadow: true,
 })
-export class KritzelStrokeSize {
+export class UpdrawStrokeSize {
   @Prop() sizes: number[] = [4, 6, 8, 12, 16, 24];
   @Prop({ mutable: true }) selectedSize: number | null = null;
 
@@ -31,7 +31,7 @@ export class KritzelStrokeSize {
               }}
               onClick={() => this.handleSizeClick(size)}
             >
-              <kritzel-color value={'var(--kritzel-global-text-primary)'} size={size}></kritzel-color>
+              <updraw-color value={'var(--updraw-global-text-primary)'} size={size}></updraw-color>
             </div>
           ))}
         </div>

@@ -9,13 +9,13 @@ Hide the built-in toolbar, load a background image users can't move, register on
 ```ts
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   template: `
-    <kritzel-editor editorId="annotation"
+    <updraw-editor editorId="annotation"
       [isToolbarVisible]="false" [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false" [isUtilityPanelVisible]="false"
       (isReady)="onReady()">
-    </kritzel-editor>
+    </updraw-editor>
     <div class="palette">
       @for (c of colors; track c.name) {
         <button (click)="activateBrush(c.name)" [style.background]="c.hex"></button>
@@ -24,14 +24,14 @@ Hide the built-in toolbar, load a background image users can't move, register on
   `,
 })
 export class AnnotationStudioComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
   readonly colors = [
     { name: 'red',    hex: '#ff0000', dark: '#ff6666' },
     { name: 'yellow', hex: '#ffeb3b', dark: '#fff176' },
   ];
 
   async onReady() {
-    const img = await KritzelImage.fromUrl('/assets/photo.jpg', { maxWidth: 800, maxHeight: 600 });
+    const img = await UpdrawImage.fromUrl('/assets/photo.jpg', { maxWidth: 800, maxHeight: 600 });
     img.translateX = 0;
     img.translateY = 0;
     img.isEditable = false;                       // background stays put
@@ -39,7 +39,7 @@ export class AnnotationStudioComponent {
     await this.editor.centerAllObjects(false);
 
     for (const c of this.colors) {
-      await this.editor.registerTool(`brush-${c.name}`, KritzelBrushTool, {
+      await this.editor.registerTool(`brush-${c.name}`, UpdrawBrushTool, {
         color: { light: c.hex, dark: c.dark },
         size: 16,
         palette: [],                              // locked color, no picker
@@ -58,7 +58,7 @@ export class AnnotationStudioComponent {
 
 ```ts
 async onReady() {
-  const plan = await KritzelImage.fromUrl('/assets/floorplan.png', { maxWidth: 2000, maxHeight: 2000 });
+  const plan = await UpdrawImage.fromUrl('/assets/floorplan.png', { maxWidth: 2000, maxHeight: 2000 });
   plan.isEditable = false;
   await this.editor.addObject(plan);
   await this.editor.centerAllObjects(false);
@@ -66,7 +66,7 @@ async onReady() {
 
 async onCanvasClick(ev: MouseEvent) {
   const { x, y } = await this.editor.screenToWorld(ev.clientX, ev.clientY);
-  const pin = new KritzelShape({
+  const pin = new UpdrawShape({
     shapeType: ShapeType.Ellipse,
     translateX: x - 25, translateY: y - 25,        // center 50Ã—50 pin on click
     width: 50, height: 50,
@@ -90,13 +90,13 @@ async focusPin(id: string) {
 
 ```ts
 // Only the selection tool in the toolbar â†’ users can pan/zoom/inspect but not draw
-readonly toolbarItems: KritzelToolbarItem[] = [
-  { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
+readonly toolbarItems: UpdrawToolbarItem[] = [
+  { name: 'select', type: 'tool', isDefault: true, tool: UpdrawSelectionTool, icon: 'cursor' },
 ];
 
 async onReady() {
   const items = await Promise.all(
-    this.artworks.map(a => KritzelImage.fromUrl(a.url, { maxWidth: 300, maxHeight: 300 })),
+    this.artworks.map(a => UpdrawImage.fromUrl(a.url, { maxWidth: 300, maxHeight: 300 })),
   );
   items.forEach((img, i) => {
     img.translateX = this.artworks[i].x;
@@ -115,11 +115,11 @@ For a hard read-only canvas, call `await editor.disable()` (re-enable with `enab
 Slides are shapes at fixed world positions; navigation moves the camera and re-clamps the pan boundaries per slide. Boundaries are plain inputs, so bind them to signals:
 
 ```html
-<kritzel-editor
+<updraw-editor
   [viewportBoundaryLeft]="bounds().left"  [viewportBoundaryRight]="bounds().right"
   [viewportBoundaryTop]="bounds().top"    [viewportBoundaryBottom]="bounds().bottom"
   (isReady)="onReady()">
-</kritzel-editor>
+</updraw-editor>
 ```
 
 ```ts
@@ -127,7 +127,7 @@ readonly SLIDE_W = 1920; readonly SLIDE_H = 1080;
 readonly bounds = signal({ left: 0, right: 1920, top: -500, bottom: 1580 });
 
 async onReady() {
-  const slides = Array.from({ length: 5 }, (_, i) => new KritzelShape({
+  const slides = Array.from({ length: 5 }, (_, i) => new UpdrawShape({
     shapeType: ShapeType.Rectangle,
     translateX: i * this.SLIDE_W, translateY: 0,
     width: this.SLIDE_W, height: this.SLIDE_H,
@@ -168,7 +168,7 @@ async onPropertyEdit(id: string, prop: string, value: unknown) {
 }
 
 // filter by type:
-const onlyShapes = await this.editor.findObjects(o => o.__class__ === 'KritzelShape');
+const onlyShapes = await this.editor.findObjects(o => o.__class__ === 'UpdrawShape');
 ```
 
 ## 6. Seed content factory
@@ -176,17 +176,17 @@ const onlyShapes = await this.editor.findObjects(o => o.__class__ === 'KritzelSh
 Keep demo/seed content in a pure factory and batch-insert once on ready:
 
 ```ts
-export function createSeedObjects(): KritzelBaseObject[] {
+export function createSeedObjects(): UpdrawBaseObject[] {
   return [
-    new KritzelShape({ translateX: 20, translateY: -150, width: 120, height: 120,
+    new UpdrawShape({ translateX: 20, translateY: -150, width: 120, height: 120,
       shapeType: ShapeType.Rectangle,
       rotation: 10,
       fillColor: { light: '#fce4ec', dark: '#880e4f' },
       strokeColor: { light: '#c62828', dark: '#ef9a9a' }, strokeWidth: 3 }),
-    new KritzelLine({ startX: -170, startY: 10, endX: 130, endY: 10,
+    new UpdrawLine({ startX: -170, startY: 10, endX: 130, endY: 10,
       rotation: -5,
       stroke: { light: '#4caf50', dark: '#81c784' }, strokeWidth: 3 }),
-    new KritzelText({ text: 'Welcome!', translateX: -60, translateY: -40, fontSize: 24,
+    new UpdrawText({ text: 'Welcome!', translateX: -60, translateY: -40, fontSize: 24,
       rotation: -90,
       fontColor: { light: '#1f2937', dark: '#f3f4f6' } }),
   ];
@@ -202,8 +202,8 @@ await this.editor.centerAllObjects(false);
 ```html
 <button [disabled]="!undoState()?.canUndo" (click)="editor.undo()">Undo</button>
 <button [disabled]="!undoState()?.canRedo" (click)="editor.redo()">Redo</button>
-<kritzel-editor [isUtilityPanelVisible]="false"
+<updraw-editor [isUtilityPanelVisible]="false"
   (undoStateChange)="undoState.set($event.detail)"
   (viewportChange)="viewport.set($event.detail)">
-</kritzel-editor>
+</updraw-editor>
 ```

@@ -1,8 +1,8 @@
-import { KritzelShape } from './shape.class';
-import { KritzelCore } from '../core/core.class';
-import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import { KritzelDevicesHelper } from '../../helpers/devices.helper';
-import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
+import { UpdrawShape } from './shape.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawKeyboardHelper } from '../../helpers/keyboard.helper';
+import { UpdrawDevicesHelper } from '../../helpers/devices.helper';
+import { UpdrawGeometryHelper } from '../../helpers/geometry.helper';
 import { ShapeType } from '../../enums/shape-type.enum';
 
 // Mock prosemirror modules
@@ -93,7 +93,7 @@ jest.mock('prosemirror-commands', () => ({
 }));
 
 jest.mock('../../helpers/keyboard.helper', () => ({
-  KritzelKeyboardHelper: {
+  UpdrawKeyboardHelper: {
     disableInteractiveWidget: jest.fn(),
     enableInteractiveWidget: jest.fn(),
     forceHideKeyboard: jest.fn(),
@@ -101,14 +101,14 @@ jest.mock('../../helpers/keyboard.helper', () => ({
 }));
 
 jest.mock('../../helpers/devices.helper', () => ({
-  KritzelDevicesHelper: {
+  UpdrawDevicesHelper: {
     isIOS: jest.fn(() => false),
     isTouchDevice: jest.fn(() => false),
   },
 }));
 
 jest.mock('../../helpers/geometry.helper', () => ({
-  KritzelGeometryHelper: {
+  UpdrawGeometryHelper: {
     getEllipsePolygonApproximation: jest.fn(() => [
       { x: 100, y: 50 },
       { x: 50, y: 100 },
@@ -118,15 +118,15 @@ jest.mock('../../helpers/geometry.helper', () => ({
   },
 }));
 
-describe('KritzelShape', () => {
-  let shapeObject: KritzelShape;
-  let mockCore: jest.Mocked<KritzelCore>;
+describe('UpdrawShape', () => {
+  let shapeObject: UpdrawShape;
+  let mockCore: jest.Mocked<UpdrawCore>;
   let mockObjectsUpdate: jest.Mock;
   let mockObjectsConsolidate: jest.Mock;
   let mockRerender: jest.Mock;
   let mockEmitObjectsChange: jest.Mock;
 
-  const createMockCore = (): jest.Mocked<KritzelCore> => {
+  const createMockCore = (): jest.Mocked<UpdrawCore> => {
     const objectsUpdate = jest.fn();
     const objectsConsolidate = jest.fn();
     const rerender = jest.fn();
@@ -171,13 +171,13 @@ describe('KritzelShape', () => {
       toolRegistry: {
         getTool: jest.fn(() => ({ name: 'shape' })),
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
   };
 
   beforeEach(() => {
     mockCore = createMockCore();
 
-    shapeObject = KritzelShape.create(mockCore, {
+    shapeObject = UpdrawShape.create(mockCore, {
       x: 10,
       y: 20,
       width: 100,
@@ -195,12 +195,12 @@ describe('KritzelShape', () => {
 
   describe('constructor', () => {
     it('should apply the common name option', () => {
-      expect(new KritzelShape({ name: 'Desktop' }).name).toBe('Desktop');
-      expect(new KritzelShape().name).toBeUndefined();
+      expect(new UpdrawShape({ name: 'Desktop' }).name).toBe('Desktop');
+      expect(new UpdrawShape().name).toBeUndefined();
     });
 
     it('should create a shape with default values when no config provided', () => {
-      const defaultShape = new KritzelShape();
+      const defaultShape = new UpdrawShape();
 
       expect(defaultShape.shapeType).toBe(ShapeType.Rectangle);
       expect(defaultShape.fillColor).toEqual({ light: 'transparent', dark: 'transparent' });
@@ -213,11 +213,11 @@ describe('KritzelShape', () => {
       expect(defaultShape.y).toBe(0);
       expect(defaultShape.scale).toBe(1);
       expect(defaultShape.scaleFactor).toBe(1);
-      expect(defaultShape.__class__).toBe('KritzelShape');
+      expect(defaultShape.__class__).toBe('UpdrawShape');
     });
 
     it('should create a shape with provided config values', () => {
-      const configuredShape = new KritzelShape({
+      const configuredShape = new UpdrawShape({
         x: 50,
         y: 100,
         width: 200,
@@ -247,7 +247,7 @@ describe('KritzelShape', () => {
     });
 
     it('should default scale to 1 when config omits scale', () => {
-      const shape = new KritzelShape({ translateX: 20, translateY: -150, width: 120, height: 120 });
+      const shape = new UpdrawShape({ translateX: 20, translateY: -150, width: 120, height: 120 });
 
       expect(shape.scale).toBe(1);
       expect(shape.transformationMatrix).toBe('matrix(1, 0, 0, 1, 20, -150)');
@@ -262,7 +262,7 @@ describe('KritzelShape', () => {
     });
 
     it('should convert constructor rotation from degrees to radians', () => {
-      const configuredShape = new KritzelShape({
+      const configuredShape = new UpdrawShape({
         rotation: -90,
       });
 
@@ -272,7 +272,7 @@ describe('KritzelShape', () => {
 
   describe('static create', () => {
     it('should create a shape with core reference and workspace id', () => {
-      const createdShape = KritzelShape.create(mockCore, {
+      const createdShape = UpdrawShape.create(mockCore, {
         shapeType: ShapeType.Triangle,
         fillColor: { light: '#00ff00', dark: '#00ff00' },
       });
@@ -285,8 +285,8 @@ describe('KritzelShape', () => {
     });
 
     it('should generate a unique id', () => {
-      const shape1 = KritzelShape.create(mockCore);
-      const shape2 = KritzelShape.create(mockCore);
+      const shape1 = UpdrawShape.create(mockCore);
+      const shape2 = UpdrawShape.create(mockCore);
 
       expect(shape1.id).toBeDefined();
       expect(shape2.id).toBeDefined();
@@ -294,19 +294,19 @@ describe('KritzelShape', () => {
     });
 
     it('should set transparent background', () => {
-      const createdShape = KritzelShape.create(mockCore);
+      const createdShape = UpdrawShape.create(mockCore);
 
       expect(createdShape.backgroundColor).toEqual({ light: 'transparent', dark: 'transparent' });
     });
 
     it('should create an editor', () => {
-      const createdShape = KritzelShape.create(mockCore);
+      const createdShape = UpdrawShape.create(mockCore);
 
       expect(createdShape.editor).toBeDefined();
     });
 
     it('should use default values when not provided', () => {
-      const createdShape = KritzelShape.create(mockCore);
+      const createdShape = UpdrawShape.create(mockCore);
 
       expect(createdShape.x).toBe(0);
       expect(createdShape.y).toBe(0);
@@ -319,7 +319,7 @@ describe('KritzelShape', () => {
     });
 
     it('should convert create rotation from degrees to radians', () => {
-      const createdShape = KritzelShape.create(mockCore, {
+      const createdShape = UpdrawShape.create(mockCore, {
         rotation: -90,
       });
 
@@ -561,7 +561,7 @@ describe('KritzelShape', () => {
 
     it('should scroll into view on iOS', () => {
       jest.useFakeTimers();
-      (KritzelDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
+      (UpdrawDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
 
       const scrollIntoViewMock = jest.fn();
       shapeObject.editor!.dom.scrollIntoView = scrollIntoViewMock;
@@ -592,14 +592,14 @@ describe('KritzelShape', () => {
 
       shapeObject.edit();
 
-      expect(KritzelKeyboardHelper.disableInteractiveWidget).not.toHaveBeenCalled();
+      expect(UpdrawKeyboardHelper.disableInteractiveWidget).not.toHaveBeenCalled();
       expect(shapeObject.uneditedObject).toBeNull();
     });
 
     it('should disable interactive widget', () => {
       shapeObject.edit();
 
-      expect(KritzelKeyboardHelper.disableInteractiveWidget).toHaveBeenCalled();
+      expect(UpdrawKeyboardHelper.disableInteractiveWidget).toHaveBeenCalled();
     });
 
     it('should clone current object as uneditedObject', () => {
@@ -632,7 +632,7 @@ describe('KritzelShape', () => {
     it('should enable interactive widget after editing starts', () => {
       shapeObject.edit();
 
-      expect(KritzelKeyboardHelper.enableInteractiveWidget).toHaveBeenCalled();
+      expect(UpdrawKeyboardHelper.enableInteractiveWidget).toHaveBeenCalled();
     });
 
     it('should focus with coordinates when event is provided', () => {
@@ -655,7 +655,7 @@ describe('KritzelShape', () => {
 
     it('should retry focus on iOS after rerender', () => {
       const focusSpy = jest.spyOn(shapeObject, 'focus');
-      (KritzelDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
+      (UpdrawDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
       const requestAnimationFrameSpy = jest
         .spyOn(globalThis, 'requestAnimationFrame')
         .mockImplementation(callback => {
@@ -878,7 +878,7 @@ describe('KritzelShape', () => {
         height: 75,
       };
 
-      const newShape = new KritzelShape();
+      const newShape = new UpdrawShape();
       newShape._core = mockCore;
       newShape.editor = shapeObject.editor;
       newShape.deserialize(serializedData);
@@ -896,7 +896,7 @@ describe('KritzelShape', () => {
         content: content,
       };
 
-      const newShape = new KritzelShape();
+      const newShape = new UpdrawShape();
       newShape._core = mockCore;
       newShape.editor = shapeObject.editor;
       const setContentSpy = jest.spyOn(newShape, 'setContent');
@@ -932,7 +932,7 @@ describe('KritzelShape', () => {
 
       const polygon = shapeObject.getClipPolygon();
 
-      expect(KritzelGeometryHelper.getEllipsePolygonApproximation).toHaveBeenCalled();
+      expect(UpdrawGeometryHelper.getEllipsePolygonApproximation).toHaveBeenCalled();
       expect(polygon).toBeDefined();
       expect(Array.isArray(polygon)).toBe(true);
     });

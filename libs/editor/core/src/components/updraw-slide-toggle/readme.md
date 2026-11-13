@@ -1,34 +1,34 @@
-# kritzel-slide-toggle
+# updraw-slide-toggle
 
 A slide toggle (switch) component for toggling between on/off states.
 
 ## Usage
 
 ```html
-<kritzel-slide-toggle></kritzel-slide-toggle>
+<updraw-slide-toggle></updraw-slide-toggle>
 
 <!-- With initial checked state -->
-<kritzel-slide-toggle checked></kritzel-slide-toggle>
+<updraw-slide-toggle checked></updraw-slide-toggle>
 
 <!-- Disabled state -->
-<kritzel-slide-toggle disabled></kritzel-slide-toggle>
+<updraw-slide-toggle disabled></updraw-slide-toggle>
 
 <!-- With accessibility label -->
-<kritzel-slide-toggle label="Enable notifications"></kritzel-slide-toggle>
+<updraw-slide-toggle label="Enable notifications"></updraw-slide-toggle>
 ```
 
 ## CSS Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `--kritzel-slide-toggle-width` | Width of the toggle track | `40px` |
-| `--kritzel-slide-toggle-height` | Height of the toggle track | `22px` |
-| `--kritzel-slide-toggle-track-color` | Background color of the track (off state) | `#ccc` |
-| `--kritzel-slide-toggle-track-checked-color` | Background color of the track (on state) | `#4caf50` |
-| `--kritzel-slide-toggle-thumb-color` | Color of the thumb | `#fff` |
-| `--kritzel-slide-toggle-thumb-size` | Size of the thumb | `18px` |
-| `--kritzel-slide-toggle-border-radius` | Border radius of the track | `11px` |
-| `--kritzel-slide-toggle-transition-duration` | Duration of the toggle animation | `0.2s` |
+| `--updraw-slide-toggle-width` | Width of the toggle track | `40px` |
+| `--updraw-slide-toggle-height` | Height of the toggle track | `22px` |
+| `--updraw-slide-toggle-track-color` | Background color of the track (off state) | `#ccc` |
+| `--updraw-slide-toggle-track-checked-color` | Background color of the track (on state) | `#4caf50` |
+| `--updraw-slide-toggle-thumb-color` | Color of the thumb | `#fff` |
+| `--updraw-slide-toggle-thumb-size` | Size of the thumb | `18px` |
+| `--updraw-slide-toggle-border-radius` | Border radius of the track | `11px` |
+| `--updraw-slide-toggle-transition-duration` | Duration of the toggle animation | `0.2s` |
 
 <!-- Auto Generated Below -->
 
@@ -53,15 +53,15 @@ A slide toggle (switch) component for toggling between on/off states.
 
 ### Used by
 
- - [kritzel-settings](../kritzel-settings)
- - [kritzel-share-dialog](../kritzel-share-dialog)
+ - [updraw-settings](../updraw-settings)
+ - [updraw-share-dialog](../updraw-share-dialog)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-settings --> kritzel-slide-toggle
-  kritzel-share-dialog --> kritzel-slide-toggle
-  style kritzel-slide-toggle fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-settings --> updraw-slide-toggle
+  updraw-share-dialog --> updraw-slide-toggle
+  style updraw-slide-toggle fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

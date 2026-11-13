@@ -1,8 +1,8 @@
 ---
 sidebar_label: Locales
 displayed_sidebar: tutorialSidebar
-title: "Locales | Kritzel for Angular"
-description: "Understand how to customize Kritzel with locales."
+title: "Locales | Updraw for Angular"
+description: "Understand how to customize Updraw with locales."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,13 +11,13 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel comes with built-in support for multiple languages and allows you to override or extend the default translations with custom locales.
+Updraw comes with built-in support for multiple languages and allows you to override or extend the default translations with custom locales.
 
 Take a look at the [Localization Terms](../api-reference/localization-terms.md) to see all available localization keys.
 
 ## Switching the Locale
 
-To change the active interface language, bind the `[locale]` property on `<kritzel-editor>` or call the asynchronous `setLocale()` method. The editor instantly updates all UI controls and context menus without requiring a page reload.
+To change the active interface language, bind the `[locale]` property on `<updraw-editor>` or call the asynchronous `setLocale()` method. The editor instantly updates all UI controls and context menus without requiring a page reload.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
@@ -37,7 +37,7 @@ Listen for the `localeChange` event to react when the active locale changes, for
 
 ## Registering Custom Locales
 
-You can add support for additional languages (such as Spanish `'es'`) or override individual term keys (such as `menu.copy` or `settings.dialogTitle`) by providing a `KritzelLocale` definition. Pass custom locales to the `[locales]` binding or register them dynamically using `registerLocales()`.
+You can add support for additional languages (such as Spanish `'es'`) or override individual term keys (such as `menu.copy` or `settings.dialogTitle`) by providing an `UpdrawLocale` definition. Pass custom locales to the `[locales]` binding or register them dynamically using `registerLocales()`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"

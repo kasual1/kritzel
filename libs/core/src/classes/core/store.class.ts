@@ -1,32 +1,32 @@
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelEngineState } from '../../interfaces/engine-state.interface';
-import { KritzelSelectionBox } from '../objects/selection-box.class';
-import { KritzelText } from '../objects/text.class';
-import { KritzelShape } from '../objects/shape.class';
-import { KritzelPath } from '../objects/path.class';
-import { KritzelLine } from '../objects/line.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawEngineState } from '../../interfaces/engine-state.interface';
+import { UpdrawSelectionBox } from '../objects/selection-box.class';
+import { UpdrawText } from '../objects/text.class';
+import { UpdrawShape } from '../objects/shape.class';
+import { UpdrawPath } from '../objects/path.class';
+import { UpdrawLine } from '../objects/line.class';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
-import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interface';
+import { UpdrawZOrderHelper } from '../../helpers/z-order.helper';
+import { UpdrawEmbeddedObject } from '../../interfaces/embedded-object.interface';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
-import { KritzelObjectMap } from '../structures/object-map.structure';
-import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelGroup } from '../objects/group.class';
+import { UpdrawObjectMap } from '../structures/object-map.structure';
+import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpdrawGroup } from '../objects/group.class';
 
 /**
- * Central state management store for the Kritzel engine.
+ * Central state management store for the Updraw engine.
  * Provides reactive state management with change listeners, caching for frequently
  * accessed objects, and computed properties for viewport and selection state.
  */
-export class KritzelStore {
+export class UpdrawStore {
   /** Internal state object containing all engine state properties */
-  private readonly _state: KritzelEngineState;
+  private readonly _state: UpdrawEngineState;
   /** Map of property keys to their registered change listeners */
   private readonly _listeners: Map<StatePropertyKey, Set<StateChangeListener<any>>> = new Map();
 
   // Cached references for O(1) access to frequently accessed special objects
-  private _cachedSelectionBox: KritzelSelectionBox | null = null;
-  private _cachedSelectionGroup: KritzelSelectionGroup | null = null;
+  private _cachedSelectionBox: UpdrawSelectionBox | null = null;
+  private _cachedSelectionGroup: UpdrawSelectionGroup | null = null;
   private _selectionBoxCacheValid: boolean = false;
   private _selectionGroupCacheValid: boolean = false;
   private _localUserId: string | null = null;
@@ -35,7 +35,7 @@ export class KritzelStore {
    * Gets the current engine state.
    * @returns The mutable engine state object
    */
-  get state(): KritzelEngineState {
+  get state(): UpdrawEngineState {
     return this._state;
   }
 
@@ -43,10 +43,10 @@ export class KritzelStore {
   /**
    *  Gets the map of all objects in the workspace.
    *  Throws an error if the objects map is not initialized, as it is required for all object management.
-   *  @returns The KritzelObjectMap containing all objects
+   *  @returns The UpdrawObjectMap containing all objects
    *  @throws Error if the objects map is not initialized in the state
    */
-  get objects(): KritzelObjectMap<KritzelBaseObject<Element>> {
+  get objects(): UpdrawObjectMap<UpdrawBaseObject<Element>> {
     if (!this._state.objects) {
       throw new Error('Objects map is not initialized.');
     }
@@ -55,7 +55,7 @@ export class KritzelStore {
 
  
   /**
-   * Gets the host element for the Kritzel editor.
+   * Gets the host element for the Updraw editor.
    * Throws an error if the host is not set, as it is required for many operations.
    * @returns The host HTMLElement
    * @throws Error if the host element is not set in the state
@@ -74,7 +74,7 @@ export class KritzelStore {
    * @returns The next z-index value to use for new objects
    */
   get currentZIndex() {
-    return Math.max(0, ...this.objects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox)).map(o => o.zIndex)) + 1;
+    return Math.max(0, ...this.objects.filter(o => !(o instanceof UpdrawSelectionGroup) && !(o instanceof UpdrawSelectionBox)).map(o => o.zIndex)) + 1;
   }
 
   /**
@@ -125,7 +125,7 @@ export class KritzelStore {
    * When viewport boundaries are set, returns only objects within those boundaries.
    * @returns Array of all canvas objects
    */
-  get allObjects(): KritzelBaseObject<Element>[] {
+  get allObjects(): UpdrawBaseObject<Element>[] {
     if (this.hasViewportBoundaries) {
       return this.objects.query(this.viewportBoundaryBounds);
     }
@@ -137,7 +137,7 @@ export class KritzelStore {
    * Uses spatial querying for efficient retrieval and sorts by z-index (a group above its tied top member).
    * @returns Array of objects within the current viewport, sorted by z-index ascending
    */
-  get objectsInViewport(): KritzelBaseObject<Element>[] {
+  get objectsInViewport(): UpdrawBaseObject<Element>[] {
     return this.getObjectsInViewport();
   }
 
@@ -147,7 +147,7 @@ export class KritzelStore {
    * @param padding - Extra margin around the viewport in world units
    * @returns Array of matching objects, sorted by z-index ascending
    */
-  getObjectsInViewport(padding: number = 0): KritzelBaseObject<Element>[] {
+  getObjectsInViewport(padding: number = 0): UpdrawBaseObject<Element>[] {
     const viewportBounds = {
       x: -this._state.translateX / this._state.scale - padding,
       y: -this._state.translateY / this._state.scale - padding,
@@ -157,23 +157,23 @@ export class KritzelStore {
       depth: 100,
     };
 
-    return this.objects.query(viewportBounds).sort(KritzelZOrderHelper.compareStackOrder);
+    return this.objects.query(viewportBounds).sort(UpdrawZOrderHelper.compareStackOrder);
   }
 
   /**
    * Gets all objects excluding selection-related objects (selection group and selection box).
    * @returns Array of all regular canvas objects
    */
-  get allNonSelectionObjects(): KritzelBaseObject<Element>[] {
-    return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
+  get allNonSelectionObjects(): UpdrawBaseObject<Element>[] {
+    return this.allObjects.filter(o => !(o instanceof UpdrawSelectionGroup) && !(o instanceof UpdrawSelectionBox));
   }
 
   /**
    * Gets all currently selected objects (excluding the selection group itself).
    * @returns Array of selected objects
    */
-  get selectedObjects(): KritzelBaseObject<Element>[] {
-    return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox)).filter(o => o.isSelected);
+  get selectedObjects(): UpdrawBaseObject<Element>[] {
+    return this.allObjects.filter(o => !(o instanceof UpdrawSelectionGroup) && !(o instanceof UpdrawSelectionBox)).filter(o => o.isSelected);
   }
 
   /**
@@ -181,12 +181,12 @@ export class KritzelStore {
    * Uses caching for O(1) access after initial lookup.
    * @returns The selection box or null if none exists
    */
-  get selectionBox(): KritzelSelectionBox | null {
+  get selectionBox(): UpdrawSelectionBox | null {
     if (this._selectionBoxCacheValid) {
       return this._cachedSelectionBox;
     }
-    const selectionBoxes = this.objects.filter(o => o instanceof KritzelSelectionBox);
-    this._cachedSelectionBox = selectionBoxes.length > 0 ? (selectionBoxes[0] as KritzelSelectionBox) : null;
+    const selectionBoxes = this.objects.filter(o => o instanceof UpdrawSelectionBox);
+    this._cachedSelectionBox = selectionBoxes.length > 0 ? (selectionBoxes[0] as UpdrawSelectionBox) : null;
     this._selectionBoxCacheValid = true;
     return this._cachedSelectionBox;
   }
@@ -197,15 +197,15 @@ export class KritzelStore {
    * Uses caching for O(1) access after initial lookup.
    * @returns The local user's selection group or null if none exists
    */
-  get selectionGroup(): KritzelSelectionGroup | null {
+  get selectionGroup(): UpdrawSelectionGroup | null {
     if (this._selectionGroupCacheValid) {
       return this._cachedSelectionGroup;
     }
-    const selectionGroups = this.objects.filter(o => o instanceof KritzelSelectionGroup);
+    const selectionGroups = this.objects.filter(o => o instanceof UpdrawSelectionGroup);
     if (this._localUserId) {
-      this._cachedSelectionGroup = (selectionGroups as KritzelSelectionGroup[]).find(sg => sg.userId === this._localUserId) ?? null;
+      this._cachedSelectionGroup = (selectionGroups as UpdrawSelectionGroup[]).find(sg => sg.userId === this._localUserId) ?? null;
     } else {
-      this._cachedSelectionGroup = selectionGroups.length > 0 ? (selectionGroups[0] as KritzelSelectionGroup) : null;
+      this._cachedSelectionGroup = selectionGroups.length > 0 ? (selectionGroups[0] as UpdrawSelectionGroup) : null;
     }
     this._selectionGroupCacheValid = true;
     return this._cachedSelectionGroup;
@@ -213,10 +213,10 @@ export class KritzelStore {
 
   /**
    * Gets the groups in the local user's selection.
-   * @returns The selected `KritzelGroup` objects; empty when nothing is selected
+   * @returns The selected `UpdrawGroup` objects; empty when nothing is selected
    */
-  get selectedGroups(): KritzelGroup[] {
-    return (this.selectionGroup?.objects ?? []).filter(obj => obj instanceof KritzelGroup);
+  get selectedGroups(): UpdrawGroup[] {
+    return (this.selectionGroup?.objects ?? []).filter(obj => obj instanceof UpdrawGroup);
   }
 
   /**
@@ -232,7 +232,7 @@ export class KritzelStore {
    * Use this when creating the selection box to avoid a filter lookup.
    * @param box - The selection box to cache, or null to clear the cache
    */
-  setSelectionBox(box: KritzelSelectionBox | null): void {
+  setSelectionBox(box: UpdrawSelectionBox | null): void {
     this._cachedSelectionBox = box;
     this._selectionBoxCacheValid = true;
   }
@@ -242,7 +242,7 @@ export class KritzelStore {
    * Use this when creating the selection group to avoid a filter lookup.
    * @param group - The selection group to cache, or null to clear the cache
    */
-  setSelectionGroup(group: KritzelSelectionGroup | null): void {
+  setSelectionGroup(group: UpdrawSelectionGroup | null): void {
     this._cachedSelectionGroup = group;
     this._selectionGroupCacheValid = true;
   }
@@ -261,27 +261,27 @@ export class KritzelStore {
    * Gets the currently active text object being edited.
    * @returns The text object in editing mode, or null if none
    */
-  get activeText(): KritzelText | null {
-    const activeTexts = this.objects.filter(o => o instanceof KritzelText && (o as KritzelText).isEditing);
-    return activeTexts.length > 0 ? (activeTexts[0] as KritzelText) : null;
+  get activeText(): UpdrawText | null {
+    const activeTexts = this.objects.filter(o => o instanceof UpdrawText && (o as UpdrawText).isEditing);
+    return activeTexts.length > 0 ? (activeTexts[0] as UpdrawText) : null;
   }
 
   /**
    * Gets the currently active shape object being edited.
    * @returns The shape object in editing mode, or null if none
    */
-  get activeShape(): KritzelShape | null {
-    const activeShapes = this.objects.filter(o => o instanceof KritzelShape && (o as KritzelShape).isEditing);
-    return activeShapes.length > 0 ? (activeShapes[0] as KritzelShape) : null;
+  get activeShape(): UpdrawShape | null {
+    const activeShapes = this.objects.filter(o => o instanceof UpdrawShape && (o as UpdrawShape).isEditing);
+    return activeShapes.length > 0 ? (activeShapes[0] as UpdrawShape) : null;
   }
 
   /**
    * Gets the currently selected dynamic object whose focused descendant is an input-like element.
    * @returns The interactive dynamic object with focused input-like content, or null if none matches
    */
-  get activeInteractiveEmbeddedObject(): KritzelEmbeddedObject | null {
+  get activeInteractiveEmbeddedObject(): UpdrawEmbeddedObject | null {
     for (const object of this.selectedObjects) {
-      if (ObjectHelper.isKritzelEmbeddedObject(object) && object.hasFocusedInputElement()) {
+      if (ObjectHelper.isUpdrawEmbeddedObject(object) && object.hasFocusedInputElement()) {
         return object;
       }
     }
@@ -289,7 +289,7 @@ export class KritzelStore {
     return null;
   }
 
-  get activeInteractiveDynamicObject(): KritzelEmbeddedObject | null {
+  get activeInteractiveDynamicObject(): UpdrawEmbeddedObject | null {
     return this.activeInteractiveEmbeddedObject;
   }
 
@@ -297,18 +297,18 @@ export class KritzelStore {
    * Gets the path currently being drawn (not yet completed).
    * @returns The incomplete path object, or null if no path is being drawn
    */
-  get currentPath(): KritzelPath | null {
-    const drawingPaths = this.objects.filter(o => o instanceof KritzelPath && (o as KritzelPath).isCompleted === false);
-    return drawingPaths.length > 0 ? (drawingPaths[0] as KritzelPath) : null;
+  get currentPath(): UpdrawPath | null {
+    const drawingPaths = this.objects.filter(o => o instanceof UpdrawPath && (o as UpdrawPath).isCompleted === false);
+    return drawingPaths.length > 0 ? (drawingPaths[0] as UpdrawPath) : null;
   }
 
   /**
    * Gets the line currently being drawn (not yet completed).
    * @returns The incomplete line object, or null if no line is being drawn
    */
-  get currentLine(): KritzelLine | null {
-    const drawingLines = this.objects.filter(o => o instanceof KritzelLine && (o as KritzelLine).isCompleted === false);
-    return drawingLines.length > 0 ? (drawingLines[0] as KritzelLine) : null;
+  get currentLine(): UpdrawLine | null {
+    const drawingLines = this.objects.filter(o => o instanceof UpdrawLine && (o as UpdrawLine).isCompleted === false);
+    return drawingLines.length > 0 ? (drawingLines[0] as UpdrawLine) : null;
   }
 
   /**
@@ -345,10 +345,10 @@ export class KritzelStore {
   }
 
   /**
-   * Creates a new KritzelStore instance.
+   * Creates a new UpdrawStore instance.
    * @param state - The initial engine state configuration
    */
-  constructor(state: KritzelEngineState) {
+  constructor(state: UpdrawEngineState) {
     this._state = {
       ...state,
       contextMenuItems: [...state.contextMenuItems],
@@ -357,7 +357,7 @@ export class KritzelStore {
       workspaces: [...state.workspaces],
       cursor: { ...state.cursor },
     };
-    this._state.objects = new KritzelObjectMap();
+    this._state.objects = new UpdrawObjectMap();
   }
 
   /**
@@ -367,7 +367,7 @@ export class KritzelStore {
    * @param property - The property key to listen for changes on
    * @param listener - The callback function to invoke on changes
    */
-  onStateChange<K extends StatePropertyKey>(property: K, listener: StateChangeListener<KritzelEngineState[K]>): void {
+  onStateChange<K extends StatePropertyKey>(property: K, listener: StateChangeListener<UpdrawEngineState[K]>): void {
     if (!this._listeners.has(property)) {
       this._listeners.set(property, new Set());
     }
@@ -387,7 +387,7 @@ export class KritzelStore {
    * @param property - The property key to retrieve
    * @returns The current value of the property
    */
-  getState<K extends StatePropertyKey>(property: K): Readonly<KritzelEngineState[K]> {
+  getState<K extends StatePropertyKey>(property: K): Readonly<UpdrawEngineState[K]> {
     return this._state[property];
   }
 
@@ -398,7 +398,7 @@ export class KritzelStore {
    * @param property - The property key to set
    * @param value - The new value to assign
    */
-  setState<K extends StatePropertyKey>(property: K, value: KritzelEngineState[K]): void {
+  setState<K extends StatePropertyKey>(property: K, value: UpdrawEngineState[K]): void {
     const oldValue = this._state[property];
 
     if (oldValue !== value) {

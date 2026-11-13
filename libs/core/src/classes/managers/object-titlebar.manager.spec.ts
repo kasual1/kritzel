@@ -1,22 +1,22 @@
 import {
-  KRITZEL_DEFAULT_OBJECT_TITLEBAR,
-  KRITZEL_OBJECT_TYPE_ICONS,
-  KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE,
-  KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE,
-  KRITZEL_TITLEBAR_OWNER_ATTRIBUTE,
-  KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE,
-  KritzelObjectTitlebarManager,
+  UPDRAW_DEFAULT_OBJECT_TITLEBAR,
+  UPDRAW_OBJECT_TYPE_ICONS,
+  UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE,
+  UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE,
+  UPDRAW_TITLEBAR_OWNER_ATTRIBUTE,
+  UPDRAW_TITLEBAR_TITLE_INPUT_ATTRIBUTE,
+  UpdrawObjectTitlebarManager,
 } from './object-titlebar.manager';
-import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelGroup } from '../objects/group.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelSelectionBox } from '../objects/selection-box.class';
-import { KritzelIconRegistry } from '../registries/icon-registry.class';
-import { KritzelObjectTitlebarConfig } from '../../interfaces/object-titlebar.interface';
-import { KritzelObjectConfig } from '../../interfaces/object-config.interface';
-import { KritzelObjectConfigManager } from './object-config.manager';
+import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpdrawGroup } from '../objects/group.class';
+import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpdrawSelectionBox } from '../objects/selection-box.class';
+import { UpdrawIconRegistry } from '../registries/icon-registry.class';
+import { UpdrawObjectTitlebarConfig } from '../../interfaces/object-titlebar.interface';
+import { UpdrawObjectConfig } from '../../interfaces/object-config.interface';
+import { UpdrawObjectConfigManager } from './object-config.manager';
 
-describe('KritzelObjectTitlebarManager', () => {
+describe('UpdrawObjectTitlebarManager', () => {
   const terms: Record<string, string> = {
     'objectType.shape': 'Shape',
     'objectType.group': 'Group',
@@ -25,21 +25,21 @@ describe('KritzelObjectTitlebarManager', () => {
   };
 
   let mockCore: any;
-  let objects: Map<string, KritzelBaseObject<any>>;
-  let manager: KritzelObjectTitlebarManager;
+  let objects: Map<string, UpdrawBaseObject<any>>;
+  let manager: UpdrawObjectTitlebarManager;
 
-  const setConfig = (config: KritzelObjectTitlebarConfig | undefined) => {
+  const setConfig = (config: UpdrawObjectTitlebarConfig | undefined) => {
     mockCore.engine.objectTitlebar = config;
   };
 
   /** Sets the engine's `objectConfig` prop. Every object has a titlebar until a test sets its own. */
-  const setObjectConfig = (config: KritzelObjectConfig | undefined) => {
+  const setObjectConfig = (config: UpdrawObjectConfig | undefined) => {
     mockCore.engine.objectConfig = config;
   };
 
-  const createObject = (id: string, props: Partial<KritzelBaseObject<any>> & Record<string, unknown> = {}): KritzelBaseObject<any> => {
-    const object = Object.assign(Object.create(KritzelBaseObject.prototype), {
-      __class__: 'KritzelShape',
+  const createObject = (id: string, props: Partial<UpdrawBaseObject<any>> & Record<string, unknown> = {}): UpdrawBaseObject<any> => {
+    const object = Object.assign(Object.create(UpdrawBaseObject.prototype), {
+      __class__: 'UpdrawShape',
       id,
       workspaceId: 'workspace-1',
       translateX: 0,
@@ -51,14 +51,14 @@ describe('KritzelObjectTitlebarManager', () => {
       rotation: 0,
       markedForRemoval: false,
       ...props,
-    }) as KritzelBaseObject<any>;
+    }) as UpdrawBaseObject<any>;
     objects.set(id, object);
     return object;
   };
 
-  const createGroup = (id: string, childIds: string[], props: Record<string, unknown> = {}): KritzelGroup => {
-    const group = createObject(id, { __class__: 'KritzelGroup', ...props }) as unknown as KritzelGroup;
-    Object.setPrototypeOf(group, KritzelGroup.prototype);
+  const createGroup = (id: string, childIds: string[], props: Record<string, unknown> = {}): UpdrawGroup => {
+    const group = createObject(id, { __class__: 'UpdrawGroup', ...props }) as unknown as UpdrawGroup;
+    Object.setPrototypeOf(group, UpdrawGroup.prototype);
     group.childIds = childIds;
     Object.defineProperty(group, 'children', { get: () => childIds.map(childId => objects.get(childId)), configurable: true });
     return group;
@@ -90,8 +90,8 @@ describe('KritzelObjectTitlebarManager', () => {
     objects = new Map();
     mockCore = {
       engine: {
-        objectTitlebar: { left: [{ id: 'title', type: 'title' }] } as KritzelObjectTitlebarConfig,
-        objectConfig: { hasTitlebar: true } as KritzelObjectConfig,
+        objectTitlebar: { left: [{ id: 'title', type: 'title' }] } as UpdrawObjectTitlebarConfig,
+        objectConfig: { hasTitlebar: true } as UpdrawObjectConfig,
         emitObjectTitlebarAction: jest.fn(),
         emitObjectTitlebarMenuStateChange: jest.fn(),
         host: { shadowRoot: { elementsFromPoint: jest.fn().mockReturnValue([]) } },
@@ -110,8 +110,8 @@ describe('KritzelObjectTitlebarManager', () => {
         translate: jest.fn((key: string) => terms[key] ?? key),
       },
     };
-    mockCore.objectConfigManager = new KritzelObjectConfigManager(mockCore);
-    manager = new KritzelObjectTitlebarManager(mockCore);
+    mockCore.objectConfigManager = new UpdrawObjectConfigManager(mockCore);
+    manager = new UpdrawObjectTitlebarManager(mockCore);
     jest.spyOn(console, 'warn').mockImplementation(() => undefined);
     jest.spyOn(console, 'error').mockImplementation(() => undefined);
     jest.spyOn(console, 'info').mockImplementation(() => undefined);
@@ -146,7 +146,7 @@ describe('KritzelObjectTitlebarManager', () => {
     });
 
     it('reads pixel metrics from the theme and falls back otherwise', () => {
-      const style = { getPropertyValue: (name: string) => ({ '--kritzel-titlebar-height': '32px', '--kritzel-titlebar-offset': '2rem' })[name] ?? '' };
+      const style = { getPropertyValue: (name: string) => ({ '--updraw-titlebar-height': '32px', '--updraw-titlebar-offset': '2rem' })[name] ?? '' };
 
       expect(manager.getMetrics(style)).toEqual({ height: 32, offset: 6 });
       expect(manager.getMetrics(null)).toEqual({ height: 28, offset: 6 });
@@ -157,7 +157,7 @@ describe('KritzelObjectTitlebarManager', () => {
     const owners = () => manager.getOwners(Array.from(objects.values()));
 
     it('includes the objects for which objectConfig.hasTitlebar is true', () => {
-      setObjectConfig({ hasTitlebar: object => object.__class__ === 'KritzelGroup' });
+      setObjectConfig({ hasTitlebar: object => object.__class__ === 'UpdrawGroup' });
       createObject('shape');
       const group = createGroup('group', []);
 
@@ -196,7 +196,7 @@ describe('KritzelObjectTitlebarManager', () => {
     });
 
     it('lets hasTitlebar decide for groups like for any other object', () => {
-      setObjectConfig({ hasTitlebar: object => object.__class__ !== 'KritzelGroup' });
+      setObjectConfig({ hasTitlebar: object => object.__class__ !== 'UpdrawGroup' });
       createObject('child');
       createGroup('group', ['child']);
       const loose = createObject('loose');
@@ -209,8 +209,8 @@ describe('KritzelObjectTitlebarManager', () => {
       setObjectConfig({ hasTitlebar });
       createObject('child');
       const group = createGroup('group', ['child']);
-      Object.setPrototypeOf(createObject('sg', { __class__: 'KritzelSelectionGroup' }), KritzelSelectionGroup.prototype);
-      Object.setPrototypeOf(createObject('sb', { __class__: 'KritzelSelectionBox' }), KritzelSelectionBox.prototype);
+      Object.setPrototypeOf(createObject('sg', { __class__: 'UpdrawSelectionGroup' }), UpdrawSelectionGroup.prototype);
+      Object.setPrototypeOf(createObject('sb', { __class__: 'UpdrawSelectionBox' }), UpdrawSelectionBox.prototype);
       createObject('erased', { markedForRemoval: true });
 
       expect(owners()).toEqual([group]);
@@ -279,7 +279,7 @@ describe('KritzelObjectTitlebarManager', () => {
       const object = createObject('a');
       expect(manager.getRotationHandleDistance(object)).toBe(15 + 28 + 6);
 
-      tokens = { '--kritzel-titlebar-height': '40px', '--kritzel-titlebar-offset': '10px' };
+      tokens = { '--updraw-titlebar-height': '40px', '--updraw-titlebar-offset': '10px' };
       expect(manager.getRotationHandleDistance(object)).toBe(15 + 50);
       expect((globalThis as any).getComputedStyle).toHaveBeenCalledWith(mockCore.engine.host);
     });
@@ -324,9 +324,9 @@ describe('KritzelObjectTitlebarManager', () => {
       const a = createObject('a');
       const root = createGroup('root', ['inner']);
       const selection = (objectIds: string[]) =>
-        Object.assign(Object.create(KritzelSelectionGroup.prototype), { id: 'selection', translateX: 0, translateY: 0, width: 200, height: 100, padding: 0, scale: 1, rotation: 0, _objectIds: objectIds });
+        Object.assign(Object.create(UpdrawSelectionGroup.prototype), { id: 'selection', translateX: 0, translateY: 0, width: 200, height: 100, padding: 0, scale: 1, rotation: 0, _objectIds: objectIds });
       const metrics = { height: 28, offset: 6 };
-      const rendered = (titlebars: { owner: KritzelBaseObject<any>; isActive: boolean }[]) => ({ titlebars: titlebars as any, metrics });
+      const rendered = (titlebars: { owner: UpdrawBaseObject<any>; isActive: boolean }[]) => ({ titlebars: titlebars as any, metrics });
 
       // The titlebar of the only selected object.
       expect(manager.getRotationHandleDistance(selection(['a']), rendered([{ owner: a, isActive: true }]))).toBe(49);
@@ -355,7 +355,7 @@ describe('KritzelObjectTitlebarManager', () => {
       createObject('a', { name: 'Ignored' });
       createObject('b', { name: 'Named' });
       createObject('c');
-      createObject('d', { __class__: 'KritzelUnknown' });
+      createObject('d', { __class__: 'UpdrawUnknown' });
 
       const titles = manager.resolveTitlebars(Array.from(objects.values())).map(titlebar => titlebar.context.title);
 
@@ -463,7 +463,7 @@ describe('KritzelObjectTitlebarManager', () => {
   describe('getOwnerFromEvent', () => {
     it('resolves the owner from the titlebar surface in the event path', () => {
       const owner = createObject('a');
-      const surface = createElement({ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
       const title = createElement({}, surface);
 
       expect(manager.getOwnerFromEvent({ clientX: 0, clientY: 0, composedPath: () => [title, surface] })).toBe(owner);
@@ -471,8 +471,8 @@ describe('KritzelObjectTitlebarManager', () => {
 
     it('returns null for presses on controls', () => {
       createObject('a');
-      const surface = createElement({ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
-      const control = createElement({ [KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE]: '' }, surface);
+      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const control = createElement({ [UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE]: '' }, surface);
 
       expect(manager.getOwnerFromEvent({ clientX: 0, clientY: 0, composedPath: () => [control, surface] })).toBeNull();
       expect(manager.isControlEvent({ composedPath: () => [control, surface] })).toBe(true);
@@ -480,15 +480,15 @@ describe('KritzelObjectTitlebarManager', () => {
 
     it('resolves the owner of a control when controls are included', () => {
       const owner = createObject('a');
-      const surface = createElement({ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
-      const control = createElement({ [KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE]: '' }, surface);
+      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const control = createElement({ [UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE]: '' }, surface);
 
       expect(manager.getOwnerFromEvent({ clientX: 0, clientY: 0, composedPath: () => [control, surface] }, { includeControls: true })).toBe(owner);
     });
 
     it('falls back to hit testing when the event was already dispatched', () => {
       const owner = createObject('a');
-      const surface = createElement({ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
       const title = createElement({}, surface);
       mockCore.engine.host.shadowRoot.elementsFromPoint.mockReturnValue([title]);
 
@@ -498,7 +498,7 @@ describe('KritzelObjectTitlebarManager', () => {
 
     it('falls back to hit testing when the event was retargeted away from the titlebar', () => {
       const owner = createObject('a');
-      const surface = createElement({ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
       mockCore.engine.host.shadowRoot.elementsFromPoint.mockReturnValue([createElement({}, surface)]);
       const host = createElement({});
 
@@ -515,7 +515,7 @@ describe('KritzelObjectTitlebarManager', () => {
     it('returns null when titlebars are disabled', () => {
       setConfig(undefined);
       createObject('a');
-      const surface = createElement({ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
 
       expect(manager.getOwnerFromEvent({ clientX: 0, clientY: 0, composedPath: () => [surface] })).toBeNull();
     });
@@ -533,12 +533,12 @@ describe('KritzelObjectTitlebarManager', () => {
 
       manager.invokeElement('a', 'right', 'play', click, anchor);
 
-      expect(action).toHaveBeenCalledWith(expect.objectContaining({ title: 'Desktop', objectType: 'KritzelShape' }), click);
+      expect(action).toHaveBeenCalledWith(expect.objectContaining({ title: 'Desktop', objectType: 'UpdrawShape' }), click);
       expect(mockCore.engine.emitObjectTitlebarAction).toHaveBeenCalledWith({
         elementId: 'play',
         section: 'right',
         objectId: 'a',
-        objectType: 'KritzelShape',
+        objectType: 'UpdrawShape',
         workspaceId: 'workspace-1',
         anchorRect,
       });
@@ -613,7 +613,7 @@ describe('KritzelObjectTitlebarManager', () => {
             ...overrides,
           },
         ],
-      } as KritzelObjectTitlebarConfig);
+      } as UpdrawObjectTitlebarConfig);
       return duplicate;
     };
 
@@ -660,7 +660,7 @@ describe('KritzelObjectTitlebarManager', () => {
         menuItemId: 'duplicate',
         section: 'right',
         objectId: 'a',
-        objectType: 'KritzelShape',
+        objectType: 'UpdrawShape',
         workspaceId: 'workspace-1',
         anchorRect,
       });
@@ -886,9 +886,9 @@ describe('KritzelObjectTitlebarManager', () => {
 
     it('finds the pressed editable title and recognizes events from the rename input', () => {
       createObject('a');
-      const surface = createElement({ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
-      const title = createElement({ [KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: 'title' }, surface);
-      const input = createElement({ [KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE]: '' }, surface);
+      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const title = createElement({ [UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: 'title' }, surface);
+      const input = createElement({ [UPDRAW_TITLEBAR_TITLE_INPUT_ATTRIBUTE]: '' }, surface);
 
       expect(manager.getEditableTitleFromEvent({ clientX: 0, clientY: 0, composedPath: () => [title, surface] })).toEqual({ ownerId: 'a', elementId: 'title' });
       expect(manager.getEditableTitleFromEvent({ clientX: 0, clientY: 0, composedPath: () => [surface] })).toBeNull();
@@ -898,8 +898,8 @@ describe('KritzelObjectTitlebarManager', () => {
 
     it('finds the editable title by hit testing when the event path is empty', () => {
       createObject('a');
-      const surface = createElement({ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
-      const title = createElement({ [KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: 'title' }, surface);
+      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const title = createElement({ [UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: 'title' }, surface);
       mockCore.engine.host.shadowRoot.elementsFromPoint.mockReturnValue([title]);
 
       expect(manager.getEditableTitleFromEvent({ clientX: 1, clientY: 2, composedPath: () => [] })).toEqual({ ownerId: 'a', elementId: 'title' });
@@ -908,15 +908,15 @@ describe('KritzelObjectTitlebarManager', () => {
 
   describe('default preset', () => {
     it('only uses registered icons', () => {
-      const icons = [...Object.values(KRITZEL_OBJECT_TYPE_ICONS), 'square', 'play', 'plus'];
+      const icons = [...Object.values(UPDRAW_OBJECT_TYPE_ICONS), 'square', 'play', 'plus'];
 
       for (const icon of icons) {
-        expect(KritzelIconRegistry.has(icon)).toBe(true);
+        expect(UpdrawIconRegistry.has(icon)).toBe(true);
       }
     });
 
     it('shows the type icon and the title', () => {
-      setConfig(KRITZEL_DEFAULT_OBJECT_TITLEBAR);
+      setConfig(UPDRAW_DEFAULT_OBJECT_TITLEBAR);
       createGroup('group', []);
 
       const [titlebar] = manager.resolveTitlebars(Array.from(objects.values()));

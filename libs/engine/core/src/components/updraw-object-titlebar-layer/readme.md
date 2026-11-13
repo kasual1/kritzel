@@ -1,4 +1,4 @@
-# kritzel-object-titlebar-layer
+# updraw-object-titlebar-layer
 
 
 
@@ -11,7 +11,7 @@ Renders object titlebars inside the engine's world-space origin. Each anchor is 
 its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
 
 Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
-`kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+`updraw-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
 Must never use the `object` class: pointer handling treats `.object` elements as objects.
 
 ## Properties
@@ -19,28 +19,28 @@ Must never use the `object` class: pointer handling treats `.object` elements as
 | Property               | Attribute                | Description                                                                                                           | Type                                                                                                                    | Default     |
 | ---------------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------- |
 | `appearingOwners`      | --                       | The objects playing their appear animation, with their stagger index, by object ID. Their titlebars appear with them. | `Map<string, number>`                                                                                                   | `undefined` |
-| `elementClick`         | --                       | Called when a titlebar button or menu button is clicked.                                                              | `(ownerId: string, section: KritzelTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement) => void` | `undefined` |
+| `elementClick`         | --                       | Called when a titlebar button or menu button is clicked.                                                              | `(ownerId: string, section: UpdrawTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement) => void` | `undefined` |
 | `surfacePointerEvents` | `surface-pointer-events` | Pointer events of the drag surfaces. Controls always receive pointer input.                                           | `"auto" \| "none"`                                                                                                      | `'none'`    |
-| `titleEdit`            | --                       | Called while a title is edited to rename its object.                                                                  | `KritzelTitlebarTitleEditHandlers`                                                                                      | `undefined` |
-| `titlebars`            | --                       | The titlebars to render, resolved by the engine for the current frame.                                                | `KritzelResolvedTitlebar[]`                                                                                             | `[]`        |
+| `titleEdit`            | --                       | Called while a title is edited to rename its object.                                                                  | `UpdrawTitlebarTitleEditHandlers`                                                                                      | `undefined` |
+| `titlebars`            | --                       | The titlebars to render, resolved by the engine for the current frame.                                                | `UpdrawResolvedTitlebar[]`                                                                                             | `[]`        |
 
 
 ## Dependencies
 
 ### Used by
 
- - [kritzel-engine](../kritzel-engine)
+ - [updraw-engine](../updraw-engine)
 
 ### Depends on
 
-- [kritzel-icon](../kritzel-icon)
+- [updraw-icon](../updraw-icon)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-object-titlebar-layer --> kritzel-icon
-  kritzel-engine --> kritzel-object-titlebar-layer
-  style kritzel-object-titlebar-layer fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-object-titlebar-layer --> updraw-icon
+  updraw-engine --> updraw-object-titlebar-layer
+  style updraw-object-titlebar-layer fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

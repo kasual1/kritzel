@@ -9,7 +9,7 @@ type ElementRect = { x: number; y: number; width: number; height: number };
 
 type ElementInfo = {
   selector: string;
-  kritzelId?: string;
+  updrawId?: string;
   tagName: string;
   text?: string;
   rect: ElementRect;
@@ -25,7 +25,7 @@ type AgentState = {
   isMoving: boolean;
 };
 
-/** The parts of `KritzelAgent` the tests use. The agent lives in the page; only its state is returned. */
+/** The parts of `UpdrawAgent` the tests use. The agent lives in the page; only its state is returned. */
 type Agent = {
   id: string;
   state: AgentState;
@@ -53,8 +53,8 @@ function card(page: Page) {
   return page.frameLocator('iframe');
 }
 
-function cardElement(page: Page, kritzelId: string) {
-  return card(page).locator(`[data-kritzel-id="${kritzelId}"]`);
+function cardElement(page: Page, updrawId: string) {
+  return card(page).locator(`[data-updraw-id="${updrawId}"]`);
 }
 
 /** Moves the real mouse to the center of an element, also inside the iframe. */
@@ -73,8 +73,8 @@ async function clickAt(page: Page, locator: Locator) {
 /** Snapshot of the demo's iframe object, as far as these tests need it. */
 async function getPlanObjectState(page: Page) {
   return page.evaluate(async () => {
-    const editor = document.querySelector('kritzel-editor') as EditorElement;
-    const [object] = await editor.findObjects(obj => obj.__class__ === 'KritzelIframeObject');
+    const editor = document.querySelector('updraw-editor') as EditorElement;
+    const [object] = await editor.findObjects(obj => obj.__class__ === 'UpdrawIframeObject');
     return {
       id: object.id,
       isInteractive: object.isInteractive,
@@ -86,8 +86,8 @@ async function getPlanObjectState(page: Page) {
 
 async function queryCardElements(page: Page, selector: string) {
   return page.evaluate(async (elementSelector) => {
-    const editor = document.querySelector('kritzel-editor') as EditorElement;
-    const [object] = await editor.findObjects(obj => obj.__class__ === 'KritzelIframeObject');
+    const editor = document.querySelector('updraw-editor') as EditorElement;
+    const [object] = await editor.findObjects(obj => obj.__class__ === 'UpdrawIframeObject');
     return editor.queryObjectElements(object.id, elementSelector);
   }, selector);
 }
@@ -103,15 +103,15 @@ test.describe('Iframe Element Interaction', () => {
     await expect
       .poll(() =>
         page.evaluate(async (agentId) => {
-          const editor = document.querySelector('kritzel-editor') as EditorElement;
-          const [object] = await editor.findObjects(obj => obj.__class__ === 'KritzelIframeObject');
+          const editor = document.querySelector('updraw-editor') as EditorElement;
+          const [object] = await editor.findObjects(obj => obj.__class__ === 'UpdrawIframeObject');
           return !!object?.isInteractive && !!(await editor.getAgent(agentId))?.state.isAdded;
         }, AGENT),
       )
       .toBe(true);
 
     // The page inside the iframe answers queries once it has loaded and talks to the editor.
-    await expect.poll(async () => (await queryCardElements(page, '[data-kritzel-id]').catch(() => [])).length).toBeGreaterThan(0);
+    await expect.poll(async () => (await queryCardElements(page, '[data-updraw-id]').catch(() => [])).length).toBeGreaterThan(0);
     await expect(cardElement(page, 'seats-count')).toHaveText('3');
   });
 
@@ -149,7 +149,7 @@ test.describe('Iframe Element Interaction', () => {
     const toggle = page.getByTestId('toggle-picking');
 
     await page.evaluate(() => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const picks: Array<{ objectId: string; element: ElementInfo }> = [];
       (window as unknown as { __picks: typeof picks }).__picks = picks;
       editor.addEventListener('objectElementPick', event => picks.push((event as CustomEvent).detail));
@@ -161,7 +161,7 @@ test.describe('Iframe Element Interaction', () => {
     await expect(toggle).toHaveText('Stop picking');
     await expect.poll(async () => (await getPlanObjectState(page)).isElementPicking).toBe(true);
 
-    // Any element can be picked, also ones without a data-kritzel-id such as the "Total" label.
+    // Any element can be picked, also ones without a data-updraw-id such as the "Total" label.
     await pointAt(page, card(page).locator('.total .label'));
     await expect(hovered).toHaveText('span "Total"');
 
@@ -180,7 +180,7 @@ test.describe('Iframe Element Interaction', () => {
     const picks = await page.evaluate(() => (window as unknown as { __picks: Array<{ objectId: string; element: ElementInfo }> }).__picks);
     expect(picks).toHaveLength(1);
     const [{ objectId, element }] = picks;
-    expect(element.kritzelId).toBe('seats-increase');
+    expect(element.updrawId).toBe('seats-increase');
     expect(element.tagName).toBe('button');
 
     // The picked element is highlighted.
@@ -188,17 +188,17 @@ test.describe('Iframe Element Interaction', () => {
 
     // The agent's cursor moves to the picked element and attaches to it.
     await expect.poll(async () => page.evaluate(async (agentId) => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const editor = document.querySelector('updraw-editor') as EditorElement;
       const state = (await editor.getAgent(agentId))?.state;
       return { selector: state?.attachedTo?.selector ?? null, isMoving: state?.isMoving ?? null };
     }, AGENT)).toEqual({ selector: element.selector, isMoving: false });
 
     const result = await page.evaluate(async ({ agentId, selector }) => {
-      const editor = document.querySelector('kritzel-editor') as EditorElement;
-      const [object] = await editor.findObjects(obj => obj.__class__ === 'KritzelIframeObject');
+      const editor = document.querySelector('updraw-editor') as EditorElement;
+      const [object] = await editor.findObjects(obj => obj.__class__ === 'UpdrawIframeObject');
       const [target] = await editor.queryObjectElements(object.id, selector);
       const cursor = (await editor.getAgent(agentId))?.state ?? null;
-      // Content coordinates (CSS pixels of the iframe) -> world units, see KritzelIframeObject.contentToObjectLocal().
+      // Content coordinates (CSS pixels of the iframe) -> world units, see UpdrawIframeObject.contentToObjectLocal().
       const scale = object.scale || 1;
       const inset = object.borderWidth || 0;
       const box = object.boundingBox;
@@ -233,16 +233,16 @@ test.describe('Iframe Element Interaction', () => {
     const { page } = editorPage;
     const buttons = await queryCardElements(page, 'button');
 
-    expect(buttons.map(button => button.kritzelId)).toEqual(['monthly', 'yearly', 'seats-decrease', 'seats-increase', 'checkout']);
+    expect(buttons.map(button => button.updrawId)).toEqual(['monthly', 'yearly', 'seats-decrease', 'seats-increase', 'checkout']);
     expect(buttons.every(button => button.tagName === 'button' && button.rect.width > 0 && button.rect.height > 0)).toBe(true);
-    expect(buttons.find(button => button.kritzelId === 'checkout')?.text).toBe('Checkout');
+    expect(buttons.find(button => button.updrawId === 'checkout')?.text).toBe('Checkout');
 
     const selectors = buttons.map(button => button.selector);
     expect(new Set(selectors).size).toBe(buttons.length);
 
     // Every selector matches exactly the button it was reported for.
-    const matches = await Promise.all(selectors.map(async selector => (await queryCardElements(page, selector)).map(match => match.kritzelId)));
-    expect(matches).toEqual(buttons.map(button => [button.kritzelId]));
+    const matches = await Promise.all(selectors.map(async selector => (await queryCardElements(page, selector)).map(match => match.updrawId)));
+    expect(matches).toEqual(buttons.map(button => [button.updrawId]));
   });
 });
 
@@ -250,9 +250,9 @@ test.describe('Agents using iframe elements', () => {
   /** Runs the demo's agent in the page; only serializable results come back. */
   async function withAgent<T>(page: Page, run: string): Promise<T> {
     return page.evaluate(async ({ agentId, source }) => {
-      const editor = document.querySelector('kritzel-editor') as any;
+      const editor = document.querySelector('updraw-editor') as any;
       const agent = await editor.getAgent(agentId);
-      const [object] = await editor.findObjects((obj: { __class__: string }) => obj.__class__ === 'KritzelIframeObject');
+      const [object] = await editor.findObjects((obj: { __class__: string }) => obj.__class__ === 'UpdrawIframeObject');
       return new Function('agent', 'objectId', `return (async () => { ${source} })();`)(agent, object.id);
     }, { agentId: AGENT, source: run });
   }
@@ -262,7 +262,7 @@ test.describe('Agents using iframe elements', () => {
     await editorPage.goto(ROUTE);
     await editorPage.waitForReady();
     await expect.poll(() => withAgent<boolean>(page, 'return !!agent && agent.state.isAdded;')).toBe(true);
-    await expect.poll(async () => (await queryCardElements(page, '[data-kritzel-id]').catch(() => [])).length).toBeGreaterThan(0);
+    await expect.poll(async () => (await queryCardElements(page, '[data-updraw-id]').catch(() => [])).length).toBeGreaterThan(0);
     await expect(cardElement(page, 'seats-count')).toHaveText('3');
     // Deselect the card: agents use widgets whether or not they are selected.
     await page.keyboard.press('Escape');
@@ -274,17 +274,17 @@ test.describe('Agents using iframe elements', () => {
 
     const result = await withAgent<any>(
       page,
-      `const result = await agent.interactWithElement({ objectId, selector: '[data-kritzel-id="seats-increase"]' }, { type: 'click' });
-       return { completed: result.completed, element: result.element && result.element.kritzelId, attachedTo: agent.state.attachedTo };`,
+      `const result = await agent.interactWithElement({ objectId, selector: '[data-updraw-id="seats-increase"]' }, { type: 'click' });
+       return { completed: result.completed, element: result.element && result.element.updrawId, attachedTo: agent.state.attachedTo };`,
     );
 
-    expect(result).toMatchObject({ completed: true, element: 'seats-increase', attachedTo: { selector: '[data-kritzel-id="seats-increase"]' } });
+    expect(result).toMatchObject({ completed: true, element: 'seats-increase', attachedTo: { selector: '[data-updraw-id="seats-increase"]' } });
     await expect(cardElement(page, 'seats-count')).toHaveText('4');
     await expect(cardElement(page, 'total')).toHaveText('$48 / month');
     // The agent's pointer is not the user's: no hover is reported to the app.
     expect((await page.getByText('Hovered').locator('..').textContent())?.replace(/\s+/g, ' ')).toContain('—');
 
-    await withAgent(page, `await agent.click({ objectId, selector: '[data-kritzel-id="seats-decrease"]' });`);
+    await withAgent(page, `await agent.click({ objectId, selector: '[data-updraw-id="seats-decrease"]' });`);
     await expect(cardElement(page, 'seats-count')).toHaveText('3');
   });
 
@@ -293,16 +293,16 @@ test.describe('Agents using iframe elements', () => {
 
     const inspected = await withAgent<any>(page, `return JSON.parse(await agent.tools().find(tool => tool.name === 'inspect_elements').run({ objectId }));`);
     expect(inspected.completed).toBe(true);
-    expect(inspected.elements.map((element: { selector: string }) => element.selector)).toContain('[data-kritzel-id="yearly"]');
+    expect(inspected.elements.map((element: { selector: string }) => element.selector)).toContain('[data-updraw-id="yearly"]');
 
     const used = await withAgent<any>(
       page,
       `return JSON.parse(await agent.tools().find(tool => tool.name === 'interact_with_element').run({
-         target: { objectId, selector: '[data-kritzel-id="yearly"]' },
+         target: { objectId, selector: '[data-updraw-id="yearly"]' },
          interaction: { type: 'click' },
        }));`,
     );
-    expect(used).toMatchObject({ completed: true, element: { selector: '[data-kritzel-id="yearly"]', visible: true } });
+    expect(used).toMatchObject({ completed: true, element: { selector: '[data-updraw-id="yearly"]', visible: true } });
     await expect(cardElement(page, 'total')).toHaveText('$360 / year');
 
     const missing = await withAgent<any>(

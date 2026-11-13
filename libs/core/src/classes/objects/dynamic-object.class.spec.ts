@@ -1,12 +1,12 @@
-import { KritzelDynamicObject } from './dynamic-object.class';
-import { KritzelCore } from '../core/core.class';
-import { KritzelDynamicObjectRendererRegistry } from '../registries/dynamic-object-renderer.registry';
+import { UpdrawDynamicObject } from './dynamic-object.class';
+import { UpdrawCore } from '../core/core.class';
+import { UpdrawDynamicObjectRendererRegistry } from '../registries/dynamic-object-renderer.registry';
 
-describe('KritzelDynamicObject', () => {
-  let mockCore: jest.Mocked<KritzelCore>;
+describe('UpdrawDynamicObject', () => {
+  let mockCore: jest.Mocked<UpdrawCore>;
   let mockObjectsUpdate: jest.Mock;
 
-  const createMockCore = (): jest.Mocked<KritzelCore> => {
+  const createMockCore = (): jest.Mocked<UpdrawCore> => {
     const objectsUpdate = jest.fn();
     mockObjectsUpdate = objectsUpdate;
 
@@ -28,7 +28,7 @@ describe('KritzelDynamicObject', () => {
         get objects() { return this.state.objects; },
         currentZIndex: 5,
       },
-    } as unknown as jest.Mocked<KritzelCore>;
+    } as unknown as jest.Mocked<UpdrawCore>;
   };
 
   const createMockElement = (): HTMLElement => {
@@ -48,16 +48,16 @@ describe('KritzelDynamicObject', () => {
 
   describe('constructor', () => {
     it('should create with default values when no config provided', () => {
-      const obj = new KritzelDynamicObject();
+      const obj = new UpdrawDynamicObject();
 
-      expect(obj.__class__).toBe('KritzelDynamicObject');
+      expect(obj.__class__).toBe('UpdrawDynamicObject');
       expect(obj.isInteractive).toBe(false);
       expect(obj.element).toBeUndefined();
     });
 
     it('should apply config values', () => {
       const element = createMockElement();
-      const obj = new KritzelDynamicObject({
+      const obj = new UpdrawDynamicObject({
         element,
         translateX: 10,
         translateY: 20,
@@ -76,7 +76,7 @@ describe('KritzelDynamicObject', () => {
 
     it('should default optional config values to 0 or 1', () => {
       const element = createMockElement();
-      const obj = new KritzelDynamicObject({ element });
+      const obj = new UpdrawDynamicObject({ element });
 
       expect(obj.element).toBe(element);
       expect(obj.translateX).toBe(0);
@@ -88,7 +88,7 @@ describe('KritzelDynamicObject', () => {
 
     it('should convert constructor rotation from degrees to radians', () => {
       const element = createMockElement();
-      const obj = new KritzelDynamicObject({
+      const obj = new UpdrawDynamicObject({
         element,
         rotation: -90,
       });
@@ -100,9 +100,9 @@ describe('KritzelDynamicObject', () => {
   describe('create', () => {
     it('should create an instance with core reference and generated id', () => {
       const element = createMockElement();
-      const obj = KritzelDynamicObject.create(mockCore, { element }) as KritzelDynamicObject;
+      const obj = UpdrawDynamicObject.create(mockCore, { element }) as UpdrawDynamicObject;
 
-      expect(obj).toBeInstanceOf(KritzelDynamicObject);
+      expect(obj).toBeInstanceOf(UpdrawDynamicObject);
       expect(obj.id).toBeDefined();
       expect(obj.id.length).toBeGreaterThan(0);
       expect(obj.element).toBe(element);
@@ -110,21 +110,21 @@ describe('KritzelDynamicObject', () => {
 
     it('should set workspaceId from core store', () => {
       const element = createMockElement();
-      const obj = KritzelDynamicObject.create(mockCore, { element }) as KritzelDynamicObject;
+      const obj = UpdrawDynamicObject.create(mockCore, { element }) as UpdrawDynamicObject;
 
       expect(obj.workspaceId).toBe('workspace-1');
     });
 
     it('should pass config through to constructor', () => {
       const element = createMockElement();
-      const obj = KritzelDynamicObject.create(mockCore, {
+      const obj = UpdrawDynamicObject.create(mockCore, {
         element,
         translateX: 50,
         translateY: 60,
         scale: 3,
         width: 200,
         height: 300,
-      }) as KritzelDynamicObject;
+      }) as UpdrawDynamicObject;
 
       expect(obj.translateX).toBe(50);
       expect(obj.translateY).toBe(60);
@@ -135,22 +135,22 @@ describe('KritzelDynamicObject', () => {
 
     it('should convert create rotation from degrees to radians', () => {
       const element = createMockElement();
-      const obj = KritzelDynamicObject.create(mockCore, {
+      const obj = UpdrawDynamicObject.create(mockCore, {
         element,
         rotation: -90,
-      }) as KritzelDynamicObject;
+      }) as UpdrawDynamicObject;
 
       expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
     });
   });
 
   describe('mount', () => {
-    let obj: KritzelDynamicObject;
+    let obj: UpdrawDynamicObject;
     let innerElement: HTMLElement;
 
     beforeEach(() => {
       innerElement = createMockElement();
-      obj = KritzelDynamicObject.create(mockCore, { element: innerElement }) as KritzelDynamicObject;
+      obj = UpdrawDynamicObject.create(mockCore, { element: innerElement }) as UpdrawDynamicObject;
     });
 
     it('should mount the element into the container', () => {
@@ -215,7 +215,7 @@ describe('KritzelDynamicObject', () => {
       obj.mount(container);
 
       expect(innerElement.style.pointerEvents).toBe('auto');
-      expect(innerElement.style.cursor).toBe('var(--kritzel-global-default-cursor, auto)');
+      expect(innerElement.style.cursor).toBe('var(--updraw-global-default-cursor, auto)');
     });
 
     it('should blur focused descendants when interactivity is disabled', () => {
@@ -240,7 +240,7 @@ describe('KritzelDynamicObject', () => {
       const input = document.createElement('input');
       shadowRoot.appendChild(input);
 
-      KritzelDynamicObjectRendererRegistry.register(rendererKey, {
+      UpdrawDynamicObjectRendererRegistry.register(rendererKey, {
         onMount: ({ container }) => {
           if (!container) {
             return;
@@ -251,10 +251,10 @@ describe('KritzelDynamicObject', () => {
         onUnmount: () => undefined,
       });
 
-      const rendererObj = KritzelDynamicObject.create(mockCore, {
+      const rendererObj = UpdrawDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey,
-      }) as KritzelDynamicObject;
+      }) as UpdrawDynamicObject;
 
       const container = document.createElement('div');
       rendererObj.mount(container);
@@ -267,7 +267,7 @@ describe('KritzelDynamicObject', () => {
 
       expect(blurSpy).toHaveBeenCalledTimes(1);
 
-      KritzelDynamicObjectRendererRegistry.unregister(rendererKey);
+      UpdrawDynamicObjectRendererRegistry.unregister(rendererKey);
     });
 
     it('should keep renderer container selectable while disabling mounted interactive content', () => {
@@ -275,7 +275,7 @@ describe('KritzelDynamicObject', () => {
       const mountedHost = document.createElement('div');
       mountedHost.innerHTML = '<button type="button">Click</button>';
 
-      KritzelDynamicObjectRendererRegistry.register(rendererKey, {
+      UpdrawDynamicObjectRendererRegistry.register(rendererKey, {
         onMount: ({ container }) => {
           if (!container) {
             return;
@@ -286,10 +286,10 @@ describe('KritzelDynamicObject', () => {
         onUnmount: () => undefined,
       });
 
-      const rendererObj = KritzelDynamicObject.create(mockCore, {
+      const rendererObj = UpdrawDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey,
-      }) as KritzelDynamicObject;
+      }) as UpdrawDynamicObject;
 
       const container = document.createElement('div');
 
@@ -303,9 +303,9 @@ describe('KritzelDynamicObject', () => {
 
       expect(container.style.pointerEvents).toBe('auto');
       expect(mountedHost.style.pointerEvents).toBe('auto');
-      expect(mountedHost.style.cursor).toBe('var(--kritzel-global-default-cursor, auto)');
+      expect(mountedHost.style.cursor).toBe('var(--updraw-global-default-cursor, auto)');
 
-      KritzelDynamicObjectRendererRegistry.unregister(rendererKey);
+      UpdrawDynamicObjectRendererRegistry.unregister(rendererKey);
     });
 
     it('should detect focused input-like descendants when interactive', () => {
@@ -358,16 +358,16 @@ describe('KritzelDynamicObject', () => {
   });
 
   describe('resize', () => {
-    let obj: KritzelDynamicObject;
+    let obj: UpdrawDynamicObject;
     let innerElement: HTMLElement;
 
     beforeEach(() => {
       innerElement = createMockElement();
-      obj = KritzelDynamicObject.create(mockCore, {
+      obj = UpdrawDynamicObject.create(mockCore, {
         element: innerElement,
         width: 100,
         height: 100,
-      }) as KritzelDynamicObject;
+      }) as UpdrawDynamicObject;
     });
 
     it('should update dimensions and position', () => {
@@ -410,17 +410,17 @@ describe('KritzelDynamicObject', () => {
   describe('copy', () => {
     it('should return a new instance with a different id', () => {
       const innerElement = createMockElement();
-      const obj = KritzelDynamicObject.create(mockCore, {
+      const obj = UpdrawDynamicObject.create(mockCore, {
         element: innerElement,
         translateX: 10,
         translateY: 20,
         width: 100,
         height: 200,
-      }) as KritzelDynamicObject;
+      }) as UpdrawDynamicObject;
 
       const copy = obj.copy();
 
-      expect(copy).toBeInstanceOf(KritzelDynamicObject);
+      expect(copy).toBeInstanceOf(UpdrawDynamicObject);
       expect(copy.id).not.toBe(obj.id);
       expect(copy.translateX).toBe(10);
       expect(copy.translateY).toBe(20);
@@ -430,7 +430,7 @@ describe('KritzelDynamicObject', () => {
 
     it('should set isMounted to false on the copy', () => {
       const innerElement = createMockElement();
-      const obj = KritzelDynamicObject.create(mockCore, { element: innerElement }) as KritzelDynamicObject;
+      const obj = UpdrawDynamicObject.create(mockCore, { element: innerElement }) as UpdrawDynamicObject;
       const container = document.createElement('div');
       obj.mount(container);
 
@@ -442,7 +442,7 @@ describe('KritzelDynamicObject', () => {
 
     it('should reset transient interaction state on copied object', () => {
       const innerElement = createMockElement();
-      const obj = KritzelDynamicObject.create(mockCore, { element: innerElement }) as KritzelDynamicObject;
+      const obj = UpdrawDynamicObject.create(mockCore, { element: innerElement }) as UpdrawDynamicObject;
       obj.isSelected = true;
       obj.isHovered = true;
       obj.isInteractive = true;
@@ -463,7 +463,7 @@ describe('KritzelDynamicObject', () => {
     it('should clone the HTML element', () => {
       const innerElement = createMockElement();
       innerElement.textContent = 'hello';
-      const obj = KritzelDynamicObject.create(mockCore, { element: innerElement }) as KritzelDynamicObject;
+      const obj = UpdrawDynamicObject.create(mockCore, { element: innerElement }) as UpdrawDynamicObject;
 
       const copy = obj.copy();
 
@@ -476,7 +476,7 @@ describe('KritzelDynamicObject', () => {
     it('should serialize element as HTML string', () => {
       const el = document.createElement('div');
       el.textContent = 'Hello';
-      const obj = KritzelDynamicObject.create(mockCore, { element: el, width: 100, height: 50 }) as KritzelDynamicObject;
+      const obj = UpdrawDynamicObject.create(mockCore, { element: el, width: 100, height: 50 }) as UpdrawDynamicObject;
 
       const serialized = obj.serialize();
 
@@ -486,7 +486,7 @@ describe('KritzelDynamicObject', () => {
 
     it('should serialize with dimension snapshot', () => {
       const el = document.createElement('div');
-      const obj = KritzelDynamicObject.create(mockCore, { element: el, width: 150, height: 75 }) as KritzelDynamicObject;
+      const obj = UpdrawDynamicObject.create(mockCore, { element: el, width: 150, height: 75 }) as UpdrawDynamicObject;
 
       const serialized = obj.serialize();
 
@@ -496,7 +496,7 @@ describe('KritzelDynamicObject', () => {
 
     it('should exclude _core and _elementRef from serialized output', () => {
       const el = document.createElement('div');
-      const obj = KritzelDynamicObject.create(mockCore, { element: el }) as KritzelDynamicObject;
+      const obj = UpdrawDynamicObject.create(mockCore, { element: el }) as UpdrawDynamicObject;
 
       const serialized = obj.serialize();
 
@@ -509,20 +509,20 @@ describe('KritzelDynamicObject', () => {
       const container = document.createElement('div');
       const onSerialize = jest.fn().mockReturnValue({ count: 7 });
 
-      KritzelDynamicObjectRendererRegistry.register(rendererKey, {
+      UpdrawDynamicObjectRendererRegistry.register(rendererKey, {
         onMount: () => undefined,
         onSerialize,
         onUnmount: () => undefined,
       });
 
-      const obj = KritzelDynamicObject.create(mockCore, {
+      const obj = UpdrawDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey,
         rendererData: {
           count: 7,
           update: () => undefined,
         },
-      }) as KritzelDynamicObject;
+      }) as UpdrawDynamicObject;
 
       obj.mount(container);
 
@@ -535,24 +535,24 @@ describe('KritzelDynamicObject', () => {
       });
       expect(serialized.rendererData).toEqual({ count: 7 });
 
-      KritzelDynamicObjectRendererRegistry.unregister(rendererKey);
+      UpdrawDynamicObjectRendererRegistry.unregister(rendererKey);
     });
 
     it('should pass null container to renderer serialization when object is not mounted', () => {
       const rendererKey = 'test-renderer-serialize-unmounted';
       const onSerialize = jest.fn().mockReturnValue({ count: 3 });
 
-      KritzelDynamicObjectRendererRegistry.register(rendererKey, {
+      UpdrawDynamicObjectRendererRegistry.register(rendererKey, {
         onMount: () => undefined,
         onSerialize,
         onUnmount: () => undefined,
       });
 
-      const obj = KritzelDynamicObject.create(mockCore, {
+      const obj = UpdrawDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey,
         rendererData: { count: 3 },
-      }) as KritzelDynamicObject;
+      }) as UpdrawDynamicObject;
 
       obj.serialize();
 
@@ -562,16 +562,16 @@ describe('KritzelDynamicObject', () => {
         data: obj.rendererData,
       });
 
-      KritzelDynamicObjectRendererRegistry.unregister(rendererKey);
+      UpdrawDynamicObjectRendererRegistry.unregister(rendererKey);
     });
 
     it('should keep existing renderer data serialization when no renderer hook is registered', () => {
       const rendererData = { count: 2, nested: { label: 'counter' } };
-      const obj = KritzelDynamicObject.create(mockCore, {
+      const obj = UpdrawDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey: 'missing-renderer-key',
         rendererData,
-      }) as KritzelDynamicObject;
+      }) as UpdrawDynamicObject;
 
       const serialized = obj.serialize();
 
@@ -583,27 +583,27 @@ describe('KritzelDynamicObject', () => {
       const rendererKey = 'test-renderer-without-serialize-hook';
       const rendererData = { count: 4 };
 
-      KritzelDynamicObjectRendererRegistry.register(rendererKey, {
+      UpdrawDynamicObjectRendererRegistry.register(rendererKey, {
         onMount: () => undefined,
         onUnmount: () => undefined,
       });
 
-      const obj = KritzelDynamicObject.create(mockCore, {
+      const obj = UpdrawDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey,
         rendererData,
-      }) as KritzelDynamicObject;
+      }) as UpdrawDynamicObject;
 
       const serialized = obj.serialize();
 
       expect(serialized.rendererData).toEqual(rendererData);
       expect(serialized.rendererData).not.toBe(rendererData);
 
-      KritzelDynamicObjectRendererRegistry.unregister(rendererKey);
+      UpdrawDynamicObjectRendererRegistry.unregister(rendererKey);
     });
 
     it('should handle empty element', () => {
-      const obj = new KritzelDynamicObject();
+      const obj = new UpdrawDynamicObject();
       obj._core = mockCore;
 
       const serialized = obj.serialize();
@@ -615,10 +615,10 @@ describe('KritzelDynamicObject', () => {
       const el = document.createElement('button');
       el.id = 'test-button';
       el.textContent = 'Click Me';
-      const obj = KritzelDynamicObject.create(mockCore, { element: el }) as KritzelDynamicObject;
+      const obj = UpdrawDynamicObject.create(mockCore, { element: el }) as UpdrawDynamicObject;
 
       const serialized = obj.serialize();
-      const restored = new KritzelDynamicObject();
+      const restored = new UpdrawDynamicObject();
       restored._core = mockCore;
       restored.deserialize(serialized);
 
@@ -627,7 +627,7 @@ describe('KritzelDynamicObject', () => {
     });
 
     it('should create placeholder on deserialize if htmlString is missing', () => {
-      const obj = new KritzelDynamicObject();
+      const obj = new UpdrawDynamicObject();
       obj._core = mockCore;
 
       obj.deserialize({});
@@ -637,7 +637,7 @@ describe('KritzelDynamicObject', () => {
     });
 
     it('should create placeholder on deserialize if htmlString is invalid', () => {
-      const obj = new KritzelDynamicObject();
+      const obj = new UpdrawDynamicObject();
       obj._core = mockCore;
 
       // Test with empty htmlString fallback - temp.firstElementChild will be null
@@ -650,10 +650,10 @@ describe('KritzelDynamicObject', () => {
     it('should survive serialization roundtrip with complex HTML', () => {
       const el = document.createElement('div');
       el.innerHTML = '<p><strong>Bold</strong> and <em>italic</em></p>';
-      const obj = KritzelDynamicObject.create(mockCore, { element: el }) as KritzelDynamicObject;
+      const obj = UpdrawDynamicObject.create(mockCore, { element: el }) as UpdrawDynamicObject;
 
       const serialized = obj.serialize();
-      const restored = new KritzelDynamicObject();
+      const restored = new UpdrawDynamicObject();
       restored._core = mockCore;
       restored.deserialize(serialized);
 
@@ -664,13 +664,13 @@ describe('KritzelDynamicObject', () => {
 
   describe('interaction semantics', () => {
     it('should have isInteractive property defaulting to false', () => {
-      const obj = new KritzelDynamicObject();
+      const obj = new UpdrawDynamicObject();
 
       expect(obj.isInteractive).toBe(false);
     });
 
     it('should not persist isInteractive through serialization', () => {
-      const obj = new KritzelDynamicObject();
+      const obj = new UpdrawDynamicObject();
       obj.isInteractive = true;
 
       const serialized = obj.serialize();
@@ -680,7 +680,7 @@ describe('KritzelDynamicObject', () => {
     });
 
     it('should ignore legacy allowEmbeddedInteraction on deserialize', () => {
-      const obj = new KritzelDynamicObject();
+      const obj = new UpdrawDynamicObject();
       obj._core = mockCore;
 
       obj.deserialize({ allowEmbeddedInteraction: true, isInteractive: false });

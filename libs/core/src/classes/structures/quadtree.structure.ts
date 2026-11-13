@@ -1,18 +1,18 @@
-import { KritzelBoundingBox } from '../../interfaces/bounding-box.interface';
-import { KritzelBaseObject } from '../objects/base-object.class';
+import { UpdrawBoundingBox } from '../../interfaces/bounding-box.interface';
+import { UpdrawBaseObject } from '../objects/base-object.class';
 
 /**
  * A quadtree data structure for efficient spatial indexing of objects.
  * Quadtrees recursively subdivide 2D space into four quadrants to enable
  * fast spatial queries like finding all objects within a given region.
  *
- * @template T - The type of objects stored in the quadtree, must extend KritzelBaseObject
+ * @template T - The type of objects stored in the quadtree, must extend UpdrawBaseObject
  */
-export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
-  private bounds: KritzelBoundingBox;
+export class UpdrawQuadtree<T extends UpdrawBaseObject<any>> {
+  private bounds: UpdrawBoundingBox;
   private capacity: number;
   private objects: T[] = [];
-  private children: KritzelQuadtree<T>[] | null = null;
+  private children: UpdrawQuadtree<T>[] | null = null;
   private _size: number = 0;
 
   /**
@@ -29,7 +29,7 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
    * @param bounds - The bounding box defining the spatial region covered by this quadtree
    * @param capacity - Maximum number of objects a node can hold before subdividing (default: 16)
    */
-  constructor(bounds: KritzelBoundingBox, capacity: number = 16) {
+  constructor(bounds: UpdrawBoundingBox, capacity: number = 16) {
     this.bounds = bounds;
     this.capacity = capacity;
   }
@@ -150,7 +150,7 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
    * @param range - The bounding box to query against
    * @returns An array of all objects that intersect with the given range
    */
-  query(range: KritzelBoundingBox): T[] {
+  query(range: UpdrawBoundingBox): T[] {
     const results: T[] = [];
     this._queryInto(range, results);
     return results;
@@ -163,7 +163,7 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
    * @param range - The bounding box to query against
    * @param results - The array to collect matching objects into
    */
-  private _queryInto(range: KritzelBoundingBox, results: T[]): void {
+  private _queryInto(range: UpdrawBoundingBox, results: T[]): void {
     if (!this.intersects(range, this.bounds)) {
       return;
     }
@@ -255,10 +255,10 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
 
     // Create 4 quadrants: NW, NE, SW, SE
     this.children = [
-      new KritzelQuadtree<T>({ x, y, z, width: halfWidth, height: halfHeight }, this.capacity), // Northwest
-      new KritzelQuadtree<T>({ x: x + halfWidth, y, z, width: halfWidth, height: halfHeight }, this.capacity), // Northeast
-      new KritzelQuadtree<T>({ x, y: y + halfHeight, z, width: halfWidth, height: halfHeight }, this.capacity), // Southwest
-      new KritzelQuadtree<T>({ x: x + halfWidth, y: y + halfHeight, z, width: halfWidth, height: halfHeight }, this.capacity), // Southeast
+      new UpdrawQuadtree<T>({ x, y, z, width: halfWidth, height: halfHeight }, this.capacity), // Northwest
+      new UpdrawQuadtree<T>({ x: x + halfWidth, y, z, width: halfWidth, height: halfHeight }, this.capacity), // Northeast
+      new UpdrawQuadtree<T>({ x, y: y + halfHeight, z, width: halfWidth, height: halfHeight }, this.capacity), // Southwest
+      new UpdrawQuadtree<T>({ x: x + halfWidth, y: y + halfHeight, z, width: halfWidth, height: halfHeight }, this.capacity), // Southeast
     ];
   }
 
@@ -270,7 +270,7 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
    * @param b - The second bounding box
    * @returns `true` if the bounding boxes overlap, `false` otherwise
    */
-  private intersects(a: KritzelBoundingBox, b: KritzelBoundingBox): boolean {
+  private intersects(a: UpdrawBoundingBox, b: UpdrawBoundingBox): boolean {
     return !(
       a.x >= b.x + b.width || // a is completely to the right of b
       a.x + a.width <= b.x || // a is completely to the left of b

@@ -1,17 +1,17 @@
 ---
 sidebar_label: Providers
-title: "Providers | Kritzel for Vue"
-description: "Reference for all sync provider classes and configuration interfaces in Kritzel: in-memory, IndexedDB, BroadcastChannel, WebSocket, and Hocuspocus."
+title: "Providers | Updraw for Vue"
+description: "Reference for all sync provider classes and configuration interfaces in Updraw: in-memory, IndexedDB, BroadcastChannel, WebSocket, and Hocuspocus."
 toc_max_heading_level: 2
 ---
 # Providers
 
-This is the API reference for all sync providers in Kritzel.
-A sync provider connects a Kritzel document to a storage or transport medium — browser storage, other tabs, or a collaboration server — and is registered through the editor's `syncConfig` prop.
+This is the API reference for all sync providers in Updraw.
+A sync provider connects an Updraw document to a storage or transport medium — browser storage, other tabs, or a collaboration server — and is registered through the editor's `syncConfig` prop.
 
 ## Overview
 
-Kritzel stores canvas state in [Yjs](https://docs.yjs.dev/) documents. Every provider in `syncConfig.providers` is attached to those documents and keeps them in sync with its medium. Providers are additive: multiple providers can be active on the same document at once.
+Updraw stores canvas state in [Yjs](https://docs.yjs.dev/) documents. Every provider in `syncConfig.providers` is attached to those documents and keeps them in sync with its medium. Providers are additive: multiple providers can be active on the same document at once.
 
 | Provider | Type | Persistence scope | Requires a server |
 |----------|------|-------------------|-------------------|
@@ -23,8 +23,8 @@ Kritzel stores canvas state in [Yjs](https://docs.yjs.dev/) documents. Every pro
 
 Each configured provider is instantiated once per Yjs document:
 
-- once for the app-state document (`kritzel-app-state-{editorId}-{appStateId}`) which holds the workspace list
-- once for every workspace document (`kritzel-workspace-{editorId}-{workspaceId}`) which holds the canvas objects
+- once for the app-state document (`updraw-app-state-{editorId}-{appStateId}`) which holds the workspace list
+- once for every workspace document (`updraw-workspace-{editorId}-{workspaceId}`) which holds the canvas objects
 
 The generated document name is passed to the provider as `docName`.
 
@@ -32,17 +32,17 @@ The generated document name is passed to the provider as `docName`.
 
 ## Sync Config
 
-`KritzelSyncConfig` is the object passed to the editor's `syncConfig` prop. The default value is `{ providers: [] }`, which means no state is persisted or shared.
+`UpdrawSyncConfig` is the object passed to the editor's `syncConfig` prop. The default value is `{ providers: [] }`, which means no state is persisted or shared.
 
 ### Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
-| providers | ProviderConfig[] | Provider classes or factories to attach to every Kritzel document |
+| providers | ProviderConfig[] | Provider classes or factories to attach to every Updraw document |
 | appStateId | string | Shared identifier for the app-state document. When omitted, a browser-local persisted instance id is used, which is stable across reloads but not shared across devices |
 
 ```ts
-import { IndexedDBSyncProvider } from '@kritzel/vue-editor'
+import { IndexedDBSyncProvider } from '@updraw/vue-editor'
 
 const syncConfig = {
   providers: [IndexedDBSyncProvider],
@@ -144,7 +144,7 @@ static clear(name?: string): void
 ```
 
 ```ts
-import { InMemorySyncProvider } from '@kritzel/vue-editor'
+import { InMemorySyncProvider } from '@updraw/vue-editor'
 
 const syncConfig = {
   providers: [InMemorySyncProvider],
@@ -168,7 +168,7 @@ const syncConfig = {
 `connect` resolves once the persisted state has been loaded into the document. `disconnect` is a no-op because IndexedDB has no connection to close.
 
 ```ts
-import { IndexedDBSyncProvider } from '@kritzel/vue-editor'
+import { IndexedDBSyncProvider } from '@updraw/vue-editor'
 
 const syncConfig = {
   providers: [IndexedDBSyncProvider],
@@ -209,7 +209,7 @@ static with(options?: BroadcastSyncOptions): ProviderFactory
 ```
 
 ```ts
-import { BroadcastSyncProvider, IndexedDBSyncProvider } from '@kritzel/vue-editor'
+import { BroadcastSyncProvider, IndexedDBSyncProvider } from '@updraw/vue-editor'
 
 const syncConfig = {
   providers: [IndexedDBSyncProvider, BroadcastSyncProvider.with({ awareness: true })],
@@ -250,7 +250,7 @@ static with(options?: WebSocketOptions): ProviderFactory
 ```
 
 ```ts
-import { IndexedDBSyncProvider, WebSocketSyncProvider } from '@kritzel/vue-editor'
+import { IndexedDBSyncProvider, WebSocketSyncProvider } from '@updraw/vue-editor'
 
 const syncConfig = {
   providers: [
@@ -261,7 +261,7 @@ const syncConfig = {
 ```
 
 :::warning
-Setting `roomName` forces every Kritzel document — the app state and all workspaces — into a single room. Leave it unset so each document keeps its generated `docName`.
+Setting `roomName` forces every Updraw document — the app state and all workspaces — into a single room. Leave it unset so each document keeps its generated `docName`.
 :::
 
 ---
@@ -339,7 +339,7 @@ static destroySharedWebSocket(): void
 ```
 
 ```ts
-import { HocuspocusSyncProvider, IndexedDBSyncProvider } from '@kritzel/vue-editor'
+import { HocuspocusSyncProvider, IndexedDBSyncProvider } from '@updraw/vue-editor'
 
 const syncConfig = {
   appStateId: 'account-42',
@@ -354,7 +354,7 @@ const syncConfig = {
 ```
 
 :::warning
-Setting `name` forces every Kritzel document — the app state and all workspaces — into a single server document. Leave it unset so each document keeps its generated `docName`.
+Setting `name` forces every Updraw document — the app state and all workspaces — into a single server document. Leave it unset so each document keeps its generated `docName`.
 :::
 
 ---
@@ -363,10 +363,10 @@ Setting `name` forces every Kritzel document — the app state and all workspace
 
 ### hasRemoteSyncProvider
 
-Returns `true` when a sync configuration contains at least one provider of type `'network'`. Kritzel uses it internally to decide whether the share option is available in the editor UI.
+Returns `true` when a sync configuration contains at least one provider of type `'network'`. Updraw uses it internally to decide whether the share option is available in the editor UI.
 
 ```ts
-hasRemoteSyncProvider(syncConfig?: KritzelSyncConfig): boolean
+hasRemoteSyncProvider(syncConfig?: UpdrawSyncConfig): boolean
 ```
 
 ---

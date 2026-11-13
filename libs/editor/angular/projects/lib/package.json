@@ -1,8 +1,8 @@
 {
-  "name": "@kritzel/angular-editor",
+  "name": "@updraw/angular-editor",
   "version": "0.6.2",
-  "homepage": "https://kritzel.io/",
-  "description": "Kritzel helps you build infinite canvas experiences with Angular.",
+  "homepage": "https://updraw.io/",
+  "description": "Updraw helps you build infinite canvas experiences with Angular.",
   "keywords": [
     "infinite canvas",
     "collaboration",
@@ -16,8 +16,8 @@
     "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0"
   },
   "dependencies": {
-    "@kritzel/editor": "^0.6.2",
-    "@kritzel/engine": "^0.6.2",
+    "@updraw/editor": "^0.6.2",
+    "@updraw/engine": "^0.6.2",
     "tslib": "^2.3.0"
   },
   "sideEffects": false,

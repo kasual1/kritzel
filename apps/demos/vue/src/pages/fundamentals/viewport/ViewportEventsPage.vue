@@ -2,10 +2,10 @@
 import { ref } from 'vue'
 import {
   getEditorRef,
-  KritzelEditor,
-  KritzelWorkspace,
-  type KritzelViewportState,
-} from '@kritzel/vue-editor'
+  UpdrawEditor,
+  UpdrawWorkspace,
+  type UpdrawViewportState,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -15,9 +15,9 @@ import Toolbar from '../../../components/Toolbar.vue'
 const panStep = 100
 const zoomFactor = 1.1
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 const editor = getEditorRef('editor')
-const viewport = ref<KritzelViewportState | null>(null)
+const viewport = ref<UpdrawViewportState | null>(null)
 
 async function panBy(offsetX: number, offsetY: number) {
   if (!editor.value) {
@@ -59,7 +59,7 @@ async function zoomOut() {
 }
 
 function onViewportChange(event: Event) {
-  viewport.value = (event as CustomEvent<KritzelViewportState>).detail
+  viewport.value = (event as CustomEvent<UpdrawViewportState>).detail
 }
 </script>
 
@@ -76,7 +76,7 @@ function onViewportChange(event: Event) {
       <span>Y: {{ Math.round(viewport?.translateY ?? 0) }}</span>
       <span>Scale: {{ (viewport?.scale ?? 1).toFixed(2) }}</span>
     </Toolbar>
-    <KritzelEditor
+    <UpdrawEditor
       ref="editor"
       editorId="viewport-events"
       theme="light"

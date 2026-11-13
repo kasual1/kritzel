@@ -1,22 +1,22 @@
 import { Component, Element, Event, EventEmitter, Host, h, Prop, State, Watch } from '@stencil/core';
-import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from '@kritzel/core';
+import { IUpdrawMasterDetailItem, IUpdrawMasterDetailSelectEvent } from '@updraw/core';
 
 @Component({
-  tag: 'kritzel-master-detail',
-  styleUrl: 'kritzel-master-detail.css',
+  tag: 'updraw-master-detail',
+  styleUrl: 'updraw-master-detail.css',
   shadow: true,
 })
-export class KritzelMasterDetail {
+export class UpdrawMasterDetail {
   @Element() host: HTMLElement;
 
   /** Array of menu items to display in the master (left) panel */
-  @Prop() items: IKritzelMasterDetailItem[] = [];
+  @Prop() items: IUpdrawMasterDetailItem[] = [];
 
   /** ID of the currently selected item */
   @Prop() selectedItemId: string;
 
   /** Emitted when an item is selected */
-  @Event() itemSelect: EventEmitter<IKritzelMasterDetailSelectEvent>;
+  @Event() itemSelect: EventEmitter<IUpdrawMasterDetailSelectEvent>;
 
   @State() focusedIndex: number = -1;
   @State() showMobileDetail: boolean = false;
@@ -34,7 +34,7 @@ export class KritzelMasterDetail {
     this.tabRefs = [];
   }
 
-  private handleItemClick = (item: IKritzelMasterDetailItem) => {
+  private handleItemClick = (item: IUpdrawMasterDetailItem) => {
     if (item.disabled) return;
     this.itemSelect.emit({ item });
     this.showMobileDetail = true;
@@ -44,7 +44,7 @@ export class KritzelMasterDetail {
     this.showMobileDetail = false;
   };
 
-  private handleKeyDown = (event: KeyboardEvent, item: IKritzelMasterDetailItem, index: number) => {
+  private handleKeyDown = (event: KeyboardEvent, item: IUpdrawMasterDetailItem, index: number) => {
     const enabledIndices = this.items
       .map((it, idx) => (!it.disabled ? idx : -1))
       .filter(idx => idx !== -1);
@@ -105,7 +105,7 @@ export class KritzelMasterDetail {
     }
   };
 
-  private getTabIndex(item: IKritzelMasterDetailItem, _index: number): number {
+  private getTabIndex(item: IUpdrawMasterDetailItem, _index: number): number {
     if (item.disabled) return -1;
     return 0;
   }
@@ -150,7 +150,7 @@ export class KritzelMasterDetail {
                 onBlur={this.handleBlur}
               >
                 {item.icon && (
-                  <kritzel-icon name={item.icon} size={20} class="menu-item-icon"></kritzel-icon>
+                  <updraw-icon name={item.icon} size={20} class="menu-item-icon"></updraw-icon>
                 )}
                 <span class="menu-item-label">{item.label}</span>
                 <span class="menu-item-chevron" aria-hidden="true">
@@ -169,7 +169,7 @@ export class KritzelMasterDetail {
             aria-labelledby={selectedTabId}
           >
             <button class="mobile-back-button" onClick={this.handleBackClick} aria-label="Back to menu">
-              <kritzel-icon name="chevronLeft" size={20} class="mobile-back-icon"></kritzel-icon>
+              <updraw-icon name="chevronLeft" size={20} class="mobile-back-icon"></updraw-icon>
               Back
             </button>
             <slot></slot>

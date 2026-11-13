@@ -7,7 +7,7 @@ test.describe("Group objects", () => {
   });
 
   test.describe("group", () => {
-    test("should group two selected shapes into a KritzelGroup", async ({
+    test("should group two selected shapes into an UpdrawGroup", async ({
       editorPage,
     }) => {
       const shape1 = await editorPage.addShape({
@@ -30,7 +30,7 @@ test.describe("Group objects", () => {
       await editorPage.clearSelection();
 
       const allObjects = await editorPage.getAllObjects<any>();
-      const group = allObjects.find((o: any) => o.__class__ === "KritzelGroup");
+      const group = allObjects.find((o: any) => o.__class__ === "UpdrawGroup");
       expect(group).toBeDefined();
     });
 
@@ -61,7 +61,7 @@ test.describe("Group objects", () => {
       await editorPage.clearSelection();
 
       const allObjects = await editorPage.getAllObjects<any>();
-      const group = allObjects.find((o: any) => o.__class__ === "KritzelGroup");
+      const group = allObjects.find((o: any) => o.__class__ === "UpdrawGroup");
       expect(group).toBeDefined();
     });
 
@@ -119,7 +119,7 @@ test.describe("Group objects", () => {
       await editorPage.clearSelection();
 
       const allObjects = await editorPage.getAllObjects<any>();
-      const group = allObjects.find((o: any) => o.__class__ === "KritzelGroup");
+      const group = allObjects.find((o: any) => o.__class__ === "UpdrawGroup");
       expect(group).toBeDefined();
       expect(group.childIds).toBeDefined();
       expect(group.childIds).toHaveLength(2);
@@ -152,7 +152,7 @@ test.describe("Group objects", () => {
       // Now ungroup
       const allAfterGroup = await editorPage.getAllObjects<any>();
       const group = allAfterGroup.find(
-        (o: any) => o.__class__ === "KritzelGroup",
+        (o: any) => o.__class__ === "UpdrawGroup",
       );
       await editorPage.selectObjects([group]);
       await editorPage.ungroup();
@@ -160,7 +160,7 @@ test.describe("Group objects", () => {
 
       const allAfterUngroup = await editorPage.getAllObjects<any>();
       const hasGroup = allAfterUngroup.some(
-        (o: any) => o.__class__ === "KritzelGroup",
+        (o: any) => o.__class__ === "UpdrawGroup",
       );
       expect(hasGroup).toBe(false);
     });
@@ -189,7 +189,7 @@ test.describe("Group objects", () => {
 
       const allAfterGroup = await editorPage.getAllObjects<any>();
       const group = allAfterGroup.find(
-        (o: any) => o.__class__ === "KritzelGroup",
+        (o: any) => o.__class__ === "UpdrawGroup",
       );
       await editorPage.selectObjects([group]);
       await editorPage.ungroup();
@@ -231,7 +231,7 @@ test.describe("Group objects", () => {
 
       const allAfterGroup = await editorPage.getAllObjects<any>();
       const group = allAfterGroup.find(
-        (o: any) => o.__class__ === "KritzelGroup",
+        (o: any) => o.__class__ === "UpdrawGroup",
       );
       await editorPage.selectObjects([group]);
       await editorPage.ungroup();
@@ -265,7 +265,7 @@ test.describe("Group objects", () => {
 
       const allAfterFirstGroup = await editorPage.getAllObjects<any>();
       const innerGroup = allAfterFirstGroup.find(
-        (o: any) => o.__class__ === "KritzelGroup",
+        (o: any) => o.__class__ === "UpdrawGroup",
       );
       expect(innerGroup).toBeDefined();
       expect(innerGroup.childIds).toHaveLength(2);
@@ -285,7 +285,7 @@ test.describe("Group objects", () => {
 
       const allAfterNestedGroup = await editorPage.getAllObjects<any>();
       const groups = allAfterNestedGroup.filter(
-        (o: any) => o.__class__ === "KritzelGroup",
+        (o: any) => o.__class__ === "UpdrawGroup",
       );
       expect(groups).toHaveLength(2);
       expect(allAfterNestedGroup).toHaveLength(5);
@@ -320,7 +320,7 @@ test.describe("Group objects", () => {
 
       const allAfterFirstGroup = await editorPage.getAllObjects<any>();
       const innerGroup = allAfterFirstGroup.find(
-        (o: any) => o.__class__ === "KritzelGroup",
+        (o: any) => o.__class__ === "UpdrawGroup",
       );
       expect(innerGroup).toBeDefined();
       expect(innerGroup.childIds).toHaveLength(2);
@@ -340,7 +340,7 @@ test.describe("Group objects", () => {
 
       const allAfterNestedGroup = await editorPage.getAllObjects<any>();
       let groupsAfterNestedGroup = allAfterNestedGroup.filter(
-        (o: any) => o.__class__ === "KritzelGroup",
+        (o: any) => o.__class__ === "UpdrawGroup",
       );
       expect(groupsAfterNestedGroup).toHaveLength(2);
       expect(allAfterNestedGroup).toHaveLength(5); // 2 groups + 3 shapes
@@ -348,7 +348,7 @@ test.describe("Group objects", () => {
       // Ungroup the outer group
       const outerGroup = allAfterNestedGroup.find(
         (o: any) =>
-          o.__class__ === "KritzelGroup" && o.childIds.includes(innerGroup.id),
+          o.__class__ === "UpdrawGroup" && o.childIds.includes(innerGroup.id),
       );
       await editorPage.selectObjects([outerGroup]);
       await editorPage.ungroup();
@@ -357,14 +357,14 @@ test.describe("Group objects", () => {
       // After ungrouping top-level, we should have the inner group + shape3
       const allAfterUngroup = await editorPage.getAllObjects<any>();
       const groupsAfterUngroup = allAfterUngroup.filter(
-        (o: any) => o.__class__ === "KritzelGroup",
+        (o: any) => o.__class__ === "UpdrawGroup",
       );
       expect(groupsAfterUngroup).toHaveLength(1);
       expect(allAfterUngroup).toHaveLength(4); // 1 group + 3 shapes
 
       // The inner group should still exist
       const remainingGroup = allAfterUngroup.find(
-        (o: any) => o.__class__ === "KritzelGroup",
+        (o: any) => o.__class__ === "UpdrawGroup",
       );
       expect(remainingGroup).toBeDefined();
       expect(remainingGroup.childIds).toHaveLength(2);
@@ -447,7 +447,7 @@ test.describe("Group objects", () => {
       // Select the group to show selection handles
       const allAfterGroup = await editorPage.getAllObjects<any>();
       const group = allAfterGroup.find(
-        (o: any) => o.__class__ === "KritzelGroup",
+        (o: any) => o.__class__ === "UpdrawGroup",
       );
       await editorPage.selectObjects([group]);
 

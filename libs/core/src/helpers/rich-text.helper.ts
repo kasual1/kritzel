@@ -2,7 +2,7 @@ import { Selection } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 
 /** Programmatic editing of the ProseMirror documents of text and shape objects. */
-export class KritzelRichTextHelper {
+export class UpdrawRichTextHelper {
   /**
    * Appends text at the end of the document. `\n` starts a new paragraph.
    * Dispatches one transaction, so the object's own change handling (content, size, persistence) runs.

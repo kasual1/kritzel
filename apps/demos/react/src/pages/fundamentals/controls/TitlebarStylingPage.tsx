@@ -1,13 +1,13 @@
 import { useState } from "react";
 import {
-  KritzelEditor,
-  KritzelShape,
-  KritzelWorkspace,
+  UpdrawEditor,
+  UpdrawShape,
+  UpdrawWorkspace,
   ShapeType,
-  type KritzelObjectConfig,
-  type KritzelObjectTitlebarConfig,
-  type KritzelTheme,
-} from "@kritzel/react-editor";
+  type UpdrawObjectConfig,
+  type UpdrawObjectTitlebarConfig,
+  type UpdrawTheme,
+} from "@updraw/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle } from "../../shared/demo-shared";
@@ -21,25 +21,25 @@ const transparentTitlebar = {
   paddingX: "0",
 };
 
-const transparentTitlebarLightTheme: KritzelTheme = {
+const transparentTitlebarLightTheme: UpdrawTheme = {
   ...reactThemeLight,
   titlebar: { ...reactThemeLight.titlebar, ...transparentTitlebar },
 };
 
-const transparentTitlebarDarkTheme: KritzelTheme = {
+const transparentTitlebarDarkTheme: UpdrawTheme = {
   ...reactThemeDark,
   titlebar: { ...reactThemeDark.titlebar, ...transparentTitlebar },
 };
 
 const themes = [transparentTitlebarLightTheme, transparentTitlebarDarkTheme];
 
-const objectConfig: KritzelObjectConfig = {
-  hasTitlebar: (object) => object.__class__ === "KritzelShape",
+const objectConfig: UpdrawObjectConfig = {
+  hasTitlebar: (object) => object.__class__ === "UpdrawShape",
   isRotatable: false,
   isResizable: false,
 };
 
-const objectTitlebar: KritzelObjectTitlebarConfig = {
+const objectTitlebar: UpdrawObjectTitlebarConfig = {
   left: [{ id: "title", type: "title" }],
   right: [
     { id: "settings", type: "button", icon: "settings", tooltip: "Settings" },
@@ -57,19 +57,19 @@ const frameConfig = {
 
 function createFrames() {
   return [
-    new KritzelShape({ ...frameConfig, name: "Landing page", translateX: -270, translateY: -110, width: 300, height: 200 }),
-    new KritzelShape({ ...frameConfig, name: "Pricing", translateX: 70, translateY: -110, width: 200, height: 200 }),
+    new UpdrawShape({ ...frameConfig, name: "Landing page", translateX: -270, translateY: -110, width: 300, height: 200 }),
+    new UpdrawShape({ ...frameConfig, name: "Pricing", translateX: 70, translateY: -110, width: 200, height: 200 }),
   ];
 }
 
 export function TitlebarStylingPage() {
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ objects: createFrames() }),
+    new UpdrawWorkspace({ objects: createFrames() }),
   ]);
 
   return (
     <div style={hostStyle}>
-      <KritzelEditor
+      <UpdrawEditor
         editorId="titlebar-styling"
         theme="light"
         themes={themes}

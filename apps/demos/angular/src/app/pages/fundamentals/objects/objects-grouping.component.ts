@@ -5,11 +5,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  KritzelEditor,
-  KritzelBaseObject,
-  KritzelGroup,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawEditor,
+  UpdrawBaseObject,
+  UpdrawGroup,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import {
@@ -21,7 +21,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-objects-grouping',
-  imports: [KritzelEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
+  imports: [UpdrawEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -31,7 +31,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       <app-info-panel-toggle [panel]="infoPanel"></app-info-panel-toggle>
     </app-toolbar>
     <div class="content">
-      <kritzel-editor
+      <updraw-editor
         editorId="objects-grouping"
         [theme]="'light'"
         [themes]="themes"
@@ -42,7 +42,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady()"
         (objectsSelectionChange)="onObjectsSelectionChange()"
-      ></kritzel-editor>
+      ></updraw-editor>
       <app-info-panel #infoPanel [hasToolbarToggle]="true">
         <h3>Objects</h3>
         <ul>
@@ -69,7 +69,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         min-height: 0;
         position: relative;
       }
-      kritzel-editor {
+      updraw-editor {
         flex: 1;
       }
       app-info-panel {
@@ -99,13 +99,13 @@ import { createSeedObjects } from '../../../const/seed-objects';
   ],
 })
 export class ObjectsGroupingComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
 
-  objects = signal<KritzelBaseObject[]>([]);
+  objects = signal<UpdrawBaseObject[]>([]);
 
   async onReady() {
     await this.refreshObjects();
@@ -128,7 +128,7 @@ export class ObjectsGroupingComponent {
 
   async ungroupSelected() {
     const selected = await this.editor.getSelectedObjects();
-    const groups = selected.filter((object): object is KritzelGroup => object.__class__ === 'KritzelGroup');
+    const groups = selected.filter((object): object is UpdrawGroup => object.__class__ === 'UpdrawGroup');
     await this.editor.ungroup(groups);
     await this.refreshObjects();
   }

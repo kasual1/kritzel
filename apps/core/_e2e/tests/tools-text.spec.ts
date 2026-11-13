@@ -90,7 +90,7 @@ test.describe('Text tool', () => {
     // The text tool sets isEditing=true on the created text object.
     // Verify via the engine's core.store.activeText getter.
     const hasActiveText = await editorPage.page.evaluate(() => {
-      const engine = document.querySelector('kritzel-engine') as any;
+      const engine = document.querySelector('updraw-engine') as any;
       return engine?.core?.store?.activeText !== null;
     });
 
@@ -156,7 +156,7 @@ test.describe('Text tool', () => {
 
     // Verify the font family is still Courier New (not reverted to Arial)
     const updatedObj = await editorPage.page.evaluate(async (id) => {
-      const el = document.querySelector('kritzel-editor') as any;
+      const el = document.querySelector('updraw-editor') as any;
       const obj = await el.getObjectById(id);
       return { fontFamily: obj?.fontFamily };
     }, textObj.id);

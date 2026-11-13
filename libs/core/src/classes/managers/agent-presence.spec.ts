@@ -1,11 +1,11 @@
 import * as Y from 'yjs';
 import { Awareness, applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
-import { KritzelAgenticCursorManager } from './agentic-cursor.manager';
-import { KritzelAgenticActionManager } from './agentic-action.manager';
-import { KritzelAgentManager } from './agent.manager';
-import { KritzelAgentBroadcaster, AGENT_BROADCAST_INTERVAL_MS, AGENT_BROADCAST_MAX_IDS } from './agent-broadcast.manager';
-import { KritzelRemoteAgentManager } from './remote-agent.manager';
-import { KritzelAgent } from '../agent/agent.class';
+import { UpdrawAgenticCursorManager } from './agentic-cursor.manager';
+import { UpdrawAgenticActionManager } from './agentic-action.manager';
+import { UpdrawAgentManager } from './agent.manager';
+import { UpdrawAgentBroadcaster, AGENT_BROADCAST_INTERVAL_MS, AGENT_BROADCAST_MAX_IDS } from './agent-broadcast.manager';
+import { UpdrawRemoteAgentManager } from './remote-agent.manager';
+import { UpdrawAgent } from '../agent/agent.class';
 
 const flushMicrotasks = async () => {
   for (let i = 0; i < 10; i++) {
@@ -24,11 +24,11 @@ const createCore = () => {
       },
     },
   };
-  core.agenticCursorManager = new KritzelAgenticCursorManager(core);
-  core.agenticActionManager = new KritzelAgenticActionManager(core);
-  core.agentManager = new KritzelAgentManager(core);
-  core.agentBroadcaster = new KritzelAgentBroadcaster(core);
-  core.remoteAgentManager = new KritzelRemoteAgentManager(core);
+  core.agenticCursorManager = new UpdrawAgenticCursorManager(core);
+  core.agenticActionManager = new UpdrawAgenticActionManager(core);
+  core.agentManager = new UpdrawAgentManager(core);
+  core.agentBroadcaster = new UpdrawAgentBroadcaster(core);
+  core.remoteAgentManager = new UpdrawRemoteAgentManager(core);
   return { core, map };
 };
 
@@ -48,11 +48,11 @@ describe('agent presence', () => {
     jest.restoreAllMocks();
   });
 
-  describe('KritzelAgentBroadcaster', () => {
+  describe('UpdrawAgentBroadcaster', () => {
     it('sends added agents at once with what collaborators need', async () => {
       const { core, map } = createCore();
       core.agentBroadcaster.start();
-      core.agentManager.add(new KritzelAgent({ id: 'writer', name: 'Writer', color: '#7C3AED', avatarUrl: '/w.png', status: 'Drafting', position: { x: 10.04, y: 20 } }));
+      core.agentManager.add(new UpdrawAgent({ id: 'writer', name: 'Writer', color: '#7C3AED', avatarUrl: '/w.png', status: 'Drafting', position: { x: 10.04, y: 20 } }));
       await flushMicrotasks();
 
       expect(sentAgents(map)).toEqual([
@@ -78,8 +78,8 @@ describe('agent presence', () => {
     it('leaves out agents with broadcast off and removes them when it is turned off', async () => {
       const { core, map } = createCore();
       core.agentBroadcaster.start();
-      const shared = core.agentManager.add(new KritzelAgent({ id: 'shared', name: 'Shared' }));
-      core.agentManager.add(new KritzelAgent({ id: 'private', name: 'Private', broadcast: false }));
+      const shared = core.agentManager.add(new UpdrawAgent({ id: 'shared', name: 'Shared' }));
+      core.agentManager.add(new UpdrawAgent({ id: 'private', name: 'Private', broadcast: false }));
       await flushMicrotasks();
       expect(sentAgents(map).map((agent: { id: string }) => agent.id)).toEqual(['shared']);
 
@@ -92,7 +92,7 @@ describe('agent presence', () => {
     it('throttles motion to one update per interval and sends nothing while idle', async () => {
       const { core, map } = createCore();
       core.agentBroadcaster.start();
-      const agent = core.agentManager.add(new KritzelAgent({ id: 'a', name: 'A', position: { x: 0, y: 0 } }));
+      const agent = core.agentManager.add(new UpdrawAgent({ id: 'a', name: 'A', position: { x: 0, y: 0 } }));
       await flushMicrotasks();
       const afterAdd = map.setLocalAgents.mock.calls.length;
 
@@ -121,7 +121,7 @@ describe('agent presence', () => {
     it('caps statuses and object lists', async () => {
       const { core, map } = createCore();
       core.agentBroadcaster.start();
-      core.agentManager.add(new KritzelAgent({ id: 'a', name: 'A', status: 'x'.repeat(500) }));
+      core.agentManager.add(new UpdrawAgent({ id: 'a', name: 'A', status: 'x'.repeat(500) }));
       core.agenticCursorManager.setSelectedObjectIds('a', Array.from({ length: 200 }, (_, index) => `o${index}`));
       await flushMicrotasks();
       now += AGENT_BROADCAST_INTERVAL_MS;
@@ -136,7 +136,7 @@ describe('agent presence', () => {
     it('sends status changes through the throttle, but renames at once', async () => {
       const { core, map } = createCore();
       core.agentBroadcaster.start();
-      const agent = core.agentManager.add(new KritzelAgent({ id: 'a', name: 'A' }));
+      const agent = core.agentManager.add(new UpdrawAgent({ id: 'a', name: 'A' }));
       await flushMicrotasks();
       const afterAdd = map.setLocalAgents.mock.calls.length;
 
@@ -176,7 +176,7 @@ describe('agent presence', () => {
         contentToObjectLocal: (point: { x: number; y: number }) => point,
       });
       core.agentBroadcaster.start();
-      const agent = core.agentManager.add(new KritzelAgent({ id: 'player', name: 'Player', position: { objectId: 'frame', selector: '#play' } }));
+      const agent = core.agentManager.add(new UpdrawAgent({ id: 'player', name: 'Player', position: { objectId: 'frame', selector: '#play' } }));
       await flushMicrotasks();
 
       expect(agent.state.attachedTo).toEqual({ objectId: 'frame', selector: '#play', anchor: 'center', offset: { x: 0, y: 0 } });
@@ -186,7 +186,7 @@ describe('agent presence', () => {
     it('clears the field and sends again after a workspace switch', async () => {
       const { core, map } = createCore();
       core.agentBroadcaster.start();
-      core.agentManager.add(new KritzelAgent({ id: 'a', name: 'A' }));
+      core.agentManager.add(new UpdrawAgent({ id: 'a', name: 'A' }));
       await flushMicrotasks();
 
       core.agentBroadcaster.clear();
@@ -197,7 +197,7 @@ describe('agent presence', () => {
     });
   });
 
-  describe('KritzelRemoteAgentManager', () => {
+  describe('UpdrawRemoteAgentManager', () => {
     const remoteAgent = (overrides: Record<string, unknown> = {}) => ({
       id: 'writer',
       name: 'Writer',
@@ -349,7 +349,7 @@ describe('agent presence', () => {
     sender.core.agentBroadcaster.start();
     const receiver = createCore();
 
-    sender.core.agentManager.add(new KritzelAgent({ id: 'writer', name: 'Writer', status: 'Hi' }));
+    sender.core.agentManager.add(new UpdrawAgent({ id: 'writer', name: 'Writer', status: 'Hi' }));
     await flushMicrotasks();
     receiver.core.remoteAgentManager.handleAwarenessStates(awarenessB.getStates(), docB.clientID);
     expect(receiver.core.remoteAgentManager.getPresences()).toEqual([expect.objectContaining({ id: 'writer', status: 'Hi', isRemote: true, clientId: docA.clientID })]);

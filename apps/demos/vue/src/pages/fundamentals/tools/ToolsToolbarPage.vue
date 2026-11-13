@@ -1,38 +1,38 @@
 <script setup lang="ts">
 import {
-  KritzelBrushTool,
-  KritzelEditor,
-  KritzelSelectionTool,
-  KritzelTextTool,
-  KritzelWorkspace,
-  type KritzelToolbarItem,
-} from '@kritzel/vue-editor'
+  UpdrawBrushTool,
+  UpdrawEditor,
+  UpdrawSelectionTool,
+  UpdrawTextTool,
+  UpdrawWorkspace,
+  type UpdrawToolbarItem,
+} from '@updraw/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
 
-const toolbarItems: KritzelToolbarItem[] = [
+const toolbarItems: UpdrawToolbarItem[] = [
   {
     name: 'selection',
     type: 'tool',
-    tool: KritzelSelectionTool,
+    tool: UpdrawSelectionTool,
     icon: 'cursor',
   },
   {
     name: 'brush',
     type: 'tool',
-    tool: KritzelBrushTool,
+    tool: UpdrawBrushTool,
     icon: 'pen',
     isDefault: true,
   },
   {
     name: 'text',
     type: 'tool',
-    tool: KritzelTextTool,
+    tool: UpdrawTextTool,
     icon: 'type',
   },
   {
@@ -44,7 +44,7 @@ const toolbarItems: KritzelToolbarItem[] = [
 
 <template>
   <div :style="hostStyle">
-    <KritzelEditor
+    <UpdrawEditor
       editorId="tools-toolbar"
       theme="light"
       :themes="themes"

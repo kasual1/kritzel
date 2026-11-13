@@ -1,4 +1,4 @@
-# kritzel-menu-item
+# updraw-menu-item
 
 
 
@@ -9,39 +9,39 @@
 
 | Property | Attribute | Description | Type                    | Default     |
 | -------- | --------- | ----------- | ----------------------- | ----------- |
-| `item`   | --        |             | `IKritzelMenuItem<any>` | `undefined` |
-| `parent` | --        |             | `IKritzelMenuItem<any>` | `null`      |
+| `item`   | --        |             | `IUpdrawMenuItem<any>` | `undefined` |
+| `parent` | --        |             | `IUpdrawMenuItem<any>` | `null`      |
 
 
 ## Events
 
 | Event                 | Description | Type                                                |
 | --------------------- | ----------- | --------------------------------------------------- |
-| `itemCancel`          |             | `CustomEvent<IKritzelMenuItem<any>>`                |
-| `itemCloseChildMenu`  |             | `CustomEvent<IKritzelMenuItem<any>>`                |
-| `itemSave`            |             | `CustomEvent<IKritzelMenuItem<any>>`                |
-| `itemSelect`          |             | `CustomEvent<IKritzelMenuItemSelectEvent>`          |
-| `itemToggleChildMenu` |             | `CustomEvent<IKritzelMenuItemToggleChildMenuEvent>` |
+| `itemCancel`          |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
+| `itemCloseChildMenu`  |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
+| `itemSave`            |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
+| `itemSelect`          |             | `CustomEvent<IUpdrawMenuItemSelectEvent>`          |
+| `itemToggleChildMenu` |             | `CustomEvent<IUpdrawMenuItemToggleChildMenuEvent>` |
 
 
 ## Dependencies
 
 ### Used by
 
- - [kritzel-menu](../kritzel-menu)
+ - [updraw-menu](../updraw-menu)
 
 ### Depends on
 
-- kritzel-icon
-- [kritzel-portal](../kritzel-portal)
+- updraw-icon
+- [updraw-portal](../updraw-portal)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-menu-item --> kritzel-icon
-  kritzel-menu-item --> kritzel-portal
-  kritzel-menu --> kritzel-menu-item
-  style kritzel-menu-item fill:#f9f,stroke:#333,stroke-width:4px
+  updraw-menu-item --> updraw-icon
+  updraw-menu-item --> updraw-portal
+  updraw-menu --> updraw-menu-item
+  style updraw-menu-item fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

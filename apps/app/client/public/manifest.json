@@ -1,7 +1,7 @@
 {
-  "name": "Kritzel App",
-  "short_name": "Kritzel",
-  "description": "An infinite canvas drawing application showcasing the capabilities of the Kritzel library.",
+  "name": "Updraw App",
+  "short_name": "Updraw",
+  "description": "An infinite canvas drawing application showcasing the capabilities of the Updraw library.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

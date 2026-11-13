@@ -2,10 +2,10 @@
 
 ## Theming
 
-Kritzel theming is a `KritzelTheme` object of design tokens (mapped to `--kritzel-*` CSS variables). Two built-ins are exported: `lightTheme`, `darkTheme`.
+Updraw theming is an `UpdrawTheme` object of design tokens (mapped to `--updraw-*` CSS variables). Two built-ins are exported: `lightTheme`, `darkTheme`.
 
 ```tsx
-<KritzelEditor theme="light" />           {/* built-ins work out of the box */}
+<UpdrawEditor theme="light" />           {/* built-ins work out of the box */}
 ```
 
 ### Custom themes — always extend a base theme
@@ -13,9 +13,9 @@ Kritzel theming is a `KritzelTheme` object of design tokens (mapped to `--kritze
 Spread a built-in theme and override sections; **give it a `name`, pass it via `themes` (an array), and select it by name with `theme`.** Define theme objects and the array at module scope (identity-stable):
 
 ```tsx
-import { lightTheme, darkTheme, type KritzelTheme } from '@kritzel/react-editor';
+import { lightTheme, darkTheme, type UpdrawTheme } from '@updraw/react-editor';
 
-export const brandLight: KritzelTheme = {
+export const brandLight: UpdrawTheme = {
   ...lightTheme,
   name: 'brand',
   global:  { ...lightTheme.global,  focusRingColor: 'rgba(8, 126, 164, 0.2)' },
@@ -35,7 +35,7 @@ export const brandLight: KritzelTheme = {
 const themes = [brandLight];
 
 // in the component:
-<KritzelEditor themes={themes} theme="brand" />
+<UpdrawEditor themes={themes} theme="brand" />
 ```
 
 Theme sections include: `global`, `engine` (canvas background), `checkerboard`, `toolbar` (toolbar), `selection`, `button`, `contextMenu`, `dialog`, `menu`, `moreMenu`, `dropdown`, `settings`, `tooltip`, `utilityPanel`, `loadingPlaceholder` (the object loading placeholder: `backgroundColor`, `borderRadius`, `glareColor`, `animationDuration`), `objectAppear` (the appear animation of objects added by app code and agents: `animationDuration` (`0s` turns it off), `animationEasing`, `distance`, `stagger`), and more — always spread the corresponding base section before overriding.
@@ -58,9 +58,9 @@ Supplying these **replaces** the defaults (the editor ships sensible defaults: p
 
 ```tsx
 import { useMemo, useRef } from 'react';
-import { KritzelEditor, type ContextMenuItem, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
+import { UpdrawEditor, type ContextMenuItem, type HTMLUpdrawEditorElement } from '@updraw/react-editor';
 
-const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
 
 const globalItems = useMemo<ContextMenuItem[]>(() => [
   {
@@ -85,7 +85,7 @@ const objectItems = useMemo<ContextMenuItem[]>(() => [
   { label: 'Delete', icon: 'delete', group: 'edit', action: async () => { await editorRef.current?.delete(); } },
 ], []);
 
-<KritzelEditor ref={editorRef} globalContextMenuItems={globalItems} objectContextMenuItems={objectItems} />
+<UpdrawEditor ref={editorRef} globalContextMenuItems={globalItems} objectContextMenuItems={objectItems} />
 ```
 
 `ContextMenuItem` shape:
@@ -93,7 +93,7 @@ const objectItems = useMemo<ContextMenuItem[]>(() => [
 | Field | Notes |
 |---|---|
 | `label` | Required display text |
-| `action(menu, objects)` | Sync or async; `menu` carries `x`, `y` (world coords), `objects` is the affected `KritzelBaseObject[]` |
+| `action(menu, objects)` | Sync or async; `menu` carries `x`, `y` (world coords), `objects` is the affected `UpdrawBaseObject[]` |
 | `disabled` | Boolean or (async) predicate `(menu, objects) => boolean` — item shown greyed out |
 | `visible` | Boolean or (async) predicate `(menu, objects) => boolean` — item hidden |
 | `icon` | Built-in icon name (extendable via `customSvgIcons`) |
@@ -112,18 +112,18 @@ On touch devices, the engine's `onLongpress` event (payload: `PointerEvent`) is 
 
 ## Object titlebars
 
-An optional bar above objects (Framer / Claude-design style). Its content and appearance are declared **once** with the `objectTitlebar` prop (on `KritzelEditor` and `KritzelEngine`) and are the same for every object. Which objects get a bar is decided by `hasTitlebar` in the `objectConfig` prop (see the object configuration section of objects.md), and each bar is titled by the object's `name`. Leaving `objectTitlebar` unset turns the feature off; without `objectConfig.hasTitlebar` no bar renders. Pass both props.
+An optional bar above objects (Framer / Claude-design style). Its content and appearance are declared **once** with the `objectTitlebar` prop (on `UpdrawEditor` and `UpdrawEngine`) and are the same for every object. Which objects get a bar is decided by `hasTitlebar` in the `objectConfig` prop (see the object configuration section of objects.md), and each bar is titled by the object's `name`. Leaving `objectTitlebar` unset turns the feature off; without `objectConfig.hasTitlebar` no bar renders. Pass both props.
 
 Define both configs at module scope (or `useMemo`) so their identity is stable, and handle buttons through `onObjectTitlebarAction` (see events.md):
 
 ```tsx
-import { KritzelEditor, type KritzelObjectConfig, type KritzelObjectTitlebarConfig } from '@kritzel/react-editor';
+import { UpdrawEditor, type UpdrawObjectConfig, type UpdrawObjectTitlebarConfig } from '@updraw/react-editor';
 
-const objectConfig: KritzelObjectConfig = {
-  hasTitlebar: object => object.__class__ === 'KritzelShape',   // without it no bar renders
+const objectConfig: UpdrawObjectConfig = {
+  hasTitlebar: object => object.__class__ === 'UpdrawShape',   // without it no bar renders
 };
 
-const objectTitlebar: KritzelObjectTitlebarConfig = {
+const objectTitlebar: UpdrawObjectTitlebarConfig = {
   left: [
     { id: 'preview', type: 'button', icon: 'play', variant: 'filled', tooltip: 'Preview' },
     { id: 'title', type: 'title' },
@@ -132,32 +132,32 @@ const objectTitlebar: KritzelObjectTitlebarConfig = {
   right: [{ id: 'add-breakpoint', type: 'button', icon: 'plus', tooltip: 'Add breakpoint' }],
 };
 
-<KritzelEditor
+<UpdrawEditor
   objectConfig={objectConfig}
   objectTitlebar={objectTitlebar}
   onObjectTitlebarAction={e => setLastAction(e.detail.elementId)}
 />
 ```
 
-`KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made preset (type icon + title); pass it as the titlebar config (or spread it to change options) and pick the objects with `objectConfig`, e.g. `{ hasTitlebar: object => object.__class__ === 'KritzelGroup' }`.
+`UPDRAW_DEFAULT_OBJECT_TITLEBAR` is a ready-made preset (type icon + title); pass it as the titlebar config (or spread it to change options) and pick the objects with `objectConfig`, e.g. `{ hasTitlebar: object => object.__class__ === 'UpdrawGroup' }`.
 
 `objectConfig.hasTitlebar` is `true` / `false` for every object, or a plain function `(object) => boolean` that receives just the object:
 
 - **Default: no bars.** Without `objectConfig.hasTitlebar` nothing renders, and the engine logs a one-time `console.info` hint while `objectTitlebar` is set. `hasTitlebar: true` gives every top-level object a bar.
 - Called **synchronously for every visible top-level object on every render**: keep it pure and cheap. Only `true` shows a bar; a non-boolean result, a throw or a returned promise counts as `false` (a throw or promise warns once).
 - Grouped children are never passed in and never get their own bar; the group is passed instead and gets a bar only if `hasTitlebar` returns `true` for it (no special group rules; its children are not asked).
-- Check types with `object.__class__` (`'KritzelGroup'`, `'KritzelShape'`, `'KritzelText'`, `'KritzelImage'`, `'KritzelPath'`, `'KritzelLine'`, `'KritzelIframeObject'`, `'KritzelDynamicObject'`). `instanceof` against the classes your Kritzel package exports works too.
-- To inspect a group's children, read `childIds` (cheap) rather than the `children` getter (looks them up in the store). The function receives a `KritzelBaseObject`, so cast after the `__class__` check, e.g. `(object as KritzelGroup).childIds`.
+- Check types with `object.__class__` (`'UpdrawGroup'`, `'UpdrawShape'`, `'UpdrawText'`, `'UpdrawImage'`, `'UpdrawPath'`, `'UpdrawLine'`, `'UpdrawIframeObject'`, `'UpdrawDynamicObject'`). `instanceof` against the classes your Updraw package exports works too.
+- To inspect a group's children, read `childIds` (cheap) rather than the `children` getter (looks them up in the store). The function receives an `UpdrawBaseObject`, so cast after the `__class__` check, e.g. `(object as UpdrawGroup).childIds`.
 
 `hasTitlebar` is only re-evaluated on renders, and a **new** `objectConfig` object triggers one. To toggle bars per object at runtime, keep the ids in state, read them inside `hasTitlebar` and derive `objectConfig` with `useMemo` (replace the `Set`, never mutate it); the titlebar config itself stays constant. The ids live in the app, so they are neither persisted nor synced:
 
 ```tsx
 import { useMemo, useState } from 'react';
-import { KRITZEL_DEFAULT_OBJECT_TITLEBAR, KritzelEditor, type KritzelObjectConfig } from '@kritzel/react-editor';
+import { UPDRAW_DEFAULT_OBJECT_TITLEBAR, UpdrawEditor, type UpdrawObjectConfig } from '@updraw/react-editor';
 
 const [titlebarIds, setTitlebarIds] = useState(() => new Set<string>());
 
-const objectConfig = useMemo<KritzelObjectConfig>(
+const objectConfig = useMemo<UpdrawObjectConfig>(
   () => ({ hasTitlebar: object => titlebarIds.has(object.id) }),
   [titlebarIds],
 );
@@ -168,7 +168,7 @@ const toggleTitlebar = (id: string) => setTitlebarIds(ids => {
   return next;
 });
 
-<KritzelEditor objectConfig={objectConfig} objectTitlebar={KRITZEL_DEFAULT_OBJECT_TITLEBAR} />
+<UpdrawEditor objectConfig={objectConfig} objectTitlebar={UPDRAW_DEFAULT_OBJECT_TITLEBAR} />
 ```
 
 Elements — every element needs a stable `id` (used in events and as `data-element-id`) and accepts `isVisible`, `showWhen` (`'always'` | `'active'` | `'inactive'`), `minBarWidth` (screen px) and `part`:
@@ -179,7 +179,7 @@ Elements — every element needs a stable `id` (used in events and as `data-elem
 | `text` | `text`, `tone?` (`'default'` \| `'muted'` \| `'strong'`) | Arbitrary text, e.g. a size |
 | `icon` | `icon` | Registry icon name (`customSvgIcons` extend it) |
 | `button` | `icon?`, `label?`, `tooltip?`, `variant?` (`'ghost'` \| `'filled'` \| `'outlined'`), `isDisabled?`, `isPressed?`, `action?(context, event)` | Never selects or drags; always emits `objectTitlebarAction`. `label` / `tooltip` take term keys or plain strings |
-| `menu` | `icon?`, `label?`, `tooltip?`, `variant?`, `isDisabled?`, `items` (`KritzelTitlebarMenuItem[]` or a function of the context) | Button that opens a menu (rendered by the editor). Menu items: `id`, `label` (term key or string), `icon?`, `isVisible?`, `isDisabled?`, `action?(context, menuItem)`. Selecting one closes the menu and emits `objectTitlebarAction` with `elementId` = menu id and `menuItemId`. Closes on camera move, when the object is selected or deselected, when its titlebar is hidden, on renaming, or when the context menu opens |
+| `menu` | `icon?`, `label?`, `tooltip?`, `variant?`, `isDisabled?`, `items` (`UpdrawTitlebarMenuItem[]` or a function of the context) | Button that opens a menu (rendered by the editor). Menu items: `id`, `label` (term key or string), `icon?`, `isVisible?`, `isDisabled?`, `action?(context, menuItem)`. Selecting one closes the menu and emits `objectTitlebarAction` with `elementId` = menu id and `menuItemId`. Closes on camera move, when the object is selected or deselected, when its titlebar is hidden, on renaming, or when the context menu opens |
 | `spacer` / `separator` | — | Flexible space / thin divider |
 
 Any value may be a function `(context) => value`. It runs **synchronously on every render**: keep it pure and cheap; promises are not supported (they resolve to the fallback and warn once). The context has `object`, `objectType`, `children`, `isActive`, `title`, `size` (world units), `contentSize` (`object.width` / `height`, e.g. a frame's `1200`), `barWidth` (screen px) and `t(key, vars)`.
@@ -190,12 +190,12 @@ Behavior: the bar is active (highlighted) while its object, or something inside 
 
 ### Titlebar theme tokens
 
-The `titlebar` theme section maps to `--kritzel-titlebar-<key-kebab>` variables: `height` and `offset` (px values only), `paddingX`, `gap`, `borderRadius`, `fontFamily`, `fontSize`, `fontWeight`, `titleFontWeight`, `backgroundColor`, `hoverBackgroundColor`, `activeBackgroundColor`, `border`, `activeBorder`, `boxShadow`, `activeBoxShadow`, `textColor`, `activeTextColor`, `mutedTextColor`, `activeMutedTextColor`, `inputBackgroundColor`, `inputPadding`, `selectionBackgroundColor`, `selectionColor`, `iconSize`, `iconColor`, `activeIconColor`, `buttonSize`, `buttonBorderRadius`, `buttonHoverBackgroundColor`, `buttonPressedBackgroundColor`, `buttonFilledBackgroundColor`, `activeButtonFilledBackgroundColor`, `buttonFilledColor`, `buttonOutlineColor`, `focusRing`, `transition`.
+The `titlebar` theme section maps to `--updraw-titlebar-<key-kebab>` variables: `height` and `offset` (px values only), `paddingX`, `gap`, `borderRadius`, `fontFamily`, `fontSize`, `fontWeight`, `titleFontWeight`, `backgroundColor`, `hoverBackgroundColor`, `activeBackgroundColor`, `border`, `activeBorder`, `boxShadow`, `activeBoxShadow`, `textColor`, `activeTextColor`, `mutedTextColor`, `activeMutedTextColor`, `inputBackgroundColor`, `inputPadding`, `selectionBackgroundColor`, `selectionColor`, `iconSize`, `iconColor`, `activeIconColor`, `buttonSize`, `buttonBorderRadius`, `buttonHoverBackgroundColor`, `buttonPressedBackgroundColor`, `buttonFilledBackgroundColor`, `activeButtonFilledBackgroundColor`, `buttonFilledColor`, `buttonOutlineColor`, `focusRing`, `transition`.
 
 `themes` **replaces** the theme registry (no deep merge), so spread both the base theme and its `titlebar` section, keep the names, and register the light and dark variants. A transparent "Claude design" bar sitting close to the object:
 
 ```tsx
-import { darkTheme, lightTheme, type KritzelTheme } from '@kritzel/react-editor';
+import { darkTheme, lightTheme, type UpdrawTheme } from '@updraw/react-editor';
 
 const transparentTitlebar = {
   backgroundColor: 'transparent',
@@ -205,23 +205,23 @@ const transparentTitlebar = {
   paddingX: '0',
 };
 
-const themes: KritzelTheme[] = [
+const themes: UpdrawTheme[] = [
   { ...lightTheme, titlebar: { ...lightTheme.titlebar, ...transparentTitlebar } },
   { ...darkTheme, titlebar: { ...darkTheme.titlebar, ...transparentTitlebar } },
 ];
 
-<KritzelEditor themes={themes} theme="light" objectTitlebar={objectTitlebar} />
+<UpdrawEditor themes={themes} theme="light" objectTitlebar={objectTitlebar} />
 ```
 
 ### Styling with `::part()`
 
-The menu a titlebar `menu` element opens is themed by the `titlebarMenu` section (`--kritzel-titlebar-menu-*`): `backgroundColor`, `border`, `borderRadius`, `boxShadow`, `fontFamily`, `gap`, `itemBorderRadius`, `itemColor`, `itemFontSize`, `itemHeight`, `itemHoverBackgroundColor`, `itemPadding`, `maxWidth`, `minWidth`, `padding`. Its defaults match the context menu (4px padding, 2px gap, 32px items).
+The menu a titlebar `menu` element opens is themed by the `titlebarMenu` section (`--updraw-titlebar-menu-*`): `backgroundColor`, `border`, `borderRadius`, `boxShadow`, `fontFamily`, `gap`, `itemBorderRadius`, `itemColor`, `itemFontSize`, `itemHeight`, `itemHoverBackgroundColor`, `itemPadding`, `maxWidth`, `minWidth`, `padding`. Its defaults match the context menu (4px padding, 2px gap, 32px items).
 
-For anything tokens do not cover, target parts on the engine from a global stylesheet (works under `KritzelEditor`, which renders the engine in light DOM): `titlebar`, `titlebar-active`, `titlebar-inactive`, `titlebar-left`, `titlebar-center`, `titlebar-right`, `titlebar-title`, `titlebar-title-input`, `titlebar-text`, `titlebar-icon`, `titlebar-button` (buttons and menu buttons), `titlebar-button-pressed` (also menu buttons of open menus), `titlebar-menu-button`, `titlebar-separator`, plus any element's own `part`.
+For anything tokens do not cover, target parts on the engine from a global stylesheet (works under `UpdrawEditor`, which renders the engine in light DOM): `titlebar`, `titlebar-active`, `titlebar-inactive`, `titlebar-left`, `titlebar-center`, `titlebar-right`, `titlebar-title`, `titlebar-title-input`, `titlebar-text`, `titlebar-icon`, `titlebar-button` (buttons and menu buttons), `titlebar-button-pressed` (also menu buttons of open menus), `titlebar-menu-button`, `titlebar-separator`, plus any element's own `part`.
 
 ```css
-kritzel-engine::part(titlebar-active) { box-shadow: 0 0 0 1px #087ea4; }
-kritzel-engine::part(titlebar-button) { border-radius: 999px; }
+updraw-engine::part(titlebar-active) { box-shadow: 0 0 0 1px #087ea4; }
+updraw-engine::part(titlebar-button) { border-radius: 999px; }
 ```
 
 Runnable demos: `/fundamentals/controls/titlebar-configuration` and `/fundamentals/controls/titlebar-styling`.

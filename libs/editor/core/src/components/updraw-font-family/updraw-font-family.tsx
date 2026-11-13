@@ -7,11 +7,11 @@ export interface FontOption {
 }
 
 @Component({
-  tag: 'kritzel-font-family',
-  styleUrl: 'kritzel-font-family.css',
+  tag: 'updraw-font-family',
+  styleUrl: 'updraw-font-family.css',
   shadow: true,
 })
-export class KritzelFontFamily {
+export class UpdrawFontFamily {
   @Prop() fontOptions: FontOption[] = [];
 
   @Prop({ mutable: true }) selectedFontFamily: string;
@@ -61,13 +61,13 @@ export class KritzelFontFamily {
 
     return (
       <Host>
-        <kritzel-dropdown
+        <updraw-dropdown
           options={dropdownOptions}
           value={this.selectedFontFamily}
           onValueChanged={this.handleDropdownValueChange}
           selectStyles={{ fontFamily: selectedFontFamily }}
         >
-        </kritzel-dropdown>
+        </updraw-dropdown>
       </Host>
     );
   }

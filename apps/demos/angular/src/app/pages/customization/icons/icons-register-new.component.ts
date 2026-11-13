@@ -1,22 +1,22 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
   ContextMenuItem,
-  KritzelBrushTool,
-  KritzelEditor,
-  KritzelSelectionTool,
-  KritzelToolbarItem,
-  KritzelWorkspace,
-} from '@kritzel/angular-editor';
+  UpdrawBrushTool,
+  UpdrawEditor,
+  UpdrawSelectionTool,
+  UpdrawToolbarItem,
+  UpdrawWorkspace,
+} from '@updraw/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-icons-register-new',
-  imports: [KritzelEditor],
+  imports: [UpdrawEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor
+    <updraw-editor
       editorId="icons-register-new"
       [customSvgIcons]="customSvgIcons"
       [toolbarItems]="toolbarItems"
@@ -29,7 +29,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady()"
-    ></kritzel-editor>
+    ></updraw-editor>
   `,
   styles: [
     `
@@ -37,7 +37,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         display: block;
         height: 100%;
       }
-      kritzel-editor {
+      updraw-editor {
         display: block;
         height: 100%;
       }
@@ -45,11 +45,11 @@ import { createSeedObjects } from '../../../const/seed-objects';
   ],
 })
 export class IconsRegisterNewComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
   
   customSvgIcons = {
     alien:
@@ -60,18 +60,18 @@ export class IconsRegisterNewComponent {
     { label: 'Alien icon', icon: 'alien', action: () => undefined },
   ];
 
-  toolbarItems: KritzelToolbarItem[] = [
+  toolbarItems: UpdrawToolbarItem[] = [
     {
       name: 'select',
       type: 'tool',
-      tool: KritzelSelectionTool,
+      tool: UpdrawSelectionTool,
       icon: 'cursor',
       isDefault: true,
     },
     {
       name: 'brush',
       type: 'tool',
-      tool: KritzelBrushTool,
+      tool: UpdrawBrushTool,
       icon: 'pen',
       config: {
         color: { light: '#dd0031', dark: '#ff5b79', label: 'Angular Red' },

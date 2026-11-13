@@ -1,4 +1,4 @@
-kritzel-editor{
+updraw-editor{
   display: flex;
   margin: 0;
   position: relative;
@@ -25,13 +25,13 @@ kritzel-editor{
   inset: 0;
 }
 
-.editor-content > kritzel-engine {
+.editor-content > updraw-engine {
   position: absolute;
   inset: 0;
   z-index: 0;
 }
 
-kritzel-toolbar {
+updraw-toolbar {
   position: absolute;
   z-index: 2;
   left: 0;
@@ -39,29 +39,29 @@ kritzel-toolbar {
   margin-inline: auto;
   width: max-content;
   max-width: calc(100% - 16px);
-  bottom: var(--kritzel-editor-toolbar-bottom, 14px);
-  transition: transform var(--kritzel-editor-toolbar-transition-duration, 0.1s) var(--kritzel-editor-toolbar-transition, ease-in-out);
+  bottom: var(--updraw-editor-toolbar-bottom, 14px);
+  transition: transform var(--updraw-editor-toolbar-transition-duration, 0.1s) var(--updraw-editor-toolbar-transition, ease-in-out);
 }
 
-kritzel-toolbar.keyboard-open {
-  transform: var(--kritzel-editor-toolbar-transform, translateY(300%));
+updraw-toolbar.keyboard-open {
+  transform: var(--updraw-editor-toolbar-transform, translateY(300%));
 }
 
-kritzel-chat-box {
+updraw-chat-box {
   position: absolute;
   z-index: 2;
   left: 0;
   right: 0;
   margin-inline: auto;
   max-width: calc(100% - 16px);
-  bottom: var(--kritzel-editor-toolbar-bottom, 14px);
+  bottom: var(--updraw-editor-toolbar-bottom, 14px);
 }
 
 .top-left-buttons {
   position: absolute;
   z-index: 2;
-  top: var(--kritzel-editor-top-left-buttons-top, 14px);
-  left: var(--kritzel-editor-top-left-buttons-left, 14px);
+  top: var(--updraw-editor-top-left-buttons-top, 14px);
+  left: var(--updraw-editor-top-left-buttons-left, 14px);
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -70,10 +70,10 @@ kritzel-chat-box {
 
 .top-center-notification-layer {
   position: absolute;
-  top: var(--kritzel-editor-top-center-notification-top, 14px);
+  top: var(--updraw-editor-top-center-notification-top, 14px);
   left: 0;
   right: 0;
-  z-index: var(--kritzel-editor-top-center-notification-z-index, 10001);
+  z-index: var(--updraw-editor-top-center-notification-z-index, 10001);
   display: flex;
   justify-content: center;
   pointer-events: none;
@@ -82,16 +82,16 @@ kritzel-chat-box {
 .top-center-notification-container {
   width: min(90vw, 420px);
   pointer-events: auto;
-  animation: kritzel-notification-slide-in var(--kritzel-editor-notification-animation-duration, 220ms)
-    var(--kritzel-editor-notification-animation-easing, cubic-bezier(0.22, 1, 0.36, 1));
+  animation: updraw-notification-slide-in var(--updraw-editor-notification-animation-duration, 220ms)
+    var(--updraw-editor-notification-animation-easing, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 .top-center-notification-container.is-dismissing {
-  animation: kritzel-notification-fade-out var(--kritzel-editor-notification-dismiss-animation-duration, 180ms)
-    var(--kritzel-editor-notification-dismiss-animation-easing, ease-in) forwards;
+  animation: updraw-notification-fade-out var(--updraw-editor-notification-dismiss-animation-duration, 180ms)
+    var(--updraw-editor-notification-dismiss-animation-easing, ease-in) forwards;
 }
 
-@keyframes kritzel-notification-slide-in {
+@keyframes updraw-notification-slide-in {
   from {
     opacity: 0;
     transform: translateY(-10px);
@@ -103,7 +103,7 @@ kritzel-chat-box {
   }
 }
 
-@keyframes kritzel-notification-fade-out {
+@keyframes updraw-notification-fade-out {
   from {
     opacity: 1;
     transform: translateY(0);
@@ -124,8 +124,8 @@ kritzel-chat-box {
 .top-right-buttons {
   position: absolute;
   z-index: 2;
-  top: var(--kritzel-editor-top-right-buttons-top, 14px);
-  right: var(--kritzel-editor-top-right-buttons-right, 14px);
+  top: var(--updraw-editor-top-right-buttons-top, 14px);
+  right: var(--updraw-editor-top-right-buttons-right, 14px);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -134,16 +134,16 @@ kritzel-chat-box {
 .bottom-left-buttons {
   position: absolute;
   z-index: 2;
-  left: var(--kritzel-editor-top-left-buttons-left, 14px);
-  bottom: var(--kritzel-editor-toolbar-bottom, 14px);
+  left: var(--updraw-editor-top-left-buttons-left, 14px);
+  bottom: var(--updraw-editor-toolbar-bottom, 14px);
   display: flex;
   align-items: flex-end;
   pointer-events: none;
-  transition: transform var(--kritzel-editor-toolbar-transition-duration, 0.1s) var(--kritzel-editor-toolbar-transition, ease-in-out);
+  transition: transform var(--updraw-editor-toolbar-transition-duration, 0.1s) var(--updraw-editor-toolbar-transition, ease-in-out);
 }
 
 .bottom-left-buttons.keyboard-open {
-  transform: var(--kritzel-editor-toolbar-transform, translateY(300%));
+  transform: var(--updraw-editor-toolbar-transform, translateY(300%));
 }
 
 /* Hide the zoom panel when the editor container is narrow. */
@@ -160,11 +160,11 @@ kritzel-chat-box {
   width: 50px;
   height: 50px;
   padding: 0;
-  border: var(--kritzel-split-button-border, 1px solid #ebebeb);
-  border-radius: var(--kritzel-split-button-border-radius, 12px);
-  background-color: var(--kritzel-split-button-background-color, #ffffff);
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
-  box-shadow: var(--kritzel-split-button-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  border: var(--updraw-split-button-border, 1px solid #ebebeb);
+  border-radius: var(--updraw-split-button-border-radius, 12px);
+  background-color: var(--updraw-split-button-background-color, #ffffff);
+  cursor: var(--updraw-global-pointer-cursor, pointer);
+  box-shadow: var(--updraw-split-button-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
   transition: background-color 150ms ease;
   -webkit-tap-highlight-color: transparent;
 }

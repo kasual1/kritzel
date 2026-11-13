@@ -1,23 +1,23 @@
 import {
-  KRITZEL_CHAT_PROTOCOL_VERSION,
-  type KritzelChatMessage,
-  type KritzelChatPart,
-  type KritzelChatRequest,
-  type KritzelChatResponse,
-  type KritzelChatStopReason,
-  type KritzelChatStreamEvent,
-  type KritzelChatToolCallPart,
-  type KritzelChatTransport,
+  UPDRAW_CHAT_PROTOCOL_VERSION,
+  type UpdrawChatMessage,
+  type UpdrawChatPart,
+  type UpdrawChatRequest,
+  type UpdrawChatResponse,
+  type UpdrawChatStopReason,
+  type UpdrawChatStreamEvent,
+  type UpdrawChatToolCallPart,
+  type UpdrawChatTransport,
 } from '../../interfaces/chat-session.interface';
 
 /** A tool call in a script; the ID is generated when left out. */
-export type KritzelScriptedToolCall = { tool: string; input?: Record<string, unknown>; id?: string };
+export type UpdrawScriptedToolCall = { tool: string; input?: Record<string, unknown>; id?: string };
 
 /** One scripted answer: text, tool calls and parts in any mix. */
-export interface KritzelScriptedAnswer {
+export interface UpdrawScriptedAnswer {
   text?: string;
-  toolCalls?: KritzelScriptedToolCall[];
-  parts?: KritzelChatPart[];
+  toolCalls?: UpdrawScriptedToolCall[];
+  parts?: UpdrawChatPart[];
   /** Overrides the transport's `delayMs` for this answer. */
   delayMs?: number;
 }
@@ -26,10 +26,10 @@ export interface KritzelScriptedAnswer {
  * A scripted step: a text answer, an answer object, or a function of the request (e.g. to answer the ID of an
  * object created by an earlier tool call, found in the request's messages).
  */
-export type KritzelScriptedStep = string | KritzelScriptedAnswer | ((request: KritzelChatRequest, index: number) => string | KritzelScriptedAnswer);
+export type UpdrawScriptedStep = string | UpdrawScriptedAnswer | ((request: UpdrawChatRequest, index: number) => string | UpdrawScriptedAnswer);
 
 /** Options of `createScriptedTransport()`. */
-export interface KritzelScriptedTransportOptions {
+export interface UpdrawScriptedTransportOptions {
   /** How long each answer takes, like a model thinking. Defaults to 0. */
   delayMs?: number;
   /**
@@ -47,14 +47,14 @@ export interface KritzelScriptedTransportOptions {
  * answered with the last step. With a function, the script decides per request.
  */
 export function createScriptedTransport(
-  steps: KritzelScriptedStep[] | ((request: KritzelChatRequest, index: number) => string | KritzelScriptedAnswer),
-  options: KritzelScriptedTransportOptions = {},
-): KritzelChatTransport {
+  steps: UpdrawScriptedStep[] | ((request: UpdrawChatRequest, index: number) => string | UpdrawScriptedAnswer),
+  options: UpdrawScriptedTransportOptions = {},
+): UpdrawChatTransport {
   let index = 0;
   let callCount = 0;
   return async (request, { signal }) => {
     const current = index++;
-    let step: KritzelScriptedStep | undefined;
+    let step: UpdrawScriptedStep | undefined;
     if (typeof steps === 'function') {
       step = steps;
     } else {
@@ -64,24 +64,24 @@ export function createScriptedTransport(
       step = steps[Math.min(current, steps.length - 1)];
     }
     const answer = typeof step === 'function' ? step(request, current) : step;
-    const resolved: KritzelScriptedAnswer = typeof answer === 'string' ? { text: answer } : answer;
+    const resolved: UpdrawScriptedAnswer = typeof answer === 'string' ? { text: answer } : answer;
     await delay(resolved.delayMs ?? options.delayMs ?? 0, signal);
 
-    const calls = (resolved.toolCalls ?? []).map<KritzelChatToolCallPart>(call => ({
+    const calls = (resolved.toolCalls ?? []).map<UpdrawChatToolCallPart>(call => ({
       type: 'tool-call',
       id: call.id ?? `scripted-${++callCount}`,
       name: call.tool,
       input: call.input ?? {},
     }));
     const extra = resolved.parts ?? [];
-    const parts: KritzelChatPart[] = [...(resolved.text ? [{ type: 'text' as const, text: resolved.text }] : []), ...calls, ...extra];
-    const stopReason: KritzelChatStopReason = parts.some(part => part.type === 'tool-call') ? 'tool-calls' : 'end';
+    const parts: UpdrawChatPart[] = [...(resolved.text ? [{ type: 'text' as const, text: resolved.text }] : []), ...calls, ...extra];
+    const stopReason: UpdrawChatStopReason = parts.some(part => part.type === 'tool-call') ? 'tool-calls' : 'end';
     if (options.stream) {
       const { chunkSize = 16, chunkDelayMs = 0 } = options.stream === true ? {} : options.stream;
       return streamAnswer(resolved.text ?? '', calls, extra, stopReason, Math.max(1, Math.floor(chunkSize)), chunkDelayMs, signal);
     }
-    const message: KritzelChatMessage = { role: 'assistant', parts };
-    const response: KritzelChatResponse = { version: KRITZEL_CHAT_PROTOCOL_VERSION, message, stopReason };
+    const message: UpdrawChatMessage = { role: 'assistant', parts };
+    const response: UpdrawChatResponse = { version: UPDRAW_CHAT_PROTOCOL_VERSION, message, stopReason };
     return response;
   };
 }
@@ -89,13 +89,13 @@ export function createScriptedTransport(
 /** One scripted answer as a stream of events, like a model writing it. */
 async function* streamAnswer(
   text: string,
-  calls: KritzelChatToolCallPart[],
-  extra: KritzelChatPart[],
-  stopReason: KritzelChatStopReason,
+  calls: UpdrawChatToolCallPart[],
+  extra: UpdrawChatPart[],
+  stopReason: UpdrawChatStopReason,
   chunkSize: number,
   chunkDelayMs: number,
   signal: AbortSignal,
-): AsyncGenerator<KritzelChatStreamEvent> {
+): AsyncGenerator<UpdrawChatStreamEvent> {
   for (const chunk of chunks(text, chunkSize)) {
     await delay(chunkDelayMs, signal);
     yield { type: 'text-delta', text: chunk };

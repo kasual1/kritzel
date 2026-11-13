@@ -1,9 +1,9 @@
-import { KritzelLocale } from '../interfaces/localization.interface';
+import { UpdrawLocale } from '../interfaces/localization.interface';
 
 /**
  * Built-in Dutch locale.
  */
-export const NL_LOCALE: KritzelLocale = {
+export const NL_LOCALE: UpdrawLocale = {
   code: 'nl',
   label: 'Nederlands',
   terms: {
@@ -76,7 +76,7 @@ export const NL_LOCALE: KritzelLocale = {
     'settings.developer.showMigrationInfo.label': 'Migratie-informatie tonen',
     'settings.developer.showMigrationInfo.description': 'Toont foutopsporingsinformatie over gegevensmigraties.',
     'settings.about.title': 'Over',
-    'settings.about.description': 'Kritzel - Een tekenapplicatie',
+    'settings.about.description': 'Updraw - Een tekenapplicatie',
 
     // Export dialog
     'export.dialogTitle': 'Exporteren',
@@ -134,7 +134,7 @@ export const NL_LOCALE: KritzelLocale = {
     'moreMenu.ariaLabel': 'Meer opties',
 
     // Watermark
-    'watermark.poweredBy': 'Mogelijk gemaakt door Kritzel',
+    'watermark.poweredBy': 'Mogelijk gemaakt door Updraw',
 
     // Object type labels
     'objectType.shape': 'Vorm',

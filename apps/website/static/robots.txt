@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kritzel.io/sitemap.xml
+Sitemap: https://updraw.io/sitemap.xml
