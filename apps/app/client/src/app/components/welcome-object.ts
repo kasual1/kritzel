@@ -1,5 +1,7 @@
 import { UpdrawDynamicObject } from '@updraw/angular-editor';
 
+const WELCOME_BOX_SHADOW = 'none';
+
 export function createWelcomeObject(): UpdrawDynamicObject {
   const element = document.createElement('div');
   element.style.width = '100%';
@@ -29,7 +31,35 @@ export function createWelcomeObject(): UpdrawDynamicObject {
     height: 480 * 72 / 253,
     translateX: 0,
     translateY: 0,
+    // Lettering drawn on the canvas, not a card: no shadow from the theme's dynamic object style.
+    boxShadow: WELCOME_BOX_SHADOW,
   });
+}
+
+/** Whether a dynamic object shows the Welcome lettering (and not another SVG with the same label). */
+function isWelcomeDrawing(object: Pick<UpdrawDynamicObject, 'element'>): boolean {
+  if (!(object.element instanceof HTMLElement) || !object.element.querySelector('svg[aria-label="Welcome"]')) {
+    return false;
+  }
+  return pathData(object.element) === pathData(createWelcomeObject().element);
+}
+
+function pathData(element: HTMLElement): string {
+  return Array.from(element.querySelectorAll('path'))
+    .map(path => path.getAttribute('d')?.trim()).join(' ').replace(/\s+/g, ' ');
+}
+
+/**
+ * Removes the box shadow from a Welcome object saved before it was created without one.
+ * @returns The update to apply, or null when the object isn't the Welcome or has no shadow.
+ */
+export function getWelcomeStyleUpdate(
+  object: UpdrawDynamicObject,
+): Partial<UpdrawDynamicObject> | null {
+  if (object.boxShadow === WELCOME_BOX_SHADOW || !isWelcomeDrawing(object)) {
+    return null;
+  }
+  return { boxShadow: WELCOME_BOX_SHADOW };
 }
 
 export function getWelcomeBoundsUpdate(
@@ -40,10 +70,7 @@ export function getWelcomeBoundsUpdate(
     return null;
   }
 
-  const replacement = createWelcomeObject().element;
-  const pathData = (element: HTMLElement) => Array.from(element.querySelectorAll('path'))
-    .map(path => path.getAttribute('d')?.trim()).join(' ').replace(/\s+/g, ' ');
-  if (pathData(object.element) !== pathData(replacement)) {
+  if (!isWelcomeDrawing(object)) {
     return null;
   }
 
