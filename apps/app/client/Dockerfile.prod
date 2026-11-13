@@ -1,14 +1,24 @@
-# Packages a client build made beforehand (the deploy workflow runs `npm run build -- --configuration=production`
-# in CI). Building Angular on the production instance is too slow for its resources.
+FROM node:24.18.0-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build -- --configuration=production
+RUN test -s dist/client/browser/ngsw-worker.js \
+	&& test -s dist/client/browser/ngsw.json \
+	&& node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('dist/client/browser/ngsw.json'));if(!m.assetGroups?.some(g=>g.name==='app'&&g.urls.includes('/index.html')))process.exit(1)"
+
 FROM nginx:alpine
 
 RUN rm -rf /usr/share/nginx/html/*
 RUN rm -f /etc/nginx/conf.d/*
 
-# Angular 17+ (application builder) outputs to dist/<project>/browser by default
-COPY dist/client/browser /usr/share/nginx/html
+COPY --from=builder /app/dist/client/browser /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-RUN test -s /usr/share/nginx/html/index.html && test -s /usr/share/nginx/html/ngsw-worker.js
+# Angular 17+ (application builder) outputs to dist/<project>/browser by default
 
 EXPOSE 80
 

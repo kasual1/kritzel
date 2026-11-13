@@ -51,29 +51,15 @@ jobs:
           fi
           echo "Using @kritzel/*@$VERSION"
 
-      # The client is built here rather than on the Lightsail instance: the Angular production build is too
-      # slow/memory-hungry for the small server. client/Dockerfile.prod only packages dist/client/browser.
       # Fails the workflow before anything is copied to the server if the published packages break the build.
       - name: Build client with published packages
         working-directory: apps/app/client
         run: |
           npm ci --no-audit --no-fund
           npm run build -- --configuration=production
-          test -s dist/client/browser/ngsw-worker.js
-          test -s dist/client/browser/ngsw.json
-          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('dist/client/browser/ngsw.json'));if(!m.assetGroups?.some(g=>g.name==='app'&&g.urls.includes('/index.html')))process.exit(1)"
 
-      - name: Remove local dependencies and caches before upload
-        run: rm -rf apps/app/client/node_modules apps/app/client/.angular
-
-      # scp only adds/overwrites files, so remove the previous build to avoid shipping stale hashed chunks.
-      - name: Remove previous client build on Lightsail
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ vars.LIGHTSAIL_HOST }}
-          username: ${{ vars.LIGHTSAIL_USER }}
-          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
-          script: rm -rf ~/kritzel-app/client/dist
+      - name: Remove local build output before upload
+        run: rm -rf apps/app/client/node_modules apps/app/client/dist apps/app/client/.angular
 
       # strip_components drops the "apps/app" prefix so the server keeps its existing
       # ~/kritzel-app layout (compose project name, .env and pgdata volume stay the same).

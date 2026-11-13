@@ -1,4 +1,7 @@
-# The image only packages the prebuilt client (see Dockerfile.prod).
-*
-!dist/client/browser
-!nginx.conf
+node_modules
+dist
+.angular
+coverage
+.git
+.vscode
+npm-debug.log*

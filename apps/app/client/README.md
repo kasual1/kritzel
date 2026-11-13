@@ -65,18 +65,15 @@ This will compile your project and store the build artifacts in the `dist/` dire
 
 The editor integration imports from `@kritzel/angular-editor`, including
 `provideKritzel` in the application configuration. After upgrading, commit both
-`package.json` and `package-lock.json`. The client is built in CI (the deploy
-workflow runs `npm ci` and `npm run build -- --configuration=production`), and
-`Dockerfile.prod` only packages `dist/client/browser` into nginx. The Angular
-build is not run on the production instance because it is too slow there.
+`package.json` and `package-lock.json`. The production Docker build uses `npm ci`
+to install the locked dependency versions; `.dockerignore` excludes host
+dependencies, Angular caches, and previous build output.
 
 The deployment SSH script stops on any failed command. A failed image build must
 not proceed to recreate containers using the previous image. Check the client
 build output in the GitHub Actions logs, not just the workflow status.
 
-To deploy manually, first build the client (`npm ci && npm run build -- --configuration=production`)
-and copy `dist/client/browser` to `client/dist/client/browser` on the server. Then run the
-following on the server, stopping if either command fails:
+To deploy manually on the server, stop if either command fails:
 
 ```bash
 set -eu
@@ -84,7 +81,9 @@ docker compose -f docker-compose.prod.yml build
 docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
 ```
 
-Run these commands from `~/kritzel-app` on the server.
+Run these commands from the repository root on the server. Docker invalidates
+the dependency layer when either package manifest changes; disabling the entire
+build cache should not normally be necessary.
 
 After a successful deployment, check the app in a fresh private browser session
 to distinguish an old server image from an old service-worker-controlled tab.
