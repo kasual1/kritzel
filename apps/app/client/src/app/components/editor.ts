@@ -18,7 +18,7 @@ import { AuthService } from '../services/auth.service';
 import { ConfigService } from '../services/config.service';
 import { UsersService } from '../services/users.service';
 import { IUser } from '../models/user.model';
-import { animateWelcomeObject, createWelcomeObject, getWelcomeBoundsUpdate } from './welcome-object';
+import { animateWelcomeObject, createWelcomeObject, getWelcomeBoundsUpdate, getWelcomeStyleUpdate } from './welcome-object';
 
 @Component({
   selector: 'app-editor',
@@ -175,9 +175,9 @@ export class Editor {
     const objects = await this.editor.getAllObjects();
     for (const object of objects) {
       if (object instanceof UpdrawDynamicObject) {
-        const update = getWelcomeBoundsUpdate(object);
-        if (update && !await this.editor.updateObject(object, update)) {
-          throw new Error('Cannot update the saved Welcome object bounds.');
+        const update = { ...getWelcomeBoundsUpdate(object), ...getWelcomeStyleUpdate(object) };
+        if (Object.keys(update).length > 0 && !await this.editor.updateObject(object, update)) {
+          throw new Error('Cannot update the saved Welcome object.');
         }
       }
       if (

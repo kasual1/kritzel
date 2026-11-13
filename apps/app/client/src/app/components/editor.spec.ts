@@ -11,7 +11,7 @@ import { AuthService } from '../services/auth.service';
 import { ConfigService } from '../services/config.service';
 import { UsersService } from '../services/users.service';
 import { Editor } from './editor';
-import { animateWelcomeObject, createWelcomeObject, getWelcomeBoundsUpdate } from './welcome-object';
+import { animateWelcomeObject, createWelcomeObject, getWelcomeBoundsUpdate, getWelcomeStyleUpdate } from './welcome-object';
 
 describe('Starter workspace', () => {
   const user = { id: 'starter-test-user', displayName: 'Guest', isGuest: true };
@@ -220,6 +220,36 @@ describe('Starter workspace', () => {
     const restored = new UpdrawDynamicObject({}).deserialize<UpdrawDynamicObject>(welcome.serialize());
     expect(restored.width).toBeCloseTo(welcome.width);
     expect(restored.element.querySelector('svg')?.getAttribute('viewBox')).toBe('18 29 253 72');
+  });
+
+  it('creates the Welcome without a box shadow', async () => {
+    await ready();
+    expect(objects).toHaveLength(1);
+    expect(objects[0].boxShadow).toBe('none');
+    const restored = new UpdrawDynamicObject({}).deserialize<UpdrawDynamicObject>(objects[0].serialize());
+    expect(restored.boxShadow).toBe('none');
+  });
+
+  it('removes the box shadow from a Welcome saved with one, once', async () => {
+    localStorage.setItem(key, 'true');
+    const welcome = createWelcomeObject();
+    welcome.boxShadow = undefined;
+    objects.push(welcome);
+
+    await ready();
+    await ready();
+
+    expect(component.editor.updateObject).toHaveBeenCalledTimes(1);
+    expect(component.editor.updateObject).toHaveBeenCalledWith(welcome, { boxShadow: 'none' });
+    expect(welcome.boxShadow).toBe('none');
+  });
+
+  it('keeps the shadow of other dynamic objects', () => {
+    const other = createWelcomeObject();
+    other.boxShadow = undefined;
+    other.element.querySelector('path')!.setAttribute('d', 'M 0 0 L 100 100');
+    expect(getWelcomeStyleUpdate(other)).toBeNull();
+    expect(getWelcomeStyleUpdate(new UpdrawDynamicObject({}))).toBeNull();
   });
 
   it('preserves a scaled and rotated saved drawing when cropping', () => {
