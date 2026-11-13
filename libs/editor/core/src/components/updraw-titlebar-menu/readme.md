@@ -12,8 +12,8 @@ context menu through the `--updraw-titlebar-menu-*` theme variables.
 
 ## Properties
 
-| Property | Attribute | Description                                                      | Type                        | Default |
-| -------- | --------- | ---------------------------------------------------------------- | --------------------------- | ------- |
+| Property | Attribute | Description                                                      | Type                       | Default |
+| -------- | --------- | ---------------------------------------------------------------- | -------------------------- | ------- |
 | `items`  | --        | Menu items of the open titlebar menu, as resolved by the engine. | `UpdrawTitlebarMenuItem[]` | `[]`    |
 
 

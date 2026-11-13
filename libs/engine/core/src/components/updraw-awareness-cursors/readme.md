@@ -7,11 +7,11 @@
 
 ## Properties
 
-| Property               | Attribute                | Description | Type          | Default     |
-| ---------------------- | ------------------------ | ----------- | ------------- | ----------- |
+| Property               | Attribute                | Description | Type         | Default     |
+| ---------------------- | ------------------------ | ----------- | ------------ | ----------- |
 | `core` _(required)_    | --                       |             | `UpdrawCore` | `undefined` |
-| `edgeIndicatorPadding` | `edge-indicator-padding` |             | `number`      | `8`         |
-| `showEdgeIndicators`   | `show-edge-indicators`   |             | `boolean`     | `true`      |
+| `edgeIndicatorPadding` | `edge-indicator-padding` |             | `number`     | `8`         |
+| `showEdgeIndicators`   | `show-edge-indicators`   |             | `boolean`    | `true`      |
 
 
 ## Dependencies

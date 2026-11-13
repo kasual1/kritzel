@@ -7,11 +7,11 @@
 
 ## Properties
 
-| Property | Attribute | Description                                                   | Type           | Default     |
-| -------- | --------- | ------------------------------------------------------------- | -------------- | ----------- |
-| `color`  | `color`   | Background color for initials fallback                        | `string`       | `undefined` |
-| `name`   | `name`    | Direct prop: user's display name (used for initials fallback) | `string`       | `undefined` |
-| `size`   | `size`    | Avatar diameter in pixels                                     | `number`       | `32`        |
+| Property | Attribute | Description                                                   | Type          | Default     |
+| -------- | --------- | ------------------------------------------------------------- | ------------- | ----------- |
+| `color`  | `color`   | Background color for initials fallback                        | `string`      | `undefined` |
+| `name`   | `name`    | Direct prop: user's display name (used for initials fallback) | `string`      | `undefined` |
+| `size`   | `size`    | Avatar diameter in pixels                                     | `number`      | `32`        |
 | `user`   | --        | Full user object. If provided, individual props are ignored.  | `IUpdrawUser` | `undefined` |
 
 

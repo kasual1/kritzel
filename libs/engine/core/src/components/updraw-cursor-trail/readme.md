@@ -7,8 +7,8 @@
 
 ## Properties
 
-| Property            | Attribute | Description | Type          | Default     |
-| ------------------- | --------- | ----------- | ------------- | ----------- |
+| Property            | Attribute | Description | Type         | Default     |
+| ------------------- | --------- | ----------- | ------------ | ----------- |
 | `core` _(required)_ | --        |             | `UpdrawCore` | `undefined` |
 
 

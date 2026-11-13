@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type UpdrawAgentsChangeEvent, type UpdrawBaseObject, type UpdrawBaseTool, type UpdrawContextMenuState, type UpdrawEngineCustomEvent, type UpdrawEngineState, type UpdrawNotification, type UpdrawObjectElementClickEvent, type UpdrawObjectElementHoverEvent, type UpdrawObjectElementPickEvent, type UpdrawObjectTitlebarActionEvent, type UpdrawObjectTitlebarMenuState, type UpdrawUndoState, type UpdrawViewportState, type UpdrawWorkspace, type ObjectsAddedEvent, type ObjectsInViewportChangeEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent } from "@updraw/engine";
+import { type ObjectsAddedEvent, type ObjectsInViewportChangeEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type UpdrawAgentsChangeEvent, type UpdrawBaseObject, type UpdrawBaseTool, type UpdrawContextMenuState, type UpdrawEngineCustomEvent, type UpdrawEngineState, type UpdrawNotification, type UpdrawObjectElementClickEvent, type UpdrawObjectElementHoverEvent, type UpdrawObjectElementPickEvent, type UpdrawObjectTitlebarActionEvent, type UpdrawObjectTitlebarMenuState, type UpdrawUndoState, type UpdrawViewportState, type UpdrawWorkspace } from "@updraw/engine";
 import type { Components } from "@updraw/engine/dist/components";
 import { UpdrawEngine as UpdrawEngineElement, defineCustomElement as defineUpdrawEngine } from "@updraw/engine/dist/components/updraw-engine.js";
 

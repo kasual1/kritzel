@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property  | Attribute | Description | Type                                             | Default     |
-| --------- | --------- | ----------- | ------------------------------------------------ | ----------- |
-| `items`   | --        |             | `ContextMenuItem[]`                              | `undefined` |
+| Property  | Attribute | Description | Type                                            | Default     |
+| --------- | --------- | ----------- | ----------------------------------------------- | ----------- |
+| `items`   | --        |             | `ContextMenuItem[]`                             | `undefined` |
 | `objects` | --        |             | `UpdrawBaseObject<HTMLElement \| SVGElement>[]` | `undefined` |
 
 

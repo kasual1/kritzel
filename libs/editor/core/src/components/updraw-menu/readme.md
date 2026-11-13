@@ -7,17 +7,17 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type                      | Default     |
-| -------- | --------- | ----------- | ------------------------- | ----------- |
+| Property | Attribute | Description | Type                     | Default     |
+| -------- | --------- | ----------- | ------------------------ | ----------- |
 | `items`  | --        |             | `IUpdrawMenuItem<any>[]` | `undefined` |
 | `parent` | --        |             | `IUpdrawMenuItem<any>`   | `null`      |
 
 
 ## Events
 
-| Event                 | Description | Type                                                |
-| --------------------- | ----------- | --------------------------------------------------- |
-| `close`               |             | `CustomEvent<void>`                                 |
+| Event                 | Description | Type                                               |
+| --------------------- | ----------- | -------------------------------------------------- |
+| `close`               |             | `CustomEvent<void>`                                |
 | `itemCancel`          |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
 | `itemCloseChildMenu`  |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
 | `itemSave`            |             | `CustomEvent<IUpdrawMenuItem<any>>`                |

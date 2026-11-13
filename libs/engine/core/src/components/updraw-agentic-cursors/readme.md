@@ -19,11 +19,11 @@ the same frame as the object state it follows and never runs ahead of the object
 
 ## Properties
 
-| Property               | Attribute                | Description | Type          | Default     |
-| ---------------------- | ------------------------ | ----------- | ------------- | ----------- |
+| Property               | Attribute                | Description | Type         | Default     |
+| ---------------------- | ------------------------ | ----------- | ------------ | ----------- |
 | `core` _(required)_    | --                       |             | `UpdrawCore` | `undefined` |
-| `edgeIndicatorPadding` | `edge-indicator-padding` |             | `number`      | `8`         |
-| `showEdgeIndicators`   | `show-edge-indicators`   |             | `boolean`     | `true`      |
+| `edgeIndicatorPadding` | `edge-indicator-padding` |             | `number`     | `8`         |
+| `showEdgeIndicators`   | `show-edge-indicators`   |             | `boolean`    | `true`      |
 
 
 ## Dependencies

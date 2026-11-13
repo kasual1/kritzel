@@ -56,11 +56,11 @@ const notification = {
 
 ## Properties
 
-| Property        | Attribute        | Description                                                       | Type                  | Default     |
-| --------------- | ---------------- | ----------------------------------------------------------------- | --------------------- | ----------- |
-| `locale`        | `locale`         | Locale used for formatting the timestamp.                         | `string`              | `undefined` |
+| Property        | Attribute        | Description                                                       | Type                 | Default     |
+| --------------- | ---------------- | ----------------------------------------------------------------- | -------------------- | ----------- |
+| `locale`        | `locale`         | Locale used for formatting the timestamp.                         | `string`             | `undefined` |
 | `notification`  | --               | Notification data rendered by this card.                          | `UpdrawNotification` | `undefined` |
-| `showTimestamp` | `show-timestamp` | Whether a formatted timestamp should be displayed when available. | `boolean`             | `true`      |
+| `showTimestamp` | `show-timestamp` | Whether a formatted timestamp should be displayed when available. | `boolean`            | `true`      |
 
 
 ## Events

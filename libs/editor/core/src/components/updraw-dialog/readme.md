@@ -58,10 +58,10 @@ A generic, reusable dialog component for displaying modal content to the user.
 
 ## Events
 
-| Event         | Description                    | Type                                    |
-| ------------- | ------------------------------ | --------------------------------------- |
+| Event         | Description                    | Type                                   |
+| ------------- | ------------------------------ | -------------------------------------- |
 | `dialogClose` | Emitted when the dialog closes | `CustomEvent<IUpdrawDialogCloseEvent>` |
-| `dialogOpen`  | Emitted when the dialog opens  | `CustomEvent<void>`                     |
+| `dialogOpen`  | Emitted when the dialog opens  | `CustomEvent<void>`                    |
 
 
 ## Methods

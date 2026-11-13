@@ -10,58 +10,58 @@
 | Property                 | Attribute                  | Description                                                                                                                                                                                                                                                                                                                                                                                           | Type                                  | Default     |
 | ------------------------ | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | ----------- |
 | `activeWorkspaceId`      | `active-workspace-id`      | Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.                                                                                                                                                                                                                                                                                                    | `string`                              | `undefined` |
-| `assetStorageConfig`     | --                         | Configuration for binary asset storage (e.g., images).  The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as `HttpAssetProvider` or `PresignedAssetProvider`. | `UpdrawAssetStorageConfig`           | `undefined` |
-| `chatSession`            | --                         | A chat session bound to this engine: its tools act on this canvas. With an agent, the agent is added here. A session replaced by another one is unbound once its running prompt ends.                                                                                                                                                                                                                 | `UpdrawChatSession`                  | `undefined` |
+| `assetStorageConfig`     | --                         | Configuration for binary asset storage (e.g., images).  The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as `HttpAssetProvider` or `PresignedAssetProvider`. | `UpdrawAssetStorageConfig`            | `undefined` |
+| `chatSession`            | --                         | A chat session bound to this engine: its tools act on this canvas. With an agent, the agent is added here. A session replaced by another one is unbound once its running prompt ends.                                                                                                                                                                                                                 | `UpdrawChatSession`                   | `undefined` |
 | `cursorTarget`           | --                         | The HTML element to apply cursor styles to. Defaults to `document.body` if not set.                                                                                                                                                                                                                                                                                                                   | `HTMLElement`                         | `undefined` |
-| `debugInfo`              | --                         | Debug info display options controlling which debug overlays are visible                                                                                                                                                                                                                                                                                                                               | `UpdrawDebugInfo`                    | `undefined` |
+| `debugInfo`              | --                         | Debug info display options controlling which debug overlays are visible                                                                                                                                                                                                                                                                                                                               | `UpdrawDebugInfo`                     | `undefined` |
 | `editorId`               | `editor-id`                | Optional unique identifier for namespacing storage keys across multiple editor instances.                                                                                                                                                                                                                                                                                                             | `string`                              | `undefined` |
 | `fallbackLocale`         | `fallback-locale`          | The locale used to resolve terms missing from the active locale.                                                                                                                                                                                                                                                                                                                                      | `"de" \| "en" \| "fr" \| string & {}` | `'en'`      |
 | `globalContextMenuItems` | --                         | Context menu items shown when right-clicking the canvas background.                                                                                                                                                                                                                                                                                                                                   | `ContextMenuItem[]`                   | `undefined` |
 | `isPanningEnabled`       | `is-panning-enabled`       | When false, non-modified wheel events do not pan the viewport.                                                                                                                                                                                                                                                                                                                                        | `boolean`                             | `true`      |
-| `isWatermarkVisible`     | `is-watermark-visible`     | Whether the "Powered by Updraw" watermark is shown. Keeping it visible helps support the project.                                                                                                                                                                                                                                                                                                    | `boolean`                             | `true`      |
+| `isWatermarkVisible`     | `is-watermark-visible`     | Whether the "Powered by Updraw" watermark is shown. Keeping it visible helps support the project.                                                                                                                                                                                                                                                                                                     | `boolean`                             | `true`      |
 | `isZoomingEnabled`       | `is-zooming-enabled`       | When false, Ctrl+wheel events do not zoom the viewport.                                                                                                                                                                                                                                                                                                                                               | `boolean`                             | `true`      |
 | `locale`                 | `locale`                   | The current locale (language) code to apply to the editor, e.g. 'en', 'de', 'fr'.                                                                                                                                                                                                                                                                                                                     | `"de" \| "en" \| "fr" \| string & {}` | `'en'`      |
-| `locales`                | --                         | An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty.                                                                                                                                                                                                                                            | `UpdrawLocale[]`                     | `undefined` |
+| `locales`                | --                         | An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty.                                                                                                                                                                                                                                            | `UpdrawLocale[]`                      | `undefined` |
 | `lockDrawingScale`       | `lock-drawing-scale`       | When true, objects are drawn at a fixed visual size regardless of zoom level                                                                                                                                                                                                                                                                                                                          | `boolean`                             | `true`      |
-| `objectConfig`           | --                         | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.                                                                                                                                                                                                                 | `UpdrawObjectConfig`                 | `undefined` |
+| `objectConfig`           | --                         | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.                                                                                                                                                                                                                 | `UpdrawObjectConfig`                  | `undefined` |
 | `objectContextMenuItems` | --                         | Context menu items shown when right-clicking a selected object.                                                                                                                                                                                                                                                                                                                                       | `ContextMenuItem[]`                   | `undefined` |
-| `objectTitlebar`         | --                         | Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.                                                                                                                                                                                                                    | `UpdrawObjectTitlebarConfig`         | `undefined` |
+| `objectTitlebar`         | --                         | Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.                                                                                                                                                                                                                    | `UpdrawObjectTitlebarConfig`          | `undefined` |
 | `scaleMax`               | `scale-max`                | Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.                                                                                                                                                                                                                                                                                                                    | `number`                              | `1000`      |
 | `scaleMin`               | `scale-min`                | Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine.                                                                                                                                                                                                                                                                                                                    | `number`                              | `0.0001`    |
-| `syncConfig`             | --                         | Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).                                                                                                                                                                                                                                                                                                                   | `UpdrawSyncConfig`                   | `undefined` |
+| `syncConfig`             | --                         | Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).                                                                                                                                                                                                                                                                                                                   | `UpdrawSyncConfig`                    | `undefined` |
 | `theme`                  | `theme`                    | The current theme to apply to the editor                                                                                                                                                                                                                                                                                                                                                              | `"dark" \| "light" \| string & {}`    | `'light'`   |
-| `themes`                 | --                         | An array of available themes for the editor.                                                                                                                                                                                                                                                                                                                                                          | `UpdrawTheme[]`                      | `undefined` |
-| `tools`                  | --                         | Tool definitions to register with this engine instance.                                                                                                                                                                                                                                                                                                                                               | `UpdrawToolDefinition[]`             | `[]`        |
-| `user`                   | --                         | The current user for awareness broadcasting (name, id, cursor position).                                                                                                                                                                                                                                                                                                                              | `IUpdrawUser`                        | `undefined` |
+| `themes`                 | --                         | An array of available themes for the editor.                                                                                                                                                                                                                                                                                                                                                          | `UpdrawTheme[]`                       | `undefined` |
+| `tools`                  | --                         | Tool definitions to register with this engine instance.                                                                                                                                                                                                                                                                                                                                               | `UpdrawToolDefinition[]`              | `[]`        |
+| `user`                   | --                         | The current user for awareness broadcasting (name, id, cursor position).                                                                                                                                                                                                                                                                                                                              | `IUpdrawUser`                         | `undefined` |
 | `viewportBoundaryBottom` | `viewport-boundary-bottom` | Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.                                                                                                                                                                                                                                                                                             | `number`                              | `Infinity`  |
 | `viewportBoundaryLeft`   | `viewport-boundary-left`   | Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.                                                                                                                                                                                                                                                                                               | `number`                              | `-Infinity` |
 | `viewportBoundaryRight`  | `viewport-boundary-right`  | Right boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.                                                                                                                                                                                                                                                                                              | `number`                              | `Infinity`  |
 | `viewportBoundaryTop`    | `viewport-boundary-top`    | Top boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.                                                                                                                                                                                                                                                                                                | `number`                              | `-Infinity` |
-| `workspaces`             | --                         | Authoritative workspace catalog for this engine instance. When provided, provider-only workspaces are hidden but not deleted.                                                                                                                                                                                                                                                                         | `UpdrawWorkspace[]`                  | `undefined` |
+| `workspaces`             | --                         | Authoritative workspace catalog for this engine instance. When provided, provider-only workspaces are hidden but not deleted.                                                                                                                                                                                                                                                                         | `UpdrawWorkspace[]`                   | `undefined` |
 
 
 ## Events
 
-| Event                           | Description                                                                                                                                                                                                                                                                  | Type                                                          |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Event                           | Description                                                                                                                                                                                                                                                                  | Type                                                         |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | `activeToolChange`              | Emitted when the active drawing tool changes.                                                                                                                                                                                                                                | `CustomEvent<UpdrawBaseTool>`                                |
 | `activeWorkspaceChange`         | Emitted when the active workspace changes (e.g., after import).                                                                                                                                                                                                              | `CustomEvent<UpdrawWorkspace>`                               |
 | `agentsChange`                  | Emitted when agents are added or removed, or when what the avatar stack shows of them changes (name, color, avatar, status, visibility, activity). Lists the local agents first, then the agents of collaborators (`isRemote: true`). Never emitted for plain cursor motion. | `CustomEvent<UpdrawAgentsChangeEvent>`                       |
-| `awarenessChange`               | Emitted when the awareness state changes (remote user cursors, presence).                                                                                                                                                                                                    | `CustomEvent<Map<number, Record<string, any>>>`               |
+| `awarenessChange`               | Emitted when the awareness state changes (remote user cursors, presence).                                                                                                                                                                                                    | `CustomEvent<Map<number, Record<string, any>>>`              |
 | `contextMenuStateChange`        | Emitted when context-menu visibility, items, or position changes.                                                                                                                                                                                                            | `CustomEvent<UpdrawContextMenuState>`                        |
 | `isEngineReady`                 | Emitted when the engine has fully initialized and is ready for interaction.                                                                                                                                                                                                  | `CustomEvent<UpdrawEngineState>`                             |
-| `isLoadingChange`               | Emitted while the selected workspace's objects are being initialized and synchronized.                                                                                                                                                                                       | `CustomEvent<boolean>`                                        |
-| `longpress`                     | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.                                                                                                                                                                                        | `CustomEvent<PointerEvent>`                                   |
+| `isLoadingChange`               | Emitted while the selected workspace's objects are being initialized and synchronized.                                                                                                                                                                                       | `CustomEvent<boolean>`                                       |
+| `longpress`                     | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.                                                                                                                                                                                        | `CustomEvent<PointerEvent>`                                  |
 | `notificationsChange`           | Emitted when notifications change.                                                                                                                                                                                                                                           | `CustomEvent<UpdrawNotification>`                            |
 | `objectElementClick`            | Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual.                                                                                                                                                    | `CustomEvent<UpdrawObjectElementClickEvent>`                 |
 | `objectElementHover`            | Emitted when the pointer moves onto another element inside the content of an interactive (selected) object, such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.                                             | `CustomEvent<UpdrawObjectElementHoverEvent>`                 |
 | `objectElementPick`             | Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`.                                                                                                                                                             | `CustomEvent<UpdrawObjectElementPickEvent>`                  |
-| `objectsAdded`                  | Emitted when one or more objects are added to the canvas. `source` is set when an agent made the change.                                                                                                                                                                     | `CustomEvent<ObjectsAddedEvent>`                              |
+| `objectsAdded`                  | Emitted when one or more objects are added to the canvas. `source` is set when an agent made the change.                                                                                                                                                                     | `CustomEvent<ObjectsAddedEvent>`                             |
 | `objectsChange`                 | Emitted when objects on the canvas are added, removed, or modified.                                                                                                                                                                                                          | `CustomEvent<UpdrawBaseObject<HTMLElement \| SVGElement>[]>` |
 | `objectsInViewportChange`       | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).                                                                                                                                                                           | `CustomEvent<UpdrawBaseObject<Element>[]>`                   |
-| `objectsRemoved`                | Emitted when one or more objects are removed from the canvas. `source` is set when an agent made the change.                                                                                                                                                                 | `CustomEvent<ObjectsRemovedEvent>`                            |
+| `objectsRemoved`                | Emitted when one or more objects are removed from the canvas. `source` is set when an agent made the change.                                                                                                                                                                 | `CustomEvent<ObjectsRemovedEvent>`                           |
 | `objectsSelectionChange`        | Emitted when the set of selected objects changes.                                                                                                                                                                                                                            | `CustomEvent<UpdrawBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsUpdated`                | Emitted when one or more objects are updated on the canvas. `source` is set when an agent made the change.                                                                                                                                                                   | `CustomEvent<ObjectsUpdatedEvent>`                            |
+| `objectsUpdated`                | Emitted when one or more objects are updated on the canvas. `source` is set when an agent made the change.                                                                                                                                                                   | `CustomEvent<ObjectsUpdatedEvent>`                           |
 | `objectTitlebarAction`          | Emitted when a button or a menu item in an object titlebar is clicked.                                                                                                                                                                                                       | `CustomEvent<UpdrawObjectTitlebarActionEvent>`               |
 | `objectTitlebarMenuStateChange` | Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`.                                                                                     | `CustomEvent<UpdrawObjectTitlebarMenuState>`                 |
 | `undoStateChange`               | Emitted when the undo/redo state changes, providing current undo availability.                                                                                                                                                                                               | `CustomEvent<UpdrawUndoState>`                               |
@@ -78,8 +78,8 @@ one editor at a time; an agent of an editor that was removed from the page moves
 
 #### Parameters
 
-| Name    | Type           | Description                       |
-| ------- | -------------- | --------------------------------- |
+| Name    | Type          | Description                      |
+| ------- | ------------- | -------------------------------- |
 | `agent` | `UpdrawAgent` | - A `new UpdrawAgent({ name })`. |
 
 #### Returns
@@ -129,8 +129,8 @@ Aligns the currently selected objects according to the specified alignment.
 
 #### Parameters
 
-| Name        | Type               | Description                                                            |
-| ----------- | ------------------ | ---------------------------------------------------------------------- |
+| Name        | Type              | Description                                                            |
+| ----------- | ----------------- | ---------------------------------------------------------------------- |
 | `alignment` | `UpdrawAlignment` | - The alignment direction (e.g., `CenterHorizontal`, `StartVertical`). |
 
 #### Returns
@@ -167,8 +167,8 @@ A group is one layer: all of its children move together. A grouped object moves 
 
 #### Parameters
 
-| Name     | Type                     | Description                                                         |
-| -------- | ------------------------ | ------------------------------------------------------------------- |
+| Name     | Type                    | Description                                                         |
+| -------- | ----------------------- | ------------------------------------------------------------------- |
 | `object` | `UpdrawBaseObject<any>` | - The object to move. If omitted, applies to the current selection. |
 
 #### Returns
@@ -185,8 +185,8 @@ front of its group.
 
 #### Parameters
 
-| Name     | Type                     | Description                                                         |
-| -------- | ------------------------ | ------------------------------------------------------------------- |
+| Name     | Type                    | Description                                                         |
+| -------- | ----------------------- | ------------------------------------------------------------------- |
 | `object` | `UpdrawBaseObject<any>` | - The object to move. If omitted, applies to the current selection. |
 
 #### Returns
@@ -245,8 +245,8 @@ Pans and zooms the viewport to center on the given object.
 
 #### Parameters
 
-| Name     | Type                                           | Description                             |
-| -------- | ---------------------------------------------- | --------------------------------------- |
+| Name     | Type                                          | Description                             |
+| -------- | --------------------------------------------- | --------------------------------------- |
 | `object` | `UpdrawBaseObject<HTMLElement \| SVGElement>` | - The object to center in the viewport. |
 
 #### Returns
@@ -262,10 +262,10 @@ Calculates the combined bounding box of the given objects and centers the viewpo
 
 #### Parameters
 
-| Name      | Type                                             | Description                                                   |
-| --------- | ------------------------------------------------ | ------------------------------------------------------------- |
+| Name      | Type                                            | Description                                                   |
+| --------- | ----------------------------------------------- | ------------------------------------------------------------- |
 | `objects` | `UpdrawBaseObject<HTMLElement \| SVGElement>[]` | - The objects to center and fit in the viewport.              |
-| `animate` | `boolean`                                        | - Whether to animate the viewport transition (default: true). |
+| `animate` | `boolean`                                       | - Whether to animate the viewport transition (default: true). |
 
 #### Returns
 
@@ -316,8 +316,8 @@ locale set. Pass `undefined` to restore the built-in locales (en/de/fr).
 
 #### Parameters
 
-| Name      | Type              | Description                                              |
-| --------- | ----------------- | -------------------------------------------------------- |
+| Name      | Type             | Description                                              |
+| --------- | ---------------- | -------------------------------------------------------- |
 | `locales` | `UpdrawLocale[]` | - The full locale catalog, or `undefined` for built-ins. |
 
 #### Returns
@@ -343,8 +343,8 @@ Emits `activeWorkspaceChange` if the created workspace is activated.
 
 #### Parameters
 
-| Name        | Type               | Description                         |
-| ----------- | ------------------ | ----------------------------------- |
+| Name        | Type              | Description                         |
+| ----------- | ----------------- | ----------------------------------- |
 | `workspace` | `UpdrawWorkspace` | - The workspace instance to create. |
 
 #### Returns
@@ -379,8 +379,8 @@ Deletes a workspace and emits a `workspacesChange` event.
 
 #### Parameters
 
-| Name        | Type               | Description                |
-| ----------- | ------------------ | -------------------------- |
+| Name        | Type              | Description                |
+| ----------- | ----------------- | -------------------------- |
 | `workspace` | `UpdrawWorkspace` | - The workspace to delete. |
 
 #### Returns
@@ -490,8 +490,8 @@ Excludes internal selection-related objects (selection groups and selection boxe
 
 #### Parameters
 
-| Name        | Type                                           | Description                                                           |
-| ----------- | ---------------------------------------------- | --------------------------------------------------------------------- |
+| Name        | Type                                          | Description                                                           |
+| ----------- | --------------------------------------------- | --------------------------------------------------------------------- |
 | `predicate` | `(obj: UpdrawBaseObject<Element>) => boolean` | - A filter function called for each object. Return `true` to include. |
 
 #### Returns
@@ -741,8 +741,8 @@ To group the current selection, pass `await getSelectedObjects()`.
 
 #### Parameters
 
-| Name      | Type                       | Description             |
-| --------- | -------------------------- | ----------------------- |
+| Name      | Type                      | Description             |
+| --------- | ------------------------- | ----------------------- |
 | `objects` | `UpdrawBaseObject<any>[]` | - The objects to group. |
 
 #### Returns
@@ -768,9 +768,9 @@ Highlights are local: they are neither saved nor shown to collaborators.
 
 #### Parameters
 
-| Name         | Type                              | Description                                                                                     |
-| ------------ | --------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `objectId`   | `string`                          | - The object ID.                                                                                |
+| Name         | Type                             | Description                                                                                     |
+| ------------ | -------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `objectId`   | `string`                         | - The object ID.                                                                                |
 | `highlights` | `UpdrawObjectElementHighlight[]` | - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted. |
 
 #### Returns
@@ -897,8 +897,8 @@ Unlike `centerObjectInViewport`, this moves the camera — not the object.
 
 #### Parameters
 
-| Name     | Type                                           | Description                                           |
-| -------- | ---------------------------------------------- | ----------------------------------------------------- |
+| Name     | Type                                          | Description                                           |
+| -------- | --------------------------------------------- | ----------------------------------------------------- |
 | `object` | `UpdrawBaseObject<HTMLElement \| SVGElement>` | - The object whose center the viewport should pan to. |
 
 #### Returns
@@ -931,11 +931,11 @@ The object must be mounted, which it is while it is in or near the viewport.
 
 #### Parameters
 
-| Name       | Type     | Description                                                 |
-| ---------- | -------- | ----------------------------------------------------------- |
-| `objectId` | `string` | - The object ID.                                            |
+| Name       | Type     | Description                                                |
+| ---------- | -------- | ---------------------------------------------------------- |
+| `objectId` | `string` | - The object ID.                                           |
 | `selector` | `string` | - A CSS selector, e.g. `'button'` or `'[data-updraw-id]'`. |
-| `limit`    | `number` | - Maximum number of elements, 1 to 500. Defaults to 100.    |
+| `limit`    | `number` | - Maximum number of elements, 1 to 500. Defaults to 100.   |
 
 #### Returns
 
@@ -960,8 +960,8 @@ Registers additional locale definitions (with optional partial term overrides).
 
 #### Parameters
 
-| Name      | Type              | Description                           |
-| --------- | ----------------- | ------------------------------------- |
+| Name      | Type             | Description                           |
+| --------- | ---------------- | ------------------------------------- |
 | `locales` | `UpdrawLocale[]` | - The locale definitions to register. |
 
 #### Returns
@@ -976,10 +976,10 @@ Registers a new drawing tool with the engine.
 
 #### Parameters
 
-| Name         | Type                                                                                                 | Description                                                     |
-| ------------ | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| `toolName`   | `string`                                                                                             | - Unique identifier for the tool (e.g., 'brush', 'eraser').     |
-| `toolClass`  | `any`                                                                                                | - Constructor class extending `UpdrawBaseTool`.                |
+| Name         | Type                                                                                             | Description                                                     |
+| ------------ | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| `toolName`   | `string`                                                                                         | - Unique identifier for the tool (e.g., 'brush', 'eraser').     |
+| `toolClass`  | `any`                                                                                            | - Constructor class extending `UpdrawBaseTool`.                 |
 | `toolConfig` | `UpdrawTextToolConfig \| UpdrawBrushToolConfig \| UpdrawLineToolConfig \| UpdrawShapeToolConfig` | - Optional initial configuration to apply to the tool instance. |
 
 #### Returns
@@ -1008,8 +1008,8 @@ Removes an agent: its running action is rolled back, its queued actions resolve 
 
 #### Parameters
 
-| Name    | Type                     | Description            |
-| ------- | ------------------------ | ---------------------- |
+| Name    | Type                    | Description            |
+| ------- | ----------------------- | ---------------------- |
 | `agent` | `string \| UpdrawAgent` | - The agent or its ID. |
 
 #### Returns
@@ -1059,8 +1059,8 @@ Persists the given settings object to localStorage using the namespaced storage 
 
 #### Parameters
 
-| Name       | Type                    | Description                              |
-| ---------- | ----------------------- | ---------------------------------------- |
+| Name       | Type                   | Description                              |
+| ---------- | ---------------------- | ---------------------------------------- |
 | `settings` | `UpdrawSettingsConfig` | - The settings configuration to persist. |
 
 #### Returns
@@ -1119,8 +1119,8 @@ Programmatically selects the given objects. Switches to the selection tool autom
 
 #### Parameters
 
-| Name      | Type                                             | Description              |
-| --------- | ------------------------------------------------ | ------------------------ |
+| Name      | Type                                            | Description              |
+| --------- | ----------------------------------------------- | ------------------------ |
 | `objects` | `UpdrawBaseObject<HTMLElement \| SVGElement>[]` | - The objects to select. |
 
 #### Returns
@@ -1136,8 +1136,8 @@ A group is one layer: all of its children move together. A grouped object moves 
 
 #### Parameters
 
-| Name     | Type                     | Description                                                         |
-| -------- | ------------------------ | ------------------------------------------------------------------- |
+| Name     | Type                    | Description                                                         |
+| -------- | ----------------------- | ------------------------------------------------------------------- |
 | `object` | `UpdrawBaseObject<any>` | - The object to move. If omitted, applies to the current selection. |
 
 #### Returns
@@ -1154,8 +1154,8 @@ back of its group.
 
 #### Parameters
 
-| Name     | Type                     | Description                                                         |
-| -------- | ------------------------ | ------------------------------------------------------------------- |
+| Name     | Type                    | Description                                                         |
+| -------- | ----------------------- | ------------------------------------------------------------------- |
 | `object` | `UpdrawBaseObject<any>` | - The object to move. If omitted, applies to the current selection. |
 
 #### Returns
@@ -1220,10 +1220,10 @@ instead of reaching the content. Picking works while the object is interactive, 
 
 #### Parameters
 
-| Name       | Type                                 | Description                                                                         |
-| ---------- | ------------------------------------ | ----------------------------------------------------------------------------------- |
-| `objectId` | `string`                             | - The object ID.                                                                    |
-| `enabled`  | `boolean`                            | - Whether the object picks elements.                                                |
+| Name       | Type                                | Description                                                                         |
+| ---------- | ----------------------------------- | ----------------------------------------------------------------------------------- |
+| `objectId` | `string`                            | - The object ID.                                                                    |
+| `enabled`  | `boolean`                           | - Whether the object picks elements.                                                |
 | `options`  | `UpdrawObjectElementPickingOptions` | - `selector` limits picking to matching elements, `color` sets the highlight color. |
 
 #### Returns
@@ -1258,7 +1258,7 @@ Resolves a term key to its translated string for the active locale.
 
 | Name   | Type                                 | Description                                          |
 | ------ | ------------------------------------ | ---------------------------------------------------- |
-| `key`  | `keyof UpdrawTerms`                 | - The term key to resolve.                           |
+| `key`  | `keyof UpdrawTerms`                  | - The term key to resolve.                           |
 | `vars` | `{ [x: string]: string \| number; }` | - Optional values for `{placeholder}` interpolation. |
 
 #### Returns
@@ -1300,8 +1300,8 @@ To ungroup the current selection, pass the `UpdrawGroup` objects from `await get
 
 #### Parameters
 
-| Name     | Type             | Description              |
-| -------- | ---------------- | ------------------------ |
+| Name     | Type            | Description              |
+| -------- | --------------- | ------------------------ |
 | `groups` | `UpdrawGroup[]` | - The groups to ungroup. |
 
 #### Returns
@@ -1336,8 +1336,8 @@ updating objects of a non-active workspace requires a configured sync provider.
 
 #### Parameters
 
-| Name        | Type               | Description                                   |
-| ----------- | ------------------ | --------------------------------------------- |
+| Name        | Type              | Description                                   |
+| ----------- | ----------------- | --------------------------------------------- |
 | `workspace` | `UpdrawWorkspace` | - The workspace describing the desired state. |
 
 #### Returns

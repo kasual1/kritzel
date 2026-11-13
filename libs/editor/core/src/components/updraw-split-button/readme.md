@@ -7,27 +7,27 @@
 
 ## Properties
 
-| Property             | Attribute              | Description | Type                      | Default         |
-| -------------------- | ---------------------- | ----------- | ------------------------- | --------------- |
-| `buttonIcon`         | `button-icon`          |             | `string`                  | `'plus'`        |
-| `dropdownIcon`       | `dropdown-icon`        |             | `string`                  | `'chevronDown'` |
+| Property             | Attribute              | Description | Type                     | Default         |
+| -------------------- | ---------------------- | ----------- | ------------------------ | --------------- |
+| `buttonIcon`         | `button-icon`          |             | `string`                 | `'plus'`        |
+| `dropdownIcon`       | `dropdown-icon`        |             | `string`                 | `'chevronDown'` |
 | `items`              | --                     |             | `IUpdrawMenuItem<any>[]` | `[]`            |
-| `mainButtonDisabled` | `main-button-disabled` |             | `boolean`                 | `false`         |
-| `menuButtonDisabled` | `menu-button-disabled` |             | `boolean`                 | `false`         |
+| `mainButtonDisabled` | `main-button-disabled` |             | `boolean`                | `false`         |
+| `menuButtonDisabled` | `menu-button-disabled` |             | `boolean`                | `false`         |
 
 
 ## Events
 
-| Event                 | Description | Type                                                |
-| --------------------- | ----------- | --------------------------------------------------- |
+| Event                 | Description | Type                                               |
+| --------------------- | ----------- | -------------------------------------------------- |
 | `itemCancel`          |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
 | `itemCloseChildMenu`  |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
 | `itemSave`            |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
 | `itemSelect`          |             | `CustomEvent<IUpdrawMenuItemSelectEvent>`          |
 | `itemToggleChildMenu` |             | `CustomEvent<IUpdrawMenuItemToggleChildMenuEvent>` |
-| `mainButtonClick`     |             | `CustomEvent<void>`                                 |
-| `menuClose`           |             | `CustomEvent<void>`                                 |
-| `menuOpen`            |             | `CustomEvent<void>`                                 |
+| `mainButtonClick`     |             | `CustomEvent<void>`                                |
+| `menuClose`           |             | `CustomEvent<void>`                                |
+| `menuOpen`            |             | `CustomEvent<void>`                                |
 
 
 ## Methods

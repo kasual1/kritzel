@@ -13,11 +13,11 @@ The parent component (updraw-editor) handles the actual authentication flow.
 
 ## Properties
 
-| Property      | Attribute      | Description                                        | Type                     | Default     |
-| ------------- | -------------- | -------------------------------------------------- | ------------------------ | ----------- |
-| `dialogTitle` | `dialog-title` | Dialog title                                       | `string`                 | `'Sign in'` |
+| Property      | Attribute      | Description                                        | Type                    | Default     |
+| ------------- | -------------- | -------------------------------------------------- | ----------------------- | ----------- |
+| `dialogTitle` | `dialog-title` | Dialog title                                       | `string`                | `'Sign in'` |
 | `providers`   | --             | Array of authentication provider buttons to render | `UpdrawLoginProvider[]` | `[]`        |
-| `subtitle`    | `subtitle`     | Optional subtitle text displayed below the title   | `string`                 | `undefined` |
+| `subtitle`    | `subtitle`     | Optional subtitle text displayed below the title   | `string`                | `undefined` |
 
 
 ## Events

@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property | Attribute | Description                        | Type               | Default     |
-| -------- | --------- | ---------------------------------- | ------------------ | ----------- |
+| Property | Attribute | Description                        | Type              | Default     |
+| -------- | --------- | ---------------------------------- | ----------------- | ----------- |
 | `tabs`   | --        | Array of tab definitions to render | `UpdrawPillTab[]` | `[]`        |
-| `value`  | `value`   | Currently selected tab ID          | `string`           | `undefined` |
+| `value`  | `value`   | Currently selected tab ID          | `string`          | `undefined` |
 
 
 ## Events
