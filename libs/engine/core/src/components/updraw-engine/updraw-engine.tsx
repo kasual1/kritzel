@@ -1853,7 +1853,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     const data = JSON.parse(json) as WorkspaceJsonExportPayload;
 
     // Validate the import data
-    // Exports made before the rename use the legacy class name `KritzelWorkspace`.
+    // Exports made before the rename use the legacy workspace class name.
     if (!data.__class__ || normalizeLegacyClassName(data.__class__) !== 'UpdrawWorkspace') {
       throw new Error('Invalid workspace data: missing or incorrect __class__ identifier');
     }
@@ -1918,7 +1918,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     const data = JSON.parse(json) as WorkspaceJsonExportPayload;
 
     // Validate the import data
-    // Exports made before the rename use the legacy class name `KritzelWorkspace`.
+    // Exports made before the rename use the legacy workspace class name.
     if (!data.__class__ || normalizeLegacyClassName(data.__class__) !== 'UpdrawWorkspace') {
       throw new Error('Invalid workspace data: missing or incorrect __class__ identifier');
     }

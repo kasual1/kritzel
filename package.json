@@ -38,6 +38,7 @@
     "skill:api": "node ./scripts/generate-updraw-skill-api.mjs",
     "skill:api:check": "node ./scripts/generate-updraw-skill-api.mjs --check",
     "skill:sync": "node ./scripts/sync-updraw-skill.mjs",
+    "brand:check": "node ./scripts/check-legacy-brand.mjs",
     "bump-patch": "node ./scripts/bump-patch.js",
     "bump-minor": "node ./scripts/bump-minor.js",
     "bump-major": "node ./scripts/bump-major.js",

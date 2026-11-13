@@ -29,6 +29,22 @@ async function fingerprint(directory) {
 
 const sourceFingerprint = await fingerprint(source);
 
+// Copies synced before the rename live under the old skill name. Remove them when this script generated them,
+// so agents do not load an outdated skill next to the current one.
+const legacySkill = 'kritzel';
+const legacyMarker = `.${legacySkill}-generated`;
+for (const agent of agents) {
+  const legacyDestination = `${root}${agent}/skills/${legacySkill}`;
+  const generated = await stat(`${legacyDestination}/${legacyMarker}`).then(() => true, error => {
+    if (error.code !== 'ENOENT') throw error;
+    return false;
+  });
+  if (generated) {
+    await rm(legacyDestination, { recursive: true, force: true });
+    console.log(`Removed outdated ${agent}/skills/${legacySkill}`);
+  }
+}
+
 for (const agent of agents) {
   const destination = `${root}${agent}/skills/updraw`;
   const exists = await stat(destination).then(() => true, error => {

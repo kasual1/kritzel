@@ -10,6 +10,9 @@ loader/
 
 .agents/skills/updraw/
 .claude/skills/updraw/
+# Copies synced before the rename; `npm run skill:sync` removes generated ones.
+.agents/skills/kritzel/
+.claude/skills/kritzel/
 
 # Former license signing keys — kept ignored so a leftover local private key is never committed.
 scripts/license/keys/

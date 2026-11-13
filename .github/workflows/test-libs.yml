@@ -24,6 +24,9 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
+      - name: Check for leftover references to the old name
+        run: npm run brand:check
+
       - name: Build Updraw libraries
         run: npm run build
 
