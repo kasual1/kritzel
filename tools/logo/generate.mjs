@@ -1,7 +1,7 @@
 // Generates every Updraw logo variant from a workspace export that holds the drawn mark.
 // See README.md for what it writes and why.
 //
-//   npm run logo:generate -- <workspace-export.json> [--out <dir>]
+//   npm run logo:generate -- <workspace-export.json> [--out <dir>] [--weight <units>] [--size <factor>]
 import { chromium } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,16 +14,23 @@ const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 // into the rounded corners, and at these widths it keeps the previous mark's margin to the rounded outline.
 const SIZES = { light: 0.62, readme: 0.68, dark: 0.72, app: 0.78 };
 
+// Extra line weight for the tile icons (light, dark and app tiles and their PNG/ICO versions), in path units of
+// the drawing: a same-coloured outline around the drawn stroke. The drawn lines are about 4-5 units thick.
+// `--weight` overrides it and `--size` scales the tile fractions above, e.g. to preview a bolder variant.
+const TILE_WEIGHT = 0;
+const TILE_SIZE = 1;
+
 // Optical centering: an upward triangle carries its weight low, so it's lifted by this fraction of its height.
 const LIFT = 0.035;
 
 // Below ~56 px the hand-drawn lines get thinner than a pixel, so the favicons and bare marks add a
 // same-coloured outline of this many output pixels. SVGs do it with size media queries (they see the size the
 // image is drawn at), the small rasters have it baked in. Nothing changes at 64 px and up.
+// `at` is the typical size in each band, used to convert a tile's extra weight to output pixels.
 const BOOST = [
-  { max: 24, px: 0.4 },
-  { max: 40, px: 0.35 },
-  { max: 56, px: 0.25 },
+  { max: 24, at: 16, px: 0.4 },
+  { max: 40, at: 32, px: 0.35 },
+  { max: 56, at: 48, px: 0.25 },
 ];
 const boostPx = (size) => (BOOST.find((b) => size <= b.max) ?? { px: 0 }).px;
 
@@ -35,12 +42,20 @@ const PATHS_TS = 'apps/website/src/components/Landing/paths.ts';
 
 // ---------- arguments ----------
 
+const USAGE = 'usage: npm run logo:generate -- <workspace-export.json> [--out <dir>] [--weight <units>] [--size <factor>]';
 const args = process.argv.slice(2);
-const outIndex = args.indexOf('--out');
-const outRoot = outIndex >= 0 ? path.resolve(args[outIndex + 1]) : ROOT;
-const exportFile = args.find((a, i) => !a.startsWith('--') && !(outIndex >= 0 && i === outIndex + 1));
-if (!exportFile) {
-  console.error('usage: npm run logo:generate -- <workspace-export.json> [--out <dir>]');
+const OPTIONS = ['--out', '--weight', '--size'];
+const option = (name) => {
+  const i = args.indexOf(name);
+  return i >= 0 ? args[i + 1] : undefined;
+};
+const optionValues = new Set(OPTIONS.map((o) => args.indexOf(o)).filter((i) => i >= 0).map((i) => i + 1));
+const exportFile = args.find((a, i) => !a.startsWith('--') && !optionValues.has(i));
+const outRoot = option('--out') ? path.resolve(option('--out')) : ROOT;
+const weight = Number(option('--weight') ?? TILE_WEIGHT);
+const sizeFactor = Number(option('--size') ?? TILE_SIZE);
+if (!exportFile || !(weight >= 0) || !(sizeFactor > 0)) {
+  console.error(USAGE);
   process.exit(1);
 }
 
@@ -86,33 +101,52 @@ function variants({ d, w, h }) {
   // <style> that thickens the mark when the image is drawn small (browser tabs, the 24 px docs navbar).
   // non-scaling-stroke makes stroke-width mean output pixels, so it matches the baked-in raster boost.
   // Widest band first so the narrower ones override it, without gaps at fractional sizes.
-  const hint = (fg) =>
-    `<style>.m{stroke:${fg};stroke-width:0;stroke-linejoin:round;vector-effect:non-scaling-stroke}` +
-    [...BOOST].reverse().map((b) => `@media (max-width:${b.max}px){.m{stroke-width:${b.px}px}}`).join('') +
-    '</style>';
+  // `extraPx(at)` is a tile's own extra weight in output pixels at that size: when the mark already has an outline,
+  // the small-size rules replace it with a non-scaling one of the combined weight.
+  const hint = (fg, extraPx = null) =>
+    extraPx
+      ? `<style>.m{stroke:${fg};stroke-linejoin:round}` +
+        [...BOOST].reverse()
+          .map((b) => `@media (max-width:${b.max}px){.m{stroke-width:${fmt(extraPx(b.at) + b.px)}px;vector-effect:non-scaling-stroke}}`)
+          .join('') +
+        '</style>'
+      : `<style>.m{stroke:${fg};stroke-width:0;stroke-linejoin:round;vector-effect:non-scaling-stroke}` +
+        [...BOOST].reverse().map((b) => `@media (max-width:${b.max}px){.m{stroke-width:${b.px}px}}`).join('') +
+        '</style>';
 
   const bare = (fill, hinted = true) =>
     `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">` +
     (hinted ? `${hint(fill)}<path class="m"` : '<path') + ` fill="${fill}" d="${d}"/></svg>\n`;
 
-  // The mark in a `size` square, `frac` of its width wide, centred and lifted.
-  const placed = (size, frac, fill, attrs = '') => {
-    const k = (size * frac) / w;
-    const tx = (size - w * k) / 2;
-    const ty = (size - h * k) / 2 - LIFT * h * k;
+  // The mark in a `size` square, `frac` of its width wide, centred and lifted. With an outline of `s` path units
+  // the mark is that much bigger, so its outer edge is what gets `frac` of the width.
+  const placed = (size, frac, fill, attrs = '', s = 0) => {
+    const k = (size * frac) / (w + s);
+    const tx = (size - (w + s) * k) / 2 + (s / 2) * k;
+    const ty = (size - (h + s) * k) / 2 - LIFT * (h + s) * k + (s / 2) * k;
     return `<path${attrs} fill="${fill}" transform="translate(${fmt(tx)} ${fmt(ty)}) scale(${+k.toFixed(5)})" d="${d}"/>`;
   };
 
-  // `rasterSize` bakes the small-size boost in (for PNG/ICO frames); `hinted` adds the media-query version.
-  const tile = ({ bg, fg, frac, rounded = true, hinted = false, rasterSize = 0 }) => {
-    const units = (px) => fmt((px * w) / (rasterSize * frac)); // output px -> path units
-    const attrs = rasterSize && boostPx(rasterSize)
-      ? ` stroke="${fg}" stroke-width="${units(boostPx(rasterSize))}" stroke-linejoin="round"`
-      : hinted ? ' class="m"' : '';
+  // Light, dark and app tiles. `rasterSize` bakes the small-size boost in (for PNG/ICO frames); `hinted` adds
+  // the media-query version. They carry the extra `weight` and are scaled by `sizeFactor`.
+  const tile = ({ bg, fg, frac: baseFrac, rounded = true, hinted = false, rasterSize = 0 }) => {
+    const s = weight;
+    const frac = baseFrac * sizeFactor;
+    const unitsPerPx = (px) => ((w + s) * 1000) / (px * frac * 1000); // path units per output px at that size
+    const extraPx = (px) => s / unitsPerPx(px);
+    let attrs = '';
+    if (rasterSize) {
+      const total = s + (boostPx(rasterSize) ? boostPx(rasterSize) * unitsPerPx(rasterSize) : 0);
+      if (total) attrs = ` stroke="${fg}" stroke-width="${fmt(total)}" stroke-linejoin="round"`;
+    } else if (hinted) {
+      attrs = s ? ` class="m" stroke-width="${fmt(s)}"` : ' class="m"';
+    } else if (s) {
+      attrs = ` stroke="${fg}" stroke-width="${fmt(s)}" stroke-linejoin="round"`;
+    }
     return `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">` +
-      (hinted ? hint(fg) : '') +
+      (hinted ? hint(fg, s ? extraPx : null) : '') +
       `<rect width="1000" height="1000"${rounded ? ' rx="350" ry="350"' : ''} fill="${bg}"/>` +
-      placed(1000, frac, fg, attrs) +
+      placed(1000, frac, fg, attrs, s) +
       '</svg>\n';
   };
 
