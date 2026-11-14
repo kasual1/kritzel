@@ -1,0 +1,15 @@
+.banner {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  padding: 10px 16px;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.banner strong {
+  font-weight: 700;
+}
