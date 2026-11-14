@@ -1,6 +1,7 @@
 // Node side of the thumbnail generator: renders a seed to a PNG file (artwork + text overlay via resvg)
-// and stores the seed in the PNG's metadata, so stale images can be detected later.
+// and stores the seed and a fingerprint of the logo in the PNG's metadata, so stale images can be detected later.
 import { Resvg } from '@resvg/resvg-js';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,6 +13,8 @@ import { renderArtwork, thumbnailSvg } from './painting.mjs';
 const LOGO_SVG = fs.readFileSync(fileURLToPath(new URL('../../static/img/logo.svg', import.meta.url)), 'utf8');
 const LOGO_VIEWBOX = LOGO_SVG.match(/viewBox="([^"]+)"/)[1].trim().split(/\s+/).map(Number);
 const LOGO = { d: LOGO_SVG.match(/\sd="([^"]+)"/)[1], w: LOGO_VIEWBOX[2], h: LOGO_VIEWBOX[3] };
+// Changes whenever the logo's shape does, so thumbnails drawn with an older logo count as stale.
+export const LOGO_HASH = createHash('sha1').update(`${LOGO.w} ${LOGO.h} ${LOGO.d}`).digest('hex').slice(0, 8);
 
 // ---------- PNG ----------
 
@@ -60,15 +63,25 @@ function encodePng(w, h, rgba) {
 }
 
 const SEED_KEY = 'updraw-thumbnail-seed';
+const LOGO_KEY = 'updraw-thumbnail-logo';
 
-// Inserts a tEXt chunk right before IEND (tEXt is Latin-1, so the seed is stored URI-encoded).
+// Inserts tEXt chunks for the seed and the logo fingerprint right before IEND (tEXt is Latin-1, so values are
+// stored URI-encoded).
 function withSeed(png, seed) {
-  const text = chunk('tEXt', Buffer.from(`${SEED_KEY}\0${encodeURIComponent(seed)}`, 'latin1'));
-  return Buffer.concat([png.subarray(0, png.length - 12), text, png.subarray(png.length - 12)]);
+  const texts = [
+    [SEED_KEY, seed],
+    [LOGO_KEY, LOGO_HASH],
+  ].map(([key, value]) => chunk('tEXt', Buffer.from(`${key}\0${encodeURIComponent(value)}`, 'latin1')));
+  return Buffer.concat([png.subarray(0, png.length - 12), ...texts, png.subarray(png.length - 12)]);
 }
 
 // The seed stored in a thumbnail PNG, or null.
-export function readSeed(file) {
+export const readSeed = (file) => readText(file, SEED_KEY);
+
+// The fingerprint of the logo a thumbnail PNG was drawn with, or null (older thumbnails don't store one).
+export const readLogoHash = (file) => readText(file, LOGO_KEY);
+
+function readText(file, wanted) {
   if (!fs.existsSync(file)) return null;
   const png = fs.readFileSync(file);
   for (let o = 8; o + 8 <= png.length; ) {
@@ -76,7 +89,7 @@ export function readSeed(file) {
     const type = png.toString('ascii', o + 4, o + 8);
     if (type === 'tEXt') {
       const [key, value] = png.toString('latin1', o + 8, o + 8 + len).split('\0');
-      if (key === SEED_KEY) return decodeURIComponent(value);
+      if (key === wanted) return decodeURIComponent(value);
     }
     o += 12 + len;
   }

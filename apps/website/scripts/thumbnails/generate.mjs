@@ -1,6 +1,6 @@
 // Generates the blog thumbnails, or renders a single seed.
 //
-//   npm run thumbnails                     # posts whose thumbnail is missing or was made from another seed
+//   npm run thumbnails                     # posts whose thumbnail is missing or was made from another seed/logo
 //   npm run thumbnails -- --force          # regenerate all of them
 //   npm run thumbnails -- --slug my-post   # only this post (combine with --force to redo it)
 //   npm run thumbnails -- --seed 5b1192ef [--scale 4] [--out file.png]   # one seed, e.g. in high res
@@ -14,12 +14,13 @@
 // matter; posts without one get a stable seed from their slug, which is written back.
 // The image goes to static/img/blog/<slug>.png and `image: /img/blog/<slug>.png` is added to the front
 // matter (Docusaurus uses it as og:image). Posts whose `image` points somewhere else are left alone.
-// Each PNG stores its seed, so changing `thumbnailSeed` re-renders the image on the next run.
+// Each PNG stores its seed and a fingerprint of static/img/logo.svg, so changing `thumbnailSeed` or the logo
+// re-renders the image on the next run.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseSeed, randomSeed, seedFor } from './painting.mjs';
-import { readSeed, renderLogoMask, renderThumbnail } from './render.mjs';
+import { LOGO_HASH, readLogoHash, readSeed, renderLogoMask, renderThumbnail } from './render.mjs';
 
 const SITE_DIR = fileURLToPath(new URL('../../', import.meta.url));
 const BLOG_DIR = path.join(SITE_DIR, 'blog');
@@ -128,7 +129,7 @@ for (const post of findPosts(BLOG_DIR)) {
     throw new Error(`${rel}: ${error.message}`);
   }
   const out = path.join(OUT_DIR, `${slug}.png`);
-  if (force || readSeed(out) !== seed) {
+  if (force || readSeed(out) !== seed || readLogoHash(out) !== LOGO_HASH) {
     timed(`thumbnail ${path.relative(SITE_DIR, out)} from ${seed}`, () => renderThumbnail(seed, out));
     generated++;
   }

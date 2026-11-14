@@ -88,9 +88,14 @@
   margin-bottom: 0.9rem;
 }
 
+/*
+ * The triangle's base corners reach into the badge's rounded corners, so the mark is drawn at 26px (not 28px)
+ * and lifted by 1px for optical centering; the margins keep the badge itself the same size.
+ */
 .updraw-footer-brand__logo {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
+  margin: 0 1px 2px;
   display: block;
 }
 
