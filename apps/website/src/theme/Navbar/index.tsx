@@ -19,7 +19,7 @@ export default function Navbar(): ReactNode {
             <div className="blog-navigation-brand">
               {/* same logo and wordmark as the landing pages' hero (Landing/Hero.tsx) */}
               <Link to="/" className="blog-navigation-logo">
-                <svg width="40" height="37" viewBox={UPDRAW_LOGO_VIEWBOX} aria-hidden="true">
+                <svg width="40" viewBox={UPDRAW_LOGO_VIEWBOX} aria-hidden="true">
                   <path fill="currentColor" d={UPDRAW_LOGO_PATH} />
                 </svg>
                 Updraw

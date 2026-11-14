@@ -108,7 +108,6 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
 
 .blog-navigation-logo svg {
   width: 36px;
-  height: 33.21px;
 }
 
 @media (max-width: 768px) {
@@ -119,7 +118,6 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
 
   .blog-navigation-logo svg {
     width: 28px;
-    height: 25.83px;
   }
 }
 
