@@ -7,7 +7,7 @@ import Calculator from "./Calculator";
 import HeroTitle from "./HeroTitle";
 import ImageCard from "./ImageCard";
 import MenuButton from "./MenuButton";
-import { HELLO_DOT, HELLO_EXCLAMATION, HELLO_STROKES, UPDRAW_LOGO_PATH } from "./paths";
+import { HELLO_DOT, HELLO_EXCLAMATION, HELLO_STROKES, UPDRAW_LOGO_PATH, UPDRAW_LOGO_VIEWBOX } from "./paths";
 import { TOOLS } from "./tools";
 import styles from "./styles.module.css";
 import { useAppUrl } from "@site/src/utils/siteUrls";
@@ -324,7 +324,7 @@ export default function Hero({
     <div ref={wrapperRef} className={styles.heroWrapper}>
       <div ref={canvasRef} className={styles.heroCanvas}>
         <Link to="/" className={styles.brand}>
-          <svg width="40" height="35" viewBox="0 0 321.05759 277.97299" aria-hidden="true">
+          <svg width="40" height="37" viewBox={UPDRAW_LOGO_VIEWBOX} aria-hidden="true">
             <path fill="currentColor" d={UPDRAW_LOGO_PATH} />
           </svg>
           Updraw

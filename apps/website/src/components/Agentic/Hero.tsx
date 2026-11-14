@@ -7,7 +7,7 @@ import ImageCard from "../Landing/ImageCard";
 import MenuButton from "../Landing/MenuButton";
 import PieChart from "./PieChart";
 import { CallToActionBar } from "./CallToActionBar";
-import { UPDRAW_LOGO_PATH } from "../Landing/paths";
+import { UPDRAW_LOGO_PATH, UPDRAW_LOGO_VIEWBOX } from "../Landing/paths";
 import styles from "./styles.module.css";
 
 // On phones the canvas items can't be selected by hand (see styles.module.css), so a tap anywhere in the
@@ -452,7 +452,7 @@ function HeroScene({
     >
       <div ref={canvasRef} className={styles.heroCanvas}>
         <Link to="/" className={styles.brand}>
-          <svg width="40" height="35" viewBox="0 0 321.05759 277.97299" aria-hidden="true">
+          <svg width="40" height="37" viewBox={UPDRAW_LOGO_VIEWBOX} aria-hidden="true">
             <path fill="currentColor" d={UPDRAW_LOGO_PATH} />
           </svg>
           Updraw
