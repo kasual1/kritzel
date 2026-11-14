@@ -11,6 +11,7 @@ import {
   GenerativeUiSection,
   Wordmark,
 } from "@site/src/components/Landing/Sections";
+import RenameBanner from "@site/src/components/RenameBanner";
 import styles from "@site/src/components/Agentic/styles.module.css";
 import {
   frameworkPaths,
@@ -46,6 +47,7 @@ export default function Agentic(): ReactNode {
           <meta name="twitter:title" content={TITLE} />
         </Head>
         <main className={styles.page}>
+          <RenameBanner />
           <div className={styles.heroArea}>
             <Hero docsPath={docsPath} variant="agentic" />
             <div aria-hidden="true" className={styles.heroSpacer} />
