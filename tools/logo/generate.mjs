@@ -15,7 +15,7 @@ const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const SIZES = { light: 0.62, readme: 0.68, dark: 0.72, app: 0.78 };
 
 // Extra line weight for the tile icons (light, dark and app tiles and their PNG/ICO versions), in path units of
-// the drawing: a same-coloured outline around the drawn stroke. The drawn lines are about 4-5 units thick.
+// the drawing: a same-coloured outline around the drawn stroke. The drawn lines are roughly 8-10 units thick.
 // `--weight` overrides it and `--size` scales the tile fractions above, e.g. to preview a bolder variant.
 const TILE_WEIGHT = 0;
 const TILE_SIZE = 1;

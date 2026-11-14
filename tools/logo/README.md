@@ -44,8 +44,8 @@ These are constants at the top of `generate.mjs`:
 - **Optical centering** (`LIFT`): the mark is lifted by 3.5 % of its height, because a triangle carries its visual
   weight low.
 - **Tile weight and size** (`TILE_WEIGHT`, `TILE_SIZE`, or `--weight` / `--size` for a one-off run): an extra
-  same-coloured outline around the drawn lines of the tile icons, in path units of the drawing (the lines are about
-  4–5 units thick), and a factor on their `SIZES`. Both default to the drawing as it is.
+  same-coloured outline around the drawn lines of the tile icons, in path units of the drawing (the drawn lines are
+  roughly 8–10 units thick, so +4.5 makes them about 45 % heavier), and a factor on their `SIZES`. Both default to the drawing as it is.
 - **Small sizes** (`BOOST`): hand-drawn lines get thinner than a pixel below about 56 px, so favicons and the bare
   marks add 0.25–0.4 px of same-coloured outline there.
   - SVGs do this with size media queries plus `vector-effect: non-scaling-stroke`. The queries see the size the image
