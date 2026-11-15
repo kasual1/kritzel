@@ -41,6 +41,7 @@ It needs Chromium for Playwright (`npx playwright install chromium`), which rend
 | App tab icon (dark, bigger) | `apps/app/client/public/favicon.svg`, `apps/app/client/public/favicon.ico`                                                |
 | Inline mark on the website  | `UPDRAW_LOGO_PATH`, `UPDRAW_LOGO_VIEWBOX` and `UPDRAW_LOGO_STROKE_WIDTH` in `apps/website/src/components/Landing/paths.ts`, drawn by the landing and agentic heroes and the blog navigation. Their CSS sets only a height, so the width follows the logo's aspect ratio. |
 | README badge                | `logo.svg`: white rounded tile with a light grey border. Not written while `README_BADGE` is `null`                      |
+| Logo version                | `apps/website/src/data/logo-version.json`: a fingerprint of the logo. The website links its logo files as `…?v=<version>` (favicon, navbar and footer logo, apple-touch-icon), so browsers and the CDN fetch them again after a deploy instead of showing cached copies. |
 
 The framework favicons in `apps/core/*` and `apps/demos/*` (Angular, Vue) aren't ours and aren't touched.
 

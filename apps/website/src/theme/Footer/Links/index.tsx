@@ -3,6 +3,7 @@ import Links from '@theme-original/Footer/Links';
 import type LinksType from '@theme/Footer/Links';
 import type {WrapperProps} from '@docusaurus/types';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import logoVersion from '@site/src/data/logo-version.json';
 import {
   getPreferredFramework,
   subscribeToPreferredFramework,
@@ -18,7 +19,8 @@ function replaceFrameworkInPath(path: string, framework: Framework): string {
 export default function LinksWrapper(props: Props): ReactNode {
   const [framework, setFramework] = useState<Framework>(getPreferredFramework);
   const homeUrl = useBaseUrl('/');
-  const logoUrl = useBaseUrl('/img/logo.svg');
+  // versioned so browsers fetch the logo again when it changes (see tools/logo)
+  const logoUrl = `${useBaseUrl('/img/logo.svg')}?v=${logoVersion.version}`;
 
   useEffect(() => {
     return subscribeToPreferredFramework(setFramework);

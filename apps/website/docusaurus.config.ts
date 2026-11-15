@@ -6,6 +6,11 @@ import type * as Preset from "@docusaurus/preset-classic";
 import type { PluginOptions as LlmsPluginOptions } from "docusaurus-plugin-llms";
 // The origins come from the environment (see site-urls.mjs), so the site can be built for another domain.
 import { APP_URL, SITE_URL } from "./site-urls.mjs";
+import logoVersion from "./src/data/logo-version.json";
+
+// The logo files keep their names when the logo changes; this version (written by `npm run logo:generate`) makes
+// browsers and the CDN fetch them again.
+const LOGO_V = `?v=${logoVersion.version}`;
 
 const SITE_BASE_URL = process.env.Docusaurus_BASE_URL || "/";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
@@ -76,7 +81,7 @@ const DOC_REDIRECTS = FRAMEWORKS.flatMap((framework) =>
 const config: Config = {
   title: "Updraw",
   tagline: "Updraw helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools. Fully open-source and easy to integrate into React, Vue & Angular.",
-  favicon: "img/favicon.svg",
+  favicon: `img/favicon.svg${LOGO_V}`,
   future: {
     v4: true,
     faster: {
@@ -310,7 +315,7 @@ const config: Config = {
       title: "Updraw",
       logo: {
         alt: "Updraw Infinite Canvas",
-        src: "img/logo.svg",
+        src: `img/logo.svg${LOGO_V}`,
         width: 19,
         height: 24,
       },
@@ -441,7 +446,7 @@ const config: Config = {
       attributes: {
         rel: "apple-touch-icon",
         sizes: "512x512",
-        href: "/img/logo_avatar.png",
+        href: `/img/logo_avatar.png${LOGO_V}`,
       },
     },
     {

@@ -3,6 +3,7 @@
 //
 //   npm run logo:generate -- [<mark.svg | workspace-export.json>] [--out <dir>] [--weight <units>] [--size <factor>]
 import { chromium } from '@playwright/test';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -43,6 +44,9 @@ const PAPER = '#ffffff';
 const BORDER = '#ededed';
 
 const PATHS_TS = 'apps/website/src/components/Landing/paths.ts';
+// The website links its logo files as `<file>?v=<version>`, so browsers and the CDN fetch them again whenever the
+// logo changes (the file names stay the same).
+const LOGO_VERSION_JSON = 'apps/website/src/data/logo-version.json';
 
 // ---------- arguments ----------
 
@@ -325,6 +329,12 @@ try {
     updatePathsTs(pathsTs, bareMark(mark));
     console.log(`  ${PATHS_TS}`);
   } else console.log(`  (skipped ${PATHS_TS}: not in ${outRoot})`);
+
+  // a fingerprint of everything the website shows; changes whenever the mark, sizes or weight do
+  const version = createHash('sha1').update(Object.values(out.svg).join('\n')).digest('hex').slice(0, 8);
+  if (fs.existsSync(path.dirname(path.join(outRoot, LOGO_VERSION_JSON)))) {
+    write(LOGO_VERSION_JSON, `${JSON.stringify({ version }, null, 2)}\n`);
+  } else console.log(`  (skipped ${LOGO_VERSION_JSON}: not in ${outRoot})`);
 
   console.log(
     '\nNext: run `npm run thumbnails` in apps/website so the blog thumbnails pick up the new logo (see README.md).',
