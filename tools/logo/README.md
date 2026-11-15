@@ -39,14 +39,14 @@ The framework favicons in `apps/core/*` and `apps/demos/*` (Angular, Vue) aren't
 These are constants at the top of `generate.mjs`:
 
 - **Size in the tiles** (`SIZES`): the mark's width as a fraction of the tile. The rounded corners have a radius of 35 %
-  of the tile, and a triangle's base corners reach into them. So the dark app tiles hold the mark narrower than a
-  round mark would need, to keep a visible margin to the corners.
+  of the tile, and a triangle's base corners reach into them, so the mark stays well inside the tile. Light and dark
+  tiles use the same size; the app's tab icon is a little bigger so it reads in a browser tab.
 - **Optical centering** (`LIFT`): the mark is lifted by 3.5 % of its height, because a triangle carries its visual
   weight low.
 - **Tile weight and size** (`TILE_WEIGHT`, `TILE_SIZE`, or `--weight` / `--size` for a one-off run): an extra
   same-coloured outline around the drawn lines of the tile icons, in path units of the drawing (the drawn lines are
-  roughly 8–10 units thick, so +4.5 makes them about 45 % heavier), and a factor on their `SIZES`. The tiles use +4.5 and 0.82 (light 51 %, dark 59 %, app tab icon 64 % of the
-  tile); the README badge and the bare marks keep the drawing as it is.
+  roughly 8–10 units thick, so +4.5 makes them about 45 % heavier), and a factor on their `SIZES`. The tiles use +4.5 and 0.82 (light and dark 59 %, app tab icon
+  64 % of the tile); the README badge and the bare marks keep the drawing as it is.
 - **Small sizes** (`BOOST`): hand-drawn lines get thinner than a pixel below about 56 px, so favicons and the bare
   marks add 0.25–0.4 px of same-coloured outline there.
   - SVGs do this with size media queries plus `vector-effect: non-scaling-stroke`. The queries see the size the image

@@ -10,14 +10,13 @@ import { fileURLToPath } from 'node:url';
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 
 // Mark width as a fraction of the tile width (before TILE_SIZE below scales the light, dark and app tiles).
-// The dark tiles are narrower than the light one because the triangle's base corners reach into the rounded
-// corners.
-const SIZES = { light: 0.62, readme: 0.68, dark: 0.72, app: 0.78 };
+// Light and dark tiles hold the mark at the same size; the app's tab icon is a bit bigger to read in a tab.
+const SIZES = { light: 0.72, readme: 0.68, dark: 0.72, app: 0.78 };
 
 // The tile icons (light, dark and app tiles and their PNG/ICO versions) are drawn bolder and smaller than the
 // bare mark: TILE_WEIGHT is a same-coloured outline around the drawn stroke, in path units of the drawing (the
 // drawn lines are roughly 8-10 units thick, so 4.5 makes them about 45 % heavier), and TILE_SIZE scales the
-// tile fractions above (light 51 %, dark 59 %, app 64 % of the tile). `--weight` / `--size` override them.
+// tile fractions above (light and dark 59 %, app 64 % of the tile). `--weight` / `--size` override them.
 const TILE_WEIGHT = 4.5;
 const TILE_SIZE = 0.82;
 
