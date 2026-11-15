@@ -22,16 +22,17 @@ It needs Chromium for Playwright (`npx playwright install chromium`), which rend
 
 ## What it writes
 
-The path is never scaled out of proportion, redrawn or smoothed. It is moved so its bounding box starts at 0,0 and
-every variant draws it filled and outlined in the same colour (see `WEIGHT` below), which makes the lines bolder than
-the raw drawing while keeping its shape.
+The path is never scaled out of proportion, redrawn or smoothed. Every variant draws it filled and outlined in the same
+colour (see `WEIGHT` below), which makes the lines bolder than the raw drawing while keeping its shape. For the bare
+mark the path is moved so the outlined mark's bounding box starts at 0,0.
 
 | Variant                     | Files                                                                                                                    |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| README badge                | `logo.svg`: the light tile with a light grey border                                                                      |
+| README badge                | `logo.svg`: white rounded tile with a light grey border, mark at the light tile's size                                   |
 | Bare mark                   | `apps/website/static/img/logo.svg` (black), `logo_dark.svg` (white), `logo.png`                                          |
 | Light tile (website)        | `apps/website/static/img/favicon.svg`, `apps/website/static/favicon.ico`, `apps/website/static/img/logo_avatar.png` (full-bleed, used as apple-touch-icon) |
-| Dark tile (app)             | `apps/website/static/img/favicon_dark.svg`, and in `apps/app/client/public/`: `favicon.svg`, `favicon.ico`, `favicon-96x96.png`, `apple-touch-icon.png`, `web-app-manifest-192x192.png`, `web-app-manifest-512x512.png` |
+| Dark tile (app)             | `apps/website/static/img/favicon_dark.svg`, and in `apps/app/client/public/`: `favicon-96x96.png`, `apple-touch-icon.png`, `web-app-manifest-192x192.png`, `web-app-manifest-512x512.png` |
+| App tab icon (dark, bigger) | `apps/app/client/public/favicon.svg`, `apps/app/client/public/favicon.ico`                                                |
 | Inline mark on the website  | `UPDRAW_LOGO_PATH`, `UPDRAW_LOGO_VIEWBOX` and `UPDRAW_LOGO_STROKE_WIDTH` in `apps/website/src/components/Landing/paths.ts`, drawn by the landing and agentic heroes and the blog navigation. Their CSS sets only a width, so the height follows the logo's aspect ratio. |
 
 The framework favicons in `apps/core/*` and `apps/demos/*` (Angular, Vue) aren't ours and aren't touched.
@@ -49,8 +50,10 @@ These are constants at the top of `generate.mjs`:
   stays well inside.
 - **Optical centering** (`LIFT`): the mark is lifted by 3.5 % of its height, because a triangle carries its visual
   weight low.
-- **Small sizes** (`BOOST`): below about 56 px the lines get thinner than a pixel, so favicons and the bare marks add
-  another 0.25–0.4 px of outline there.
+- **Small sizes** (`BOOST`): in a 16–48 px favicon the mark is so small that its lines get thinner than a pixel even
+  with the outline, so the tile icons add another 0.25–0.4 px there.
   - SVGs do this with size media queries plus `vector-effect: non-scaling-stroke`. The queries see the size the image
-    is drawn at, so a large logo is untouched.
-  - The small ICO frames have the outline baked in.
+    is drawn at, so a large icon is untouched.
+  - The small ICO frames have it baked in.
+  - The bare mark doesn't get it: at its smallest use (the 24 px docs navbar) its lines are already over a pixel, and
+    it stays identical to the inline mark on the website.

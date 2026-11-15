@@ -348,8 +348,9 @@ export function renderArtwork(seedText, { scale = 1, scheme = SCHEME, steps = ST
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 // The text overlay as an SVG document in logical units, sized for `scale`: a darkening gradient, the Updraw
-// logo (`logo` = { d, w, h, stroke } of the navbar logo path, drawn filled and outlined `stroke` units wide), "updraw / blog" and the seed. `imageHref` (a data
-// URL of the artwork) is drawn underneath when given, so the result is the complete thumbnail.
+// logo (`logo` = { d, w, h, stroke } of the navbar logo path, drawn filled and outlined `stroke` units wide),
+// "updraw / blog" and the seed. `imageHref` (a data URL of the artwork) is drawn underneath when given, so the
+// result is the complete thumbnail.
 export function thumbnailSvg({ seed, label, logo, scale = 1, imageHref = null }) {
   const font = `font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"`;
   const baseline = H - 52;

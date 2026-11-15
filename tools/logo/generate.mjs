@@ -21,9 +21,11 @@ const WEIGHT = 6;
 // Optical centering: an upward triangle carries its weight low, so it's lifted by this fraction of its height.
 const LIFT = 0.035;
 
-// Below ~56 px the hand-drawn lines get thinner than a pixel, so the favicons and bare marks add a
-// same-coloured outline of this many output pixels. SVGs do it with size media queries (they see the size the
-// image is drawn at), the small rasters have it baked in. Nothing changes at 64 px and up.
+// In a favicon the mark is only 9-30 px wide, so even with the outline its lines get thinner than a pixel. The
+// tiles therefore widen the outline to at least this many output pixels on top of it at 56 px and below. SVGs do
+// it with size media queries (they see the size the image is drawn at), the small rasters have it baked in.
+// Nothing changes at 64 px and up. The bare mark doesn't need it: at its smallest use (24 px) its lines are
+// already over a pixel wide, and it stays identical to the inline mark on the website.
 // `at` is the typical size in each band, used to convert a tile's extra weight to output pixels.
 const BOOST = [
   { max: 24, at: 16, px: 0.4 },
@@ -120,12 +122,9 @@ function variants({ d, w, h }) {
         '</style>';
 
   const b = bareMark({ d, w, h });
-  const bare = (fill, hinted = true) =>
+  const bare = (fill) =>
     `<svg xmlns="http://www.w3.org/2000/svg" width="${b.w}" height="${b.h}" viewBox="0 0 ${b.w} ${b.h}">` +
-    (hinted
-      ? `${hint(fill, s ? (px) => (s * px) / b.w : null)}<path class="m"${s ? ` stroke-width="${fmt(s)}"` : ''}`
-      : `<path${outline(fill)}`) +
-    ` fill="${fill}" d="${b.d}"/></svg>\n`;
+    `<path${outline(fill)} fill="${fill}" d="${b.d}"/></svg>\n`;
 
   // The mark in a `size` square, `frac` of its width wide, centred and lifted. With an outline of `s` path units
   // the mark is that much bigger, so its outer edge is what gets `frac` of the width.
@@ -147,7 +146,7 @@ function variants({ d, w, h }) {
       const total = s + (boostPx(rasterSize) ? boostPx(rasterSize) * unitsPerPx(rasterSize) : 0);
       if (total) attrs = ` stroke="${fg}" stroke-width="${fmt(total)}" stroke-linejoin="round"`;
     } else if (hinted) {
-      attrs = s ? ` class="m" stroke-width="${fmt(s)}"` : ' class="m"';
+      attrs = ` class="m"${outline(fg)}`;
     } else {
       attrs = outline(fg);
     }
@@ -181,7 +180,7 @@ function variants({ d, w, h }) {
     },
     // [file, svg for a given pixel size, width, height]
     png: [
-      ['apps/website/static/img/logo.png', () => bare(INK, false), Math.round((277 * b.w) / b.h), 277],
+      ['apps/website/static/img/logo.png', () => bare(INK), Math.round((277 * b.w) / b.h), 277],
       ['apps/website/static/img/logo_avatar.png', () => tile({ ...light, rounded: false }), 512, 512],
       ['apps/app/client/public/apple-touch-icon.png', (s) => tile({ ...dark, rasterSize: s }), 180, 180],
       ['apps/app/client/public/favicon-96x96.png', (s) => tile({ ...dark, rasterSize: s }), 96, 96],
