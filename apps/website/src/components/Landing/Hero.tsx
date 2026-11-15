@@ -324,7 +324,7 @@ export default function Hero({
     <div ref={wrapperRef} className={styles.heroWrapper}>
       <div ref={canvasRef} className={styles.heroCanvas}>
         <Link to="/" className={styles.brand}>
-          <svg width="40" viewBox={UPDRAW_LOGO_VIEWBOX} aria-hidden="true">
+          <svg height="40" viewBox={UPDRAW_LOGO_VIEWBOX} aria-hidden="true">
             <path
               fill="currentColor"
               stroke="currentColor"

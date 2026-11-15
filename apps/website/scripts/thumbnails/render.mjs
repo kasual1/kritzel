@@ -9,8 +9,8 @@ import zlib from 'node:zlib';
 import { W, H } from './lib.mjs';
 import { renderArtwork, thumbnailSvg } from './painting.mjs';
 
-// The navbar logo (static/img/logo.svg, a single path drawn filled and outlined in the same colour), read at
-// runtime so thumbnails follow logo changes.
+// The navbar logo (static/img/logo.svg: one path of filled subpaths, plus an outline of its stroke-width when it has
+// one), read at runtime so thumbnails follow logo changes.
 const LOGO_SVG = fs.readFileSync(fileURLToPath(new URL('../../static/img/logo.svg', import.meta.url)), 'utf8');
 const LOGO_VIEWBOX = LOGO_SVG.match(/viewBox="([^"]+)"/)[1].trim().split(/\s+/).map(Number);
 const LOGO_PATH = LOGO_SVG.match(/<path\b[^>]*>/)[0];

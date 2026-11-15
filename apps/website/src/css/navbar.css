@@ -83,7 +83,7 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
 
 .blog-sidebar-brand .navbar__logo,
 .blog-sidebar-brand .navbar__logo img {
-  width: 36px;
+  width: auto;
   height: 36px;
 }
 
@@ -107,7 +107,8 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
 }
 
 .blog-navigation-logo svg {
-  width: 36px;
+  width: auto;
+  height: 34px;
 }
 
 @media (max-width: 768px) {
@@ -117,7 +118,8 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
   }
 
   .blog-navigation-logo svg {
-    width: 28px;
+    width: auto;
+    height: 28px;
   }
 }
 
@@ -309,11 +311,12 @@ html.landing-page .navbar--fixed-top {
   letter-spacing: -0.01em;
 }
 
+/* Sized by height: the mark is taller than wide, and the box hugs it so the gap to the title matches the heroes. */
 .navbar__logo {
   display: flex;
   align-items: center;
   height: 24px;
-  width: 24px;
+  width: auto;
 }
 
 /*
@@ -322,9 +325,8 @@ html.landing-page .navbar--fixed-top {
  * shows both stacked, and the logo jumps once React removes the extra one.
  */
 .navbar__logo img {
-  width: 24px;
+  width: auto;
   height: 24px;
-  object-fit: contain;
 }
 
 .navbar__items {
