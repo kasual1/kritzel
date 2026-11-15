@@ -31,7 +31,10 @@ export default function UpdrawBrand({ className }: { className?: string }): Reac
           d={UPDRAW_LOGO_PATH}
         />
       </svg>
-      Updraw
+      {/* one flex item, so "up" and "draw" stay one word */}
+      <span>
+        <span className={styles.up}>Up</span>draw
+      </span>
     </Link>
   );
 }
