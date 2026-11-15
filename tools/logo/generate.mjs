@@ -9,16 +9,17 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 
-// Mark width as a fraction of the tile width. The light tile and the README badge keep the width the previous
-// mark had; the dark tiles are narrower than before (0.80 / 0.89) because the triangle's base corners reach
-// into the rounded corners, and at these widths it keeps the previous mark's margin to the rounded outline.
+// Mark width as a fraction of the tile width (before TILE_SIZE below scales the light, dark and app tiles).
+// The dark tiles are narrower than the light one because the triangle's base corners reach into the rounded
+// corners.
 const SIZES = { light: 0.62, readme: 0.68, dark: 0.72, app: 0.78 };
 
-// Extra line weight for the tile icons (light, dark and app tiles and their PNG/ICO versions), in path units of
-// the drawing: a same-coloured outline around the drawn stroke. The drawn lines are roughly 8-10 units thick.
-// `--weight` overrides it and `--size` scales the tile fractions above, e.g. to preview a bolder variant.
-const TILE_WEIGHT = 0;
-const TILE_SIZE = 1;
+// The tile icons (light, dark and app tiles and their PNG/ICO versions) are drawn bolder and smaller than the
+// bare mark: TILE_WEIGHT is a same-coloured outline around the drawn stroke, in path units of the drawing (the
+// drawn lines are roughly 8-10 units thick, so 4.5 makes them about 45 % heavier), and TILE_SIZE scales the
+// tile fractions above (light 51 %, dark 59 %, app 64 % of the tile). `--weight` / `--size` override them.
+const TILE_WEIGHT = 4.5;
+const TILE_SIZE = 0.82;
 
 // Optical centering: an upward triangle carries its weight low, so it's lifted by this fraction of its height.
 const LIFT = 0.035;
