@@ -13,3 +13,35 @@
 .banner strong {
   font-weight: 700;
 }
+
+/* The banner is Docusaurus' announcement bar (src/theme/AnnouncementBar). Its one-line height, so the docs sidebar
+   (which reserves the bar's height while the page is scrolled to the top) matches it. `html:root` outranks the
+   theme's own 30px default. */
+@media (min-width: 997px) {
+  :global(html:root) {
+    --docusaurus-announcement-bar-height: 39.6px;
+  }
+}
+
+/*
+ * Each name's logo, in the text colour and centred on it. The Kritzel scribble is wide and dense and the Updraw mark
+ * is thin, so the scribble is a bit smaller and the mark a bit larger to look the same size. Gaps to the names:
+ * 0.18em (about 2.5 px) after the scribble, about 3.4 px after the mark.
+ * The --rename-* variables are only there for fine-tuning previews.
+ */
+.logo {
+  display: inline-block;
+  width: auto;
+}
+
+.oldLogo {
+  height: var(--rename-old-logo-height, 1em);
+  margin-right: var(--rename-old-logo-gap, 0.18em);
+  vertical-align: var(--rename-old-logo-shift, -0.15em);
+}
+
+.newLogo {
+  height: var(--rename-new-logo-height, 1.25em);
+  margin-right: var(--rename-new-logo-gap, calc(0.1em + 2px));
+  vertical-align: var(--rename-new-logo-shift, -0.28em);
+}
