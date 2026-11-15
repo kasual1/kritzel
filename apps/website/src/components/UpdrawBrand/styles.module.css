@@ -1,0 +1,33 @@
+/*
+ * The Updraw logo + name lockup (UpdrawBrand), the same in every header. `a.` outranks Infima's
+ * `.navbar__brand` / `.navbar__brand:hover` colours in the docs navbar.
+ */
+a.brand,
+a.brand:hover {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #0a0a0a;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+/* Sized by height: the mark is taller than wide. */
+.mark {
+  flex: none;
+  width: auto;
+  height: 34px;
+}
+
+@media (max-width: 768px) {
+  a.brand,
+  a.brand:hover {
+    font-size: 22px;
+  }
+
+  .mark {
+    height: 28px;
+  }
+}

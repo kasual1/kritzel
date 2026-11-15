@@ -81,46 +81,9 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
   backdrop-filter: none;
 }
 
-.blog-sidebar-brand .navbar__logo,
-.blog-sidebar-brand .navbar__logo img {
-  width: auto;
-  height: 36px;
-}
-
-.blog-sidebar-brand .navbar__title {
-  font-size: 26px;
-  letter-spacing: -0.02em;
-}
-
-/* Matches the landing pages' hero brand (.brand in Landing/styles.module.css). */
-.blog-navigation-logo,
-.blog-navigation-logo:hover {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* The logo + name (UpdrawBrand, which styles it), as tall as the landing pages' hero brand. */
+.blog-navigation-logo {
   min-height: 48px;
-  color: #0a0a0a;
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  text-decoration: none;
-}
-
-.blog-navigation-logo svg {
-  width: auto;
-  height: 34px;
-}
-
-@media (max-width: 768px) {
-  .blog-navigation-logo,
-  .blog-navigation-logo:hover {
-    font-size: 22px;
-  }
-
-  .blog-navigation-logo svg {
-    width: auto;
-    height: 28px;
-  }
 }
 
 .blog-sidebar-brand {
@@ -304,29 +267,6 @@ html.landing-page .navbar--fixed-top {
 
 .navbar__brand {
   margin-right: 1.1rem;
-}
-
-.navbar__title {
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-/* Sized by height: the mark is taller than wide, and the box hugs it so the gap to the title matches the heroes. */
-.navbar__logo {
-  display: flex;
-  align-items: center;
-  height: 24px;
-  width: auto;
-}
-
-/*
- * Don't set `display` here: Docusaurus SSR renders a light and a dark logo and hides the
- * inactive one via `.themedComponent { display: none }` until hydration. Overriding it
- * shows both stacked, and the logo jumps once React removes the extra one.
- */
-.navbar__logo img {
-  width: auto;
-  height: 24px;
 }
 
 .navbar__items {
