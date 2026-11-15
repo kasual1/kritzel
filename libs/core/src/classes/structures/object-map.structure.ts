@@ -1228,6 +1228,55 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
   }
 
   /**
+   * Removes an object the local user started but did not finish, as if it had never been made,
+   * e.g. a brush stroke whose first finger turned out to be the start of a pinch-zoom.
+   *
+   * Unlike `remove()`, which records the removal as an undo step of its own (so undo would bring
+   * the half-made object back), the deletion joins the still open undo step that recorded the
+   * object's insertion. Yjs never restores what was created and deleted in the same step. If that
+   * step holds nothing else, it is dropped, so the next undo reverts the user's previous action.
+   *
+   * @param objectId - The ID of the object to discard
+   */
+  discard(objectId: string): void {
+    if (!this._idMap.has(objectId)) {
+      return;
+    }
+    this.quadtree.remove(o => o.id === objectId);
+    this._idMap.delete(objectId);
+    if (this._localActiveDrawingObjectId === objectId) {
+      this._localActiveDrawingObjectId = null;
+    }
+
+    if (this._objectsMap?.has(objectId)) {
+      const undoManager = this._undoManager;
+      const stackLength = undoManager?.undoStack.length ?? 0;
+      const origin = this.writeOrigin;
+
+      // No undo boundary before the deletion, so it merges into the step of the insertion.
+      this._ydoc?.transact(() => {
+        this._objectsMap?.delete(objectId);
+      }, origin);
+
+      const top = undoManager?.undoStack[stackLength - 1];
+      if (
+        undoManager &&
+        top &&
+        origin === 'local' &&
+        this._transactionDepth === 0 &&
+        this._temporaryItemsCount === 0 &&
+        undoManager.undoStack.length === stackLength &&
+        Y.equalDeleteSets(top.insertions, top.deletions)
+      ) {
+        // The step deleted exactly what it created: undoing it would change nothing.
+        undoManager.undoStack.pop();
+      }
+    }
+
+    this.markUndoBoundary();
+  }
+
+  /**
    * Filters objects in the quadtree based on a predicate function.
    *
    * @param predicate - A function that returns `true` for objects to include in the result

@@ -2,6 +2,7 @@ import { UpdrawViewport } from './viewport.class';
 import { UpdrawCore } from './core.class';
 import { UpdrawMouseButton } from '../../enums/event-button.enum';
 import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpdrawPath } from '../objects/path.class';
 import { UpdrawKeyboardHelper } from '../../helpers/keyboard.helper';
 import { UpdrawDevicesHelper } from '../../helpers/devices.helper';
 
@@ -272,29 +273,67 @@ describe('UpdrawViewport', () => {
         expect(viewport.startY).toBe(200);
       });
 
-      it('should remove current path when two-finger gesture starts', () => {
-        const mockPath = { id: 'path-1', isCompleted: false };
-        (mockCore.store as any).currentPath = mockPath;
+      describe('brush stroke started by the first finger', () => {
+        const startPinch = () => {
+          const pointer1 = createPointerEvent({ pointerType: 'touch', pointerId: 1, clientX: 100, clientY: 100 });
+          const pointer2 = createPointerEvent({ pointerType: 'touch', pointerId: 2, clientX: 200, clientY: 200 });
+          mockState.pointers.set(1, pointer1);
+          mockState.pointers.set(2, pointer2);
+          viewport.handlePointerDown(pointer2);
+        };
 
-        const pointer1 = createPointerEvent({
-          pointerType: 'touch',
-          pointerId: 1,
-          clientX: 100,
-          clientY: 100,
+        const createPath = (id: string): UpdrawPath => {
+          const path = Object.create(UpdrawPath.prototype) as UpdrawPath;
+          path.id = id;
+          path.isCompleted = false;
+          return path;
+        };
+
+        beforeEach(() => {
+          mockState.objects.localActiveDrawingObjectId = null;
+          mockState.objects.findById = jest.fn().mockReturnValue(undefined);
+          mockState.objects.discard = jest.fn();
         });
-        const pointer2 = createPointerEvent({
-          pointerType: 'touch',
-          pointerId: 2,
-          clientX: 200,
-          clientY: 200,
+
+        it('should discard the stroke when two-finger gesture starts', () => {
+          const path = createPath('path-1');
+          mockState.objects.localActiveDrawingObjectId = 'path-1';
+          mockState.objects.findById.mockImplementation((id: string) => (id === 'path-1' ? path : undefined));
+
+          startPinch();
+
+          expect(mockState.objects.discard).toHaveBeenCalledWith('path-1');
         });
 
-        mockState.pointers.set(1, pointer1);
-        mockState.pointers.set(2, pointer2);
+        it('should not remove the stroke as an undoable step', () => {
+          // Regression: remove() recorded the removal as its own undo step, so undoing after a
+          // pinch-zoom brought the one-point stroke back as a dot between the two fingers.
+          const path = createPath('path-1');
+          mockState.objects.localActiveDrawingObjectId = 'path-1';
+          mockState.objects.findById.mockReturnValue(path);
 
-        viewport.handlePointerDown(pointer2);
+          startPinch();
 
-        expect(mockState.objects.remove).toHaveBeenCalled();
+          expect(mockState.objects.remove).not.toHaveBeenCalled();
+        });
+
+        it('should not discard unfinished strokes of collaborators', () => {
+          (mockCore.store as any).currentPath = createPath('remote-path');
+
+          startPinch();
+
+          expect(mockState.objects.discard).not.toHaveBeenCalled();
+          expect(mockState.objects.remove).not.toHaveBeenCalled();
+        });
+
+        it('should not discard an active drawing object that is not a stroke', () => {
+          mockState.objects.localActiveDrawingObjectId = 'line-1';
+          mockState.objects.findById.mockReturnValue({ id: 'line-1', isCompleted: false });
+
+          startPinch();
+
+          expect(mockState.objects.discard).not.toHaveBeenCalled();
+        });
       });
 
       it('should clear selection when scaling starts while selecting', () => {
