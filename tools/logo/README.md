@@ -28,7 +28,7 @@ mark the path is moved so the outlined mark's bounding box starts at 0,0.
 
 | Variant                     | Files                                                                                                                    |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| README badge                | `logo.svg`: white rounded tile with a light grey border, mark at the light tile's size                                   |
+| README badge                | `logo.svg`: white rounded tile with a light grey border. Pinned to an earlier version for now (`README_BADGE`)           |
 | Bare mark                   | `apps/website/static/img/logo.svg` (black), `logo_dark.svg` (white), `logo.png`                                          |
 | Light tile (website)        | `apps/website/static/img/favicon.svg`, `apps/website/static/favicon.ico`, `apps/website/static/img/logo_avatar.png` (full-bleed, used as apple-touch-icon) |
 | Dark tile (app)             | `apps/website/static/img/favicon_dark.svg`, and in `apps/app/client/public/`: `favicon-96x96.png`, `apple-touch-icon.png`, `web-app-manifest-192x192.png`, `web-app-manifest-512x512.png` |
@@ -41,13 +41,15 @@ The framework favicons in `apps/core/*` and `apps/demos/*` (Angular, Vue) aren't
 
 These are constants at the top of `generate.mjs`:
 
-- **Line weight** (`WEIGHT`, or `--weight` for a one-off run): a same-coloured outline of 6 path units around the
-  drawn lines (which are roughly 8–10 units thick), in every variant. The website constants and the blog thumbnails
-  draw the same outline.
+- **Line weight** (`WEIGHT`, or `--weight` for a one-off run): a same-coloured outline of 7.5 path units around the
+  drawn lines (which are roughly 8–10 units thick), in every variant. It keeps the lines bold and the triangle's open
+  interior compact. The website constants and the blog thumbnails draw the same outline.
 - **Size in the tiles** (`SIZES`, scaled by `--size` for a one-off run): the mark's width as a fraction of the tile.
-  The light and dark tiles and the README badge use 59 %; the app's tab icon uses 64 % so it reads in a browser tab.
-  The rounded corners have a radius of 35 % of the tile and a triangle's base corners reach into them, so the mark
-  stays well inside.
+  The light and dark tiles use 54.3 %; the app's tab icon uses 58.9 % so it reads in a browser tab. The rounded
+  corners have a radius of 35 % of the tile and a triangle's base corners reach into them, so the mark stays well
+  inside.
+- **README badge** (`README_BADGE`): pinned to an earlier version (outline 6, mark at 59 %) for now, and not affected
+  by the options above. Set it to `{ weight: WEIGHT, frac: SIZES.light }` to bring it in line.
 - **Optical centering** (`LIFT`): the mark is lifted by 3.5 % of its height, because a triangle carries its visual
   weight low.
 - **Small sizes** (`BOOST`): in a 16–48 px favicon the mark is so small that its lines get thinner than a pixel even
