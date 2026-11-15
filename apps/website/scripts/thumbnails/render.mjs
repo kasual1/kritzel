@@ -9,12 +9,19 @@ import zlib from 'node:zlib';
 import { W, H } from './lib.mjs';
 import { renderArtwork, thumbnailSvg } from './painting.mjs';
 
-// The navbar logo (static/img/logo.svg, a single path), read at runtime so thumbnails follow logo changes.
+// The navbar logo (static/img/logo.svg, a single path drawn filled and outlined in the same colour), read at
+// runtime so thumbnails follow logo changes.
 const LOGO_SVG = fs.readFileSync(fileURLToPath(new URL('../../static/img/logo.svg', import.meta.url)), 'utf8');
 const LOGO_VIEWBOX = LOGO_SVG.match(/viewBox="([^"]+)"/)[1].trim().split(/\s+/).map(Number);
-const LOGO = { d: LOGO_SVG.match(/\sd="([^"]+)"/)[1], w: LOGO_VIEWBOX[2], h: LOGO_VIEWBOX[3] };
+const LOGO_PATH = LOGO_SVG.match(/<path\b[^>]*>/)[0];
+const LOGO = {
+  d: LOGO_PATH.match(/\sd="([^"]+)"/)[1],
+  w: LOGO_VIEWBOX[2],
+  h: LOGO_VIEWBOX[3],
+  stroke: Number(LOGO_PATH.match(/\sstroke-width="([\d.]+)"/)?.[1] ?? 0),
+};
 // Changes whenever the logo's shape does, so thumbnails drawn with an older logo count as stale.
-export const LOGO_HASH = createHash('sha1').update(`${LOGO.w} ${LOGO.h} ${LOGO.d}`).digest('hex').slice(0, 8);
+export const LOGO_HASH = createHash('sha1').update(`${LOGO.w} ${LOGO.h} ${LOGO.stroke} ${LOGO.d}`).digest('hex').slice(0, 8);
 
 // ---------- PNG ----------
 
@@ -123,9 +130,9 @@ export function renderLogoMask(seed, outFile, { scale = 1, background = 'white',
   const x = (W - LOGO.w * k) / 2, y = (H - LOGO.h * k) / 2;
   const image = `<image width="${W}" height="${H}" href="${imageHref}"/>`;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W * scale}" height="${H * scale}" viewBox="0 0 ${W} ${H}">
-  <defs><clipPath id="logo"><path transform="translate(${x} ${y}) scale(${k})" d="${LOGO.d}"/></clipPath></defs>
+  <defs><mask id="logo"><path fill="#fff" stroke="#fff" stroke-width="${LOGO.stroke}" stroke-linejoin="round" transform="translate(${x} ${y}) scale(${k})" d="${LOGO.d}"/></mask></defs>
   ${bg === 'dim' ? `${image}<rect width="${W}" height="${H}" fill="#000" fill-opacity="0.72"/>` : bg === 'transparent' ? '' : `<rect width="${W}" height="${H}" fill="${bg}"/>`}
-  <g clip-path="url(#logo)">${image}</g>
+  <g mask="url(#logo)">${image}</g>
 </svg>`;
   const png = new Resvg(svg, { fitTo: { mode: 'width', value: W * scale } }).render().asPng();
   fs.mkdirSync(path.dirname(outFile), { recursive: true });

@@ -9,16 +9,14 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 
-// Mark width as a fraction of the tile width (before TILE_SIZE below scales the light, dark and app tiles).
-// Light and dark tiles hold the mark at the same size; the app's tab icon is a bit bigger to read in a tab.
-const SIZES = { light: 0.72, readme: 0.68, dark: 0.72, app: 0.78 };
+// Mark width as a fraction of the tile width. The light and dark tiles and the README badge (the light tile with a
+// border) hold the mark at the same size; the app's tab icon is a bit bigger so it reads in a browser tab.
+const SIZES = { light: 0.59, readme: 0.59, dark: 0.59, app: 0.64 };
 
-// The tile icons (light, dark and app tiles and their PNG/ICO versions) are drawn bolder and smaller than the
-// bare mark: TILE_WEIGHT is a same-coloured outline around the drawn stroke, in path units of the drawing (the
-// drawn lines are roughly 8-10 units thick, so 4.5 makes them about 45 % heavier), and TILE_SIZE scales the
-// tile fractions above (light and dark 59 %, app 64 % of the tile). `--weight` / `--size` override them.
-const TILE_WEIGHT = 4.5;
-const TILE_SIZE = 0.82;
+// Line weight of the logo: every variant draws the mark with a same-coloured outline of this many path units
+// around the drawn stroke (the drawn lines are roughly 8-10 units thick, so 6 makes them clearly bolder).
+// `--weight` overrides it and `--size` scales SIZES, e.g. to preview a variant into `--out` first.
+const WEIGHT = 6;
 
 // Optical centering: an upward triangle carries its weight low, so it's lifted by this fraction of its height.
 const LIFT = 0.035;
@@ -52,8 +50,8 @@ const option = (name) => {
 const optionValues = new Set(OPTIONS.map((o) => args.indexOf(o)).filter((i) => i >= 0).map((i) => i + 1));
 const exportFile = args.find((a, i) => !a.startsWith('--') && !optionValues.has(i));
 const outRoot = option('--out') ? path.resolve(option('--out')) : ROOT;
-const weight = Number(option('--weight') ?? TILE_WEIGHT);
-const sizeFactor = Number(option('--size') ?? TILE_SIZE);
+const weight = Number(option('--weight') ?? WEIGHT);
+const sizeFactor = Number(option('--size') ?? 1);
 if (!exportFile || !(weight >= 0) || !(sizeFactor > 0)) {
   console.error(USAGE);
   process.exit(1);
@@ -97,7 +95,14 @@ function translatePath(d, dx, dy) {
 
 // ---------- SVG builders ----------
 
+// The bare mark: the drawing moved by half the outline so the outline fits in a box starting at 0,0.
+function bareMark({ d, w, h }) {
+  return { d: weight ? translatePath(d, weight / 2, weight / 2) : d, w: Number(fmt(w + weight)), h: Number(fmt(h + weight)) };
+}
+
 function variants({ d, w, h }) {
+  const s = weight;
+  const outline = (fg) => (s ? ` stroke="${fg}" stroke-width="${fmt(s)}" stroke-linejoin="round"` : '');
   // <style> that thickens the mark when the image is drawn small (browser tabs, the 24 px docs navbar).
   // non-scaling-stroke makes stroke-width mean output pixels, so it matches the baked-in raster boost.
   // Widest band first so the narrower ones override it, without gaps at fractional sizes.
@@ -114,9 +119,13 @@ function variants({ d, w, h }) {
         [...BOOST].reverse().map((b) => `@media (max-width:${b.max}px){.m{stroke-width:${b.px}px}}`).join('') +
         '</style>';
 
+  const b = bareMark({ d, w, h });
   const bare = (fill, hinted = true) =>
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">` +
-    (hinted ? `${hint(fill)}<path class="m"` : '<path') + ` fill="${fill}" d="${d}"/></svg>\n`;
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${b.w}" height="${b.h}" viewBox="0 0 ${b.w} ${b.h}">` +
+    (hinted
+      ? `${hint(fill, s ? (px) => (s * px) / b.w : null)}<path class="m"${s ? ` stroke-width="${fmt(s)}"` : ''}`
+      : `<path${outline(fill)}`) +
+    ` fill="${fill}" d="${b.d}"/></svg>\n`;
 
   // The mark in a `size` square, `frac` of its width wide, centred and lifted. With an outline of `s` path units
   // the mark is that much bigger, so its outer edge is what gets `frac` of the width.
@@ -128,9 +137,8 @@ function variants({ d, w, h }) {
   };
 
   // Light, dark and app tiles. `rasterSize` bakes the small-size boost in (for PNG/ICO frames); `hinted` adds
-  // the media-query version. They carry the extra `weight` and are scaled by `sizeFactor`.
+  // the media-query version.
   const tile = ({ bg, fg, frac: baseFrac, rounded = true, hinted = false, rasterSize = 0 }) => {
-    const s = weight;
     const frac = baseFrac * sizeFactor;
     const unitsPerPx = (px) => ((w + s) * 1000) / (px * frac * 1000); // path units per output px at that size
     const extraPx = (px) => s / unitsPerPx(px);
@@ -140,8 +148,8 @@ function variants({ d, w, h }) {
       if (total) attrs = ` stroke="${fg}" stroke-width="${fmt(total)}" stroke-linejoin="round"`;
     } else if (hinted) {
       attrs = s ? ` class="m" stroke-width="${fmt(s)}"` : ' class="m"';
-    } else if (s) {
-      attrs = ` stroke="${fg}" stroke-width="${fmt(s)}" stroke-linejoin="round"`;
+    } else {
+      attrs = outline(fg);
     }
     return `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">` +
       (hinted ? hint(fg, s ? extraPx : null) : '') +
@@ -155,7 +163,7 @@ function variants({ d, w, h }) {
   const readme =
     `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}">` +
     `<rect x="9.38" y="9.38" width="1143.75" height="1143.75" rx="365.63" ry="365.63" fill="${PAPER}" stroke="${BORDER}" stroke-width="18.75"/>` +
-    placed(S, SIZES.readme, INK) +
+    placed(S, SIZES.readme * sizeFactor, INK, outline(INK), s) +
     '</svg>\n';
 
   const light = { bg: PAPER, fg: INK, frac: SIZES.light };
@@ -173,7 +181,7 @@ function variants({ d, w, h }) {
     },
     // [file, svg for a given pixel size, width, height]
     png: [
-      ['apps/website/static/img/logo.png', () => bare(INK, false), Math.round((277 * w) / h), 277],
+      ['apps/website/static/img/logo.png', () => bare(INK, false), Math.round((277 * b.w) / b.h), 277],
       ['apps/website/static/img/logo_avatar.png', () => tile({ ...light, rounded: false }), 512, 512],
       ['apps/app/client/public/apple-touch-icon.png', (s) => tile({ ...dark, rasterSize: s }), 180, 180],
       ['apps/app/client/public/favicon-96x96.png', (s) => tile({ ...dark, rasterSize: s }), 96, 96],
@@ -206,17 +214,19 @@ function encodeIco(frames) {
   return Buffer.concat([header, ...frames.map((f) => f.png)]);
 }
 
-// Puts the new path and viewBox into the constants the website's React components draw the mark from.
+// Puts the bare mark's path, viewBox and outline width into the constants the website's React components draw
+// the mark from.
 function updatePathsTs(file, { d, w, h }) {
   const source = fs.readFileSync(file, 'utf8');
-  if (!/export const UPDRAW_LOGO_PATH =/.test(source) || !/export const UPDRAW_LOGO_VIEWBOX =/.test(source)) {
-    throw new Error(`${file}: UPDRAW_LOGO_PATH / UPDRAW_LOGO_VIEWBOX not found`);
-  }
+  const names = ['UPDRAW_LOGO_PATH', 'UPDRAW_LOGO_VIEWBOX', 'UPDRAW_LOGO_STROKE_WIDTH'];
+  const missing = names.filter((n) => !new RegExp(`export const ${n} =`).test(source));
+  if (missing.length) throw new Error(`${file}: ${missing.join(', ')} not found`);
   fs.writeFileSync(
     file,
     source
       .replace(/(export const UPDRAW_LOGO_PATH =\s*)"[^"]*";/, `$1"${d}";`)
-      .replace(/(export const UPDRAW_LOGO_VIEWBOX = )"[^"]*";/, `$1"0 0 ${w} ${h}";`),
+      .replace(/(export const UPDRAW_LOGO_VIEWBOX = )"[^"]*";/, `$1"0 0 ${w} ${h}";`)
+      .replace(/(export const UPDRAW_LOGO_STROKE_WIDTH = )[\d.]+;/, `$1${fmt(weight)};`),
   );
 }
 
@@ -246,7 +256,7 @@ try {
   const d = translatePath(drawn, -raw.x, -raw.y);
   const moved = await bbox(d);
   const mark = { d, w: Number(fmt(moved.x + moved.width)), h: Number(fmt(moved.y + moved.height)) };
-  console.log(`mark: ${mark.w} x ${mark.h} (aspect ${(mark.w / mark.h).toFixed(4)})`);
+  console.log(`mark: ${mark.w} x ${mark.h}, outline ${fmt(weight)} units, tile sizes x${sizeFactor}`);
 
   const write = (rel, data) => {
     const file = path.join(outRoot, rel);
@@ -276,7 +286,7 @@ try {
 
   const pathsTs = path.join(outRoot, PATHS_TS);
   if (fs.existsSync(pathsTs)) {
-    updatePathsTs(pathsTs, mark);
+    updatePathsTs(pathsTs, bareMark(mark));
     console.log(`  ${PATHS_TS}`);
   } else console.log(`  (skipped ${PATHS_TS}: not in ${outRoot})`);
 

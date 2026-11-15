@@ -5,8 +5,8 @@ Generates every variant of the Updraw logo from a mark drawn in Updraw itself.
 ```bash
 npm run logo:generate -- path/to/updraw-logo.json              # write all variants into the repo
 npm run logo:generate -- path/to/updraw-logo.json --out preview # write them into ./preview instead, to look first
-npm run logo:generate -- path/to/updraw-logo.json --out preview --weight 4.5 --size 0.9
-                                    # preview bolder, 10 % smaller tile icons (light, dark and app tiles)
+npm run logo:generate -- path/to/updraw-logo.json --out preview --weight 7 --size 0.9
+                                    # preview a heavier line and 10 % smaller marks in the tiles
 ```
 
 1. Draw the logo in Updraw as a single stroke, on an otherwise empty workspace.
@@ -22,15 +22,17 @@ It needs Chromium for Playwright (`npx playwright install chromium`), which rend
 
 ## What it writes
 
-The path is only moved so its bounding box starts at 0,0. It is never scaled out of proportion, redrawn or smoothed.
+The path is never scaled out of proportion, redrawn or smoothed. It is moved so its bounding box starts at 0,0 and
+every variant draws it filled and outlined in the same colour (see `WEIGHT` below), which makes the lines bolder than
+the raw drawing while keeping its shape.
 
 | Variant                     | Files                                                                                                                    |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| README badge                | `logo.svg`: white rounded tile with a light grey border                                                                  |
+| README badge                | `logo.svg`: the light tile with a light grey border                                                                      |
 | Bare mark                   | `apps/website/static/img/logo.svg` (black), `logo_dark.svg` (white), `logo.png`                                          |
 | Light tile (website)        | `apps/website/static/img/favicon.svg`, `apps/website/static/favicon.ico`, `apps/website/static/img/logo_avatar.png` (full-bleed, used as apple-touch-icon) |
 | Dark tile (app)             | `apps/website/static/img/favicon_dark.svg`, and in `apps/app/client/public/`: `favicon.svg`, `favicon.ico`, `favicon-96x96.png`, `apple-touch-icon.png`, `web-app-manifest-192x192.png`, `web-app-manifest-512x512.png` |
-| Inline mark on the website  | `UPDRAW_LOGO_PATH` and `UPDRAW_LOGO_VIEWBOX` in `apps/website/src/components/Landing/paths.ts`, drawn by the landing and agentic heroes and the blog navigation. Their CSS sets only a width, so the height follows the logo's aspect ratio. |
+| Inline mark on the website  | `UPDRAW_LOGO_PATH`, `UPDRAW_LOGO_VIEWBOX` and `UPDRAW_LOGO_STROKE_WIDTH` in `apps/website/src/components/Landing/paths.ts`, drawn by the landing and agentic heroes and the blog navigation. Their CSS sets only a width, so the height follows the logo's aspect ratio. |
 
 The framework favicons in `apps/core/*` and `apps/demos/*` (Angular, Vue) aren't ours and aren't touched.
 
@@ -38,17 +40,17 @@ The framework favicons in `apps/core/*` and `apps/demos/*` (Angular, Vue) aren't
 
 These are constants at the top of `generate.mjs`:
 
-- **Size in the tiles** (`SIZES`): the mark's width as a fraction of the tile. The rounded corners have a radius of 35 %
-  of the tile, and a triangle's base corners reach into them, so the mark stays well inside the tile. Light and dark
-  tiles use the same size; the app's tab icon is a little bigger so it reads in a browser tab.
+- **Line weight** (`WEIGHT`, or `--weight` for a one-off run): a same-coloured outline of 6 path units around the
+  drawn lines (which are roughly 8–10 units thick), in every variant. The website constants and the blog thumbnails
+  draw the same outline.
+- **Size in the tiles** (`SIZES`, scaled by `--size` for a one-off run): the mark's width as a fraction of the tile.
+  The light and dark tiles and the README badge use 59 %; the app's tab icon uses 64 % so it reads in a browser tab.
+  The rounded corners have a radius of 35 % of the tile and a triangle's base corners reach into them, so the mark
+  stays well inside.
 - **Optical centering** (`LIFT`): the mark is lifted by 3.5 % of its height, because a triangle carries its visual
   weight low.
-- **Tile weight and size** (`TILE_WEIGHT`, `TILE_SIZE`, or `--weight` / `--size` for a one-off run): an extra
-  same-coloured outline around the drawn lines of the tile icons, in path units of the drawing (the drawn lines are
-  roughly 8–10 units thick, so +4.5 makes them about 45 % heavier), and a factor on their `SIZES`. The tiles use +4.5 and 0.82 (light and dark 59 %, app tab icon
-  64 % of the tile); the README badge and the bare marks keep the drawing as it is.
-- **Small sizes** (`BOOST`): hand-drawn lines get thinner than a pixel below about 56 px, so favicons and the bare
-  marks add 0.25–0.4 px of same-coloured outline there.
+- **Small sizes** (`BOOST`): below about 56 px the lines get thinner than a pixel, so favicons and the bare marks add
+  another 0.25–0.4 px of outline there.
   - SVGs do this with size media queries plus `vector-effect: non-scaling-stroke`. The queries see the size the image
     is drawn at, so a large logo is untouched.
   - The small ICO frames have the outline baked in.
