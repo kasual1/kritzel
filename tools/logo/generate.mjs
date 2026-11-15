@@ -19,9 +19,9 @@ const SIZES = { light: 0.66, dark: 0.66, app: 0.72 };
 // scales SIZES, e.g. to preview a variant into `--out` first.
 const WEIGHT = 0;
 
-// The README badge (repo-root logo.svg, shown in the main README). null leaves the committed badge as it is (it
-// still shows an earlier version of the logo for now); { frac } generates it from the mark at that size.
-const README_BADGE = null;
+// The README badge (repo-root logo.svg, shown in the main README): the mark at this size in a white tile with a light
+// grey border, the same size as in the light tile. null would leave the committed badge as it is.
+const README_BADGE = { frac: SIZES.light };
 
 // Optical centering: the mark is lifted by this fraction of its height inside the tiles.
 const LIFT = 0;
