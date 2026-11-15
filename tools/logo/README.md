@@ -5,8 +5,8 @@ Generates every variant of the Updraw logo from a mark drawn in Updraw itself.
 ```bash
 npm run logo:generate -- path/to/updraw-logo.json              # write all variants into the repo
 npm run logo:generate -- path/to/updraw-logo.json --out preview # write them into ./preview instead, to look first
-npm run logo:generate -- path/to/updraw-logo.json --out preview --weight 7 --size 0.9
-                                    # preview a heavier line and 10 % smaller marks in the tiles
+npm run logo:generate -- path/to/updraw-logo.json --out preview --weight 9 --size 0.9
+                                    # preview heavier lines and 10 % smaller marks in the tiles
 ```
 
 1. Draw the logo in Updraw as a single stroke, on an otherwise empty workspace.

@@ -26,7 +26,7 @@ const README_BADGE = { weight: 6, frac: 0.59 };
 // Optical centering: an upward triangle carries its weight low, so it's lifted by this fraction of its height.
 const LIFT = 0.035;
 
-// In a favicon the mark is only 9-30 px wide, so even with the outline its lines get thinner than a pixel. The
+// In a favicon the mark is only about 9-28 px wide, so even with the outline its lines get thinner than a pixel. The
 // tiles therefore widen the outline to at least this many output pixels on top of it at 56 px and below. SVGs do
 // it with size media queries (they see the size the image is drawn at), the small rasters have it baked in.
 // Nothing changes at 64 px and up. The bare mark doesn't need it: at its smallest use (24 px) its lines are
@@ -110,7 +110,7 @@ function bareMark({ d, w, h }) {
 function variants({ d, w, h }) {
   const s = weight;
   const outline = (fg) => (s ? ` stroke="${fg}" stroke-width="${fmt(s)}" stroke-linejoin="round"` : '');
-  // <style> that thickens the mark when the image is drawn small (browser tabs, the 24 px docs navbar).
+  // <style> that thickens the tile icons' mark when the image is drawn small (browser tabs, bookmarks).
   // non-scaling-stroke makes stroke-width mean output pixels, so it matches the baked-in raster boost.
   // Widest band first so the narrower ones override it, without gaps at fractional sizes.
   // `extraPx(at)` is a tile's own extra weight in output pixels at that size: when the mark already has an outline,
