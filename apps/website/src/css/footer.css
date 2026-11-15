@@ -88,11 +88,12 @@
   margin-bottom: 0.9rem;
 }
 
-/* The mark is taller than wide, so it fits the square box by its height. */
+/* The mark is taller than wide, so it fits the square box by its height (the SVG keeps its aspect ratio). */
 .updraw-footer-brand__logo {
   width: 28px;
   height: 28px;
   display: block;
+  color: #0a0a0a;
 }
 
 .updraw-footer-brand__description {
