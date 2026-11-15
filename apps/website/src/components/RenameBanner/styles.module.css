@@ -25,8 +25,8 @@
 
 /*
  * Each name's logo, in the text colour and centred on it. The Kritzel scribble is wide and dense and the Updraw mark
- * is thin, so the scribble is a bit smaller and the mark a bit larger to look the same size. The Updraw mark sits a
- * little closer to its name: its round bowl curves away from the text, which makes the same gap look wider.
+ * is thin, so the scribble is a bit smaller and the mark a bit larger to look the same size. Gaps to the names:
+ * 0.18em (about 2.5 px) after the scribble, about 3.4 px after the mark.
  * The --rename-* variables are only there for fine-tuning previews.
  */
 .logo {
@@ -42,6 +42,6 @@
 
 .newLogo {
   height: var(--rename-new-logo-height, 1.25em);
-  margin-right: var(--rename-new-logo-gap, 0.1em);
+  margin-right: var(--rename-new-logo-gap, calc(0.1em + 2px));
   vertical-align: var(--rename-new-logo-shift, -0.28em);
 }
