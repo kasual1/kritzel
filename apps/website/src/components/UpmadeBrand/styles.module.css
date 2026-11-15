@@ -1,5 +1,5 @@
 /*
- * The Updraw logo + name lockup (UpdrawBrand), the same in every header. `a.` outranks Infima's
+ * The Upmade logo + name lockup (UpmadeBrand), the same in every header. `a.` outranks Infima's
  * `.navbar__brand` / `.navbar__brand:hover` colours in the docs navbar.
  */
 a.brand,
@@ -11,7 +11,7 @@ a.brand:hover {
   color: #0a0a0a;
   font-size: 26px;
   /* The wordmark: lowercase like the hand-drawn "up", semibold to sit closer to the mark's thin lines, set tight.
-     The HTML keeps "Updraw"; browsers show, read out and copy it as "updraw". */
+     The HTML keeps "Upmade"; browsers show, read out and copy it as "upmade". */
   font-weight: 600;
   letter-spacing: -0.04em;
   text-transform: lowercase;

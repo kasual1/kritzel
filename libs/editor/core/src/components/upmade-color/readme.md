@@ -1,4 +1,4 @@
-# updraw-color
+# upmade-color
 
 
 
@@ -18,17 +18,17 @@
 
 ### Used by
 
- - [updraw-color-palette](../updraw-color-palette)
- - [updraw-stroke-size](../updraw-stroke-size)
- - [updraw-toolbar](../updraw-toolbar)
+ - [upmade-color-palette](../upmade-color-palette)
+ - [upmade-stroke-size](../upmade-stroke-size)
+ - [upmade-toolbar](../upmade-toolbar)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-color-palette --> updraw-color
-  updraw-stroke-size --> updraw-color
-  updraw-toolbar --> updraw-color
-  style updraw-color fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-color-palette --> upmade-color
+  upmade-stroke-size --> upmade-color
+  upmade-toolbar --> upmade-color
+  style upmade-color fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

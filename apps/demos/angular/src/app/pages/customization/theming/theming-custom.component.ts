@@ -1,10 +1,10 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import {
-  UpdrawEditor,
-  UpdrawTheme,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeTheme,
+  UpmadeWorkspace,
   lightTheme,
-} from '@updraw/angular-editor';
+} from '@upmade/angular-editor';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 const brandPurple = '#7c3aed';
@@ -254,14 +254,14 @@ const brandedPurpleFlatTheme = {
     buttonHoverBackgroundColor: brandPurpleMedium,
     separatorColor: '#e1d2ff',
   },
-} as UpdrawTheme;
+} as UpmadeTheme;
 
 @Component({
   selector: 'app-theming-custom',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       editorId="theming-custom"
       theme="branded-purple-flat"
       [themes]="themes"
@@ -270,7 +270,7 @@ const brandedPurpleFlatTheme = {
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="true"
       [isWorkspaceManagerVisible]="true"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [
     `
@@ -280,7 +280,7 @@ const brandedPurpleFlatTheme = {
         background: linear-gradient(180deg, #fbf8ff 0%, #f3ebff 100%);
       }
 
-      updraw-editor {
+      upmade-editor {
         display: block;
         height: 100%;
         background: linear-gradient(180deg, #ffffff 0%, #f8f2ff 100%);
@@ -292,7 +292,7 @@ const brandedPurpleFlatTheme = {
   ],
 })
 export class ThemingCustomComponent {
-  themes: UpdrawTheme[] = [brandedPurpleFlatTheme];
+  themes: UpmadeTheme[] = [brandedPurpleFlatTheme];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 }

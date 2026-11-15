@@ -4,15 +4,15 @@ jest.mock('@stencil/core', () => ({
   Prop: () => () => {},
 }));
 
-import { UpdrawObjectTitlebarLayer } from './updraw-object-titlebar-layer';
-import { UpdrawResolvedTitlebar } from '@updraw/core';
+import { UpmadeObjectTitlebarLayer } from './upmade-object-titlebar-layer';
+import { UpmadeResolvedTitlebar } from '@upmade/core';
 
-describe('UpdrawObjectTitlebarLayer', () => {
-  let component: UpdrawObjectTitlebarLayer;
+describe('UpmadeObjectTitlebarLayer', () => {
+  let component: UpmadeObjectTitlebarLayer;
 
-  const createTitlebar = (ownerId: string, isActive = false): UpdrawResolvedTitlebar =>
+  const createTitlebar = (ownerId: string, isActive = false): UpmadeResolvedTitlebar =>
     ({
-      owner: { id: ownerId, __class__: 'UpdrawShape' },
+      owner: { id: ownerId, __class__: 'UpmadeShape' },
       context: { title: `Title ${ownerId}` },
       isActive,
       transform: 'translate(10px, 20px) rotate(0deg) scale(1)',
@@ -22,7 +22,7 @@ describe('UpdrawObjectTitlebarLayer', () => {
         center: [],
         right: [{ element: { id: 'play', type: 'button', icon: 'play' }, section: 'right', icon: 'play', tooltip: 'Play' }],
       },
-    }) as unknown as UpdrawResolvedTitlebar;
+    }) as unknown as UpmadeResolvedTitlebar;
 
   /** Depth-first search through a rendered vnode tree. */
   const findAll = (vnode: any, predicate: (node: any) => boolean, found: any[] = []): any[] => {
@@ -34,7 +34,7 @@ describe('UpdrawObjectTitlebarLayer', () => {
   const byClass = (name: string) => (node: any) => node.$attrs$?.class?.[name] === true || String(node.$attrs$?.class ?? '').split(' ').includes(name);
 
   beforeEach(() => {
-    component = new UpdrawObjectTitlebarLayer();
+    component = new UpmadeObjectTitlebarLayer();
   });
 
   it('renders an empty layer without titlebars', () => {
@@ -66,8 +66,8 @@ describe('UpdrawObjectTitlebarLayer', () => {
     const anchors = findAll(component.render(), byClass('object-titlebar-anchor'));
 
     expect(anchors.map(byClass('object-titlebar-anchor--appearing'))).toEqual([false, true]);
-    expect(anchors[0].$attrs$.style).not.toHaveProperty('--updraw-object-appear-index');
-    expect(anchors[1].$attrs$.style).toEqual(expect.objectContaining({ '--updraw-object-appear-index': '3' }));
+    expect(anchors[0].$attrs$.style).not.toHaveProperty('--upmade-object-appear-index');
+    expect(anchors[1].$attrs$.style).toEqual(expect.objectContaining({ '--upmade-object-appear-index': '3' }));
   });
 
   it('applies the surface pointer events to the drag surface', () => {
@@ -104,7 +104,7 @@ describe('UpdrawObjectTitlebarLayer', () => {
     expect(elementClick).toHaveBeenCalledWith('a', 'right', 'play', event, currentTarget);
     expect(currentTarget.blur).toHaveBeenCalled();
     expect(button.$attrs$.tabindex).toBe(0);
-    expect(button.$attrs$['data-updraw-titlebar-control']).toBe('');
+    expect(button.$attrs$['data-upmade-titlebar-control']).toBe('');
   });
 
   it('renders menus as buttons that announce and reflect their open state', () => {
@@ -147,7 +147,7 @@ describe('UpdrawObjectTitlebarLayer', () => {
       titlebar.owner.name = 'Desktop';
       titlebar.sections.left[0].isEditable = true;
       titlebar.editingElementId = editing ? 'title' : undefined;
-      return titlebar as UpdrawResolvedTitlebar;
+      return titlebar as UpmadeResolvedTitlebar;
     };
 
     it('marks editable titles so a second click can rename the object', () => {
@@ -155,7 +155,7 @@ describe('UpdrawObjectTitlebarLayer', () => {
 
       const [title] = findAll(component.render(), byClass('object-titlebar-title'));
 
-      expect(title.$attrs$['data-updraw-titlebar-editable-title']).toBe('title');
+      expect(title.$attrs$['data-upmade-titlebar-editable-title']).toBe('title');
       expect(byClass('is-editable')(title)).toBe(true);
     });
 
@@ -166,8 +166,8 @@ describe('UpdrawObjectTitlebarLayer', () => {
       const [input] = findAll(host, node => node.$tag$ === 'input');
 
       expect(findAll(host, byClass('object-titlebar-title'))).toHaveLength(0);
-      expect(input.$attrs$['data-updraw-titlebar-title-input']).toBe('');
-      expect(input.$attrs$['data-updraw-titlebar-control']).toBe('');
+      expect(input.$attrs$['data-upmade-titlebar-title-input']).toBe('');
+      expect(input.$attrs$['data-upmade-titlebar-control']).toBe('');
       expect(input.$attrs$.part).toBe('titlebar-title-input');
     });
 

@@ -1,21 +1,21 @@
-import { UpdrawBaseObject } from './base-object.class';
-import { UpdrawPolygon } from '../../interfaces/polygon.interface';
-import { UpdrawGeometryHelper } from '../../helpers/geometry.helper';
-import { UpdrawPoint } from '../../interfaces/point.interface';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeBaseObject } from './base-object.class';
+import { UpmadePolygon } from '../../interfaces/polygon.interface';
+import { UpmadeGeometryHelper } from '../../helpers/geometry.helper';
+import { UpmadePoint } from '../../interfaces/point.interface';
+import { UpmadeCore } from '../core/core.class';
 import { LineAnchor } from '../../interfaces/anchor.interface';
 import { ArrowHeadStyle, LineArrowConfig } from '../../interfaces/arrow-head.interface';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
-import { UpdrawColorHelper } from '../../helpers/color.helper';
-import { UpdrawMathHelper } from '../../helpers/math.helper';
+import { UpmadeColorHelper } from '../../helpers/color.helper';
+import { UpmadeMathHelper } from '../../helpers/math.helper';
 
 /**
- * Configuration options for creating an UpdrawLine instance.
+ * Configuration options for creating an UpmadeLine instance.
  */
-export interface UpdrawLineConfig {
+export interface UpmadeLineConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
-  /** Whether the engine's loading placeholder is drawn over the object, see `UpdrawBaseObject.setLoading()`. */
+  /** Whether the engine's loading placeholder is drawn over the object, see `UpmadeBaseObject.setLoading()`. */
   isLoading?: boolean;
   startX: number;
   startY: number;
@@ -39,8 +39,8 @@ export interface UpdrawLineConfig {
   arrows?: LineArrowConfig;
 }
 
-export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
-  override __class__: string = 'UpdrawLine';
+export class UpmadeLine extends UpmadeBaseObject<SVGElement> {
+  override __class__: string = 'UpmadeLine';
 
   startX: number;
   startY: number;
@@ -51,7 +51,7 @@ export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
   stroke: ThemeAwareColor;
   strokeWidth: number;
   scale: number = 1;
-  options: UpdrawLineConfig | undefined;
+  options: UpmadeLineConfig | undefined;
 
   /** Anchor connection for the start point of the line */
   startAnchor?: LineAnchor;
@@ -90,11 +90,11 @@ export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
   }
 
   /**
-   * Creates a new UpdrawLine instance.
+   * Creates a new UpmadeLine instance.
    * @param config - Optional configuration options for the line including start/end points,
    *                 control point for curves, stroke settings, anchors, and arrow configuration
    */
-  constructor(config?: UpdrawLineConfig) {
+  constructor(config?: UpmadeLineConfig) {
     super();
     this.name = config?.name;
     this.isLoading = config?.isLoading ?? false;
@@ -107,7 +107,7 @@ export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
     this.controlY = config?.controlY;
     this.translateX = config?.translateX ?? 0;
     this.translateY = config?.translateY ?? 0;
-    this.rotation = UpdrawMathHelper.degreesToRadians(config?.rotation ?? 0);
+    this.rotation = UpmadeMathHelper.degreesToRadians(config?.rotation ?? 0);
     this.scale = config?.scale ?? 1;
     this.strokeWidth = config?.strokeWidth ?? 4;
     this.stroke = config?.stroke ?? { light: '#000000', dark: '#ffffff' };
@@ -118,14 +118,14 @@ export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
   }
 
   /**
-   * Factory method to create a new UpdrawLine with a core reference and unique ID.
+   * Factory method to create a new UpmadeLine with a core reference and unique ID.
    * This is the preferred way to create lines that will be managed by the core.
-   * @param core - The UpdrawCore instance that will manage this line
+   * @param core - The UpmadeCore instance that will manage this line
    * @param options - Optional configuration options for the line
-   * @returns A fully initialized UpdrawLine instance with generated ID and workspace assignment
+   * @returns A fully initialized UpmadeLine instance with generated ID and workspace assignment
    */
-  static override create(core: UpdrawCore, options?: UpdrawLineConfig): UpdrawLine {
-    const object = new UpdrawLine();
+  static override create(core: UpmadeCore, options?: UpmadeLineConfig): UpmadeLine {
+    const object = new UpmadeLine();
 
     object._core = core;
     object.id = object.generateId();
@@ -140,7 +140,7 @@ export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
     object.controlY = options?.controlY;
     object.translateX = options?.translateX ?? 0;
     object.translateY = options?.translateY ?? 0;
-    object.rotation = UpdrawMathHelper.degreesToRadians(options?.rotation ?? 0);
+    object.rotation = UpmadeMathHelper.degreesToRadians(options?.rotation ?? 0);
     object.scale = options?.scale ?? 1;
     object.strokeWidth = options?.strokeWidth ?? 4;
     object.stroke = options?.stroke ?? { light: '#000000', dark: '#ffffff' };
@@ -292,7 +292,7 @@ export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
    * @param polygon - The polygon to test intersection with, defined by four corner points
    * @returns True if any part of the line intersects with the polygon
    */
-  override hitTestPolygon(polygon: UpdrawPolygon): boolean {
+  override hitTestPolygon(polygon: UpmadePolygon): boolean {
     const halfStroke = this.strokeWidth / this.scale / 2;
 
     if (this._adjustedPoints === null) {
@@ -301,7 +301,7 @@ export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
 
     const clip = this.getClipInfo();
 
-    const polyPoints: UpdrawPoint[] = [
+    const polyPoints: UpmadePoint[] = [
       { x: polygon.bottomLeft.x, y: polygon.bottomLeft.y },
       { x: polygon.bottomRight.x, y: polygon.bottomRight.y },
       { x: polygon.topRight.x, y: polygon.topRight.y },
@@ -316,7 +316,7 @@ export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
     const endpoints = [p1, p2];
 
     for (const [px, py] of endpoints) {
-      if (UpdrawGeometryHelper.isPointInPolygon({ x: px, y: py }, polyPoints)) {
+      if (UpmadeGeometryHelper.isPointInPolygon({ x: px, y: py }, polyPoints)) {
         return true;
       }
     }
@@ -346,7 +346,7 @@ export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
         const bx = oneMinusT * oneMinusT * p0[0] + 2 * oneMinusT * t * controlAdjusted[0] + t * t * p2[0];
         const by = oneMinusT * oneMinusT * p0[1] + 2 * oneMinusT * t * controlAdjusted[1] + t * t * p2[1];
 
-        if (UpdrawGeometryHelper.isPointInPolygon({ x: bx, y: by }, polyPoints)) {
+        if (UpmadeGeometryHelper.isPointInPolygon({ x: bx, y: by }, polyPoints)) {
           return true;
         }
 
@@ -372,7 +372,7 @@ export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
       const q1 = polyPoints[j];
       const q2 = polyPoints[(j + 1) % polyPoints.length];
 
-      if (UpdrawGeometryHelper.intersectLines(checkP1, checkP2, q1, q2)) {
+      if (UpmadeGeometryHelper.intersectLines(checkP1, checkP2, q1, q2)) {
         return true;
       }
 
@@ -743,11 +743,11 @@ export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
    * @returns A polygon with four corner points (topLeft, topRight, bottomRight, bottomLeft)
    *          transformed to world coordinates with rotation applied
    */
-  override get rotatedPolygon(): UpdrawPolygon {
+  override get rotatedPolygon(): UpmadePolygon {
     const padding = this.padding;
 
     // Use the bounding box which accounts for curve extrema
-    const { minX, minY, maxX, maxY } = UpdrawLine.calculateBoundingBox(
+    const { minX, minY, maxX, maxY } = UpmadeLine.calculateBoundingBox(
       this.startX,
       this.startY,
       this.endX,
@@ -861,7 +861,7 @@ export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
    * @returns Object with minX, minY, maxX, maxY bounds including stroke width padding
    */
   calculateBoundingBox(): { minX: number; minY: number; maxX: number; maxY: number } {
-    return UpdrawLine.calculateBoundingBox(
+    return UpmadeLine.calculateBoundingBox(
       this.startX,
       this.startY,
       this.endX,
@@ -950,7 +950,7 @@ export class UpdrawLine extends UpdrawBaseObject<SVGElement> {
   getArrowFill(end: 'start' | 'end'): string {
     const config = end === 'start' ? this.arrows?.start : this.arrows?.end;
     const color = config?.fill ?? this.stroke;
-    return UpdrawColorHelper.resolveThemeColor(color, this._core?.themeManager?.currentTheme);
+    return UpmadeColorHelper.resolveThemeColor(color, this._core?.themeManager?.currentTheme);
   }
 
   /**

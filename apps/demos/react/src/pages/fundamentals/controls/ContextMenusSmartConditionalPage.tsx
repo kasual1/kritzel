@@ -1,10 +1,10 @@
 import { useMemo, useRef, useState } from "react";
 import {
-  UpdrawEditor,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeWorkspace,
   type ContextMenuItem,
-  HTMLUpdrawEditorElement,
-} from "@updraw/react-editor";
+  HTMLUpmadeEditorElement,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -13,9 +13,9 @@ import { editorStyle, hostStyle } from "../../shared/demo-shared";
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ContextMenusSmartConditionalPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const [workspaces] = useState(() => [
-    new UpdrawWorkspace({ objects: createSeedObjects() }),
+    new UpmadeWorkspace({ objects: createSeedObjects() }),
   ]);
 
   const globalItems = useMemo<ContextMenuItem[]>(
@@ -93,7 +93,7 @@ export function ContextMenusSmartConditionalPage() {
 
   return (
     <div style={hostStyle}>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="custom-context-menu-smart-conditional"
         theme="light"

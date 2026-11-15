@@ -1,9 +1,9 @@
-import { UpdrawLocale } from '../interfaces/localization.interface';
+import { UpmadeLocale } from '../interfaces/localization.interface';
 
 /**
  * Built-in Italian locale.
  */
-export const IT_LOCALE: UpdrawLocale = {
+export const IT_LOCALE: UpmadeLocale = {
   code: 'it',
   label: 'Italiano',
   terms: {
@@ -76,7 +76,7 @@ export const IT_LOCALE: UpdrawLocale = {
     'settings.developer.showMigrationInfo.label': 'Mostra informazioni sulla migrazione',
     'settings.developer.showMigrationInfo.description': 'Visualizza informazioni di debug sulle migrazioni dei dati.',
     'settings.about.title': 'Informazioni',
-    'settings.about.description': 'Updraw - Un’applicazione per disegnare',
+    'settings.about.description': 'Upmade - Un’applicazione per disegnare',
 
     // Export dialog
     'export.dialogTitle': 'Esporta',
@@ -134,7 +134,7 @@ export const IT_LOCALE: UpdrawLocale = {
     'moreMenu.ariaLabel': 'Altre opzioni',
 
     // Watermark
-    'watermark.poweredBy': 'Offerto da Updraw',
+    'watermark.poweredBy': 'Offerto da Upmade',
 
     // Object type labels
     'objectType.shape': 'Forma',

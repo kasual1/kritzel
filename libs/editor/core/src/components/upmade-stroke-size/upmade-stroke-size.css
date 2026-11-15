@@ -22,16 +22,16 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  cursor: var(--updraw-global-pointer-cursor, pointer);
+  cursor: var(--upmade-global-pointer-cursor, pointer);
   border: 2px solid transparent;
   box-sizing: border-box;
 }
 
 .size-container:hover {
-  background-color: var(--updraw-stroke-size-hover-background-color, #ebebeb);
+  background-color: var(--upmade-stroke-size-hover-background-color, #ebebeb);
 }
 
 .size-container.selected {
-  border-color: var(--updraw-selection-border-color, #007AFF);
-  background-color: var(--updraw-stroke-size-selected-background-color, #ebebeb);
+  border-color: var(--upmade-selection-border-color, #007AFF);
+  background-color: var(--upmade-stroke-size-selected-background-color, #ebebeb);
 }

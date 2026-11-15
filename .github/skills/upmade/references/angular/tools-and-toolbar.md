@@ -1,18 +1,18 @@
 # Tools & Toolbar
 
-A *tool* is the active pointer-interaction mode; exactly one is active at a time. The default `<updraw-editor>` toolbar registers these tools under these names:
+A *tool* is the active pointer-interaction mode; exactly one is active at a time. The default `<upmade-editor>` toolbar registers these tools under these names:
 
 | Name | Class | Creates |
 |---|---|---|
-| `selection` (default active) | `UpdrawSelectionTool` | â€” selects/transforms |
-| `brush` | `UpdrawBrushTool` | `UpdrawPath` |
-| `eraser` | `UpdrawEraserTool` | â€” removes objects |
-| `line` | `UpdrawLineTool` | `UpdrawLine` |
-| `shape` | `UpdrawShapeTool` | `UpdrawShape` |
-| `text` | `UpdrawTextTool` | `UpdrawText` |
-| `image` | `UpdrawImageTool` | `UpdrawImage` |
+| `selection` (default active) | `UpmadeSelectionTool` | â€” selects/transforms |
+| `brush` | `UpmadeBrushTool` | `UpmadePath` |
+| `eraser` | `UpmadeEraserTool` | â€” removes objects |
+| `line` | `UpmadeLineTool` | `UpmadeLine` |
+| `shape` | `UpmadeShapeTool` | `UpmadeShape` |
+| `text` | `UpmadeTextTool` | `UpmadeText` |
+| `image` | `UpmadeImageTool` | `UpmadeImage` |
 
-Tool *names are whatever the toolbar config / `registerTool` call says* â€” when you customize the toolbar, `changeActiveToolByName` must use your names. `<updraw-engine>` registers none.
+Tool *names are whatever the toolbar config / `registerTool` call says* â€” when you customize the toolbar, `changeActiveToolByName` must use your names. `<upmade-engine>` registers none.
 
 ## Switching tools
 
@@ -27,14 +27,14 @@ Switching tools clears the current selection. `disable()` / `enable()` turn all 
 ## Tool config interfaces
 
 ```ts
-interface UpdrawBrushToolConfig {
+interface UpmadeBrushToolConfig {
   color: ThemeAwareColor;                 // { light, dark }
   size: number;
   palette: ThemeAwareColor[];             // [] disables the picker
   opacity?: number;                       // highlighters typically ~0.6
 }
 
-interface UpdrawLineToolConfig {
+interface UpmadeLineToolConfig {
   color: ThemeAwareColor;
   size: number;
   palette: ThemeAwareColor[];
@@ -44,7 +44,7 @@ interface UpdrawLineToolConfig {
   };
 }
 
-interface UpdrawShapeToolConfig {
+interface UpmadeShapeToolConfig {
   shapeType: ShapeType;
   fillColor: ThemeAwareColor;
   strokeColor: ThemeAwareColor;
@@ -55,7 +55,7 @@ interface UpdrawShapeToolConfig {
   palette: ThemeAwareColor[];
 }
 
-interface UpdrawTextToolConfig {
+interface UpmadeTextToolConfig {
   color: ThemeAwareColor;
   size: number;
   fontFamily: string;
@@ -70,15 +70,15 @@ Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` â€�
 The most common customization: several variants of a built-in tool under distinct names (e.g. color-locked brushes driven by your own UI):
 
 ```ts
-import { UpdrawBrushTool, UpdrawBrushToolConfig } from '@updraw/angular-editor';
+import { UpmadeBrushTool, UpmadeBrushToolConfig } from '@upmade/angular-editor';
 
 async onReady() {
-  const red: UpdrawBrushToolConfig = {
+  const red: UpmadeBrushToolConfig = {
     color: { light: '#ff0000', dark: '#ff6666' },
     size: 16,
     palette: [],                  // empty → no color picker, color is locked
   };
-  await this.editor.registerTool('red-brush', UpdrawBrushTool, red);
+  await this.editor.registerTool('red-brush', UpmadeBrushTool, red);
   await this.editor.changeActiveToolByName('red-brush');
 }
 ```
@@ -87,17 +87,17 @@ async onReady() {
 
 ## Customizing the toolbar (`[toolbarItems]`)
 
-Replace the editor's toolbar wholesale with an `UpdrawToolbarItem[]`:
+Replace the editor's toolbar wholesale with an `UpmadeToolbarItem[]`:
 
 ```ts
 import {
-  UpdrawToolbarItem, UpdrawSelectionTool, UpdrawBrushTool, UpdrawTextTool, ShapeType,
-} from '@updraw/angular-editor';
+  UpmadeToolbarItem, UpmadeSelectionTool, UpmadeBrushTool, UpmadeTextTool, ShapeType,
+} from '@upmade/angular-editor';
 
-readonly toolbarItems: UpdrawToolbarItem[] = [
-  { name: 'select', type: 'tool', isDefault: true, tool: UpdrawSelectionTool, icon: 'cursor' },
+readonly toolbarItems: UpmadeToolbarItem[] = [
+  { name: 'select', type: 'tool', isDefault: true, tool: UpmadeSelectionTool, icon: 'cursor' },
   {
-    name: 'brush', type: 'tool', tool: UpdrawBrushTool, icon: 'pen',
+    name: 'brush', type: 'tool', tool: UpmadeBrushTool, icon: 'pen',
     config: {
       color: { light: '#1f2937', dark: '#f3f4f6' },
       size: 6,
@@ -108,7 +108,7 @@ readonly toolbarItems: UpdrawToolbarItem[] = [
     },
   },
   {
-    name: 'highlighter', type: 'tool', tool: UpdrawBrushTool, icon: 'highlighter',
+    name: 'highlighter', type: 'tool', tool: UpmadeBrushTool, icon: 'highlighter',
     config: {
       color: { light: '#ffeb3b', dark: '#fff176' },
       size: 20, opacity: 0.6,
@@ -116,7 +116,7 @@ readonly toolbarItems: UpdrawToolbarItem[] = [
     },
   },
   {
-    name: 'text', type: 'tool', tool: UpdrawTextTool, icon: 'type',
+    name: 'text', type: 'tool', tool: UpmadeTextTool, icon: 'type',
     config: {
       color: { light: '#1f2937', dark: '#f3f4f6' },
       size: 18, fontFamily: 'Arial',
@@ -128,7 +128,7 @@ readonly toolbarItems: UpdrawToolbarItem[] = [
 ```
 
 ```html
-<updraw-editor [toolbarItems]="toolbarItems"></updraw-editor>
+<upmade-editor [toolbarItems]="toolbarItems"></upmade-editor>
 ```
 
 Rules:
@@ -142,12 +142,12 @@ To hide the toolbar entirely and drive tools from your own Angular UI: `[isToolb
 
 ## Fully custom tool classes
 
-For new interaction behavior, extend `UpdrawBaseTool` (exported from `@updraw/angular-editor`) and override the lifecycle/pointer hooks:
+For new interaction behavior, extend `UpmadeBaseTool` (exported from `@upmade/angular-editor`) and override the lifecycle/pointer hooks:
 
 ```ts
-import { UpdrawBaseTool } from '@updraw/angular-editor';
+import { UpmadeBaseTool } from '@upmade/angular-editor';
 
-export class StampTool extends UpdrawBaseTool {
+export class StampTool extends UpmadeBaseTool {
   override onActivate(): void {}
   override onDeactivate(): void {}
   override handlePointerDown(ev: PointerEvent): void { /* place a stamp */ }

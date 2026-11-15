@@ -9,9 +9,9 @@ jest.mock('@stencil/core', () => ({
   writeTask: (task: () => void) => mockWrites.push(task),
 }));
 
-import { UpdrawAgenticCursors } from './updraw-agentic-cursors';
-import { UpdrawLine } from '@updraw/core';
-import type { UpdrawAgenticCursor, UpdrawCore } from '@updraw/core';
+import { UpmadeAgenticCursors } from './upmade-agentic-cursors';
+import { UpmadeLine } from '@upmade/core';
+import type { UpmadeAgenticCursor, UpmadeCore } from '@upmade/core';
 
 interface VNode {
   $tag$?: string | ((...args: unknown[]) => unknown);
@@ -33,7 +33,7 @@ const byClass = (root: VNode, className: string) =>
 
 const flushWrites = () => mockWrites.splice(0).forEach(task => task());
 
-const createCursor = (overrides: Partial<UpdrawAgenticCursor> = {}): UpdrawAgenticCursor => ({
+const createCursor = (overrides: Partial<UpmadeAgenticCursor> = {}): UpmadeAgenticCursor => ({
   id: 'agent',
   name: 'Agent',
   color: '#7C3AED',
@@ -51,9 +51,9 @@ const createCursor = (overrides: Partial<UpdrawAgenticCursor> = {}): UpdrawAgent
   ...overrides,
 });
 
-describe('UpdrawAgenticCursors', () => {
-  let component: UpdrawAgenticCursors;
-  let cursors: UpdrawAgenticCursor[];
+describe('UpmadeAgenticCursors', () => {
+  let component: UpmadeAgenticCursors;
+  let cursors: UpmadeAgenticCursor[];
   let objects: Map<string, any>;
   let changeListener: (() => void) | null;
   let frameListener: (() => void) | null;
@@ -106,9 +106,9 @@ describe('UpdrawAgenticCursors', () => {
           return unsubscribeFrame;
         },
       },
-    } as unknown as UpdrawCore;
+    } as unknown as UpmadeCore;
 
-    component = new UpdrawAgenticCursors();
+    component = new UpmadeAgenticCursors();
     component.core = core;
     component.showEdgeIndicators = true;
     component.edgeIndicatorPadding = 8;
@@ -278,7 +278,7 @@ describe('UpdrawAgenticCursors', () => {
     it('shows no handle for several objects, lines and objects that cannot rotate', () => {
       objects.set('a', createObject('a', 0, 0, 10, 5));
       objects.set('b', createObject('b', 20, 0, 10, 5));
-      objects.set('line', Object.setPrototypeOf(createObject('line', 40, 0, 10, 5), UpdrawLine.prototype));
+      objects.set('line', Object.setPrototypeOf(createObject('line', 40, 0, 10, 5), UpmadeLine.prototype));
 
       cursors = [createCursor({ selectedObjectIds: ['a', 'b'] })];
       expect(handleParts(component.render() as unknown as VNode).groups).toHaveLength(0);
@@ -294,7 +294,7 @@ describe('UpdrawAgenticCursors', () => {
     });
 
     it('shows the handle of the object an agent rotates, even a line', () => {
-      objects.set('line', Object.setPrototypeOf(createObject('line', 0, 0, 10, 5), UpdrawLine.prototype));
+      objects.set('line', Object.setPrototypeOf(createObject('line', 0, 0, 10, 5), UpmadeLine.prototype));
       cursors = [createCursor({ selectedObjectIds: ['line'], activeAction: 'rotateObject' })];
       expect(handleParts(component.render() as unknown as VNode).groups).toHaveLength(1);
     });

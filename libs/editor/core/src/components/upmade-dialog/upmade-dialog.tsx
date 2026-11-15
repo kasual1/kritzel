@@ -1,13 +1,13 @@
 ﻿import { Component, Element, Event, EventEmitter, Host, Listen, Method, Prop, State, Watch, h } from '@stencil/core';
-import { IUpdrawDialogCloseEvent, UpdrawDialogCloseReason } from '@updraw/core';
-import { UpdrawHTMLHelper } from '@updraw/core';
+import { IUpmadeDialogCloseEvent, UpmadeDialogCloseReason } from '@upmade/core';
+import { UpmadeHTMLHelper } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-dialog',
-  styleUrl: 'updraw-dialog.css',
+  tag: 'upmade-dialog',
+  styleUrl: 'upmade-dialog.css',
   shadow: true,
 })
-export class UpdrawDialog {
+export class UpmadeDialog {
   @Element() host: HTMLElement;
 
   /** Whether the dialog is open */
@@ -49,7 +49,7 @@ export class UpdrawDialog {
   @Event() dialogOpen: EventEmitter<void>;
 
   /** Emitted when the dialog closes */
-  @Event() dialogClose: EventEmitter<IUpdrawDialogCloseEvent>;
+  @Event() dialogClose: EventEmitter<IUpmadeDialogCloseEvent>;
 
   private previousOverflow: string = '';
   private previousActiveElement: HTMLElement | null = null;
@@ -103,7 +103,7 @@ export class UpdrawDialog {
   }
 
   @Method()
-  async close(reason: UpdrawDialogCloseReason = 'programmatic'): Promise<void> {
+  async close(reason: UpmadeDialogCloseReason = 'programmatic'): Promise<void> {
     this.emitClose(reason);
   }
 
@@ -158,12 +158,12 @@ export class UpdrawDialog {
   private findContainerElement(): HTMLElement | null {
     // Walk up the composed DOM (crossing shadow roots) and return the first
     // ancestor that opts into containing dialogs. We accept either an explicit
-    // [data-updraw-dialog-container] marker or the updraw-editor host so any
+    // [data-upmade-dialog-container] marker or the upmade-editor host so any
     // consumer can opt in without modifying the editor itself.
     let node: Node | null = this.host;
     while (node) {
       if (node instanceof HTMLElement) {
-        if (node.hasAttribute('data-updraw-dialog-container') || node.tagName === 'UPDRAW-EDITOR') {
+        if (node.hasAttribute('data-upmade-dialog-container') || node.tagName === 'UPMADE-EDITOR') {
           return node;
         }
       }
@@ -257,7 +257,7 @@ export class UpdrawDialog {
     return null;
   }
 
-  private emitClose(reason: UpdrawDialogCloseReason) {
+  private emitClose(reason: UpmadeDialogCloseReason) {
     this.dialogClose.emit({ reason });
   }
 
@@ -332,7 +332,7 @@ export class UpdrawDialog {
     const dialogContent = this.host.shadowRoot?.querySelector('.dialog-content') as HTMLElement;
     if (!dialogContent) return;
 
-    const focusableElements = UpdrawHTMLHelper.getFocusableElements(dialogContent);
+    const focusableElements = UpmadeHTMLHelper.getFocusableElements(dialogContent);
     const slotElements = this.getSlottedFocusableElements();
     const allFocusable = [...focusableElements, ...slotElements];
 
@@ -350,8 +350,8 @@ export class UpdrawDialog {
     slots.forEach(slot => {
       const assigned = slot.assignedElements({ flatten: true }) as HTMLElement[];
       assigned.forEach(el => {
-        // Use UpdrawHTMLHelper to find focusable elements including those in nested shadow DOMs
-        const elements = UpdrawHTMLHelper.getFocusableElements(el);
+        // Use UpmadeHTMLHelper to find focusable elements including those in nested shadow DOMs
+        const elements = UpmadeHTMLHelper.getFocusableElements(el);
         focusable.push(...elements);
       });
     });

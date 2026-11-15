@@ -1,100 +1,100 @@
 import { Component, Host, h, Listen, Element, Prop, Method, State, Event, EventEmitter, Watch } from '@stencil/core';
 import {
-  UpdrawViewport,
-  UpdrawPath,
-  UpdrawLine,
-  UpdrawSelectionTool,
-  UpdrawTextTool,
-  UpdrawShapeTool,
-  UpdrawBrushTool,
-  UpdrawLineTool,
-  UpdrawImageTool,
-  UpdrawImage,
-  UpdrawText,
-  UpdrawShape,
-  UpdrawSelectionGroup,
-  UpdrawGroup,
-  UpdrawSelectionBox,
-  UpdrawKeyHandler,
-  UpdrawBaseTool,
-  UpdrawToolType,
+  UpmadeViewport,
+  UpmadePath,
+  UpmadeLine,
+  UpmadeSelectionTool,
+  UpmadeTextTool,
+  UpmadeShapeTool,
+  UpmadeBrushTool,
+  UpmadeLineTool,
+  UpmadeImageTool,
+  UpmadeImage,
+  UpmadeText,
+  UpmadeShape,
+  UpmadeSelectionGroup,
+  UpmadeGroup,
+  UpmadeSelectionBox,
+  UpmadeKeyHandler,
+  UpmadeBaseTool,
+  UpmadeToolType,
   ContextMenuItem,
-  UpdrawEraserTool,
-  UpdrawBrushToolConfig,
-  UpdrawLineToolConfig,
-  UpdrawShapeToolConfig,
-  UpdrawTextToolConfig,
-  UpdrawKeyboardHelper,
-  UpdrawContextMenuHandler,
-  UpdrawBaseObject,
-  UpdrawEventHelper,
+  UpmadeEraserTool,
+  UpmadeBrushToolConfig,
+  UpmadeLineToolConfig,
+  UpmadeShapeToolConfig,
+  UpmadeTextToolConfig,
+  UpmadeKeyboardHelper,
+  UpmadeContextMenuHandler,
+  UpmadeBaseObject,
+  UpmadeEventHelper,
   ABSOLUTE_SCALE_MAX,
   ABSOLUTE_SCALE_MIN,
-  UpdrawDynamicObject,
-  UpdrawIframeObject,
-  UpdrawWorkspace,
+  UpmadeDynamicObject,
+  UpmadeIframeObject,
+  UpmadeWorkspace,
   WORKSPACE_EXPORT_VERSION,
-  UpdrawReviver,
-  UpdrawEngineState,
-  UpdrawDebugInfo,
-  UpdrawSettingsConfig,
-  UpdrawCore,
-  UpdrawDevicesHelper,
-  UpdrawSyncConfig,
-  UpdrawAssetStorageConfig,
-  UpdrawColorHelper,
-  UpdrawUndoState,
-  UpdrawTheme,
+  UpmadeReviver,
+  UpmadeEngineState,
+  UpmadeDebugInfo,
+  UpmadeSettingsConfig,
+  UpmadeCore,
+  UpmadeDevicesHelper,
+  UpmadeSyncConfig,
+  UpmadeAssetStorageConfig,
+  UpmadeColorHelper,
+  UpmadeUndoState,
+  UpmadeTheme,
   ThemeName,
-  UpdrawLocale,
-  UpdrawTermKey,
-  UpdrawTermVars,
+  UpmadeLocale,
+  UpmadeTermKey,
+  UpmadeTermVars,
   LocaleCode,
-  UpdrawShortcut,
-  UpdrawAlignment,
-  UpdrawViewportState,
-  UpdrawAgent,
-  UpdrawChatSession,
-  isUpdrawChatSession,
-  UpdrawAgentsChangeEvent,
-  UpdrawRemoteAgentPresence,
-  UpdrawObjectChangeSource,
+  UpmadeShortcut,
+  UpmadeAlignment,
+  UpmadeViewportState,
+  UpmadeAgent,
+  UpmadeChatSession,
+  isUpmadeChatSession,
+  UpmadeAgentsChangeEvent,
+  UpmadeRemoteAgentPresence,
+  UpmadeObjectChangeSource,
   ObjectHelper,
-  UpdrawWheelHelper,
+  UpmadeWheelHelper,
   ObjectsAddedEvent,
   ObjectsRemovedEvent,
   ObjectsUpdatedEvent,
   ObjectsInViewportChangeEvent,
-  IUpdrawUser,
-  UpdrawNotification,
+  IUpmadeUser,
+  UpmadeNotification,
   resolveTextToolAvailableFonts,
-  UpdrawContextMenuState,
-  UpdrawExportable,
-  UpdrawObjectExportContext,
-  UpdrawObjectExportFormat,
-  UpdrawSvgExportHelper,
-  UpdrawToolDefinition,
-  UpdrawObjectTitlebarActionEvent,
-  UpdrawObjectTitlebarConfig,
-  UpdrawObjectTitlebarMenuState,
-  UpdrawElementAwareObject,
-  UpdrawObjectElementClickEvent,
-  UpdrawObjectElementHighlight,
-  UpdrawObjectElementHoverEvent,
-  UpdrawObjectElementInfo,
-  UpdrawObjectElementPickEvent,
-  UpdrawObjectElementPickingOptions,
-  UpdrawTitlebarSection,
-  UpdrawObjectConfig,
-  UpdrawEngineHost,
-  UPDRAW_ROTATION_HANDLE_DISTANCE,
-  UPDRAW_OBJECT_APPEAR_MAX_BATCH,
-  UpdrawObjectAppearTiming,
-  UpdrawObjectAppearResolution,
-  UpdrawResolvedTitlebar,
+  UpmadeContextMenuState,
+  UpmadeExportable,
+  UpmadeObjectExportContext,
+  UpmadeObjectExportFormat,
+  UpmadeSvgExportHelper,
+  UpmadeToolDefinition,
+  UpmadeObjectTitlebarActionEvent,
+  UpmadeObjectTitlebarConfig,
+  UpmadeObjectTitlebarMenuState,
+  UpmadeElementAwareObject,
+  UpmadeObjectElementClickEvent,
+  UpmadeObjectElementHighlight,
+  UpmadeObjectElementHoverEvent,
+  UpmadeObjectElementInfo,
+  UpmadeObjectElementPickEvent,
+  UpmadeObjectElementPickingOptions,
+  UpmadeTitlebarSection,
+  UpmadeObjectConfig,
+  UpmadeEngineHost,
+  UPMADE_ROTATION_HANDLE_DISTANCE,
+  UPMADE_OBJECT_APPEAR_MAX_BATCH,
+  UpmadeObjectAppearTiming,
+  UpmadeObjectAppearResolution,
+  UpmadeResolvedTitlebar,
   normalizeLegacyClassName,
   migrateLegacyStorageKeys,
-} from '@updraw/core';
+} from '@upmade/core';
 import throttle from 'lodash/throttle';
 import { toPng, toSvg } from 'html-to-image';
 
@@ -111,18 +111,18 @@ interface WorkspaceJsonExportPayload extends Record<string, unknown> {
 const TITLEBAR_CONTROL_KEYS = new Set(['Enter', ' ', 'Spacebar', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']);
 
 @Component({
-  tag: 'updraw-engine',
-  styleUrl: 'updraw-engine.css',
+  tag: 'upmade-engine',
+  styleUrl: 'upmade-engine.css',
   shadow: true,
 })
-export class UpdrawEngine implements UpdrawEngineHost {
+export class UpmadeEngine implements UpmadeEngineHost {
   @Element() host!: HTMLElement;
 
   private activeImportFileInput?: HTMLInputElement;
   private cancelActiveImport?: () => void;
 
   /** Authoritative workspace catalog for this engine instance. When provided, provider-only workspaces are hidden but not deleted. */
-  @Prop() workspaces?: UpdrawWorkspace[];
+  @Prop() workspaces?: UpmadeWorkspace[];
   @Watch('workspaces')
   async onWorkspacesPropChange() {
     this._workspacesRevision++;
@@ -164,9 +164,9 @@ export class UpdrawEngine implements UpdrawEngineHost {
   }
 
   /** Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket). */
-  @Prop() syncConfig?: UpdrawSyncConfig;
+  @Prop() syncConfig?: UpmadeSyncConfig;
   @Watch('syncConfig')
-  async onSyncConfigChange(newValue: UpdrawSyncConfig | undefined) {
+  async onSyncConfigChange(newValue: UpmadeSyncConfig | undefined) {
     this._syncConfigRevision++;
 
     // Keep core config in sync immediately so late prop updates are not lost.
@@ -175,7 +175,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     // If syncConfig arrives after componentDidLoad, initialize Yjs now.
     // Guard on _isViewportReady to avoid restoring viewport state before
     // viewportWidth/viewportHeight are set (they default to 0 until the
-    // UpdrawViewport constructor runs inside componentDidLoad's timeout).
+    // UpmadeViewport constructor runs inside componentDidLoad's timeout).
     if (newValue && !this._isYjsInitialized && this._isViewportReady) {
       await this.initializeSyncAndWorkspace();
     }
@@ -190,9 +190,9 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * (Hocuspocus, WebSocket), configure at least one remote asset provider
    * such as `HttpAssetProvider` or `PresignedAssetProvider`.
    */
-  @Prop() assetStorageConfig?: UpdrawAssetStorageConfig;
+  @Prop() assetStorageConfig?: UpmadeAssetStorageConfig;
   @Watch('assetStorageConfig')
-  async onAssetStorageConfigChange(newValue: UpdrawAssetStorageConfig | undefined) {
+  async onAssetStorageConfigChange(newValue: UpmadeAssetStorageConfig | undefined) {
     this._assetStorageConfigRevision++;
 
     // Keep core config in sync immediately so late prop updates are not lost.
@@ -209,9 +209,9 @@ export class UpdrawEngine implements UpdrawEngineHost {
   }
 
   /** The current user for awareness broadcasting (name, id, cursor position). */
-  @Prop() user?: IUpdrawUser;
+  @Prop() user?: IUpmadeUser;
   @Watch('user')
-  onUserChange(newValue: IUpdrawUser | undefined) {
+  onUserChange(newValue: IUpmadeUser | undefined) {
     this.core.setUser(newValue);
   }
 
@@ -219,14 +219,14 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * A chat session bound to this engine: its tools act on this canvas. With an agent, the agent is added here.
    * A session replaced by another one is unbound once its running prompt ends.
    */
-  @Prop() chatSession?: UpdrawChatSession | null;
+  @Prop() chatSession?: UpmadeChatSession | null;
   @Watch('chatSession')
   onChatSessionChange() {
     this.bindChatSession();
   }
 
   /** Tool definitions to register with this engine instance. */
-  @Prop() tools: UpdrawToolDefinition[] = [];
+  @Prop() tools: UpmadeToolDefinition[] = [];
   @Watch('tools')
   onToolsChange() {
     this._toolsRevision++;
@@ -255,7 +255,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar`
    * is true. The same configuration applies to all objects. Leave unset to disable titlebars.
    */
-  @Prop() objectTitlebar?: UpdrawObjectTitlebarConfig;
+  @Prop() objectTitlebar?: UpmadeObjectTitlebarConfig;
   @Watch('objectTitlebar')
   onObjectTitlebarChange() {
     // The titlebar manager reads this prop live, so only the render needs refreshing.
@@ -267,7 +267,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * Configures how objects behave, in one place for all objects: which objects get a titlebar,
    * and which can be rotated or resized. Each option is a boolean or a function of the object.
    */
-  @Prop() objectConfig?: UpdrawObjectConfig;
+  @Prop() objectConfig?: UpmadeObjectConfig;
   @Watch('objectConfig')
   onObjectConfigChange() {
     // The object config manager reads this prop live, so only the render needs refreshing.
@@ -321,13 +321,13 @@ export class UpdrawEngine implements UpdrawEngineHost {
     this.refreshObjectElementThemes();
   }
 
-  /** Whether the "Powered by Updraw" watermark is shown. Keeping it visible helps support the project. */
+  /** Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project. */
   @Prop() isWatermarkVisible: boolean = true;
 
   /** An array of available themes for the editor. */
-  @Prop() themes?: UpdrawTheme[];
+  @Prop() themes?: UpmadeTheme[];
   @Watch('themes')
-  onThemesChange(newValue?: UpdrawTheme[]) {
+  onThemesChange(newValue?: UpmadeTheme[]) {
     if (newValue && newValue.length > 0) {
       this.core.themeManager.registerThemes(newValue);
       this.core.themeManager.applyTheme(this.core.themeManager.currentTheme);
@@ -343,9 +343,9 @@ export class UpdrawEngine implements UpdrawEngineHost {
   }
 
   /** An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty. */
-  @Prop() locales?: UpdrawLocale[];
+  @Prop() locales?: UpmadeLocale[];
   @Watch('locales')
-  onLocalesChange(newValue?: UpdrawLocale[]) {
+  onLocalesChange(newValue?: UpmadeLocale[]) {
     this.core.localizationManager.configureLocales(newValue);
     this.core.localizationManager.setLocale(this.core.localizationManager.resolveActiveLocale(this.locale));
   }
@@ -387,9 +387,9 @@ export class UpdrawEngine implements UpdrawEngineHost {
   }
 
   /** Debug info display options controlling which debug overlays are visible */
-  @Prop() debugInfo?: UpdrawDebugInfo;
+  @Prop() debugInfo?: UpmadeDebugInfo;
   @Watch('debugInfo')
-  onDebugInfoChange(newValue: UpdrawDebugInfo) {
+  onDebugInfoChange(newValue: UpmadeDebugInfo) {
     if (newValue) {
       this.core.store.state.debugInfo = newValue;
       this.core.assetResolver.setShowInfo(newValue.showAssetResolverInfo);
@@ -403,22 +403,22 @@ export class UpdrawEngine implements UpdrawEngineHost {
   @Prop() isZoomingEnabled: boolean = true;
 
   /** Emitted when the engine has fully initialized and is ready for interaction. */
-  @Event() isEngineReady!: EventEmitter<UpdrawEngineState>;
+  @Event() isEngineReady!: EventEmitter<UpmadeEngineState>;
 
   /** Emitted when the active drawing tool changes. */
-  @Event() activeToolChange!: EventEmitter<UpdrawBaseTool>;
+  @Event() activeToolChange!: EventEmitter<UpmadeBaseTool>;
 
   /** Emitted when workspaces are created, updated, or deleted. */
-  @Event() workspacesChange!: EventEmitter<UpdrawWorkspace[]>;
+  @Event() workspacesChange!: EventEmitter<UpmadeWorkspace[]>;
 
   /** Emitted when the active workspace changes (e.g., after import). */
-  @Event() activeWorkspaceChange!: EventEmitter<UpdrawWorkspace>;
+  @Event() activeWorkspaceChange!: EventEmitter<UpmadeWorkspace>;
 
   /** Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile. */
   @Event() longpress!: EventEmitter<PointerEvent>;
 
   /** Emitted when objects on the canvas are added, removed, or modified. */
-  @Event() objectsChange!: EventEmitter<UpdrawBaseObject[]>;
+  @Event() objectsChange!: EventEmitter<UpmadeBaseObject[]>;
 
   /** Emitted when one or more objects are added to the canvas. `source` is set when an agent made the change. */
   @Event() objectsAdded!: EventEmitter<ObjectsAddedEvent>;
@@ -430,25 +430,25 @@ export class UpdrawEngine implements UpdrawEngineHost {
   @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
 
   /** Emitted when the set of selected objects changes. */
-  @Event() objectsSelectionChange!: EventEmitter<UpdrawBaseObject[]>;
+  @Event() objectsSelectionChange!: EventEmitter<UpmadeBaseObject[]>;
 
   /** Emitted when the undo/redo state changes, providing current undo availability. */
-  @Event() undoStateChange!: EventEmitter<UpdrawUndoState>;
+  @Event() undoStateChange!: EventEmitter<UpmadeUndoState>;
 
   /** Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom). */
   @Event() objectsInViewportChange!: EventEmitter<ObjectsInViewportChangeEvent>;
 
   /** Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize). */
-  @Event() viewportChange!: EventEmitter<UpdrawViewportState>;
+  @Event() viewportChange!: EventEmitter<UpmadeViewportState>;
 
   /** Emitted when the awareness state changes (remote user cursors, presence). */
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
 
   /** Emitted when notifications change. */
-  @Event() notificationsChange!: EventEmitter<UpdrawNotification>;
+  @Event() notificationsChange!: EventEmitter<UpmadeNotification>;
 
   /** Emitted when context-menu visibility, items, or position changes. */
-  @Event() contextMenuStateChange!: EventEmitter<UpdrawContextMenuState>;
+  @Event() contextMenuStateChange!: EventEmitter<UpmadeContextMenuState>;
 
   /** Emitted while the selected workspace's objects are being initialized and synchronized. */
   @Event() isLoadingChange!: EventEmitter<boolean>;
@@ -458,35 +458,35 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * (name, color, avatar, status, visibility, activity). Lists the local agents first, then the agents of
    * collaborators (`isRemote: true`). Never emitted for plain cursor motion.
    */
-  @Event() agentsChange!: EventEmitter<UpdrawAgentsChangeEvent>;
+  @Event() agentsChange!: EventEmitter<UpmadeAgentsChangeEvent>;
 
   /** Emitted when a button or a menu item in an object titlebar is clicked. */
-  @Event() objectTitlebarAction!: EventEmitter<UpdrawObjectTitlebarActionEvent>;
+  @Event() objectTitlebarAction!: EventEmitter<UpmadeObjectTitlebarActionEvent>;
 
   /**
    * Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render
    * `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`.
    */
-  @Event() objectTitlebarMenuStateChange!: EventEmitter<UpdrawObjectTitlebarMenuState>;
+  @Event() objectTitlebarMenuStateChange!: EventEmitter<UpmadeObjectTitlebarMenuState>;
 
   /**
    * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object,
    * such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
    */
-  @Event() objectElementHover!: EventEmitter<UpdrawObjectElementHoverEvent>;
+  @Event() objectElementHover!: EventEmitter<UpmadeObjectElementHoverEvent>;
 
   /** Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual. */
-  @Event() objectElementClick!: EventEmitter<UpdrawObjectElementClickEvent>;
+  @Event() objectElementClick!: EventEmitter<UpmadeObjectElementClickEvent>;
 
   /** Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`. */
-  @Event() objectElementPick!: EventEmitter<UpdrawObjectElementPickEvent>;
+  @Event() objectElementPick!: EventEmitter<UpmadeObjectElementPickEvent>;
 
   @State() forceUpdate: number = 0;
 
   /** Manually triggers the `objectsSelectionChange` event. */
   @Method()
   async triggerSelectionChange() {
-    const selectedObjects = this.core.store.selectedObjects as UpdrawBaseObject[];
+    const selectedObjects = this.core.store.selectedObjects as UpmadeBaseObject[];
     this._lastHadSelectionGroup = this.core.store.selectionGroup !== null;
     this.objectsSelectionChange.emit(selectedObjects);
   }
@@ -537,8 +537,8 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
     if (
       hoveredObject &&
-      ObjectHelper.isUpdrawEmbeddedObject(hoveredObject) &&
-      UpdrawWheelHelper.shouldKeepWheelInDynamicObject(ev, hoveredObject)
+      ObjectHelper.isUpmadeEmbeddedObject(hoveredObject) &&
+      UpmadeWheelHelper.shouldKeepWheelInDynamicObject(ev, hoveredObject)
     ) {
       return;
     }
@@ -573,8 +573,8 @@ export class UpdrawEngine implements UpdrawEngineHost {
       return;
     }
 
-    if (UpdrawDevicesHelper.isTouchDevice()) {
-      UpdrawEventHelper.onLongPress(ev, (event: PointerEvent) => this.longpress.emit(event));
+    if (UpmadeDevicesHelper.isTouchDevice()) {
+      UpmadeEventHelper.onLongPress(ev, (event: PointerEvent) => this.longpress.emit(event));
     }
 
     this.host.setPointerCapture(ev.pointerId);
@@ -683,7 +683,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     }
 
     const object = this.core.store.objects.findById(objectElement.id);
-    if (!object || !ObjectHelper.isUpdrawEmbeddedObject(object)) {
+    if (!object || !ObjectHelper.isUpmadeEmbeddedObject(object)) {
       return false;
     }
 
@@ -865,7 +865,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     // Check if event path includes a dialog (works across Shadow DOM boundaries)
     const isInsideDialog = path.some((el: EventTarget) => {
       if (!(el instanceof HTMLElement)) return false;
-      return el.tagName === 'DIALOG' || el.tagName === 'UPDRAW-DIALOG' || el.getAttribute?.('role') === 'dialog' || el.getAttribute?.('role') === 'alertdialog';
+      return el.tagName === 'DIALOG' || el.tagName === 'UPMADE-DIALOG' || el.getAttribute?.('role') === 'dialog' || el.getAttribute?.('role') === 'alertdialog';
     });
 
     if (isInsideDialog) {
@@ -893,7 +893,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
   /**
    * Registers a new drawing tool with the engine.
    * @param toolName - Unique identifier for the tool (e.g., 'brush', 'eraser').
-   * @param toolClass - Constructor class extending `UpdrawBaseTool`.
+   * @param toolClass - Constructor class extending `UpmadeBaseTool`.
    * @param toolConfig - Optional initial configuration to apply to the tool instance.
    * @returns The registered tool instance, or `null` if registration failed.
    */
@@ -901,8 +901,8 @@ export class UpdrawEngine implements UpdrawEngineHost {
   async registerTool(
     toolName: string,
     toolClass: any,
-    toolConfig?: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig,
-  ): Promise<UpdrawBaseTool | null> {
+    toolConfig?: UpmadeTextToolConfig | UpmadeBrushToolConfig | UpmadeLineToolConfig | UpmadeShapeToolConfig,
+  ): Promise<UpmadeBaseTool | null> {
     if (typeof toolClass !== 'function') {
       console.error(`Failed to register tool "${toolName}": Tool class must be a constructor function`);
       return null;
@@ -927,7 +927,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     return Promise.resolve(registeredTool);
   }
 
-  private async activateTool(tool: UpdrawBaseTool): Promise<void> {
+  private async activateTool(tool: UpmadeBaseTool): Promise<void> {
     if (this.core.store.state.activeTool === tool) {
       return;
     }
@@ -946,7 +946,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
   async setActiveTool(toolName: string): Promise<void> {
     const tool = this.core.toolRegistry.getTool(toolName);
     if (!tool) {
-      console.warn(`[UpdrawEngine] No tool registered with name: ${toolName}`);
+      console.warn(`[UpmadeEngine] No tool registered with name: ${toolName}`);
       return;
     }
     await this.activateTool(tool);
@@ -998,7 +998,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
         type: 'error',
         message: 'Clipboard read permission is required to paste content. Please grant permission and try again.',
         id: ObjectHelper.generateUUID(),
-      } as UpdrawNotification);
+      } as UpmadeNotification);
 
       return;
     }
@@ -1012,7 +1012,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
-  async bringForward(object?: UpdrawBaseObject<any>) {
+  async bringForward(object?: UpmadeBaseObject<any>) {
     this.core.bringForward(object);
   }
 
@@ -1022,7 +1022,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
-  async sendBackward(object?: UpdrawBaseObject<any>) {
+  async sendBackward(object?: UpmadeBaseObject<any>) {
     this.core.sendBackward(object);
   }
 
@@ -1033,7 +1033,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
-  async bringToFront(object?: UpdrawBaseObject<any>) {
+  async bringToFront(object?: UpmadeBaseObject<any>) {
     this.core.bringToFront(object);
   }
 
@@ -1044,7 +1044,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
-  async sendToBack(object?: UpdrawBaseObject<any>) {
+  async sendToBack(object?: UpmadeBaseObject<any>) {
     this.core.sendToBack(object);
   }
 
@@ -1053,12 +1053,12 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param alignment - The alignment direction (e.g., `CenterHorizontal`, `StartVertical`).
    */
   @Method()
-  async alignObjects(alignment: UpdrawAlignment) {
+  async alignObjects(alignment: UpmadeAlignment) {
     this.core.alignObjects(alignment);
   }
 
   /**
-   * Creates a group (`UpdrawGroup`) from the given objects. Requires at least two objects. The grouped objects
+   * Creates a group (`UpmadeGroup`) from the given objects. Requires at least two objects. The grouped objects
    * become one layer at the position of the topmost object, as a single undoable step.
    *
    * Objects are resolved by id, so stale references work. Objects that are not in the active workspace are
@@ -1072,7 +1072,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @returns The created group, or `null` (with a console warning) when fewer than two objects could be grouped.
    */
   @Method()
-  async group(objects: UpdrawBaseObject<any>[]): Promise<UpdrawGroup | null> {
+  async group(objects: UpmadeBaseObject<any>[]): Promise<UpmadeGroup | null> {
     return this.core.group(objects);
   }
 
@@ -1080,16 +1080,16 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * Ungroups the given groups. Their children become individual objects again and keep their stacking order;
    * the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step.
    *
-   * Groups are resolved by id, so stale references work. Entries that are not an `UpdrawGroup` or not in the
+   * Groups are resolved by id, so stale references work. Entries that are not an `UpmadeGroup` or not in the
    * active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their
    * children.
    *
-   * To ungroup the current selection, pass the `UpdrawGroup` objects from `await getSelectedObjects()`.
+   * To ungroup the current selection, pass the `UpmadeGroup` objects from `await getSelectedObjects()`.
    * @param groups - The groups to ungroup.
    * @returns The extracted children.
    */
   @Method()
-  async ungroup(groups: UpdrawGroup[]): Promise<UpdrawBaseObject<any>[]> {
+  async ungroup(groups: UpmadeGroup[]): Promise<UpmadeBaseObject<any>[]> {
     return this.core.ungroup(groups);
   }
 
@@ -1110,7 +1110,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
   async hideContextMenu() {
     this.core.store.state.pointers.clear();
     this.core.store.state.isContextMenuVisible = false;
-    this.core.store.objects?.remove(o => o instanceof UpdrawSelectionBox);
+    this.core.store.objects?.remove(o => o instanceof UpmadeSelectionBox);
     this.core.store.setSelectionBox(null);
     this.core.store.objects?.clearLocalSelectionBox();
     this.core.store.state.isSelecting = false;
@@ -1156,14 +1156,14 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @returns The matching object, or `null` if not found.
    */
   @Method()
-  async getObjectById<T extends UpdrawBaseObject>(id: string): Promise<T | null> {
+  async getObjectById<T extends UpmadeBaseObject>(id: string): Promise<T | null> {
     const object = this.core.store.allObjects.find(obj => obj.id === id) as T | undefined;
     return object || null;
   }
 
   /** Returns all objects on the canvas across all layers. */
   @Method()
-  async getAllObjects<T extends UpdrawBaseObject>(): Promise<T[]> {
+  async getAllObjects<T extends UpmadeBaseObject>(): Promise<T[]> {
     return this.core.store.allObjects as T[];
   }
 
@@ -1176,17 +1176,17 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @example
    * ```ts
    * // Find all text objects
-   * const texts = await engine.findObjects(obj => obj.__class__ === 'UpdrawText');
+   * const texts = await engine.findObjects(obj => obj.__class__ === 'UpmadeText');
    *
    * // Find objects at a point
    * const hits = await engine.findObjects(obj => obj.hitTest(100, 200));
    *
    * // Combine criteria
-   * const filtered = await engine.findObjects(obj => obj.__class__ === 'UpdrawPath' && obj.opacity < 0.5);
+   * const filtered = await engine.findObjects(obj => obj.__class__ === 'UpmadePath' && obj.opacity < 0.5);
    * ```
    */
   @Method()
-  async findObjects<T extends UpdrawBaseObject>(predicate: (obj: UpdrawBaseObject<Element>) => boolean): Promise<T[]> {
+  async findObjects<T extends UpmadeBaseObject>(predicate: (obj: UpmadeBaseObject<Element>) => boolean): Promise<T[]> {
     return this.core.store.allNonSelectionObjects.filter(predicate) as T[];
   }
 
@@ -1202,13 +1202,13 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @returns The added object.
    */
   @Method()
-  async addObject<T extends UpdrawBaseObject>(object: T): Promise<T | null> {
+  async addObject<T extends UpmadeBaseObject>(object: T): Promise<T | null> {
     this.core.deselectAllObjects();
 
     object._core = this.core;
     object.scale = object.scale ?? this.core.store.state.scale;
 
-    if (object instanceof UpdrawImage) {
+    if (object instanceof UpmadeImage) {
       await object.prepareForInsert();
     }
 
@@ -1218,7 +1218,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
     // Wait for the object to be fully rendered and mounted before resolving.
     // First rAF: Stencil processes the render and calls ref callbacks (mount).
-    // Second rAF: mounted objects (e.g. UpdrawText) run adjustSizeOnInput
+    // Second rAF: mounted objects (e.g. UpmadeText) run adjustSizeOnInput
     // to compute actual dimensions from the DOM.
     await new Promise<void>(resolve => {
       requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
@@ -1239,20 +1239,20 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @returns The added objects.
    */
   @Method()
-  async addObjects<T extends UpdrawBaseObject>(objects: T[]): Promise<T[]> {
+  async addObjects<T extends UpmadeBaseObject>(objects: T[]): Promise<T[]> {
     if (objects.length === 0) {
       return [];
     }
 
     for (const object of objects) {
       object._core = this.core;
-      if (object instanceof UpdrawImage) {
+      if (object instanceof UpmadeImage) {
         await object.prepareForInsert();
       }
     }
 
     // Objects of one batch appear one after another; big batches appear at once, without the animation.
-    const appears = objects.length <= UPDRAW_OBJECT_APPEAR_MAX_BATCH;
+    const appears = objects.length <= UPMADE_OBJECT_APPEAR_MAX_BATCH;
     this.core.store.objects.transaction(() => {
       objects.forEach((object, index) => {
         const descendants = this.core.prepareObjectForInsert(object);
@@ -1279,7 +1279,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @returns The updated object.
    */
   @Method()
-  async updateObject<T extends UpdrawBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null> {
+  async updateObject<T extends UpmadeBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null> {
     this.core.deselectAllObjects();
 
     this.core.updateObject(object, updatedProperties);
@@ -1296,7 +1296,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @returns The removed object.
    */
   @Method()
-  async removeObject<T extends UpdrawBaseObject>(object: T): Promise<T | null> {
+  async removeObject<T extends UpmadeBaseObject>(object: T): Promise<T | null> {
     const objectsMap = this.core.store.objects;
     if (!objectsMap) {
       return null;
@@ -1321,7 +1321,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @returns The removed objects.
    */
   @Method()
-  async removeObjects<T extends UpdrawBaseObject>(objects: T[]): Promise<T[]> {
+  async removeObjects<T extends UpmadeBaseObject>(objects: T[]): Promise<T[]> {
     const objectsMap = this.core.store.objects;
     if (!objectsMap || objects.length === 0) {
       return [];
@@ -1342,14 +1342,14 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
   /** Returns the currently selected objects. Returns an empty array if nothing is selected. */
   @Method()
-  async getSelectedObjects(): Promise<UpdrawBaseObject<any>[]> {
+  async getSelectedObjects(): Promise<UpmadeBaseObject<any>[]> {
     const selectionGroup = this.core.store.selectionGroup;
     return selectionGroup ? selectionGroup.objects : [];
   }
 
   /** Returns all registered keyboard shortcuts (without action/condition) for display in a help UI. */
   @Method()
-  async getDisplayableShortcuts(): Promise<Omit<UpdrawShortcut, 'action' | 'condition'>[]> {
+  async getDisplayableShortcuts(): Promise<Omit<UpmadeShortcut, 'action' | 'condition'>[]> {
     return this.keyHandler.getDisplayableShortcuts();
   }
 
@@ -1358,7 +1358,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param objects - The objects to select.
    */
   @Method()
-  async selectObjects(objects: UpdrawBaseObject[]) {
+  async selectObjects(objects: UpmadeBaseObject[]) {
     const selectionTool = this.core.toolRegistry.getTool('selection');
     if (!selectionTool) {
       return;
@@ -1396,7 +1396,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @returns The centered object.
    */
   @Method()
-  async centerObjectInViewport(object: UpdrawBaseObject) {
+  async centerObjectInViewport(object: UpmadeBaseObject) {
     object.centerInViewport();
 
     this.core.updateObject(object, object);
@@ -1411,7 +1411,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param object - The object whose center the viewport should pan to.
    */
   @Method()
-  async panToObject(object: UpdrawBaseObject): Promise<void> {
+  async panToObject(object: UpmadeBaseObject): Promise<void> {
     this.viewport.panTo(object.centerX, object.centerY);
   }
 
@@ -1444,7 +1444,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @returns `true` if objects were provided and the viewport was adjusted, `false` otherwise.
    */
   @Method()
-  async centerObjects(objects: UpdrawBaseObject[], animate = true): Promise<boolean> {
+  async centerObjects(objects: UpmadeBaseObject[], animate = true): Promise<boolean> {
     return this.viewport.centerFitObjects(objects, animate);
   }
 
@@ -1506,7 +1506,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @returns The current viewport state.
    */
   @Method()
-  async getViewport(): Promise<UpdrawViewportState> {
+  async getViewport(): Promise<UpmadeViewportState> {
     return this.viewport.getViewport();
   }
 
@@ -1534,18 +1534,18 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
   /** Returns all objects currently visible within the viewport bounds. */
   @Method()
-  async getObjectsInViewport(): Promise<UpdrawBaseObject[]> {
+  async getObjectsInViewport(): Promise<UpmadeBaseObject[]> {
     return this.core.getObjectsInViewport();
   }
 
   /**
    * Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to
    * one editor at a time; an agent of an editor that was removed from the page moves here.
-   * @param agent - A `new UpdrawAgent({ name })`.
+   * @param agent - A `new UpmadeAgent({ name })`.
    * @returns The same agent.
    */
   @Method()
-  async addAgent(agent: UpdrawAgent): Promise<UpdrawAgent> {
+  async addAgent(agent: UpmadeAgent): Promise<UpmadeAgent> {
     return this.core.agentManager.add(agent);
   }
 
@@ -1556,7 +1556,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @returns `false` if the agent was not added.
    */
   @Method()
-  async removeAgent(agent: UpdrawAgent | string): Promise<boolean> {
+  async removeAgent(agent: UpmadeAgent | string): Promise<boolean> {
     return this.core.agentManager.remove(agent);
   }
 
@@ -1565,19 +1565,19 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param id - The agent's ID.
    */
   @Method()
-  async getAgent(id: string): Promise<UpdrawAgent | null> {
+  async getAgent(id: string): Promise<UpmadeAgent | null> {
     return this.core.agentManager.get(id);
   }
 
   /** Returns the added agents. */
   @Method()
-  async getAgents(): Promise<UpdrawAgent[]> {
+  async getAgents(): Promise<UpmadeAgent[]> {
     return this.core.agentManager.getAll();
   }
 
   /** Returns the agents of collaborators, as shared through presence. */
   @Method()
-  async getRemoteAgents(): Promise<UpdrawRemoteAgentPresence[]> {
+  async getRemoteAgents(): Promise<UpmadeRemoteAgentPresence[]> {
     return this.core.remoteAgentManager.getPresences();
   }
 
@@ -1590,7 +1590,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param options - `selector` limits picking to matching elements, `color` sets the highlight color.
    */
   @Method()
-  async setObjectElementPicking(objectId: string, enabled: boolean, options: UpdrawObjectElementPickingOptions = {}): Promise<void> {
+  async setObjectElementPicking(objectId: string, enabled: boolean, options: UpmadeObjectElementPickingOptions = {}): Promise<void> {
     this.getElementAwareObjectOrThrow(objectId).setElementPicking(enabled, options);
   }
 
@@ -1601,7 +1601,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param highlights - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted.
    */
   @Method()
-  async highlightObjectElements(objectId: string, highlights: UpdrawObjectElementHighlight[]): Promise<void> {
+  async highlightObjectElements(objectId: string, highlights: UpmadeObjectElementHighlight[]): Promise<void> {
     this.getElementAwareObjectOrThrow(objectId).setElementHighlights(highlights);
   }
 
@@ -1616,7 +1616,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
       return;
     }
     this.core.store.objects?.allObjects().forEach(object => {
-      if (ObjectHelper.isUpdrawElementAwareObject(object) && object.getElementHighlights().length > 0) {
+      if (ObjectHelper.isUpmadeElementAwareObject(object) && object.getElementHighlights().length > 0) {
         object.setElementHighlights([]);
       }
     });
@@ -1626,13 +1626,13 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * Describes the elements inside an object's content that match a CSS selector, in document order.
    * The object must be mounted, which it is while it is in or near the viewport.
    * @param objectId - The object ID.
-   * @param selector - A CSS selector, e.g. `'button'` or `'[data-updraw-id]'`.
+   * @param selector - A CSS selector, e.g. `'button'` or `'[data-upmade-id]'`.
    * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
    * @returns The matching elements, each with a `selector` that can be used to highlight it or point an agent's cursor
    * at it with `agent.moveTo({ objectId, selector })`.
    */
   @Method()
-  async queryObjectElements(objectId: string, selector: string, limit?: number): Promise<UpdrawObjectElementInfo[]> {
+  async queryObjectElements(objectId: string, selector: string, limit?: number): Promise<UpmadeObjectElementInfo[]> {
     return this.getElementAwareObjectOrThrow(objectId).queryElements(selector, limit);
   }
 
@@ -1660,14 +1660,14 @@ export class UpdrawEngine implements UpdrawEngineHost {
     const screenshotOptions: Record<string, unknown> = {
       filter: (node: HTMLElement) => {
         // Exclude the context menu, debug panel, and awareness cursors from the screenshot
-        if (node.tagName === 'UPDRAW-CONTEXT-MENU') {
+        if (node.tagName === 'UPMADE-CONTEXT-MENU') {
           return false;
         }
-        if (node.tagName === 'UPDRAW-AWARENESS-CURSORS') {
+        if (node.tagName === 'UPMADE-AWARENESS-CURSORS') {
           return false;
         }
         // Agent cursors and their selections are UI, not content
-        if (node.tagName === 'UPDRAW-AGENTIC-CURSORS') {
+        if (node.tagName === 'UPMADE-AGENTIC-CURSORS') {
           return false;
         }
         if (node.classList && node.classList.contains('debug-panel')) {
@@ -1755,7 +1755,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * Only returns formats when exactly one object is selected.
    */
   @Method()
-  async getSelectedObjectSupportedExportFormats(): Promise<UpdrawObjectExportFormat[]> {
+  async getSelectedObjectSupportedExportFormats(): Promise<UpmadeObjectExportFormat[]> {
     const selected = this.getSingleSelectedExportableObject();
     if (!selected) {
       return [];
@@ -1769,7 +1769,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * Returns false when none or multiple objects are selected.
    */
   @Method()
-  async canExportSelectedObjectAs(format: UpdrawObjectExportFormat): Promise<boolean> {
+  async canExportSelectedObjectAs(format: UpmadeObjectExportFormat): Promise<boolean> {
     const selected = this.getSingleSelectedExportableObject();
     if (!selected) {
       return false;
@@ -1783,7 +1783,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * Only supports single selection.
    */
   @Method()
-  async exportSelectedObject(format: UpdrawObjectExportFormat): Promise<void> {
+  async exportSelectedObject(format: UpmadeObjectExportFormat): Promise<void> {
     const selected = this.getSingleSelectedExportableObject();
     if (!selected) {
       return;
@@ -1797,7 +1797,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
       }
 
       const activeWorkspaceName = this.core.store.state?.activeWorkspace?.name || 'workspace';
-      const objectName = selected.__class__.replace(/^Updraw/, '').toLowerCase() || 'object';
+      const objectName = selected.__class__.replace(/^Upmade/, '').toLowerCase() || 'object';
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const filename = `${activeWorkspaceName}-${objectName}-${timestamp}.${format}`;
 
@@ -1854,7 +1854,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
     // Validate the import data
     // Exports made before the rename use the legacy workspace class name.
-    if (!data.__class__ || normalizeLegacyClassName(data.__class__) !== 'UpdrawWorkspace') {
+    if (!data.__class__ || normalizeLegacyClassName(data.__class__) !== 'UpmadeWorkspace') {
       throw new Error('Invalid workspace data: missing or incorrect __class__ identifier');
     }
 
@@ -1870,7 +1870,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     const importedName = this.getImportedWorkspaceName(data.name);
     const importedViewport = this.getImportedWorkspaceViewport(data.viewport);
 
-    const newWorkspace = new UpdrawWorkspace({
+    const newWorkspace = new UpmadeWorkspace({
       id: newWorkspaceId,
       name: importedName,
       viewport: importedViewport,
@@ -1887,9 +1887,9 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
     // Revive and add objects to the new workspace
     if (data.objects && Array.isArray(data.objects)) {
-      const reviver = new UpdrawReviver(this.core);
+      const reviver = new UpmadeReviver(this.core);
       for (const objData of data.objects) {
-        const revivedObj = reviver.revive<UpdrawBaseObject>(objData);
+        const revivedObj = reviver.revive<UpmadeBaseObject>(objData);
         if (revivedObj) {
           // Update workspaceId to the new workspace's ID
           revivedObj.workspaceId = newWorkspaceId;
@@ -1919,7 +1919,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
     // Validate the import data
     // Exports made before the rename use the legacy workspace class name.
-    if (!data.__class__ || normalizeLegacyClassName(data.__class__) !== 'UpdrawWorkspace') {
+    if (!data.__class__ || normalizeLegacyClassName(data.__class__) !== 'UpmadeWorkspace') {
       throw new Error('Invalid workspace data: missing or incorrect __class__ identifier');
     }
 
@@ -1940,12 +1940,12 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
     // Revive and add objects to the current workspace
     if (data.objects && Array.isArray(data.objects)) {
-      const reviver = new UpdrawReviver(this.core);
+      const reviver = new UpmadeReviver(this.core);
       const objectsMap = this.core.store.objects;
 
       const insertRevivedObjects = () => {
         for (const objData of data.objects!) {
-          const revivedObj = reviver.revive<UpdrawBaseObject>(objData);
+          const revivedObj = reviver.revive<UpmadeBaseObject>(objData);
           if (!revivedObj) {
             continue;
           }
@@ -1989,7 +1989,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
       const maybeImage = serializedObject as { __class__?: string; assetId?: unknown };
       const className = typeof maybeImage.__class__ === 'string' ? normalizeLegacyClassName(maybeImage.__class__) : undefined;
-      if (className === 'UpdrawImage' && typeof maybeImage.assetId === 'string' && maybeImage.assetId.length > 0) {
+      if (className === 'UpmadeImage' && typeof maybeImage.assetId === 'string' && maybeImage.assetId.length > 0) {
         assetIds.add(maybeImage.assetId);
       }
     }
@@ -2000,7 +2000,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
         const blob = await this.core.assetResolver.fetchBlob(assetId);
         assets[assetId] = await this.blobToDataUrl(blob);
       } catch (error) {
-        console.warn(`[Updraw] Failed to embed asset ${assetId} in portable workspace export:`, error);
+        console.warn(`[Upmade] Failed to embed asset ${assetId} in portable workspace export:`, error);
       }
     }
 
@@ -2026,7 +2026,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
           kind: 'image',
         });
       } catch (error) {
-        console.warn(`[Updraw] Failed to restore embedded asset ${assetId} from portable workspace import:`, error);
+        console.warn(`[Upmade] Failed to restore embedded asset ${assetId} from portable workspace import:`, error);
       }
     }
   }
@@ -2052,21 +2052,21 @@ export class UpdrawEngine implements UpdrawEngineHost {
     link.click();
   }
 
-  private getSingleSelectedExportableObject(): (UpdrawBaseObject & UpdrawExportable) | null {
+  private getSingleSelectedExportableObject(): (UpmadeBaseObject & UpmadeExportable) | null {
     const selectedObjects = this.core.store.selectionGroup?.objects ?? [];
     if (selectedObjects.length !== 1) {
       return null;
     }
 
     const [selected] = selectedObjects;
-    if (!ObjectHelper.isUpdrawExportable(selected)) {
+    if (!ObjectHelper.isUpmadeExportable(selected)) {
       return null;
     }
 
-    return selected as UpdrawBaseObject & UpdrawExportable;
+    return selected as UpmadeBaseObject & UpmadeExportable;
   }
 
-  private getObjectExportContext(): UpdrawObjectExportContext {
+  private getObjectExportContext(): UpmadeObjectExportContext {
     return {
       getObjectAsSvgDataUrl: async (object, options) => {
         const svg = await this.getObjectAsSvgMarkup(object, options?.rasterSafeForCanvas ?? false);
@@ -2079,9 +2079,9 @@ export class UpdrawEngine implements UpdrawEngineHost {
     };
   }
 
-  private async getObjectAsSvgMarkup(object: UpdrawBaseObject, rasterSafeForCanvas: boolean): Promise<string | null> {
-    const imageDataUrls = await UpdrawSvgExportHelper.resolveImageDataUrls([object], this.core.assetResolver);
-    const svg = UpdrawSvgExportHelper.generateSvg([object], {
+  private async getObjectAsSvgMarkup(object: UpmadeBaseObject, rasterSafeForCanvas: boolean): Promise<string | null> {
+    const imageDataUrls = await UpmadeSvgExportHelper.resolveImageDataUrls([object], this.core.assetResolver);
+    const svg = UpmadeSvgExportHelper.generateSvg([object], {
       theme: this.theme,
       rasterSafeForCanvas,
       imageDataUrls,
@@ -2285,7 +2285,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
   async setActiveWorkspace(id: string): Promise<void> {
     const workspace = this.findVisibleWorkspace(id);
     if (!workspace) {
-      console.warn(`[UpdrawEngine] No workspace found with ID: ${id}`);
+      console.warn(`[UpmadeEngine] No workspace found with ID: ${id}`);
       return;
     }
 
@@ -2299,7 +2299,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @returns The created workspace.
    */
   @Method()
-  async createWorkspace(workspace: UpdrawWorkspace): Promise<UpdrawWorkspace | null> {
+  async createWorkspace(workspace: UpmadeWorkspace): Promise<UpmadeWorkspace | null> {
     const createdWorkspace = await this.core.createWorkspace(workspace);
     this.syncVisibleWorkspacesToState();
     this.workspacesChange.emit(this.getVisibleWorkspaces());
@@ -2320,9 +2320,9 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param workspace - The workspace describing the desired state.
    */
   @Method()
-  async updateWorkspace(workspace: UpdrawWorkspace): Promise<void> {
+  async updateWorkspace(workspace: UpmadeWorkspace): Promise<void> {
     if (this.isWorkspaceCatalogControlled() && !this.findVisibleWorkspace(workspace.id)) {
-      console.warn(`[UpdrawEngine] Cannot update workspace outside the controlled catalog: ${workspace.id}`);
+      console.warn(`[UpmadeEngine] Cannot update workspace outside the controlled catalog: ${workspace.id}`);
       return;
     }
 
@@ -2354,9 +2354,9 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param workspace - The workspace to delete.
    */
   @Method()
-  async deleteWorkspace(workspace: UpdrawWorkspace): Promise<void> {
+  async deleteWorkspace(workspace: UpmadeWorkspace): Promise<void> {
     if (this.isWorkspaceCatalogControlled() && !this.findVisibleWorkspace(workspace.id)) {
-      console.warn(`[UpdrawEngine] Cannot delete workspace outside the controlled catalog: ${workspace.id}`);
+      console.warn(`[UpmadeEngine] Cannot delete workspace outside the controlled catalog: ${workspace.id}`);
       return;
     }
 
@@ -2367,13 +2367,13 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
   /** Returns all available workspaces. */
   @Method()
-  async getWorkspaces(): Promise<UpdrawWorkspace[]> {
+  async getWorkspaces(): Promise<UpmadeWorkspace[]> {
     return this.getVisibleWorkspaces();
   }
 
   /** Returns the currently active workspace. */
   @Method()
-  async getActiveWorkspace(): Promise<UpdrawWorkspace> {
+  async getActiveWorkspace(): Promise<UpmadeWorkspace> {
     const activeWorkspace = this.core.store.state.activeWorkspace;
     if (!activeWorkspace) {
       throw new Error('No active workspace is loaded');
@@ -2404,7 +2404,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     let workspace = this.core.getWorkspaces().find(w => w.id === workspaceId);
 
     if (!workspace) {
-      workspace = new UpdrawWorkspace({ id: workspaceId, name: 'Shared Workspace' });
+      workspace = new UpmadeWorkspace({ id: workspaceId, name: 'Shared Workspace' });
       workspace.isPublic = true;
       this.core.createWorkspace(workspace);
     } else {
@@ -2415,7 +2415,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     this.workspacesChange.emit(this.getVisibleWorkspaces());
 
     if (this.isWorkspaceCatalogControlled() && !this.findVisibleWorkspace(workspace.id)) {
-      console.warn(`[UpdrawEngine] Cannot load shared workspace outside the controlled catalog: ${workspace.id}`);
+      console.warn(`[UpmadeEngine] Cannot load shared workspace outside the controlled catalog: ${workspace.id}`);
       return;
     }
 
@@ -2448,8 +2448,8 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param settings - The settings configuration to persist.
    */
   @Method()
-  async saveSettings(settings: UpdrawSettingsConfig): Promise<void> {
-    const key = this.core.getStorageKey('updraw-settings');
+  async saveSettings(settings: UpmadeSettingsConfig): Promise<void> {
+    const key = this.core.getStorageKey('upmade-settings');
     localStorage.setItem(key, JSON.stringify(settings));
   }
 
@@ -2458,14 +2458,14 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @returns The stored settings, or null if nothing is stored or the value is invalid.
    */
   @Method()
-  async loadSettings(): Promise<Partial<UpdrawSettingsConfig> | null> {
-    const key = this.core.getStorageKey('updraw-settings');
+  async loadSettings(): Promise<Partial<UpmadeSettingsConfig> | null> {
+    const key = this.core.getStorageKey('upmade-settings');
     const stored = localStorage.getItem(key);
     if (!stored) {
       return null;
     }
     try {
-      return JSON.parse(stored) as Partial<UpdrawSettingsConfig>;
+      return JSON.parse(stored) as Partial<UpmadeSettingsConfig>;
     } catch {
       return null;
     }
@@ -2476,7 +2476,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param locales - The locale definitions to register.
    */
   @Method()
-  async registerLocales(locales: UpdrawLocale[]): Promise<void> {
+  async registerLocales(locales: UpmadeLocale[]): Promise<void> {
     this.core.localizationManager.registerLocales(locales);
     this.core.localizationManager.setLocale(this.core.localizationManager.currentLocale);
   }
@@ -2487,7 +2487,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param locales - The full locale catalog, or `undefined` for built-ins.
    */
   @Method()
-  async configureLocales(locales?: UpdrawLocale[]): Promise<void> {
+  async configureLocales(locales?: UpmadeLocale[]): Promise<void> {
     this.core.localizationManager.configureLocales(locales);
     this.core.localizationManager.setLocale(this.core.localizationManager.resolveActiveLocale(this.locale));
   }
@@ -2532,7 +2532,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * @param vars - Optional values for `{placeholder}` interpolation.
    */
   @Method()
-  async t(key: UpdrawTermKey, vars?: UpdrawTermVars): Promise<string> {
+  async t(key: UpmadeTermKey, vars?: UpmadeTermVars): Promise<string> {
     return this.core.localizationManager.translate(key, vars);
   }
 
@@ -2541,14 +2541,14 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * Useful for UI layers that need to localize many strings at once.
    */
   @Method()
-  async getResolvedTerms(): Promise<Partial<Record<UpdrawTermKey, string>>> {
+  async getResolvedTerms(): Promise<Partial<Record<UpmadeTermKey, string>>> {
     return this.core.localizationManager.getAllTerms();
   }
 
-  core: UpdrawCore;
-  viewport!: UpdrawViewport;
-  contextMenuHandler!: UpdrawContextMenuHandler;
-  keyHandler!: UpdrawKeyHandler;
+  core: UpmadeCore;
+  viewport!: UpmadeViewport;
+  contextMenuHandler!: UpmadeContextMenuHandler;
+  keyHandler!: UpmadeKeyHandler;
 
   private _lastHadSelectionGroup: boolean = false;
   private _isViewportReady: boolean = false;
@@ -2578,7 +2578,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
   private _sceneBootstrapOpacity: number = 1;
   private _sceneBootstrapTransitionEnabled: boolean = false;
   private _sceneBootstrapTransitionTimer: ReturnType<typeof setTimeout> | null = null;
-  private readonly _defaultUndoState: UpdrawUndoState = {
+  private readonly _defaultUndoState: UpmadeUndoState = {
     canUndo: false,
     canRedo: false,
     undoStackSize: 0,
@@ -2587,7 +2587,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
   /** Returns a tool registered in this engine instance. */
   @Method()
-  async getTool(toolName: string): Promise<UpdrawBaseTool | null> {
+  async getTool(toolName: string): Promise<UpmadeBaseTool | null> {
     await this.registerConfiguredTools();
     return this.core.toolRegistry.getTool(toolName);
   }
@@ -2603,7 +2603,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
         for (const definition of this.tools) {
           let toolClass = definition.tool;
           if (typeof toolClass !== 'function') {
-            toolClass = toolClass.constructor as UpdrawToolDefinition['tool'];
+            toolClass = toolClass.constructor as UpmadeToolDefinition['tool'];
           }
 
           await this.registerTool(definition.name, toolClass, definition.config);
@@ -2655,7 +2655,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     });
   }
 
-  private applyToolConfig(tool: UpdrawBaseTool, toolConfig: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig): void {
+  private applyToolConfig(tool: UpmadeBaseTool, toolConfig: UpmadeTextToolConfig | UpmadeBrushToolConfig | UpmadeLineToolConfig | UpmadeShapeToolConfig): void {
     const normalizedToolConfig = this.normalizeToolConfig(toolConfig);
 
     Object.entries(normalizedToolConfig).forEach(([key, value]) => {
@@ -2664,8 +2664,8 @@ export class UpdrawEngine implements UpdrawEngineHost {
   }
 
   private normalizeToolConfig(
-    toolConfig: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig,
-  ): UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig {
+    toolConfig: UpmadeTextToolConfig | UpmadeBrushToolConfig | UpmadeLineToolConfig | UpmadeShapeToolConfig,
+  ): UpmadeTextToolConfig | UpmadeBrushToolConfig | UpmadeLineToolConfig | UpmadeShapeToolConfig {
     if (!this.isTextToolConfig(toolConfig)) {
       return toolConfig;
     }
@@ -2677,20 +2677,20 @@ export class UpdrawEngine implements UpdrawEngineHost {
   }
 
   private isTextToolConfig(
-    toolConfig: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig,
-  ): toolConfig is UpdrawTextToolConfig {
+    toolConfig: UpmadeTextToolConfig | UpmadeBrushToolConfig | UpmadeLineToolConfig | UpmadeShapeToolConfig,
+  ): toolConfig is UpmadeTextToolConfig {
     return 'fontFamily' in toolConfig && 'size' in toolConfig && 'color' in toolConfig;
   }
 
   /** Built-in tool classes of this bundle keyed by their tool type. */
-  private static readonly BUILT_IN_TOOL_CLASSES: Partial<Record<UpdrawToolType, new (core: UpdrawCore) => UpdrawBaseTool>> = {
-    selection: UpdrawSelectionTool,
-    brush: UpdrawBrushTool,
-    eraser: UpdrawEraserTool,
-    line: UpdrawLineTool,
-    shape: UpdrawShapeTool,
-    text: UpdrawTextTool,
-    image: UpdrawImageTool,
+  private static readonly BUILT_IN_TOOL_CLASSES: Partial<Record<UpmadeToolType, new (core: UpmadeCore) => UpmadeBaseTool>> = {
+    selection: UpmadeSelectionTool,
+    brush: UpmadeBrushTool,
+    eraser: UpmadeEraserTool,
+    line: UpmadeLineTool,
+    shape: UpmadeShapeTool,
+    text: UpmadeTextTool,
+    image: UpmadeImageTool,
   };
 
   /**
@@ -2698,26 +2698,26 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * Classes from another compiled copy of the library (dual-package hazard, e.g. built-ins
    * re-exported by a framework wrapper) would otherwise break `instanceof` checks.
    */
-  private resolveToolClass(toolClass: new (core: UpdrawCore) => UpdrawBaseTool): new (core: UpdrawCore) => UpdrawBaseTool {
-    if (toolClass.prototype instanceof UpdrawBaseTool) {
+  private resolveToolClass(toolClass: new (core: UpmadeCore) => UpmadeBaseTool): new (core: UpmadeCore) => UpmadeBaseTool {
+    if (toolClass.prototype instanceof UpmadeBaseTool) {
       return toolClass;
     }
 
     try {
       const probe = new toolClass(this.core);
-      return UpdrawEngine.BUILT_IN_TOOL_CLASSES[probe.toolType] ?? toolClass;
+      return UpmadeEngine.BUILT_IN_TOOL_CLASSES[probe.toolType] ?? toolClass;
     } catch {
       return toolClass;
     }
   }
 
   /** The session `chatSession` is bound to; binding again is a no-op. */
-  private _boundChatSession: UpdrawChatSession | null = null;
+  private _boundChatSession: UpmadeChatSession | null = null;
 
   private bindChatSession(): void {
-    const next = isUpdrawChatSession(this.chatSession) ? this.chatSession : null;
+    const next = isUpmadeChatSession(this.chatSession) ? this.chatSession : null;
     if (this.chatSession != null && !next) {
-      console.error('[Updraw] chatSession expects an UpdrawChatSession.');
+      console.error('[Upmade] chatSession expects an UpmadeChatSession.');
     }
     const previous = this._boundChatSession;
     if (next && next === previous && next._owner === this.core) {
@@ -2738,7 +2738,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
       next._attach(this.core);
     } catch (error) {
       this._boundChatSession = null;
-      console.error('[Updraw] Failed to bind the chat session:', error);
+      console.error('[Upmade] Failed to bind the chat session:', error);
     }
   }
 
@@ -2756,7 +2756,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
   }
 
   constructor() {
-    this.core = new UpdrawCore(this);
+    this.core = new UpmadeCore(this);
     const emitAgents = () =>
       this.agentsChange?.emit({ agents: [...this.core.agentManager.getPresences(), ...this.core.remoteAgentManager.getPresences()] });
     this.core.agentManager.onChange(emitAgents);
@@ -2788,7 +2788,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     // Unmount all remaining dynamic objects
     if (this.core.store.allObjects) {
       this.core.store.allObjects.forEach(object => {
-        if (object instanceof UpdrawDynamicObject) {
+        if (object instanceof UpmadeDynamicObject) {
           (object as any).unmount();
         }
       });
@@ -2824,7 +2824,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
       this.core.themeManager.registerThemes(this.themes);
     }
 
-    const editorElement = this.host.closest('updraw-editor') as HTMLElement;
+    const editorElement = this.host.closest('upmade-editor') as HTMLElement;
     this.core.themeManager.injectThemeEarly(editorElement || this.host);
 
     this.core.localizationManager.configureLocales(this.locales);
@@ -2849,9 +2849,9 @@ export class UpdrawEngine implements UpdrawEngineHost {
     // A chatSession set after componentWillLoad but before @Watch handlers run is bound here.
     this.bindChatSession();
     setTimeout(async () => {
-      this.contextMenuHandler = new UpdrawContextMenuHandler(this.core, this.globalContextMenuItems ?? [], this.objectContextMenuItems ?? []);
-      this.keyHandler = new UpdrawKeyHandler(this.core);
-      this.viewport = new UpdrawViewport(this.core, this.host);
+      this.contextMenuHandler = new UpmadeContextMenuHandler(this.core, this.globalContextMenuItems ?? [], this.objectContextMenuItems ?? []);
+      this.keyHandler = new UpmadeKeyHandler(this.core);
+      this.viewport = new UpmadeViewport(this.core, this.host);
       this._isViewportReady = true;
       window.visualViewport?.addEventListener('resize', this.handleVisualViewportResize);
 
@@ -2861,8 +2861,8 @@ export class UpdrawEngine implements UpdrawEngineHost {
         this.core.cursorManager.setShadowRoot(this.host.shadowRoot);
       }
 
-      // Initialize theme manager with updraw-editor as target element
-      const editorElement = this.host.closest('updraw-editor') as HTMLElement;
+      // Initialize theme manager with upmade-editor as target element
+      const editorElement = this.host.closest('upmade-editor') as HTMLElement;
       this.core.themeManager.setTargetElement(editorElement || this.host);
 
       // Initialize sync config and Yjs
@@ -3023,7 +3023,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
           return;
         }
 
-        console.warn(`[UpdrawEngine] No workspace found with ID: ${this.activeWorkspaceId}`);
+        console.warn(`[UpmadeEngine] No workspace found with ID: ${this.activeWorkspaceId}`);
       }
 
       if (visibleWorkspaces.length > 0) {
@@ -3053,7 +3053,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     await this.core.appStateMap.whenNetworkSynced();
   }
 
-  private async resolveStartupWorkspace(): Promise<UpdrawWorkspace> {
+  private async resolveStartupWorkspace(): Promise<UpmadeWorkspace> {
     if (this.activeWorkspaceId) {
       const workspaceById = this.core.getWorkspaces().find(ws => ws.id === this.activeWorkspaceId);
 
@@ -3112,11 +3112,11 @@ export class UpdrawEngine implements UpdrawEngineHost {
     return this.workspaces !== undefined;
   }
 
-  private getProvidedWorkspaces(): UpdrawWorkspace[] {
+  private getProvidedWorkspaces(): UpmadeWorkspace[] {
     return this.workspaces ?? [];
   }
 
-  private getVisibleWorkspaces(): UpdrawWorkspace[] {
+  private getVisibleWorkspaces(): UpmadeWorkspace[] {
     if (!this.isWorkspaceCatalogControlled()) {
       return this.core.getWorkspaces();
     }
@@ -3126,7 +3126,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     return this.getProvidedWorkspaces().map(workspace => providerWorkspaces.find(existing => existing.id === workspace.id) ?? workspace);
   }
 
-  private findVisibleWorkspace(workspaceId: string): UpdrawWorkspace | undefined {
+  private findVisibleWorkspace(workspaceId: string): UpmadeWorkspace | undefined {
     return this.getVisibleWorkspaces().find(workspace => workspace.id === workspaceId);
   }
 
@@ -3134,7 +3134,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     this.core.store.state.workspaces = this.getVisibleWorkspaces();
   }
 
-  private hasWorkspaceMetadataChanged(existingWorkspace: UpdrawWorkspace, providedWorkspace: UpdrawWorkspace): boolean {
+  private hasWorkspaceMetadataChanged(existingWorkspace: UpmadeWorkspace, providedWorkspace: UpmadeWorkspace): boolean {
     return (
       existingWorkspace.name !== providedWorkspace.name ||
       existingWorkspace.isPublic !== providedWorkspace.isPublic ||
@@ -3144,7 +3144,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     );
   }
 
-  private cloneWorkspaceMetadata(workspace: UpdrawWorkspace): UpdrawWorkspace {
+  private cloneWorkspaceMetadata(workspace: UpmadeWorkspace): UpmadeWorkspace {
     const clonedWorkspace = workspace.clone();
     clonedWorkspace.objects = undefined;
     return clonedWorkspace;
@@ -3169,7 +3169,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     const workspace = this.findVisibleWorkspace(workspaceId);
     if (!workspace) {
       if (logIfMissing) {
-        console.warn(`[UpdrawEngine] No workspace found with ID: ${workspaceId}`);
+        console.warn(`[UpmadeEngine] No workspace found with ID: ${workspaceId}`);
       }
       return;
     }
@@ -3183,7 +3183,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     this.activeWorkspaceChange.emit(this.core.store.state.activeWorkspace!);
   }
 
-  private async initializeWorkspaceIfNeeded(workspace?: UpdrawWorkspace, options?: { skipFallbackCreation?: boolean }): Promise<void> {
+  private async initializeWorkspaceIfNeeded(workspace?: UpmadeWorkspace, options?: { skipFallbackCreation?: boolean }): Promise<void> {
     const targetWorkspaceId = workspace?.id ?? null;
     const targetKey = targetWorkspaceId ?? (options?.skipFallbackCreation ? '__NO_FALLBACK__' : '__AUTO__');
 
@@ -3218,7 +3218,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
   emitObjectsChange() {
     const objectsMap = this.core.store.objects;
-    const selectedObjects = this.core.store.selectedObjects as UpdrawBaseObject[];
+    const selectedObjects = this.core.store.selectedObjects as UpmadeBaseObject[];
 
     if (!objectsMap) {
       this.objectsChange.emit([]);
@@ -3232,7 +3232,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
       return;
     }
 
-    const objects = this.core.store.allObjects as UpdrawBaseObject<HTMLElement | SVGElement>[];
+    const objects = this.core.store.allObjects as UpmadeBaseObject<HTMLElement | SVGElement>[];
     const undoState = objectsMap.undoState;
     const hasSelectionGroup = this.core.store.selectionGroup !== null;
 
@@ -3245,15 +3245,15 @@ export class UpdrawEngine implements UpdrawEngineHost {
     }
   }
 
-  emitObjectsAdded(objects: UpdrawBaseObject<any>[], source?: UpdrawObjectChangeSource) {
+  emitObjectsAdded(objects: UpmadeBaseObject<any>[], source?: UpmadeObjectChangeSource) {
     this.objectsAdded.emit(source ? { objects, source } : { objects });
   }
 
-  emitObjectsRemoved(objects: UpdrawBaseObject<any>[], source?: UpdrawObjectChangeSource) {
+  emitObjectsRemoved(objects: UpmadeBaseObject<any>[], source?: UpmadeObjectChangeSource) {
     this.objectsRemoved.emit(source ? { objects, source } : { objects });
   }
 
-  emitObjectsUpdated(objects: { object: UpdrawBaseObject<any>; changedProperties: string[] }[], source?: UpdrawObjectChangeSource) {
+  emitObjectsUpdated(objects: { object: UpmadeBaseObject<any>; changedProperties: string[] }[], source?: UpmadeObjectChangeSource) {
     this.objectsUpdated.emit(source ? { objects, source } : { objects });
   }
 
@@ -3261,32 +3261,32 @@ export class UpdrawEngine implements UpdrawEngineHost {
     this.awarenessChange.emit(states);
   }
 
-  emitObjectTitlebarAction(detail: UpdrawObjectTitlebarActionEvent) {
+  emitObjectTitlebarAction(detail: UpmadeObjectTitlebarActionEvent) {
     this.objectTitlebarAction.emit(detail);
   }
 
-  emitObjectTitlebarMenuStateChange(detail: UpdrawObjectTitlebarMenuState) {
+  emitObjectTitlebarMenuStateChange(detail: UpmadeObjectTitlebarMenuState) {
     this.objectTitlebarMenuStateChange.emit(detail);
   }
 
-  emitObjectElementHover(detail: UpdrawObjectElementHoverEvent) {
+  emitObjectElementHover(detail: UpmadeObjectElementHoverEvent) {
     this.objectElementHover.emit(detail);
   }
 
-  emitObjectElementClick(detail: UpdrawObjectElementClickEvent) {
+  emitObjectElementClick(detail: UpmadeObjectElementClickEvent) {
     this.objectElementClick.emit(detail);
   }
 
-  emitObjectElementPick(detail: UpdrawObjectElementPickEvent) {
+  emitObjectElementPick(detail: UpmadeObjectElementPickEvent) {
     this.objectElementPick.emit(detail);
   }
 
-  private getElementAwareObjectOrThrow(objectId: string): UpdrawElementAwareObject {
+  private getElementAwareObjectOrThrow(objectId: string): UpmadeElementAwareObject {
     const object = this.core.store.objects?.findById(objectId);
     if (!object) {
       throw new Error(`Object "${objectId}" not found.`);
     }
-    if (!ObjectHelper.isUpdrawElementAwareObject(object)) {
+    if (!ObjectHelper.isUpmadeElementAwareObject(object)) {
       throw new Error(`Object "${objectId}" has no content elements.`);
     }
     return object;
@@ -3295,7 +3295,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
   /** Element highlights are drawn inside the objects' content, which can't read the engine's CSS variables. */
   private refreshObjectElementThemes() {
     this.core.store.objects?.allObjects().forEach(object => {
-      if (ObjectHelper.isUpdrawElementAwareObject(object)) {
+      if (ObjectHelper.isUpmadeElementAwareObject(object)) {
         object.refreshElementTheme();
       }
     });
@@ -3310,10 +3310,10 @@ export class UpdrawEngine implements UpdrawEngineHost {
     this.core.store.onStateChange('activeTool', this._handleActiveToolChange.bind(this));
   }
 
-  private _handleActiveToolChange(activeTool: UpdrawBaseTool | null) {
+  private _handleActiveToolChange(activeTool: UpmadeBaseTool | null) {
     if (activeTool?.toolType !== 'selection') {
       this.core.clearSelection();
-      this.core.store.objects?.remove(o => o instanceof UpdrawSelectionBox);
+      this.core.store.objects?.remove(o => o instanceof UpmadeSelectionBox);
       this.core.store.setSelectionBox(null);
       this.core.store.objects?.clearLocalSelectionBox();
       this.core.store.state.isSelecting = false;
@@ -3333,21 +3333,21 @@ export class UpdrawEngine implements UpdrawEngineHost {
     if (activeTool) {
       this.activeToolChange.emit(activeTool);
     }
-    UpdrawKeyboardHelper.forceHideKeyboard();
+    UpmadeKeyboardHelper.forceHideKeyboard();
 
     this.core.rerender();
   }
 
 
   /** Classes of an object's container: card objects and images get a modifier that resolves their theme radius. */
-  private getObjectContainerClass(object: UpdrawBaseObject<any>): string {
-    if (object instanceof UpdrawIframeObject) {
+  private getObjectContainerClass(object: UpmadeBaseObject<any>): string {
+    if (object instanceof UpmadeIframeObject) {
       return 'object object--iframe';
     }
-    if (object instanceof UpdrawDynamicObject) {
+    if (object instanceof UpmadeDynamicObject) {
       return 'object object--dynamic-object';
     }
-    if (object instanceof UpdrawImage) {
+    if (object instanceof UpmadeImage) {
       return 'object object--image';
     }
     return 'object';
@@ -3357,7 +3357,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
   private finishAppearAnimations(): void {
     this.host.shadowRoot?.querySelectorAll('.object--appearing').forEach(element => {
       element.getAnimations?.().forEach(animation => {
-        if ((animation as CSSAnimation).animationName === 'updraw-object-appear') {
+        if ((animation as CSSAnimation).animationName === 'upmade-object-appear') {
           animation.finish();
         }
       });
@@ -3368,11 +3368,11 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * Whether an inserted object can be shown, so its appear animation can start: an iframe once its document loaded
    * (it is invisible until then) or while it shows its loading placeholder; other objects at once.
    */
-  private isReadyToAppear(object: UpdrawBaseObject<any>): boolean {
-    if (object instanceof UpdrawIframeObject) {
+  private isReadyToAppear(object: UpmadeBaseObject<any>): boolean {
+    if (object instanceof UpmadeIframeObject) {
       return object.isLoading || object.isDocumentLoaded;
     }
-    if (object instanceof UpdrawGroup && !object.isLoading) {
+    if (object instanceof UpmadeGroup && !object.isLoading) {
       // A group (and its titlebar) appears with its children.
       return object.children.every(child => this.isReadyToAppear(child));
     }
@@ -3384,7 +3384,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * starts to appear. A titlebar shown later (e.g. once its object is selected) shows at once, rather than replaying the
    * animation out of step with its object.
    */
-  private resolveAppearingTitlebarOwners(titlebars: UpdrawResolvedTitlebar[], appear: UpdrawObjectAppearResolution): Map<string, number> {
+  private resolveAppearingTitlebarOwners(titlebars: UpmadeResolvedTitlebar[], appear: UpmadeObjectAppearResolution): Map<string, number> {
     const owners = new Map<string, number>();
     titlebars.forEach(({ owner }) => {
       const index = appear.appearing.get(owner.id);
@@ -3397,10 +3397,10 @@ export class UpdrawEngine implements UpdrawEngineHost {
   }
 
   /** The appear animation's timing from the theme (`objectAppear`), with the stylesheet's defaults. */
-  private getObjectAppearTiming(computedStyle: CSSStyleDeclaration): UpdrawObjectAppearTiming {
+  private getObjectAppearTiming(computedStyle: CSSStyleDeclaration): UpmadeObjectAppearTiming {
     return {
-      duration: parseCssTime(computedStyle.getPropertyValue('--updraw-object-appear-animation-duration'), 600),
-      stagger: parseCssTime(computedStyle.getPropertyValue('--updraw-object-appear-stagger'), 110),
+      duration: parseCssTime(computedStyle.getPropertyValue('--upmade-object-appear-animation-duration'), 600),
+      stagger: parseCssTime(computedStyle.getPropertyValue('--upmade-object-appear-stagger'), 110),
     };
   }
 
@@ -3408,17 +3408,17 @@ export class UpdrawEngine implements UpdrawEngineHost {
    * The radius a card object or image sets itself, as the inline style that overrides the theme's; empty to use the
    * theme's.
    */
-  private getOwnBorderRadiusStyle(object: UpdrawBaseObject<any>): Record<string, string> {
-    if (!(object instanceof UpdrawIframeObject) && !(object instanceof UpdrawDynamicObject) && !(object instanceof UpdrawImage)) {
+  private getOwnBorderRadiusStyle(object: UpmadeBaseObject<any>): Record<string, string> {
+    if (!(object instanceof UpmadeIframeObject) && !(object instanceof UpmadeDynamicObject) && !(object instanceof UpmadeImage)) {
       return {};
     }
     const radius = object.borderRadius;
     if (radius === undefined || radius === '') {
       return {};
     }
-    return { '--updraw-content-border-radius': typeof radius === 'number' ? `${radius}px` : radius };
+    return { '--upmade-content-border-radius': typeof radius === 'number' ? `${radius}px` : radius };
   }
-  private getObjectEffectiveOpacity(object: UpdrawBaseObject<any>): { multiplied: number; overridden: string } {
+  private getObjectEffectiveOpacity(object: UpmadeBaseObject<any>): { multiplied: number; overridden: string } {
     const safeObjectOpacity = Number.isFinite(object.opacity) ? object.opacity : 1;
     const multiplied = (object.markedForRemoval ? 0.5 : 1) * safeObjectOpacity;
     const overridden = (object.markedForRemoval ? 0.5 : safeObjectOpacity).toString();
@@ -3426,7 +3426,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     return { multiplied, overridden };
   }
 
-  private readonly handleTitlebarElementClick = (ownerId: string, section: UpdrawTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement) => {
+  private readonly handleTitlebarElementClick = (ownerId: string, section: UpmadeTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement) => {
     this.core.objectTitlebarManager.invokeElement(ownerId, section, elementId, event, anchor);
     this.core.rerender();
   };
@@ -3447,14 +3447,14 @@ export class UpdrawEngine implements UpdrawEngineHost {
     return state.activeTool?.toolType === 'selection' || isEditing ? 'auto' : 'none';
   }
 
-  private getSelectionHandleCapabilities(object: UpdrawBaseObject<any>): { canRenderResizeHandles: boolean; canRenderRotationHandle: boolean } {
+  private getSelectionHandleCapabilities(object: UpmadeBaseObject<any>): { canRenderResizeHandles: boolean; canRenderRotationHandle: boolean } {
     return {
       canRenderResizeHandles: this.core.objectConfigManager.isResizable(object),
       canRenderRotationHandle: this.core.objectConfigManager.isRotatable(object),
     };
   }
 
-  private getImageRevealKey(image: UpdrawImage): string | null {
+  private getImageRevealKey(image: UpmadeImage): string | null {
     if (image.assetId) {
       return `asset:${image.assetId}`;
     }
@@ -3466,7 +3466,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     return null;
   }
 
-  private shouldAnimateImageFirstReveal(image: UpdrawImage): boolean {
+  private shouldAnimateImageFirstReveal(image: UpmadeImage): boolean {
     if (image.loadState !== 'ready') {
       return false;
     }
@@ -3491,7 +3491,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
     const currentTheme = this.core.themeManager.getStoredTheme();
     const computedStyle = window.getComputedStyle(this.host);
-    const baseHandleSizePx = computedStyle.getPropertyValue('--updraw-selection-handle-size').trim() || '6px';
+    const baseHandleSizePx = computedStyle.getPropertyValue('--upmade-selection-handle-size').trim() || '6px';
     const baseHandleSize = parseFloat(baseHandleSizePx);
     const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
@@ -3515,14 +3515,14 @@ export class UpdrawEngine implements UpdrawEngineHost {
     const selectionGroup = this.core.store.selectionGroup;
     const rotationHandleDistance = selectionGroup
       ? titlebarManager.getRotationHandleDistance(selectionGroup, { titlebars, metrics: titlebarMetrics })
-      : UPDRAW_ROTATION_HANDLE_DISTANCE;
+      : UPMADE_ROTATION_HANDLE_DISTANCE;
 
-    const getObjectWrapperPointerEvents = (object: UpdrawBaseObject<any>): 'none' | 'auto' => {
+    const getObjectWrapperPointerEvents = (object: UpmadeBaseObject<any>): 'none' | 'auto' => {
       if (this.core.store.state.isScaling) {
         return 'none';
       }
 
-      if (object instanceof UpdrawSelectionGroup) {
+      if (object instanceof UpmadeSelectionGroup) {
         return 'none';
       }
 
@@ -3533,21 +3533,21 @@ export class UpdrawEngine implements UpdrawEngineHost {
     // A group contains its children, so it is in the viewport whenever one of them is.
     const hiddenByLoadingGroup = new Set<string>();
     visibleObjects.forEach(object => {
-      if (object instanceof UpdrawGroup && object.isLoading) {
-        UpdrawGroup.collectDescendantIds(object, hiddenByLoadingGroup);
+      if (object instanceof UpmadeGroup && object.isLoading) {
+        UpmadeGroup.collectDescendantIds(object, hiddenByLoadingGroup);
       }
     });
 
-    const getSelectionGroupOverlayPointerEvents = (object: UpdrawBaseObject<any>): 'none' | 'auto' => {
+    const getSelectionGroupOverlayPointerEvents = (object: UpmadeBaseObject<any>): 'none' | 'auto' => {
       if (object.markedForRemoval) {
         return 'none';
       }
 
-      if (!(object instanceof UpdrawSelectionGroup)) {
+      if (!(object instanceof UpmadeSelectionGroup)) {
         return 'auto';
       }
 
-      if (object.objects.length === 1 && ObjectHelper.isUpdrawEmbeddedObject(object.objects[0])) {
+      if (object.objects.length === 1 && ObjectHelper.isUpmadeEmbeddedObject(object.objects[0])) {
         return 'none';
       }
 
@@ -3557,7 +3557,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     // Track visible dynamic objects and unmount culled ones
     const currentVisibleDynamicObjects = new Map<string, { unmount(): void }>();
     visibleObjects.forEach(object => {
-      if (ObjectHelper.isUpdrawEmbeddedObject(object)) {
+      if (ObjectHelper.isUpmadeEmbeddedObject(object)) {
         currentVisibleDynamicObjects.set(object.id, object);
       }
     });
@@ -3567,7 +3567,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
     this._previousVisibleDynamicObjects.forEach((previous, id) => {
       if (!currentVisibleDynamicObjects.has(id)) {
         const object = this.core.store.objects.findById(id) ?? previous;
-        if (object && ObjectHelper.isUpdrawEmbeddedObject(object)) {
+        if (object && ObjectHelper.isUpmadeEmbeddedObject(object)) {
           object.unmount();
         }
       }
@@ -3591,7 +3591,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
           <div
             class="debug-panel"
             style={{
-              color: 'var(--updraw-global-text-primary)',
+              color: 'var(--upmade-global-text-primary)',
             }}
           >
             <div>ActiveWorkspaceId: {this.core.store.state?.activeWorkspace?.id}</div>
@@ -3650,7 +3650,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                   // Left out when unset, so the variable is removed rather than set to an empty value.
                   ...this.getOwnBorderRadiusStyle(object),
                   // Its place in its batch, which delays its appear animation (`.object--appearing`).
-                  ...(appearingObjects.has(object.id) ? { '--updraw-object-appear-index': String(appearingObjects.get(object.id)) } : {}),
+                  ...(appearingObjects.has(object.id) ? { '--upmade-object-appear-index': String(appearingObjects.get(object.id)) } : {}),
                   transform: object?.transformationMatrix,
                   transformOrigin: 'top left',
                   position: 'absolute',
@@ -3664,7 +3664,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                   visibility: hiddenByLoadingGroup.has(object.id) ? 'hidden' : undefined,
                 }}
               >
-                {object instanceof UpdrawPath && (
+                {object instanceof UpmadePath && (
                   <svg
                     ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
@@ -3683,14 +3683,14 @@ export class UpdrawEngine implements UpdrawEngineHost {
                   >
                     <path
                       d={object?.d}
-                      fill={UpdrawColorHelper.applyOpacity(object.fill, effectiveOpacity, currentTheme)}
-                      stroke={UpdrawColorHelper.applyOpacity(object?.stroke, effectiveOpacity, currentTheme)}
+                      fill={UpmadeColorHelper.applyOpacity(object.fill, effectiveOpacity, currentTheme)}
+                      stroke={UpmadeColorHelper.applyOpacity(object?.stroke, effectiveOpacity, currentTheme)}
                       shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'}
                     />
                   </svg>
                 )}
 
-                {object instanceof UpdrawLine && (
+                {object instanceof UpmadeLine && (
                   <svg
                     ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
@@ -3721,7 +3721,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                           >
                             <path
                               d={object.getArrowPath(object.arrows?.start?.style)}
-                              fill={UpdrawColorHelper.applyOpacity(object.getArrowFill('start'), effectiveOpacity)}
+                              fill={UpmadeColorHelper.applyOpacity(object.getArrowFill('start'), effectiveOpacity)}
                               transform={`scale(${object.getArrowSize('start') / 10})`}
                             />
                           </marker>
@@ -3738,7 +3738,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                           >
                             <path
                               d={object.getArrowPath(object.arrows?.end?.style)}
-                              fill={UpdrawColorHelper.applyOpacity(object.getArrowFill('end'), effectiveOpacity)}
+                              fill={UpmadeColorHelper.applyOpacity(object.getArrowFill('end'), effectiveOpacity)}
                               transform={`scale(${object.getArrowSize('end') / 10})`}
                             />
                           </marker>
@@ -3755,7 +3755,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                     <path
                       d={this.core.anchorManager.computeClippedLinePath(object)}
                       fill="none"
-                      stroke={UpdrawColorHelper.applyOpacity(object?.stroke, effectiveOpacity, currentTheme)}
+                      stroke={UpmadeColorHelper.applyOpacity(object?.stroke, effectiveOpacity, currentTheme)}
                       stroke-width={object?.strokeWidth}
                       stroke-linecap="round"
                       marker-start={object.hasStartArrow ? `url(#${object.startMarkerId})` : undefined}
@@ -3764,10 +3764,10 @@ export class UpdrawEngine implements UpdrawEngineHost {
                   </svg>
                 )}
 
-                {object instanceof UpdrawImage && object.loadState === 'ready' && (
+                {object instanceof UpmadeImage && object.loadState === 'ready' && (
                   <img
                     ref={el => el && object.mount(el)}
-                    class={this.shouldAnimateImageFirstReveal(object) ? 'updraw-image-object updraw-image-object--first-reveal' : 'updraw-image-object'}
+                    class={this.shouldAnimateImageFirstReveal(object) ? 'upmade-image-object upmade-image-object--first-reveal' : 'upmade-image-object'}
                     src={object.resolvedSrc || object.src}
                     style={{
                       position: 'absolute',
@@ -3779,14 +3779,14 @@ export class UpdrawEngine implements UpdrawEngineHost {
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: effectiveOpacityString,
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
-                      backgroundColor: UpdrawColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
-                      borderColor: UpdrawColorHelper.resolveThemeColor(object.borderColor, currentTheme),
+                      backgroundColor: UpmadeColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
+                      borderColor: UpmadeColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
                       overflow: 'visible',
                       userSelect: 'none',
-                      // Overrides the theme's drop shadow (`.updraw-image-object`).
+                      // Overrides the theme's drop shadow (`.upmade-image-object`).
                       filter: object.dropShadow,
                       imageRendering: this.core.store.state.isScaling || this.core.store.state.isPanning ? 'pixelated' : 'auto',
                     }}
@@ -3797,10 +3797,10 @@ export class UpdrawEngine implements UpdrawEngineHost {
                   />
                 )}
 
-                {object instanceof UpdrawImage && object.loadState !== 'ready' && (
+                {object instanceof UpmadeImage && object.loadState !== 'ready' && (
                   <div
                     ref={() => object.ensureLoaded()}
-                    class="updraw-image-placeholder"
+                    class="upmade-image-placeholder"
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -3811,11 +3811,11 @@ export class UpdrawEngine implements UpdrawEngineHost {
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: effectiveOpacityString,
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
-                      backgroundColor: UpdrawColorHelper.resolveThemeColor({ light: '#e5e7eb', dark: '#2a2a2a' }, currentTheme),
+                      backgroundColor: UpmadeColorHelper.resolveThemeColor({ light: '#e5e7eb', dark: '#2a2a2a' }, currentTheme),
                       borderColor:
                         object.loadState === 'error'
-                          ? UpdrawColorHelper.resolveThemeColor({ light: '#9ca3af', dark: '#6b7280' }, currentTheme)
-                          : UpdrawColorHelper.resolveThemeColor(object.borderColor, currentTheme),
+                          ? UpmadeColorHelper.resolveThemeColor({ light: '#9ca3af', dark: '#6b7280' }, currentTheme)
+                          : UpmadeColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.loadState === 'error' ? '1px' : object.borderWidth + 'px',
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
@@ -3826,20 +3826,20 @@ export class UpdrawEngine implements UpdrawEngineHost {
                       justifyContent: 'center',
                     }}
                   >
-                    <updraw-icon
+                    <upmade-icon
                       name={object.loadState === 'error' ? 'imageOff' : 'image'}
                       size={Math.max(16, Math.min(object.totalWidth, object.totalHeight) * 0.3)}
                       style={{
-                        color: UpdrawColorHelper.resolveThemeColor({ light: '#9ca3af', dark: '#6b7280' }, currentTheme),
+                        color: UpmadeColorHelper.resolveThemeColor({ light: '#9ca3af', dark: '#6b7280' }, currentTheme),
                       }}
-                    ></updraw-icon>
+                    ></upmade-icon>
                   </div>
                 )}
 
-                {object instanceof UpdrawDynamicObject && (
+                {object instanceof UpmadeDynamicObject && (
                   <div
                     ref={el => el && object.mount(el)}
-                    class="updraw-dynamic-object"
+                    class="upmade-dynamic-object"
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -3850,12 +3850,12 @@ export class UpdrawEngine implements UpdrawEngineHost {
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: effectiveOpacityString,
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
-                      backgroundColor: UpdrawColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
-                      borderColor: UpdrawColorHelper.resolveThemeColor(object.borderColor, currentTheme),
+                      backgroundColor: UpmadeColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
+                      borderColor: UpmadeColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
-                      // Overrides the theme's shadow (`.updraw-dynamic-object`).
+                      // Overrides the theme's shadow (`.upmade-dynamic-object`).
                       boxShadow: object.boxShadow,
                       // Content is clipped to the rounded box unless the object lets it overflow.
                       overflow: object.clipContent === false ? 'visible' : undefined,
@@ -3864,11 +3864,11 @@ export class UpdrawEngine implements UpdrawEngineHost {
                   ></div>
                 )}
 
-                {object instanceof UpdrawIframeObject && (
+                {object instanceof UpmadeIframeObject && (
                   <div
                     // Invisible until the iframe has loaded its first document, then it fades in with its content
                     // instead of showing an empty frame first.
-                    class={object.isDocumentLoaded ? 'updraw-iframe-object updraw-iframe-object--revealed' : 'updraw-iframe-object'}
+                    class={object.isDocumentLoaded ? 'upmade-iframe-object upmade-iframe-object--revealed' : 'upmade-iframe-object'}
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -3878,11 +3878,11 @@ export class UpdrawEngine implements UpdrawEngineHost {
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: object.isDocumentLoaded ? effectiveOpacityString : '0',
-                      backgroundColor: UpdrawColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
-                      borderColor: UpdrawColorHelper.resolveThemeColor(object.borderColor, currentTheme),
+                      backgroundColor: UpmadeColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
+                      borderColor: UpmadeColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
-                      // Overrides the theme's shadow (`.updraw-iframe-object`).
+                      // Overrides the theme's shadow (`.upmade-iframe-object`).
                       boxShadow: object.boxShadow,
                       overflow: 'hidden',
                       display: 'block',
@@ -3911,7 +3911,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                   </div>
                 )}
 
-                {object instanceof UpdrawSelectionGroup && !this.core.displaySelectionLineUI(object) && (
+                {object instanceof UpmadeSelectionGroup && !this.core.displaySelectionLineUI(object) && (
                   <div
                     ref={el => el && object.mount(el)}
                     style={{
@@ -3928,7 +3928,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                   ></div>
                 )}
 
-                {object instanceof UpdrawSelectionBox && (
+                {object instanceof UpmadeSelectionBox && (
                   <div
                     ref={el => el && object.mount(el)}
                     style={{
@@ -3941,15 +3941,15 @@ export class UpdrawEngine implements UpdrawEngineHost {
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
-                      backgroundColor: UpdrawColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
-                      borderColor: UpdrawColorHelper.resolveThemeColor(object.borderColor, currentTheme),
+                      backgroundColor: UpmadeColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
+                      borderColor: UpmadeColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
                     }}
                   ></div>
                 )}
 
-                {object instanceof UpdrawText && (
+                {object instanceof UpmadeText && (
                   <div
                     style={{
                       position: 'absolute',
@@ -3977,17 +3977,17 @@ export class UpdrawEngine implements UpdrawEngineHost {
                         width: 'max-content',
                         transformOrigin: 'top left',
                         transform: `scale(${object.scaleFactor})`,
-                        backgroundColor: UpdrawColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
+                        backgroundColor: UpmadeColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
                         overflow: 'visible',
                       }}
                     ></div>
                   </div>
                 )}
 
-                {object instanceof UpdrawShape &&
+                {object instanceof UpmadeShape &&
                   (() => {
-                    const fillResolved = UpdrawColorHelper.resolveThemeColor(object.fillColor, currentTheme);
-                    const strokeResolved = UpdrawColorHelper.resolveThemeColor(object.strokeColor, currentTheme);
+                    const fillResolved = UpmadeColorHelper.resolveThemeColor(object.fillColor, currentTheme);
+                    const strokeResolved = UpmadeColorHelper.resolveThemeColor(object.strokeColor, currentTheme);
                     const isFilled = !!fillResolved && fillResolved !== 'transparent';
                     const strokeMatchesFill = isFilled && strokeResolved === fillResolved;
 
@@ -4025,8 +4025,8 @@ export class UpdrawEngine implements UpdrawEngineHost {
                         >
                           <path
                             d={object.getSvgPath()}
-                            fill={UpdrawColorHelper.applyOpacity(object.fillColor, effectiveOpacity, currentTheme)}
-                            stroke={strokeMatchesFill ? 'none' : UpdrawColorHelper.applyOpacity(object.strokeColor, effectiveOpacity, currentTheme)}
+                            fill={UpmadeColorHelper.applyOpacity(object.fillColor, effectiveOpacity, currentTheme)}
+                            stroke={strokeMatchesFill ? 'none' : UpmadeColorHelper.applyOpacity(object.strokeColor, effectiveOpacity, currentTheme)}
                             stroke-width={strokeMatchesFill ? 0 : object.strokeWidth}
                           />
                         </svg>
@@ -4050,11 +4050,11 @@ export class UpdrawEngine implements UpdrawEngineHost {
                     );
                   })()}
 
-                {object.isLoading && !(object instanceof UpdrawSelectionGroup) && !(object instanceof UpdrawSelectionBox) && (
+                {object.isLoading && !(object instanceof UpmadeSelectionGroup) && !(object instanceof UpmadeSelectionBox) && (
                   <div
                     // Drawn over the object's content, which stays mounted underneath so it can keep loading.
-                    class="updraw-loading-placeholder"
-                    data-testid="updraw-loading-placeholder"
+                    class="upmade-loading-placeholder"
+                    data-testid="upmade-loading-placeholder"
                     style={{
                       width: object.totalWidth + 'px',
                       height: object.totalHeight + 'px',
@@ -4074,7 +4074,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                       left: `${object.totalWidth}px`,
                       top: '0',
                       zIndex: (object.zIndex + 2).toString(),
-                      color: 'var(--updraw-global-text-primary)',
+                      color: 'var(--upmade-global-text-primary)',
                     }}
                   >
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>Id: {object.id}</div>
@@ -4088,13 +4088,13 @@ export class UpdrawEngine implements UpdrawEngineHost {
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>zIndex: {object.zIndex}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>isSelected: {object.isSelected ? 'true' : 'false'}</div>
 
-                    {object instanceof UpdrawDynamicObject && (
+                    {object instanceof UpmadeDynamicObject && (
                       <div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>isInteractive: {object.isInteractive ? 'true' : 'false'}</div>
                       </div>
                     )}
 
-                    {object instanceof UpdrawImage && (
+                    {object instanceof UpmadeImage && (
                       <div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>assetId: {object.assetId}</div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>mimeType: {object.mimeType}</div>
@@ -4105,7 +4105,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
 
                 {(this.core.displaySelectionGroupUI(object) || this.core.displaySelectionLineUI(object)) &&
                   (() => {
-                    const isSelectionGroup = object instanceof UpdrawSelectionGroup;
+                    const isSelectionGroup = object instanceof UpmadeSelectionGroup;
                     const localClientId = this.core.store.objects?.localClientId;
 
                     const awarenessStates = this.core.store.objects?.awareness?.getStates();
@@ -4142,10 +4142,10 @@ export class UpdrawEngine implements UpdrawEngineHost {
                     }
 
                     const selectionBorderColor =
-                      remoteUserColor ?? (UpdrawColorHelper.resolveThemeColor(object.borderColor, currentTheme) || 'var(--updraw-selection-border-color, #007AFF)');
+                      remoteUserColor ?? (UpmadeColorHelper.resolveThemeColor(object.borderColor, currentTheme) || 'var(--upmade-selection-border-color, #007AFF)');
 
-                    const selectionHandleStrokeColor = remoteUserColor ?? 'var(--updraw-selection-handle-stroke-color, #007AFF)';
-                    const lineObject = object as UpdrawLine;
+                    const selectionHandleStrokeColor = remoteUserColor ?? 'var(--upmade-selection-handle-stroke-color, #007AFF)';
+                    const lineObject = object as UpmadeLine;
                     const activeSnapCandidate = this.core.store.state.snapCandidate;
                     const previewSnapCandidate = this.core.store.state.snapPreviewCandidate;
                     const isStartHandleSnapped = lineObject.startAnchor != null;
@@ -4180,10 +4180,10 @@ export class UpdrawEngine implements UpdrawEngineHost {
                             {(() => {
                               const remoteLineObject =
                                 isRemoteSelection &&
-                                object instanceof UpdrawSelectionGroup &&
+                                object instanceof UpmadeSelectionGroup &&
                                 object.objects.length === 1 &&
-                                object.objects[0] instanceof UpdrawLine
-                                  ? (object.objects[0] as UpdrawLine)
+                                object.objects[0] instanceof UpmadeLine
+                                  ? (object.objects[0] as UpmadeLine)
                                   : null;
 
                               if (remoteLineObject) {
@@ -4194,7 +4194,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                       d={this.core.anchorManager.computeClippedLinePath(remoteLineObject, true)}
                                       style={{
                                         stroke: selectionBorderColor,
-                                        strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                                        strokeWidth: `calc(var(--upmade-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                                         strokeLinecap: 'round',
                                         fill: 'none',
                                       }}
@@ -4212,7 +4212,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                     y2="0"
                                     style={{
                                       stroke: selectionBorderColor,
-                                      strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                                      strokeWidth: `calc(var(--upmade-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                                       strokeLinecap: 'square',
                                     }}
                                   />
@@ -4223,7 +4223,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                     y2={object.totalHeight}
                                     style={{
                                       stroke: selectionBorderColor,
-                                      strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                                      strokeWidth: `calc(var(--upmade-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                                       strokeLinecap: 'square',
                                     }}
                                   />
@@ -4234,7 +4234,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                     y2={object.totalHeight}
                                     style={{
                                       stroke: selectionBorderColor,
-                                      strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                                      strokeWidth: `calc(var(--upmade-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                                       strokeLinecap: 'square',
                                     }}
                                   />
@@ -4245,7 +4245,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                     y2={object.totalHeight}
                                     style={{
                                       stroke: selectionBorderColor,
-                                      strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                                      strokeWidth: `calc(var(--upmade-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                                       strokeLinecap: 'square',
                                     }}
                                   />
@@ -4264,11 +4264,11 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                       width={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       height={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       style={{
-                                        fill: 'var(--updraw-selection-handle-color, #ffffff)',
+                                        fill: 'var(--upmade-selection-handle-color, #ffffff)',
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
-                                        visibility: 'var(--updraw-selection-resize-handle-visibility, visible)',
+                                        visibility: 'var(--upmade-selection-resize-handle-visibility, visible)',
                                       }}
                                     />
                                     <rect
@@ -4290,11 +4290,11 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                       width={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       height={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       style={{
-                                        fill: 'var(--updraw-selection-handle-color, #ffffff)',
+                                        fill: 'var(--upmade-selection-handle-color, #ffffff)',
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
-                                        visibility: 'var(--updraw-selection-resize-handle-visibility, visible)',
+                                        visibility: 'var(--upmade-selection-resize-handle-visibility, visible)',
                                       }}
                                     />
                                     <rect
@@ -4316,11 +4316,11 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                       width={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       height={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       style={{
-                                        fill: 'var(--updraw-selection-handle-color, #ffffff)',
+                                        fill: 'var(--upmade-selection-handle-color, #ffffff)',
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
-                                        visibility: 'var(--updraw-selection-resize-handle-visibility, visible)',
+                                        visibility: 'var(--upmade-selection-resize-handle-visibility, visible)',
                                       }}
                                     />
                                     <rect
@@ -4342,11 +4342,11 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                       width={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       height={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
                                       style={{
-                                        fill: 'var(--updraw-selection-handle-color, #ffffff)',
+                                        fill: 'var(--upmade-selection-handle-color, #ffffff)',
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
-                                        visibility: 'var(--updraw-selection-resize-handle-visibility, visible)',
+                                        visibility: 'var(--upmade-selection-resize-handle-visibility, visible)',
                                       }}
                                     />
                                     <rect
@@ -4372,7 +4372,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                       y2={-((rotationHandleDistance * handleScale) / this.core.store.state?.scale)}
                                       style={{
                                         stroke: selectionBorderColor,
-                                        strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${handleScale} / ${this.core.store.state?.scale})`,
+                                        strokeWidth: `calc(var(--upmade-selection-border-width, 2px) * ${handleScale} / ${this.core.store.state?.scale})`,
                                       }}
                                     />
                                     <circle
@@ -4381,7 +4381,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                       cy={-((rotationHandleDistance * handleScale) / this.core.store.state?.scale)}
                                       r={`${((baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
                                       style={{
-                                        fill: 'var(--updraw-selection-handle-color, #ffffff)',
+                                        fill: 'var(--upmade-selection-handle-color, #ffffff)',
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
@@ -4404,7 +4404,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                           </g>
                         )}
 
-                        {this.core.displaySelectionLineUI(object) && object instanceof UpdrawLine && (
+                        {this.core.displaySelectionLineUI(object) && object instanceof UpmadeLine && (
                           <g class="selection-line-ui" style={{ pointerEvents: 'none' }}>
                             <g class="selection-line-borders">
                               <path
@@ -4412,7 +4412,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                 d={this.core.anchorManager.computeClippedLinePath(object, true)}
                                 style={{
                                   stroke: selectionBorderColor,
-                                  strokeWidth: `calc(var(--updraw-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                                  strokeWidth: `calc(var(--upmade-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                                   strokeLinecap: 'round',
                                   fill: 'none',
                                 }}
@@ -4427,7 +4427,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                   cy={object.startY - object.y}
                                   r={`${((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
                                   style={{
-                                    fill: isStartHandleHighlighted ? selectionHandleStrokeColor : 'var(--updraw-selection-handle-color, #000000)',
+                                    fill: isStartHandleHighlighted ? selectionHandleStrokeColor : 'var(--upmade-selection-handle-color, #000000)',
                                     stroke: selectionHandleStrokeColor,
                                     strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
                                     paintOrder: 'fill',
@@ -4459,7 +4459,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                   }
                                   r={`${((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
                                   style={{
-                                    fill: 'var(--updraw-selection-handle-color, #000000)',
+                                    fill: 'var(--upmade-selection-handle-color, #000000)',
                                     stroke: selectionHandleStrokeColor,
                                     strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
                                     paintOrder: 'fill',
@@ -4491,7 +4491,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                                   cy={object.endY - object.y}
                                   r={`${((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
                                   style={{
-                                    fill: isEndHandleHighlighted ? selectionHandleStrokeColor : 'var(--updraw-selection-handle-color, #000000)',
+                                    fill: isEndHandleHighlighted ? selectionHandleStrokeColor : 'var(--upmade-selection-handle-color, #000000)',
                                     stroke: selectionHandleStrokeColor,
                                     strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
                                     paintOrder: 'fill',
@@ -4520,7 +4520,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
           })}
 
           {this.core.objectTitlebarManager.isEnabled && (
-            <updraw-object-titlebar-layer
+            <upmade-object-titlebar-layer
               titlebars={titlebars}
               appearingOwners={appearingTitlebarOwners}
               surfacePointerEvents={this.getTitlebarSurfacePointerEvents()}
@@ -4559,7 +4559,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                       d={data.snapLinePath}
                       fill="none"
                       style={{
-                        stroke: isActiveSnap ? 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.2))' : 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.12))',
+                        stroke: isActiveSnap ? 'var(--upmade-snap-line-stroke, rgba(0, 0, 0, 0.2))' : 'var(--upmade-snap-line-stroke, rgba(0, 0, 0, 0.12))',
                         strokeWidth: data.lineStrokeWidth,
                         strokeDasharray: data.dashArray,
                         strokeLinecap: 'round',
@@ -4574,7 +4574,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                         x2={data.centerX}
                         y2={data.centerY}
                         style={{
-                          stroke: isActiveSnap ? 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.2))' : 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.12))',
+                          stroke: isActiveSnap ? 'var(--upmade-snap-line-stroke, rgba(0, 0, 0, 0.2))' : 'var(--upmade-snap-line-stroke, rgba(0, 0, 0, 0.12))',
                           strokeWidth: data.lineStrokeWidth,
                           strokeDasharray: data.dashArray,
                           strokeLinecap: 'round',
@@ -4589,11 +4589,11 @@ export class UpdrawEngine implements UpdrawEngineHost {
                     r={data.indicatorRadius}
                     style={{
                       fill: isActiveSnap
-                        ? 'var(--updraw-snap-indicator-fill, rgba(59, 130, 246, 0.3))'
-                        : 'var(--updraw-snap-indicator-fill-inactive, var(--updraw-snap-indicator-fill, rgba(59, 130, 246, 0.18)))',
+                        ? 'var(--upmade-snap-indicator-fill, rgba(59, 130, 246, 0.3))'
+                        : 'var(--upmade-snap-indicator-fill-inactive, var(--upmade-snap-indicator-fill, rgba(59, 130, 246, 0.18)))',
                       stroke: isActiveSnap
-                        ? 'var(--updraw-snap-indicator-stroke, #007bff)'
-                        : 'var(--updraw-snap-indicator-stroke-inactive, var(--updraw-snap-indicator-stroke, rgba(59, 130, 246, 0.5)))',
+                        ? 'var(--upmade-snap-indicator-stroke, #007bff)'
+                        : 'var(--upmade-snap-indicator-stroke-inactive, var(--upmade-snap-indicator-stroke, rgba(59, 130, 246, 0.5)))',
                       strokeWidth: data.indicatorStrokeWidth,
                     }}
                   />
@@ -4628,7 +4628,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                       <path
                         d={data.startAnchorViz.pathD}
                         style={{
-                          stroke: 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.3))',
+                          stroke: 'var(--upmade-snap-line-stroke, rgba(0, 0, 0, 0.3))',
                           strokeWidth: `${data.lineStrokeWidth}`,
                           strokeDasharray: data.dashArray,
                           strokeLinecap: 'round',
@@ -4642,7 +4642,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                         x2={data.startAnchorViz.centerX}
                         y2={data.startAnchorViz.centerY}
                         style={{
-                          stroke: 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.3))',
+                          stroke: 'var(--upmade-snap-line-stroke, rgba(0, 0, 0, 0.3))',
                           strokeWidth: `${data.lineStrokeWidth}`,
                           strokeDasharray: data.dashArray,
                           strokeLinecap: 'round',
@@ -4654,9 +4654,9 @@ export class UpdrawEngine implements UpdrawEngineHost {
                       cy={data.startAnchorViz.centerY}
                       r={data.indicatorRadius}
                       style={{
-                        fill: 'var(--updraw-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                        fill: 'var(--upmade-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
 
-                        stroke: 'var(--updraw-snap-indicator-stroke, #007bff)',
+                        stroke: 'var(--upmade-snap-indicator-stroke, #007bff)',
                         strokeWidth: data.indicatorStrokeWidth,
                       }}
                     />
@@ -4668,7 +4668,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                       <path
                         d={data.endAnchorViz.pathD}
                         style={{
-                          stroke: 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          stroke: 'var(--upmade-snap-line-stroke, rgba(0, 0, 0, 0.2))',
                           strokeWidth: `${data.lineStrokeWidth}`,
                           strokeDasharray: data.dashArray,
                           strokeLinecap: 'round',
@@ -4682,7 +4682,7 @@ export class UpdrawEngine implements UpdrawEngineHost {
                         x2={data.endAnchorViz.centerX}
                         y2={data.endAnchorViz.centerY}
                         style={{
-                          stroke: 'var(--updraw-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          stroke: 'var(--upmade-snap-line-stroke, rgba(0, 0, 0, 0.2))',
                           strokeWidth: `${data.lineStrokeWidth}`,
                           strokeDasharray: data.dashArray,
                           strokeLinecap: 'round',
@@ -4694,8 +4694,8 @@ export class UpdrawEngine implements UpdrawEngineHost {
                       cy={data.endAnchorViz.centerY}
                       r={data.indicatorRadius}
                       style={{
-                        fill: 'var(--updraw-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
-                        stroke: 'var(--updraw-snap-indicator-stroke, #007bff)',
+                        fill: 'var(--upmade-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                        stroke: 'var(--upmade-snap-indicator-stroke, #007bff)',
                         strokeWidth: data.indicatorStrokeWidth,
                       }}
                     />
@@ -4706,13 +4706,13 @@ export class UpdrawEngine implements UpdrawEngineHost {
           })()}
         </div>
 
-        {this.core.store.objects?.hasAwareness && <updraw-awareness-cursors core={this.core}></updraw-awareness-cursors>}
+        {this.core.store.objects?.hasAwareness && <upmade-awareness-cursors core={this.core}></upmade-awareness-cursors>}
 
-        <updraw-agentic-cursors core={this.core}></updraw-agentic-cursors>
+        <upmade-agentic-cursors core={this.core}></upmade-agentic-cursors>
 
-        {this.core.store.state?.activeTool?.toolType === 'eraser' && !this.core.store.state.isScaling && <updraw-cursor-trail core={this.core}></updraw-cursor-trail>}
+        {this.core.store.state?.activeTool?.toolType === 'eraser' && !this.core.store.state.isScaling && <upmade-cursor-trail core={this.core}></upmade-cursor-trail>}
 
-        {this.isWatermarkVisible && <updraw-watermark core={this.core} label={this.core.localizationManager.translate('watermark.poweredBy')}></updraw-watermark>}
+        {this.isWatermarkVisible && <upmade-watermark core={this.core} label={this.core.localizationManager.translate('watermark.poweredBy')}></upmade-watermark>}
       </Host>
     );
   }

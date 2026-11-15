@@ -1,4 +1,4 @@
-# updraw-dialog
+# upmade-dialog
 
 A generic, reusable dialog component for displaying modal content to the user.
 
@@ -16,25 +16,25 @@ A generic, reusable dialog component for displaying modal content to the user.
 ## Usage
 
 ```html
-<updraw-dialog is-open="true" dialog-title="Confirm Action" size="medium">
+<upmade-dialog is-open="true" dialog-title="Confirm Action" size="medium">
   <p>Are you sure you want to proceed?</p>
   <div slot="footer">
     <button>Cancel</button>
     <button>Confirm</button>
   </div>
-</updraw-dialog>
+</upmade-dialog>
 ```
 
 ### With custom header
 
 ```html
-<updraw-dialog is-open="true">
+<upmade-dialog is-open="true">
   <div slot="header">
     <h2>Custom Header</h2>
     <span>Subtitle text</span>
   </div>
   <p>Dialog content goes here.</p>
-</updraw-dialog>
+</upmade-dialog>
 ```
 
 <!-- Auto Generated Below -->
@@ -60,13 +60,13 @@ A generic, reusable dialog component for displaying modal content to the user.
 
 | Event         | Description                    | Type                                   |
 | ------------- | ------------------------------ | -------------------------------------- |
-| `dialogClose` | Emitted when the dialog closes | `CustomEvent<IUpdrawDialogCloseEvent>` |
+| `dialogClose` | Emitted when the dialog closes | `CustomEvent<IUpmadeDialogCloseEvent>` |
 | `dialogOpen`  | Emitted when the dialog opens  | `CustomEvent<void>`                    |
 
 
 ## Methods
 
-### `close(reason?: UpdrawDialogCloseReason) => Promise<void>`
+### `close(reason?: UpmadeDialogCloseReason) => Promise<void>`
 
 
 
@@ -116,21 +116,21 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [updraw-current-user-dialog](../updraw-current-user-dialog)
- - [updraw-export](../updraw-export)
- - [updraw-login-dialog](../updraw-login-dialog)
- - [updraw-settings](../updraw-settings)
- - [updraw-share-dialog](../updraw-share-dialog)
+ - [upmade-current-user-dialog](../upmade-current-user-dialog)
+ - [upmade-export](../upmade-export)
+ - [upmade-login-dialog](../upmade-login-dialog)
+ - [upmade-settings](../upmade-settings)
+ - [upmade-share-dialog](../upmade-share-dialog)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-current-user-dialog --> updraw-dialog
-  updraw-export --> updraw-dialog
-  updraw-login-dialog --> updraw-dialog
-  updraw-settings --> updraw-dialog
-  updraw-share-dialog --> updraw-dialog
-  style updraw-dialog fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-current-user-dialog --> upmade-dialog
+  upmade-export --> upmade-dialog
+  upmade-login-dialog --> upmade-dialog
+  upmade-settings --> upmade-dialog
+  upmade-share-dialog --> upmade-dialog
+  style upmade-dialog fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

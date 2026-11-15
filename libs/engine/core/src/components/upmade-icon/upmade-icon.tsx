@@ -1,13 +1,13 @@
 import { Component, h, Prop, Host, forceUpdate } from '@stencil/core';
-import { UpdrawIconName, UpdrawIconRegistry } from '@updraw/core';
+import { UpmadeIconName, UpmadeIconRegistry } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-icon',
-  styleUrl: 'updraw-icon.css',
+  tag: 'upmade-icon',
+  styleUrl: 'upmade-icon.css',
   shadow: true,
 })
-export class UpdrawIcon {
-  @Prop() name: UpdrawIconName;
+export class UpmadeIcon {
+  @Prop() name: UpmadeIconName;
   @Prop() label?: string;
   @Prop() size: number = 24;
 
@@ -15,7 +15,7 @@ export class UpdrawIcon {
 
   connectedCallback() {
     this.unsubscribe?.();
-    this.unsubscribe = UpdrawIconRegistry.subscribe(name => {
+    this.unsubscribe = UpmadeIconRegistry.subscribe(name => {
       if (name === this.name) {
         forceUpdate(this);
       }
@@ -29,10 +29,10 @@ export class UpdrawIcon {
   }
 
   render() {
-    const svgContent = UpdrawIconRegistry.get(this.name);
+    const svgContent = UpmadeIconRegistry.get(this.name);
 
     if (!svgContent) {
-      console.error(`[updraw-icon] Icon "${this.name}" not found in registry.`);
+      console.error(`[upmade-icon] Icon "${this.name}" not found in registry.`);
       return <span class="error-icon" aria-label={`Error: Icon ${this.name} not found`}>?</span>;
     }
 

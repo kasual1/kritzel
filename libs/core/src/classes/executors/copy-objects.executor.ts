@@ -1,13 +1,13 @@
-import type { UpdrawAgenticCopyObjectsAction } from '../../interfaces/agentic-action.interface';
-import type { UpdrawBaseObject } from '../objects/base-object.class';
-import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
-import { UpdrawLine } from '../objects/line.class';
+import type { UpmadeAgenticCopyObjectsAction } from '../../interfaces/agentic-action.interface';
+import type { UpmadeBaseObject } from '../objects/base-object.class';
+import type { UpmadeAgenticActionExecutor } from '../../types/agentic-action.types';
+import { UpmadeLine } from '../objects/line.class';
 import { prepareTopLevelTargets } from './select.executor';
 import { pendingDescendants } from './add-object.executor';
 import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { isObjectTarget, unionBox, unionCenter } from '../../helpers/agentic-geometry.helper';
 import { assertObjectIds, assertTarget, uniqueIds } from '../../helpers/agentic-validation.helper';
-import { UpdrawZOrderHelper } from '../../helpers/z-order.helper';
+import { UpmadeZOrderHelper } from '../../helpers/z-order.helper';
 
 /** Screen gap between the originals and their copies when `to` is not given. */
 const COPY_GAP_PX = 24;
@@ -16,7 +16,7 @@ const COPY_GAP_PX = 24;
  * `copyObjects`: Alt-drags the objects. The cursor presses on them, the copies appear on top of the originals,
  * like pasted objects, and are dragged so that their center lands on `to`.
  */
-export const copyObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticCopyObjectsAction> = {
+export const copyObjectsExecutor: UpmadeAgenticActionExecutor<UpmadeAgenticCopyObjectsAction> = {
   mutates: true,
 
   validate(action) {
@@ -43,7 +43,7 @@ export const copyObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticCopyO
     const map = run.map!;
     const core = run.core;
     const cursors = run.cursorManager;
-    const originals = () => ids.map(id => map.findById(id)).filter((object): object is UpdrawBaseObject<any> => !!object);
+    const originals = () => ids.map(id => map.findById(id)).filter((object): object is UpmadeBaseObject<any> => !!object);
 
     const grip = unionCenter(originals());
     if (!grip) {
@@ -52,7 +52,7 @@ export const copyObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticCopyO
     await run.fly(grip);
     await run.press();
 
-    const sources = originals().sort(UpdrawZOrderHelper.compareStackOrder);
+    const sources = originals().sort(UpmadeZOrderHelper.compareStackOrder);
     const box = unionBox(sources);
     const destination = action.to
       ? cursors.resolveTarget(action.to)
@@ -67,7 +67,7 @@ export const copyObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticCopyO
     for (const object of all) {
       run.own(object);
       // Dragging a whole line detaches it (as moveObject does), so a copied line lets go of objects that stay behind.
-      if (object instanceof UpdrawLine) {
+      if (object instanceof UpmadeLine) {
         if (object.startAnchor && !copiedIds.has(object.startAnchor.objectId)) object.startAnchor = undefined;
         if (object.endAnchor && !copiedIds.has(object.endAnchor.objectId)) object.endAnchor = undefined;
       }

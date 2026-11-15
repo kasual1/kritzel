@@ -5,20 +5,20 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  UpdrawEditor,
+  UpmadeEditor,
   ContextMenuItem,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-context-menus-canvas-quick-actions',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       #editor
       editorId="custom-context-menu-canvas-quick-actions"
       [theme]="'light'"
@@ -31,7 +31,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady()"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: `
     :host {
@@ -41,11 +41,11 @@ import { createSeedObjects } from '../../../const/seed-objects';
   `,
 })
 export class ContextMenusCanvasQuickActionsComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
   globalItems: ContextMenuItem[] = [
     {

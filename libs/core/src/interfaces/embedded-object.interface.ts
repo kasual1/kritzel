@@ -1,4 +1,4 @@
-export interface UpdrawEmbeddedObject {
+export interface UpmadeEmbeddedObject {
   isInteractive: boolean;
   isSelected: boolean;
 

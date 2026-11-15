@@ -1,22 +1,22 @@
 import {
-  UPDRAW_DEFAULT_OBJECT_TITLEBAR,
-  UPDRAW_OBJECT_TYPE_ICONS,
-  UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE,
-  UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE,
-  UPDRAW_TITLEBAR_OWNER_ATTRIBUTE,
-  UPDRAW_TITLEBAR_TITLE_INPUT_ATTRIBUTE,
-  UpdrawObjectTitlebarManager,
+  UPMADE_DEFAULT_OBJECT_TITLEBAR,
+  UPMADE_OBJECT_TYPE_ICONS,
+  UPMADE_TITLEBAR_CONTROL_ATTRIBUTE,
+  UPMADE_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE,
+  UPMADE_TITLEBAR_OWNER_ATTRIBUTE,
+  UPMADE_TITLEBAR_TITLE_INPUT_ATTRIBUTE,
+  UpmadeObjectTitlebarManager,
 } from './object-titlebar.manager';
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawSelectionBox } from '../objects/selection-box.class';
-import { UpdrawIconRegistry } from '../registries/icon-registry.class';
-import { UpdrawObjectTitlebarConfig } from '../../interfaces/object-titlebar.interface';
-import { UpdrawObjectConfig } from '../../interfaces/object-config.interface';
-import { UpdrawObjectConfigManager } from './object-config.manager';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeSelectionBox } from '../objects/selection-box.class';
+import { UpmadeIconRegistry } from '../registries/icon-registry.class';
+import { UpmadeObjectTitlebarConfig } from '../../interfaces/object-titlebar.interface';
+import { UpmadeObjectConfig } from '../../interfaces/object-config.interface';
+import { UpmadeObjectConfigManager } from './object-config.manager';
 
-describe('UpdrawObjectTitlebarManager', () => {
+describe('UpmadeObjectTitlebarManager', () => {
   const terms: Record<string, string> = {
     'objectType.shape': 'Shape',
     'objectType.group': 'Group',
@@ -25,21 +25,21 @@ describe('UpdrawObjectTitlebarManager', () => {
   };
 
   let mockCore: any;
-  let objects: Map<string, UpdrawBaseObject<any>>;
-  let manager: UpdrawObjectTitlebarManager;
+  let objects: Map<string, UpmadeBaseObject<any>>;
+  let manager: UpmadeObjectTitlebarManager;
 
-  const setConfig = (config: UpdrawObjectTitlebarConfig | undefined) => {
+  const setConfig = (config: UpmadeObjectTitlebarConfig | undefined) => {
     mockCore.engine.objectTitlebar = config;
   };
 
   /** Sets the engine's `objectConfig` prop. Every object has a titlebar until a test sets its own. */
-  const setObjectConfig = (config: UpdrawObjectConfig | undefined) => {
+  const setObjectConfig = (config: UpmadeObjectConfig | undefined) => {
     mockCore.engine.objectConfig = config;
   };
 
-  const createObject = (id: string, props: Partial<UpdrawBaseObject<any>> & Record<string, unknown> = {}): UpdrawBaseObject<any> => {
-    const object = Object.assign(Object.create(UpdrawBaseObject.prototype), {
-      __class__: 'UpdrawShape',
+  const createObject = (id: string, props: Partial<UpmadeBaseObject<any>> & Record<string, unknown> = {}): UpmadeBaseObject<any> => {
+    const object = Object.assign(Object.create(UpmadeBaseObject.prototype), {
+      __class__: 'UpmadeShape',
       id,
       workspaceId: 'workspace-1',
       translateX: 0,
@@ -51,14 +51,14 @@ describe('UpdrawObjectTitlebarManager', () => {
       rotation: 0,
       markedForRemoval: false,
       ...props,
-    }) as UpdrawBaseObject<any>;
+    }) as UpmadeBaseObject<any>;
     objects.set(id, object);
     return object;
   };
 
-  const createGroup = (id: string, childIds: string[], props: Record<string, unknown> = {}): UpdrawGroup => {
-    const group = createObject(id, { __class__: 'UpdrawGroup', ...props }) as unknown as UpdrawGroup;
-    Object.setPrototypeOf(group, UpdrawGroup.prototype);
+  const createGroup = (id: string, childIds: string[], props: Record<string, unknown> = {}): UpmadeGroup => {
+    const group = createObject(id, { __class__: 'UpmadeGroup', ...props }) as unknown as UpmadeGroup;
+    Object.setPrototypeOf(group, UpmadeGroup.prototype);
     group.childIds = childIds;
     Object.defineProperty(group, 'children', { get: () => childIds.map(childId => objects.get(childId)), configurable: true });
     return group;
@@ -90,8 +90,8 @@ describe('UpdrawObjectTitlebarManager', () => {
     objects = new Map();
     mockCore = {
       engine: {
-        objectTitlebar: { left: [{ id: 'title', type: 'title' }] } as UpdrawObjectTitlebarConfig,
-        objectConfig: { hasTitlebar: true } as UpdrawObjectConfig,
+        objectTitlebar: { left: [{ id: 'title', type: 'title' }] } as UpmadeObjectTitlebarConfig,
+        objectConfig: { hasTitlebar: true } as UpmadeObjectConfig,
         emitObjectTitlebarAction: jest.fn(),
         emitObjectTitlebarMenuStateChange: jest.fn(),
         host: { shadowRoot: { elementsFromPoint: jest.fn().mockReturnValue([]) } },
@@ -110,8 +110,8 @@ describe('UpdrawObjectTitlebarManager', () => {
         translate: jest.fn((key: string) => terms[key] ?? key),
       },
     };
-    mockCore.objectConfigManager = new UpdrawObjectConfigManager(mockCore);
-    manager = new UpdrawObjectTitlebarManager(mockCore);
+    mockCore.objectConfigManager = new UpmadeObjectConfigManager(mockCore);
+    manager = new UpmadeObjectTitlebarManager(mockCore);
     jest.spyOn(console, 'warn').mockImplementation(() => undefined);
     jest.spyOn(console, 'error').mockImplementation(() => undefined);
     jest.spyOn(console, 'info').mockImplementation(() => undefined);
@@ -146,7 +146,7 @@ describe('UpdrawObjectTitlebarManager', () => {
     });
 
     it('reads pixel metrics from the theme and falls back otherwise', () => {
-      const style = { getPropertyValue: (name: string) => ({ '--updraw-titlebar-height': '32px', '--updraw-titlebar-offset': '2rem' })[name] ?? '' };
+      const style = { getPropertyValue: (name: string) => ({ '--upmade-titlebar-height': '32px', '--upmade-titlebar-offset': '2rem' })[name] ?? '' };
 
       expect(manager.getMetrics(style)).toEqual({ height: 32, offset: 6 });
       expect(manager.getMetrics(null)).toEqual({ height: 28, offset: 6 });
@@ -157,7 +157,7 @@ describe('UpdrawObjectTitlebarManager', () => {
     const owners = () => manager.getOwners(Array.from(objects.values()));
 
     it('includes the objects for which objectConfig.hasTitlebar is true', () => {
-      setObjectConfig({ hasTitlebar: object => object.__class__ === 'UpdrawGroup' });
+      setObjectConfig({ hasTitlebar: object => object.__class__ === 'UpmadeGroup' });
       createObject('shape');
       const group = createGroup('group', []);
 
@@ -196,7 +196,7 @@ describe('UpdrawObjectTitlebarManager', () => {
     });
 
     it('lets hasTitlebar decide for groups like for any other object', () => {
-      setObjectConfig({ hasTitlebar: object => object.__class__ !== 'UpdrawGroup' });
+      setObjectConfig({ hasTitlebar: object => object.__class__ !== 'UpmadeGroup' });
       createObject('child');
       createGroup('group', ['child']);
       const loose = createObject('loose');
@@ -209,8 +209,8 @@ describe('UpdrawObjectTitlebarManager', () => {
       setObjectConfig({ hasTitlebar });
       createObject('child');
       const group = createGroup('group', ['child']);
-      Object.setPrototypeOf(createObject('sg', { __class__: 'UpdrawSelectionGroup' }), UpdrawSelectionGroup.prototype);
-      Object.setPrototypeOf(createObject('sb', { __class__: 'UpdrawSelectionBox' }), UpdrawSelectionBox.prototype);
+      Object.setPrototypeOf(createObject('sg', { __class__: 'UpmadeSelectionGroup' }), UpmadeSelectionGroup.prototype);
+      Object.setPrototypeOf(createObject('sb', { __class__: 'UpmadeSelectionBox' }), UpmadeSelectionBox.prototype);
       createObject('erased', { markedForRemoval: true });
 
       expect(owners()).toEqual([group]);
@@ -279,7 +279,7 @@ describe('UpdrawObjectTitlebarManager', () => {
       const object = createObject('a');
       expect(manager.getRotationHandleDistance(object)).toBe(15 + 28 + 6);
 
-      tokens = { '--updraw-titlebar-height': '40px', '--updraw-titlebar-offset': '10px' };
+      tokens = { '--upmade-titlebar-height': '40px', '--upmade-titlebar-offset': '10px' };
       expect(manager.getRotationHandleDistance(object)).toBe(15 + 50);
       expect((globalThis as any).getComputedStyle).toHaveBeenCalledWith(mockCore.engine.host);
     });
@@ -324,9 +324,9 @@ describe('UpdrawObjectTitlebarManager', () => {
       const a = createObject('a');
       const root = createGroup('root', ['inner']);
       const selection = (objectIds: string[]) =>
-        Object.assign(Object.create(UpdrawSelectionGroup.prototype), { id: 'selection', translateX: 0, translateY: 0, width: 200, height: 100, padding: 0, scale: 1, rotation: 0, _objectIds: objectIds });
+        Object.assign(Object.create(UpmadeSelectionGroup.prototype), { id: 'selection', translateX: 0, translateY: 0, width: 200, height: 100, padding: 0, scale: 1, rotation: 0, _objectIds: objectIds });
       const metrics = { height: 28, offset: 6 };
-      const rendered = (titlebars: { owner: UpdrawBaseObject<any>; isActive: boolean }[]) => ({ titlebars: titlebars as any, metrics });
+      const rendered = (titlebars: { owner: UpmadeBaseObject<any>; isActive: boolean }[]) => ({ titlebars: titlebars as any, metrics });
 
       // The titlebar of the only selected object.
       expect(manager.getRotationHandleDistance(selection(['a']), rendered([{ owner: a, isActive: true }]))).toBe(49);
@@ -355,7 +355,7 @@ describe('UpdrawObjectTitlebarManager', () => {
       createObject('a', { name: 'Ignored' });
       createObject('b', { name: 'Named' });
       createObject('c');
-      createObject('d', { __class__: 'UpdrawUnknown' });
+      createObject('d', { __class__: 'UpmadeUnknown' });
 
       const titles = manager.resolveTitlebars(Array.from(objects.values())).map(titlebar => titlebar.context.title);
 
@@ -463,7 +463,7 @@ describe('UpdrawObjectTitlebarManager', () => {
   describe('getOwnerFromEvent', () => {
     it('resolves the owner from the titlebar surface in the event path', () => {
       const owner = createObject('a');
-      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const surface = createElement({ [UPMADE_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
       const title = createElement({}, surface);
 
       expect(manager.getOwnerFromEvent({ clientX: 0, clientY: 0, composedPath: () => [title, surface] })).toBe(owner);
@@ -471,8 +471,8 @@ describe('UpdrawObjectTitlebarManager', () => {
 
     it('returns null for presses on controls', () => {
       createObject('a');
-      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
-      const control = createElement({ [UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE]: '' }, surface);
+      const surface = createElement({ [UPMADE_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const control = createElement({ [UPMADE_TITLEBAR_CONTROL_ATTRIBUTE]: '' }, surface);
 
       expect(manager.getOwnerFromEvent({ clientX: 0, clientY: 0, composedPath: () => [control, surface] })).toBeNull();
       expect(manager.isControlEvent({ composedPath: () => [control, surface] })).toBe(true);
@@ -480,15 +480,15 @@ describe('UpdrawObjectTitlebarManager', () => {
 
     it('resolves the owner of a control when controls are included', () => {
       const owner = createObject('a');
-      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
-      const control = createElement({ [UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE]: '' }, surface);
+      const surface = createElement({ [UPMADE_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const control = createElement({ [UPMADE_TITLEBAR_CONTROL_ATTRIBUTE]: '' }, surface);
 
       expect(manager.getOwnerFromEvent({ clientX: 0, clientY: 0, composedPath: () => [control, surface] }, { includeControls: true })).toBe(owner);
     });
 
     it('falls back to hit testing when the event was already dispatched', () => {
       const owner = createObject('a');
-      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const surface = createElement({ [UPMADE_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
       const title = createElement({}, surface);
       mockCore.engine.host.shadowRoot.elementsFromPoint.mockReturnValue([title]);
 
@@ -498,7 +498,7 @@ describe('UpdrawObjectTitlebarManager', () => {
 
     it('falls back to hit testing when the event was retargeted away from the titlebar', () => {
       const owner = createObject('a');
-      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const surface = createElement({ [UPMADE_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
       mockCore.engine.host.shadowRoot.elementsFromPoint.mockReturnValue([createElement({}, surface)]);
       const host = createElement({});
 
@@ -515,7 +515,7 @@ describe('UpdrawObjectTitlebarManager', () => {
     it('returns null when titlebars are disabled', () => {
       setConfig(undefined);
       createObject('a');
-      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const surface = createElement({ [UPMADE_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
 
       expect(manager.getOwnerFromEvent({ clientX: 0, clientY: 0, composedPath: () => [surface] })).toBeNull();
     });
@@ -533,12 +533,12 @@ describe('UpdrawObjectTitlebarManager', () => {
 
       manager.invokeElement('a', 'right', 'play', click, anchor);
 
-      expect(action).toHaveBeenCalledWith(expect.objectContaining({ title: 'Desktop', objectType: 'UpdrawShape' }), click);
+      expect(action).toHaveBeenCalledWith(expect.objectContaining({ title: 'Desktop', objectType: 'UpmadeShape' }), click);
       expect(mockCore.engine.emitObjectTitlebarAction).toHaveBeenCalledWith({
         elementId: 'play',
         section: 'right',
         objectId: 'a',
-        objectType: 'UpdrawShape',
+        objectType: 'UpmadeShape',
         workspaceId: 'workspace-1',
         anchorRect,
       });
@@ -613,7 +613,7 @@ describe('UpdrawObjectTitlebarManager', () => {
             ...overrides,
           },
         ],
-      } as UpdrawObjectTitlebarConfig);
+      } as UpmadeObjectTitlebarConfig);
       return duplicate;
     };
 
@@ -660,7 +660,7 @@ describe('UpdrawObjectTitlebarManager', () => {
         menuItemId: 'duplicate',
         section: 'right',
         objectId: 'a',
-        objectType: 'UpdrawShape',
+        objectType: 'UpmadeShape',
         workspaceId: 'workspace-1',
         anchorRect,
       });
@@ -886,9 +886,9 @@ describe('UpdrawObjectTitlebarManager', () => {
 
     it('finds the pressed editable title and recognizes events from the rename input', () => {
       createObject('a');
-      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
-      const title = createElement({ [UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: 'title' }, surface);
-      const input = createElement({ [UPDRAW_TITLEBAR_TITLE_INPUT_ATTRIBUTE]: '' }, surface);
+      const surface = createElement({ [UPMADE_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const title = createElement({ [UPMADE_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: 'title' }, surface);
+      const input = createElement({ [UPMADE_TITLEBAR_TITLE_INPUT_ATTRIBUTE]: '' }, surface);
 
       expect(manager.getEditableTitleFromEvent({ clientX: 0, clientY: 0, composedPath: () => [title, surface] })).toEqual({ ownerId: 'a', elementId: 'title' });
       expect(manager.getEditableTitleFromEvent({ clientX: 0, clientY: 0, composedPath: () => [surface] })).toBeNull();
@@ -898,8 +898,8 @@ describe('UpdrawObjectTitlebarManager', () => {
 
     it('finds the editable title by hit testing when the event path is empty', () => {
       createObject('a');
-      const surface = createElement({ [UPDRAW_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
-      const title = createElement({ [UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: 'title' }, surface);
+      const surface = createElement({ [UPMADE_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const title = createElement({ [UPMADE_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: 'title' }, surface);
       mockCore.engine.host.shadowRoot.elementsFromPoint.mockReturnValue([title]);
 
       expect(manager.getEditableTitleFromEvent({ clientX: 1, clientY: 2, composedPath: () => [] })).toEqual({ ownerId: 'a', elementId: 'title' });
@@ -908,15 +908,15 @@ describe('UpdrawObjectTitlebarManager', () => {
 
   describe('default preset', () => {
     it('only uses registered icons', () => {
-      const icons = [...Object.values(UPDRAW_OBJECT_TYPE_ICONS), 'square', 'play', 'plus'];
+      const icons = [...Object.values(UPMADE_OBJECT_TYPE_ICONS), 'square', 'play', 'plus'];
 
       for (const icon of icons) {
-        expect(UpdrawIconRegistry.has(icon)).toBe(true);
+        expect(UpmadeIconRegistry.has(icon)).toBe(true);
       }
     });
 
     it('shows the type icon and the title', () => {
-      setConfig(UPDRAW_DEFAULT_OBJECT_TITLEBAR);
+      setConfig(UPMADE_DEFAULT_OBJECT_TITLEBAR);
       createGroup('group', []);
 
       const [titlebar] = manager.resolveTitlebars(Array.from(objects.values()));

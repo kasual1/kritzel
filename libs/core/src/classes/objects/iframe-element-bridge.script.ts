@@ -1,30 +1,30 @@
 import { LEGACY_ELEMENT_ID_ATTRIBUTE } from '../../migrations/legacy-brand';
 
 /**
- * Message types of the element bridge between an `UpdrawIframeObject` and its page.
+ * Message types of the element bridge between an `UpmadeIframeObject` and its page.
  * Page → host: ready, hover, click, pick, rects, query result, interaction result. Host → page: sync, query, interaction.
  */
 export const IFRAME_ELEMENT_MESSAGES = {
-  ready: 'updraw-iframe-ready',
-  sync: 'updraw-iframe-element-sync',
-  query: 'updraw-iframe-element-query',
-  queryResult: 'updraw-iframe-element-query-result',
-  interact: 'updraw-iframe-element-interact',
-  interactResult: 'updraw-iframe-element-interact-result',
-  hover: 'updraw-iframe-element-hover',
-  click: 'updraw-iframe-element-click',
-  pick: 'updraw-iframe-element-pick',
-  rects: 'updraw-iframe-element-rects',
+  ready: 'upmade-iframe-ready',
+  sync: 'upmade-iframe-element-sync',
+  query: 'upmade-iframe-element-query',
+  queryResult: 'upmade-iframe-element-query-result',
+  interact: 'upmade-iframe-element-interact',
+  interactResult: 'upmade-iframe-element-interact-result',
+  hover: 'upmade-iframe-element-hover',
+  click: 'upmade-iframe-element-click',
+  pick: 'upmade-iframe-element-pick',
+  rects: 'upmade-iframe-element-rects',
 } as const;
 
 /** Tag of the element that holds the highlight layer inside the page. Its shadow root keeps page CSS out. */
-export const IFRAME_ELEMENT_OVERLAY_TAG = 'updraw-element-overlay';
+export const IFRAME_ELEMENT_OVERLAY_TAG = 'upmade-element-overlay';
 
 /** Attributes that give elements a stable id for agents, in order of precedence (current, then pre-rename). */
-export const IFRAME_ELEMENT_ID_ATTRIBUTES: readonly string[] = ['data-updraw-id', LEGACY_ELEMENT_ID_ATTRIBUTE];
+export const IFRAME_ELEMENT_ID_ATTRIBUTES: readonly string[] = ['data-upmade-id', LEGACY_ELEMENT_ID_ATTRIBUTE];
 
 /** Attribute set on the page's root element while picking, used to show the default cursor everywhere. */
-export const IFRAME_ELEMENT_PICKING_ATTRIBUTE = 'data-updraw-picking';
+export const IFRAME_ELEMENT_PICKING_ATTRIBUTE = 'data-upmade-picking';
 
 /**
  * CSS used while picking: keeps the default cursor on links and buttons, since clicks don't activate them, and lets
@@ -32,7 +32,7 @@ export const IFRAME_ELEMENT_PICKING_ATTRIBUTE = 'data-updraw-picking';
  * receive them otherwise). Pointing at a nested frame picks the element that contains it.
  */
 export const IFRAME_ELEMENT_PICKING_CSS =
-  `html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}], html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] * { cursor: var(--updraw-iframe-default-cursor) !important; }`
+  `html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}], html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] * { cursor: var(--upmade-iframe-default-cursor) !important; }`
   + ` html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] iframe, html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] embed, html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] object { pointer-events: none !important; }`;
 
 /**
@@ -307,7 +307,7 @@ export function createIframeElementBridgeScript(documentToken: number): string {
     const visibleRect = visibleRectOf(element, null);
     if (visibleRect) info.visibleRect = toRect(visibleRect);
     const elementId = idOf(element);
-    if (elementId) info.updrawId = clip(elementId.value, MAX_ATTRIBUTE);
+    if (elementId) info.upmadeId = clip(elementId.value, MAX_ATTRIBUTE);
     if (element.id) info.id = clip(element.id, MAX_ATTRIBUTE);
     const text = textOf(element);
     if (text) info.text = text;

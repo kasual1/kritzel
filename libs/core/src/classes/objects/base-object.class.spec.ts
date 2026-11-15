@@ -1,10 +1,10 @@
-import { UpdrawBaseObject } from './base-object.class';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawPolygon } from '../../interfaces/polygon.interface';
+import { UpmadeBaseObject } from './base-object.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadePolygon } from '../../interfaces/polygon.interface';
 
-describe('UpdrawBaseObject', () => {
-  let baseObject: UpdrawBaseObject;
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadeBaseObject', () => {
+  let baseObject: UpmadeBaseObject;
+  let mockCore: jest.Mocked<UpmadeCore>;
   let mockObjectsUpdate: jest.Mock;
   let mockAnchorManagerUpdate: jest.Mock;
   let mockRerender: jest.Mock;
@@ -39,9 +39,9 @@ describe('UpdrawBaseObject', () => {
         id: 'user-123',
       },
       rerender: mockRerender,
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    baseObject = new UpdrawBaseObject();
+    baseObject = new UpmadeBaseObject();
     baseObject._core = mockCore;
     baseObject.width = 100;
     baseObject.height = 50;
@@ -53,16 +53,16 @@ describe('UpdrawBaseObject', () => {
 
   describe('constructor', () => {
     it('should generate a unique id on instantiation', () => {
-      const obj1 = new UpdrawBaseObject();
-      const obj2 = new UpdrawBaseObject();
+      const obj1 = new UpmadeBaseObject();
+      const obj2 = new UpmadeBaseObject();
       expect(obj1.id).toBeDefined();
       expect(obj2.id).toBeDefined();
       expect(obj1.id).not.toBe(obj2.id);
     });
 
     it('should set default property values', () => {
-      const obj = new UpdrawBaseObject();
-      expect(obj.__class__).toBe('UpdrawBaseObject');
+      const obj = new UpmadeBaseObject();
+      expect(obj.__class__).toBe('UpmadeBaseObject');
       expect(obj.borderWidth).toBe(0);
       expect(obj.opacity).toBe(1);
       expect(obj.padding).toBe(0);
@@ -84,20 +84,20 @@ describe('UpdrawBaseObject', () => {
 
   describe('static create', () => {
     it('should create a new object with core reference and workspace id', () => {
-      const obj = UpdrawBaseObject.create(mockCore);
+      const obj = UpmadeBaseObject.create(mockCore);
       expect(obj._core).toBe(mockCore);
       expect(obj.zIndex).toBe(1);
       expect(obj.workspaceId).toBe('workspace-1');
     });
 
     it('should set userId from core.user', () => {
-      const obj = UpdrawBaseObject.create(mockCore);
+      const obj = UpmadeBaseObject.create(mockCore);
       expect(obj.userId).toBe('user-123');
     });
 
     it('should set userId to undefined when core.user is undefined', () => {
-      const coreWithoutUser = { ...mockCore, user: undefined } as unknown as jest.Mocked<UpdrawCore>;
-      const obj = UpdrawBaseObject.create(coreWithoutUser);
+      const coreWithoutUser = { ...mockCore, user: undefined } as unknown as jest.Mocked<UpmadeCore>;
+      const obj = UpmadeBaseObject.create(coreWithoutUser);
       expect(obj.userId).toBeUndefined();
     });
   });
@@ -449,7 +449,7 @@ describe('UpdrawBaseObject', () => {
     });
 
     it('should only set the flag on an object that is not attached to a core yet', () => {
-      const object = new UpdrawBaseObject();
+      const object = new UpmadeBaseObject();
 
       object.setLoading(true);
 
@@ -458,7 +458,7 @@ describe('UpdrawBaseObject', () => {
 
     it('should be serialized and survive deserialization', () => {
       baseObject.setLoading(true);
-      const revived = new UpdrawBaseObject();
+      const revived = new UpmadeBaseObject();
 
       revived.deserialize(baseObject.serialize());
 
@@ -467,7 +467,7 @@ describe('UpdrawBaseObject', () => {
     });
 
     it('should treat a missing or invalid serialized value as not loading', () => {
-      const revived = new UpdrawBaseObject();
+      const revived = new UpmadeBaseObject();
 
       revived.deserialize({ isLoading: 'yes' });
 
@@ -736,7 +736,7 @@ describe('UpdrawBaseObject', () => {
 
   describe('isClass', () => {
     it('should return true when class name matches', () => {
-      expect(baseObject.isClass('UpdrawBaseObject')).toBe(true);
+      expect(baseObject.isClass('UpmadeBaseObject')).toBe(true);
     });
 
     it('should return false when class name does not match', () => {
@@ -772,7 +772,7 @@ describe('UpdrawBaseObject', () => {
       baseObject.scale = 1;
       baseObject.rotation = 0;
 
-      const testPolygon: UpdrawPolygon = {
+      const testPolygon: UpmadePolygon = {
         topLeft: { x: 50, y: 50 },
         topRight: { x: 150, y: 50 },
         bottomRight: { x: 150, y: 150 },
@@ -791,7 +791,7 @@ describe('UpdrawBaseObject', () => {
       baseObject.scale = 1;
       baseObject.rotation = 0;
 
-      const testPolygon: UpdrawPolygon = {
+      const testPolygon: UpmadePolygon = {
         topLeft: { x: 200, y: 200 },
         topRight: { x: 300, y: 200 },
         bottomRight: { x: 300, y: 300 },

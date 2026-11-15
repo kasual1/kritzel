@@ -1,9 +1,9 @@
-import { UpdrawHoverHandler } from './hover.handler';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeHoverHandler } from './hover.handler';
+import { UpmadeCore } from '../core/core.class';
 
-describe('UpdrawHoverHandler', () => {
-  let hoverHandler: UpdrawHoverHandler;
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadeHoverHandler', () => {
+  let hoverHandler: UpmadeHoverHandler;
+  let mockCore: jest.Mocked<UpmadeCore>;
   let mockObject: {
     isHovered: boolean;
     hitTest: jest.Mock;
@@ -41,9 +41,9 @@ describe('UpdrawHoverHandler', () => {
         },
       },
       getObjectFromPointerEvent: jest.fn().mockReturnValue(mockObject),
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    hoverHandler = new UpdrawHoverHandler(mockCore);
+    hoverHandler = new UpmadeHoverHandler(mockCore);
   });
 
   describe('handlePointerMove', () => {

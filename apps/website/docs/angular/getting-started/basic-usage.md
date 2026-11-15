@@ -1,8 +1,8 @@
 ---
 sidebar_label: Basic Usage
 displayed_sidebar: tutorialSidebar
-title: "Basic Usage | Updraw for Angular"
-description: "Learn the main ways to interact with Updraw from Angular: set props, listen to events, and call public methods."
+title: "Basic Usage | Upmade for Angular"
+description: "Learn the main ways to interact with Upmade from Angular: set props, listen to events, and call public methods."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,31 +11,31 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-For most use cases `<updraw-editor>` is the preferred choice. It gives you a ready made whiteboard experience and includes customizable controls that can be further tuned to your needs. Only use `<updraw-engine>` when you want to build the entire UI yourself.
+For most use cases `<upmade-editor>` is the preferred choice. It gives you a ready made whiteboard experience and includes customizable controls that can be further tuned to your needs. Only use `<upmade-engine>` when you want to build the entire UI yourself.
 
-Once `<updraw-editor>` or `<updraw-engine>` is rendering in your application, you can interact with the canvas in three complementary ways:
+Once `<upmade-editor>` or `<upmade-engine>` is rendering in your application, you can interact with the canvas in three complementary ways:
 
 - **Setting props** to configure the component declaratively.
 - **Listening to events** to react to changes from the editor or engine.
 - **Calling methods** to make imperative changes or query state.
 
-While the `<updraw-editor>` is the main way to integrate Updraw into your application, the same APIs also apply to `<updraw-engine>`. The examples below focus on `<updraw-editor>`, but the concepts carry over to the engine as well.
+While the `<upmade-editor>` is the main way to integrate Upmade into your application, the same APIs also apply to `<upmade-engine>`. The examples below focus on `<upmade-editor>`, but the concepts carry over to the engine as well.
 
 For the full documentation, please see the API reference of the [Editor](../api-reference/editor.md) or the [Engine](../api-reference/engine.md).
 
 ## Waiting for Initialization
 
-Before interacting with an editor instance through its public API, you must wait for the editor's `isReady` event. The `<updraw-editor>` emits `isReady` after the engine is mounted, the internal rendering context is created, and the initial workspace state is available.
+Before interacting with an editor instance through its public API, you must wait for the editor's `isReady` event. The `<upmade-editor>` emits `isReady` after the engine is mounted, the internal rendering context is created, and the initial workspace state is available.
 
 ```ts
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  template: `<updraw-editor #editor (isReady)="onReady()"></updraw-editor>`
+  template: `<upmade-editor #editor (isReady)="onReady()"></upmade-editor>`
 })
 export class AppComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   onReady() {
     this.editor.setActiveTool('brush');
@@ -51,13 +51,13 @@ Props are the declarative way to configure the editor. Use props such as `theme`
 
 ```ts
 import { Component } from '@angular/core';
-import { UpdrawEditor, UpdrawSyncConfig } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeSyncConfig } from '@upmade/angular-editor';
 
 @Component({
   selector: 'app-canvas',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   template: `
-    <updraw-editor [isToolbarVisible]="isToolbarVisible"></updraw-editor>
+    <upmade-editor [isToolbarVisible]="isToolbarVisible"></upmade-editor>
   `,
 })
 export class CanvasComponent {
@@ -72,22 +72,22 @@ For example, changing `isToolbarVisible` from application state hides the editor
 Events are the way the editor reports state changes. Bind custom-element events in the template and read their payload from `event.detail`. The payload type depends on the event; for example, `objectsChange` contains the current objects and `viewportChange` contains the current viewport state.
 
 ```html
-<updraw-editor
+<upmade-editor
   (objectsChange)="onObjectsChange($event)"
   (viewportChange)="onViewportChange($event)">
-</updraw-editor>
+</upmade-editor>
 ```
 
 ```ts
-import { UpdrawBaseObject, UpdrawViewportState } from '@updraw/angular-editor';
+import { UpmadeBaseObject, UpmadeViewportState } from '@upmade/angular-editor';
 
 onObjectsChange(event: Event) {
-  const objects = (event as CustomEvent<UpdrawBaseObject[]>).detail;
+  const objects = (event as CustomEvent<UpmadeBaseObject[]>).detail;
   console.log('Canvas objects updated:', objects.length);
 }
 
 onViewportChange(event: Event) {
-  const viewport = (event as CustomEvent<UpdrawViewportState>).detail;
+  const viewport = (event as CustomEvent<UpmadeViewportState>).detail;
   console.log('Viewport updated:', viewport);
 }
 ```
@@ -96,13 +96,13 @@ The `isReady` event is also an event you can listen to. Treat it as the point at
 
 ## Calling Methods
 
-Public methods are the imperative way to control the editor canvas and query its state. Updraw methods are asynchronous and return Promises, so call them from an `async` function and `await` their results. The element reference must be ready before these calls are made. The following example demonstrates adding a text object programmatically.
+Public methods are the imperative way to control the editor canvas and query its state. Upmade methods are asynchronous and return Promises, so call them from an `async` function and `await` their results. The element reference must be ready before these calls are made. The following example demonstrates adding a text object programmatically.
 
 ```ts
-import { UpdrawText } from '@updraw/angular-editor';
+import { UpmadeText } from '@upmade/angular-editor';
 
 async addText() {
-  await this.editor.addObject(new UpdrawText({
+  await this.editor.addObject(new UpmadeText({
     text: 'Programmatic text!',
     translateX: 0,
     translateY: 0,

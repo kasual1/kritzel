@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
-  UpdrawEditor,
+  UpmadeEditor,
   EditorIsReadyEvent,
-  UpdrawBaseObject,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeBaseObject,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -16,20 +16,20 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-objects-filter',
-  imports: [UpdrawEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
+  imports: [UpmadeEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
-      <button (click)="queryByType('UpdrawShape')">Shapes</button>
-      <button (click)="queryByType('UpdrawPath')">Paths</button>
-      <button (click)="queryByType('UpdrawLine')">Lines</button>
+      <button (click)="queryByType('UpmadeShape')">Shapes</button>
+      <button (click)="queryByType('UpmadePath')">Paths</button>
+      <button (click)="queryByType('UpmadeLine')">Lines</button>
       <button (click)="queryAll()">All</button>
       <button (click)="queryNone()">None</button>
       <button (click)="queryInViewport()">In Viewport</button>
       <app-info-panel-toggle [panel]="infoPanel"></app-info-panel-toggle>
     </app-toolbar>
     <div class="content">
-      <updraw-editor
+      <upmade-editor
         editorId="objects-filter"
         [theme]="'light'"
         [themes]="themes"
@@ -39,7 +39,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady($event)"
-      ></updraw-editor>
+      ></upmade-editor>
       <app-info-panel #infoPanel [hasToolbarToggle]="true">
         <h3>Objects</h3>
         <ul>
@@ -59,7 +59,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
     .content { display: flex; flex: 1; min-height: 0; position: relative; }
-    updraw-editor { flex: 1; }
+    upmade-editor { flex: 1; }
     ul { list-style: none; margin: 0; padding: 0; }
     li { padding: 4px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
     .type { color: #333; font-weight: 500; }
@@ -68,13 +68,13 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   `],
 })
 export class ObjectsFilterComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
-  results = signal<UpdrawBaseObject[]>([]);
+  results = signal<UpmadeBaseObject[]>([]);
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
     const objects = await this.editor.getAllObjects();
@@ -108,7 +108,7 @@ export class ObjectsFilterComponent {
     await this.highlightResults(visible);
   }
 
-  private async highlightResults(results: UpdrawBaseObject[]) {
+  private async highlightResults(results: UpmadeBaseObject[]) {
     const all = await this.editor.getAllObjects();
     await Promise.all(all.map(obj => this.editor.updateObject(obj, { opacity: 0.5 })));
     await Promise.all(results.map(obj => this.editor.updateObject(obj, { opacity: 1 })));

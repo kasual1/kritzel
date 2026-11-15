@@ -32,8 +32,8 @@ Use this pattern whenever demo pages are created, moved, or ported across Angula
 
 2. Ref access conventions:
 - Angular: direct via `viewChild`/`ElementRef`
-- React: direct via `useRef<HTMLUpdrawEditorElement | null>`
-- Vue: use `getEditorRef` / `getEngineRef` from `@updraw/vue-editor`
+- React: direct via `useRef<HTMLUpmadeEditorElement | null>`
+- Vue: use `getEditorRef` / `getEngineRef` from `@upmade/vue-editor`
 
 3. Router locations:
 - Angular: `apps/demos/angular/src/app/app.routes.ts`
@@ -55,7 +55,7 @@ When a docs page embeds a demo:
 
 ## Dynamic Object Reliability Checks
 
-When a demo route uses `UpdrawDynamicObject`:
+When a demo route uses `UpmadeDynamicObject`:
 
 1. Renderer registration and teardown are both implemented.
 2. Unmount returns serializable state snapshot where persistence is expected.

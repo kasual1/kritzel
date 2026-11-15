@@ -1,10 +1,10 @@
-import { UpdrawEventHelper } from '../../helpers/event.helper';
-import { UpdrawSelectionBox } from '../objects/selection-box.class';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawBaseHandler } from './base.handler';
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
+import { UpmadeSelectionBox } from '../objects/selection-box.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeBaseHandler } from './base.handler';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeCore } from '../core/core.class';
 import { ObjectHelper } from '../../helpers/object.helper';
 
 /**
@@ -13,7 +13,7 @@ import { ObjectHelper } from '../../helpers/object.helper';
  * for mouse, touch, and pen input types. Also handles additive selection
  * via shift/ctrl modifiers.
  */
-export class UpdrawSelectionHandler extends UpdrawBaseHandler {
+export class UpmadeSelectionHandler extends UpmadeBaseHandler {
   startX: number = 0;
   startY: number = 0;
 
@@ -32,7 +32,7 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
    * Tracks previously selected objects for efficient deselection.
    * Uses a Set for O(1) lookup when determining which objects need to be deselected.
    */
-  private _previouslySelectedObjects: Set<UpdrawBaseObject<any>> = new Set();
+  private _previouslySelectedObjects: Set<UpmadeBaseObject<any>> = new Set();
 
   /**
    * Indicates whether the current selection action is a single click (no drag).
@@ -54,9 +54,9 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
 
   /**
    * Creates a new selection handler instance.
-   * @param core - The UpdrawCore instance providing access to store, engine, and other core services
+   * @param core - The UpmadeCore instance providing access to store, engine, and other core services
    */
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     super(core);
   }
 
@@ -73,7 +73,7 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
 
     const isAdditive = event.shiftKey || event.ctrlKey;
     if (event.pointerType === 'mouse') {
-      if (UpdrawEventHelper.isLeftClick(event) && (!this._core.store.selectionGroup || isAdditive)) {
+      if (UpmadeEventHelper.isLeftClick(event) && (!this._core.store.selectionGroup || isAdditive)) {
         this.startMouseSelection(event, isAdditive);
       }
     }
@@ -137,7 +137,7 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
     }
 
     if (event.pointerType === 'mouse') {
-      if (UpdrawEventHelper.isLeftClick(event)) {
+      if (UpmadeEventHelper.isLeftClick(event)) {
         const hasObjectsMoved = this._core.store.state.hasObjectsChanged;
         const selectionGroup = this._core.store.selectionGroup;
         const isAdditive = event.shiftKey || event.ctrlKey;
@@ -202,7 +202,7 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
    */
   private removeSelectionBox(): void {
     this._core.store.state.isSelecting = false;
-    this._core.store.objects.remove(o => o instanceof UpdrawSelectionBox);
+    this._core.store.objects.remove(o => o instanceof UpmadeSelectionBox);
     this._core.store.setSelectionBox(null);
     this._core.store.objects.clearLocalSelectionBox();
   }
@@ -220,7 +220,7 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
     clientX = event.clientX - this._core.store.offsetX;
     clientY = event.clientY - this._core.store.offsetY;
 
-    const selectionBox = UpdrawSelectionBox.create(this._core);
+    const selectionBox = UpmadeSelectionBox.create(this._core);
 
     this.startX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
     this.startY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
@@ -260,7 +260,7 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
     this.touchStartX = clientX;
     this.touchStartY = clientY;
 
-    const selectionBox = UpdrawSelectionBox.create(this._core);
+    const selectionBox = UpmadeSelectionBox.create(this._core);
 
     this.startX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
     this.startY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
@@ -401,11 +401,11 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
     const candidates = this._core.store.objects.query(selectionBounds);
 
     // Track newly selected objects for efficient comparison
-    const newlySelectedObjects = new Set<UpdrawBaseObject<any>>();
+    const newlySelectedObjects = new Set<UpmadeBaseObject<any>>();
 
     // Only test candidates that overlap the bounding box
     for (const object of candidates) {
-      if (object instanceof UpdrawSelectionBox || object instanceof UpdrawSelectionGroup) continue;
+      if (object instanceof UpmadeSelectionBox || object instanceof UpmadeSelectionGroup) continue;
       const isHit = object.hitTestPolygon(selectionPolygon);
       object.isSelected = isHit;
       if (isHit) {
@@ -450,13 +450,13 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
    * @param event - The pointer event used to query overlapping DOM elements
    * @returns The topmost object that passes hit testing, or `null` if none found
    */
-  private getTopmostHitObject(event: PointerEvent): UpdrawBaseObject<any> | null {
+  private getTopmostHitObject(event: PointerEvent): UpmadeBaseObject<any> | null {
     const pointerX = this._core.store.state.pointerX;
     const pointerY = this._core.store.state.pointerY;
     const overlappingObjects = this._core.getObjectsFromPointerEvent(event, '.object');
 
     for (const object of overlappingObjects) {
-      if (object instanceof UpdrawSelectionBox || object instanceof UpdrawSelectionGroup) continue;
+      if (object instanceof UpmadeSelectionBox || object instanceof UpmadeSelectionGroup) continue;
       if (object.hitTest(pointerX, pointerY)) {
         return object;
       }
@@ -486,7 +486,7 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
    * Ancestor groups and their descendants never coexist in the result. Emits `objectsSelectionChange`.
    * @param object - The top-level object or group to toggle
    */
-  toggleObjectInSelection(object: UpdrawBaseObject): void {
+  toggleObjectInSelection(object: UpmadeBaseObject): void {
     const existingGroup = this._core.store.selectionGroup;
     if (!existingGroup) {
       this._core.selectObjects([object]);
@@ -497,7 +497,7 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
     existingGroup.addOrRemove(object);
     this.removeDescendantsOfSelectedGroups(existingGroup);
     // Selecting made embedded content interactive; a deselected embed must hand pointer input back to the canvas.
-    if (wasSelected && ObjectHelper.isUpdrawEmbeddedObject(object)) {
+    if (wasSelected && ObjectHelper.isUpmadeEmbeddedObject(object)) {
       object.setIsInteractive(false);
     }
     if (existingGroup.objects.length === 0) {
@@ -517,13 +517,13 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
    * @param object - The object to add to selection (may be a child of a group)
    * @param shiftKey - When `true`, adds to/removes from existing selection group
    */
-  private addObjectToSelectionGroup(object: UpdrawBaseObject, shiftKey: boolean = false): void {
+  private addObjectToSelectionGroup(object: UpmadeBaseObject, shiftKey: boolean = false): void {
     if (!object) {
       return;
     }
 
     // Resolve child objects to their parent groups
-    const parentGroup = UpdrawGroup.findParentGroup(this._core, object.id);
+    const parentGroup = UpmadeGroup.findParentGroup(this._core, object.id);
     const objectToSelect = parentGroup || object;
 
     // When the click resolves to a parent group, clear the child's own flag so
@@ -542,7 +542,7 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
         this._core.rerender();
       }
     } else {
-      const selectionGroup = UpdrawSelectionGroup.create(this._core);
+      const selectionGroup = UpmadeSelectionGroup.create(this._core);
       selectionGroup.addOrRemove(objectToSelect);
       selectionGroup.isSelected = true;
 
@@ -567,8 +567,8 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
     }
 
     // Build parent group lookup map ONCE - O(g * c) instead of O(n * g * c)
-    const allGroups = this._core.store.objects.filter(obj => obj.__class__ === 'UpdrawGroup') as UpdrawGroup[];
-    const childToParentMap = new Map<string, UpdrawGroup>();
+    const allGroups = this._core.store.objects.filter(obj => obj.__class__ === 'UpmadeGroup') as UpmadeGroup[];
+    const childToParentMap = new Map<string, UpmadeGroup>();
     for (const group of allGroups) {
       for (const childId of group.childIds) {
         childToParentMap.set(childId, group);
@@ -576,7 +576,7 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
     }
 
     // Resolve child objects to their parent groups in a single pass - O(n)
-    const resolvedObjects = new Map<string, UpdrawBaseObject<any>>();
+    const resolvedObjects = new Map<string, UpmadeBaseObject<any>>();
     for (const obj of selectedObjects) {
       const parentGroup = childToParentMap.get(obj.id);
       if (parentGroup) {
@@ -601,7 +601,7 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
       this._core.rerender();
     } else {
       // Create selection group and set all IDs at once (no per-item refresh)
-      const selectionGroup = UpdrawSelectionGroup.create(this._core);
+      const selectionGroup = UpmadeSelectionGroup.create(this._core);
       selectionGroup.objectIds = filteredObjects.map(o => o.id);
       filteredObjects.forEach(obj => {
         obj.isSelected = true;
@@ -622,18 +622,18 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
   }
 
   /**
-   * Removes objects that are descendants of any UpdrawGroup also present in the list.
+   * Removes objects that are descendants of any UpmadeGroup also present in the list.
    * Prevents an ancestor group and one of its descendants from coexisting in a selection,
    * which would otherwise cause the descendant to be transformed twice (once via the
    * ancestor group, and once directly).
    * @param objects - The candidate objects for the selection.
    * @returns A new array with descendants of selected groups removed.
    */
-  private filterDescendantsOfSelectedGroups(objects: UpdrawBaseObject<any>[]): UpdrawBaseObject<any>[] {
+  private filterDescendantsOfSelectedGroups(objects: UpmadeBaseObject<any>[]): UpmadeBaseObject<any>[] {
     const descendantIds = new Set<string>();
     for (const obj of objects) {
-      if (obj instanceof UpdrawGroup) {
-        UpdrawGroup.collectDescendantIds(obj, descendantIds);
+      if (obj instanceof UpmadeGroup) {
+        UpmadeGroup.collectDescendantIds(obj, descendantIds);
       }
     }
     if (descendantIds.size === 0) {
@@ -647,7 +647,7 @@ export class UpdrawSelectionHandler extends UpdrawBaseHandler {
    * already present in it. See {@link filterDescendantsOfSelectedGroups}.
    * @param selectionGroup - The selection group to clean up in place.
    */
-  private removeDescendantsOfSelectedGroups(selectionGroup: UpdrawSelectionGroup): void {
+  private removeDescendantsOfSelectedGroups(selectionGroup: UpmadeSelectionGroup): void {
     const filtered = this.filterDescendantsOfSelectedGroups(selectionGroup.objects);
     if (filtered.length !== selectionGroup.objects.length) {
       selectionGroup.objectIds = filtered.map(o => o.id);

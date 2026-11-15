@@ -1,11 +1,11 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 
 @Component({
-  tag: 'updraw-slide-toggle',
-  styleUrl: 'updraw-slide-toggle.css',
+  tag: 'upmade-slide-toggle',
+  styleUrl: 'upmade-slide-toggle.css',
   shadow: true,
 })
-export class UpdrawSlideToggle {
+export class UpmadeSlideToggle {
   /** Whether the toggle is checked/on */
   @Prop({ mutable: true }) checked = false;
 

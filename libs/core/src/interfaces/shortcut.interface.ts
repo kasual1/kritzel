@@ -1,11 +1,11 @@
-import { UpdrawCore } from '..';
+import { UpmadeCore } from '..';
 
-export interface UpdrawShortcut {
+export interface UpmadeShortcut {
   key: string;
   ctrl?: boolean;
   shift?: boolean;
   label: string;
   category: string;
-  condition?: (core: UpdrawCore) => boolean;
-  action: (core: UpdrawCore) => void;
+  condition?: (core: UpmadeCore) => boolean;
+  action: (core: UpmadeCore) => void;
 }

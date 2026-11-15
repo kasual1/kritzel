@@ -71,7 +71,7 @@ function Line({ indent = 0, highlight, children }: { indent?: number; highlight?
 }
 
 /**
- * A working calculator laid over a mock of the page that puts it on an Updraw canvas. Dragging the split
+ * A working calculator laid over a mock of the page that puts it on an Upmade canvas. Dragging the split
  * bar wipes between the rendered canvas object and that DOM, whose value follows the calculator as you use it.
  */
 export default function DomCanvasDemo() {
@@ -132,7 +132,7 @@ export default function DomCanvasDemo() {
             <OpenTag name="head" />
           </Line>
           <Line indent={2}>
-            <OpenTag name="script" attrs={{ src: "updraw.js" }} />
+            <OpenTag name="script" attrs={{ src: "upmade.js" }} />
             <CloseTag name="script" />
           </Line>
           <Line indent={1}>
@@ -142,10 +142,10 @@ export default function DomCanvasDemo() {
             <OpenTag name="body" />
           </Line>
           <Line indent={2}>
-            <OpenTag name="updraw-editor" attrs={{ theme: "light" }} />
+            <OpenTag name="upmade-editor" attrs={{ theme: "light" }} />
           </Line>
           <Line indent={3}>
-            <OpenTag name="updraw-dynamic-object" unclosed />
+            <OpenTag name="upmade-dynamic-object" unclosed />
           </Line>
           <Line indent={4}>
             <Attrs attrs={{ x: "120", y: "80" }} />
@@ -159,10 +159,10 @@ export default function DomCanvasDemo() {
             <CloseTag name="app-calculator" />
           </Line>
           <Line indent={3}>
-            <CloseTag name="updraw-dynamic-object" />
+            <CloseTag name="upmade-dynamic-object" />
           </Line>
           <Line indent={2}>
-            <CloseTag name="updraw-editor" />
+            <CloseTag name="upmade-editor" />
           </Line>
           <Line indent={1}>
             <CloseTag name="body" />

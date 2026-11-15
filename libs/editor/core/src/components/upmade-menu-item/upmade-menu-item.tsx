@@ -1,29 +1,29 @@
 import { Component, Host, Prop, h, Element, State, Watch, Event, EventEmitter } from '@stencil/core';
-import { IUpdrawMenuItem, IUpdrawMenuItemSelectEvent, IUpdrawMenuItemToggleChildMenuEvent } from '@updraw/core';
-import { UpdrawDevicesHelper } from '@updraw/core';
+import { IUpmadeMenuItem, IUpmadeMenuItemSelectEvent, IUpmadeMenuItemToggleChildMenuEvent } from '@upmade/core';
+import { UpmadeDevicesHelper } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-menu-item',
-  styleUrl: 'updraw-menu-item.css',
+  tag: 'upmade-menu-item',
+  styleUrl: 'upmade-menu-item.css',
   shadow: true,
 })
-export class UpdrawMenuItem {
+export class UpmadeMenuItem {
   @Element() host: HTMLElement;
 
-  @Prop() item: IUpdrawMenuItem;
+  @Prop() item: IUpmadeMenuItem;
   @Watch('item')
-  onItemChange(newValue: IUpdrawMenuItem, oldValue: IUpdrawMenuItem) {
+  onItemChange(newValue: IUpmadeMenuItem, oldValue: IUpmadeMenuItem) {
     if (newValue !== oldValue) {
       this.isDirty = false;
     }
   }
-  @Prop() parent: IUpdrawMenuItem = null;
+  @Prop() parent: IUpmadeMenuItem = null;
 
-  @Event() itemSelect: EventEmitter<IUpdrawMenuItemSelectEvent>;
-  @Event() itemSave: EventEmitter<IUpdrawMenuItem>;
-  @Event() itemCancel: EventEmitter<IUpdrawMenuItem>;
-  @Event() itemToggleChildMenu: EventEmitter<IUpdrawMenuItemToggleChildMenuEvent>;
-  @Event() itemCloseChildMenu: EventEmitter<IUpdrawMenuItem>;
+  @Event() itemSelect: EventEmitter<IUpmadeMenuItemSelectEvent>;
+  @Event() itemSave: EventEmitter<IUpmadeMenuItem>;
+  @Event() itemCancel: EventEmitter<IUpmadeMenuItem>;
+  @Event() itemToggleChildMenu: EventEmitter<IUpmadeMenuItemToggleChildMenuEvent>;
+  @Event() itemCloseChildMenu: EventEmitter<IUpmadeMenuItem>;
 
   @State()
   isDirty: boolean = false;
@@ -36,7 +36,7 @@ export class UpdrawMenuItem {
         if (this.inputRef) {
           this.inputRef.focus();
 
-          if (UpdrawDevicesHelper.isIOS()) {
+          if (UpmadeDevicesHelper.isIOS()) {
             const length = this.inputRef.value.length;
             this.inputRef.setSelectionRange(length, length);
           } else {
@@ -57,10 +57,10 @@ export class UpdrawMenuItem {
   }
 
   private setDeviceSpecificStyles = () => {
-    const isTouchDevice = UpdrawDevicesHelper.isTouchDevice();
+    const isTouchDevice = UpmadeDevicesHelper.isTouchDevice();
     if (isTouchDevice) {
-      this.host.style.setProperty('--updraw-menu-item-overlay-background-color', 'transparent');
-      this.host.style.setProperty('--updraw-menu-item-button-hover-background-color', 'transparent');
+      this.host.style.setProperty('--upmade-menu-item-overlay-background-color', 'transparent');
+      this.host.style.setProperty('--upmade-menu-item-button-hover-background-color', 'transparent');
     }
   };
 
@@ -98,13 +98,13 @@ export class UpdrawMenuItem {
   };
 
   private renderViewMode() {
-    const childMenuTag = ['updraw', 'menu'].join('-');
+    const childMenuTag = ['upmade', 'menu'].join('-');
 
     return [
       <div class="menu-item-content left">
         {this.item.icon && (
           <span title={this.item.iconTooltip}>
-            <updraw-icon name={this.item.icon} size={16} style={this.item.color ? { '--updraw-icon-color': this.item.color } : undefined}></updraw-icon>
+            <upmade-icon name={this.item.icon} size={16} style={this.item.color ? { '--upmade-icon-color': this.item.color } : undefined}></upmade-icon>
           </span>
         )}
         <div style={this.item.color ? { color: this.item.color } : undefined}>{this.item.label}</div>
@@ -113,9 +113,9 @@ export class UpdrawMenuItem {
         {this.item.children &&
           this.item.children.length > 0 && [
             <button id="child-menu-toggle" class="action-button" onClick={this.handleMenuToggle} disabled={this.item.isDisabled}>
-              <updraw-icon name="ellipsisVertical" size={16}></updraw-icon>
+              <upmade-icon name="ellipsisVertical" size={16}></upmade-icon>
             </button>,
-            <updraw-portal anchor={this.item.childMenuAnchor} offsetY={4} onClose={this.handleMenuClose}>
+            <upmade-portal anchor={this.item.childMenuAnchor} offsetY={4} onClose={this.handleMenuClose}>
               {h(childMenuTag, {
                 items: this.item.children,
                 parent: this.item,
@@ -124,7 +124,7 @@ export class UpdrawMenuItem {
                 onItemCancel: event => this.itemCancel.emit(event.detail),
                 onClose: this.handleMenuClose,
               })}
-            </updraw-portal>,
+            </upmade-portal>,
           ]}
       </div>,
     ];
@@ -143,14 +143,14 @@ export class UpdrawMenuItem {
       </div>,
       <div class="menu-item-content right">
         <div tabIndex={0} class="action-button" onClick={this.handleCancel}>
-          <updraw-icon name="x" size={16}></updraw-icon>
+          <upmade-icon name="x" size={16}></upmade-icon>
         </div>
         <div
           tabIndex={!this.isDirty && !this.item.isNewItem ? -1 : 0}
           class={{ 'action-button': true, 'disabled': !this.isDirty && !this.item.isNewItem }}
           onClick={this.handleSave}
         >
-          <updraw-icon name="check" size={16}></updraw-icon>
+          <upmade-icon name="check" size={16}></upmade-icon>
         </div>
       </div>,
     ];

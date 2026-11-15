@@ -11,109 +11,109 @@ import {
   EventEmitter,
   Watch,
 } from "@stencil/core";
-// Makes Stencil treat @updraw/engine as a collection, so <updraw-engine> and its child
-// components are compiled into this package, and loads its global HTMLUpdrawEngineElement
-// type. Stencil removes this import from the output; classes come from @updraw/core.
-import "@updraw/engine";
+// Makes Stencil treat @upmade/engine as a collection, so <upmade-engine> and its child
+// components are compiled into this package, and loads its global HTMLUpmadeEngineElement
+// type. Stencil removes this import from the output; classes come from @upmade/core.
+import "@upmade/engine";
 import {
-  UpdrawAgent,
-  UpdrawAgentPresence,
-  UpdrawAgentsChangeEvent,
-  UpdrawRemoteAgentPresence,
-  UpdrawIconRegistry,
-} from "@updraw/core";
-import { UpdrawToolbarItem, migrateLegacyStorageKeys } from "@updraw/core";
-import { UpdrawToolDefinition } from "@updraw/core";
-import { ShapeType } from "@updraw/core";
-import { UpdrawAlignment } from "@updraw/core";
-import { UpdrawBaseObject, UpdrawGroup } from "@updraw/core";
-import { UpdrawSelectionTool } from "@updraw/core";
-import { UpdrawEraserTool } from "@updraw/core";
-import { UpdrawImageTool } from "@updraw/core";
-import { UpdrawBrushTool } from "@updraw/core";
-import { UpdrawLineTool } from "@updraw/core";
-import { UpdrawTextTool } from "@updraw/core";
-import { UpdrawShapeTool } from "@updraw/core";
-import { ContextMenuItem } from "@updraw/core";
+  UpmadeAgent,
+  UpmadeAgentPresence,
+  UpmadeAgentsChangeEvent,
+  UpmadeRemoteAgentPresence,
+  UpmadeIconRegistry,
+} from "@upmade/core";
+import { UpmadeToolbarItem, migrateLegacyStorageKeys } from "@upmade/core";
+import { UpmadeToolDefinition } from "@upmade/core";
+import { ShapeType } from "@upmade/core";
+import { UpmadeAlignment } from "@upmade/core";
+import { UpmadeBaseObject, UpmadeGroup } from "@upmade/core";
+import { UpmadeSelectionTool } from "@upmade/core";
+import { UpmadeEraserTool } from "@upmade/core";
+import { UpmadeImageTool } from "@upmade/core";
+import { UpmadeBrushTool } from "@upmade/core";
+import { UpmadeLineTool } from "@upmade/core";
+import { UpmadeTextTool } from "@upmade/core";
+import { UpmadeShapeTool } from "@upmade/core";
+import { ContextMenuItem } from "@upmade/core";
 import {
-  UpdrawObjectConfig,
-  UpdrawObjectTitlebarActionEvent,
-  UpdrawObjectElementClickEvent,
-  UpdrawObjectElementHighlight,
-  UpdrawObjectElementHoverEvent,
-  UpdrawObjectElementInfo,
-  UpdrawObjectElementPickEvent,
-  UpdrawObjectElementPickingOptions,
-  UpdrawObjectTitlebarConfig,
-  UpdrawObjectTitlebarMenuState,
-} from "@updraw/core";
-import { DEFAULT_BRUSH_CONFIG } from "@updraw/core";
-import { DEFAULT_LINE_TOOL_CONFIG } from "@updraw/core";
-import { DEFAULT_TEXT_CONFIG } from "@updraw/core";
-import { DEFAULT_SHAPE_CONFIG } from "@updraw/core";
-import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from "@updraw/core";
-import { UpdrawEngineState } from "@updraw/core";
-import { UpdrawSettingsConfig } from "@updraw/core";
-import { UpdrawDebugInfo } from "@updraw/core";
-import { IUpdrawMenuItem } from "@updraw/core";
-import { UpdrawWorkspace } from "@updraw/core";
-import { UpdrawKeyboardHelper } from "@updraw/core";
-import { UpdrawDevicesHelper } from "@updraw/core";
-import { UpdrawSyncConfig, hasRemoteSyncProvider } from "@updraw/core";
-import { UpdrawAssetStorageConfig } from "@updraw/core";
-import { UpdrawBaseTool } from "@updraw/core";
+  UpmadeObjectConfig,
+  UpmadeObjectTitlebarActionEvent,
+  UpmadeObjectElementClickEvent,
+  UpmadeObjectElementHighlight,
+  UpmadeObjectElementHoverEvent,
+  UpmadeObjectElementInfo,
+  UpmadeObjectElementPickEvent,
+  UpmadeObjectElementPickingOptions,
+  UpmadeObjectTitlebarConfig,
+  UpmadeObjectTitlebarMenuState,
+} from "@upmade/core";
+import { DEFAULT_BRUSH_CONFIG } from "@upmade/core";
+import { DEFAULT_LINE_TOOL_CONFIG } from "@upmade/core";
+import { DEFAULT_TEXT_CONFIG } from "@upmade/core";
+import { DEFAULT_SHAPE_CONFIG } from "@upmade/core";
+import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from "@upmade/core";
+import { UpmadeEngineState } from "@upmade/core";
+import { UpmadeSettingsConfig } from "@upmade/core";
+import { UpmadeDebugInfo } from "@upmade/core";
+import { IUpmadeMenuItem } from "@upmade/core";
+import { UpmadeWorkspace } from "@upmade/core";
+import { UpmadeKeyboardHelper } from "@upmade/core";
+import { UpmadeDevicesHelper } from "@upmade/core";
+import { UpmadeSyncConfig, hasRemoteSyncProvider } from "@upmade/core";
+import { UpmadeAssetStorageConfig } from "@upmade/core";
+import { UpmadeBaseTool } from "@upmade/core";
 import {
-  UpdrawBrushToolConfig,
-  UpdrawLineToolConfig,
-  UpdrawShapeToolConfig,
-  UpdrawTextToolConfig,
-} from "@updraw/core";
-import { ActiveWorkspaceChangeEvent } from "@updraw/core";
-import { DEFAULT_ASSET_STORAGE_CONFIG } from "@updraw/core";
-import { EditorIsReadyEvent } from "@updraw/core";
-import { UpdrawUndoState } from "@updraw/core";
-import { DEFAULT_SYNC_CONFIG } from "@updraw/core";
-import { ThemeName, UpdrawTheme } from "@updraw/core";
+  UpmadeBrushToolConfig,
+  UpmadeLineToolConfig,
+  UpmadeShapeToolConfig,
+  UpmadeTextToolConfig,
+} from "@upmade/core";
+import { ActiveWorkspaceChangeEvent } from "@upmade/core";
+import { DEFAULT_ASSET_STORAGE_CONFIG } from "@upmade/core";
+import { EditorIsReadyEvent } from "@upmade/core";
+import { UpmadeUndoState } from "@upmade/core";
+import { DEFAULT_SYNC_CONFIG } from "@upmade/core";
+import { ThemeName, UpmadeTheme } from "@upmade/core";
 import {
-  UpdrawLocale,
-  UpdrawTermKey,
-  UpdrawTermVars,
+  UpmadeLocale,
+  UpmadeTermKey,
+  UpmadeTermVars,
   LocaleCode,
-} from "@updraw/core";
-import { ThemeHelper } from "@updraw/core";
-import { lightTheme } from "@updraw/core";
-import { darkTheme } from "@updraw/core";
-import { UpdrawSelectionGroup } from "@updraw/core";
-import { UpdrawSelectionBox } from "@updraw/core";
-import { UpdrawShortcut } from "@updraw/core";
-import { UpdrawViewportState } from "@updraw/core";
+} from "@upmade/core";
+import { ThemeHelper } from "@upmade/core";
+import { lightTheme } from "@upmade/core";
+import { darkTheme } from "@upmade/core";
+import { UpmadeSelectionGroup } from "@upmade/core";
+import { UpmadeSelectionBox } from "@upmade/core";
+import { UpmadeShortcut } from "@upmade/core";
+import { UpmadeViewportState } from "@upmade/core";
 import {
   ObjectsAddedEvent,
   ObjectsRemovedEvent,
   ObjectsUpdatedEvent,
-} from "@updraw/core";
-import { IUpdrawUser } from "@updraw/core";
-import { IUpdrawIsPublicChangeEvent } from "@updraw/core";
-import { UpdrawLoginConfig as UpdrawLoginConfig } from "@updraw/core";
-import { LoginEvent } from "@updraw/core";
-import { UpdrawNotification } from "@updraw/core";
-import { ObjectHelper } from "@updraw/core";
-import { UpdrawFontMap } from "@updraw/core";
-import { UpdrawFontRegistry } from "@updraw/core";
-import { resolveTextToolAvailableFonts } from "@updraw/core";
-import { UpdrawContextMenuState } from "@updraw/core";
-import { UpdrawObjectExportFormat } from "@updraw/core";
-import { UpdrawSvgIconMap } from "@updraw/core";
-import { UpdrawChatBoxChip } from "@updraw/core";
-import { UpdrawChatSession, isUpdrawChatSession } from "@updraw/core";
-import { UpdrawChatBoxMode } from "../updraw-chat-box/updraw-chat-box";
+} from "@upmade/core";
+import { IUpmadeUser } from "@upmade/core";
+import { IUpmadeIsPublicChangeEvent } from "@upmade/core";
+import { UpmadeLoginConfig as UpmadeLoginConfig } from "@upmade/core";
+import { LoginEvent } from "@upmade/core";
+import { UpmadeNotification } from "@upmade/core";
+import { ObjectHelper } from "@upmade/core";
+import { UpmadeFontMap } from "@upmade/core";
+import { UpmadeFontRegistry } from "@upmade/core";
+import { resolveTextToolAvailableFonts } from "@upmade/core";
+import { UpmadeContextMenuState } from "@upmade/core";
+import { UpmadeObjectExportFormat } from "@upmade/core";
+import { UpmadeSvgIconMap } from "@upmade/core";
+import { UpmadeChatBoxChip } from "@upmade/core";
+import { UpmadeChatSession, isUpmadeChatSession } from "@upmade/core";
+import { UpmadeChatBoxMode } from "../upmade-chat-box/upmade-chat-box";
 
 @Component({
-  tag: "updraw-editor",
-  styleUrl: "updraw-editor.css",
+  tag: "upmade-editor",
+  styleUrl: "upmade-editor.css",
   shadow: false,
 })
-export class UpdrawEditor {
+export class UpmadeEditor {
   @Element() host!: HTMLElement;
 
   @Prop({ mutable: true }) scaleMax: number = ABSOLUTE_SCALE_MAX;
@@ -123,49 +123,49 @@ export class UpdrawEditor {
   @Prop({ mutable: true }) viewportBoundaryRight: number = Infinity;
   @Prop({ mutable: true }) viewportBoundaryTop: number = -Infinity;
   @Prop({ mutable: true }) viewportBoundaryBottom: number = Infinity;
-  @Prop({ mutable: true }) debugInfo: UpdrawDebugInfo = {
+  @Prop({ mutable: true }) debugInfo: UpmadeDebugInfo = {
     showViewportInfo: false,
     showObjectInfo: false,
     showSyncProviderInfo: true,
     showMigrationInfo: true,
     showAssetResolverInfo: false,
   };
-  @Prop() user?: IUpdrawUser;
-  @Prop() activeUsers?: IUpdrawUser[];
+  @Prop() user?: IUpmadeUser;
+  @Prop() activeUsers?: IUpmadeUser[];
   /** Whether the avatar stack shows agents (local ones and those of collaborators) after the active users. */
   @Prop() isAgentAvatarsVisible: boolean = true;
-  @Prop() toolbarItems: UpdrawToolbarItem[] = [
+  @Prop() toolbarItems: UpmadeToolbarItem[] = [
     {
       name: "selection",
       type: "tool",
       isDefault: true,
-      tool: UpdrawSelectionTool,
+      tool: UpmadeSelectionTool,
       icon: "cursor",
     },
     {
       name: "brush",
       type: "tool",
-      tool: UpdrawBrushTool,
+      tool: UpmadeBrushTool,
       icon: "pen",
       config: DEFAULT_BRUSH_CONFIG,
     },
     {
       name: "eraser",
       type: "tool",
-      tool: UpdrawEraserTool,
+      tool: UpmadeEraserTool,
       icon: "eraser",
     },
     {
       name: "line",
       type: "tool",
-      tool: UpdrawLineTool,
+      tool: UpmadeLineTool,
       icon: "arrow",
       config: DEFAULT_LINE_TOOL_CONFIG,
     },
     {
       name: "shape",
       type: "tool",
-      tool: UpdrawShapeTool,
+      tool: UpmadeShapeTool,
       icon: "shapeRectangle",
       config: DEFAULT_SHAPE_CONFIG,
       subOptions: [
@@ -195,14 +195,14 @@ export class UpdrawEditor {
     {
       name: "text",
       type: "tool",
-      tool: UpdrawTextTool,
+      tool: UpmadeTextTool,
       icon: "type",
       config: DEFAULT_TEXT_CONFIG,
     },
     {
       name: "image",
       type: "tool",
-      tool: UpdrawImageTool,
+      tool: UpmadeImageTool,
       icon: "image",
     },
     {
@@ -293,37 +293,37 @@ export class UpdrawEditor {
           label: "menu.alignLeft",
           icon: "alignStartVertical",
           action: () =>
-            this.engineRef.alignObjects(UpdrawAlignment.StartHorizontal),
+            this.engineRef.alignObjects(UpmadeAlignment.StartHorizontal),
         },
         {
           label: "menu.alignCenterHorizontal",
           icon: "alignCenterHorizontal",
           action: () =>
-            this.engineRef.alignObjects(UpdrawAlignment.CenterHorizontal),
+            this.engineRef.alignObjects(UpmadeAlignment.CenterHorizontal),
         },
         {
           label: "menu.alignRight",
           icon: "alignEndVertical",
           action: () =>
-            this.engineRef.alignObjects(UpdrawAlignment.EndHorizontal),
+            this.engineRef.alignObjects(UpmadeAlignment.EndHorizontal),
         },
         {
           label: "menu.alignTop",
           icon: "alignStartHorizontal",
           action: () =>
-            this.engineRef.alignObjects(UpdrawAlignment.StartVertical),
+            this.engineRef.alignObjects(UpmadeAlignment.StartVertical),
         },
         {
           label: "menu.alignCenterVertical",
           icon: "alignCenterVertical",
           action: () =>
-            this.engineRef.alignObjects(UpdrawAlignment.CenterVertical),
+            this.engineRef.alignObjects(UpmadeAlignment.CenterVertical),
         },
         {
           label: "menu.alignBottom",
           icon: "alignEndHorizontal",
           action: () =>
-            this.engineRef.alignObjects(UpdrawAlignment.EndVertical),
+            this.engineRef.alignObjects(UpmadeAlignment.EndVertical),
         },
       ],
     },
@@ -342,8 +342,8 @@ export class UpdrawEditor {
           icon: "ungroup",
           action: (_, objects) => {
             const groups = objects.filter(
-              (object): object is UpdrawGroup =>
-                object.__class__ === "UpdrawGroup",
+              (object): object is UpmadeGroup =>
+                object.__class__ === "UpmadeGroup",
             );
             this.engineRef.ungroup(groups);
           },
@@ -362,19 +362,19 @@ export class UpdrawEditor {
    * Configures how objects behave, in one place for all objects: which objects get a titlebar,
    * and which can be rotated or resized. Each option is a boolean or a function of the object.
    */
-  @Prop() objectConfig?: UpdrawObjectConfig;
+  @Prop() objectConfig?: UpmadeObjectConfig;
   // = {
   //   hasTitlebar: (object) =>
-  //     object.__class__ === "UpdrawGroup" || object.__class__ === "UpdrawText",
+  //     object.__class__ === "UpmadeGroup" || object.__class__ === "UpmadeText",
   //   isRotatable: (object) =>
-  //     object.__class__ !== "UpdrawGroup" && object.__class__ !== "UpdrawText",
+  //     object.__class__ !== "UpmadeGroup" && object.__class__ !== "UpmadeText",
   // };
 
   /**
    * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar`
    * is true. The same configuration applies to all objects. Leave unset to disable titlebars.
    */
-  @Prop() objectTitlebar?: UpdrawObjectTitlebarConfig;
+  @Prop() objectTitlebar?: UpmadeObjectTitlebarConfig;
   //  = {
   //   left: [
   //     { id: "title", type: "title", isEditable: true },
@@ -404,8 +404,8 @@ export class UpdrawEditor {
   //           id: "ungroup",
   //           label: "Ungroup",
   //           action: ({ object }) =>
-  //             this.engineRef.ungroup([object as UpdrawGroup]),
-  //           isDisabled: ({ objectType }) => objectType !== "UpdrawGroup",
+  //             this.engineRef.ungroup([object as UpmadeGroup]),
+  //           isDisabled: ({ objectType }) => objectType !== "UpmadeGroup",
   //         },
   //       ],
   //     },
@@ -413,7 +413,7 @@ export class UpdrawEditor {
   //   ],
   // };
 
-  @Prop() moreMenuItems?: IUpdrawMenuItem[] = [
+  @Prop() moreMenuItems?: IUpmadeMenuItem[] = [
     {
       id: "share",
       label: "menu.share",
@@ -450,26 +450,26 @@ export class UpdrawEditor {
     },
   ];
 
-  @Prop() themes?: UpdrawTheme[];
+  @Prop() themes?: UpmadeTheme[];
   @Prop({ mutable: true }) theme: ThemeName = "light";
   /** The current locale (language) code applied to the editor, e.g. 'en', 'de', 'fr'. */
   @Prop({ mutable: true }) locale: LocaleCode = "en";
   /** An array of available locale definitions (with optional partial term overrides). */
-  @Prop() locales?: UpdrawLocale[];
+  @Prop() locales?: UpmadeLocale[];
   /** The locale used to resolve terms missing from the active locale. */
   @Prop() fallbackLocale: LocaleCode = "en";
-  @Prop() customSvgIcons: UpdrawSvgIconMap = {};
+  @Prop() customSvgIcons: UpmadeSvgIconMap = {};
   /**
    * Registers fonts for runtime usage (for example custom object rendering).
    * Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts.
    */
-  @Prop() customFonts: UpdrawFontMap = {};
+  @Prop() customFonts: UpmadeFontMap = {};
   @Prop({ mutable: true }) isPanningEnabled: boolean = true;
   @Prop({ mutable: true }) isZoomingEnabled: boolean = true;
   @Prop() isToolbarVisible: boolean = true;
   @Prop() isChatBoxVisible: boolean = false;
   /** Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row. */
-  @Prop() chatBoxMode: UpdrawChatBoxMode = "collapsed";
+  @Prop() chatBoxMode: UpmadeChatBoxMode = "collapsed";
   /** Whether the chat box shows its progress ring and turns its send button into a stop button. */
   @Prop() isChatBoxLoading: boolean = false;
   /**
@@ -477,13 +477,13 @@ export class UpdrawEditor {
    * Up to three share one row as wide as the box; the rest are summarized as "+N more".
    * Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
    */
-  @Prop() chatBoxChips: UpdrawChatBoxChip[] = [];
+  @Prop() chatBoxChips: UpmadeChatBoxChip[] = [];
   /**
    * A chat session the chat box sends its prompts to, with `chatBoxChips` as what they refer to. While it runs,
    * the chat box shows its progress and the stop button stops it. Call `preventDefault()` on `chatSubmit` to
    * send a prompt yourself.
    */
-  @Prop() chatSession?: UpdrawChatSession | null;
+  @Prop() chatSession?: UpmadeChatSession | null;
   @Watch("chatSession")
   onChatSessionChange() {
     this.subscribeChatSession();
@@ -492,17 +492,17 @@ export class UpdrawEditor {
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
   @Prop() isZoomPanelVisible: boolean = true;
-  /** Whether the "Powered by Updraw" watermark is shown. Keeping it visible helps support the project. */
+  /** Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project. */
   @Prop() isWatermarkVisible: boolean = true;
-  @Prop() syncConfig?: UpdrawSyncConfig = DEFAULT_SYNC_CONFIG;
-  @Prop() assetStorageConfig?: UpdrawAssetStorageConfig =
+  @Prop() syncConfig?: UpmadeSyncConfig = DEFAULT_SYNC_CONFIG;
+  @Prop() assetStorageConfig?: UpmadeAssetStorageConfig =
     DEFAULT_ASSET_STORAGE_CONFIG;
 
   /** The element to use as the target for the cursor. Defaults to the editor container if not set. */
   @Prop() cursorTarget?: HTMLElement;
 
   /** Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. */
-  @Prop() loginConfig?: UpdrawLoginConfig;
+  @Prop() loginConfig?: UpmadeLoginConfig;
 
   /** Optional unique identifier for namespacing storage keys across multiple editor instances. */
   @Prop() editorId?: string;
@@ -511,25 +511,25 @@ export class UpdrawEditor {
   @Prop() activeWorkspaceId?: string;
 
   /** Authoritative workspace catalog for this editor instance. When provided, provider-only workspaces are hidden but not deleted. */
-  @Prop() workspaces?: UpdrawWorkspace[];
+  @Prop() workspaces?: UpmadeWorkspace[];
 
   @Event() isReady!: EventEmitter<EditorIsReadyEvent>;
   @Event() activeWorkspaceChange!: EventEmitter<ActiveWorkspaceChangeEvent>;
-  @Event() objectsChange!: EventEmitter<UpdrawBaseObject[]>;
+  @Event() objectsChange!: EventEmitter<UpmadeBaseObject[]>;
   /** Emitted when objects are added. `source` is set when an agent made the change. */
   @Event() objectsAdded!: EventEmitter<ObjectsAddedEvent>;
   /** Emitted when objects are removed. `source` is set when an agent made the change. */
   @Event() objectsRemoved!: EventEmitter<ObjectsRemovedEvent>;
   /** Emitted when objects are updated. `source` is set when an agent made the change. */
   @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
-  @Event() objectsSelectionChange!: EventEmitter<UpdrawBaseObject[]>;
-  @Event() undoStateChange!: EventEmitter<UpdrawUndoState>;
+  @Event() objectsSelectionChange!: EventEmitter<UpmadeBaseObject[]>;
+  @Event() undoStateChange!: EventEmitter<UpmadeUndoState>;
   @Event() themeChange!: EventEmitter<ThemeName>;
   @Event() localeChange!: EventEmitter<LocaleCode>;
-  @Event() viewportChange!: EventEmitter<UpdrawViewportState>;
+  @Event() viewportChange!: EventEmitter<UpmadeViewportState>;
   @Event() logout!: EventEmitter<void>;
   @Event() login!: EventEmitter<LoginEvent>;
-  @Event() isPublicChange!: EventEmitter<IUpdrawIsPublicChangeEvent>;
+  @Event() isPublicChange!: EventEmitter<IUpmadeIsPublicChangeEvent>;
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
   /**
    * Emitted with the chat box text when the user submits it. With a `chatSession`, the prompt is sent to it
@@ -539,56 +539,56 @@ export class UpdrawEditor {
   /** Emitted when the user stops the current chat response. A `chatSession` is stopped too. */
   @Event() chatStop!: EventEmitter<void>;
   /** Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it. */
-  @Event() chatChipRemove!: EventEmitter<UpdrawChatBoxChip>;
+  @Event() chatChipRemove!: EventEmitter<UpmadeChatBoxChip>;
   /**
    * Emitted when agents are added or removed, or when what the avatar stack shows of them changes
    * (name, color, avatar, status, visibility, activity). Never emitted for plain cursor motion.
    */
-  @Event() agentsChange!: EventEmitter<UpdrawAgentsChangeEvent>;
+  @Event() agentsChange!: EventEmitter<UpmadeAgentsChangeEvent>;
   /** Emitted when a button or a menu item in an object titlebar is clicked. */
   @Event()
-  objectTitlebarAction!: EventEmitter<UpdrawObjectTitlebarActionEvent>;
+  objectTitlebarAction!: EventEmitter<UpmadeObjectTitlebarActionEvent>;
   /**
    * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object,
    * such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
    */
   @Event()
-  objectElementHover!: EventEmitter<UpdrawObjectElementHoverEvent>;
+  objectElementHover!: EventEmitter<UpmadeObjectElementHoverEvent>;
   /** Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual. */
   @Event()
-  objectElementClick!: EventEmitter<UpdrawObjectElementClickEvent>;
+  objectElementClick!: EventEmitter<UpmadeObjectElementClickEvent>;
   /** Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`. */
   @Event()
-  objectElementPick!: EventEmitter<UpdrawObjectElementPickEvent>;
+  objectElementPick!: EventEmitter<UpmadeObjectElementPickEvent>;
   @State() isEngineReady: boolean = false;
   /** Whether the bound chat session runs a prompt. */
   @State() isChatSessionRunning: boolean = false;
-  @State() agents: (UpdrawAgentPresence | UpdrawRemoteAgentPresence)[] = [];
+  @State() agents: (UpmadeAgentPresence | UpmadeRemoteAgentPresence)[] = [];
   @State() isToolbarReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
-  @State() availableWorkspaces: UpdrawWorkspace[] = [];
-  @State() activeWorkspace?: UpdrawWorkspace;
+  @State() availableWorkspaces: UpmadeWorkspace[] = [];
+  @State() activeWorkspace?: UpmadeWorkspace;
   @State() isVirtualKeyboardOpen: boolean = false;
-  @State() undoState: UpdrawUndoState | null = null;
+  @State() undoState: UpmadeUndoState | null = null;
   @State() isBackToContentButtonVisible: boolean = false;
   /** Localized strings for editor-owned UI (e.g. the more menu), resolved from the active locale. */
-  @State() resolvedTerms: Partial<Record<UpdrawTermKey, string>> = {};
+  @State() resolvedTerms: Partial<Record<UpmadeTermKey, string>> = {};
   /** Available locales as `{ code, label }` options for the settings language selector. */
   @State() availableLocaleOptions: { code: LocaleCode; label: string }[] = [];
   @State() currentZoomPercent: number = 100;
-  @State() shortcuts: Omit<UpdrawShortcut, "action" | "condition">[] = [];
+  @State() shortcuts: Omit<UpmadeShortcut, "action" | "condition">[] = [];
 
   /** Shortcuts handled by editor-level components (not the engine), shown alongside engine shortcuts. */
-  @State() editorShortcuts: Omit<UpdrawShortcut, "action" | "condition">[] = [
+  @State() editorShortcuts: Omit<UpmadeShortcut, "action" | "condition">[] = [
     { key: "i", ctrl: true, label: "Focus Chat Box", category: "General" },
   ];
   @State() currentIsPublic: boolean = false;
   @State() isEditorVisible: boolean = false;
-  @State() activeNotification?: UpdrawNotification;
+  @State() activeNotification?: UpmadeNotification;
   @State() isNotificationDismissing: boolean = false;
-  @State() contextMenuState?: UpdrawContextMenuState;
-  @State() objectTitlebarMenuState?: UpdrawObjectTitlebarMenuState;
-  @State() resolvedMoreMenuItems: IUpdrawMenuItem[] = [];
+  @State() contextMenuState?: UpmadeContextMenuState;
+  @State() objectTitlebarMenuState?: UpmadeObjectTitlebarMenuState;
+  @State() resolvedMoreMenuItems: IUpmadeMenuItem[] = [];
   private notificationDismissTimeout?: ReturnType<typeof setTimeout>;
   private notificationDismissAnimationTimeout?: ReturnType<typeof setTimeout>;
   private readonly notificationDisplayDurationMs = 5000;
@@ -612,7 +612,7 @@ export class UpdrawEditor {
   }
 
   @Watch("availableWorkspaces")
-  onAvailableWorkspacesChange(newWorkspaces: UpdrawWorkspace[]) {
+  onAvailableWorkspacesChange(newWorkspaces: UpmadeWorkspace[]) {
     const activeWorkspace = this.activeWorkspace;
 
     if (activeWorkspace) {
@@ -643,12 +643,12 @@ export class UpdrawEditor {
   }
 
   @Watch("customFonts")
-  onCustomFontsChange(newValue: UpdrawFontMap) {
+  onCustomFontsChange(newValue: UpmadeFontMap) {
     void this.registerCustomFonts(newValue);
   }
 
   @Watch("customSvgIcons")
-  onCustomSvgIconsChange(newValue: UpdrawSvgIconMap | undefined) {
+  onCustomSvgIconsChange(newValue: UpmadeSvgIconMap | undefined) {
     this.registerCustomSvgIcons(newValue);
   }
 
@@ -690,7 +690,7 @@ export class UpdrawEditor {
         this.activeWorkspace = workspace;
       }
     } else {
-      console.warn(`[UpdrawEditor] No workspace found with ID: ${newId}`);
+      console.warn(`[UpmadeEditor] No workspace found with ID: ${newId}`);
     }
   }
 
@@ -718,7 +718,7 @@ export class UpdrawEditor {
   }
 
   @Watch("locales")
-  onLocalesChange(newValue?: UpdrawLocale[]) {
+  onLocalesChange(newValue?: UpmadeLocale[]) {
     if (this.engineRef) {
       void this.engineRef
         .configureLocales(newValue)
@@ -755,24 +755,24 @@ export class UpdrawEditor {
   }
 
   @Method()
-  async getObjectById<T extends UpdrawBaseObject>(
+  async getObjectById<T extends UpmadeBaseObject>(
     id: string,
   ): Promise<T | null> {
     return this.engineRef.getObjectById(id);
   }
 
   @Method()
-  async addObject<T extends UpdrawBaseObject>(object: T): Promise<T | null> {
+  async addObject<T extends UpmadeBaseObject>(object: T): Promise<T | null> {
     return this.engineRef.addObject(object);
   }
 
   @Method()
-  async addObjects<T extends UpdrawBaseObject>(objects: T[]): Promise<T[]> {
+  async addObjects<T extends UpmadeBaseObject>(objects: T[]): Promise<T[]> {
     return this.engineRef.addObjects(objects);
   }
 
   @Method()
-  async updateObject<T extends UpdrawBaseObject>(
+  async updateObject<T extends UpmadeBaseObject>(
     object: T,
     updatedProperties: Partial<T>,
   ): Promise<T | null> {
@@ -780,24 +780,24 @@ export class UpdrawEditor {
   }
 
   @Method()
-  async removeObject<T extends UpdrawBaseObject>(
+  async removeObject<T extends UpmadeBaseObject>(
     object: T,
   ): Promise<T | null> {
     return this.engineRef.removeObject(object);
   }
 
   @Method()
-  async removeObjects<T extends UpdrawBaseObject>(objects: T[]): Promise<T[]> {
+  async removeObjects<T extends UpmadeBaseObject>(objects: T[]): Promise<T[]> {
     return this.engineRef.removeObjects(objects);
   }
 
   @Method()
-  async getSelectedObjects(): Promise<UpdrawBaseObject[]> {
+  async getSelectedObjects(): Promise<UpmadeBaseObject[]> {
     return this.engineRef.getSelectedObjects();
   }
 
   @Method()
-  async selectObjects(objects: UpdrawBaseObject[]) {
+  async selectObjects(objects: UpmadeBaseObject[]) {
     return this.engineRef.selectObjects(objects);
   }
 
@@ -812,12 +812,12 @@ export class UpdrawEditor {
   }
 
   @Method()
-  async centerObjectInViewport(object: UpdrawBaseObject) {
+  async centerObjectInViewport(object: UpmadeBaseObject) {
     return this.engineRef.centerObjectInViewport(object);
   }
 
   @Method()
-  async panToObject(object: UpdrawBaseObject): Promise<void> {
+  async panToObject(object: UpmadeBaseObject): Promise<void> {
     return this.engineRef.panToObject(object);
   }
 
@@ -833,7 +833,7 @@ export class UpdrawEditor {
 
   @Method()
   async centerObjects(
-    objects: UpdrawBaseObject[],
+    objects: UpmadeBaseObject[],
     animate = true,
   ): Promise<boolean> {
     return this.engineRef.centerObjects(objects, animate);
@@ -865,7 +865,7 @@ export class UpdrawEditor {
   }
 
   @Method()
-  async getViewport(): Promise<UpdrawViewportState> {
+  async getViewport(): Promise<UpmadeViewportState> {
     return this.engineRef.getViewport();
   }
 
@@ -886,28 +886,28 @@ export class UpdrawEditor {
 
   @Method()
   async createWorkspace(
-    workspace: UpdrawWorkspace,
-  ): Promise<UpdrawWorkspace | null> {
+    workspace: UpmadeWorkspace,
+  ): Promise<UpmadeWorkspace | null> {
     return this.engineRef.createWorkspace(workspace);
   }
 
   @Method()
-  async updateWorkspace(workspace: UpdrawWorkspace): Promise<void> {
+  async updateWorkspace(workspace: UpmadeWorkspace): Promise<void> {
     return this.engineRef.updateWorkspace(workspace);
   }
 
   @Method()
-  async deleteWorkspace(workspace: UpdrawWorkspace): Promise<void> {
+  async deleteWorkspace(workspace: UpmadeWorkspace): Promise<void> {
     return this.engineRef.deleteWorkspace(workspace);
   }
 
   @Method()
-  async getWorkspaces(): Promise<UpdrawWorkspace[]> {
+  async getWorkspaces(): Promise<UpmadeWorkspace[]> {
     return this.engineRef.getWorkspaces();
   }
 
   @Method()
-  async getActiveWorkspace(): Promise<UpdrawWorkspace> {
+  async getActiveWorkspace(): Promise<UpmadeWorkspace> {
     return this.engineRef.getActiveWorkspace();
   }
 
@@ -926,11 +926,11 @@ export class UpdrawEditor {
     toolName: string,
     toolClass: any,
     toolConfig?:
-      | UpdrawTextToolConfig
-      | UpdrawBrushToolConfig
-      | UpdrawLineToolConfig
-      | UpdrawShapeToolConfig,
-  ): Promise<UpdrawBaseTool | null> {
+      | UpmadeTextToolConfig
+      | UpmadeBrushToolConfig
+      | UpmadeLineToolConfig
+      | UpmadeShapeToolConfig,
+  ): Promise<UpmadeBaseTool | null> {
     return this.engineRef.registerTool(toolName, toolClass, toolConfig);
   }
 
@@ -970,37 +970,37 @@ export class UpdrawEditor {
   }
 
   @Method()
-  async bringForward(object?: UpdrawBaseObject<any>) {
+  async bringForward(object?: UpmadeBaseObject<any>) {
     return this.engineRef.bringForward(object);
   }
 
   @Method()
-  async sendBackward(object?: UpdrawBaseObject<any>) {
+  async sendBackward(object?: UpmadeBaseObject<any>) {
     return this.engineRef.sendBackward(object);
   }
 
   @Method()
-  async bringToFront(object?: UpdrawBaseObject<any>) {
+  async bringToFront(object?: UpmadeBaseObject<any>) {
     return this.engineRef.bringToFront(object);
   }
 
   @Method()
-  async sendToBack(object?: UpdrawBaseObject<any>) {
+  async sendToBack(object?: UpmadeBaseObject<any>) {
     return this.engineRef.sendToBack(object);
   }
 
   @Method()
-  async alignObjects(alignment: UpdrawAlignment) {
+  async alignObjects(alignment: UpmadeAlignment) {
     return this.engineRef.alignObjects(alignment);
   }
 
   @Method()
-  async group(objects: UpdrawBaseObject<any>[]): Promise<UpdrawGroup | null> {
+  async group(objects: UpmadeBaseObject<any>[]): Promise<UpmadeGroup | null> {
     return this.engineRef.group(objects);
   }
 
   @Method()
-  async ungroup(groups: UpdrawGroup[]): Promise<UpdrawBaseObject<any>[]> {
+  async ungroup(groups: UpmadeGroup[]): Promise<UpmadeBaseObject<any>[]> {
     return this.engineRef.ungroup(groups);
   }
 
@@ -1031,20 +1031,20 @@ export class UpdrawEditor {
 
   @Method()
   async getSelectedObjectSupportedExportFormats(): Promise<
-    UpdrawObjectExportFormat[]
+    UpmadeObjectExportFormat[]
   > {
     return this.engineRef.getSelectedObjectSupportedExportFormats();
   }
 
   @Method()
   async canExportSelectedObjectAs(
-    format: UpdrawObjectExportFormat,
+    format: UpmadeObjectExportFormat,
   ): Promise<boolean> {
     return this.engineRef.canExportSelectedObjectAs(format);
   }
 
   @Method()
-  async exportSelectedObject(format: UpdrawObjectExportFormat): Promise<void> {
+  async exportSelectedObject(format: UpmadeObjectExportFormat): Promise<void> {
     return this.engineRef.exportSelectedObject(format);
   }
 
@@ -1079,19 +1079,19 @@ export class UpdrawEditor {
   }
 
   @Method()
-  async getAllObjects<T extends UpdrawBaseObject>(): Promise<T[]> {
+  async getAllObjects<T extends UpmadeBaseObject>(): Promise<T[]> {
     return this.engineRef.getAllObjects();
   }
 
   @Method()
-  async findObjects<T extends UpdrawBaseObject>(
-    predicate: (obj: UpdrawBaseObject<Element>) => boolean,
+  async findObjects<T extends UpmadeBaseObject>(
+    predicate: (obj: UpmadeBaseObject<Element>) => boolean,
   ): Promise<T[]> {
     return this.engineRef.findObjects(predicate);
   }
 
   @Method()
-  async getObjectsInViewport(): Promise<UpdrawBaseObject[]> {
+  async getObjectsInViewport(): Promise<UpmadeBaseObject[]> {
     return this.engineRef.getObjectsInViewport();
   }
 
@@ -1099,11 +1099,11 @@ export class UpdrawEditor {
    * Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to
    * one editor at a time; an agent of an editor that was removed from the page moves here.
    * Call it after the editor emitted `isReady`.
-   * @param agent - A `new UpdrawAgent({ name })`.
+   * @param agent - A `new UpmadeAgent({ name })`.
    * @returns The same agent.
    */
   @Method()
-  async addAgent(agent: UpdrawAgent): Promise<UpdrawAgent> {
+  async addAgent(agent: UpmadeAgent): Promise<UpmadeAgent> {
     return this.engineRef.addAgent(agent);
   }
 
@@ -1114,7 +1114,7 @@ export class UpdrawEditor {
    * @returns `false` if the agent was not added.
    */
   @Method()
-  async removeAgent(agent: UpdrawAgent | string): Promise<boolean> {
+  async removeAgent(agent: UpmadeAgent | string): Promise<boolean> {
     return this.engineRef.removeAgent(agent);
   }
 
@@ -1123,19 +1123,19 @@ export class UpdrawEditor {
    * @param id - The agent's ID.
    */
   @Method()
-  async getAgent(id: string): Promise<UpdrawAgent | null> {
+  async getAgent(id: string): Promise<UpmadeAgent | null> {
     return this.engineRef.getAgent(id);
   }
 
   /** Returns the added agents. */
   @Method()
-  async getAgents(): Promise<UpdrawAgent[]> {
+  async getAgents(): Promise<UpmadeAgent[]> {
     return this.engineRef.getAgents();
   }
 
   /** Returns the agents of collaborators, as shared through presence. */
   @Method()
-  async getRemoteAgents(): Promise<UpdrawRemoteAgentPresence[]> {
+  async getRemoteAgents(): Promise<UpmadeRemoteAgentPresence[]> {
     return this.engineRef.getRemoteAgents();
   }
 
@@ -1151,7 +1151,7 @@ export class UpdrawEditor {
   async setObjectElementPicking(
     objectId: string,
     enabled: boolean,
-    options: UpdrawObjectElementPickingOptions = {},
+    options: UpmadeObjectElementPickingOptions = {},
   ): Promise<void> {
     return this.engineRef.setObjectElementPicking(objectId, enabled, options);
   }
@@ -1165,7 +1165,7 @@ export class UpdrawEditor {
   @Method()
   async highlightObjectElements(
     objectId: string,
-    highlights: UpdrawObjectElementHighlight[],
+    highlights: UpmadeObjectElementHighlight[],
   ): Promise<void> {
     return this.engineRef.highlightObjectElements(objectId, highlights);
   }
@@ -1183,7 +1183,7 @@ export class UpdrawEditor {
    * Describes the elements inside an object's content that match a CSS selector, in document order.
    * The object must be mounted, which it is while it is in or near the viewport.
    * @param objectId - The object ID.
-   * @param selector - A CSS selector, e.g. `'button'` or `'[data-updraw-id]'`.
+   * @param selector - A CSS selector, e.g. `'button'` or `'[data-upmade-id]'`.
    * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
    * @returns The matching elements, each with a `selector` that can be used to highlight it or point an agent's cursor
    * at it with `agent.moveTo({ objectId, selector })`.
@@ -1193,7 +1193,7 @@ export class UpdrawEditor {
     objectId: string,
     selector: string,
     limit?: number,
-  ): Promise<UpdrawObjectElementInfo[]> {
+  ): Promise<UpmadeObjectElementInfo[]> {
     return this.engineRef.queryObjectElements(objectId, selector, limit);
   }
 
@@ -1303,7 +1303,7 @@ export class UpdrawEditor {
 
   @Method()
   async getDisplayableShortcuts(): Promise<
-    Omit<UpdrawShortcut, "action" | "condition">[]
+    Omit<UpmadeShortcut, "action" | "condition">[]
   > {
     return this.engineRef.getDisplayableShortcuts();
   }
@@ -1354,7 +1354,7 @@ export class UpdrawEditor {
    * @param locales - The locale definitions to register.
    */
   @Method()
-  async registerLocales(locales: UpdrawLocale[]): Promise<void> {
+  async registerLocales(locales: UpmadeLocale[]): Promise<void> {
     await this.engineRef?.registerLocales(locales);
   }
 
@@ -1365,7 +1365,7 @@ export class UpdrawEditor {
    * Configure tooltip fonts via toolbarItems[].config.availableFonts.
    */
   @Method()
-  async registerFonts(fonts: UpdrawFontMap): Promise<void> {
+  async registerFonts(fonts: UpmadeFontMap): Promise<void> {
     await this.registerCustomFonts(fonts);
   }
 
@@ -1375,7 +1375,7 @@ export class UpdrawEditor {
    * @param vars - Optional values for `{placeholder}` interpolation.
    */
   @Method()
-  async t(key: UpdrawTermKey, vars?: UpdrawTermVars): Promise<string> {
+  async t(key: UpmadeTermKey, vars?: UpmadeTermVars): Promise<string> {
     return this.engineRef ? this.engineRef.t(key, vars) : key;
   }
 
@@ -1385,10 +1385,10 @@ export class UpdrawEditor {
    */
   @Method()
   async triggerNotification(
-    notification: Omit<UpdrawNotification, "id"> &
-      Partial<Pick<UpdrawNotification, "id" | "timestamp">>,
+    notification: Omit<UpmadeNotification, "id"> &
+      Partial<Pick<UpmadeNotification, "id" | "timestamp">>,
   ): Promise<void> {
-    const normalizedNotification: UpdrawNotification = {
+    const normalizedNotification: UpmadeNotification = {
       ...notification,
       id: notification.id ?? ObjectHelper.generateUUID(),
       timestamp: notification.timestamp ?? new Date(),
@@ -1401,16 +1401,16 @@ export class UpdrawEditor {
     this.scheduleNotificationDismiss();
   }
 
-  engineRef!: HTMLUpdrawEngineElement;
-  toolbarRef!: HTMLUpdrawToolbarElement;
-  settingsRef!: HTMLUpdrawSettingsElement;
-  exportRef!: HTMLUpdrawExportElement;
-  splitButtonRef!: HTMLUpdrawSplitButtonElement;
-  workspaceManagerRef!: HTMLUpdrawWorkspaceManagerElement;
-  moreMenuRef!: HTMLUpdrawMoreMenuElement;
-  shareDialogRef!: HTMLUpdrawShareDialogElement;
-  loginDialogRef!: HTMLUpdrawLoginDialogElement;
-  currentUserDialogRef!: HTMLUpdrawCurrentUserDialogElement;
+  engineRef!: HTMLUpmadeEngineElement;
+  toolbarRef!: HTMLUpmadeToolbarElement;
+  settingsRef!: HTMLUpmadeSettingsElement;
+  exportRef!: HTMLUpmadeExportElement;
+  splitButtonRef!: HTMLUpmadeSplitButtonElement;
+  workspaceManagerRef!: HTMLUpmadeWorkspaceManagerElement;
+  moreMenuRef!: HTMLUpmadeMoreMenuElement;
+  shareDialogRef!: HTMLUpmadeShareDialogElement;
+  loginDialogRef!: HTMLUpmadeLoginDialogElement;
+  currentUserDialogRef!: HTMLUpmadeCurrentUserDialogElement;
 
   componentWillLoad() {
     this.subscribeChatSession();
@@ -1431,11 +1431,11 @@ export class UpdrawEditor {
 
   private isTextToolConfig(
     config?:
-      | UpdrawTextToolConfig
-      | UpdrawBrushToolConfig
-      | UpdrawLineToolConfig
-      | UpdrawShapeToolConfig,
-  ): config is UpdrawTextToolConfig {
+      | UpmadeTextToolConfig
+      | UpmadeBrushToolConfig
+      | UpmadeLineToolConfig
+      | UpmadeShapeToolConfig,
+  ): config is UpmadeTextToolConfig {
     return (
       !!config &&
       "fontFamily" in config &&
@@ -1444,12 +1444,12 @@ export class UpdrawEditor {
     );
   }
 
-  private lastToolbarItemsRef: UpdrawToolbarItem[] | null = null;
-  private lastNormalizedToolbarItems: UpdrawToolbarItem[] = [];
-  private lastToolsSource: UpdrawToolbarItem[] | null = null;
-  private lastTools: UpdrawToolDefinition[] = [];
+  private lastToolbarItemsRef: UpmadeToolbarItem[] | null = null;
+  private lastNormalizedToolbarItems: UpmadeToolbarItem[] = [];
+  private lastToolsSource: UpmadeToolbarItem[] | null = null;
+  private lastTools: UpmadeToolDefinition[] = [];
 
-  private getNormalizedToolbarItems(): UpdrawToolbarItem[] {
+  private getNormalizedToolbarItems(): UpmadeToolbarItem[] {
     if (this.toolbarItems !== this.lastToolbarItemsRef) {
       this.lastToolbarItemsRef = this.toolbarItems;
       this.lastNormalizedToolbarItems = this.normalizeToolbar(
@@ -1459,7 +1459,7 @@ export class UpdrawEditor {
     return this.lastNormalizedToolbarItems;
   }
 
-  private getTools(): UpdrawToolDefinition[] {
+  private getTools(): UpmadeToolDefinition[] {
     const normalizedToolbarItems = this.getNormalizedToolbarItems();
     if (normalizedToolbarItems !== this.lastToolsSource) {
       this.lastToolsSource = normalizedToolbarItems;
@@ -1475,8 +1475,8 @@ export class UpdrawEditor {
   }
 
   private normalizeToolbar(
-    toolbarItems: UpdrawToolbarItem[],
-  ): UpdrawToolbarItem[] {
+    toolbarItems: UpmadeToolbarItem[],
+  ): UpmadeToolbarItem[] {
     return toolbarItems.map((control) => {
       if (!this.isTextToolConfig(control.config)) {
         return control;
@@ -1506,7 +1506,7 @@ export class UpdrawEditor {
     ThemeHelper.applyThemeToElement(this.host, themeObj);
   }
 
-  private resolveThemeObject(): UpdrawTheme {
+  private resolveThemeObject(): UpmadeTheme {
     return (
       this.themes?.find((t) => t.name === this.theme) ??
       (this.theme === "dark" ? darkTheme : lightTheme)
@@ -1530,10 +1530,10 @@ export class UpdrawEditor {
   }
 
   async checkIsReady() {
-    await customElements.whenDefined("updraw-editor");
-    await customElements.whenDefined("updraw-workspace-manager");
-    await customElements.whenDefined("updraw-toolbar");
-    await customElements.whenDefined("updraw-engine");
+    await customElements.whenDefined("upmade-editor");
+    await customElements.whenDefined("upmade-workspace-manager");
+    await customElements.whenDefined("upmade-toolbar");
+    await customElements.whenDefined("upmade-engine");
     await this.waitForCustomFontsReady();
 
     if (
@@ -1565,7 +1565,7 @@ export class UpdrawEditor {
     });
   }
 
-  async onEngineReady(event: CustomEvent<UpdrawEngineState>) {
+  async onEngineReady(event: CustomEvent<UpmadeEngineState>) {
     this.isEngineReady = true;
     if (!event.detail.activeWorkspace) {
       return;
@@ -1583,13 +1583,13 @@ export class UpdrawEditor {
     this.loadShortcuts();
   }
 
-  handleWorkspacesChange(event: CustomEvent<UpdrawWorkspace[]>) {
+  handleWorkspacesChange(event: CustomEvent<UpmadeWorkspace[]>) {
     event.stopPropagation();
     this.availableWorkspaces = event.detail;
   }
 
   async handleWorkspaceManagerChange(
-    event: CustomEvent<UpdrawWorkspace | null>,
+    event: CustomEvent<UpmadeWorkspace | null>,
   ) {
     event.stopPropagation();
 
@@ -1603,7 +1603,7 @@ export class UpdrawEditor {
     await this.engineRef.setActiveWorkspace(workspace.id);
   }
 
-  handleActiveWorkspaceChange(event: CustomEvent<UpdrawWorkspace>) {
+  handleActiveWorkspaceChange(event: CustomEvent<UpmadeWorkspace>) {
     event.stopPropagation();
 
     this.activeWorkspace = event.detail;
@@ -1623,7 +1623,7 @@ export class UpdrawEditor {
     });
   }
 
-  handleObjectsChange(event: CustomEvent<UpdrawBaseObject[]>) {
+  handleObjectsChange(event: CustomEvent<UpmadeBaseObject[]>) {
     event.stopPropagation();
     this.objectsChange.emit(event.detail);
   }
@@ -1643,19 +1643,19 @@ export class UpdrawEditor {
     this.objectsUpdated.emit(event.detail);
   }
 
-  handleObjectsSelectionChange(event: CustomEvent<UpdrawBaseObject[]>) {
+  handleObjectsSelectionChange(event: CustomEvent<UpmadeBaseObject[]>) {
     event.stopPropagation();
     this.objectsSelectionChange.emit(event.detail);
   }
 
-  handleUndoStateChange(event: CustomEvent<UpdrawUndoState>) {
+  handleUndoStateChange(event: CustomEvent<UpmadeUndoState>) {
     event.stopPropagation();
     this.undoStateChange.emit(event.detail);
     this.undoState = event.detail;
   }
 
   async handleObjectsInViewportChange(
-    event: CustomEvent<UpdrawBaseObject<Element>[]>,
+    event: CustomEvent<UpmadeBaseObject<Element>[]>,
   ) {
     event.stopPropagation();
     const hasVisibleObjects = this.getContentObjects(event.detail).length > 0;
@@ -1665,7 +1665,7 @@ export class UpdrawEditor {
       !hasVisibleObjects && hasAnyObjectsAtAll;
   }
 
-  handleViewportChange(event: CustomEvent<UpdrawViewportState>) {
+  handleViewportChange(event: CustomEvent<UpmadeViewportState>) {
     event.stopPropagation();
     this.currentZoomPercent = this.getZoomPercentFromScale(event.detail.scale);
     this.viewportChange.emit(event.detail);
@@ -1683,38 +1683,38 @@ export class UpdrawEditor {
     this.awarenessChange.emit(event.detail);
   }
 
-  handleAgentsChange(event: CustomEvent<UpdrawAgentsChangeEvent>) {
+  handleAgentsChange(event: CustomEvent<UpmadeAgentsChangeEvent>) {
     event.stopPropagation();
     this.agents = event.detail.agents;
     this.agentsChange.emit(event.detail);
   }
 
   handleObjectTitlebarAction(
-    event: CustomEvent<UpdrawObjectTitlebarActionEvent>,
+    event: CustomEvent<UpmadeObjectTitlebarActionEvent>,
   ) {
     event.stopPropagation();
     this.objectTitlebarAction.emit(event.detail);
   }
 
-  handleObjectElementHover(event: CustomEvent<UpdrawObjectElementHoverEvent>) {
+  handleObjectElementHover(event: CustomEvent<UpmadeObjectElementHoverEvent>) {
     event.stopPropagation();
     this.objectElementHover.emit(event.detail);
   }
 
-  handleObjectElementClick(event: CustomEvent<UpdrawObjectElementClickEvent>) {
+  handleObjectElementClick(event: CustomEvent<UpmadeObjectElementClickEvent>) {
     event.stopPropagation();
     this.objectElementClick.emit(event.detail);
   }
 
-  handleObjectElementPick(event: CustomEvent<UpdrawObjectElementPickEvent>) {
+  handleObjectElementPick(event: CustomEvent<UpmadeObjectElementPickEvent>) {
     event.stopPropagation();
     this.objectElementPick.emit(event.detail);
   }
 
-  private chatSessionSubscription: { session: UpdrawChatSession; unsubscribe: () => void } | null = null;
+  private chatSessionSubscription: { session: UpmadeChatSession; unsubscribe: () => void } | null = null;
 
   private subscribeChatSession(): void {
-    const session = isUpdrawChatSession(this.chatSession) ? this.chatSession : null;
+    const session = isUpmadeChatSession(this.chatSession) ? this.chatSession : null;
     if (this.chatSessionSubscription?.session === session) {
       return;
     }
@@ -1735,7 +1735,7 @@ export class UpdrawEditor {
 
   private handleChatSubmit(text: string): void {
     const event = this.chatSubmit.emit(text);
-    const session = isUpdrawChatSession(this.chatSession) ? this.chatSession : null;
+    const session = isUpmadeChatSession(this.chatSession) ? this.chatSession : null;
     if (!session || event?.defaultPrevented) {
       return;
     }
@@ -1745,17 +1745,17 @@ export class UpdrawEditor {
 
   private handleChatStop(): void {
     this.chatStop.emit();
-    if (isUpdrawChatSession(this.chatSession)) {
+    if (isUpmadeChatSession(this.chatSession)) {
       this.chatSession.stop();
     }
   }
 
-  handleChatChipRemove(event: CustomEvent<UpdrawChatBoxChip>) {
+  handleChatChipRemove(event: CustomEvent<UpmadeChatBoxChip>) {
     event.stopPropagation();
     this.chatChipRemove.emit(event.detail);
   }
 
-  handleNotificationsChange(event: CustomEvent<UpdrawNotification>) {
+  handleNotificationsChange(event: CustomEvent<UpmadeNotification>) {
     event.stopPropagation();
     this.clearNotificationDismissAnimationTimer();
     this.isNotificationDismissing = false;
@@ -1765,7 +1765,7 @@ export class UpdrawEditor {
   }
 
   handleObjectTitlebarMenuStateChange(
-    event: CustomEvent<UpdrawObjectTitlebarMenuState>,
+    event: CustomEvent<UpmadeObjectTitlebarMenuState>,
   ) {
     event.stopPropagation();
     this.objectTitlebarMenuState = event.detail.isVisible
@@ -1773,7 +1773,7 @@ export class UpdrawEditor {
       : undefined;
   }
 
-  handleContextMenuStateChange(event: CustomEvent<UpdrawContextMenuState>) {
+  handleContextMenuStateChange(event: CustomEvent<UpmadeContextMenuState>) {
     event.stopPropagation();
     this.contextMenuState = event.detail.isVisible ? event.detail : undefined;
   }
@@ -1850,7 +1850,7 @@ export class UpdrawEditor {
     }, this.notificationDismissAnimationDurationMs);
   };
 
-  handleSettingsChange(event: CustomEvent<UpdrawSettingsConfig>) {
+  handleSettingsChange(event: CustomEvent<UpmadeSettingsConfig>) {
     this.scaleMin = event.detail.scaleMin;
     this.scaleMax = event.detail.scaleMax;
     this.lockDrawingScale = event.detail.lockDrawingScale;
@@ -1915,22 +1915,22 @@ export class UpdrawEditor {
   }
 
   private canExportObjectsAs(
-    objects: UpdrawBaseObject[],
-    format: UpdrawObjectExportFormat,
+    objects: UpmadeBaseObject[],
+    format: UpmadeObjectExportFormat,
   ): boolean {
     if (!objects || objects.length !== 1) {
       return false;
     }
 
     const [selected] = objects;
-    if (!ObjectHelper.isUpdrawExportable(selected)) {
+    if (!ObjectHelper.isUpmadeExportable(selected)) {
       return false;
     }
 
     return selected.getSupportedExportFormats().includes(format);
   }
 
-  private canExportObjects(objects: UpdrawBaseObject[]): boolean {
+  private canExportObjects(objects: UpmadeBaseObject[]): boolean {
     return (
       this.canExportObjectsAs(objects, "png") ||
       this.canExportObjectsAs(objects, "svg")
@@ -1938,8 +1938,8 @@ export class UpdrawEditor {
   }
 
   private getPreferredExportFormat(
-    objects: UpdrawBaseObject[],
-  ): UpdrawObjectExportFormat | null {
+    objects: UpmadeBaseObject[],
+  ): UpmadeObjectExportFormat | null {
     if (this.canExportObjectsAs(objects, "png")) {
       return "png";
     }
@@ -1953,15 +1953,15 @@ export class UpdrawEditor {
 
   private getSettingsStorageKey(): string {
     return this.editorId
-      ? `updraw-settings-${this.editorId}`
-      : "updraw-settings";
+      ? `upmade-settings-${this.editorId}`
+      : "upmade-settings";
   }
 
   private loadSettingsFromStorage(): void {
     const stored = localStorage.getItem(this.getSettingsStorageKey());
     if (stored) {
       try {
-        const parsed = JSON.parse(stored) as Partial<UpdrawSettingsConfig>;
+        const parsed = JSON.parse(stored) as Partial<UpmadeSettingsConfig>;
         if (typeof parsed.scaleMin === "number") {
           this.scaleMin = parsed.scaleMin;
         }
@@ -2002,7 +2002,7 @@ export class UpdrawEditor {
     this.shortcuts = await this.engineRef.getDisplayableShortcuts();
   }
 
-  private get currentSettingsConfig(): UpdrawSettingsConfig {
+  private get currentSettingsConfig(): UpmadeSettingsConfig {
     return {
       scaleMin: this.scaleMin,
       scaleMax: this.scaleMax,
@@ -2018,32 +2018,32 @@ export class UpdrawEditor {
   }
 
   private getContentObjects(
-    objects: UpdrawBaseObject<Element>[],
-  ): UpdrawBaseObject<Element>[] {
+    objects: UpmadeBaseObject<Element>[],
+  ): UpmadeBaseObject<Element>[] {
     return objects.filter(
       (obj) =>
-        !(obj instanceof UpdrawSelectionGroup) &&
-        !(obj instanceof UpdrawSelectionBox),
+        !(obj instanceof UpmadeSelectionGroup) &&
+        !(obj instanceof UpmadeSelectionBox),
     );
   }
 
-  private lastCustomSvgIcons?: UpdrawSvgIconMap;
+  private lastCustomSvgIcons?: UpmadeSvgIconMap;
 
-  private registerCustomSvgIcons(icons: UpdrawSvgIconMap | undefined) {
+  private registerCustomSvgIcons(icons: UpmadeSvgIconMap | undefined) {
     if (icons === this.lastCustomSvgIcons) {
       return;
     }
     this.lastCustomSvgIcons = icons;
-    UpdrawIconRegistry.registerIcons(icons ?? {});
+    UpmadeIconRegistry.registerIcons(icons ?? {});
   }
 
   private async registerCustomFonts(
-    fonts: UpdrawFontMap = this.customFonts,
+    fonts: UpmadeFontMap = this.customFonts,
   ): Promise<void> {
-    UpdrawFontRegistry.registerFonts(fonts);
+    UpmadeFontRegistry.registerFonts(fonts);
 
     const currentVersion = ++this.customFontsLoadVersion;
-    const loadPromise = UpdrawFontRegistry.waitForFonts(fonts);
+    const loadPromise = UpmadeFontRegistry.waitForFonts(fonts);
     this.customFontsReady = loadPromise;
 
     await loadPromise;
@@ -2065,36 +2065,36 @@ export class UpdrawEditor {
   }
 
   private listenForMobileKeyboard() {
-    UpdrawKeyboardHelper.onKeyboardVisibleChanged((isOpen) => {
+    UpmadeKeyboardHelper.onKeyboardVisibleChanged((isOpen) => {
       this.isVirtualKeyboardOpen = isOpen;
     });
   }
 
   private setOsSpecificCssVariables() {
-    const os = UpdrawDevicesHelper.detectOS();
+    const os = UpmadeDevicesHelper.detectOS();
 
     switch (os) {
       case "iOS":
         // iOS specific adjustments
         this.host.style.setProperty(
-          "--updraw-editor-top-left-buttons-top",
+          "--upmade-editor-top-left-buttons-top",
           "14px",
         );
         this.host.style.setProperty(
-          "--updraw-editor-top-left-buttons-left",
+          "--upmade-editor-top-left-buttons-left",
           "14px",
         );
-        this.host.style.setProperty("--updraw-editor-toolbar-bottom", "14px");
+        this.host.style.setProperty("--upmade-editor-toolbar-bottom", "14px");
         this.host.style.setProperty(
-          "--updraw-editor-toolbar-transition",
+          "--upmade-editor-toolbar-transition",
           "cubic-bezier(0.25, 0.1, 0.25, 1.0)",
         );
         this.host.style.setProperty(
-          "--updraw-editor-toolbar-transform",
+          "--upmade-editor-toolbar-transform",
           "translateY(200%)",
         );
         this.host.style.setProperty(
-          "--updraw-editor-toolbar-transition-duration",
+          "--upmade-editor-toolbar-transition-duration",
           "0.25s",
         );
         break;
@@ -2102,24 +2102,24 @@ export class UpdrawEditor {
       case "Android":
         // Android specific adjustments
         this.host.style.setProperty(
-          "--updraw-editor-top-left-buttons-top",
+          "--upmade-editor-top-left-buttons-top",
           "14px",
         );
         this.host.style.setProperty(
-          "--updraw-editor-top-left-buttons-left",
+          "--upmade-editor-top-left-buttons-left",
           "14px",
         );
-        this.host.style.setProperty("--updraw-editor-toolbar-bottom", "24px");
+        this.host.style.setProperty("--upmade-editor-toolbar-bottom", "24px");
         this.host.style.setProperty(
-          "--updraw-editor-toolbar-transition",
+          "--upmade-editor-toolbar-transition",
           "cubic-bezier(0.25, 0.1, 0.25, 1.0)",
         );
         this.host.style.setProperty(
-          "--updraw-editor-toolbar-transform",
+          "--upmade-editor-toolbar-transform",
           "translateY(200%)",
         );
         this.host.style.setProperty(
-          "--updraw-editor-toolbar-transition-duration",
+          "--upmade-editor-toolbar-transition-duration",
           "0.25s",
         );
         break;
@@ -2127,14 +2127,14 @@ export class UpdrawEditor {
       default:
         // Default for Windows/Linux
         this.host.style.setProperty(
-          "--updraw-editor-top-left-buttons-top",
+          "--upmade-editor-top-left-buttons-top",
           "14px",
         );
         this.host.style.setProperty(
-          "--updraw-editor-top-left-buttons-left",
+          "--upmade-editor-top-left-buttons-left",
           "14px",
         );
-        this.host.style.setProperty("--updraw-editor-toolbar-bottom", "14px");
+        this.host.style.setProperty("--upmade-editor-toolbar-bottom", "14px");
         break;
     }
   }
@@ -2158,7 +2158,7 @@ export class UpdrawEditor {
           }}
         >
           <div class="top-left-buttons">
-            <updraw-workspace-manager
+            <upmade-workspace-manager
               ref={(el) => {
                 if (el) {
                   this.workspaceManagerRef = el;
@@ -2174,15 +2174,15 @@ export class UpdrawEditor {
               onIsWorkspaceManagerReady={() =>
                 (this.isWorkspaceManagerReady = true)
               }
-            ></updraw-workspace-manager>
+            ></upmade-workspace-manager>
 
-            <updraw-back-to-content
+            <upmade-back-to-content
               visible={this.isBackToContentButtonVisible}
               text={
                 this.resolvedTerms["backToContent.label"] ?? "Back to content"
               }
               onBackToContent={() => this.backToContent()}
-            ></updraw-back-to-content>
+            ></upmade-back-to-content>
           </div>
 
           {this.activeNotification && (
@@ -2194,20 +2194,20 @@ export class UpdrawEditor {
                 }}
                 role="presentation"
               >
-                <updraw-notification-card
+                <upmade-notification-card
                   notification={this.activeNotification}
                   locale={this.locale}
                   onDismiss={this.dismissNotification}
                   onHoverChange={(event) =>
                     this.handleNotificationHoverChange(event)
                   }
-                ></updraw-notification-card>
+                ></upmade-notification-card>
               </div>
             </div>
           )}
 
           {this.contextMenuState && this.contextMenuState.items.length > 0 && (
-            <updraw-context-menu
+            <upmade-context-menu
               class="context-menu"
               items={this.contextMenuState.items}
               objects={this.contextMenuState.objects}
@@ -2221,30 +2221,30 @@ export class UpdrawEditor {
                 this.handleContextMenuActionSelected(event)
               }
               onClose={() => this.hideContextMenu()}
-            ></updraw-context-menu>
+            ></upmade-context-menu>
           )}
 
           {/* Titlebar menus are tracked by the engine and rendered here, anchored to their menu button.
               The portal moves itself to the body and removes itself when it closes, so it gets a
               wrapper of its own: siblings rendered later must never be inserted relative to it. */}
           <div class="object-titlebar-menu-host">
-            <updraw-portal
+            <upmade-portal
               anchor={this.objectTitlebarMenuState?.anchor ?? null}
               offsetY={4}
               onClose={() => void this.engineRef?.closeObjectTitlebarMenu()}
             >
-              <updraw-titlebar-menu
+              <upmade-titlebar-menu
                 items={this.objectTitlebarMenuState?.items ?? []}
                 onMenuItemSelect={(event) =>
                   void this.engineRef?.selectObjectTitlebarMenuItem(
                     event.detail,
                   )
                 }
-              ></updraw-titlebar-menu>
-            </updraw-portal>
+              ></upmade-titlebar-menu>
+            </upmade-portal>
           </div>
 
-          <updraw-engine
+          <upmade-engine
             ref={(el) => {
               if (el) {
                 this.engineRef = el;
@@ -2317,10 +2317,10 @@ export class UpdrawEditor {
               this.handleObjectElementClick(event)
             }
             onObjectElementPick={(event) => this.handleObjectElementPick(event)}
-          ></updraw-engine>
+          ></upmade-engine>
 
           {this.isChatBoxVisible && (
-            <updraw-chat-box
+            <upmade-chat-box
               mode={this.chatBoxMode}
               loading={this.isChatBoxLoading || this.isChatSessionRunning}
               terms={this.resolvedTerms}
@@ -2334,10 +2334,10 @@ export class UpdrawEditor {
                 this.handleChatStop();
               }}
               onChatChipRemove={(event) => this.handleChatChipRemove(event)}
-            ></updraw-chat-box>
+            ></upmade-chat-box>
           )}
 
-          <updraw-toolbar
+          <upmade-toolbar
             visible={this.isToolbarVisible && !this.isChatBoxVisible}
             class={{ "keyboard-open": this.isVirtualKeyboardOpen }}
             ref={(el) => {
@@ -2351,7 +2351,7 @@ export class UpdrawEditor {
             theme={this.theme}
             terms={this.resolvedTerms}
             onIsToolbarReady={() => (this.isToolbarReady = true)}
-          ></updraw-toolbar>
+          ></upmade-toolbar>
 
           <div
             class={{
@@ -2359,17 +2359,17 @@ export class UpdrawEditor {
               "keyboard-open": this.isVirtualKeyboardOpen,
             }}
           >
-            <updraw-zoom-panel
+            <upmade-zoom-panel
               visible={this.isZoomPanelVisible}
               zoomPercent={this.currentZoomPercent}
               terms={this.resolvedTerms}
               onZoomIn={() => this.zoomIn()}
               onZoomOut={() => this.zoomOut()}
-            ></updraw-zoom-panel>
+            ></upmade-zoom-panel>
           </div>
 
           <div class="top-right-buttons">
-            <updraw-settings
+            <upmade-settings
               ref={(el) => {
                 if (el) {
                   this.settingsRef = el;
@@ -2385,9 +2385,9 @@ export class UpdrawEditor {
               settings={this.currentSettingsConfig}
               terms={this.resolvedTerms}
               onSettingsChange={(event) => this.handleSettingsChange(event)}
-            ></updraw-settings>
+            ></upmade-settings>
 
-            <updraw-export
+            <upmade-export
               ref={(el) => {
                 if (el) {
                   this.exportRef = el;
@@ -2400,23 +2400,23 @@ export class UpdrawEditor {
               onExportJson={(event) =>
                 this.engineRef.downloadAsJson(event.detail)
               }
-            ></updraw-export>
+            ></upmade-export>
 
-            <updraw-active-users
+            <upmade-active-users
               users={this.activeUsers}
               agents={this.isAgentAvatarsVisible ? this.agents : []}
-            ></updraw-active-users>
+            ></upmade-active-users>
 
             {shouldShowCurrentUser && (
-              <updraw-current-user
+              <upmade-current-user
                 user={this.user}
                 terms={this.resolvedTerms}
                 onClick={() => this.currentUserDialogRef?.open()}
-              ></updraw-current-user>
+              ></upmade-current-user>
             )}
 
             {shouldShowCurrentUser && (
-              <updraw-current-user-dialog
+              <upmade-current-user-dialog
                 ref={(el) => {
                   if (el) {
                     this.currentUserDialogRef = el;
@@ -2425,16 +2425,16 @@ export class UpdrawEditor {
                 user={this.user}
                 terms={this.resolvedTerms}
                 onLogoutRequest={this.handleCurrentUserLogout}
-              ></updraw-current-user-dialog>
+              ></upmade-current-user-dialog>
             )}
 
             {shouldShowLoginButton && (
-              <updraw-button onButtonClick={() => this.loginDialogRef?.open()}>
+              <upmade-button onButtonClick={() => this.loginDialogRef?.open()}>
                 {this.resolvedTerms["login.dialogTitle"] ?? "Sign in"}
-              </updraw-button>
+              </upmade-button>
             )}
 
-            <updraw-more-menu
+            <upmade-more-menu
               ref={(el) => {
                 if (el) {
                   this.moreMenuRef = el;
@@ -2443,9 +2443,9 @@ export class UpdrawEditor {
               items={this.resolvedMoreMenuItems}
               visible={this.isMoreMenuVisible}
               terms={this.resolvedTerms}
-            ></updraw-more-menu>
+            ></upmade-more-menu>
 
-            <updraw-share-dialog
+            <upmade-share-dialog
               ref={(el) => {
                 if (el) {
                   this.shareDialogRef = el;
@@ -2455,10 +2455,10 @@ export class UpdrawEditor {
               workspaceId={this.activeWorkspace?.id}
               terms={this.resolvedTerms}
               onToggleIsPublic={this.handleToggleIsPublic}
-            ></updraw-share-dialog>
+            ></upmade-share-dialog>
 
             {this.loginConfig && (
-              <updraw-login-dialog
+              <upmade-login-dialog
                 ref={(el) => {
                   if (el) {
                     this.loginDialogRef = el;
@@ -2472,7 +2472,7 @@ export class UpdrawEditor {
                 }
                 subtitle={this.loginConfig.subtitle}
                 onProviderLogin={this.handleProviderLogin}
-              ></updraw-login-dialog>
+              ></upmade-login-dialog>
             )}
           </div>
         </div>

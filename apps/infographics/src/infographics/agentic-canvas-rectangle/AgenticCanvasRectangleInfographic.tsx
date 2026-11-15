@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { UpdrawEditor, UpdrawWorkspace, type HTMLUpdrawEditorElement } from '@updraw/react-editor';
+import { UpmadeEditor, UpmadeWorkspace, type HTMLUpmadeEditorElement } from '@upmade/react-editor';
 import { playRectangleScene } from './rectangle-scene';
 
 const WORKSPACE_ID = 'agentic-canvas-rectangle';
@@ -14,11 +14,11 @@ const hostStyle: CSSProperties = {
  * which is removed again 1.5 seconds later. The scene plays once when the editor is ready; reload to play it again.
  */
 export function AgenticCanvasRectangleInfographic() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const [isWorking, setIsWorking] = useState(false);
   const [workspaces] = useState(() => [
-    new UpdrawWorkspace({ id: WORKSPACE_ID, name: 'Agentic canvas rectangle', objects: [] }),
+    new UpmadeWorkspace({ id: WORKSPACE_ID, name: 'Agentic canvas rectangle', objects: [] }),
   ]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
@@ -39,7 +39,7 @@ export function AgenticCanvasRectangleInfographic() {
 
   return (
     <div style={hostStyle}>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="infographic-agentic-canvas-rectangle"
         workspaces={workspaces}

@@ -145,7 +145,7 @@ describe('legacy IndexedDB import', () => {
       await seedYjsDatabase(`kritzel-workspace-${id}`, 'p1');
 
       const doc = new Y.Doc();
-      const provider = new IndexedDBSyncProvider(`updraw-workspace-${id}`, doc);
+      const provider = new IndexedDBSyncProvider(`upmade-workspace-${id}`, doc);
       await provider.connect();
       expect(doc.getMap('objects').get('p1')).toEqual({ __class__: 'KritzelPath', id: 'p1' });
       provider.destroy();
@@ -153,7 +153,7 @@ describe('legacy IndexedDB import', () => {
       // Remove the legacy database: the content must now come from the new one.
       await deleteDatabase(`kritzel-workspace-${id}`);
       const reloaded = new Y.Doc();
-      const reloadedProvider = new IndexedDBSyncProvider(`updraw-workspace-${id}`, reloaded);
+      const reloadedProvider = new IndexedDBSyncProvider(`upmade-workspace-${id}`, reloaded);
       await reloadedProvider.connect();
       expect(reloaded.getMap('objects').get('p1')).toEqual({ __class__: 'KritzelPath', id: 'p1' });
       reloadedProvider.destroy();
@@ -164,7 +164,7 @@ describe('legacy IndexedDB import', () => {
       await seedYjsDatabase(`kritzel-workspace-${id}`, 'p1');
 
       const doc = new Y.Doc();
-      const provider = new IndexedDBSyncProvider(`updraw-workspace-${id}`, doc, { name: `custom-${id}` });
+      const provider = new IndexedDBSyncProvider(`upmade-workspace-${id}`, doc, { name: `custom-${id}` });
       await provider.connect();
 
       expect(doc.getMap('objects').size).toBe(0);
@@ -175,7 +175,7 @@ describe('legacy IndexedDB import', () => {
   describe('IndexedDBAssetProvider', () => {
     afterEach(async () => {
       await deleteDatabase('kritzel-assets');
-      await deleteDatabase('updraw-assets');
+      await deleteDatabase('upmade-assets');
     });
 
     it('copies assets from the legacy default database', async () => {

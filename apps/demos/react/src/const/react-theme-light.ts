@@ -1,6 +1,6 @@
-import { UpdrawTheme } from "@updraw/react-editor";
+import { UpmadeTheme } from "@upmade/react-editor";
 
-export const reactThemeLight: UpdrawTheme = {
+export const reactThemeLight: UpmadeTheme = {
   name: 'light',
   global: {
     primaryColor: '#4A7DFF',

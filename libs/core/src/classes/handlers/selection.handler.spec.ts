@@ -1,17 +1,17 @@
-import { UpdrawSelectionHandler } from './selection.handler';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
-import { UpdrawSelectionBox } from '../objects/selection-box.class';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpmadeSelectionHandler } from './selection.handler';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
+import { UpmadeSelectionBox } from '../objects/selection-box.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeBaseObject } from '../objects/base-object.class';
 
 jest.mock('../../helpers/event.helper');
 jest.mock('../objects/selection-box.class');
 jest.mock('../objects/selection-group.class');
 
-describe('UpdrawSelectionHandler', () => {
-  let selectionHandler: UpdrawSelectionHandler;
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadeSelectionHandler', () => {
+  let selectionHandler: UpmadeSelectionHandler;
+  let mockCore: jest.Mocked<UpmadeCore>;
   let mockSelectionBox: {
     width: number;
     height: number;
@@ -26,7 +26,7 @@ describe('UpdrawSelectionHandler', () => {
     };
   } | null;
   let mockSelectionGroup: {
-    objects: UpdrawBaseObject[];
+    objects: UpmadeBaseObject[];
     objectIds: string[];
     isSelected: boolean;
     rotation: number;
@@ -57,7 +57,7 @@ describe('UpdrawSelectionHandler', () => {
     };
     activeWorkspace: { id: string };
   };
-  let mockSelectedObjects: UpdrawBaseObject[];
+  let mockSelectedObjects: UpmadeBaseObject[];
 
   const createPointerEvent = (
     type: string,
@@ -107,7 +107,7 @@ describe('UpdrawSelectionHandler', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockSelectionBox = null;
     mockSelectionGroup = null;
@@ -169,21 +169,21 @@ describe('UpdrawSelectionHandler', () => {
       removeSelectionBox: jest.fn(),
       rerender: jest.fn(),
       getObjectsFromPointerEvent: jest.fn().mockReturnValue([]),
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
     // Mock static create methods
-    (UpdrawSelectionBox.create as jest.Mock).mockImplementation(() => {
+    (UpmadeSelectionBox.create as jest.Mock).mockImplementation(() => {
       const box = createMockSelectionBox();
       mockSelectionBox = box;
       return box;
     });
-    (UpdrawSelectionGroup.create as jest.Mock).mockImplementation(() => {
+    (UpmadeSelectionGroup.create as jest.Mock).mockImplementation(() => {
       const group = createMockSelectionGroup();
       mockSelectionGroup = group;
       return group;
     });
 
-    selectionHandler = new UpdrawSelectionHandler(mockCore);
+    selectionHandler = new UpmadeSelectionHandler(mockCore);
   });
 
   afterEach(() => {
@@ -267,13 +267,13 @@ describe('UpdrawSelectionHandler', () => {
         selectionHandler.handlePointerDown(event);
 
         expect(mockState.isSelecting).toBe(true);
-        expect(UpdrawSelectionBox.create).toHaveBeenCalledWith(mockCore);
+        expect(UpmadeSelectionBox.create).toHaveBeenCalledWith(mockCore);
         expect(mockState.objects.insert).toHaveBeenCalled();
         expect(mockCore.store.setSelectionBox).toHaveBeenCalled();
       });
 
       it('should not start selection on non-left click', () => {
-        (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+        (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
         mockSelectionGroup = null;
         const event = createPointerEvent('pointerdown', {
           pointerType: 'mouse',
@@ -283,7 +283,7 @@ describe('UpdrawSelectionHandler', () => {
         selectionHandler.handlePointerDown(event);
 
         expect(mockState.isSelecting).toBe(false);
-        expect(UpdrawSelectionBox.create).not.toHaveBeenCalled();
+        expect(UpmadeSelectionBox.create).not.toHaveBeenCalled();
       });
 
       it('should not start selection when selection group already exists', () => {
@@ -294,7 +294,7 @@ describe('UpdrawSelectionHandler', () => {
 
         selectionHandler.handlePointerDown(event);
 
-        expect(UpdrawSelectionBox.create).not.toHaveBeenCalled();
+        expect(UpmadeSelectionBox.create).not.toHaveBeenCalled();
       });
 
       it('should apply viewport transformation when calculating start position', () => {
@@ -366,7 +366,7 @@ describe('UpdrawSelectionHandler', () => {
         jest.advanceTimersByTime(80);
 
         expect(mockState.isSelecting).toBe(true);
-        expect(UpdrawSelectionBox.create).toHaveBeenCalled();
+        expect(UpmadeSelectionBox.create).toHaveBeenCalled();
       });
 
       it('should not start selection when scaling', () => {
@@ -380,7 +380,7 @@ describe('UpdrawSelectionHandler', () => {
         selectionHandler.handlePointerDown(event);
         jest.advanceTimersByTime(80);
 
-        expect(UpdrawSelectionBox.create).not.toHaveBeenCalled();
+        expect(UpmadeSelectionBox.create).not.toHaveBeenCalled();
       });
 
       it('should not start selection when selection group exists', () => {
@@ -394,7 +394,7 @@ describe('UpdrawSelectionHandler', () => {
         selectionHandler.handlePointerDown(event);
         jest.advanceTimersByTime(80);
 
-        expect(UpdrawSelectionBox.create).not.toHaveBeenCalled();
+        expect(UpmadeSelectionBox.create).not.toHaveBeenCalled();
       });
 
       it('should not start selection with multiple pointers', () => {
@@ -409,7 +409,7 @@ describe('UpdrawSelectionHandler', () => {
         selectionHandler.handlePointerDown(event);
         jest.advanceTimersByTime(80);
 
-        expect(UpdrawSelectionBox.create).not.toHaveBeenCalled();
+        expect(UpmadeSelectionBox.create).not.toHaveBeenCalled();
       });
 
       it('should store touch start position', () => {
@@ -441,7 +441,7 @@ describe('UpdrawSelectionHandler', () => {
         jest.advanceTimersByTime(80);
 
         expect(mockState.isSelecting).toBe(true);
-        expect(UpdrawSelectionBox.create).toHaveBeenCalled();
+        expect(UpmadeSelectionBox.create).toHaveBeenCalled();
       });
     });
   });
@@ -598,7 +598,7 @@ describe('UpdrawSelectionHandler', () => {
           isSelected: false,
           rotation: 0.5,
           hitTest: jest.fn().mockReturnValue(true),
-        } as unknown as UpdrawBaseObject;
+        } as unknown as UpmadeBaseObject;
 
         (mockCore.getObjectsFromPointerEvent as jest.Mock).mockReturnValue([mockObject]);
 
@@ -608,13 +608,13 @@ describe('UpdrawSelectionHandler', () => {
 
         selectionHandler.handlePointerUp(upEvent);
 
-        expect(UpdrawSelectionGroup.create).toHaveBeenCalledWith(mockCore);
+        expect(UpmadeSelectionGroup.create).toHaveBeenCalledWith(mockCore);
         expect(mockCore.addSelectionGroup).toHaveBeenCalled();
         expect(mockCore.rerender).toHaveBeenCalled();
       });
 
       it('should not start selection when non-left click', () => {
-        (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+        (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
         mockState.isSelecting = true;
 
         const upEvent = createPointerEvent('pointerup', {
@@ -662,10 +662,10 @@ describe('UpdrawSelectionHandler', () => {
       it('should add selected objects to selection group after drag', () => {
         const mockObject = {
           id: 'obj-1',
-          __class__: 'UpdrawPath',
+          __class__: 'UpmadePath',
           isSelected: true,
           rotation: 0,
-        } as unknown as UpdrawBaseObject;
+        } as unknown as UpmadeBaseObject;
         mockSelectedObjects = [mockObject];
 
         const upEvent = createPointerEvent('pointerup', {
@@ -674,7 +674,7 @@ describe('UpdrawSelectionHandler', () => {
 
         selectionHandler.handlePointerUp(upEvent);
 
-        expect(UpdrawSelectionGroup.create).toHaveBeenCalledWith(mockCore);
+        expect(UpmadeSelectionGroup.create).toHaveBeenCalledWith(mockCore);
         expect(mockCore.addSelectionGroup).toHaveBeenCalled();
       });
 
@@ -697,7 +697,7 @@ describe('UpdrawSelectionHandler', () => {
           id: 'obj-1',
           isSelected: true,
           edit: jest.fn(),
-        } as unknown as UpdrawBaseObject;
+        } as unknown as UpmadeBaseObject;
 
         mockSelectionGroup = {
           ...createMockSelectionGroup(),
@@ -719,7 +719,7 @@ describe('UpdrawSelectionHandler', () => {
           id: 'obj-1',
           isSelected: true,
           edit: jest.fn(),
-        } as unknown as UpdrawBaseObject;
+        } as unknown as UpmadeBaseObject;
 
         mockSelectionGroup = {
           ...createMockSelectionGroup(),
@@ -737,8 +737,8 @@ describe('UpdrawSelectionHandler', () => {
       });
 
       it('should not call edit when multiple objects selected', () => {
-        const mockObject1 = { id: 'obj-1', edit: jest.fn() } as unknown as UpdrawBaseObject;
-        const mockObject2 = { id: 'obj-2', edit: jest.fn() } as unknown as UpdrawBaseObject;
+        const mockObject1 = { id: 'obj-1', edit: jest.fn() } as unknown as UpmadeBaseObject;
+        const mockObject2 = { id: 'obj-2', edit: jest.fn() } as unknown as UpmadeBaseObject;
 
         mockSelectionGroup = {
           ...createMockSelectionGroup(),
@@ -816,7 +816,7 @@ describe('UpdrawSelectionHandler', () => {
           id: 'obj-1',
           isSelected: true,
           edit: jest.fn(),
-        } as unknown as UpdrawBaseObject;
+        } as unknown as UpmadeBaseObject;
 
         mockSelectionGroup = {
           ...createMockSelectionGroup(),
@@ -862,17 +862,17 @@ describe('UpdrawSelectionHandler', () => {
     it('should clear child isSelected when drag selection resolves child to parent group', () => {
       const childObject = {
         id: 'child-1',
-        __class__: 'UpdrawPath',
+        __class__: 'UpmadePath',
         isSelected: true,
         rotation: 0,
-      } as unknown as UpdrawBaseObject;
+      } as unknown as UpmadeBaseObject;
 
       const parentGroup = {
         id: 'group-1',
-        __class__: 'UpdrawGroup',
+        __class__: 'UpmadeGroup',
         childIds: ['child-1'],
         isSelected: false,
-      } as unknown as UpdrawBaseObject;
+      } as unknown as UpmadeBaseObject;
 
       mockState.objects.filter.mockReturnValue([parentGroup]);
       mockSelectedObjects = [childObject];
@@ -903,18 +903,18 @@ describe('UpdrawSelectionHandler', () => {
     it('should clear child isSelected when click selection resolves child to parent group', () => {
       const childObject = {
         id: 'child-1',
-        __class__: 'UpdrawPath',
+        __class__: 'UpmadePath',
         isSelected: true,
         rotation: 0,
         hitTest: jest.fn().mockReturnValue(true),
-      } as unknown as UpdrawBaseObject;
+      } as unknown as UpmadeBaseObject;
 
       const parentGroup = {
         id: 'group-1',
-        __class__: 'UpdrawGroup',
+        __class__: 'UpmadeGroup',
         childIds: ['child-1'],
         isSelected: false,
-      } as unknown as UpdrawBaseObject;
+      } as unknown as UpmadeBaseObject;
 
       mockState.objects.filter.mockReturnValue([parentGroup]);
       (mockCore.getObjectsFromPointerEvent as jest.Mock).mockReturnValue([childObject]);
@@ -938,10 +938,10 @@ describe('UpdrawSelectionHandler', () => {
     it('should set rotation from single selected object', () => {
       const mockObject = {
         id: 'obj-1',
-        __class__: 'UpdrawPath',
+        __class__: 'UpmadePath',
         isSelected: true,
         rotation: Math.PI / 4,
-      } as unknown as UpdrawBaseObject;
+      } as unknown as UpmadeBaseObject;
       mockSelectedObjects = [mockObject];
 
       mockSelectionGroup = null;
@@ -966,22 +966,22 @@ describe('UpdrawSelectionHandler', () => {
       selectionHandler.handlePointerUp(upEvent);
 
       // The mock selection group should have been created and have properties set
-      expect(UpdrawSelectionGroup.create).toHaveBeenCalled();
+      expect(UpmadeSelectionGroup.create).toHaveBeenCalled();
     });
 
     it('should capture snapshots and refresh dimensions for multiple objects', () => {
       const mockObject1 = {
         id: 'obj-1',
-        __class__: 'UpdrawPath',
+        __class__: 'UpmadePath',
         isSelected: true,
         rotation: 0,
-      } as unknown as UpdrawBaseObject;
+      } as unknown as UpmadeBaseObject;
       const mockObject2 = {
         id: 'obj-2',
-        __class__: 'UpdrawPath',
+        __class__: 'UpmadePath',
         isSelected: true,
         rotation: 0,
-      } as unknown as UpdrawBaseObject;
+      } as unknown as UpmadeBaseObject;
       mockSelectedObjects = [mockObject1, mockObject2];
 
       mockSelectionGroup = null;
@@ -1004,7 +1004,7 @@ describe('UpdrawSelectionHandler', () => {
       });
       selectionHandler.handlePointerUp(upEvent);
 
-      expect(UpdrawSelectionGroup.create).toHaveBeenCalled();
+      expect(UpmadeSelectionGroup.create).toHaveBeenCalled();
     });
   });
 
@@ -1022,7 +1022,7 @@ describe('UpdrawSelectionHandler', () => {
     });
   });
   describe('titlebar support', () => {
-    const createEditableObject = (id = 'obj-1') => ({ id, edit: jest.fn() }) as unknown as UpdrawBaseObject & { edit: jest.Mock };
+    const createEditableObject = (id = 'obj-1') => ({ id, edit: jest.fn() }) as unknown as UpmadeBaseObject & { edit: jest.Mock };
 
     it('does not enter edit mode when releasing the suppressed pointer', () => {
       const object = createEditableObject();
@@ -1079,7 +1079,7 @@ describe('UpdrawSelectionHandler', () => {
 
     describe('toggleObjectInSelection', () => {
       it('selects the object when nothing is selected', () => {
-        const object = { id: 'obj-1' } as unknown as UpdrawBaseObject;
+        const object = { id: 'obj-1' } as unknown as UpmadeBaseObject;
         (mockCore as any).selectObjects = jest.fn();
 
         selectionHandler.toggleObjectInSelection(object);
@@ -1088,8 +1088,8 @@ describe('UpdrawSelectionHandler', () => {
       });
 
       it('toggles the object in the existing selection and emits a selection change', () => {
-        const first = { id: 'obj-1' } as unknown as UpdrawBaseObject;
-        const second = { id: 'obj-2' } as unknown as UpdrawBaseObject;
+        const first = { id: 'obj-1' } as unknown as UpmadeBaseObject;
+        const second = { id: 'obj-2' } as unknown as UpmadeBaseObject;
         mockSelectionGroup = { ...createMockSelectionGroup(), objects: [first, second] };
         (mockCore.engine as any).triggerSelectionChange = jest.fn().mockResolvedValue(undefined);
 
@@ -1111,7 +1111,7 @@ describe('UpdrawSelectionHandler', () => {
           setIsInteractive: jest.fn(),
           hasFocusedInputElement: jest.fn(),
           getEmbeddedContentRoots: jest.fn(() => []),
-        } as unknown as UpdrawBaseObject & { setIsInteractive: jest.Mock };
+        } as unknown as UpmadeBaseObject & { setIsInteractive: jest.Mock };
         mockSelectionGroup = { ...createMockSelectionGroup(), objectIds: ['embed-1'], objects: [] };
         (mockCore.engine as any).triggerSelectionChange = jest.fn();
 
@@ -1122,7 +1122,7 @@ describe('UpdrawSelectionHandler', () => {
       });
 
       it('removes the selection when its last object is toggled off', () => {
-        const object = { id: 'obj-1' } as unknown as UpdrawBaseObject;
+        const object = { id: 'obj-1' } as unknown as UpmadeBaseObject;
         mockSelectionGroup = { ...createMockSelectionGroup(), objects: [] };
         (mockCore.engine as any).triggerSelectionChange = jest.fn();
 

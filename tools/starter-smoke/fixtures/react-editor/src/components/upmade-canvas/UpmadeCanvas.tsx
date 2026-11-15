@@ -1,21 +1,21 @@
 import { useState } from 'react';
-import { UpdrawEditor } from '@updraw/react-editor';
+import { UpmadeEditor } from '@upmade/react-editor';
 
-const editorId = 'updraw-canvas';
+const editorId = 'upmade-canvas';
 const canvasStyle = { display: 'block', width: '100%', height: 480 };
 
-export function UpdrawCanvas() {
+export function UpmadeCanvas() {
   const [isReady, setIsReady] = useState(false);
 
   return (
     <section>
-      <UpdrawEditor
+      <UpmadeEditor
         editorId={editorId}
         onIsReady={() => setIsReady(true)}
         style={canvasStyle}
-        aria-label="Updraw canvas"
+        aria-label="Upmade canvas"
       />
-      <p role="status">{isReady ? 'Updraw is ready.' : 'Loading Updraw…'}</p>
+      <p role="status">{isReady ? 'Upmade is ready.' : 'Loading Upmade…'}</p>
     </section>
   );
 }

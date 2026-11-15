@@ -1,14 +1,14 @@
 ﻿import { Component, h, Prop, Host, State, Watch } from '@stencil/core';
-import { IUpdrawUser } from '@updraw/core';
+import { IUpmadeUser } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-avatar',
-  styleUrl: 'updraw-avatar.css',
+  tag: 'upmade-avatar',
+  styleUrl: 'upmade-avatar.css',
   shadow: true,
 })
-export class UpdrawAvatar {
+export class UpmadeAvatar {
   /** Full user object. If provided, individual props are ignored. */
-  @Prop() user?: IUpdrawUser;
+  @Prop() user?: IUpmadeUser;
 
   /** Direct prop: user's display name (used for initials fallback) */
   @Prop() name?: string;

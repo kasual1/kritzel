@@ -1,21 +1,21 @@
 import { Component, ChangeDetectionStrategy,  ViewChild } from '@angular/core';
 import {
   EditorIsReadyEvent,
-  UpdrawEditor,
+  UpmadeEditor,
   IndexedDBSyncProvider,
-  UpdrawSyncConfig,
-} from '@updraw/angular-editor';
+  UpmadeSyncConfig,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-persistence-local',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="editor-wrap">
-      <updraw-editor
+      <upmade-editor
         editorId="persistence-local"
         [syncConfig]="syncConfig"
         [theme]="'light'"
@@ -26,7 +26,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady($event)"
-      ></updraw-editor>
+      ></upmade-editor>
     </div>
   `,
   styles: [
@@ -81,11 +81,11 @@ import { createSeedObjects } from '../../../const/seed-objects';
   ],
 })
 export class PersistenceLocalComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: UpdrawSyncConfig = {
+  syncConfig: UpmadeSyncConfig = {
     providers: [IndexedDBSyncProvider],
     appStateId: 'persistence-local',
   };

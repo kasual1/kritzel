@@ -1,12 +1,12 @@
 import { useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import {
-  UpdrawEditor,
-  UpdrawImage,
-  UpdrawShape,
+  UpmadeEditor,
+  UpmadeImage,
+  UpmadeShape,
   ShapeType,
-  type HTMLUpdrawEditorElement,
+  type HTMLUpmadeEditorElement,
   type ThemeAwareColor,
-} from "@updraw/react-editor";
+} from "@upmade/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 import { reactThemeDark } from "../../const/react-theme-dark";
 import { InfoPanel, useInfoPanel } from "../../components/InfoPanel";
@@ -168,16 +168,16 @@ const statusColors: Record<DefectStatus, string> = {
 };
 
 export function BlueprintDefectMapperPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const infoPanel = useInfoPanel({ showOnMobile: true });
   const nextDefectId = useRef(2);
 
   const [placingMode, setPlacingMode] = useState(false);
   const [defects, setDefects] = useState<Defect[]>([]);
 
-  async function initializeBlueprint(editor: HTMLUpdrawEditorElement) {
+  async function initializeBlueprint(editor: HTMLUpmadeEditorElement) {
     // 1. Load floorplan.png from local assets as unselectable background scenery
-    const bg = await UpdrawImage.fromUrl("/floorplan.png", {
+    const bg = await UpmadeImage.fromUrl("/floorplan.png", {
       maxWidth: 660,
       maxHeight: 360,
     });
@@ -210,7 +210,7 @@ export function BlueprintDefectMapperPage() {
 
     for (const d of seedPins) {
       const pinId = `pin-${d.id}`;
-      const pin = new UpdrawShape({
+      const pin = new UpmadeShape({
         translateX: d.x - PIN_SIZE / 2,
         translateY: d.y - PIN_SIZE / 2,
         width: PIN_SIZE,
@@ -238,11 +238,11 @@ export function BlueprintDefectMapperPage() {
     setDefects(initialList);
   }
 
-  async function restoreDefectsFromCanvas(editor: HTMLUpdrawEditorElement) {
+  async function restoreDefectsFromCanvas(editor: HTMLUpmadeEditorElement) {
     const all = await editor.getAllObjects();
     const pinObjects = all.filter(
-      (o) => o.id.startsWith("pin-") && o instanceof UpdrawShape,
-    ) as UpdrawShape[];
+      (o) => o.id.startsWith("pin-") && o instanceof UpmadeShape,
+    ) as UpmadeShape[];
 
     const restoredList: Defect[] = [];
     pinObjects.forEach((pin) => {
@@ -284,11 +284,11 @@ export function BlueprintDefectMapperPage() {
   }
 
   async function normalizeSeedPin(
-    editor: HTMLUpdrawEditorElement,
+    editor: HTMLUpmadeEditorElement,
     pinId: string,
     center: { x: number; y: number },
   ) {
-    const pin = (await editor.getObjectById(pinId)) as UpdrawShape | undefined;
+    const pin = (await editor.getObjectById(pinId)) as UpmadeShape | undefined;
     if (!pin) {
       return;
     }
@@ -343,7 +343,7 @@ export function BlueprintDefectMapperPage() {
     const defectId = `defect-user-${++nextDefectId.current}`;
     const pinId = `pin-${defectId}`;
 
-    const pin = new UpdrawShape({
+    const pin = new UpmadeShape({
       translateX: worldPos.x - PIN_SIZE / 2,
       translateY: worldPos.y - PIN_SIZE / 2,
       width: PIN_SIZE,
@@ -386,7 +386,7 @@ export function BlueprintDefectMapperPage() {
     );
 
     const pin = (await editorRef.current?.getObjectById(defect.pinId)) as
-      | UpdrawShape
+      | UpmadeShape
       | undefined;
     if (pin) {
       await editorRef.current?.updateObject(pin, {
@@ -395,7 +395,7 @@ export function BlueprintDefectMapperPage() {
     }
   }
 
-  async function findPinsForDefect(defect: Defect): Promise<UpdrawShape[]> {
+  async function findPinsForDefect(defect: Defect): Promise<UpmadeShape[]> {
     const editor = editorRef.current;
     if (!editor) {
       return [];
@@ -405,10 +405,10 @@ export function BlueprintDefectMapperPage() {
       new Set([defect.pinId, `pin-${defect.id}`, defect.id]),
     );
 
-    const directMatches: UpdrawShape[] = [];
+    const directMatches: UpmadeShape[] = [];
     for (const id of idCandidates) {
-      const pin = (await editor.getObjectById(id)) as UpdrawShape | null;
-      if (pin && pin instanceof UpdrawShape && pin.shapeType === ShapeType.Ellipse) {
+      const pin = (await editor.getObjectById(id)) as UpmadeShape | null;
+      if (pin && pin instanceof UpmadeShape && pin.shapeType === ShapeType.Ellipse) {
         directMatches.push(pin);
       }
     }
@@ -420,10 +420,10 @@ export function BlueprintDefectMapperPage() {
     const all = await editor.getAllObjects();
     const idMatches = all.filter(
       (obj) =>
-        obj instanceof UpdrawShape &&
+        obj instanceof UpmadeShape &&
         obj.shapeType === ShapeType.Ellipse &&
         idCandidates.includes(obj.id),
-    ) as UpdrawShape[];
+    ) as UpmadeShape[];
 
     if (idMatches.length > 0) {
       return idMatches;
@@ -431,11 +431,11 @@ export function BlueprintDefectMapperPage() {
 
     // Fallback for legacy/persisted IDs: match the nearest pin to the defect coordinates.
     const ellipsePins = all.filter(
-      (obj) => obj instanceof UpdrawShape && obj.shapeType === ShapeType.Ellipse,
-    ) as UpdrawShape[];
+      (obj) => obj instanceof UpmadeShape && obj.shapeType === ShapeType.Ellipse,
+    ) as UpmadeShape[];
 
     const maxDistance = PIN_SIZE;
-    let bestMatch: UpdrawShape | null = null;
+    let bestMatch: UpmadeShape | null = null;
     let bestDistance = Number.POSITIVE_INFINITY;
 
     for (const pin of ellipsePins) {
@@ -467,7 +467,7 @@ export function BlueprintDefectMapperPage() {
   return (
     <div style={hostStyle}>
       <div style={editorPaneStyle} onClick={(event) => void onCanvasClick(event)}>
-        <UpdrawEditor
+        <UpmadeEditor
           ref={editorRef}
           editorId="blueprint-defect-mapper"
           theme="light"

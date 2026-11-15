@@ -1,14 +1,14 @@
 import { Component, Host, h, Prop, State, Element, Event, EventEmitter, Watch, Method } from '@stencil/core';
-import { UpdrawDevicesHelper } from '@updraw/core';
-import { IUpdrawMenuItem } from '@updraw/core';
-import { UpdrawTermKey } from '@updraw/core';
+import { UpmadeDevicesHelper } from '@upmade/core';
+import { IUpmadeMenuItem } from '@upmade/core';
+import { UpmadeTermKey } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-more-menu',
-  styleUrl: 'updraw-more-menu.css',
+  tag: 'upmade-more-menu',
+  styleUrl: 'upmade-more-menu.css',
   shadow: true,
 })
-export class UpdrawMoreMenu {
+export class UpmadeMoreMenu {
   @Element() host!: HTMLElement;
 
   /**
@@ -21,7 +21,7 @@ export class UpdrawMoreMenu {
    * Items with `isVisible` set to `false` will be filtered out.
    * Items with an `action` will have that action invoked on selection.
    */
-  @Prop() items: IUpdrawMenuItem[] = [];
+  @Prop() items: IUpmadeMenuItem[] = [];
 
   /**
    * The icon to display on the button
@@ -39,16 +39,16 @@ export class UpdrawMoreMenu {
   @Prop() offsetY: number = 4;
 
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpmadeTermKey, string>> = {};
 
   /**
    * Emitted when a menu item is selected
    */
-  @Event() itemSelect: EventEmitter<{ item: IUpdrawMenuItem; parent: IUpdrawMenuItem }>;
+  @Event() itemSelect: EventEmitter<{ item: IUpmadeMenuItem; parent: IUpmadeMenuItem }>;
 
   @State() menuAnchor: HTMLElement = null;
-  @State() isTouchDevice: boolean = UpdrawDevicesHelper.isTouchDevice();
-  @State() visibleItems: IUpdrawMenuItem[] = [];
+  @State() isTouchDevice: boolean = UpmadeDevicesHelper.isTouchDevice();
+  @State() visibleItems: IUpmadeMenuItem[] = [];
 
   private visibilityResolveVersion = 0;
 
@@ -63,7 +63,7 @@ export class UpdrawMoreMenu {
       return;
     }
 
-    window.dispatchEvent(new CustomEvent('updraw-dismiss-menus'));
+    window.dispatchEvent(new CustomEvent('upmade-dismiss-menus'));
     this.menuAnchor = this.host;
     this.visibleItems = this.filterVisibleItemsSync(this.items ?? []);
     await this.resolveVisibleItems();
@@ -116,8 +116,8 @@ export class UpdrawMoreMenu {
     return visibility !== false;
   }
 
-  private filterVisibleItemsSync(items: IUpdrawMenuItem[]): IUpdrawMenuItem[] {
-    return items.reduce<IUpdrawMenuItem[]>((visibleItems, item) => {
+  private filterVisibleItemsSync(items: IUpmadeMenuItem[]): IUpmadeMenuItem[] {
+    return items.reduce<IUpmadeMenuItem[]>((visibleItems, item) => {
       const isVisible = this.evaluateVisibilitySync(item.isVisible);
       if (isVisible === null || !isVisible) {
         return visibleItems;
@@ -137,7 +137,7 @@ export class UpdrawMoreMenu {
     }, []);
   }
 
-  private async filterVisibleItems(items: IUpdrawMenuItem[]): Promise<IUpdrawMenuItem[]> {
+  private async filterVisibleItems(items: IUpmadeMenuItem[]): Promise<IUpmadeMenuItem[]> {
     const resolved = await Promise.all(
       items.map(async item => {
         const isVisible = await this.evaluateVisibility(item.isVisible);
@@ -156,7 +156,7 @@ export class UpdrawMoreMenu {
       }),
     );
 
-    return resolved.filter((item): item is IUpdrawMenuItem => !!item);
+    return resolved.filter((item): item is IUpmadeMenuItem => !!item);
   }
 
   private async resolveVisibleItems(): Promise<void> {
@@ -171,15 +171,15 @@ export class UpdrawMoreMenu {
     this.visibleItems = resolvedItems;
   }
 
-  private resolveMenuLabels(items: IUpdrawMenuItem[]): IUpdrawMenuItem[] {
+  private resolveMenuLabels(items: IUpmadeMenuItem[]): IUpmadeMenuItem[] {
     return items.map(item => ({
       ...item,
-      label: this.terms[item.label as UpdrawTermKey] ?? item.label,
+      label: this.terms[item.label as UpmadeTermKey] ?? item.label,
       children: item.children ? this.resolveMenuLabels(item.children) : undefined,
     }));
   }
 
-  private handleMenuItemSelect = (event: CustomEvent<{ item: IUpdrawMenuItem; parent: IUpdrawMenuItem }>): void => {
+  private handleMenuItemSelect = (event: CustomEvent<{ item: IUpmadeMenuItem; parent: IUpmadeMenuItem }>): void => {
     const { item, parent } = event.detail;
 
     if (item.action) {
@@ -199,15 +199,15 @@ export class UpdrawMoreMenu {
             onClick={this.toggleMenu}
             aria-label={this.terms['moreMenu.ariaLabel'] ?? 'More options'}
           >
-            <updraw-icon name={this.icon} size={this.iconSize}></updraw-icon>
+            <upmade-icon name={this.icon} size={this.iconSize}></upmade-icon>
           </button>
 
-          <updraw-portal anchor={this.menuAnchor} offsetY={this.offsetY} onClose={this.closeMenu}>
-            <updraw-menu
+          <upmade-portal anchor={this.menuAnchor} offsetY={this.offsetY} onClose={this.closeMenu}>
+            <upmade-menu
               items={this.resolveMenuLabels(this.visibleItems)}
               onItemSelect={this.handleMenuItemSelect}
-            ></updraw-menu>
-          </updraw-portal>
+            ></upmade-menu>
+          </upmade-portal>
         </div>
       </Host>
     );

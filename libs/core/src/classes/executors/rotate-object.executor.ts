@@ -1,12 +1,12 @@
-import type { UpdrawAgenticRotateObjectAction } from '../../interfaces/agentic-action.interface';
+import type { UpmadeAgenticRotateObjectAction } from '../../interfaces/agentic-action.interface';
 import { AGENTIC_ACTION_ROTATE_SPEED } from '../../constants/agentic-action.constants';
-import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpmadeAgenticActionExecutor } from '../../types/agentic-action.types';
 import { prepareTopLevelTargets } from './select.executor';
 import { assertObjectId } from '../../helpers/agentic-validation.helper';
 import { createTransientSelectionGroup, targetRotation } from '../../helpers/agentic-transform.helper';
 
 /** `rotateObject`: grabs the rotation handle and turns the object to the new angle. */
-export const rotateObjectExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticRotateObjectAction> = {
+export const rotateObjectExecutor: UpmadeAgenticActionExecutor<UpmadeAgenticRotateObjectAction> = {
   mutates: true,
 
   validate(action) {

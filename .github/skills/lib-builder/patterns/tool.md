@@ -6,16 +6,16 @@
 
 ## Base Class
 
-All tools extend `UpdrawBaseTool` which implements `UpdrawTool` and `UpdrawSerializable`.
+All tools extend `UpmadeBaseTool` which implements `UpmadeTool` and `UpmadeSerializable`.
 
 ```typescript
-import { UpdrawBaseTool } from './base-tool.class';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeBaseTool } from './base-tool.class';
+import { UpmadeCore } from '../core/core.class';
 
-export class MyTool extends UpdrawBaseTool {
+export class MyTool extends UpmadeBaseTool {
   override name = 'my-tool';
 
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     super(core);
   }
 }
@@ -36,7 +36,7 @@ export class MyTool extends UpdrawBaseTool {
 
 ## Lifecycle
 
-1. Tool is registered via `UpdrawToolRegistry`
+1. Tool is registered via `UpmadeToolRegistry`
 2. User selects tool → `onActivate()` called
 3. Pointer events dispatched to active tool
 4. User switches tool → `onDeactivate()` called

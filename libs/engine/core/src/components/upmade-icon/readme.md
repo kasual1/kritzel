@@ -1,4 +1,4 @@
-# updraw-icon
+# upmade-icon
 
 
 
@@ -18,15 +18,15 @@
 
 ### Used by
 
- - [updraw-engine](../updraw-engine)
- - [updraw-object-titlebar-layer](../updraw-object-titlebar-layer)
+ - [upmade-engine](../upmade-engine)
+ - [upmade-object-titlebar-layer](../upmade-object-titlebar-layer)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-engine --> updraw-icon
-  updraw-object-titlebar-layer --> updraw-icon
-  style updraw-icon fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-engine --> upmade-icon
+  upmade-object-titlebar-layer --> upmade-icon
+  style upmade-icon fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

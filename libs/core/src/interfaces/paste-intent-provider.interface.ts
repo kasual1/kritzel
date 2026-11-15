@@ -1,12 +1,12 @@
-import { UpdrawCore } from '../classes/core/core.class';
+import { UpmadeCore } from '../classes/core/core.class';
 import { PasteIntent } from '../classes/managers/clipboard.types';
 
-export interface UpdrawPasteIntentProviderContext {
-  core: UpdrawCore;
+export interface UpmadePasteIntentProviderContext {
+  core: UpmadeCore;
   event?: ClipboardEvent;
 }
 
-export interface UpdrawPasteIntentProvider {
-  canHandle(context: UpdrawPasteIntentProviderContext): boolean;
-  getPasteIntent(context: UpdrawPasteIntentProviderContext): Promise<PasteIntent>;
+export interface UpmadePasteIntentProvider {
+  canHandle(context: UpmadePasteIntentProviderContext): boolean;
+  getPasteIntent(context: UpmadePasteIntentProviderContext): Promise<PasteIntent>;
 }

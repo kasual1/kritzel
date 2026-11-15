@@ -1,35 +1,35 @@
 import { useCallback, useRef, useState } from 'react';
 import {
-  UpdrawBrushTool,
-  UpdrawEngine,
-  UpdrawEraserTool,
-  UpdrawSelectionTool,
-  type HTMLUpdrawEngineElement,
-} from '@updraw/react-engine';
+  UpmadeBrushTool,
+  UpmadeEngine,
+  UpmadeEraserTool,
+  UpmadeSelectionTool,
+  type HTMLUpmadeEngineElement,
+} from '@upmade/react-engine';
 
-const editorId = 'updraw-canvas';
+const editorId = 'upmade-canvas';
 const canvasStyle = { display: 'block', width: '100%', height: 480 };
 
-export function UpdrawCanvas() {
-  const engineRef = useRef<HTMLUpdrawEngineElement>(null);
+export function UpmadeCanvas() {
+  const engineRef = useRef<HTMLUpmadeEngineElement>(null);
   const [initializationError, setInitializationError] = useState('');
 
   const initializeEngine = useCallback(async () => {
     const engine = engineRef.current;
     if (!engine) {
-      setInitializationError('The Updraw engine element is not available.');
+      setInitializationError('The Upmade engine element is not available.');
       return;
     }
 
     try {
-      if (!(await engine.registerTool('selection', UpdrawSelectionTool))) {
-        throw new Error('Updraw could not register the selection tool.');
+      if (!(await engine.registerTool('selection', UpmadeSelectionTool))) {
+        throw new Error('Upmade could not register the selection tool.');
       }
-      if (!(await engine.registerTool('brush', UpdrawBrushTool))) {
-        throw new Error('Updraw could not register the brush tool.');
+      if (!(await engine.registerTool('brush', UpmadeBrushTool))) {
+        throw new Error('Upmade could not register the brush tool.');
       }
-      if (!(await engine.registerTool('eraser', UpdrawEraserTool))) {
-        throw new Error('Updraw could not register the eraser tool.');
+      if (!(await engine.registerTool('eraser', UpmadeEraserTool))) {
+        throw new Error('Upmade could not register the eraser tool.');
       }
       await engine.setActiveTool('brush');
     } catch (error: unknown) {
@@ -39,12 +39,12 @@ export function UpdrawCanvas() {
 
   return (
     <section>
-      <UpdrawEngine
+      <UpmadeEngine
         ref={engineRef}
         editorId={editorId}
         onIsEngineReady={() => { void initializeEngine(); }}
         style={canvasStyle}
-        aria-label="Updraw canvas"
+        aria-label="Upmade canvas"
       />
       {initializationError && <p role="alert">{initializationError}</p>}
     </section>

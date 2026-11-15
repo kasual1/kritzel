@@ -1,36 +1,36 @@
 import { useRef } from "react";
 import {
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawSelectionTool,
-  UpdrawTextTool,
-  type HTMLUpdrawEditorElement,
-  type UpdrawToolbarItem,
-} from "@updraw/react-editor";
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeSelectionTool,
+  UpmadeTextTool,
+  type HTMLUpmadeEditorElement,
+  type UpmadeToolbarItem,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
 
 const themes = [reactThemeLight, reactThemeDark];
 
-const toolbarItems: UpdrawToolbarItem[] = [
+const toolbarItems: UpmadeToolbarItem[] = [
   {
     name: "selection",
     type: "tool",
-    tool: UpdrawSelectionTool,
+    tool: UpmadeSelectionTool,
     icon: "cursor",
   },
   {
     name: "brush",
     type: "tool",
-    tool: UpdrawBrushTool,
+    tool: UpmadeBrushTool,
     icon: "pen",
     isDefault: true,
   },
   {
     name: "text",
     type: "tool",
-    tool: UpdrawTextTool,
+    tool: UpmadeTextTool,
     icon: "type",
   },
   {
@@ -40,11 +40,11 @@ const toolbarItems: UpdrawToolbarItem[] = [
 ];
 
 export function ToolsToolbarPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
 
   return (
     <div style={hostStyle}>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="tools-toolbar"
         theme="light"

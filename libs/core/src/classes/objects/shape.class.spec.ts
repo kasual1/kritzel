@@ -1,8 +1,8 @@
-import { UpdrawShape } from './shape.class';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawKeyboardHelper } from '../../helpers/keyboard.helper';
-import { UpdrawDevicesHelper } from '../../helpers/devices.helper';
-import { UpdrawGeometryHelper } from '../../helpers/geometry.helper';
+import { UpmadeShape } from './shape.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeKeyboardHelper } from '../../helpers/keyboard.helper';
+import { UpmadeDevicesHelper } from '../../helpers/devices.helper';
+import { UpmadeGeometryHelper } from '../../helpers/geometry.helper';
 import { ShapeType } from '../../enums/shape-type.enum';
 
 // Mock prosemirror modules
@@ -93,7 +93,7 @@ jest.mock('prosemirror-commands', () => ({
 }));
 
 jest.mock('../../helpers/keyboard.helper', () => ({
-  UpdrawKeyboardHelper: {
+  UpmadeKeyboardHelper: {
     disableInteractiveWidget: jest.fn(),
     enableInteractiveWidget: jest.fn(),
     forceHideKeyboard: jest.fn(),
@@ -101,14 +101,14 @@ jest.mock('../../helpers/keyboard.helper', () => ({
 }));
 
 jest.mock('../../helpers/devices.helper', () => ({
-  UpdrawDevicesHelper: {
+  UpmadeDevicesHelper: {
     isIOS: jest.fn(() => false),
     isTouchDevice: jest.fn(() => false),
   },
 }));
 
 jest.mock('../../helpers/geometry.helper', () => ({
-  UpdrawGeometryHelper: {
+  UpmadeGeometryHelper: {
     getEllipsePolygonApproximation: jest.fn(() => [
       { x: 100, y: 50 },
       { x: 50, y: 100 },
@@ -118,15 +118,15 @@ jest.mock('../../helpers/geometry.helper', () => ({
   },
 }));
 
-describe('UpdrawShape', () => {
-  let shapeObject: UpdrawShape;
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadeShape', () => {
+  let shapeObject: UpmadeShape;
+  let mockCore: jest.Mocked<UpmadeCore>;
   let mockObjectsUpdate: jest.Mock;
   let mockObjectsConsolidate: jest.Mock;
   let mockRerender: jest.Mock;
   let mockEmitObjectsChange: jest.Mock;
 
-  const createMockCore = (): jest.Mocked<UpdrawCore> => {
+  const createMockCore = (): jest.Mocked<UpmadeCore> => {
     const objectsUpdate = jest.fn();
     const objectsConsolidate = jest.fn();
     const rerender = jest.fn();
@@ -171,13 +171,13 @@ describe('UpdrawShape', () => {
       toolRegistry: {
         getTool: jest.fn(() => ({ name: 'shape' })),
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
   };
 
   beforeEach(() => {
     mockCore = createMockCore();
 
-    shapeObject = UpdrawShape.create(mockCore, {
+    shapeObject = UpmadeShape.create(mockCore, {
       x: 10,
       y: 20,
       width: 100,
@@ -195,12 +195,12 @@ describe('UpdrawShape', () => {
 
   describe('constructor', () => {
     it('should apply the common name option', () => {
-      expect(new UpdrawShape({ name: 'Desktop' }).name).toBe('Desktop');
-      expect(new UpdrawShape().name).toBeUndefined();
+      expect(new UpmadeShape({ name: 'Desktop' }).name).toBe('Desktop');
+      expect(new UpmadeShape().name).toBeUndefined();
     });
 
     it('should create a shape with default values when no config provided', () => {
-      const defaultShape = new UpdrawShape();
+      const defaultShape = new UpmadeShape();
 
       expect(defaultShape.shapeType).toBe(ShapeType.Rectangle);
       expect(defaultShape.fillColor).toEqual({ light: 'transparent', dark: 'transparent' });
@@ -213,11 +213,11 @@ describe('UpdrawShape', () => {
       expect(defaultShape.y).toBe(0);
       expect(defaultShape.scale).toBe(1);
       expect(defaultShape.scaleFactor).toBe(1);
-      expect(defaultShape.__class__).toBe('UpdrawShape');
+      expect(defaultShape.__class__).toBe('UpmadeShape');
     });
 
     it('should create a shape with provided config values', () => {
-      const configuredShape = new UpdrawShape({
+      const configuredShape = new UpmadeShape({
         x: 50,
         y: 100,
         width: 200,
@@ -247,7 +247,7 @@ describe('UpdrawShape', () => {
     });
 
     it('should default scale to 1 when config omits scale', () => {
-      const shape = new UpdrawShape({ translateX: 20, translateY: -150, width: 120, height: 120 });
+      const shape = new UpmadeShape({ translateX: 20, translateY: -150, width: 120, height: 120 });
 
       expect(shape.scale).toBe(1);
       expect(shape.transformationMatrix).toBe('matrix(1, 0, 0, 1, 20, -150)');
@@ -262,7 +262,7 @@ describe('UpdrawShape', () => {
     });
 
     it('should convert constructor rotation from degrees to radians', () => {
-      const configuredShape = new UpdrawShape({
+      const configuredShape = new UpmadeShape({
         rotation: -90,
       });
 
@@ -272,7 +272,7 @@ describe('UpdrawShape', () => {
 
   describe('static create', () => {
     it('should create a shape with core reference and workspace id', () => {
-      const createdShape = UpdrawShape.create(mockCore, {
+      const createdShape = UpmadeShape.create(mockCore, {
         shapeType: ShapeType.Triangle,
         fillColor: { light: '#00ff00', dark: '#00ff00' },
       });
@@ -285,8 +285,8 @@ describe('UpdrawShape', () => {
     });
 
     it('should generate a unique id', () => {
-      const shape1 = UpdrawShape.create(mockCore);
-      const shape2 = UpdrawShape.create(mockCore);
+      const shape1 = UpmadeShape.create(mockCore);
+      const shape2 = UpmadeShape.create(mockCore);
 
       expect(shape1.id).toBeDefined();
       expect(shape2.id).toBeDefined();
@@ -294,19 +294,19 @@ describe('UpdrawShape', () => {
     });
 
     it('should set transparent background', () => {
-      const createdShape = UpdrawShape.create(mockCore);
+      const createdShape = UpmadeShape.create(mockCore);
 
       expect(createdShape.backgroundColor).toEqual({ light: 'transparent', dark: 'transparent' });
     });
 
     it('should create an editor', () => {
-      const createdShape = UpdrawShape.create(mockCore);
+      const createdShape = UpmadeShape.create(mockCore);
 
       expect(createdShape.editor).toBeDefined();
     });
 
     it('should use default values when not provided', () => {
-      const createdShape = UpdrawShape.create(mockCore);
+      const createdShape = UpmadeShape.create(mockCore);
 
       expect(createdShape.x).toBe(0);
       expect(createdShape.y).toBe(0);
@@ -319,7 +319,7 @@ describe('UpdrawShape', () => {
     });
 
     it('should convert create rotation from degrees to radians', () => {
-      const createdShape = UpdrawShape.create(mockCore, {
+      const createdShape = UpmadeShape.create(mockCore, {
         rotation: -90,
       });
 
@@ -561,7 +561,7 @@ describe('UpdrawShape', () => {
 
     it('should scroll into view on iOS', () => {
       jest.useFakeTimers();
-      (UpdrawDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
+      (UpmadeDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
 
       const scrollIntoViewMock = jest.fn();
       shapeObject.editor!.dom.scrollIntoView = scrollIntoViewMock;
@@ -592,14 +592,14 @@ describe('UpdrawShape', () => {
 
       shapeObject.edit();
 
-      expect(UpdrawKeyboardHelper.disableInteractiveWidget).not.toHaveBeenCalled();
+      expect(UpmadeKeyboardHelper.disableInteractiveWidget).not.toHaveBeenCalled();
       expect(shapeObject.uneditedObject).toBeNull();
     });
 
     it('should disable interactive widget', () => {
       shapeObject.edit();
 
-      expect(UpdrawKeyboardHelper.disableInteractiveWidget).toHaveBeenCalled();
+      expect(UpmadeKeyboardHelper.disableInteractiveWidget).toHaveBeenCalled();
     });
 
     it('should clone current object as uneditedObject', () => {
@@ -632,7 +632,7 @@ describe('UpdrawShape', () => {
     it('should enable interactive widget after editing starts', () => {
       shapeObject.edit();
 
-      expect(UpdrawKeyboardHelper.enableInteractiveWidget).toHaveBeenCalled();
+      expect(UpmadeKeyboardHelper.enableInteractiveWidget).toHaveBeenCalled();
     });
 
     it('should focus with coordinates when event is provided', () => {
@@ -655,7 +655,7 @@ describe('UpdrawShape', () => {
 
     it('should retry focus on iOS after rerender', () => {
       const focusSpy = jest.spyOn(shapeObject, 'focus');
-      (UpdrawDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
+      (UpmadeDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
       const requestAnimationFrameSpy = jest
         .spyOn(globalThis, 'requestAnimationFrame')
         .mockImplementation(callback => {
@@ -878,7 +878,7 @@ describe('UpdrawShape', () => {
         height: 75,
       };
 
-      const newShape = new UpdrawShape();
+      const newShape = new UpmadeShape();
       newShape._core = mockCore;
       newShape.editor = shapeObject.editor;
       newShape.deserialize(serializedData);
@@ -896,7 +896,7 @@ describe('UpdrawShape', () => {
         content: content,
       };
 
-      const newShape = new UpdrawShape();
+      const newShape = new UpmadeShape();
       newShape._core = mockCore;
       newShape.editor = shapeObject.editor;
       const setContentSpy = jest.spyOn(newShape, 'setContent');
@@ -932,7 +932,7 @@ describe('UpdrawShape', () => {
 
       const polygon = shapeObject.getClipPolygon();
 
-      expect(UpdrawGeometryHelper.getEllipsePolygonApproximation).toHaveBeenCalled();
+      expect(UpmadeGeometryHelper.getEllipsePolygonApproximation).toHaveBeenCalled();
       expect(polygon).toBeDefined();
       expect(Array.isArray(polygon)).toBe(true);
     });

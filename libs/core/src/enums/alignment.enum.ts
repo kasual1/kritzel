@@ -1,4 +1,4 @@
-export enum UpdrawAlignment {
+export enum UpmadeAlignment {
   StartHorizontal = 'start-horizontal',
   CenterHorizontal = 'center-horizontal',
   EndHorizontal = 'end-horizontal',

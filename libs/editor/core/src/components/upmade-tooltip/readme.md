@@ -1,4 +1,4 @@
-# updraw-tooltip
+# upmade-tooltip
 
 
 
@@ -77,13 +77,13 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [updraw-toolbar](../updraw-toolbar)
+ - [upmade-toolbar](../upmade-toolbar)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-toolbar --> updraw-tooltip
-  style updraw-tooltip fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-toolbar --> upmade-tooltip
+  style upmade-tooltip fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

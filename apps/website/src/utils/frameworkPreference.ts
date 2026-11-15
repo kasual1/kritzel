@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-const STORAGE_KEY = 'updraw-preferred-framework';
-const CHANGE_EVENT = 'updraw-framework-preference-change';
+const STORAGE_KEY = 'upmade-preferred-framework';
+const CHANGE_EVENT = 'upmade-framework-preference-change';
 
 export type Framework = 'angular' | 'react' | 'vue';
 

@@ -1,5 +1,5 @@
 // Same environment as `stencil test --spec` in the engine (node + Stencil's mock-doc),
-// so the specs that moved here from @updraw/engine run unchanged.
+// so the specs that moved here from @upmade/engine run unchanged.
 module.exports = {
   preset: '@stencil/core/testing',
   transform: { '^.+\\.tsx?$': 'ts-jest' },

@@ -1,25 +1,25 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawLineTool,
-  UpdrawSelectionTool,
-  UpdrawShapeTool,
-  UpdrawTextTool,
-  UpdrawToolbarItem,
-  UpdrawWorkspace,
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeLineTool,
+  UpmadeSelectionTool,
+  UpmadeShapeTool,
+  UpmadeTextTool,
+  UpmadeToolbarItem,
+  UpmadeWorkspace,
   ShapeType,
-} from '@updraw/angular-editor';
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-tools-config',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       editorId="tools-config"
       [theme]="'light'"
       [themes]="themes"
@@ -29,7 +29,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: `
     :host {
@@ -41,19 +41,19 @@ import { createSeedObjects } from '../../../const/seed-objects';
 export class ToolsConfigComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
-  toolbarItems: UpdrawToolbarItem[] = [
+  toolbarItems: UpmadeToolbarItem[] = [
     {
       name: 'selection',
       type: 'tool',
-      tool: UpdrawSelectionTool,
+      tool: UpmadeSelectionTool,
       icon: 'cursor',
     },
     {
       name: 'brush',
       type: 'tool',
-      tool: UpdrawBrushTool,
+      tool: UpmadeBrushTool,
       icon: 'pen',
       isDefault: true,
       config: {
@@ -71,7 +71,7 @@ export class ToolsConfigComponent {
     {
       name: 'line',
       type: 'tool',
-      tool: UpdrawLineTool,
+      tool: UpmadeLineTool,
       icon: 'arrow',
       config: {
         color: { light: '#0284c7', dark: '#38bdf8', label: 'Sky' },
@@ -91,7 +91,7 @@ export class ToolsConfigComponent {
     {
       name: 'shape',
       type: 'tool',
-      tool: UpdrawShapeTool,
+      tool: UpmadeShapeTool,
       icon: 'shapeEllipse',
       config: {
         shapeType: ShapeType.Ellipse,
@@ -117,7 +117,7 @@ export class ToolsConfigComponent {
     {
       name: 'text',
       type: 'tool',
-      tool: UpdrawTextTool,
+      tool: UpmadeTextTool,
       icon: 'type',
       config: {
         color: { light: '#1f2937', dark: '#f3f4f6', label: 'Ink' },

@@ -1,10 +1,10 @@
-import { UpdrawLocale } from '../interfaces/localization.interface';
+import { UpmadeLocale } from '../interfaces/localization.interface';
 
 /**
  * Built-in English locale (default). Provides a complete set of term values
  * that act as the ultimate fallback when other locales omit a key.
  */
-export const EN_LOCALE: UpdrawLocale = {
+export const EN_LOCALE: UpmadeLocale = {
   code: 'en',
   label: 'English',
   terms: {
@@ -77,7 +77,7 @@ export const EN_LOCALE: UpdrawLocale = {
     'settings.developer.showMigrationInfo.label': 'Show Migration Info',
     'settings.developer.showMigrationInfo.description': 'Display debug information about data migrations.',
     'settings.about.title': 'About',
-    'settings.about.description': 'Updraw - A drawing application',
+    'settings.about.description': 'Upmade - A drawing application',
 
     // Export dialog
     'export.dialogTitle': 'Export',
@@ -135,7 +135,7 @@ export const EN_LOCALE: UpdrawLocale = {
     'moreMenu.ariaLabel': 'More options',
 
     // Watermark
-    'watermark.poweredBy': 'Powered by Updraw',
+    'watermark.poweredBy': 'Powered by Upmade',
 
     // Object type labels
     'objectType.shape': 'Shape',

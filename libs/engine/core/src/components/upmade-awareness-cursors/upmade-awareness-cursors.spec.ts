@@ -5,26 +5,26 @@ jest.mock('@stencil/core', () => ({
   State: () => () => {},
 }));
 
-class MockUpdrawPath { }
-class MockUpdrawLine { }
-class MockUpdrawShape { }
+class MockUpmadePath { }
+class MockUpmadeLine { }
+class MockUpmadeShape { }
 
-jest.mock('@updraw/core/src/classes/objects/path.class', () => ({
-  UpdrawPath: MockUpdrawPath,
+jest.mock('@upmade/core/src/classes/objects/path.class', () => ({
+  UpmadePath: MockUpmadePath,
 }));
-jest.mock('@updraw/core/src/classes/objects/line.class', () => ({
-  UpdrawLine: MockUpdrawLine,
+jest.mock('@upmade/core/src/classes/objects/line.class', () => ({
+  UpmadeLine: MockUpmadeLine,
 }));
-jest.mock('@updraw/core/src/classes/objects/shape.class', () => ({
-  UpdrawShape: MockUpdrawShape,
+jest.mock('@upmade/core/src/classes/objects/shape.class', () => ({
+  UpmadeShape: MockUpmadeShape,
 }));
 
-import { UpdrawAwarenessCursors } from './updraw-awareness-cursors';
-import { UpdrawCore, UpdrawViewportOverlayHelper } from '@updraw/core';
+import { UpmadeAwarenessCursors } from './upmade-awareness-cursors';
+import { UpmadeCore, UpmadeViewportOverlayHelper } from '@upmade/core';
 
-describe('UpdrawAwarenessCursors', () => {
-  let component: UpdrawAwarenessCursors;
-  let mockCore: UpdrawCore;
+describe('UpmadeAwarenessCursors', () => {
+  let component: UpmadeAwarenessCursors;
+  let mockCore: UpmadeCore;
 
   const createMockCore = (overrides: Partial<{
     scale: number;
@@ -61,7 +61,7 @@ describe('UpdrawAwarenessCursors', () => {
           findById: jest.fn(),
         },
       },
-    } as unknown as UpdrawCore;
+    } as unknown as UpmadeCore;
   };
 
   const createAwarenessStates = (entries: Array<{
@@ -83,7 +83,7 @@ describe('UpdrawAwarenessCursors', () => {
 
   beforeEach(() => {
     mockCore = createMockCore();
-    component = new UpdrawAwarenessCursors();
+    component = new UpmadeAwarenessCursors();
     component.core = mockCore;
     component.showEdgeIndicators = true;
     component.edgeIndicatorPadding = 40;
@@ -245,28 +245,28 @@ describe('UpdrawAwarenessCursors', () => {
 
   describe('clampToEdge', () => {
     it('should clamp coordinates to left edge', () => {
-      const result = UpdrawViewportOverlayHelper.clampToEdge(component.core.store.state, -100, 400, component.edgeIndicatorPadding);
+      const result = UpmadeViewportOverlayHelper.clampToEdge(component.core.store.state, -100, 400, component.edgeIndicatorPadding);
 
       expect(result.x).toBe(40); // edgeIndicatorPadding
       expect(result.y).toBe(400);
     });
 
     it('should clamp coordinates to top edge', () => {
-      const result = UpdrawViewportOverlayHelper.clampToEdge(component.core.store.state, 500, -200, component.edgeIndicatorPadding);
+      const result = UpmadeViewportOverlayHelper.clampToEdge(component.core.store.state, 500, -200, component.edgeIndicatorPadding);
 
       expect(result.x).toBe(500);
       expect(result.y).toBe(40);
     });
 
     it('should clamp coordinates to right edge', () => {
-      const result = UpdrawViewportOverlayHelper.clampToEdge(component.core.store.state, 1500, 400, component.edgeIndicatorPadding);
+      const result = UpmadeViewportOverlayHelper.clampToEdge(component.core.store.state, 1500, 400, component.edgeIndicatorPadding);
 
       expect(result.x).toBe(960); // viewportWidth - padding
       expect(result.y).toBe(400);
     });
 
     it('should clamp coordinates to bottom edge', () => {
-      const result = UpdrawViewportOverlayHelper.clampToEdge(component.core.store.state, 500, 1200, component.edgeIndicatorPadding);
+      const result = UpmadeViewportOverlayHelper.clampToEdge(component.core.store.state, 500, 1200, component.edgeIndicatorPadding);
 
       expect(result.x).toBe(500);
       expect(result.y).toBe(760); // viewportHeight - padding
@@ -274,14 +274,14 @@ describe('UpdrawAwarenessCursors', () => {
 
     it('should compute correct angle for off-screen cursor', () => {
       // Cursor far to the right: angle should be ~0 (pointing right)
-      const result = UpdrawViewportOverlayHelper.clampToEdge(component.core.store.state, 2000, 400, component.edgeIndicatorPadding);
+      const result = UpmadeViewportOverlayHelper.clampToEdge(component.core.store.state, 2000, 400, component.edgeIndicatorPadding);
 
       expect(result.angle).toBeCloseTo(0, 1);
     });
 
     it('should compute correct angle for cursor below viewport', () => {
       // Cursor far below: angle should be ~π/2 (pointing down)
-      const result = UpdrawViewportOverlayHelper.clampToEdge(component.core.store.state, 500, 2000, component.edgeIndicatorPadding);
+      const result = UpmadeViewportOverlayHelper.clampToEdge(component.core.store.state, 500, 2000, component.edgeIndicatorPadding);
 
       expect(result.angle).toBeCloseTo(Math.PI / 2, 1);
     });
@@ -289,23 +289,23 @@ describe('UpdrawAwarenessCursors', () => {
 
   describe('getInitials', () => {
     it('should return two initials for full name', () => {
-      expect(UpdrawViewportOverlayHelper.getInitials('John Doe')).toBe('JD');
+      expect(UpmadeViewportOverlayHelper.getInitials('John Doe')).toBe('JD');
     });
 
     it('should return single initial for single name', () => {
-      expect(UpdrawViewportOverlayHelper.getInitials('Alice')).toBe('A');
+      expect(UpmadeViewportOverlayHelper.getInitials('Alice')).toBe('A');
     });
 
     it('should use first and last for multi-part names', () => {
-      expect(UpdrawViewportOverlayHelper.getInitials('John Michael Doe')).toBe('JD');
+      expect(UpmadeViewportOverlayHelper.getInitials('John Michael Doe')).toBe('JD');
     });
 
     it('should handle empty string', () => {
-      expect(UpdrawViewportOverlayHelper.getInitials('?')).toBe('?');
+      expect(UpmadeViewportOverlayHelper.getInitials('?')).toBe('?');
     });
 
     it('should uppercase initials', () => {
-      expect(UpdrawViewportOverlayHelper.getInitials('john doe')).toBe('JD');
+      expect(UpmadeViewportOverlayHelper.getInitials('john doe')).toBe('JD');
     });
   });
 
@@ -367,8 +367,8 @@ describe('UpdrawAwarenessCursors', () => {
       expect(result).toBeNull();
     });
 
-    it('should return world coords for an UpdrawPath last point', () => {
-      const mockPath = Object.create(MockUpdrawPath.prototype);
+    it('should return world coords for an UpmadePath last point', () => {
+      const mockPath = Object.create(MockUpmadePath.prototype);
       Object.assign(mockPath, {
         points: [[10, 20], [30, 40]],
         x: 5,
@@ -388,8 +388,8 @@ describe('UpdrawAwarenessCursors', () => {
       });
     });
 
-    it('should return null for a completed UpdrawPath', () => {
-      const mockPath = Object.create(MockUpdrawPath.prototype);
+    it('should return null for a completed UpmadePath', () => {
+      const mockPath = Object.create(MockUpmadePath.prototype);
       Object.assign(mockPath, {
         points: [[10, 20]],
         translateX: 0,
@@ -404,10 +404,10 @@ describe('UpdrawAwarenessCursors', () => {
       expect(result).toBeNull();
     });
 
-    it('should return world coords for an UpdrawLine end point', () => {
-      const mockLine = Object.create(MockUpdrawLine.prototype);
+    it('should return world coords for an UpmadeLine end point', () => {
+      const mockLine = Object.create(MockUpmadeLine.prototype);
       Object.assign(mockLine, {
-        __class__: 'UpdrawLine',
+        __class__: 'UpmadeLine',
         endX: 50,
         endY: 60,
         x: 5,
@@ -427,10 +427,10 @@ describe('UpdrawAwarenessCursors', () => {
       });
     });
 
-    it('should return null for a completed UpdrawLine', () => {
-      const mockLine = Object.create(MockUpdrawLine.prototype);
+    it('should return null for a completed UpmadeLine', () => {
+      const mockLine = Object.create(MockUpmadeLine.prototype);
       Object.assign(mockLine, {
-        __class__: 'UpdrawLine',
+        __class__: 'UpmadeLine',
         endX: 50,
         endY: 60,
         translateX: 0,
@@ -445,8 +445,8 @@ describe('UpdrawAwarenessCursors', () => {
       expect(result).toBeNull();
     });
 
-    it('should return null for an UpdrawShape (falls back to awareness cursor)', () => {
-      const mockShape = Object.create(MockUpdrawShape.prototype);
+    it('should return null for an UpmadeShape (falls back to awareness cursor)', () => {
+      const mockShape = Object.create(MockUpmadeShape.prototype);
       Object.assign(mockShape, {
         x: 10,
         y: 20,

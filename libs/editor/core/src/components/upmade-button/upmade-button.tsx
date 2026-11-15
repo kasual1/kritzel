@@ -1,11 +1,11 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 
 @Component({
-  tag: 'updraw-button',
-  styleUrl: 'updraw-button.css',
+  tag: 'upmade-button',
+  styleUrl: 'upmade-button.css',
   shadow: true,
 })
-export class UpdrawButton {
+export class UpmadeButton {
   /** The visual variant of the button */
   @Prop() variant: 'primary' | 'secondary' | 'text' = 'primary';
 
@@ -30,7 +30,7 @@ export class UpdrawButton {
         <button
           type={this.type}
           class={{
-            'updraw-button': true,
+            'upmade-button': true,
             [this.variant]: true,
             'disabled': this.disabled,
           }}

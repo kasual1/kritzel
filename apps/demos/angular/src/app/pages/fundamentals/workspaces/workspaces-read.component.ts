@@ -8,10 +8,10 @@ import {
 import {
   ActiveWorkspaceChangeEvent,
   InMemorySyncProvider,
-  UpdrawEditor,
-  UpdrawSyncConfig,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeEditor,
+  UpmadeSyncConfig,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import {
   InfoPanelComponent,
   InfoPanelToggleComponent,
@@ -24,7 +24,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
 @Component({
   selector: 'app-workspaces-read',
   imports: [
-    UpdrawEditor,
+    UpmadeEditor,
     InfoPanelComponent,
     InfoPanelToggleComponent,
     ToolbarComponent,
@@ -45,7 +45,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       <app-info-panel-toggle [panel]="infoPanel"></app-info-panel-toggle>
     </app-toolbar>
     <div class="content">
-      <updraw-editor
+      <upmade-editor
         editorId="workspaces-read"
         [theme]="'light'"
         [themes]="themes"
@@ -58,7 +58,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady()"
         (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-      ></updraw-editor>
+      ></upmade-editor>
       <app-info-panel #infoPanel>
         <h3>Active Workspace</h3>
         <pre>{{ activeWorkspaceJson() }}</pre>
@@ -79,7 +79,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         min-height: 0;
         position: relative;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
       }
       app-info-panel {
@@ -97,21 +97,21 @@ import { createSeedObjects } from '../../../const/seed-objects';
   ],
 })
 export class WorkspacesReadComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-  syncConfig: UpdrawSyncConfig = {
+  syncConfig: UpmadeSyncConfig = {
     providers: [InMemorySyncProvider],
   };
-  workspaces = signal<UpdrawWorkspace[]>([
-    new UpdrawWorkspace({
+  workspaces = signal<UpmadeWorkspace[]>([
+    new UpmadeWorkspace({
       id: 'board-1',
       name: 'Board 1',
       objects: createSeedObjects(),
     }),
   ]);
   activeWorkspaceId = signal<string | undefined>('board-1');
-  activeWorkspace = signal<UpdrawWorkspace | null>(null);
+  activeWorkspace = signal<UpmadeWorkspace | null>(null);
   activeWorkspaceJson = computed(() => {
     const workspace = this.activeWorkspace();
     return workspace
@@ -126,7 +126,7 @@ export class WorkspacesReadComponent {
   async addWorkspace() {
     const workspaceNumber = this.workspaces().length + 1;
     const workspace = await this.editor.createWorkspace(
-      new UpdrawWorkspace({
+      new UpmadeWorkspace({
         id: `board-${workspaceNumber}`,
         name: `Board ${workspaceNumber}`,
         objects: createSeedObjects(),
@@ -138,7 +138,7 @@ export class WorkspacesReadComponent {
     }
   }
 
-  async switchTo(workspace: UpdrawWorkspace) {
+  async switchTo(workspace: UpmadeWorkspace) {
     await this.editor.setActiveWorkspace(workspace.id);
   }
 

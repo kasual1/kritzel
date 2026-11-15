@@ -1,6 +1,6 @@
-import { darkTheme, UpdrawTheme } from "@updraw/angular-editor";
+import { darkTheme, UpmadeTheme } from "@upmade/angular-editor";
 
-export const angularThemeDark: UpdrawTheme = {
+export const angularThemeDark: UpmadeTheme = {
   ...darkTheme,
   name: 'dark',
   global: {

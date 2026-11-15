@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type UpdrawLoginConfig,
-} from '@updraw/vue-editor'
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type UpmadeLoginConfig,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -19,9 +19,9 @@ const providerIcons: Record<string, string> = {
 }
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
-const loginConfig: UpdrawLoginConfig = {
-  title: 'Sign in to Updraw',
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
+const loginConfig: UpmadeLoginConfig = {
+  title: 'Sign in to Upmade',
   providers: [
     { name: 'google', icon: 'google', label: 'Continue with Google' },
     { name: 'facebook', icon: 'facebook', label: 'Continue with Facebook' },
@@ -35,7 +35,7 @@ async function onReady(): Promise<void> {
 </script>
 
 <template>
-  <UpdrawEditor
+  <UpmadeEditor
     ref="editor"
     editorId="user-management-providers"
     :loginConfig="loginConfig"

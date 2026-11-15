@@ -1,4 +1,4 @@
-import { UpdrawTermVars } from '../interfaces/localization.interface';
+import { UpmadeTermVars } from '../interfaces/localization.interface';
 
 /**
  * Pure static utilities for localization term resolution.
@@ -15,7 +15,7 @@ export class LocalizationHelper {
    * @example
    * LocalizationHelper.interpolate('Hello {name}', { name: 'Ada' }); // 'Hello Ada'
    */
-  static interpolate(template: string, vars?: UpdrawTermVars): string {
+  static interpolate(template: string, vars?: UpmadeTermVars): string {
     if (!vars) {
       return template;
     }

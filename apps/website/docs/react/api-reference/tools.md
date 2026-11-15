@@ -1,24 +1,24 @@
 ---
 sidebar_label: Tools
-title: "Tools | Updraw for React"
-description: "Reference for all drawing tool classes and tool configuration interfaces in Updraw: base tool, selection, brush, line, shape, text, image, and eraser."
+title: "Tools | Upmade for React"
+description: "Reference for all drawing tool classes and tool configuration interfaces in Upmade: base tool, selection, brush, line, shape, text, image, and eraser."
 toc_max_heading_level: 2
 ---
 # Tools
 
-This is the API reference for all drawing tool classes and tool configurations in Updraw.
+This is the API reference for all drawing tool classes and tool configurations in Upmade.
 Every tool handles user interactions on the canvas and can be registered and configured via the editor.
 
 ## Base Tool
 
-`UpdrawBaseTool` is the abstract base class for all tools in Updraw. All specific tool implementations extend this class and inherit its properties and lifecycle hooks.
+`UpmadeBaseTool` is the abstract base class for all tools in Upmade. All specific tool implementations extend this class and inherit its properties and lifecycle hooks.
 
 ### Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
 | __class__ | string | Identifier used for object serialization and deserialization |
-| toolType | UpdrawToolType | Type key identifying the tool type across builds ('base', 'selection', 'brush', 'line', 'shape', 'text', 'image', 'eraser') |
+| toolType | UpmadeToolType | Type key identifying the tool type across builds ('base', 'selection', 'brush', 'line', 'shape', 'text', 'image', 'eraser') |
 | name | string | Human-readable name of the tool |
 
 ### Methods
@@ -91,19 +91,19 @@ deserialize(object: any)
 
 ## Selection Tool
 
-`UpdrawSelectionTool` enables selecting, moving, resizing, and rotating objects on the canvas. It manages selection handles, multi-selection bounding boxes, and object transformations.
+`UpmadeSelectionTool` enables selecting, moving, resizing, and rotating objects on the canvas. It manages selection handles, multi-selection bounding boxes, and object transformations.
 
 ### Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
 | toolType | 'selection' | Type identifier for the selection tool |
-| selectionHandler | UpdrawSelectionHandler | Handler for selection box and multi-select logic |
-| moveHandler | UpdrawMoveHandler | Handler for dragging and moving selected objects |
-| resizeHandler | UpdrawResizeHandler | Handler for resizing selected objects |
-| rotationHandler | UpdrawRotationHandler | Handler for rotating selected objects |
-| hoverHandler | UpdrawHoverHandler | Handler for object hover highlighting |
-| lineHandleHandler | UpdrawLineHandleHandler | Handler for manipulating line endpoint anchors |
+| selectionHandler | UpmadeSelectionHandler | Handler for selection box and multi-select logic |
+| moveHandler | UpmadeMoveHandler | Handler for dragging and moving selected objects |
+| resizeHandler | UpmadeResizeHandler | Handler for resizing selected objects |
+| rotationHandler | UpmadeRotationHandler | Handler for rotating selected objects |
+| hoverHandler | UpmadeHoverHandler | Handler for object hover highlighting |
+| lineHandleHandler | UpmadeLineHandleHandler | Handler for manipulating line endpoint anchors |
 | palette | ThemeAwareColor[] | Active color palette available for modifying selected objects |
 
 ### Methods
@@ -128,7 +128,7 @@ getSelectedObjects()
 
 ## Brush Tool
 
-`UpdrawBrushTool` handles freehand drawing on the canvas, creating vector `UpdrawPath` objects as the pointer moves.
+`UpmadeBrushTool` handles freehand drawing on the canvas, creating vector `UpmadePath` objects as the pointer moves.
 
 ### Properties
 
@@ -143,7 +143,7 @@ getSelectedObjects()
 
 ### Configuration
 
-Toolbar items can configure initial settings for the brush tool using `UpdrawBrushToolConfig`:
+Toolbar items can configure initial settings for the brush tool using `UpmadeBrushToolConfig`:
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -157,7 +157,7 @@ Toolbar items can configure initial settings for the brush tool using `UpdrawBru
 
 ## Line Tool
 
-`UpdrawLineTool` creates straight or curved `UpdrawLine` objects with optional arrowheads by dragging from a start point to an end point.
+`UpmadeLineTool` creates straight or curved `UpmadeLine` objects with optional arrowheads by dragging from a start point to an end point.
 
 ### Properties
 
@@ -173,7 +173,7 @@ Toolbar items can configure initial settings for the brush tool using `UpdrawBru
 
 ### Configuration
 
-Toolbar items configure initial line settings using `UpdrawLineToolConfig`:
+Toolbar items configure initial line settings using `UpmadeLineToolConfig`:
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -188,7 +188,7 @@ Toolbar items configure initial line settings using `UpdrawLineToolConfig`:
 
 ## Shape Tool
 
-`UpdrawShapeTool` creates geometric `UpdrawShape` objects (rectangles, ellipses, triangles) by dragging across the canvas.
+`UpmadeShapeTool` creates geometric `UpmadeShape` objects (rectangles, ellipses, triangles) by dragging across the canvas.
 
 ### Properties
 
@@ -208,7 +208,7 @@ Toolbar items configure initial line settings using `UpdrawLineToolConfig`:
 
 ### Configuration
 
-Toolbar items configure initial shape settings using `UpdrawShapeToolConfig`:
+Toolbar items configure initial shape settings using `UpmadeShapeToolConfig`:
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -227,7 +227,7 @@ Toolbar items configure initial shape settings using `UpdrawShapeToolConfig`:
 
 ## Text Tool
 
-`UpdrawTextTool` places and edits rich text `UpdrawText` objects on the canvas using an inline ProseMirror editor.
+`UpmadeTextTool` places and edits rich text `UpmadeText` objects on the canvas using an inline ProseMirror editor.
 
 ### Properties
 
@@ -243,7 +243,7 @@ Toolbar items configure initial shape settings using `UpdrawShapeToolConfig`:
 
 ### Configuration
 
-Toolbar items configure initial text tool settings using `UpdrawTextToolConfig`:
+Toolbar items configure initial text tool settings using `UpmadeTextToolConfig`:
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -251,7 +251,7 @@ Toolbar items configure initial text tool settings using `UpdrawTextToolConfig`:
 | size | number | Initial font size in points |
 | opacity | number | Optional initial opacity (0–1) |
 | fontFamily | string | Initial font family name |
-| availableFonts | UpdrawFontRegistration[] | Optional array of registered fonts available in the tool UI |
+| availableFonts | UpmadeFontRegistration[] | Optional array of registered fonts available in the tool UI |
 | palette | ThemeAwareColor[] | Color palette options |
 | sizes | number[] | Optional font size presets |
 
@@ -259,7 +259,7 @@ Toolbar items configure initial text tool settings using `UpdrawTextToolConfig`:
 
 ## Image Tool
 
-`UpdrawImageTool` handles uploading and inserting raster `UpdrawImage` objects onto the canvas via a native file picker dialog.
+`UpmadeImageTool` handles uploading and inserting raster `UpmadeImage` objects onto the canvas via a native file picker dialog.
 
 ### Properties
 
@@ -274,7 +274,7 @@ Toolbar items configure initial text tool settings using `UpdrawTextToolConfig`:
 
 ## Eraser Tool
 
-`UpdrawEraserTool` removes objects or path segments touched by the eraser during drag gestures.
+`UpmadeEraserTool` removes objects or path segments touched by the eraser during drag gestures.
 
 ### Properties
 

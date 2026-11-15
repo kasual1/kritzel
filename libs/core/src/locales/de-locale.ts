@@ -1,9 +1,9 @@
-import { UpdrawLocale } from '../interfaces/localization.interface';
+import { UpmadeLocale } from '../interfaces/localization.interface';
 
 /**
  * Built-in German locale.
  */
-export const DE_LOCALE: UpdrawLocale = {
+export const DE_LOCALE: UpmadeLocale = {
   code: 'de',
   label: 'Deutsch',
   terms: {
@@ -76,7 +76,7 @@ export const DE_LOCALE: UpdrawLocale = {
     'settings.developer.showMigrationInfo.label': 'Migrations-Infos anzeigen',
     'settings.developer.showMigrationInfo.description': 'Zeigt Debug-Informationen zu Datenmigrationen an.',
     'settings.about.title': 'Über',
-    'settings.about.description': 'Updraw – Eine Zeichenanwendung',
+    'settings.about.description': 'Upmade – Eine Zeichenanwendung',
 
     // Export dialog
     'export.dialogTitle': 'Exportieren',
@@ -134,7 +134,7 @@ export const DE_LOCALE: UpdrawLocale = {
     'moreMenu.ariaLabel': 'Weitere Optionen',
 
     // Watermark
-    'watermark.poweredBy': 'Bereitgestellt von Updraw',
+    'watermark.poweredBy': 'Bereitgestellt von Upmade',
 
     // Object type labels
     'objectType.shape': 'Form',

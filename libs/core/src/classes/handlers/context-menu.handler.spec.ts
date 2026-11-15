@@ -1,16 +1,16 @@
-import { UpdrawContextMenuHandler } from './context-menu.handler';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawSelectionTool } from '../tools/selection-tool.class';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawSelectionBox } from '../objects/selection-box.class';
-import { UpdrawGroup } from '../objects/group.class';
+import { UpmadeContextMenuHandler } from './context-menu.handler';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeSelectionTool } from '../tools/selection-tool.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeSelectionBox } from '../objects/selection-box.class';
+import { UpmadeGroup } from '../objects/group.class';
 
 jest.mock('../objects/selection-group.class');
 
-describe('UpdrawContextMenuHandler', () => {
-  let contextMenuHandler: UpdrawContextMenuHandler;
-  let mockCore: jest.Mocked<UpdrawCore>;
-  let mockSelectionTool: jest.Mocked<UpdrawSelectionTool>;
+describe('UpmadeContextMenuHandler', () => {
+  let contextMenuHandler: UpmadeContextMenuHandler;
+  let mockCore: jest.Mocked<UpmadeCore>;
+  let mockSelectionTool: jest.Mocked<UpmadeSelectionTool>;
   let mockSelectionGroup: {
     addOrRemove: jest.Mock;
     isSelected: boolean;
@@ -53,15 +53,15 @@ describe('UpdrawContextMenuHandler', () => {
     } as PointerEvent;
   };
 
-  const createGroup = (id: string, childIds: string[], rotation = 0): UpdrawGroup => {
-    const group = new UpdrawGroup();
+  const createGroup = (id: string, childIds: string[], rotation = 0): UpmadeGroup => {
+    const group = new UpmadeGroup();
     group.id = id;
     group.childIds = childIds;
     group.rotation = rotation;
     return group;
   };
 
-  // Selection group returned by the next UpdrawSelectionGroup.create call; records what gets selected.
+  // Selection group returned by the next UpmadeSelectionGroup.create call; records what gets selected.
   const stubSelectionGroup = () => {
     const selectionGroup = {
       addOrRemove: jest.fn(),
@@ -70,7 +70,7 @@ describe('UpdrawContextMenuHandler', () => {
       objects: [] as unknown[],
     };
     selectionGroup.addOrRemove.mockImplementation((object: unknown) => selectionGroup.objects.push(object));
-    (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
+    (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
     return selectionGroup;
   };
 
@@ -89,10 +89,10 @@ describe('UpdrawContextMenuHandler', () => {
         cancelPendingDrag: jest.fn(),
       },
       cancelTitlebarGesture: jest.fn(),
-    } as unknown as jest.Mocked<UpdrawSelectionTool>;
+    } as unknown as jest.Mocked<UpmadeSelectionTool>;
 
-    // Make mockSelectionTool an instance of UpdrawSelectionTool
-    Object.setPrototypeOf(mockSelectionTool, UpdrawSelectionTool.prototype);
+    // Make mockSelectionTool an instance of UpmadeSelectionTool
+    Object.setPrototypeOf(mockSelectionTool, UpmadeSelectionTool.prototype);
 
     mockState = {
       activeTool: mockSelectionTool,
@@ -150,9 +150,9 @@ describe('UpdrawContextMenuHandler', () => {
       localizationManager: {
         translate: jest.fn((key: string) => key),
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    (UpdrawSelectionGroup.create as jest.Mock).mockImplementation(() => {
+    (UpmadeSelectionGroup.create as jest.Mock).mockImplementation(() => {
       const group = {
         addOrRemove: jest.fn(),
         isSelected: false,
@@ -162,7 +162,7 @@ describe('UpdrawContextMenuHandler', () => {
       return group;
     });
 
-    contextMenuHandler = new UpdrawContextMenuHandler(mockCore, globalContextMenuItems, objectContextMenuItems);
+    contextMenuHandler = new UpmadeContextMenuHandler(mockCore, globalContextMenuItems, objectContextMenuItems);
   });
 
   describe('constructor', () => {
@@ -242,7 +242,7 @@ describe('UpdrawContextMenuHandler', () => {
     describe('selection box cleanup', () => {
       it('should remove selection box if present', () => {
         const mockSelectionBox = { id: 'selection-box' };
-        Object.setPrototypeOf(mockSelectionBox, UpdrawSelectionBox.prototype);
+        Object.setPrototypeOf(mockSelectionBox, UpmadeSelectionBox.prototype);
 
         Object.defineProperty(mockCore.store, 'selectionBox', {
           get: () => mockSelectionBox,
@@ -283,7 +283,7 @@ describe('UpdrawContextMenuHandler', () => {
 
         contextMenuHandler.handleContextMenu(event);
 
-        expect(UpdrawSelectionGroup.create).toHaveBeenCalledWith(mockCore);
+        expect(UpmadeSelectionGroup.create).toHaveBeenCalledWith(mockCore);
         expect(mockCore.addSelectionGroup).toHaveBeenCalled();
       });
 
@@ -296,7 +296,7 @@ describe('UpdrawContextMenuHandler', () => {
           objects: [],
         };
 
-        (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(createdGroup);
+        (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(createdGroup);
         (mockCore.getObjectFromPointerEvent as jest.Mock).mockReturnValue(mockObject);
 
         const event = createPointerEvent();
@@ -329,7 +329,7 @@ describe('UpdrawContextMenuHandler', () => {
 
       it('should not create selection group when clicking on SelectionGroup', () => {
         const mockSelectionGroupObj = { id: 'sel-group' };
-        Object.setPrototypeOf(mockSelectionGroupObj, UpdrawSelectionGroup.prototype);
+        Object.setPrototypeOf(mockSelectionGroupObj, UpmadeSelectionGroup.prototype);
 
         (mockCore.getObjectFromPointerEvent as jest.Mock).mockReturnValue(mockSelectionGroupObj);
 
@@ -337,12 +337,12 @@ describe('UpdrawContextMenuHandler', () => {
 
         contextMenuHandler.handleContextMenu(event);
 
-        expect(UpdrawSelectionGroup.create).not.toHaveBeenCalled();
+        expect(UpmadeSelectionGroup.create).not.toHaveBeenCalled();
       });
 
       it('should not create selection group when clicking on SelectionBox', () => {
         const mockSelectionBoxObj = { id: 'sel-box' };
-        Object.setPrototypeOf(mockSelectionBoxObj, UpdrawSelectionBox.prototype);
+        Object.setPrototypeOf(mockSelectionBoxObj, UpmadeSelectionBox.prototype);
 
         (mockCore.getObjectFromPointerEvent as jest.Mock).mockReturnValue(mockSelectionBoxObj);
 
@@ -350,7 +350,7 @@ describe('UpdrawContextMenuHandler', () => {
 
         contextMenuHandler.handleContextMenu(event);
 
-        expect(UpdrawSelectionGroup.create).not.toHaveBeenCalled();
+        expect(UpmadeSelectionGroup.create).not.toHaveBeenCalled();
       });
 
       it('should not create selection group when no object clicked', () => {
@@ -360,7 +360,7 @@ describe('UpdrawContextMenuHandler', () => {
 
         contextMenuHandler.handleContextMenu(event);
 
-        expect(UpdrawSelectionGroup.create).not.toHaveBeenCalled();
+        expect(UpmadeSelectionGroup.create).not.toHaveBeenCalled();
       });
 
       it('should set isSelecting to false when selecting object', () => {
@@ -667,7 +667,7 @@ describe('UpdrawContextMenuHandler', () => {
     it('opens the object menu for the owner of a right-clicked titlebar', () => {
       const owner = { id: 'owner-1', rotation: 0 };
       const createdGroup = { addOrRemove: jest.fn(), isSelected: false, rotation: 0, objects: [] };
-      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(createdGroup);
+      (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(createdGroup);
       (mockCore.objectTitlebarManager.getOwnerFromEvent as jest.Mock).mockReturnValue(owner);
 
       contextMenuHandler.handleContextMenu(createPointerEvent());
@@ -695,7 +695,7 @@ describe('UpdrawContextMenuHandler', () => {
 
       contextMenuHandler.handleContextMenu(createPointerEvent());
 
-      expect(UpdrawSelectionGroup.create).not.toHaveBeenCalled();
+      expect(UpmadeSelectionGroup.create).not.toHaveBeenCalled();
       expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
       expect(mockCore.addSelectionGroup).not.toHaveBeenCalled();
     });

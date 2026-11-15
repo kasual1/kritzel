@@ -5,7 +5,7 @@ import Link from '@docusaurus/Link';
 import { ArrowLeft } from 'lucide-react';
 import NavbarLayout from '@theme/Navbar/Layout';
 import NavbarContent from '@theme/Navbar/Content';
-import UpdrawBrand from '@site/src/components/UpdrawBrand';
+import UpmadeBrand from '@site/src/components/UpmadeBrand';
 
 export default function Navbar(): ReactNode {
   const { pathname } = useLocation();
@@ -17,7 +17,7 @@ export default function Navbar(): ReactNode {
         <div className="navbar">
           <div className="navbar__inner container">
             <div className="blog-navigation-brand">
-              <UpdrawBrand className="blog-navigation-logo" />
+              <UpmadeBrand className="blog-navigation-logo" />
             </div>
             <Link
               to={blogPath}

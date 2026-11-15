@@ -1,23 +1,23 @@
 ---
 sidebar_label: Icons
-title: "Icons | Updraw for React"
-description: "Reference for the default Updraw icon names available to Updraw React applications."
+title: "Icons | Upmade for React"
+description: "Reference for the default Upmade icon names available to Upmade React applications."
 toc_max_heading_level: 2
 ---
 
 # Icons
 
-Updraw registers the following default SVG icons through `UpdrawIconRegistry`. Use these names anywhere an API accepts an `UpdrawIconName`, such as toolbar items, menu items, login providers, cursor configuration, or the `customSvgIcons` map.
+Upmade registers the following default SVG icons through `UpmadeIconRegistry`. Use these names anywhere an API accepts an `UpmadeIconName`, such as toolbar items, menu items, login providers, cursor configuration, or the `customSvgIcons` map.
 
-Custom icon names are still supported. Register them through the `customSvgIcons` prop or `UpdrawIconRegistry.register()` and then reference the same string where an icon name is accepted.
+Custom icon names are still supported. Register them through the `customSvgIcons` prop or `UpmadeIconRegistry.register()` and then reference the same string where an icon name is accepted.
 
 ```ts
-import { UpdrawDefaultIconName, UpdrawIconName, UpdrawSvgIconMap } from '@updraw/react-editor';
+import { UpmadeDefaultIconName, UpmadeIconName, UpmadeSvgIconMap } from '@upmade/react-editor';
 
-const builtInIcon: UpdrawDefaultIconName = 'shapeRectangle';
-const customIcon: UpdrawIconName = 'brandExport';
+const builtInIcon: UpmadeDefaultIconName = 'shapeRectangle';
+const customIcon: UpmadeIconName = 'brandExport';
 
-const customSvgIcons: UpdrawSvgIconMap = {
+const customSvgIcons: UpmadeSvgIconMap = {
   shapeRectangle: '<svg><!-- replacement SVG --></svg>',
   brandExport: '<svg><!-- custom SVG --></svg>',
 };

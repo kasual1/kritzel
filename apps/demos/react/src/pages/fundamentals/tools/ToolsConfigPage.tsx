@@ -1,32 +1,32 @@
 import { useRef } from "react";
 import {
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawLineTool,
-  UpdrawSelectionTool,
-  UpdrawShapeTool,
-  UpdrawTextTool,
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeLineTool,
+  UpmadeSelectionTool,
+  UpmadeShapeTool,
+  UpmadeTextTool,
   ShapeType,
-  type HTMLUpdrawEditorElement,
-  type UpdrawToolbarItem,
-} from "@updraw/react-editor";
+  type HTMLUpmadeEditorElement,
+  type UpmadeToolbarItem,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
 
 const themes = [reactThemeLight, reactThemeDark];
 
-const toolbarItems: UpdrawToolbarItem[] = [
+const toolbarItems: UpmadeToolbarItem[] = [
   {
     name: "selection",
     type: "tool",
-    tool: UpdrawSelectionTool,
+    tool: UpmadeSelectionTool,
     icon: "cursor",
   },
   {
     name: "brush",
     type: "tool",
-    tool: UpdrawBrushTool,
+    tool: UpmadeBrushTool,
     icon: "pen",
     isDefault: true,
     config: {
@@ -44,7 +44,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
   {
     name: "line",
     type: "tool",
-    tool: UpdrawLineTool,
+    tool: UpmadeLineTool,
     icon: "arrow",
     config: {
       color: { light: "#0284c7", dark: "#38bdf8", label: "Sky" },
@@ -64,7 +64,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
   {
     name: "shape",
     type: "tool",
-    tool: UpdrawShapeTool,
+    tool: UpmadeShapeTool,
     icon: "shapeEllipse",
     config: {
       shapeType: ShapeType.Ellipse,
@@ -90,7 +90,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
   {
     name: "text",
     type: "tool",
-    tool: UpdrawTextTool,
+    tool: UpmadeTextTool,
     icon: "type",
     config: {
       color: { light: "#1f2937", dark: "#f3f4f6", label: "Ink" },
@@ -111,11 +111,11 @@ const toolbarItems: UpdrawToolbarItem[] = [
 ];
 
 export function ToolsConfigPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
 
   return (
     <div style={hostStyle}>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="tools-config"
         theme="light"

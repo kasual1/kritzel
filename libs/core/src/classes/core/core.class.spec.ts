@@ -1,23 +1,23 @@
-import { UpdrawIframeObject } from '../objects/iframe.class';
-import { UpdrawCore } from './core.class';
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawSelectionBox } from '../objects/selection-box.class';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawLine } from '../objects/line.class';
-import { UpdrawPath } from '../objects/path.class';
-import { UpdrawText } from '../objects/text.class';
-import { UpdrawImage } from '../objects/image.class';
-import { UpdrawShape } from '../objects/shape.class';
-import { UpdrawDynamicObject } from '../objects/dynamic-object.class';
-import { UpdrawBaseTool } from '../tools/base-tool.class';
-import { UpdrawWorkspace } from './workspace.class';
-import { UpdrawStore } from './store.class';
-import { UpdrawObjectMap } from '../structures/object-map.structure';
-import { UpdrawAppStateMap } from '../structures/app-state-map.structure';
-import { UpdrawAnchorManager } from '../managers/anchor.manager';
-import { UpdrawCursorManager } from '../managers/cursor.manager';
-import { UpdrawThemeManager } from '../managers/theme.manager';
+import { UpmadeIframeObject } from '../objects/iframe.class';
+import { UpmadeCore } from './core.class';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeSelectionBox } from '../objects/selection-box.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeLine } from '../objects/line.class';
+import { UpmadePath } from '../objects/path.class';
+import { UpmadeText } from '../objects/text.class';
+import { UpmadeImage } from '../objects/image.class';
+import { UpmadeShape } from '../objects/shape.class';
+import { UpmadeDynamicObject } from '../objects/dynamic-object.class';
+import { UpmadeBaseTool } from '../tools/base-tool.class';
+import { UpmadeWorkspace } from './workspace.class';
+import { UpmadeStore } from './store.class';
+import { UpmadeObjectMap } from '../structures/object-map.structure';
+import { UpmadeAppStateMap } from '../structures/app-state-map.structure';
+import { UpmadeAnchorManager } from '../managers/anchor.manager';
+import { UpmadeCursorManager } from '../managers/cursor.manager';
+import { UpmadeThemeManager } from '../managers/theme.manager';
 import { ShapeType } from '../../enums/shape-type.enum';
 // Mock the asset resolver so `initializeYjs` doesn't hit the real IndexedDB
 // provider during unit tests (jsdom does not expose a global `indexedDB`).
@@ -40,8 +40,8 @@ const createWithPrototype = <T>(cls: abstract new (...args: any[]) => T, fields:
   return obj;
 };
 
-describe('UpdrawCore', () => {
-  let core: UpdrawCore;
+describe('UpmadeCore', () => {
+  let core: UpmadeCore;
   let mockEngine: any;
   let mockStore: any;
   let mockAppStateMap: any;
@@ -103,7 +103,7 @@ describe('UpdrawCore', () => {
       setLocalUser: jest.fn(),
     };
 
-    jest.mocked(UpdrawObjectMap).mockImplementation(() => mockObjectsMap);
+    jest.mocked(UpmadeObjectMap).mockImplementation(() => mockObjectsMap);
 
     // Setup mock app state map
     mockAppStateMap = {
@@ -118,7 +118,7 @@ describe('UpdrawCore', () => {
       destroy: jest.fn(),
     };
 
-    jest.mocked(UpdrawAppStateMap).mockImplementation(() => mockAppStateMap);
+    jest.mocked(UpmadeAppStateMap).mockImplementation(() => mockAppStateMap);
 
     // Setup mock anchor manager
     mockAnchorManager = {
@@ -128,8 +128,8 @@ describe('UpdrawCore', () => {
       updateAnchorsForObject: jest.fn(),
     };
 
-    jest.mocked(UpdrawAnchorManager).mockImplementation(() => mockAnchorManager);
-    jest.mocked(UpdrawCursorManager).mockImplementation(function (this: UpdrawCursorManager) {
+    jest.mocked(UpmadeAnchorManager).mockImplementation(() => mockAnchorManager);
+    jest.mocked(UpmadeCursorManager).mockImplementation(function (this: UpmadeCursorManager) {
       Object.assign(this, {
         setTargetElement: jest.fn(),
         setShadowRoot: jest.fn(),
@@ -139,7 +139,7 @@ describe('UpdrawCore', () => {
       });
       return this;
     });
-    jest.mocked(UpdrawThemeManager).mockImplementation(function (this: UpdrawThemeManager) {
+    jest.mocked(UpmadeThemeManager).mockImplementation(function (this: UpmadeThemeManager) {
       Object.assign(this, {
         setTheme: jest.fn(),
         setTargetElement: jest.fn(),
@@ -188,12 +188,12 @@ describe('UpdrawCore', () => {
       onStateChange: jest.fn(),
     };
 
-    jest.mocked(UpdrawStore).mockImplementation(() => mockStore);
-    const selectionTool = new UpdrawBaseTool(Object.create(UpdrawCore.prototype));
+    jest.mocked(UpmadeStore).mockImplementation(() => mockStore);
+    const selectionTool = new UpmadeBaseTool(Object.create(UpmadeCore.prototype));
     selectionTool.name = 'selection';
 
     mockEngine = createMockEngine();
-    core = new UpdrawCore(mockEngine);
+    core = new UpmadeCore(mockEngine);
     (core.toolRegistry.getTool as jest.Mock).mockReturnValue(selectionTool);
   });
 
@@ -202,28 +202,28 @@ describe('UpdrawCore', () => {
   });
 
   describe('constructor', () => {
-    it('should create an UpdrawCore instance', () => {
+    it('should create an UpmadeCore instance', () => {
       expect(core).toBeDefined();
     });
 
     it('should initialize the store', () => {
-      expect(UpdrawStore).toHaveBeenCalled();
+      expect(UpmadeStore).toHaveBeenCalled();
     });
 
     it('should initialize the app state map', () => {
-      expect(UpdrawAppStateMap).toHaveBeenCalled();
+      expect(UpmadeAppStateMap).toHaveBeenCalled();
     });
 
     it('should initialize the anchor manager', () => {
-      expect(UpdrawAnchorManager).toHaveBeenCalledWith(core);
+      expect(UpmadeAnchorManager).toHaveBeenCalledWith(core);
     });
 
     it('should initialize the cursor manager', () => {
-      expect(UpdrawCursorManager).toHaveBeenCalledWith(core);
+      expect(UpmadeCursorManager).toHaveBeenCalledWith(core);
     });
 
     it('should initialize the theme manager', () => {
-      expect(UpdrawThemeManager).toHaveBeenCalledWith(core);
+      expect(UpmadeThemeManager).toHaveBeenCalledWith(core);
     });
 
     it('should have undefined editorId by default', () => {
@@ -231,7 +231,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should accept an editorId parameter', () => {
-      const coreWithId = new UpdrawCore(mockEngine, 'my-editor');
+      const coreWithId = new UpmadeCore(mockEngine, 'my-editor');
       expect(coreWithId.editorId).toBe('my-editor');
     });
   });
@@ -264,17 +264,17 @@ describe('UpdrawCore', () => {
 
   describe('getStorageKey', () => {
     it('should return the base key when no editorId is set', () => {
-      expect(core.getStorageKey('updraw-settings')).toBe('updraw-settings');
+      expect(core.getStorageKey('upmade-settings')).toBe('upmade-settings');
     });
 
     it('should append editorId to the base key when set', () => {
-      const coreWithId = new UpdrawCore(mockEngine, 'homepage');
-      expect(coreWithId.getStorageKey('updraw-settings')).toBe('updraw-settings-homepage');
+      const coreWithId = new UpmadeCore(mockEngine, 'homepage');
+      expect(coreWithId.getStorageKey('upmade-settings')).toBe('upmade-settings-homepage');
     });
 
     it('should work with different base keys', () => {
-      const coreWithId = new UpdrawCore(mockEngine, 'demo');
-      expect(coreWithId.getStorageKey('updraw-active-workspace-id')).toBe('updraw-active-workspace-id-demo');
+      const coreWithId = new UpmadeCore(mockEngine, 'demo');
+      expect(coreWithId.getStorageKey('upmade-active-workspace-id')).toBe('upmade-active-workspace-id-demo');
     });
   });
 
@@ -286,20 +286,20 @@ describe('UpdrawCore', () => {
 
     it('should update getStorageKey results', () => {
       core.setEditorId('instance-1');
-      expect(core.getStorageKey('updraw-theme')).toBe('updraw-theme-instance-1');
+      expect(core.getStorageKey('upmade-theme')).toBe('upmade-theme-instance-1');
     });
 
     it('should re-create the theme manager', () => {
-      const callCountBefore = jest.mocked(UpdrawThemeManager).mock.calls.length;
+      const callCountBefore = jest.mocked(UpmadeThemeManager).mock.calls.length;
       core.setEditorId('new-id');
-      expect(jest.mocked(UpdrawThemeManager).mock.calls.length).toBe(callCountBefore + 1);
+      expect(jest.mocked(UpmadeThemeManager).mock.calls.length).toBe(callCountBefore + 1);
     });
 
     it('should clear editorId when called with undefined', () => {
       core.setEditorId('temp-id');
       core.setEditorId(undefined);
       expect(core.editorId).toBeUndefined();
-      expect(core.getStorageKey('updraw-theme')).toBe('updraw-theme');
+      expect(core.getStorageKey('upmade-theme')).toBe('upmade-theme');
     });
   });
 
@@ -334,7 +334,7 @@ describe('UpdrawCore', () => {
 
   describe('findObjectById', () => {
     it('should return the object when found', () => {
-      const obj = { id: 'obj-1' } as UpdrawBaseObject<any>;
+      const obj = { id: 'obj-1' } as UpmadeBaseObject<any>;
       mockStore.allObjects = [obj];
 
       expect(core.findObjectById('obj-1')).toBe(obj);
@@ -346,8 +346,8 @@ describe('UpdrawCore', () => {
     });
 
     it('should return the first match among multiple objects', () => {
-      const obj1 = { id: 'obj-1' } as UpdrawBaseObject<any>;
-      const obj2 = { id: 'obj-2' } as UpdrawBaseObject<any>;
+      const obj1 = { id: 'obj-1' } as UpmadeBaseObject<any>;
+      const obj2 = { id: 'obj-2' } as UpmadeBaseObject<any>;
       mockStore.allObjects = [obj1, obj2];
 
       expect(core.findObjectById('obj-2')).toBe(obj2);
@@ -356,7 +356,7 @@ describe('UpdrawCore', () => {
 
   describe('getWorkspaces', () => {
     it('should return workspaces from app state map', () => {
-      const ws = [new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace 1' })];
+      const ws = [new UpmadeWorkspace({ id: 'ws-1', name: 'Workspace 1' })];
       mockAppStateMap.allWorkspaces.mockReturnValue(ws);
 
       expect(core.getWorkspaces()).toBe(ws);
@@ -365,7 +365,7 @@ describe('UpdrawCore', () => {
 
   describe('createWorkspace', () => {
     it('should set core reference and dates on the workspace', async () => {
-      const ws = new UpdrawWorkspace({ id: 'ws-new', name: 'New Workspace' });
+      const ws = new UpmadeWorkspace({ id: 'ws-new', name: 'New Workspace' });
       const before = new Date();
 
       await core.createWorkspace(ws);
@@ -376,7 +376,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should save workspace to app state and refresh workspace list', async () => {
-      const ws = new UpdrawWorkspace({ id: 'ws-new', name: 'New Workspace' });
+      const ws = new UpmadeWorkspace({ id: 'ws-new', name: 'New Workspace' });
 
       await core.createWorkspace(ws);
 
@@ -388,7 +388,7 @@ describe('UpdrawCore', () => {
 
   describe('setActiveWorkspace', () => {
     it('should switch to workspace by ID', async () => {
-      const ws = new UpdrawWorkspace({ id: 'ws-target', name: 'Target Workspace' });
+      const ws = new UpmadeWorkspace({ id: 'ws-target', name: 'Target Workspace' });
       jest.spyOn(core, 'getWorkspaces').mockReturnValue([ws]);
       const initSpy = jest.spyOn(core, 'initializeWorkspace').mockResolvedValue(undefined);
 
@@ -418,13 +418,13 @@ describe('UpdrawCore', () => {
         isMounted: true,
         workspaceId: 'ws-1',
         generateId: jest.fn().mockReturnValue(`generated-${id}`),
-      }) as unknown as UpdrawBaseObject<any>;
+      }) as unknown as UpmadeBaseObject<any>;
 
-    const removeCallsFor = (object: UpdrawBaseObject<any>) =>
+    const removeCallsFor = (object: UpmadeBaseObject<any>) =>
       (mockObjectsMap.remove.mock.calls as [(o: any) => boolean][]).filter(([predicate]) => predicate(object));
 
     it('should update the updatedAt timestamp', async () => {
-      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace' });
+      const ws = new UpmadeWorkspace({ id: 'ws-1', name: 'Workspace' });
       const oldDate = new Date(2020, 0, 1);
       ws.updatedAt = oldDate;
 
@@ -436,7 +436,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should update the workspace in the workspaces array', async () => {
-      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Old Name' });
+      const ws = new UpmadeWorkspace({ id: 'ws-1', name: 'Old Name' });
       mockStore.state.workspaces = [ws];
 
       ws.name = 'New Name';
@@ -446,7 +446,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should update the active workspace metadata when the active workspace is updated', async () => {
-      mockStore.state.activeWorkspace = new UpdrawWorkspace({ id: 'ws-1', name: 'Old Name' });
+      mockStore.state.activeWorkspace = new UpmadeWorkspace({ id: 'ws-1', name: 'Old Name' });
       mockStore.state.workspaces = [mockStore.state.activeWorkspace];
       const ws = mockStore.state.activeWorkspace.clone();
 
@@ -460,7 +460,7 @@ describe('UpdrawCore', () => {
     it('should leave objects untouched when no object set is declared', async () => {
       const existing = createStubObject('obj-1');
       mockObjectsMap.allObjects.mockReturnValue([existing]);
-      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Renamed' });
+      const ws = new UpmadeWorkspace({ id: 'ws-1', name: 'Renamed' });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -472,7 +472,7 @@ describe('UpdrawCore', () => {
     it('should remove all objects when an empty object set is declared', async () => {
       const existing = createStubObject('obj-1');
       mockObjectsMap.allObjects.mockReturnValue([existing]);
-      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [] });
+      const ws = new UpmadeWorkspace({ id: 'ws-1', name: 'Workspace', objects: [] });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -483,7 +483,7 @@ describe('UpdrawCore', () => {
     it('should add declared objects that are missing, preserving their ids', async () => {
       mockObjectsMap.allObjects.mockReturnValue([]);
       const incoming = createStubObject('obj-new');
-      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
+      const ws = new UpmadeWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -496,7 +496,7 @@ describe('UpdrawCore', () => {
     it('should update objects passed by the same instance reference', async () => {
       const existing = createStubObject('obj-1');
       mockObjectsMap.allObjects.mockReturnValue([existing]);
-      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [existing] });
+      const ws = new UpmadeWorkspace({ id: 'ws-1', name: 'Workspace', objects: [existing] });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -509,7 +509,7 @@ describe('UpdrawCore', () => {
       const existing = createStubObject('obj-1');
       const incoming = createStubObject('obj-1', 7);
       mockObjectsMap.allObjects.mockReturnValue([existing]);
-      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
+      const ws = new UpmadeWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -520,14 +520,14 @@ describe('UpdrawCore', () => {
     });
 
     it('should hand local element state to the instance that replaces an iframe object', async () => {
-      const existing = new UpdrawIframeObject({ html: '<button id="run">Run</button>' });
+      const existing = new UpmadeIframeObject({ html: '<button id="run">Run</button>' });
       existing.id = 'frame-1';
       existing.setElementHighlights([{ selector: '#run', label: 'Run' }]);
       existing.trackElement('#run');
-      const incoming = new UpdrawIframeObject({ html: '<button id="run">Run!</button>' });
+      const incoming = new UpmadeIframeObject({ html: '<button id="run">Run!</button>' });
       incoming.id = 'frame-1';
       mockObjectsMap.allObjects.mockReturnValue([existing]);
-      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
+      const ws = new UpmadeWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
 
       await core.updateWorkspace(ws);
 
@@ -538,7 +538,7 @@ describe('UpdrawCore', () => {
 
     it('should rebuild the anchor index after reconciling the active workspace', async () => {
       mockObjectsMap.allObjects.mockReturnValue([]);
-      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [createStubObject('obj-new')] });
+      const ws = new UpmadeWorkspace({ id: 'ws-1', name: 'Workspace', objects: [createStubObject('obj-new')] });
 
       await core.updateWorkspace(ws);
 
@@ -547,7 +547,7 @@ describe('UpdrawCore', () => {
 
     it('should clear the declared object set so it is not re-seeded later', async () => {
       mockObjectsMap.allObjects.mockReturnValue([]);
-      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', objects: [createStubObject('obj-new')] });
+      const ws = new UpmadeWorkspace({ id: 'ws-1', name: 'Workspace', objects: [createStubObject('obj-new')] });
 
       await core.updateWorkspace(ws);
 
@@ -556,7 +556,7 @@ describe('UpdrawCore', () => {
 
     it('should apply the declared viewport to the active workspace', async () => {
       mockStore.state.workspaces = [];
-      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', viewport: { centerWorldX: 100, centerWorldY: 50, scale: 2 } });
+      const ws = new UpmadeWorkspace({ id: 'ws-1', name: 'Workspace', viewport: { centerWorldX: 100, centerWorldY: 50, scale: 2 } });
 
       await core.updateWorkspace(ws);
 
@@ -567,7 +567,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should not touch the viewport when the workspace is passed back unchanged', async () => {
-      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Workspace', viewport: { centerWorldX: 0, centerWorldY: 0, scale: 1 } });
+      const ws = new UpmadeWorkspace({ id: 'ws-1', name: 'Workspace', viewport: { centerWorldX: 0, centerWorldY: 0, scale: 1 } });
 
       await core.updateWorkspace(ws);
 
@@ -576,7 +576,7 @@ describe('UpdrawCore', () => {
 
     it('should warn and skip object changes for a non-active workspace without a sync provider', async () => {
       const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      const ws = new UpdrawWorkspace({ id: 'ws-other', name: 'Other', objects: [createStubObject('obj-new')] });
+      const ws = new UpmadeWorkspace({ id: 'ws-other', name: 'Other', objects: [createStubObject('obj-new')] });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -591,10 +591,10 @@ describe('UpdrawCore', () => {
       core.setSyncConfig(syncConfig);
 
       const headlessMap = { ...mockObjectsMap, whenNetworkSynced: jest.fn().mockResolvedValue(undefined) };
-      jest.mocked(UpdrawObjectMap).mockImplementationOnce(() => headlessMap);
+      jest.mocked(UpmadeObjectMap).mockImplementationOnce(() => headlessMap);
 
       const incoming = createStubObject('obj-new');
-      const ws = new UpdrawWorkspace({ id: 'ws-other', name: 'Other', objects: [incoming] });
+      const ws = new UpmadeWorkspace({ id: 'ws-other', name: 'Other', objects: [incoming] });
 
       const diff = await core.updateWorkspace(ws);
 
@@ -607,7 +607,7 @@ describe('UpdrawCore', () => {
 
   describe('deleteWorkspace', () => {
     it('should remove workspace from app state', () => {
-      const ws = new UpdrawWorkspace({ id: 'ws-del', name: 'Delete Me' });
+      const ws = new UpmadeWorkspace({ id: 'ws-del', name: 'Delete Me' });
       mockStore.state.activeWorkspace = { id: 'ws-other' };
 
       core.deleteWorkspace(ws);
@@ -616,7 +616,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should destroy objects and cancel updates when deleting the active workspace', () => {
-      const ws = new UpdrawWorkspace({ id: 'ws-1', name: 'Active WS' });
+      const ws = new UpmadeWorkspace({ id: 'ws-1', name: 'Active WS' });
       mockStore.state.activeWorkspace = { id: 'ws-1' };
 
       core.deleteWorkspace(ws);
@@ -626,26 +626,26 @@ describe('UpdrawCore', () => {
     });
 
     it('should delete the IndexedDB database for the workspace', () => {
-      const ws = new UpdrawWorkspace({ id: 'ws-db', name: 'DB Test' });
+      const ws = new UpmadeWorkspace({ id: 'ws-db', name: 'DB Test' });
       mockStore.state.activeWorkspace = { id: 'ws-other' };
 
       core.deleteWorkspace(ws);
 
-      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('updraw-workspace-ws-db');
+      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('upmade-workspace-ws-db');
       // The database the workspace had before the rename, which is only imported once the workspace is opened.
       expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('kritzel-workspace-ws-db');
     });
 
     it('should use editorId-namespaced database name when editorId is set', () => {
-      const coreWithId = new UpdrawCore(mockEngine, 'homepage');
+      const coreWithId = new UpmadeCore(mockEngine, 'homepage');
       // Point the new core at the same mock store
       (coreWithId as any)._store = mockStore;
       mockStore.state.activeWorkspace = { id: 'ws-other' };
 
-      const ws = new UpdrawWorkspace({ id: 'ws-db', name: 'DB Test' });
+      const ws = new UpmadeWorkspace({ id: 'ws-db', name: 'DB Test' });
       coreWithId.deleteWorkspace(ws);
 
-      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('updraw-workspace-homepage-ws-db');
+      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('upmade-workspace-homepage-ws-db');
       expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('kritzel-workspace-homepage-ws-db');
     });
   });
@@ -689,7 +689,7 @@ describe('UpdrawCore', () => {
 
   describe('addObject', () => {
     it('should insert object into the objects map', () => {
-      const obj = { id: 'obj-1' } as UpdrawBaseObject<any>;
+      const obj = { id: 'obj-1' } as UpmadeBaseObject<any>;
 
       core.addObject(obj);
 
@@ -697,7 +697,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should add a rotated path object', () => {
-      const obj = new UpdrawPath({
+      const obj = new UpmadePath({
         points: [[0, 0], [10, 10]],
         rotation: -90,
       });
@@ -709,7 +709,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should add a rotated line object', () => {
-      const obj = new UpdrawLine({
+      const obj = new UpmadeLine({
         startX: 0,
         startY: 0,
         endX: 100,
@@ -724,7 +724,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should add a rotated text object', () => {
-      const obj = new UpdrawText({
+      const obj = new UpmadeText({
         rotation: -90,
       });
 
@@ -735,7 +735,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should add a rotated image object', () => {
-      const obj = new UpdrawImage({
+      const obj = new UpmadeImage({
         rotation: -90,
       });
 
@@ -746,7 +746,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should add a rotated shape object', () => {
-      const obj = new UpdrawShape({
+      const obj = new UpmadeShape({
         shapeType: ShapeType.Rectangle,
         rotation: -90,
       });
@@ -759,7 +759,7 @@ describe('UpdrawCore', () => {
 
     it('should add a rotated dynamic object object', () => {
       const element = document.createElement('div');
-      const obj = new UpdrawDynamicObject({
+      const obj = new UpmadeDynamicObject({
         element,
         rotation: -90,
       });
@@ -771,7 +771,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should add a rotated group object', () => {
-      const obj = new UpdrawGroup({
+      const obj = new UpmadeGroup({
         rotation: -90,
       });
 
@@ -782,7 +782,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should add a rotated selection group object', () => {
-      const obj = new UpdrawSelectionGroup({
+      const obj = new UpmadeSelectionGroup({
         rotation: -90,
       });
 
@@ -810,7 +810,7 @@ describe('UpdrawCore', () => {
     it('gives a plain object a fresh ID, the core, the viewport scale, z-index and workspace', () => {
       mockStore.state.scale = 2;
       mockStore.currentZIndex = 7;
-      const shape = new UpdrawShape({ shapeType: ShapeType.Rectangle });
+      const shape = new UpmadeShape({ shapeType: ShapeType.Rectangle });
       shape.scale = undefined; // only an unset scale falls back to the viewport scale
       const originalId = shape.id;
 
@@ -827,7 +827,7 @@ describe('UpdrawCore', () => {
 
     it('keeps an explicit scale', () => {
       mockStore.state.scale = 3;
-      const shape = new UpdrawShape({ shapeType: ShapeType.Rectangle, scale: 0.5 });
+      const shape = new UpmadeShape({ shapeType: ShapeType.Rectangle, scale: 0.5 });
 
       core.prepareObjectForInsert(shape);
 
@@ -835,7 +835,7 @@ describe('UpdrawCore', () => {
     });
 
     it('recreates the text editor with the pending content', () => {
-      const text = new UpdrawText({});
+      const text = new UpmadeText({});
       const content = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hi' }] }] };
       text.content = content as any;
       const setContent = jest.spyOn(text, 'setContent');
@@ -847,14 +847,14 @@ describe('UpdrawCore', () => {
     });
 
     it('flushes pending group children with new IDs and remaps line anchors, nested groups included', () => {
-      const a = new UpdrawShape({ shapeType: ShapeType.Rectangle });
-      const b = new UpdrawShape({ shapeType: ShapeType.Ellipse });
-      const line = new UpdrawLine({ startX: 0, startY: 0, endX: 10, endY: 10 });
+      const a = new UpmadeShape({ shapeType: ShapeType.Rectangle });
+      const b = new UpmadeShape({ shapeType: ShapeType.Ellipse });
+      const line = new UpmadeLine({ startX: 0, startY: 0, endX: 10, endY: 10 });
       line.startAnchor = { objectId: a.id };
       line.endAnchor = { objectId: b.id };
-      const inner = new UpdrawGroup();
+      const inner = new UpmadeGroup();
       inner.addChild(b);
-      const group = new UpdrawGroup();
+      const group = new UpmadeGroup();
       group.addChild(a);
       group.addChild(inner);
       group.addChild(line);
@@ -878,8 +878,8 @@ describe('UpdrawCore', () => {
     });
 
     it('inserts descendants first, finalizes the group, rebuilds anchors, then inserts the group', () => {
-      const a = new UpdrawShape({ shapeType: ShapeType.Rectangle });
-      const group = new UpdrawGroup();
+      const a = new UpmadeShape({ shapeType: ShapeType.Rectangle });
+      const group = new UpmadeGroup();
       group.addChild(a);
       const descendants = core.prepareObjectForInsert(group);
       const finalize = jest.spyOn(group, 'finalize').mockImplementation(() => undefined);
@@ -892,8 +892,8 @@ describe('UpdrawCore', () => {
     });
 
     it('lets the object and its descendants appear, with the given stagger index, unless it is null', () => {
-      const a = new UpdrawShape({ shapeType: ShapeType.Rectangle });
-      const group = new UpdrawGroup();
+      const a = new UpmadeShape({ shapeType: ShapeType.Rectangle });
+      const group = new UpmadeGroup();
       group.addChild(a);
       jest.spyOn(group, 'finalize').mockImplementation(() => undefined);
       const mark = jest.spyOn(core.objectAppearManager, 'mark');
@@ -902,32 +902,32 @@ describe('UpdrawCore', () => {
       expect(mark).toHaveBeenCalledWith([a, group], 2);
 
       mark.mockClear();
-      const b = new UpdrawShape({ shapeType: ShapeType.Rectangle });
+      const b = new UpmadeShape({ shapeType: ShapeType.Rectangle });
       core.insertPreparedObject(b, core.prepareObjectForInsert(b), null);
       expect(mark).not.toHaveBeenCalled();
     });
 
     describe('z-order of flushed groups', () => {
       /** zIndex of every object at the moment it was inserted. */
-      let stored: Map<UpdrawBaseObject<any> | string, number>;
+      let stored: Map<UpmadeBaseObject<any> | string, number>;
 
       beforeEach(() => {
-        jest.spyOn(UpdrawGroup.prototype, 'finalize').mockImplementation(() => undefined);
+        jest.spyOn(UpmadeGroup.prototype, 'finalize').mockImplementation(() => undefined);
         // Like the real store, currentZIndex is one above the highest stored zIndex.
-        stored = new Map<UpdrawBaseObject<any> | string, number>([['existing', 4]]);
-        mockObjectsMap.insert.mockImplementation((object: UpdrawBaseObject<any>) => stored.set(object, object.zIndex));
+        stored = new Map<UpmadeBaseObject<any> | string, number>([['existing', 4]]);
+        mockObjectsMap.insert.mockImplementation((object: UpmadeBaseObject<any>) => stored.set(object, object.zIndex));
         Object.defineProperty(mockStore, 'currentZIndex', { get: () => Math.max(0, ...stored.values()) + 1, configurable: true });
       });
 
-      const shape = () => new UpdrawShape({ shapeType: ShapeType.Rectangle });
-      const insert = (object: UpdrawBaseObject<any>) => core.insertPreparedObject(object, core.prepareObjectForInsert(object));
+      const shape = () => new UpmadeShape({ shapeType: ShapeType.Rectangle });
+      const insert = (object: UpmadeBaseObject<any>) => core.insertPreparedObject(object, core.prepareObjectForInsert(object));
 
       it('stacks pending children bottom to top in the order they were added; groups take their top child', () => {
         const [r1, r2, r3, r4] = [shape(), shape(), shape(), shape()];
-        const inner = new UpdrawGroup();
+        const inner = new UpmadeGroup();
         inner.addChild(r2);
         inner.addChild(r3);
-        const group = new UpdrawGroup();
+        const group = new UpmadeGroup();
         group.addChild(r1);
         group.addChild(inner);
         group.addChild(r4);
@@ -939,7 +939,7 @@ describe('UpdrawCore', () => {
 
       it('places a plain object inserted after a group above the group band', () => {
         const [a, b, plain] = [shape(), shape(), shape()];
-        const group = new UpdrawGroup();
+        const group = new UpmadeGroup();
         group.addChild(a);
         group.addChild(b);
 
@@ -951,7 +951,7 @@ describe('UpdrawCore', () => {
     });
 
     it('inserts a plain object without touching the anchor index', () => {
-      const shape = new UpdrawShape({ shapeType: ShapeType.Rectangle });
+      const shape = new UpmadeShape({ shapeType: ShapeType.Rectangle });
 
       core.insertPreparedObject(shape, core.prepareObjectForInsert(shape));
 
@@ -971,8 +971,8 @@ describe('UpdrawCore', () => {
     });
 
     it('should cleanup anchors for line objects', () => {
-      const line = Object.create(UpdrawLine.prototype);
-      line.__class__ = 'UpdrawLine';
+      const line = Object.create(UpmadeLine.prototype);
+      line.__class__ = 'UpmadeLine';
       line.id = 'line-1';
       line.isMounted = true;
 
@@ -993,8 +993,8 @@ describe('UpdrawCore', () => {
       const child1 = { id: 'child-1', isMounted: true } as any;
       const child2 = { id: 'child-2', isMounted: true } as any;
 
-      const group = Object.create(UpdrawGroup.prototype);
-      group.__class__ = 'UpdrawGroup';
+      const group = Object.create(UpmadeGroup.prototype);
+      group.__class__ = 'UpmadeGroup';
       group.id = 'group-1';
       group.isMounted = true;
       Object.defineProperty(group, 'children', { get: () => [child1, child2] });
@@ -1008,8 +1008,8 @@ describe('UpdrawCore', () => {
     it('should preserve children when preserveChildren is true', () => {
       const child = { id: 'child-1', isMounted: true } as any;
 
-      const group = Object.create(UpdrawGroup.prototype);
-      group.__class__ = 'UpdrawGroup';
+      const group = Object.create(UpmadeGroup.prototype);
+      group.__class__ = 'UpmadeGroup';
       group.id = 'group-1';
       group.isMounted = true;
       Object.defineProperty(group, 'children', { get: () => [child] });
@@ -1067,7 +1067,7 @@ describe('UpdrawCore', () => {
       mockStore.selectionGroup = existingGroup;
       mockStore.selectionBox = existingBox;
 
-      const newGroup = { id: 'new-sg' } as UpdrawSelectionGroup;
+      const newGroup = { id: 'new-sg' } as UpmadeSelectionGroup;
 
       core.addSelectionGroup(newGroup);
 
@@ -1079,7 +1079,7 @@ describe('UpdrawCore', () => {
     it('should enable interactivity for selected embedded objects', () => {
       const embeddedObject = {
         id: 'custom-1',
-        __class__: 'UpdrawIframeObject',
+        __class__: 'UpmadeIframeObject',
         isInteractive: false,
         isSelected: false,
         mount: jest.fn(),
@@ -1089,17 +1089,17 @@ describe('UpdrawCore', () => {
         },
         hasFocusedInputElement: jest.fn(),
         getEmbeddedContentRoots: jest.fn(() => []),
-      } as unknown as UpdrawBaseObject<any>;
+      } as unknown as UpmadeBaseObject<any>;
       const regularObject = {
         id: 'shape-1',
-        __class__: 'UpdrawShape',
+        __class__: 'UpmadeShape',
         isInteractive: false,
-      } as unknown as UpdrawBaseObject<any>;
+      } as unknown as UpmadeBaseObject<any>;
 
       const newGroup = {
         id: 'new-sg',
         objects: [embeddedObject, regularObject],
-      } as unknown as UpdrawSelectionGroup;
+      } as unknown as UpmadeSelectionGroup;
 
       core.addSelectionGroup(newGroup);
 
@@ -1110,13 +1110,13 @@ describe('UpdrawCore', () => {
     it('should remove orphaned local selection groups before adding a new one', () => {
       const orphanChild = {
         id: 'orphan-child',
-        __class__: 'UpdrawShape',
+        __class__: 'UpmadeShape',
         isSelected: true,
-      } as unknown as UpdrawBaseObject<any>;
+      } as unknown as UpmadeBaseObject<any>;
 
-      const orphanGroup = createWithPrototype(UpdrawSelectionGroup, {
+      const orphanGroup = createWithPrototype(UpmadeSelectionGroup, {
         id: 'orphan-sg',
-        __class__: 'UpdrawSelectionGroup',
+        __class__: 'UpmadeSelectionGroup',
         userId: undefined,
         objects: [orphanChild],
         deselectAllChildren: jest.fn(() => {
@@ -1126,7 +1126,7 @@ describe('UpdrawCore', () => {
 
       mockObjectsMap.allObjects.mockReturnValue([orphanGroup]);
 
-      const newGroup = { id: 'new-sg', objects: [] } as unknown as UpdrawSelectionGroup;
+      const newGroup = { id: 'new-sg', objects: [] } as unknown as UpmadeSelectionGroup;
 
       core.addSelectionGroup(newGroup);
 
@@ -1161,7 +1161,7 @@ describe('UpdrawCore', () => {
     it('should disable interactivity for deselected embedded objects', () => {
       const embeddedObject = {
         id: 'custom-1',
-        __class__: 'UpdrawIframeObject',
+        __class__: 'UpmadeIframeObject',
         isInteractive: true,
         isSelected: true,
         mount: jest.fn(),
@@ -1171,17 +1171,17 @@ describe('UpdrawCore', () => {
         },
         hasFocusedInputElement: jest.fn(),
         getEmbeddedContentRoots: jest.fn(() => []),
-      } as unknown as UpdrawBaseObject<any>;
+      } as unknown as UpmadeBaseObject<any>;
       const regularObject = {
         id: 'shape-1',
-        __class__: 'UpdrawShape',
+        __class__: 'UpmadeShape',
         isInteractive: true,
-      } as unknown as UpdrawBaseObject<any>;
+      } as unknown as UpmadeBaseObject<any>;
 
       const sg = {
         id: 'sg-1',
         objects: [embeddedObject, regularObject],
-      } as unknown as UpdrawSelectionGroup;
+      } as unknown as UpmadeSelectionGroup;
       mockStore.selectionGroup = sg;
 
       core.removeSelectionGroup();
@@ -1193,13 +1193,13 @@ describe('UpdrawCore', () => {
     it('should remove orphaned local selection groups that are not in store.selectionGroup', () => {
       const selectedChild = {
         id: 'obj-1',
-        __class__: 'UpdrawShape',
+        __class__: 'UpmadeShape',
         isSelected: true,
-      } as unknown as UpdrawBaseObject<any>;
+      } as unknown as UpmadeBaseObject<any>;
 
-      const referencedGroup = createWithPrototype(UpdrawSelectionGroup, {
+      const referencedGroup = createWithPrototype(UpmadeSelectionGroup, {
         id: 'sg-1',
-        __class__: 'UpdrawSelectionGroup',
+        __class__: 'UpmadeSelectionGroup',
         userId: undefined,
         objects: [selectedChild],
         deselectAllChildren: jest.fn(() => {
@@ -1209,13 +1209,13 @@ describe('UpdrawCore', () => {
 
       const orphanChild = {
         id: 'obj-2',
-        __class__: 'UpdrawShape',
+        __class__: 'UpmadeShape',
         isSelected: true,
-      } as unknown as UpdrawBaseObject<any>;
+      } as unknown as UpmadeBaseObject<any>;
 
-      const orphanGroup = createWithPrototype(UpdrawSelectionGroup, {
+      const orphanGroup = createWithPrototype(UpmadeSelectionGroup, {
         id: 'sg-2',
-        __class__: 'UpdrawSelectionGroup',
+        __class__: 'UpmadeSelectionGroup',
         userId: undefined,
         objects: [orphanChild],
         deselectAllChildren: jest.fn(() => {
@@ -1329,7 +1329,7 @@ describe('UpdrawCore', () => {
   // Plain store objects for the z-order tests; groups reference their children via childIds.
   const createObj = (id: string, zIndex: number) => ({ id, zIndex, onAfterUpdate: jest.fn() }) as any;
   const createGroup = (id: string, zIndex: number, childIds: string[], fields: Record<string, any> = {}) =>
-    createWithPrototype(UpdrawGroup, { ...createObj(id, zIndex), __class__: 'UpdrawGroup', childIds, ...fields }) as any;
+    createWithPrototype(UpmadeGroup, { ...createObj(id, zIndex), __class__: 'UpmadeGroup', childIds, ...fields }) as any;
   const zIndices = (...objs: any[]) => objs.map(obj => obj.zIndex);
 
   /** Sets the objects of the whole workspace (store order), independent of the viewport. */
@@ -1656,7 +1656,7 @@ describe('UpdrawCore', () => {
   });
 
   describe('group', () => {
-    // UpdrawGroup.createFromObjects is real and needs the children's polygons for its bounding box.
+    // UpmadeGroup.createFromObjects is real and needs the children's polygons for its bounding box.
     const createShape = (id: string, zIndex: number) =>
       ({
         ...createObj(id, zIndex),
@@ -1667,13 +1667,13 @@ describe('UpdrawCore', () => {
     let createSelectionGroupSpy: jest.SpyInstance;
     let createFromObjectsSpy: jest.SpyInstance;
 
-    const createdGroup = (): UpdrawGroup => createFromObjectsSpy.mock.results[0]?.value;
+    const createdGroup = (): UpmadeGroup => createFromObjectsSpy.mock.results[0]?.value;
 
     beforeEach(() => {
       newSelectionGroup = { id: 'new-selection', objects: [], isSelected: false, rotation: 0 };
       newSelectionGroup.addOrRemove = jest.fn((obj: any) => newSelectionGroup.objects.push(obj));
-      createSelectionGroupSpy = jest.spyOn(UpdrawSelectionGroup, 'create').mockReturnValue(newSelectionGroup);
-      createFromObjectsSpy = jest.spyOn(UpdrawGroup, 'createFromObjects');
+      createSelectionGroupSpy = jest.spyOn(UpmadeSelectionGroup, 'create').mockReturnValue(newSelectionGroup);
+      createFromObjectsSpy = jest.spyOn(UpmadeGroup, 'createFromObjects');
     });
 
     afterEach(() => {
@@ -1918,8 +1918,8 @@ describe('UpdrawCore', () => {
   });
 
   describe('ungroup', () => {
-    // A real UpdrawGroup, because ungroup() reads the children through group.ungroup().
-    const createUpdrawGroup = (id: string, zIndex: number, childIds: string[]) => Object.assign(new UpdrawGroup(), { _core: core, id, zIndex, childIds, isMounted: true });
+    // A real UpmadeGroup, because ungroup() reads the children through group.ungroup().
+    const createUpmadeGroup = (id: string, zIndex: number, childIds: string[]) => Object.assign(new UpmadeGroup(), { _core: core, id, zIndex, childIds, isMounted: true });
     const createChild = (id: string, zIndex: number) => ({ ...createObj(id, zIndex), isMounted: true }) as any;
 
     let newSelectionGroup: any;
@@ -1928,7 +1928,7 @@ describe('UpdrawCore', () => {
     beforeEach(() => {
       newSelectionGroup = { id: 'new-selection', objects: [], isSelected: false, rotation: 0 };
       newSelectionGroup.addOrRemove = jest.fn((obj: any) => newSelectionGroup.objects.push(obj));
-      createSelectionGroupSpy = jest.spyOn(UpdrawSelectionGroup, 'create').mockReturnValue(newSelectionGroup);
+      createSelectionGroupSpy = jest.spyOn(UpmadeSelectionGroup, 'create').mockReturnValue(newSelectionGroup);
     });
 
     afterEach(() => {
@@ -1938,13 +1938,13 @@ describe('UpdrawCore', () => {
     it('removes the group, keeps its children and selects them', () => {
       const c1 = createChild('c1', 1);
       const c2 = createChild('c2', 2);
-      const group = createUpdrawGroup('group', 2, ['c1', 'c2']);
+      const group = createUpmadeGroup('group', 2, ['c1', 'c2']);
       const objs = [c1, c2, group];
       setStoreObjects(...objs);
       const store = trackStoreWrites(objs);
       select(group);
 
-      core.ungroup(selection().filter(obj => obj instanceof UpdrawGroup));
+      core.ungroup(selection().filter(obj => obj instanceof UpmadeGroup));
 
       expect(group.isMounted).toBe(false);
       expect([c1.isMounted, c2.isMounted]).toEqual([true, true]);
@@ -1957,20 +1957,20 @@ describe('UpdrawCore', () => {
     it('writes no zIndex for a well-formed group', () => {
       const c1 = createChild('c1', 1);
       const c2 = createChild('c2', 2);
-      const group = createUpdrawGroup('group', 2, ['c1', 'c2']);
+      const group = createUpmadeGroup('group', 2, ['c1', 'c2']);
       // Ties outside of the group are left alone.
       const p = createChild('p', 4);
       const q = createChild('q', 4);
       setStoreObjects(c1, c2, group, p, q);
       select(group);
 
-      core.ungroup(selection().filter(obj => obj instanceof UpdrawGroup));
+      core.ungroup(selection().filter(obj => obj instanceof UpmadeGroup));
 
       expect(zIndices(c1, c2, p, q)).toEqual([1, 2, 4, 4]);
       expect(mockObjectsMap.update).not.toHaveBeenCalled();
     });
 
-    /** A store whose remove() drops objects right away, like UpdrawObjectMap. */
+    /** A store whose remove() drops objects right away, like UpmadeObjectMap. */
     const setMutableStoreObjects = (...objs: any[]) => {
       const live = [...objs];
       mockObjectsMap.allObjects.mockImplementation(() => [...live]);
@@ -1987,13 +1987,13 @@ describe('UpdrawCore', () => {
       const x = createChild('x', 1);
       const c = createChild('c', 2);
       const d = createChild('d', 3);
-      const inner = createUpdrawGroup('inner', 3, ['c', 'd']);
+      const inner = createUpmadeGroup('inner', 3, ['c', 'd']);
       const y = createChild('y', 4);
       const parent = createGroup('parent', 4, ['x', 'inner', 'y'], { finalize: jest.fn() });
       const live = setMutableStoreObjects(x, c, d, inner, y, parent);
       select(inner);
 
-      core.ungroup(selection().filter(obj => obj instanceof UpdrawGroup));
+      core.ungroup(selection().filter(obj => obj instanceof UpmadeGroup));
 
       expect(parent.childIds).toEqual(['x', 'c', 'd', 'y']);
       expect(parent.finalize).toHaveBeenCalled();
@@ -2007,12 +2007,12 @@ describe('UpdrawCore', () => {
       const a = createChild('a', 1);
       const b = createChild('b', 2);
       const c = createChild('c', 3);
-      const inner = createUpdrawGroup('inner', 3, ['b', 'c']);
-      const outer = createUpdrawGroup('outer', 3, ['a', 'inner']);
+      const inner = createUpmadeGroup('inner', 3, ['b', 'c']);
+      const outer = createUpmadeGroup('outer', 3, ['a', 'inner']);
       setMutableStoreObjects(a, b, c, inner, outer);
       select(outer, inner, a, b, c);
 
-      core.ungroup(selection().filter(obj => obj instanceof UpdrawGroup));
+      core.ungroup(selection().filter(obj => obj instanceof UpmadeGroup));
 
       expect(newSelectionGroup.objects.map((obj: any) => obj.id).sort()).toEqual(['a', 'b', 'c']);
     });
@@ -2021,14 +2021,14 @@ describe('UpdrawCore', () => {
       // Pasted by older versions: tied members and a tie across the two groups.
       const a = createChild('a', 2);
       const b = createChild('b', 2);
-      const g1 = createUpdrawGroup('g1', 2, ['a', 'b']);
+      const g1 = createUpmadeGroup('g1', 2, ['a', 'b']);
       const c = createChild('c', 3);
       const d = createChild('d', 3);
-      const g2 = createUpdrawGroup('g2', 3, ['c', 'd']);
+      const g2 = createUpmadeGroup('g2', 3, ['c', 'd']);
       setMutableStoreObjects(a, b, g1, c, d, g2);
       select(g1, g2);
 
-      core.ungroup(selection().filter(obj => obj instanceof UpdrawGroup));
+      core.ungroup(selection().filter(obj => obj instanceof UpmadeGroup));
 
       const values = zIndices(a, b, c, d);
       expect(new Set(values).size).toBe(4);
@@ -2042,14 +2042,14 @@ describe('UpdrawCore', () => {
       const c1 = createChild('c1', 2);
       const c2 = createChild('c2', 2);
       const c3 = createChild('c3', 2);
-      const group = createUpdrawGroup('group', 2, ['c1', 'c2', 'c3']);
+      const group = createUpmadeGroup('group', 2, ['c1', 'c2', 'c3']);
       const x = createChild('x', 5);
       const objs = [c1, c2, c3, group, x];
       setStoreObjects(...objs);
       const store = trackStoreWrites(objs);
       select(group);
 
-      core.ungroup(selection().filter(obj => obj instanceof UpdrawGroup));
+      core.ungroup(selection().filter(obj => obj instanceof UpmadeGroup));
 
       expect(c1.zIndex).toBeLessThan(c2.zIndex);
       expect(c2.zIndex).toBeLessThan(c3.zIndex);
@@ -2075,10 +2075,10 @@ describe('UpdrawCore', () => {
       it('ungroups several groups in one undo step, returns the children and leaves the selection alone', () => {
         const a = createChild('a', 1);
         const b = createChild('b', 2);
-        const g1 = createUpdrawGroup('g1', 2, ['a', 'b']);
+        const g1 = createUpmadeGroup('g1', 2, ['a', 'b']);
         const c = createChild('c', 3);
         const d = createChild('d', 4);
-        const g2 = createUpdrawGroup('g2', 4, ['c', 'd']);
+        const g2 = createUpmadeGroup('g2', 4, ['c', 'd']);
         const other = createChild('other', 5);
         const objs = [a, b, g1, c, d, g2, other];
         setMutableStoreObjects(...objs);
@@ -2099,9 +2099,9 @@ describe('UpdrawCore', () => {
       it('resolves stale references by id', () => {
         const a = createChild('a', 1);
         const b = createChild('b', 2);
-        const group = createUpdrawGroup('group', 2, ['a', 'b']);
+        const group = createUpmadeGroup('group', 2, ['a', 'b']);
         setMutableStoreObjects(a, b, group);
-        const stale = Object.assign(new UpdrawGroup(), { id: 'group', childIds: [] });
+        const stale = Object.assign(new UpmadeGroup(), { id: 'group', childIds: [] });
 
         expect(core.ungroup([stale])).toEqual([a, b]);
         expect(group.isMounted).toBe(false);
@@ -2110,22 +2110,22 @@ describe('UpdrawCore', () => {
       it('skips non-group entries and unknown groups with a warning', () => {
         const a = createChild('a', 1);
         const b = createChild('b', 2);
-        const group = createUpdrawGroup('group', 2, ['a', 'b']);
+        const group = createUpmadeGroup('group', 2, ['a', 'b']);
         const loose = createChild('loose', 3);
         setMutableStoreObjects(a, b, group, loose);
 
-        const children = core.ungroup([loose, group, createUpdrawGroup('missing', 9, [])] as any);
+        const children = core.ungroup([loose, group, createUpmadeGroup('missing', 9, [])] as any);
 
         expect(children).toEqual([a, b]);
         expect(loose.isMounted).toBe(true);
-        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("'loose': it is not an UpdrawGroup"));
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("'loose': it is not an UpmadeGroup"));
         expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("'missing': it is not in the active workspace"));
       });
 
       it('does nothing for an empty array even when groups are selected', () => {
         const a = createChild('a', 1);
         const b = createChild('b', 2);
-        const group = createUpdrawGroup('group', 2, ['a', 'b']);
+        const group = createUpmadeGroup('group', 2, ['a', 'b']);
         setMutableStoreObjects(a, b, group);
         select(group);
 
@@ -2137,7 +2137,7 @@ describe('UpdrawCore', () => {
       it('replaces a selected dissolved group by its children and keeps other selected objects', () => {
         const a = createChild('a', 1);
         const b = createChild('b', 2);
-        const group = createUpdrawGroup('group', 2, ['a', 'b']);
+        const group = createUpmadeGroup('group', 2, ['a', 'b']);
         const other = createChild('other', 3);
         setMutableStoreObjects(a, b, group, other);
         select(other, group);
@@ -2151,7 +2151,7 @@ describe('UpdrawCore', () => {
         const x = createChild('x', 1);
         const c = createChild('c', 2);
         const d = createChild('d', 3);
-        const inner = createUpdrawGroup('inner', 3, ['c', 'd']);
+        const inner = createUpmadeGroup('inner', 3, ['c', 'd']);
         const parent = createGroup('parent', 3, ['x', 'inner'], { finalize: jest.fn() });
         setMutableStoreObjects(x, c, d, inner, parent);
 
@@ -2176,7 +2176,7 @@ describe('UpdrawCore', () => {
         objects: [{ rotation: 0.5 }],
         rotation: 0,
       };
-      jest.spyOn(UpdrawSelectionGroup, 'create').mockReturnValue(mockSG);
+      jest.spyOn(UpmadeSelectionGroup, 'create').mockReturnValue(mockSG);
 
       const obj = { id: 'obj-1', isSelected: true } as any;
 
@@ -2300,9 +2300,9 @@ describe('UpdrawCore', () => {
 
     it('should exclude selection group and selection box', () => {
       const obj = { zIndex: 1 } as any;
-      const selGroup = Object.create(UpdrawSelectionGroup.prototype);
+      const selGroup = Object.create(UpmadeSelectionGroup.prototype);
       selGroup.zIndex = 99999;
-      const selBox = Object.create(UpdrawSelectionBox.prototype);
+      const selBox = Object.create(UpmadeSelectionBox.prototype);
       selBox.zIndex = 99999;
 
       mockObjectsMap.query.mockReturnValue([obj, selGroup, selBox]);
@@ -2327,7 +2327,7 @@ describe('UpdrawCore', () => {
     it('should sort a group above its tied top member regardless of query order', () => {
       const below = { id: 'below', zIndex: 1 } as any;
       const member = { id: 'member', zIndex: 2 } as any;
-      const group = createWithPrototype(UpdrawGroup, { id: 'group', zIndex: 2, __class__: 'UpdrawGroup' }) as any;
+      const group = createWithPrototype(UpmadeGroup, { id: 'group', zIndex: 2, __class__: 'UpmadeGroup' }) as any;
 
       mockObjectsMap.query.mockReturnValue([group, member, below]);
       expect(core.getObjectsInViewport()).toEqual([below, member, group]);
@@ -2351,9 +2351,9 @@ describe('UpdrawCore', () => {
       expect(core.displaySelectionGroupUI(obj)).toBe(true);
     });
 
-    it('should return false for selected UpdrawLine when no selection group', () => {
-      const line = Object.create(UpdrawLine.prototype);
-      line.__class__ = 'UpdrawLine';
+    it('should return false for selected UpmadeLine when no selection group', () => {
+      const line = Object.create(UpmadeLine.prototype);
+      line.__class__ = 'UpmadeLine';
       line.isSelected = true;
       mockStore.selectionGroup = null;
 
@@ -2362,7 +2362,7 @@ describe('UpdrawCore', () => {
 
     it('should render group UI only on the local selection group when multiple objects are selected', () => {
       const obj = { id: 'obj-1', isSelected: true } as any;
-      const localGroup = Object.create(UpdrawSelectionGroup.prototype);
+      const localGroup = Object.create(UpmadeSelectionGroup.prototype);
       localGroup.id = 'sg-1';
       localGroup.isSelected = true;
       Object.defineProperty(localGroup, 'objects', { value: [{}, {}], writable: true });
@@ -2372,12 +2372,12 @@ describe('UpdrawCore', () => {
       expect(core.displaySelectionGroupUI(localGroup)).toBe(true);
     });
 
-    it('should return false when local selection group contains a single UpdrawLine', () => {
-      const localGroup = Object.create(UpdrawSelectionGroup.prototype);
+    it('should return false when local selection group contains a single UpmadeLine', () => {
+      const localGroup = Object.create(UpmadeSelectionGroup.prototype);
       localGroup.id = 'sg-1';
       localGroup.isSelected = true;
-      const line = Object.create(UpdrawLine.prototype);
-      line.__class__ = 'UpdrawLine';
+      const line = Object.create(UpmadeLine.prototype);
+      line.__class__ = 'UpmadeLine';
       Object.defineProperty(localGroup, 'objects', { value: [line], writable: true });
       mockStore.selectionGroup = localGroup;
 
@@ -2385,7 +2385,7 @@ describe('UpdrawCore', () => {
     });
 
     it('should return true when local selection group contains a single non-line object', () => {
-      const localGroup = Object.create(UpdrawSelectionGroup.prototype);
+      const localGroup = Object.create(UpmadeSelectionGroup.prototype);
       localGroup.id = 'sg-1';
       localGroup.isSelected = true;
       const rect = { id: 'rect-1' };
@@ -2396,11 +2396,11 @@ describe('UpdrawCore', () => {
     });
 
     it('should return true for a remote selection group regardless of content', () => {
-      const remoteGroup = Object.create(UpdrawSelectionGroup.prototype);
+      const remoteGroup = Object.create(UpmadeSelectionGroup.prototype);
       remoteGroup.isSelected = true;
       remoteGroup.userId = 'remote-user';
-      const line = Object.create(UpdrawLine.prototype);
-      line.__class__ = 'UpdrawLine';
+      const line = Object.create(UpmadeLine.prototype);
+      line.__class__ = 'UpmadeLine';
       Object.defineProperty(remoteGroup, 'objects', { value: [line], writable: true });
       core.setUser({ id: 'local-user', displayName: 'Local' } as any);
 
@@ -2416,8 +2416,8 @@ describe('UpdrawCore', () => {
     });
 
     it('should show line UI and hide group UI for a single selected line in a local selection group', () => {
-      const line = createWithPrototype(UpdrawLine, { __class__: 'UpdrawLine', id: 'line-1', isSelected: true }) as any;
-      const localGroup = Object.create(UpdrawSelectionGroup.prototype);
+      const line = createWithPrototype(UpmadeLine, { __class__: 'UpmadeLine', id: 'line-1', isSelected: true }) as any;
+      const localGroup = Object.create(UpmadeSelectionGroup.prototype);
       localGroup.id = 'group-1';
       localGroup.isSelected = true;
       Object.defineProperty(localGroup, 'objects', { value: [line], writable: true });
@@ -2428,8 +2428,8 @@ describe('UpdrawCore', () => {
     });
 
     it('should return true for selected line when no selection group', () => {
-      const line = Object.create(UpdrawLine.prototype);
-      line.__class__ = 'UpdrawLine';
+      const line = Object.create(UpmadeLine.prototype);
+      line.__class__ = 'UpmadeLine';
       line.isSelected = true;
       line.id = 'line-1';
       mockStore.selectionGroup = null;
@@ -2438,8 +2438,8 @@ describe('UpdrawCore', () => {
     });
 
     it('should return false for unselected line when no selection group', () => {
-      const line = Object.create(UpdrawLine.prototype);
-      line.__class__ = 'UpdrawLine';
+      const line = Object.create(UpmadeLine.prototype);
+      line.__class__ = 'UpmadeLine';
       line.isSelected = false;
       mockStore.selectionGroup = null;
 
@@ -2447,8 +2447,8 @@ describe('UpdrawCore', () => {
     });
 
     it('should return false when selection group is not selected', () => {
-      const line = Object.create(UpdrawLine.prototype);
-      line.__class__ = 'UpdrawLine';
+      const line = Object.create(UpmadeLine.prototype);
+      line.__class__ = 'UpmadeLine';
       line.isSelected = true;
       line.id = 'line-1';
       mockStore.selectionGroup = { isSelected: false, objects: [line] };
@@ -2457,8 +2457,8 @@ describe('UpdrawCore', () => {
     });
 
     it('should return true for a single selected line in selection group', () => {
-      const line = Object.create(UpdrawLine.prototype);
-      line.__class__ = 'UpdrawLine';
+      const line = Object.create(UpmadeLine.prototype);
+      line.__class__ = 'UpmadeLine';
       line.isSelected = true;
       line.id = 'line-1';
       mockStore.selectionGroup = { isSelected: true, objects: [line] };
@@ -2467,8 +2467,8 @@ describe('UpdrawCore', () => {
     });
 
     it('should return false when selection group has multiple objects', () => {
-      const line = Object.create(UpdrawLine.prototype);
-      line.__class__ = 'UpdrawLine';
+      const line = Object.create(UpmadeLine.prototype);
+      line.__class__ = 'UpmadeLine';
       line.isSelected = true;
       line.id = 'line-1';
       const otherObj = { id: 'other' };
@@ -2668,10 +2668,10 @@ describe('UpdrawCore', () => {
   });
 
   describe('initializeWorkspace', () => {
-    const STORAGE_KEY = 'updraw-active-workspace-id';
+    const STORAGE_KEY = 'upmade-active-workspace-id';
 
-    function createWorkspace(id: string, name: string, createdAt: Date, updatedAt?: Date): UpdrawWorkspace {
-      const ws = new UpdrawWorkspace({ id, name });
+    function createWorkspace(id: string, name: string, createdAt: Date, updatedAt?: Date): UpmadeWorkspace {
+      const ws = new UpmadeWorkspace({ id, name });
       ws.createdAt = createdAt;
       ws.updatedAt = updatedAt ?? createdAt;
       return ws;
@@ -2782,8 +2782,8 @@ describe('UpdrawCore', () => {
     });
 
     it('should seed configured objects into an empty workspace object map', async () => {
-      const object = { id: 'seed-object', workspaceId: 'other-workspace' } as UpdrawBaseObject<any>;
-      const ws = new UpdrawWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
+      const object = { id: 'seed-object', workspaceId: 'other-workspace' } as UpmadeBaseObject<any>;
+      const ws = new UpmadeWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
       mockAppStateMap.allWorkspaces.mockReturnValue([]);
       mockAppStateMap.has.mockReturnValue(false);
 
@@ -2794,8 +2794,8 @@ describe('UpdrawCore', () => {
     });
 
     it('should initialize runtime fields on seeded objects like addObject does', async () => {
-      const object = { id: 'seed-object' } as UpdrawBaseObject<any>;
-      const ws = new UpdrawWorkspace({ id: 'ws-seeded', name: 'Seeded', viewport: { scale: 2 }, objects: [object] });
+      const object = { id: 'seed-object' } as UpmadeBaseObject<any>;
+      const ws = new UpmadeWorkspace({ id: 'ws-seeded', name: 'Seeded', viewport: { scale: 2 }, objects: [object] });
       mockAppStateMap.allWorkspaces.mockReturnValue([]);
       mockAppStateMap.has.mockReturnValue(false);
 
@@ -2807,8 +2807,8 @@ describe('UpdrawCore', () => {
     });
 
     it('should preserve an explicit scale on seeded objects', async () => {
-      const object = { id: 'seed-object', scale: 0.5 } as UpdrawBaseObject<any>;
-      const ws = new UpdrawWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
+      const object = { id: 'seed-object', scale: 0.5 } as UpmadeBaseObject<any>;
+      const ws = new UpmadeWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
       mockAppStateMap.allWorkspaces.mockReturnValue([]);
       mockAppStateMap.has.mockReturnValue(false);
       mockStore.state.scale = 2;
@@ -2819,8 +2819,8 @@ describe('UpdrawCore', () => {
     });
 
     it('should not insert a configured object that already exists in the workspace map', async () => {
-      const object = { id: 'seed-object', workspaceId: 'ws-seeded' } as UpdrawBaseObject<any>;
-      const ws = new UpdrawWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
+      const object = { id: 'seed-object', workspaceId: 'ws-seeded' } as UpmadeBaseObject<any>;
+      const ws = new UpmadeWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
       mockAppStateMap.allWorkspaces.mockReturnValue([]);
       mockAppStateMap.has.mockReturnValue(false);
       mockObjectsMap.findById.mockReturnValue(object);

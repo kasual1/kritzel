@@ -1,14 +1,14 @@
 import { Component, Element, Event, EventEmitter, h, Host, Listen, Prop, State, Watch } from '@stencil/core';
-import { UpdrawChatBoxChip, UpdrawTermKey } from '@updraw/core';
+import { UpmadeChatBoxChip, UpmadeTermKey } from '@upmade/core';
 
-export type UpdrawChatBoxMode = 'collapsed' | 'expanded';
+export type UpmadeChatBoxMode = 'collapsed' | 'expanded';
 
 @Component({
-  tag: 'updraw-chat-box',
-  styleUrl: 'updraw-chat-box.css',
+  tag: 'upmade-chat-box',
+  styleUrl: 'upmade-chat-box.css',
   shadow: true,
 })
-export class UpdrawChatBox {
+export class UpmadeChatBox {
   /** Chips shown at most; the rest are summarized as "+N more". */
   private static readonly MAX_VISIBLE_CHIPS = 3;
 
@@ -23,7 +23,7 @@ export class UpdrawChatBox {
    * automatically while focused once the text no longer fits on one line,
    * collapsing again when focus is lost.
    */
-  @Prop({ mutable: true, reflect: true }) mode: UpdrawChatBoxMode = 'collapsed';
+  @Prop({ mutable: true, reflect: true }) mode: UpmadeChatBoxMode = 'collapsed';
 
   /** Placeholder text shown when the chat box is empty. Falls back to the localized term. */
   @Prop() placeholder?: string;
@@ -35,7 +35,7 @@ export class UpdrawChatBox {
   @Prop() loading: boolean = false;
 
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpmadeTermKey, string>> = {};
 
   /**
    * Chips shown above the box, e.g. the object or element the next prompt refers to.
@@ -43,7 +43,7 @@ export class UpdrawChatBox {
    * The box never changes this array: pass a new array to add, change or remove chips.
    * Each chip's remove button emits `chatChipRemove`.
    */
-  @Prop() chips: UpdrawChatBoxChip[] = [];
+  @Prop() chips: UpmadeChatBoxChip[] = [];
 
   /** Emitted with the current text when the user submits the chat box. */
   @Event() chatSubmit!: EventEmitter<string>;
@@ -52,10 +52,10 @@ export class UpdrawChatBox {
   @Event() chatStop!: EventEmitter<void>;
 
   /** Emitted when the mode changes, including automatic expansion. */
-  @Event() modeChange!: EventEmitter<UpdrawChatBoxMode>;
+  @Event() modeChange!: EventEmitter<UpmadeChatBoxMode>;
 
   /** Emitted with the chip whose remove button the user activated. The chip stays until `chips` no longer contains it. */
-  @Event() chatChipRemove!: EventEmitter<UpdrawChatBoxChip>;
+  @Event() chatChipRemove!: EventEmitter<UpmadeChatBoxChip>;
 
   private textareaRef?: HTMLTextAreaElement;
 
@@ -74,7 +74,7 @@ export class UpdrawChatBox {
   /** Set by keyboard input so only typing (not clicking or focusing) keeps the caret solid. */
   private isTyping = false;
 
-  @Element() host!: HTMLUpdrawChatBoxElement;
+  @Element() host!: HTMLUpmadeChatBoxElement;
 
   @State() isFocused = false;
 
@@ -92,7 +92,7 @@ export class UpdrawChatBox {
 
     const path = event.composedPath();
     if (!path.includes(this.host)) {
-      const isInsideDialog = path.some(el => el instanceof HTMLElement && (el.tagName === 'DIALOG' || el.tagName === 'UPDRAW-DIALOG' || el.getAttribute('role') === 'dialog'));
+      const isInsideDialog = path.some(el => el instanceof HTMLElement && (el.tagName === 'DIALOG' || el.tagName === 'UPMADE-DIALOG' || el.getAttribute('role') === 'dialog'));
       const target = path[0];
       const isEditableTarget = target instanceof HTMLElement && (target.isContentEditable || target.matches('input, textarea, select'));
       if (isInsideDialog || isEditableTarget) {
@@ -145,7 +145,7 @@ export class UpdrawChatBox {
   }
 
   @Watch('mode')
-  onModeChange(newMode: UpdrawChatBoxMode, oldMode: UpdrawChatBoxMode): void {
+  onModeChange(newMode: UpmadeChatBoxMode, oldMode: UpmadeChatBoxMode): void {
     if (newMode !== oldMode) {
       this.modeChange.emit(newMode);
     }
@@ -244,7 +244,7 @@ export class UpdrawChatBox {
       this.isTyping = false;
       caret.classList.add('typing');
       clearTimeout(this.caretIdleTimer);
-      this.caretIdleTimer = setTimeout(() => caret.classList.remove('typing'), UpdrawChatBox.CARET_IDLE_DELAY);
+      this.caretIdleTimer = setTimeout(() => caret.classList.remove('typing'), UpmadeChatBox.CARET_IDLE_DELAY);
     } else if (!caret.classList.contains('typing')) {
       // Clicking or otherwise moving the caret restarts the blink so it appears right away.
       caret.style.animation = 'none';
@@ -419,7 +419,7 @@ export class UpdrawChatBox {
     event.preventDefault();
   };
 
-  private removeChip(chip: UpdrawChatBoxChip, event: MouseEvent): void {
+  private removeChip(chip: UpmadeChatBoxChip, event: MouseEvent): void {
     // Only keyboard activation leaves focus on the button (mousedown is prevented), and the button may disappear with its chip.
     if (this.host?.shadowRoot?.activeElement === event.currentTarget) {
       this.textareaRef?.focus();
@@ -430,7 +430,7 @@ export class UpdrawChatBox {
   private renderChips() {
     const removeLabel = this.terms['chatBox.removeChip'] ?? 'Remove';
     const chips = this.chips ?? [];
-    const visibleChips = chips.slice(0, UpdrawChatBox.MAX_VISIBLE_CHIPS);
+    const visibleChips = chips.slice(0, UpmadeChatBox.MAX_VISIBLE_CHIPS);
     const hiddenCount = chips.length - visibleChips.length;
     // Always rendered, so screen readers announce chips as they appear and change.
     return (
@@ -443,7 +443,7 @@ export class UpdrawChatBox {
             aria-label={chip.detail ? `${chip.label}, ${chip.detail}` : chip.label}
             onMouseDown={this.preventFocusChange}
           >
-            {chip.icon && <updraw-icon class="chat-chip-icon" name={chip.icon} size={14} aria-hidden="true"></updraw-icon>}
+            {chip.icon && <upmade-icon class="chat-chip-icon" name={chip.icon} size={14} aria-hidden="true"></upmade-icon>}
             <span class="chat-chip-label">{chip.label}</span>
             {chip.detail && (
               <span class="chat-chip-separator" aria-hidden="true">
@@ -460,7 +460,7 @@ export class UpdrawChatBox {
               disabled={this.disabled}
               onClick={event => this.removeChip(chip, event)}
             >
-              <updraw-icon name="x" size={14} aria-hidden="true"></updraw-icon>
+              <upmade-icon name="x" size={14} aria-hidden="true"></upmade-icon>
             </button>
           </div>
         ))}
@@ -530,7 +530,7 @@ export class UpdrawChatBox {
               disabled={this.disabled || (!this.loading && !this.canSubmit)}
               onClick={this.handleButtonClick}
             >
-              <updraw-icon name={this.loading ? 'square' : 'arrowUp'} size={16} aria-hidden="true"></updraw-icon>
+              <upmade-icon name={this.loading ? 'square' : 'arrowUp'} size={16} aria-hidden="true"></upmade-icon>
             </button>
           </div>
         </div>

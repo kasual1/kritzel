@@ -1,10 +1,10 @@
-﻿import { UpdrawEditor } from './updraw-editor';
-import { UpdrawBaseObject } from '@updraw/core';
-import { UpdrawWorkspace } from '@updraw/core';
-import { UpdrawFontRegistry } from '@updraw/core';
-import { UpdrawIconRegistry } from '@updraw/core';
-import { UpdrawKeyboardHelper } from '@updraw/core';
-import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '@updraw/core';
+﻿import { UpmadeEditor } from './upmade-editor';
+import { UpmadeBaseObject } from '@upmade/core';
+import { UpmadeWorkspace } from '@upmade/core';
+import { UpmadeFontRegistry } from '@upmade/core';
+import { UpmadeIconRegistry } from '@upmade/core';
+import { UpmadeKeyboardHelper } from '@upmade/core';
+import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '@upmade/core';
 
 // Simple mock for decorators
 jest.mock('@stencil/core', () => ({
@@ -19,12 +19,12 @@ jest.mock('@stencil/core', () => ({
   Element: () => () => {},
 }));
 
-describe('UpdrawEditor', () => {
-  let component: UpdrawEditor;
+describe('UpmadeEditor', () => {
+  let component: UpmadeEditor;
   let mockEngine: any;
 
   beforeEach(() => {
-    component = new UpdrawEditor();
+    component = new UpmadeEditor();
     component.host = {
       style: {
         setProperty: jest.fn(),
@@ -169,7 +169,7 @@ describe('UpdrawEditor', () => {
       const createSession = () => {
         const listeners = new Set<() => void>();
         const session: any = {
-          [Symbol.for('updraw.chatSession')]: true,
+          [Symbol.for('upmade.chatSession')]: true,
           running: false,
           send: jest.fn(() => {
             session.running = true;
@@ -255,7 +255,7 @@ describe('UpdrawEditor', () => {
     it('re-emits titlebar actions once, stopping the engine event', () => {
       const emit = jest.fn();
       (component as any).objectTitlebarAction = { emit };
-      const detail = { elementId: 'play', section: 'left', objectId: 'a', objectType: 'UpdrawShape', workspaceId: 'w', anchorRect: {} };
+      const detail = { elementId: 'play', section: 'left', objectId: 'a', objectType: 'UpmadeShape', workspaceId: 'w', anchorRect: {} };
       const event = { detail, stopPropagation: jest.fn() } as any;
 
       component.handleObjectTitlebarAction(event);
@@ -333,36 +333,36 @@ describe('UpdrawEditor', () => {
 
       component.componentWillLoad();
 
-      expect(UpdrawIconRegistry.get('editor-initial-icon')).toBe(svg);
+      expect(UpmadeIconRegistry.get('editor-initial-icon')).toBe(svg);
     });
 
     it('registers and replaces icons supplied after initialization', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
       component.componentWillLoad();
       component.onCustomSvgIconsChange({ 'editor-late-icon': '<svg/>' });
-      expect(UpdrawIconRegistry.get('editor-late-icon')).toBe('<svg/>');
+      expect(UpmadeIconRegistry.get('editor-late-icon')).toBe('<svg/>');
 
       const replacement = '<svg><path d="M1 1L2 2"/></svg>';
       component.onCustomSvgIconsChange({ 'editor-late-icon': replacement });
-      expect(UpdrawIconRegistry.get('editor-late-icon')).toBe(replacement);
+      expect(UpmadeIconRegistry.get('editor-late-icon')).toBe(replacement);
     });
 
     it('accepts undefined custom icons without removing existing registry entries', () => {
       component.onCustomSvgIconsChange({ 'editor-retained-icon': '<svg/>' });
 
       expect(() => component.onCustomSvgIconsChange(undefined)).not.toThrow();
-      expect(UpdrawIconRegistry.get('editor-retained-icon')).toBe('<svg/>');
+      expect(UpmadeIconRegistry.get('editor-retained-icon')).toBe('<svg/>');
     });
 
     it('registers upgrade-time inputs before rendering even when the watcher did not run', () => {
       component.componentWillLoad();
-      const register = jest.spyOn(UpdrawIconRegistry, 'registerIcons');
+      const register = jest.spyOn(UpmadeIconRegistry, 'registerIcons');
       component.customSvgIcons = { 'editor-upgrade-icon': '<svg/>' };
 
       component.componentWillRender();
       component.componentWillRender();
 
-      expect(UpdrawIconRegistry.get('editor-upgrade-icon')).toBe('<svg/>');
+      expect(UpmadeIconRegistry.get('editor-upgrade-icon')).toBe('<svg/>');
       expect(register).toHaveBeenCalledTimes(1);
     });
   });
@@ -404,7 +404,7 @@ describe('UpdrawEditor', () => {
 
   describe('Workspace Methods', () => {
     it('should store provided workspaces separately from activeWorkspace', () => {
-      const workspace = new UpdrawWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
+      const workspace = new UpmadeWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
       component.workspaces = [workspace];
 
       expect(component.workspaces).toEqual([workspace]);
@@ -412,9 +412,9 @@ describe('UpdrawEditor', () => {
     });
 
     it('should keep public workspaces separate from availableWorkspaces state', () => {
-      const providedWorkspace = new UpdrawWorkspace({ id: 'provided-workspace', name: 'Provided Workspace' });
-      const availableWorkspace = new UpdrawWorkspace({ id: 'available-workspace', name: 'Available Workspace' });
-      const activeWorkspace = new UpdrawWorkspace({ id: 'active-workspace', name: 'Active Workspace' });
+      const providedWorkspace = new UpmadeWorkspace({ id: 'provided-workspace', name: 'Provided Workspace' });
+      const availableWorkspace = new UpmadeWorkspace({ id: 'available-workspace', name: 'Available Workspace' });
+      const activeWorkspace = new UpmadeWorkspace({ id: 'active-workspace', name: 'Active Workspace' });
       component.workspaces = [providedWorkspace];
       component.availableWorkspaces = [availableWorkspace];
       component.activeWorkspace = activeWorkspace;
@@ -430,7 +430,7 @@ describe('UpdrawEditor', () => {
     });
 
     it('should switch the engine when workspace manager selects a workspace', async () => {
-      const workspace = new UpdrawWorkspace({ id: 'ws-selected', name: 'Selected Workspace' });
+      const workspace = new UpmadeWorkspace({ id: 'ws-selected', name: 'Selected Workspace' });
       const event = { stopPropagation: jest.fn(), detail: workspace } as any;
 
       await component.handleWorkspaceManagerChange(event);
@@ -441,7 +441,7 @@ describe('UpdrawEditor', () => {
     });
 
     it('should clear the active workspace when workspace manager emits no workspace', async () => {
-      component.activeWorkspace = new UpdrawWorkspace({ id: 'ws-active', name: 'Active Workspace' });
+      component.activeWorkspace = new UpmadeWorkspace({ id: 'ws-active', name: 'Active Workspace' });
       const event = { stopPropagation: jest.fn(), detail: null } as any;
 
       await component.handleWorkspaceManagerChange(event);
@@ -458,8 +458,8 @@ describe('UpdrawEditor', () => {
     });
 
     it('should pass configured workspace seed objects to the engine', async () => {
-      const object = { id: 'seed-object' } as UpdrawBaseObject<any>;
-      const workspace = new UpdrawWorkspace({ id: 'seeded-workspace', name: 'Seeded Workspace', objects: [object] });
+      const object = { id: 'seed-object' } as UpmadeBaseObject<any>;
+      const workspace = new UpmadeWorkspace({ id: 'seeded-workspace', name: 'Seeded Workspace', objects: [object] });
 
       await component.createWorkspace(workspace);
 
@@ -597,7 +597,7 @@ describe('UpdrawEditor', () => {
     });
 
     it('should call centerObjects on engine', async () => {
-      const objects = [{ id: 'obj-1' }] as unknown as UpdrawBaseObject[];
+      const objects = [{ id: 'obj-1' }] as unknown as UpmadeBaseObject[];
       await component.centerObjects(objects, false);
       expect(mockEngine.centerObjects).toHaveBeenCalledWith(objects, false);
     });
@@ -759,7 +759,7 @@ describe('UpdrawEditor', () => {
     });
 
     it('should register custom fonts when the customFonts prop changes', () => {
-      const spy = jest.spyOn(UpdrawFontRegistry, 'registerFonts').mockImplementation();
+      const spy = jest.spyOn(UpmadeFontRegistry, 'registerFonts').mockImplementation();
       const customFonts = {
         'editor-lora': {
           family: 'Lora',
@@ -773,8 +773,8 @@ describe('UpdrawEditor', () => {
     });
 
     it('should register custom fonts in componentDidLoad', () => {
-      const spy = jest.spyOn(UpdrawFontRegistry, 'registerFonts').mockImplementation();
-      const keyboardSpy = jest.spyOn(UpdrawKeyboardHelper, 'onKeyboardVisibleChanged').mockReturnValue(() => {});
+      const spy = jest.spyOn(UpmadeFontRegistry, 'registerFonts').mockImplementation();
+      const keyboardSpy = jest.spyOn(UpmadeKeyboardHelper, 'onKeyboardVisibleChanged').mockReturnValue(() => {});
       component.customFonts = {
         'editor-inter': {
           family: 'Inter',
@@ -789,7 +789,7 @@ describe('UpdrawEditor', () => {
     });
 
     it('should register custom fonts through the public method', async () => {
-      const spy = jest.spyOn(UpdrawFontRegistry, 'registerFonts').mockImplementation();
+      const spy = jest.spyOn(UpmadeFontRegistry, 'registerFonts').mockImplementation();
       const runtimeFonts = {
         'editor-space-grotesk': {
           family: 'Space Grotesk',
@@ -863,8 +863,8 @@ describe('UpdrawEditor', () => {
       })();
 
       const customElementsSpy = jest.spyOn(customElements, 'whenDefined').mockResolvedValue(undefined as any);
-      const waitForFontsSpy = jest.spyOn(UpdrawFontRegistry, 'waitForFonts').mockReturnValue(deferred.promise);
-      const keyboardSpy = jest.spyOn(UpdrawKeyboardHelper, 'onKeyboardVisibleChanged').mockReturnValue(() => {});
+      const waitForFontsSpy = jest.spyOn(UpmadeFontRegistry, 'waitForFonts').mockReturnValue(deferred.promise);
+      const keyboardSpy = jest.spyOn(UpmadeKeyboardHelper, 'onKeyboardVisibleChanged').mockReturnValue(() => {});
       component.isReady = { emit: jest.fn() } as any;
       component.customFonts = {
         'editor-racing': {

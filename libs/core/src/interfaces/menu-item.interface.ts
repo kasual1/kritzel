@@ -1,13 +1,13 @@
-import { UpdrawIconName } from '../classes/registries/icon-registry.class';
+import { UpmadeIconName } from '../classes/registries/icon-registry.class';
 
-export interface IUpdrawMenuItem<T = any> {
+export interface IUpmadeMenuItem<T = any> {
   id: string;
   label: string;
-  icon?: UpdrawIconName;
+  icon?: UpmadeIconName;
   iconTooltip?: string;
   color?: string;
   value?: T;
-  children?: IUpdrawMenuItem[];
+  children?: IUpmadeMenuItem[];
   isSelectable?: boolean;
   isSelected?: boolean;
   isEditing?: boolean;
@@ -16,16 +16,16 @@ export interface IUpdrawMenuItem<T = any> {
   isChildMenuOpen?: boolean;
   isNewItem?: boolean;
   childMenuAnchor?: HTMLElement;
-  unchangedState?: Partial<IUpdrawMenuItem>;
-  action?: (item: IUpdrawMenuItem, parent: IUpdrawMenuItem) => void;
+  unchangedState?: Partial<IUpmadeMenuItem>;
+  action?: (item: IUpmadeMenuItem, parent: IUpmadeMenuItem) => void;
 }
 
-export interface IUpdrawMenuItemSelectEvent {
-  item: IUpdrawMenuItem;
-  parent: IUpdrawMenuItem;
+export interface IUpmadeMenuItemSelectEvent {
+  item: IUpmadeMenuItem;
+  parent: IUpmadeMenuItem;
 }
 
-export interface IUpdrawMenuItemToggleChildMenuEvent {
-  item: IUpdrawMenuItem;
+export interface IUpmadeMenuItemToggleChildMenuEvent {
+  item: IUpmadeMenuItem;
   childMenuAnchor: HTMLElement;
 }

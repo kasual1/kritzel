@@ -1,9 +1,9 @@
 {
-  "name": "@updraw/react-demo",
+  "name": "@upmade/react-demo",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://updraw.io",
+  "homepage": "https://upmade.io",
   "scripts": {
     "start": "vite",
     "clean": "rimraf dist node_modules",
@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",
-    "@updraw/react-engine": "file:../../../libs/engine/react/dist",
-    "@updraw/react-editor": "file:../../../libs/editor/react/dist",
+    "@upmade/react-engine": "file:../../../libs/engine/react/dist",
+    "@upmade/react-editor": "file:../../../libs/editor/react/dist",
     "postprocessing": "^6.39.4",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",

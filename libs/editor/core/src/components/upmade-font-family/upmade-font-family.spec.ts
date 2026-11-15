@@ -1,4 +1,4 @@
-import { UpdrawFontFamily } from './updraw-font-family';
+import { UpmadeFontFamily } from './upmade-font-family';
 
 jest.mock('@stencil/core', () => ({
   ...jest.requireActual('@stencil/core/internal/testing'),
@@ -9,11 +9,11 @@ jest.mock('@stencil/core', () => ({
   Event: () => () => {},
 }));
 
-describe('UpdrawFontFamily', () => {
-  let component: UpdrawFontFamily;
+describe('UpmadeFontFamily', () => {
+  let component: UpmadeFontFamily;
 
   beforeEach(() => {
-    component = new UpdrawFontFamily();
+    component = new UpmadeFontFamily();
   });
 
   it('uses provided fontOptions as-is', () => {

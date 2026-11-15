@@ -9,17 +9,17 @@
 /** Class name prefix of serialized objects written before the rename (e.g. `KritzelPath`). */
 export const LEGACY_CLASS_PREFIX = 'Kritzel';
 
-const CLASS_PREFIX = 'Updraw';
+const CLASS_PREFIX = 'Upmade';
 
 /** Legacy class names whose new name is not just the prefix swapped. */
 const LEGACY_CLASS_RENAMES: Readonly<Record<string, string>> = {
-  KritzelCustomElement: 'UpdrawDynamicObject',
+  KritzelCustomElement: 'UpmadeDynamicObject',
 };
 
 /** Prefix of storage keys and document/database names written before the rename. */
 export const LEGACY_NAME_PREFIX = 'kritzel-';
 
-const NAME_PREFIX = 'updraw-';
+const NAME_PREFIX = 'upmade-';
 
 /** localStorage keys that are copied from their legacy name, with or without an `-<editorId>` suffix. */
 export const LEGACY_STORAGE_KEYS: readonly string[] = ['kritzel-settings', 'kritzel-active-workspace-id', 'kritzel-app-state-instance-id'];
@@ -41,9 +41,9 @@ export const LEGACY_ELEMENT_ID_ATTRIBUTE = 'data-kritzel-id';
 
 /** CSS custom properties that saved iframe and dynamic object content may reference, mapped to their new names. */
 export const LEGACY_CONTENT_CSS_VARIABLES: Readonly<Record<string, string>> = {
-  '--kritzel-iframe-default-cursor': '--updraw-iframe-default-cursor',
-  '--kritzel-iframe-pointer-cursor': '--updraw-iframe-pointer-cursor',
-  '--kritzel-content-border-radius': '--updraw-content-border-radius',
+  '--kritzel-iframe-default-cursor': '--upmade-iframe-default-cursor',
+  '--kritzel-iframe-pointer-cursor': '--upmade-iframe-pointer-cursor',
+  '--kritzel-content-border-radius': '--upmade-content-border-radius',
 };
 
 /**
@@ -56,7 +56,7 @@ export function isLegacyClassName(className: unknown): className is string {
 
 /**
  * Maps a serialized `__class__` value written before the rename to its current name
- * (e.g. `KritzelPath` → `UpdrawPath`). Other values are returned unchanged.
+ * (e.g. `KritzelPath` → `UpmadePath`). Other values are returned unchanged.
  * @param className - The `__class__` value to normalize
  * @returns The current class name
  */
@@ -69,10 +69,10 @@ export function normalizeLegacyClassName(className: string): string {
 
 /**
  * Returns the name a document, database or storage key had before the rename
- * (e.g. `updraw-workspace-<id>` → `kritzel-workspace-<id>`).
+ * (e.g. `upmade-workspace-<id>` → `kritzel-workspace-<id>`).
  * Useful for servers that store documents by name and need to find documents saved by older versions.
- * @param name - A current name starting with `updraw-`
- * @returns The legacy name, or `null` when the name does not use the `updraw-` prefix
+ * @param name - A current name starting with `upmade-`
+ * @returns The legacy name, or `null` when the name does not use the `upmade-` prefix
  */
 export function toLegacyDocumentName(name: string): string | null {
   return name.startsWith(NAME_PREFIX) ? LEGACY_NAME_PREFIX + name.slice(NAME_PREFIX.length) : null;

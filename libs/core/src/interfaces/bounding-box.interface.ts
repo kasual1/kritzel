@@ -1,4 +1,4 @@
-export interface UpdrawBoundingBox {
+export interface UpmadeBoundingBox {
   x: number;
   y: number;
   z: number;

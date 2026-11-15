@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import {
-  HTMLUpdrawEditorElement,
-  UpdrawEditor,
-  UpdrawWorkspace,
-} from "@updraw/react-editor";
+  HTMLUpmadeEditorElement,
+  UpmadeEditor,
+  UpmadeWorkspace,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -13,9 +13,9 @@ import { Toolbar } from "../../../components/Toolbar";
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ExportDialogPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const [workspaces] = useState(() => [
-    new UpdrawWorkspace({ objects: createSeedObjects() }),
+    new UpmadeWorkspace({ objects: createSeedObjects() }),
   ]);
 
   async function openDialog() {
@@ -37,7 +37,7 @@ export function ExportDialogPage() {
         <button type="button" onClick={() => void openDialog()}>Open export dialog</button>
         <button type="button" onClick={() => void closeDialog()}>Close export dialog</button>
       </Toolbar>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="export-dialog"
         theme="light"

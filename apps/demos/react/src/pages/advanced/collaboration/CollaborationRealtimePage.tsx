@@ -2,10 +2,10 @@ import { useMemo } from "react";
 import {
   HocuspocusSyncProvider,
   IndexedDBSyncProvider,
-  UpdrawEditor,
-  type UpdrawSyncConfig,
-  UpdrawWorkspace,
-} from "@updraw/react-editor";
+  UpmadeEditor,
+  type UpmadeSyncConfig,
+  UpmadeWorkspace,
+} from "@upmade/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -16,7 +16,7 @@ import {
 import { Toolbar } from "../../../components/Toolbar";
 
 export function CollaborationRealtimePage() {
-  const syncConfig = useMemo<UpdrawSyncConfig>(
+  const syncConfig = useMemo<UpmadeSyncConfig>(
     () => ({
       providers: [
         IndexedDBSyncProvider,
@@ -26,7 +26,7 @@ export function CollaborationRealtimePage() {
     [],
   );
   const workspaces = useMemo(
-    () => [new UpdrawWorkspace({ objects: createSeedObjects() })],
+    () => [new UpmadeWorkspace({ objects: createSeedObjects() })],
     [],
   );
 
@@ -36,7 +36,7 @@ export function CollaborationRealtimePage() {
         <span className="label">Real-time Sync</span>
         <span className="status">Configured for Hocuspocus server</span>
       </Toolbar>
-      <UpdrawEditor
+      <UpmadeEditor
         editorId="collaboration-realtime"
         syncConfig={syncConfig}
         theme="light"

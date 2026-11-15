@@ -1,24 +1,24 @@
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawBaseObject } from './base-object.class';
-import { UpdrawPolygon } from '../../interfaces/polygon.interface';
-import { UpdrawMathHelper } from '../../helpers/math.helper';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeBaseObject } from './base-object.class';
+import { UpmadePolygon } from '../../interfaces/polygon.interface';
+import { UpmadeMathHelper } from '../../helpers/math.helper';
 
 /**
- * Configuration options for creating an UpdrawGroup instance.
+ * Configuration options for creating an UpmadeGroup instance.
  */
-export interface UpdrawGroupConfig {
+export interface UpmadeGroupConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
-  /** Whether the engine's loading placeholder is drawn over the object, see `UpdrawBaseObject.setLoading()`. */
+  /** Whether the engine's loading placeholder is drawn over the object, see `UpmadeBaseObject.setLoading()`. */
   isLoading?: boolean;
   rotation?: number;
 }
 
 /**
- * UpdrawGroup represents a permanent grouping of objects that act as a single unit.
+ * UpmadeGroup represents a permanent grouping of objects that act as a single unit.
  * 
- * Unlike UpdrawSelectionGroup (which is ephemeral and used for temporary multi-selection),
- * UpdrawGroup is persisted and saved with the workspace. Grouped objects move, resize,
+ * Unlike UpmadeSelectionGroup (which is ephemeral and used for temporary multi-selection),
+ * UpmadeGroup is persisted and saved with the workspace. Grouped objects move, resize,
  * rotate, copy, and delete together as one unit.
  * 
  * Key features:
@@ -26,8 +26,8 @@ export interface UpdrawGroupConfig {
  * - Clicking any child selects the entire group
  * - Can be ungrouped to restore children to top-level objects
  */
-export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
-    override __class__: string = 'UpdrawGroup';
+export class UpmadeGroup extends UpmadeBaseObject<HTMLElement> {
+    override __class__: string = 'UpmadeGroup';
 
     /**
      * Groups being resized by an agentic action. Like the user's interactive resize
@@ -35,18 +35,18 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
      * Never serialized.
      * @internal
      */
-    static readonly transformLocks = new WeakSet<UpdrawGroup>();
+    static readonly transformLocks = new WeakSet<UpmadeGroup>();
 
-    constructor(config?: UpdrawGroupConfig) {
+    constructor(config?: UpmadeGroupConfig) {
         super();
         this.name = config?.name;
         this.isLoading = config?.isLoading ?? false;
-        this.rotation = UpdrawMathHelper.degreesToRadians(config?.rotation ?? 0);
+        this.rotation = UpmadeMathHelper.degreesToRadians(config?.rotation ?? 0);
     }
 
     /**
      * IDs of child objects within this group.
-     * Children can be any UpdrawBaseObject, including other UpdrawGroups for nesting.
+     * Children can be any UpmadeBaseObject, including other UpmadeGroups for nesting.
      */
     childIds: string[] = [];
 
@@ -55,11 +55,11 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
      * is added to the engine. Once the group is added (and _core is set),
      * these are flushed into the store and this array is cleared.
      */
-    _pendingChildren: UpdrawBaseObject<any>[] = [];
+    _pendingChildren: UpmadeBaseObject<any>[] = [];
 
     /**
      * Snapshots of child states for transformation operations (resize, rotate).
-     * Similar pattern to UpdrawSelectionGroup.
+     * Similar pattern to UpmadeSelectionGroup.
      */
     private unchangedChildSnapshots: Map<string, ChildSnapshot> = new Map();
     private snapshotRotation: number = 0;
@@ -73,9 +73,9 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
     /**
      * Retrieves the actual child objects from the store by their IDs.
      * Filters out any IDs that no longer exist in the store.
-     * @returns An array of UpdrawBaseObject instances representing the group's children.
+     * @returns An array of UpmadeBaseObject instances representing the group's children.
      */
-    get children(): UpdrawBaseObject<any>[] {
+    get children(): UpmadeBaseObject<any>[] {
         if (!this._core) {
             return this._pendingChildren;
         }
@@ -85,7 +85,7 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
                 const found = this._core.store.objects.filter(obj => obj.id === id);
                 return found.length > 0 ? found[0] : null;
             })
-            .filter((obj): obj is UpdrawBaseObject<any> => obj !== null);
+            .filter((obj): obj is UpmadeBaseObject<any> => obj !== null);
     }
 
     /**
@@ -97,13 +97,13 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
     }
 
     /**
-     * Factory method to create a new empty UpdrawGroup with core integration.
+     * Factory method to create a new empty UpmadeGroup with core integration.
      * Initializes the group with default values and links it to the core store.
-     * @param core - The UpdrawCore instance providing access to store and state management.
-     * @returns A new UpdrawGroup instance configured with the core context.
+     * @param core - The UpmadeCore instance providing access to store and state management.
+     * @returns A new UpmadeGroup instance configured with the core context.
      */
-    static override create(core: UpdrawCore, config?: { rotation?: number }): UpdrawGroup {
-        const group = new UpdrawGroup(config);
+    static override create(core: UpmadeCore, config?: { rotation?: number }): UpmadeGroup {
+        const group = new UpmadeGroup(config);
 
         group._core = core;
         group.id = group.generateId();
@@ -116,15 +116,15 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
     }
 
     /**
-     * Creates an UpdrawGroup from an array of existing objects.
+     * Creates an UpmadeGroup from an array of existing objects.
      * The objects are added as children and the group's bounding box is calculated
      * to encompass all children. Child snapshots are captured for transformation operations.
-     * @param core - The UpdrawCore instance providing access to store and state management.
-     * @param objects - An array of UpdrawBaseObject instances to group together.
-     * @returns A new UpdrawGroup containing the specified objects as children.
+     * @param core - The UpmadeCore instance providing access to store and state management.
+     * @param objects - An array of UpmadeBaseObject instances to group together.
+     * @returns A new UpmadeGroup containing the specified objects as children.
      */
-    static createFromObjects(core: UpdrawCore, objects: UpdrawBaseObject<any>[]): UpdrawGroup {
-        const group = UpdrawGroup.create(core);
+    static createFromObjects(core: UpmadeCore, objects: UpmadeBaseObject<any>[]): UpmadeGroup {
+        const group = UpmadeGroup.create(core);
 
         // Add all objects as children
         objects.forEach(obj => {
@@ -139,15 +139,15 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
     }
 
     /**
-     * Finds the parent UpdrawGroup that contains the given object as a direct child.
+     * Finds the parent UpmadeGroup that contains the given object as a direct child.
      * Searches through all groups in the store to find one containing the specified object ID.
-     * @param core - The UpdrawCore instance providing access to the object store.
+     * @param core - The UpmadeCore instance providing access to the object store.
      * @param objectId - The unique identifier of the object to find the parent group for.
-     * @returns The parent UpdrawGroup if found, or null if the object is not a child of any group.
+     * @returns The parent UpmadeGroup if found, or null if the object is not a child of any group.
      */
-    static findParentGroup(core: UpdrawCore, objectId: string): UpdrawGroup | null {
+    static findParentGroup(core: UpmadeCore, objectId: string): UpmadeGroup | null {
         const allGroups = core.store.objects
-            .filter(obj => obj.__class__ === 'UpdrawGroup') as UpdrawGroup[];
+            .filter(obj => obj.__class__ === 'UpmadeGroup') as UpmadeGroup[];
 
         for (const group of allGroups) {
             if (group.childIds.includes(objectId)) {
@@ -166,11 +166,11 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
      * @param group - The group whose descendants should be collected.
      * @param out - A set that will be populated with all descendant object IDs.
      */
-    static collectDescendantIds(group: UpdrawGroup, out: Set<string> = new Set()): Set<string> {
+    static collectDescendantIds(group: UpmadeGroup, out: Set<string> = new Set()): Set<string> {
         for (const child of group.children) {
             out.add(child.id);
-            if (child instanceof UpdrawGroup) {
-                UpdrawGroup.collectDescendantIds(child, out);
+            if (child instanceof UpmadeGroup) {
+                UpmadeGroup.collectDescendantIds(child, out);
             }
         }
         return out;
@@ -180,9 +180,9 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
      * Adds a child object to this group.
      * If the object is already a child, no action is taken.
      * Automatically refreshes the bounding box and captures child snapshots.
-     * @param object - The UpdrawBaseObject instance to add as a child.
+     * @param object - The UpmadeBaseObject instance to add as a child.
      */
-    addChild(object: UpdrawBaseObject<any>): void {
+    addChild(object: UpmadeBaseObject<any>): void {
         if (!this.childIds.includes(object.id)) {
             this.childIds.push(object.id);
 
@@ -216,7 +216,7 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
      * The group itself should be removed from the store after calling this method.
      * @returns An array of all child objects that were part of this group.
      */
-    ungroup(): UpdrawBaseObject<any>[] {
+    ungroup(): UpmadeBaseObject<any>[] {
         return this.children;
     }
 
@@ -233,7 +233,7 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
      */
     finalize(): void {
         for (const child of this.children) {
-            if (child instanceof UpdrawGroup) {
+            if (child instanceof UpmadeGroup) {
                 child.finalize();
             }
         }
@@ -421,7 +421,7 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
      */
     override resize(x: number, y: number, width: number, height: number): void {
         // Use snapshot dimensions (stable across the gesture) instead of `this.*`,
-        // which mutates each frame and gets distorted by descendants like UpdrawText
+        // which mutates each frame and gets distorted by descendants like UpmadeText
         // that clamp to a uniform scale, causing the cascade factor to drift.
         const baseWidth = this.snapshotTotalWidth > 0
             ? this.snapshotTotalWidth - this.padding * 2
@@ -522,7 +522,7 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
             // recapturing each frame would defeat the purpose of using stable snapshots
             // and re-introduce the compounding distortion described above. Snapshots are
             // refreshed at the start of the next gesture via beginTransform/finalize.
-            if (!this._core.store.state.isResizing && !UpdrawGroup.transformLocks.has(this)) {
+            if (!this._core.store.state.isResizing && !UpmadeGroup.transformLocks.has(this)) {
                 this.captureChildSnapshots();
             }
 
@@ -615,7 +615,7 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
      * @param polygon - The polygon to test intersection against.
      * @returns True if the polygon intersects any child, false otherwise.
      */
-    override hitTestPolygon(polygon: UpdrawPolygon): boolean {
+    override hitTestPolygon(polygon: UpmadePolygon): boolean {
         // Check if polygon intersects with any child
         return this.children.some(child => child.hitTestPolygon(polygon));
     }
@@ -628,19 +628,19 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
      * Creates a deep copy of this group and all its children.
      * Children are copied but not added to the store; they are stored
      * in a temporary _pendingChildren property for paste() to handle.
-     * @returns A new UpdrawGroup with copied children and properties.
+     * @returns A new UpmadeGroup with copied children and properties.
      */
-    override copy(): UpdrawGroup {
-        const copiedGroup = UpdrawGroup.create(this._core);
+    override copy(): UpmadeGroup {
+        const copiedGroup = UpmadeGroup.create(this._core);
 
         // Deep copy all children but DON'T add to store yet
         // Store the copied children temporarily for paste() to handle
-        const copiedChildren: UpdrawBaseObject<any>[] = [];
+        const copiedChildren: UpmadeBaseObject<any>[] = [];
 
         this.children
             .sort((a, b) => a.zIndex - b.zIndex)
             .forEach(child => {
-                const copiedChild = child.copy() as UpdrawBaseObject<any>;
+                const copiedChild = child.copy() as UpmadeBaseObject<any>;
                 copiedChildren.push(copiedChild);
                 copiedGroup.childIds.push(copiedChild.id);
             });
@@ -677,7 +677,7 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
     }
 
     /**
-     * Deserializes a plain object back into this UpdrawGroup instance.
+     * Deserializes a plain object back into this UpmadeGroup instance.
      * Restores the unchangedChildSnapshots Map from the serialized object format.
      * @param object - The serialized plain object containing group data.
      * @returns This group instance after deserialization, cast to type T.
@@ -711,7 +711,7 @@ export class UpdrawGroup extends UpdrawBaseObject<HTMLElement> {
         this.children.forEach(child => {
             child.workspaceId = workspaceId;
             // Recursively update nested groups
-            if (child instanceof UpdrawGroup) {
+            if (child instanceof UpmadeGroup) {
                 child.updateWorkspaceId(workspaceId);
             }
         });

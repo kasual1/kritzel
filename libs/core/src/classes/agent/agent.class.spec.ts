@@ -1,21 +1,21 @@
-import { UpdrawObjectMap } from '../structures/object-map.structure';
-import { UpdrawAgenticCursorManager } from '../managers/agentic-cursor.manager';
-import { UpdrawAgenticActionManager } from '../managers/agentic-action.manager';
-import { UpdrawAgentManager } from '../managers/agent.manager';
-import { UpdrawAnchorManager } from '../managers/anchor.manager';
-import { UpdrawClipboardManager } from '../managers/clipboard.manager';
-import { UpdrawShape } from '../objects/shape.class';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawAgent, isUpdrawAgent } from './agent.class';
-import { UpdrawAgentActionError } from './agent-action-error.class';
+import { UpmadeObjectMap } from '../structures/object-map.structure';
+import { UpmadeAgenticCursorManager } from '../managers/agentic-cursor.manager';
+import { UpmadeAgenticActionManager } from '../managers/agentic-action.manager';
+import { UpmadeAgentManager } from '../managers/agent.manager';
+import { UpmadeAnchorManager } from '../managers/anchor.manager';
+import { UpmadeClipboardManager } from '../managers/clipboard.manager';
+import { UpmadeShape } from '../objects/shape.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeAgent, isUpmadeAgent } from './agent.class';
+import { UpmadeAgentActionError } from './agent-action-error.class';
 import { buildCanvasSnapshot } from './agent-snapshot';
-import { UpdrawUserActor } from './user-actor.class';
-import { UpdrawIframeObject } from '../objects/iframe.class';
+import { UpmadeUserActor } from './user-actor.class';
+import { UpmadeIframeObject } from '../objects/iframe.class';
 import { createModelIframe } from './canvas-tool-definitions';
-import type { UpdrawCore } from '../core/core.class';
+import type { UpmadeCore } from '../core/core.class';
 
-// An UpdrawAgent on a real Yjs object map with real object classes and the real agentic managers.
+// An UpmadeAgent on a real Yjs object map with real object classes and the real agentic managers.
 
 jest.mock('../../configs/default-sync.config', () => ({ DEFAULT_SYNC_CONFIG: { providers: [] } }));
 jest.mock('../../helpers/migration.helper', () => ({ runMigrations: jest.fn() }));
@@ -50,14 +50,14 @@ const flushMicrotasks = async () => {
 
 interface Harness {
   core: any;
-  map: UpdrawObjectMap<any>;
+  map: UpmadeObjectMap<any>;
 }
 
-describe('UpdrawAgent', () => {
+describe('UpmadeAgent', () => {
   let now: number;
   let harnesses: Harness[];
   let core: any;
-  let map: UpdrawObjectMap<any>;
+  let map: UpmadeObjectMap<any>;
 
   const createHarness = async (user?: { id: string }): Promise<Harness> => {
     const state = {
@@ -80,7 +80,7 @@ describe('UpdrawAgent', () => {
       isRotationHandleSelected: false,
       isLineHandleSelected: false,
     };
-    const harness = { core: null as any, map: new UpdrawObjectMap<any>() };
+    const harness = { core: null as any, map: new UpmadeObjectMap<any>() };
     const fakeCore: any = {
       user,
       editorId: undefined,
@@ -112,12 +112,12 @@ describe('UpdrawAgent', () => {
       addObject: (object: any) => harness.map.insert(object),
       removeObject: (object: any) => harness.map.remove((o: any) => o.id === object.id),
     };
-    fakeCore.anchorManager = new UpdrawAnchorManager(fakeCore);
-    fakeCore.clipboardManager = new UpdrawClipboardManager(fakeCore);
-    await harness.map.initialize(fakeCore as unknown as UpdrawCore, 'ws', { providers: [] });
-    fakeCore.agenticCursorManager = new UpdrawAgenticCursorManager(fakeCore);
-    fakeCore.agenticActionManager = new UpdrawAgenticActionManager(fakeCore);
-    fakeCore.agentManager = new UpdrawAgentManager(fakeCore);
+    fakeCore.anchorManager = new UpmadeAnchorManager(fakeCore);
+    fakeCore.clipboardManager = new UpmadeClipboardManager(fakeCore);
+    await harness.map.initialize(fakeCore as unknown as UpmadeCore, 'ws', { providers: [] });
+    fakeCore.agenticCursorManager = new UpmadeAgenticCursorManager(fakeCore);
+    fakeCore.agenticActionManager = new UpmadeAgenticActionManager(fakeCore);
+    fakeCore.agentManager = new UpmadeAgentManager(fakeCore);
     harness.core = fakeCore;
     harnesses.push(harness);
     return harness;
@@ -143,17 +143,17 @@ describe('UpdrawAgent', () => {
   };
 
   const addShape = (x: number, y: number, width = 100, height = 50) => {
-    const shape = UpdrawShape.create(core, { x, y, translateX: 0, translateY: 0, width, height, scale: 1 });
+    const shape = UpmadeShape.create(core, { x, y, translateX: 0, translateY: 0, width, height, scale: 1 });
     map.insert(shape);
     map.stopUndoCapturing();
     return shape;
   };
 
-  const add = (agent: UpdrawAgent): UpdrawAgent => core.agentManager.add(agent);
+  const add = (agent: UpmadeAgent): UpmadeAgent => core.agentManager.add(agent);
 
   /** Selects objects as the local user (a synced selection group of this client). */
   const selectAsUser = (objectIds: string[]) => {
-    const group = Object.create(UpdrawSelectionGroup.prototype);
+    const group = Object.create(UpmadeSelectionGroup.prototype);
     const fields: Record<string, unknown> = {
       objectIds,
       id: `sg-${Math.round(Math.random() * 1e9)}`,
@@ -190,10 +190,10 @@ describe('UpdrawAgent', () => {
   });
 
   describe('identity', () => {
-    it('requires a name and derives id, color and the IUpdrawUser aliases', () => {
-      expect(() => new UpdrawAgent({ name: '' })).toThrow(TypeError);
+    it('requires a name and derives id, color and the IUpmadeUser aliases', () => {
+      expect(() => new UpmadeAgent({ name: '' })).toThrow(TypeError);
 
-      const agent = new UpdrawAgent({ name: 'Planner', avatarUrl: '/bot.png' });
+      const agent = new UpmadeAgent({ name: 'Planner', avatarUrl: '/bot.png' });
 
       expect(agent.id).toMatch(/^agent-[0-9a-zA-Z]{12}$/);
       expect(agent.kind).toBe('agent');
@@ -201,18 +201,18 @@ describe('UpdrawAgent', () => {
       expect(agent.profileImageUrl).toBe('/bot.png');
       expect(agent.color).toMatch(/^(#|hsl|rgb)/);
       expect(agent.broadcast).toBe(true);
-      expect(isUpdrawAgent(agent)).toBe(true);
-      expect(isUpdrawAgent({ id: 'x', kind: 'agent' })).toBe(false);
+      expect(isUpmadeAgent(agent)).toBe(true);
+      expect(isUpmadeAgent({ id: 'x', kind: 'agent' })).toBe(false);
     });
 
     it('opts out of Vue reactivity', () => {
-      expect((new UpdrawAgent({ name: 'A' }) as any).__v_skip).toBe(true);
+      expect((new UpmadeAgent({ name: 'A' }) as any).__v_skip).toBe(true);
     });
   });
 
   describe('before it is added', () => {
     it('rejects actions and moves with a hint', async () => {
-      const agent = new UpdrawAgent({ name: 'A' });
+      const agent = new UpmadeAgent({ name: 'A' });
 
       await expect(agent.perform({ type: 'clearSelection' })).rejects.toThrow('editor.addAgent(agent)');
       await expect(agent.moveTo({ x: 0, y: 0 })).rejects.toThrow('not added');
@@ -220,7 +220,7 @@ describe('UpdrawAgent', () => {
     });
 
     it('keeps the status and visibility for when it is added', () => {
-      const agent = new UpdrawAgent({ name: 'A', position: { x: 10, y: 20 } });
+      const agent = new UpmadeAgent({ name: 'A', position: { x: 10, y: 20 } });
       agent.setStatus('Warming up');
       agent.hide();
 
@@ -233,18 +233,18 @@ describe('UpdrawAgent', () => {
 
   describe('agent manager', () => {
     it('ignores adding the same agent twice and refuses a second agent with the same ID', () => {
-      const agent = new UpdrawAgent({ id: 'a', name: 'A' });
+      const agent = new UpmadeAgent({ id: 'a', name: 'A' });
 
       expect(core.agentManager.add(agent)).toBe(agent);
       expect(core.agentManager.add(agent)).toBe(agent);
-      expect(() => core.agentManager.add(new UpdrawAgent({ id: 'a', name: 'B' }))).toThrow('already added');
+      expect(() => core.agentManager.add(new UpmadeAgent({ id: 'a', name: 'B' }))).toThrow('already added');
       expect(() => core.agentManager.add({ id: 'x' })).toThrow(TypeError);
       expect(core.agentManager.getAll()).toEqual([agent]);
     });
 
     it('refuses an agent of another connected editor, but takes one over from a disconnected editor', async () => {
       const other = await createHarness();
-      const agent = new UpdrawAgent({ name: 'A' });
+      const agent = new UpmadeAgent({ name: 'A' });
       const removed = jest.fn();
       agent.on('removed', removed);
       other.core.agentManager.add(agent);
@@ -263,7 +263,7 @@ describe('UpdrawAgent', () => {
 
     it('rolls back the running action when the agent is removed, and the agent can be added again', async () => {
       const shape = addShape(0, 0);
-      const agent = add(new UpdrawAgent({ name: 'A', position: { x: 0, y: 0 } }));
+      const agent = add(new UpmadeAgent({ name: 'A', position: { x: 0, y: 0 } }));
       const removed = jest.fn();
       agent.on('removed', removed);
 
@@ -283,7 +283,7 @@ describe('UpdrawAgent', () => {
 
     it('starts at the viewport center when its start object is gone, when added again or taken over', async () => {
       const shape = addShape(0, 0);
-      const agent = add(new UpdrawAgent({ name: 'A', position: { objectId: shape.id, anchor: 'top-left' } }));
+      const agent = add(new UpmadeAgent({ name: 'A', position: { objectId: shape.id, anchor: 'top-left' } }));
       expect(agent.state.attachedTo).toMatchObject({ objectId: shape.id });
 
       core.agentManager.remove(agent);
@@ -293,10 +293,10 @@ describe('UpdrawAgent', () => {
       expect(agent.state).toMatchObject({ attachedTo: null, position: { x: 1000, y: 1000 } });
 
       // An object without a position (an empty group) is ignored too.
-      const empty = new UpdrawGroup();
+      const empty = new UpmadeGroup();
       map.insert(empty);
       map.stopUndoCapturing();
-      const atEmpty = add(new UpdrawAgent({ name: 'B', position: { objectId: empty.id } }));
+      const atEmpty = add(new UpmadeAgent({ name: 'B', position: { objectId: empty.id } }));
       expect(atEmpty.state.position).toEqual({ x: 1000, y: 1000 });
 
       // Taken over by an editor whose document never had the object.
@@ -310,7 +310,7 @@ describe('UpdrawAgent', () => {
     it('notifies changes once per microtask and lists presences', async () => {
       const listener = jest.fn();
       core.agentManager.onChange(listener);
-      const agent = add(new UpdrawAgent({ id: 'a', name: 'A', avatarUrl: '/a.png' }));
+      const agent = add(new UpmadeAgent({ id: 'a', name: 'A', avatarUrl: '/a.png' }));
       agent.setStatus('Busy');
       agent.hide();
       await flushMicrotasks();
@@ -337,7 +337,7 @@ describe('UpdrawAgent', () => {
 
   describe('actions', () => {
     it('creates objects as itself, not as the local user, and undoes them in its own history', async () => {
-      const agent = add(new UpdrawAgent({ id: 'writer', name: 'Writer' }));
+      const agent = add(new UpmadeAgent({ id: 'writer', name: 'Writer' }));
 
       const result = await settle(agent.createShape({ x: 0, y: 0, width: 120, height: 60, text: 'Hi' }, { instant: true }));
 
@@ -354,7 +354,7 @@ describe('UpdrawAgent', () => {
 
     it('maps the shortcuts onto actions with the default speed', async () => {
       const shape = addShape(0, 0);
-      const agent = add(new UpdrawAgent({ name: 'A', speed: 900 }));
+      const agent = add(new UpmadeAgent({ name: 'A', speed: 900 }));
       const perform = jest.spyOn(core.agenticActionManager, 'perform');
 
       await settle(agent.moveObject(shape.id, { x: 300, y: 0 }, { align: 'top-left', instant: true }));
@@ -367,7 +367,7 @@ describe('UpdrawAgent', () => {
 
     it('maps the copy, group, ungroup and order shortcuts onto actions', async () => {
       const [a, b] = [addShape(0, 0), addShape(0, 200)];
-      const agent = add(new UpdrawAgent({ name: 'A' }));
+      const agent = add(new UpmadeAgent({ name: 'A' }));
       const perform = jest.spyOn(core.agenticActionManager, 'perform');
 
       const copied = await settle(agent.copyObjects([a.id], { to: { x: 500, y: 0 }, instant: true }));
@@ -389,7 +389,7 @@ describe('UpdrawAgent', () => {
   describe('cancel', () => {
     it('rolls back the running action, drops the queued ones and keeps the selection', async () => {
       const [a, b] = [addShape(0, 0), addShape(0, 200)];
-      const agent = add(new UpdrawAgent({ name: 'A', position: { x: 0, y: 0 } }));
+      const agent = add(new UpmadeAgent({ name: 'A', position: { x: 0, y: 0 } }));
       await settle(agent.select([b.id], { instant: true }));
 
       const running = agent.moveObject(a.id, { x: 600, y: 0 });
@@ -408,7 +408,7 @@ describe('UpdrawAgent', () => {
 
   describe('task', () => {
     it('shows the label while it runs and restores the status afterwards', async () => {
-      const agent = add(new UpdrawAgent({ name: 'A', status: 'Idle' }));
+      const agent = add(new UpmadeAgent({ name: 'A', status: 'Idle' }));
       let during: string | null = null;
 
       const result = await agent.task('Tidying up', async () => {
@@ -421,10 +421,10 @@ describe('UpdrawAgent', () => {
       expect(agent.state.status).toBe('Idle');
     });
 
-    it('throws UpdrawAgentActionError on the first action that does not complete', async () => {
+    it('throws UpmadeAgentActionError on the first action that does not complete', async () => {
       const shape = addShape(0, 0);
       selectAsUser([shape.id]);
-      const agent = add(new UpdrawAgent({ name: 'A' }));
+      const agent = add(new UpmadeAgent({ name: 'A' }));
       const after = jest.fn();
 
       const task = agent.task('Moving', async () => {
@@ -433,7 +433,7 @@ describe('UpdrawAgent', () => {
       });
 
       const error: any = await settle(task).catch(e => e);
-      expect(error).toBeInstanceOf(UpdrawAgentActionError);
+      expect(error).toBeInstanceOf(UpmadeAgentActionError);
       expect(error).toMatchObject({ reason: 'user-selected', objectIds: [shape.id] });
       expect(error.action).toMatchObject({ type: 'moveObject' });
       expect(after).not.toHaveBeenCalled();
@@ -442,7 +442,7 @@ describe('UpdrawAgent', () => {
     });
 
     it('refuses a second task while one runs', async () => {
-      const agent = add(new UpdrawAgent({ name: 'A' }));
+      const agent = add(new UpmadeAgent({ name: 'A' }));
       let release!: () => void;
       const first = agent.task('One', () => new Promise<void>(resolve => (release = resolve)));
 
@@ -454,7 +454,7 @@ describe('UpdrawAgent', () => {
     it('leaves actions started before the task, or by a task that has ended, alone', async () => {
       const shape = addShape(0, 0);
       selectAsUser([shape.id]);
-      const agent = add(new UpdrawAgent({ name: 'A' }));
+      const agent = add(new UpmadeAgent({ name: 'A' }));
 
       // Started before the task, ends while it runs: resolves with the result.
       const before = agent.moveObject(shape.id, { x: 300, y: 0 });
@@ -469,7 +469,7 @@ describe('UpdrawAgent', () => {
 
     it('stops at the next action after cancel()', async () => {
       const shape = addShape(0, 0);
-      const agent = add(new UpdrawAgent({ name: 'A', position: { x: 0, y: 0 } }));
+      const agent = add(new UpmadeAgent({ name: 'A', position: { x: 0, y: 0 } }));
       const steps: string[] = [];
 
       const task = agent.task('Script', async () => {
@@ -489,7 +489,7 @@ describe('UpdrawAgent', () => {
   describe('events', () => {
     it('emits interrupted when the user takes over the objects mid-action', async () => {
       const shape = addShape(0, 0);
-      const agent = add(new UpdrawAgent({ name: 'A', position: { x: 0, y: 0 } }));
+      const agent = add(new UpmadeAgent({ name: 'A', position: { x: 0, y: 0 } }));
       const interrupted = jest.fn();
       agent.on('interrupted', interrupted);
 
@@ -510,7 +510,7 @@ describe('UpdrawAgent', () => {
     it('does not emit interrupted for refusals before the action started', async () => {
       const shape = addShape(0, 0);
       selectAsUser([shape.id]);
-      const agent = add(new UpdrawAgent({ name: 'A' }));
+      const agent = add(new UpmadeAgent({ name: 'A' }));
       const interrupted = jest.fn();
       agent.on('interrupted', interrupted);
 
@@ -520,7 +520,7 @@ describe('UpdrawAgent', () => {
     });
 
     it('emits change for state changes but not for plain motion', async () => {
-      const agent = add(new UpdrawAgent({ name: 'A', position: { x: 0, y: 0 } }));
+      const agent = add(new UpmadeAgent({ name: 'A', position: { x: 0, y: 0 } }));
       const change = jest.fn();
       agent.on('change', change);
 
@@ -539,7 +539,7 @@ describe('UpdrawAgent', () => {
     });
 
     it('emits change when added and removed, and for setters before it is added', async () => {
-      const agent = new UpdrawAgent({ name: 'A' });
+      const agent = new UpmadeAgent({ name: 'A' });
       const change = jest.fn();
       agent.on('change', change);
 
@@ -560,7 +560,7 @@ describe('UpdrawAgent', () => {
     });
 
     it('reports canUndo again when the history is cleared or the workspace map is destroyed', async () => {
-      const agent = add(new UpdrawAgent({ name: 'A' }));
+      const agent = add(new UpmadeAgent({ name: 'A' }));
       const change = jest.fn();
       agent.on('change', change);
       await settle(agent.createShape({ x: 0, y: 0, width: 120, height: 60 }, { instant: true }));
@@ -578,7 +578,7 @@ describe('UpdrawAgent', () => {
 
     it('emits detached after detach()', async () => {
       const shape = addShape(0, 0);
-      const agent = add(new UpdrawAgent({ name: 'A' }));
+      const agent = add(new UpmadeAgent({ name: 'A' }));
       const detached = jest.fn();
       agent.on('detached', detached);
 
@@ -618,7 +618,7 @@ describe('UpdrawAgent', () => {
       const shape = addShape(100, 100, 200, 100);
       const rects = { '#play': { x: 10, y: 20, width: 20, height: 10 } };
       const tracked = makeElementAware(shape, rects);
-      const agent = add(new UpdrawAgent({ name: 'A' }));
+      const agent = add(new UpmadeAgent({ name: 'A' }));
 
       await expect(settle(agent.moveTo({ objectId: shape.id, selector: '#play' }))).resolves.toEqual({ completed: true });
       expect(agent.state.attachedTo).toEqual({ objectId: shape.id, selector: '#play', anchor: 'center', offset: { x: 0, y: 0 } });
@@ -636,7 +636,7 @@ describe('UpdrawAgent', () => {
       const frame = addShape(0, 0);
       makeElementAware(frame, {});
       const plain = addShape(300, 0);
-      const agent = add(new UpdrawAgent({ name: 'A' }));
+      const agent = add(new UpmadeAgent({ name: 'A' }));
 
       await expect(agent.moveTo({ objectId: frame.id, selector: '#missing' })).rejects.toThrow('not found');
       await expect(agent.moveTo({ objectId: plain.id, selector: '#play' })).rejects.toThrow('has no elements');
@@ -645,7 +645,7 @@ describe('UpdrawAgent', () => {
     it('stops a running action when it moves to an element', async () => {
       const frame = addShape(500, 500, 200, 100);
       makeElementAware(frame, { '#play': { x: 0, y: 0, width: 20, height: 20 } });
-      const agent = add(new UpdrawAgent({ name: 'A', position: { x: 0, y: 0 } }));
+      const agent = add(new UpmadeAgent({ name: 'A', position: { x: 0, y: 0 } }));
 
       const action = agent.createShape({ x: 1000, y: 1000, width: 100, height: 100 });
       await step();
@@ -659,7 +659,7 @@ describe('UpdrawAgent', () => {
     it('refuses element targets for actions that need canvas points, and elements of objects that cannot interact', async () => {
       const frame = addShape(0, 0);
       makeElementAware(frame, { '#play': { x: 0, y: 0, width: 20, height: 20 } });
-      const agent = add(new UpdrawAgent({ name: 'A' }));
+      const agent = add(new UpmadeAgent({ name: 'A' }));
 
       await expect(agent.moveObject(frame.id, { objectId: frame.id, selector: '#play' } as any)).rejects.toThrow('agent.moveTo');
       // Element-aware, but without interactWithElement.
@@ -694,7 +694,7 @@ describe('UpdrawAgent', () => {
         const frame: any = addShape(100, 100, 200, 100);
         const rects = { '#play': { x: 10, y: 20, width: 20, height: 10 } };
         const tracked = makeInteractive(frame, rects);
-        const agent = add(new UpdrawAgent({ name: 'A', position: { x: 0, y: 0 } }));
+        const agent = add(new UpmadeAgent({ name: 'A', position: { x: 0, y: 0 } }));
         const pressCount = core.agenticCursorManager.get(agent.id)!.pressCount;
 
         const result = await settle(agent.click({ objectId: frame.id, selector: '#play' }));
@@ -716,7 +716,7 @@ describe('UpdrawAgent', () => {
       it('double-clicks with two presses', async () => {
         const frame: any = addShape(100, 100, 200, 100);
         makeInteractive(frame, { '#play': { x: 10, y: 20, width: 20, height: 10 } });
-        const agent = add(new UpdrawAgent({ name: 'A' }));
+        const agent = add(new UpmadeAgent({ name: 'A' }));
         const pressCount = core.agenticCursorManager.get(agent.id)!.pressCount;
 
         await expect(settle(agent.click({ objectId: frame.id, selector: '#play' }, { count: 2 }))).resolves.toMatchObject({ completed: true });
@@ -735,7 +735,7 @@ describe('UpdrawAgent', () => {
           element: info('#play', rects['#play']),
           coveredBy: info('.modal', rects['#play'], { text: 'Cookies?' }),
         }));
-        const agent = add(new UpdrawAgent({ name: 'A', position: { x: 0, y: 0 } }));
+        const agent = add(new UpmadeAgent({ name: 'A', position: { x: 0, y: 0 } }));
 
         const result = await settle(agent.interactWithElement({ objectId: frame.id, selector: '#play' }, { type: 'click' }));
 
@@ -758,7 +758,7 @@ describe('UpdrawAgent', () => {
         makeInteractive(frame, rects, (selector, _interaction, options) =>
           options?.trial ? { completed: true, element: info(selector, rects['#volume']) } : { completed: false, reason: 'invalid-value', message: 'It did not accept "loud".' },
         );
-        const agent = add(new UpdrawAgent({ name: 'A' }));
+        const agent = add(new UpmadeAgent({ name: 'A' }));
 
         await expect(settle(agent.interactWithElement({ objectId: frame.id, selector: '#volume' }, { type: 'fill', value: 'loud' }))).resolves.toEqual({
           completed: false,
@@ -774,7 +774,7 @@ describe('UpdrawAgent', () => {
       it('jumps without a check when instant, and hovers without pressing', async () => {
         const frame: any = addShape(100, 100, 200, 100);
         makeInteractive(frame, { '#play': { x: 10, y: 20, width: 20, height: 10 } });
-        const agent = add(new UpdrawAgent({ name: 'A' }));
+        const agent = add(new UpmadeAgent({ name: 'A' }));
         const pressCount = core.agenticCursorManager.get(agent.id)!.pressCount;
 
         await expect(settle(agent.interactWithElement({ objectId: frame.id, selector: '#play' }, { type: 'hover' }, { instant: true }))).resolves.toMatchObject({
@@ -789,7 +789,7 @@ describe('UpdrawAgent', () => {
       it('does not attach when an instant interaction fails, and stops tracking the element', async () => {
         const frame: any = addShape(100, 100, 200, 100);
         const tracked = makeInteractive(frame, {}, () => ({ completed: false, reason: 'not-found', message: 'No element matches the selector.' }));
-        const agent = add(new UpdrawAgent({ name: 'A' }));
+        const agent = add(new UpmadeAgent({ name: 'A' }));
 
         await expect(settle(agent.interactWithElement({ objectId: frame.id, selector: '#missing' }, { type: 'click' }, { instant: true }))).resolves.toMatchObject({
           completed: false,
@@ -808,7 +808,7 @@ describe('UpdrawAgent', () => {
           if (!options?.trial) performed++;
           return { completed: true, element: info(selector, rects['#play']) };
         });
-        const agent = add(new UpdrawAgent({ name: 'A', position: { x: 0, y: 0 } }));
+        const agent = add(new UpmadeAgent({ name: 'A', position: { x: 0, y: 0 } }));
         const controller = new AbortController();
         const promise = agent.interactWithElement({ objectId: frame.id, selector: '#play' }, { type: 'click' }, { signal: controller.signal });
         let done = false;
@@ -830,7 +830,7 @@ describe('UpdrawAgent', () => {
         frame.trackElement.mockImplementation(() => {
           throw new Error('At most 50 elements can be tracked per object.');
         });
-        const agent = add(new UpdrawAgent({ name: 'A' }));
+        const agent = add(new UpmadeAgent({ name: 'A' }));
 
         await expect(settle(agent.interactWithElement({ objectId: frame.id, selector: '#play' }, { type: 'click' }))).resolves.toMatchObject({
           completed: false,
@@ -847,7 +847,7 @@ describe('UpdrawAgent', () => {
         makeInteractive(frame, rects);
         const replacement = Object.assign(Object.create(frame), { untrackElement: jest.fn() });
         const findById = core.store.objects.findById.bind(core.store.objects);
-        const agent = add(new UpdrawAgent({ name: 'A', speed: 100000 }));
+        const agent = add(new UpmadeAgent({ name: 'A', speed: 100000 }));
         const promise = agent.interactWithElement({ objectId: frame.id, selector: '#play' }, { type: 'hover' });
         await step();
         jest.spyOn(core.store.objects, 'findById').mockImplementation((id: unknown) => (id === frame.id ? replacement : findById(id)));
@@ -859,7 +859,7 @@ describe('UpdrawAgent', () => {
       it('rejects invalid targets and interactions', async () => {
         const frame: any = addShape(100, 100, 200, 100);
         makeInteractive(frame, {});
-        const agent = add(new UpdrawAgent({ name: 'A' }));
+        const agent = add(new UpmadeAgent({ name: 'A' }));
 
         await expect(agent.interactWithElement({ objectId: frame.id, selector: ' ' }, { type: 'click' })).rejects.toThrow('"target.selector"');
         await expect(agent.interactWithElement({ objectId: frame.id, selector: '#a' }, { type: 'fill' } as any)).rejects.toThrow('"value" must be a string');
@@ -872,7 +872,7 @@ describe('UpdrawAgent', () => {
         const rects = { '#play': { x: 10, y: 20, width: 20, height: 10 }, '#name': { x: 10, y: 40, width: 80, height: 10 } };
         makeInteractive(frame, rects);
         frame.queryElements = jest.fn(async () => [info('#play', rects['#play'], { attributes: { 'aria-label': 'Play' } }), info('#name', rects['#name'], { tagName: 'input', value: 'Mix', visibleRect: undefined })]);
-        const actor = new UpdrawUserActor('me');
+        const actor = new UpmadeUserActor('me');
         actor._attach(core);
         const call = async (name: string, input: unknown) => JSON.parse(await settle(actor.tools().find(candidate => candidate.name === name)!.run(input)));
 
@@ -901,7 +901,7 @@ describe('UpdrawAgent', () => {
         const frame: any = addShape(100, 100, 200, 100);
         makeInteractive(frame, { '#off': { x: 0, y: 0, width: 10, height: 10 } }, () => ({ completed: false, reason: 'disabled', message: 'It is disabled.' }));
         const plain = addShape(400, 100);
-        const agent = add(new UpdrawAgent({ name: 'A', speed: 100000 }));
+        const agent = add(new UpmadeAgent({ name: 'A', speed: 100000 }));
         const call = async (name: string, input: unknown) => JSON.parse(await settle(agent.tools().find(candidate => candidate.name === name)!.run(input)));
 
         await expect(call('interact_with_element', { target: { objectId: frame.id, selector: '#off' }, interaction: { type: 'fill' } })).resolves.toMatchObject({
@@ -940,10 +940,10 @@ describe('UpdrawAgent', () => {
       makeElementAware(frame, { '#play': { x: 10, y: 20, width: 20, height: 10 } });
       const plain = addShape(300, 0);
 
-      const atElement = add(new UpdrawAgent({ name: 'A', position: { objectId: frame.id, selector: '#play', anchor: 'top-left' } }));
+      const atElement = add(new UpmadeAgent({ name: 'A', position: { objectId: frame.id, selector: '#play', anchor: 'top-left' } }));
       expect(atElement.state).toMatchObject({ position: { x: 110, y: 120 }, attachedTo: { objectId: frame.id, selector: '#play', anchor: 'top-left' } });
 
-      const atPlain = add(new UpdrawAgent({ name: 'B', position: { objectId: plain.id, selector: '#play' } }));
+      const atPlain = add(new UpmadeAgent({ name: 'B', position: { objectId: plain.id, selector: '#play' } }));
       expect(atPlain.state).toMatchObject({ position: { x: 1000, y: 1000 }, attachedTo: null });
     });
 
@@ -954,7 +954,7 @@ describe('UpdrawAgent', () => {
         throw new Error('At most 50 elements can be tracked per object.');
       });
 
-      const agent = add(new UpdrawAgent({ name: 'A', position: { objectId: frame.id, selector: '#play' } }));
+      const agent = add(new UpmadeAgent({ name: 'A', position: { objectId: frame.id, selector: '#play' } }));
 
       expect(agent.state).toMatchObject({ isAdded: true, position: { x: 1000, y: 1000 }, attachedTo: null });
       expect(frame.trackElement).toHaveBeenCalledWith('#play');
@@ -962,14 +962,14 @@ describe('UpdrawAgent', () => {
   });
 
   describe('tools and observe', () => {
-    const toolOf = (agent: UpdrawAgent, name: string) => agent.tools().find(candidate => candidate.name === name)!;
-    const call = async (agent: UpdrawAgent, name: string, input: unknown) => {
+    const toolOf = (agent: UpmadeAgent, name: string) => agent.tools().find(candidate => candidate.name === name)!;
+    const call = async (agent: UpmadeAgent, name: string, input: unknown) => {
       const promise = toolOf(agent, name).run(input);
       return JSON.parse(await settle(promise));
     };
 
     it('builds a flowchart through tool calls, sees it with observe_canvas and undoes a step', async () => {
-      const agent = add(new UpdrawAgent({ id: 'claude', name: 'Claude', speed: 100000 }));
+      const agent = add(new UpmadeAgent({ id: 'claude', name: 'Claude', speed: 100000 }));
 
       const start = await call(agent, 'create_shape', { x: 0, y: 0, width: 120, height: 60, text: 'Start', shapeType: 'ellipse' });
       const end = await call(agent, 'create_shape', { x: 300, y: 0, width: 120, height: 60, text: 'End', style: { fillColor: '#dcfce7' } });
@@ -993,11 +993,11 @@ describe('UpdrawAgent', () => {
       Object.assign(widget, { _core: core, translateX: 0, translateY: 0, width: 200, height: 100, scale: 1 });
       map.insert(widget);
       map.stopUndoCapturing();
-      const appFrame = new UpdrawIframeObject({ html: '<p>App</p>', sandbox: ['allow-scripts', 'allow-same-origin'] });
+      const appFrame = new UpmadeIframeObject({ html: '<p>App</p>', sandbox: ['allow-scripts', 'allow-same-origin'] });
       Object.assign(appFrame, { _core: core, translateX: 400, translateY: 0, width: 200, height: 100, scale: 1 });
       map.insert(appFrame);
       map.stopUndoCapturing();
-      const agent = add(new UpdrawAgent({ id: 'claude', name: 'Claude', speed: 100000 }));
+      const agent = add(new UpmadeAgent({ id: 'claude', name: 'Claude', speed: 100000 }));
       const call = async (name: string, input: unknown) =>
         JSON.parse(await settle(agent.tools({ iframes: true }).find(candidate => candidate.name === name)!.run(input)));
 
@@ -1012,23 +1012,23 @@ describe('UpdrawAgent', () => {
       await expect(
         call('update_iframe', { objectId: widget.id, name: 'Tally', css: 'button { color: blue; }', edits: [{ part: 'html', find: '+', replace: 'Add' }] }),
       ).resolves.toMatchObject({ completed: true, objectIds: [widget.id] });
-      const updated = map.findById(widget.id) as UpdrawIframeObject;
+      const updated = map.findById(widget.id) as UpmadeIframeObject;
       expect(updated.content).toEqual({ html: '<button>Add</button>', css: 'button { color: blue; }', script: 'let n = 0;' });
       expect(updated).toMatchObject({ name: 'Tally', title: 'Tally' });
 
       await expect(call('update_iframe', { objectId: appFrame.id, html: '<p>Hacked</p>' })).resolves.toMatchObject({ completed: false, reason: 'not-allowed' });
       await expect(call('read_iframe', { objectId: appFrame.id })).resolves.toMatchObject({ completed: false, reason: 'not-allowed' });
-      expect((map.findById(appFrame.id) as UpdrawIframeObject).html).toBe('<p>App</p>');
+      expect((map.findById(appFrame.id) as UpmadeIframeObject).html).toBe('<p>App</p>');
 
       await expect(call('undo', {})).resolves.toMatchObject({ completed: true });
-      expect((map.findById(widget.id) as UpdrawIframeObject).content.html).toBe('<button>+</button>');
-      expect((map.findById(widget.id) as UpdrawIframeObject).name).toBe('Counter');
+      expect((map.findById(widget.id) as UpmadeIframeObject).content.html).toBe('<button>+</button>');
+      expect((map.findById(widget.id) as UpmadeIframeObject).name).toBe('Counter');
     });
 
     it('reports refusals as results the model can act on', async () => {
       const shape = addShape(0, 0);
       selectAsUser([shape.id]);
-      const agent = add(new UpdrawAgent({ name: 'Claude' }));
+      const agent = add(new UpmadeAgent({ name: 'Claude' }));
 
       await expect(call(agent, 'move_object', { objectId: shape.id, to: { x: 400, y: 0 } })).resolves.toMatchObject({
         completed: false,
@@ -1055,7 +1055,7 @@ describe('UpdrawAgent', () => {
     });
 
     it('lets a user actor build through tools; one prompt undoes as one user step', async () => {
-      const actor = new UpdrawUserActor('me');
+      const actor = new UpmadeUserActor('me');
       actor._attach(core);
       actor.historyGroup = 'prompt-1';
       const tools = actor.tools();
@@ -1083,7 +1083,7 @@ describe('UpdrawAgent', () => {
 
     it('keeps the objects that matter when the board is too big, children only with their group', async () => {
       const shapes = Array.from({ length: 6 }, (_, index) => addShape(index * 5000, 0, 50, 50));
-      const agent = add(new UpdrawAgent({ name: 'Claude' }));
+      const agent = add(new UpmadeAgent({ name: 'Claude' }));
       await settle(agent.select([shapes[5].id], { instant: true }));
 
       const snapshot = await agent.observe({ maxObjects: 2, maxTextLength: 10 });
@@ -1100,10 +1100,10 @@ describe('UpdrawAgent', () => {
       const b = addShape(2950, 975, 50, 50);
       const c = addShape(1400, 975, 50, 50);
       addShape(9000, 9000, 50, 50);
-      const group = UpdrawGroup.createFromObjects(core, [a, b]);
+      const group = UpmadeGroup.createFromObjects(core, [a, b]);
       map.insert(group);
       map.stopUndoCapturing();
-      const agent = add(new UpdrawAgent({ name: 'Claude' }));
+      const agent = add(new UpmadeAgent({ name: 'Claude' }));
 
       const snapshot = await agent.observe({ maxObjects: 3 });
 
@@ -1113,7 +1113,7 @@ describe('UpdrawAgent', () => {
 
     it('observe_canvas answers agent-removed when the agent is removed while its actions finish', async () => {
       const shape = addShape(0, 0);
-      const agent = add(new UpdrawAgent({ name: 'Claude', position: { x: 0, y: 0 } }));
+      const agent = add(new UpmadeAgent({ name: 'Claude', position: { x: 0, y: 0 } }));
       const move = toolOf(agent, 'move_object').run({ objectId: shape.id, to: { x: 600, y: 0 } });
       const observe = toolOf(agent, 'observe_canvas').run({});
       await step();
@@ -1125,7 +1125,7 @@ describe('UpdrawAgent', () => {
     });
 
     it('rejects observe while the agent is not added', async () => {
-      await expect(new UpdrawAgent({ name: 'A' }).observe()).rejects.toThrow('not added');
+      await expect(new UpmadeAgent({ name: 'A' }).observe()).rejects.toThrow('not added');
     });
   });
 });

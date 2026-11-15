@@ -1,4 +1,4 @@
-# updraw-zoom-panel
+# upmade-zoom-panel
 
 
 
@@ -27,18 +27,18 @@
 
 ### Used by
 
- - [updraw-editor](../updraw-editor)
+ - [upmade-editor](../upmade-editor)
 
 ### Depends on
 
-- updraw-icon
+- upmade-icon
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-zoom-panel --> updraw-icon
-  updraw-editor --> updraw-zoom-panel
-  style updraw-zoom-panel fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-zoom-panel --> upmade-icon
+  upmade-editor --> upmade-zoom-panel
+  style upmade-zoom-panel fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

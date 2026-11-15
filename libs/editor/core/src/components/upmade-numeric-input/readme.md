@@ -1,4 +1,4 @@
-# updraw-numeric-input
+# upmade-numeric-input
 
 
 
@@ -28,13 +28,13 @@
 
 ### Used by
 
- - [updraw-settings](../updraw-settings)
+ - [upmade-settings](../upmade-settings)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-settings --> updraw-numeric-input
-  style updraw-numeric-input fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-settings --> upmade-numeric-input
+  style upmade-numeric-input fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

@@ -1,4 +1,4 @@
-# updraw-stroke-size
+# upmade-stroke-size
 
 
 
@@ -24,18 +24,18 @@
 
 ### Used by
 
- - [updraw-tool-config](../updraw-tool-config)
+ - [upmade-tool-config](../upmade-tool-config)
 
 ### Depends on
 
-- [updraw-color](../updraw-color)
+- [upmade-color](../upmade-color)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-stroke-size --> updraw-color
-  updraw-tool-config --> updraw-stroke-size
-  style updraw-stroke-size fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-stroke-size --> upmade-color
+  upmade-tool-config --> upmade-stroke-size
+  style upmade-stroke-size fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

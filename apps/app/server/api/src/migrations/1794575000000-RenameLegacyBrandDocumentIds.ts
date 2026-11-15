@@ -21,7 +21,7 @@ interface DocumentDataRow {
 const CONFLICT_ID_PREFIX = 'rename-conflict-';
 
 /**
- * Moves documents saved under the pre-rebrand id prefix (see ../legacy-brand) to `updraw-…`, merging the
+ * Moves documents saved under the pre-rebrand id prefix (see ../legacy-brand) to `upmade-…`, merging the
  * Yjs state when both ids exist, and renames legacy `__class__` values inside the stored Yjs documents.
  * No client holds a replica of these documents on the new origin, so rewriting them here is safe.
  */

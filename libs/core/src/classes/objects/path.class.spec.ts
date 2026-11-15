@@ -1,11 +1,11 @@
-import { UpdrawPath } from './path.class';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawPolygon } from '../../interfaces/polygon.interface';
+import { UpmadePath } from './path.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadePolygon } from '../../interfaces/polygon.interface';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 
-describe('UpdrawPath', () => {
-  let path: UpdrawPath;
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadePath', () => {
+  let path: UpmadePath;
+  let mockCore: jest.Mocked<UpmadeCore>;
   let mockObjectsUpdate: jest.Mock;
 
   beforeEach(() => {
@@ -32,9 +32,9 @@ describe('UpdrawPath', () => {
       anchorManager: {
         updateAnchorsForObject: jest.fn(),
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    path = new UpdrawPath({
+    path = new UpmadePath({
       points: [
         [0, 0],
         [50, 50],
@@ -51,19 +51,19 @@ describe('UpdrawPath', () => {
 
   describe('constructor', () => {
     it('should create a path with default values when no config provided', () => {
-      const defaultPath = new UpdrawPath();
+      const defaultPath = new UpmadePath();
 
       expect(defaultPath.points).toEqual([]);
       // Note: translateX/Y become Infinity when points array is empty due to Math.min/max on empty array
       expect(defaultPath.scale).toBe(1);
       expect(defaultPath.strokeWidth).toBe(8);
       expect(defaultPath.fill).toEqual({ light: '#000000', dark: '#ffffff' });
-      expect(defaultPath.__class__).toBe('UpdrawPath');
+      expect(defaultPath.__class__).toBe('UpmadePath');
     });
 
     it('should create a path with provided config values', () => {
       const themeAwareColor: ThemeAwareColor = { light: '#00ff00', dark: '#00ff00' };
-      const configuredPath = new UpdrawPath({
+      const configuredPath = new UpmadePath({
         points: [[10, 10], [20, 20]],
         translateX: 100,
         translateY: 200,
@@ -81,7 +81,7 @@ describe('UpdrawPath', () => {
     });
 
     it('should convert constructor rotation from degrees to radians', () => {
-      const configuredPath = new UpdrawPath({
+      const configuredPath = new UpmadePath({
         points: [[10, 10], [20, 20]],
         rotation: -90,
       });
@@ -91,13 +91,13 @@ describe('UpdrawPath', () => {
 
     it('should keep the same base placement with and without constructor rotation', () => {
       const points = [[0, 0], [50, 50], [100, 0]];
-      const withoutRotation = new UpdrawPath({
+      const withoutRotation = new UpmadePath({
         points,
         translateX: 120,
         translateY: 240,
         strokeWidth: 8,
       });
-      const withRotation = new UpdrawPath({
+      const withRotation = new UpmadePath({
         points,
         translateX: 120,
         translateY: 240,
@@ -128,7 +128,7 @@ describe('UpdrawPath', () => {
   describe('static create', () => {
     it('should create a path with core reference and workspace id', () => {
       const themeAwareColor: ThemeAwareColor = { light: '#0000ff', dark: '#0000ff' };
-      const createdPath = UpdrawPath.create(mockCore, {
+      const createdPath = UpmadePath.create(mockCore, {
         points: [[0, 0], [10, 10]],
         fill: themeAwareColor,
       });
@@ -140,7 +140,7 @@ describe('UpdrawPath', () => {
     });
 
     it('should convert create rotation from degrees to radians', () => {
-      const createdPath = UpdrawPath.create(mockCore, {
+      const createdPath = UpmadePath.create(mockCore, {
         points: [[0, 0], [10, 10]],
         rotation: -90,
       });
@@ -149,7 +149,7 @@ describe('UpdrawPath', () => {
     });
 
     it('should use default options when not provided', () => {
-      const createdPath = UpdrawPath.create(mockCore);
+      const createdPath = UpmadePath.create(mockCore);
 
       expect(createdPath.points).toEqual([]);
       // Note: translateX/Y become Infinity when points array is empty due to Math.min/max on empty array
@@ -159,8 +159,8 @@ describe('UpdrawPath', () => {
     });
 
     it('should generate a unique id', () => {
-      const path1 = UpdrawPath.create(mockCore);
-      const path2 = UpdrawPath.create(mockCore);
+      const path1 = UpmadePath.create(mockCore);
+      const path2 = UpmadePath.create(mockCore);
 
       expect(path1.id).toBeDefined();
       expect(path2.id).toBeDefined();
@@ -206,7 +206,7 @@ describe('UpdrawPath', () => {
       ];
       const offset = 40_000_000;
 
-      const far = UpdrawPath.create(mockCore, {
+      const far = UpmadePath.create(mockCore, {
         points: shape.map(([x, y]) => [x + offset, y + offset]),
         strokeWidth: 6,
       });
@@ -226,13 +226,13 @@ describe('UpdrawPath', () => {
         [40_000_000, 40_000_010],
         [40_000_005, 40_000_005],
       ];
-      const original = UpdrawPath.create(mockCore, { points: shape, strokeWidth: 6 });
+      const original = UpmadePath.create(mockCore, { points: shape, strokeWidth: 6 });
 
       const serialized = original.serialize() as Record<string, unknown>;
       // Simulate legacy persisted data whose `d` was stored in absolute coordinates.
       serialized.d = 'M40000000.00,40000000.00 L40000010.00,40000010.00';
 
-      const revived = UpdrawPath.create(mockCore).deserialize<UpdrawPath>(serialized);
+      const revived = UpmadePath.create(mockCore).deserialize<UpmadePath>(serialized);
 
       expect(revived.d).not.toContain('40000000');
       expect(maxAbsCoordinate(revived.d)).toBeLessThan(1000);
@@ -371,7 +371,7 @@ describe('UpdrawPath', () => {
 
   describe('hitTest', () => {
     beforeEach(() => {
-      path = new UpdrawPath({
+      path = new UpmadePath({
         points: [[0, 0], [100, 0]],
         translateX: 0,
         translateY: 0,
@@ -398,7 +398,7 @@ describe('UpdrawPath', () => {
     });
 
     it('should handle single point paths', () => {
-      const singlePointPath = new UpdrawPath({
+      const singlePointPath = new UpmadePath({
         points: [[50, 50]],
         translateX: 0,
         translateY: 0,
@@ -429,7 +429,7 @@ describe('UpdrawPath', () => {
 
   describe('hitTestPolygon', () => {
     beforeEach(() => {
-      path = new UpdrawPath({
+      path = new UpmadePath({
         points: [[0, 0], [100, 0], [100, 100]],
         translateX: 0,
         translateY: 0,
@@ -443,7 +443,7 @@ describe('UpdrawPath', () => {
     });
 
     it('should return true when polygon overlaps path', () => {
-      const polygon: UpdrawPolygon = {
+      const polygon: UpmadePolygon = {
         topLeft: { x: 40, y: -20 },
         topRight: { x: 60, y: -20 },
         bottomRight: { x: 60, y: 20 },
@@ -454,7 +454,7 @@ describe('UpdrawPath', () => {
     });
 
     it('should return false when polygon does not overlap path', () => {
-      const polygon: UpdrawPolygon = {
+      const polygon: UpmadePolygon = {
         topLeft: { x: 500, y: 500 },
         topRight: { x: 600, y: 500 },
         bottomRight: { x: 600, y: 600 },
@@ -465,7 +465,7 @@ describe('UpdrawPath', () => {
     });
 
     it('should return true when path point is inside polygon', () => {
-      const polygon: UpdrawPolygon = {
+      const polygon: UpmadePolygon = {
         topLeft: { x: -50, y: -50 },
         topRight: { x: 150, y: -50 },
         bottomRight: { x: 150, y: 150 },
@@ -476,7 +476,7 @@ describe('UpdrawPath', () => {
     });
 
     it('should return true when polygon edge intersects path', () => {
-      path = new UpdrawPath({
+      path = new UpmadePath({
         points: [[0, 0], [200, 200]],
         translateX: 0,
         translateY: 0,
@@ -486,7 +486,7 @@ describe('UpdrawPath', () => {
       path._core = mockCore;
       path.rotation = 0;
 
-      const polygon: UpdrawPolygon = {
+      const polygon: UpmadePolygon = {
         topLeft: { x: 50, y: 0 },
         topRight: { x: 150, y: 0 },
         bottomRight: { x: 150, y: 50 },
@@ -523,10 +523,10 @@ describe('UpdrawPath', () => {
 
   describe('isLowRes', () => {
     it('should return false when core is not set', () => {
-      const pathWithoutCore = new UpdrawPath({
+      const pathWithoutCore = new UpmadePath({
         points: [[0, 0], [100, 100]],
       });
-      pathWithoutCore._core = undefined as unknown as UpdrawCore;
+      pathWithoutCore._core = undefined as unknown as UpmadeCore;
 
       expect(pathWithoutCore.isLowRes()).toBe(false);
     });
@@ -567,7 +567,7 @@ describe('UpdrawPath', () => {
 
   describe('getClipPoint', () => {
     beforeEach(() => {
-      path = new UpdrawPath({
+      path = new UpmadePath({
         points: [[50, 50], [100, 50], [150, 50]],
         translateX: 0,
         translateY: 0,
@@ -583,7 +583,7 @@ describe('UpdrawPath', () => {
     });
 
     it('should return null when path has no points', () => {
-      const emptyPath = new UpdrawPath({ points: [] });
+      const emptyPath = new UpmadePath({ points: [] });
       emptyPath._core = mockCore;
 
       const result = emptyPath.getClipPoint({ x: 0, y: 0 });
@@ -607,7 +607,7 @@ describe('UpdrawPath', () => {
 
     it('should return null when no intersection found', () => {
       // Create a path with points far from the test line
-      const isolatedPath = new UpdrawPath({
+      const isolatedPath = new UpmadePath({
         points: [[1000, 1000], [1100, 1000]],
         translateX: 0,
         translateY: 0,
@@ -630,7 +630,7 @@ describe('UpdrawPath', () => {
     });
 
     it('should handle single point paths', () => {
-      const singlePointPath = new UpdrawPath({
+      const singlePointPath = new UpmadePath({
         points: [[50, 50]],
         translateX: 0,
         translateY: 0,
@@ -656,7 +656,7 @@ describe('UpdrawPath', () => {
 
   describe('SVG path generation', () => {
     it('should generate valid SVG path for multiple points', () => {
-      const pathWithPoints = new UpdrawPath({
+      const pathWithPoints = new UpmadePath({
         points: [
           [0, 0],
           [10, 10],
@@ -674,7 +674,7 @@ describe('UpdrawPath', () => {
 
     it('should return empty string for paths with less than 4 stroke points', () => {
       // Very short paths may not generate enough stroke points
-      const shortPath = new UpdrawPath({
+      const shortPath = new UpmadePath({
         points: [[0, 0]],
       });
 
@@ -683,7 +683,7 @@ describe('UpdrawPath', () => {
     });
 
     it('should end with Z for closed paths', () => {
-      const pathWithPoints = new UpdrawPath({
+      const pathWithPoints = new UpmadePath({
         points: [
           [0, 0],
           [50, 50],
@@ -701,7 +701,7 @@ describe('UpdrawPath', () => {
 
   describe('dimension calculations', () => {
     it('should calculate width and height based on points', () => {
-      const pathWithKnownPoints = new UpdrawPath({
+      const pathWithKnownPoints = new UpmadePath({
         points: [
           [0, 0],
           [100, 0],
@@ -717,12 +717,12 @@ describe('UpdrawPath', () => {
     });
 
     it('should include stroke width in dimensions', () => {
-      const pathNoStroke = new UpdrawPath({
+      const pathNoStroke = new UpmadePath({
         points: [[0, 0], [100, 0]],
         strokeWidth: 0,
       });
 
-      const pathWithStroke = new UpdrawPath({
+      const pathWithStroke = new UpmadePath({
         points: [[0, 0], [100, 0]],
         strokeWidth: 20,
       });
@@ -734,7 +734,7 @@ describe('UpdrawPath', () => {
 
   describe('rotation handling', () => {
     it('should apply rotation to adjusted points', () => {
-      path = new UpdrawPath({
+      path = new UpmadePath({
         points: [[0, 0], [100, 0]],
         translateX: 0,
         translateY: 0,
@@ -757,9 +757,9 @@ describe('UpdrawPath', () => {
     });
   });
 
-  describe('inheritance from UpdrawBaseObject', () => {
-    it('should have __class__ set to UpdrawPath', () => {
-      expect(path.__class__).toBe('UpdrawPath');
+  describe('inheritance from UpmadeBaseObject', () => {
+    it('should have __class__ set to UpmadePath', () => {
+      expect(path.__class__).toBe('UpmadePath');
     });
 
     it('should inherit boundingBox getter', () => {
@@ -777,8 +777,8 @@ describe('UpdrawPath', () => {
     });
 
     it('should be identifiable via isClass method', () => {
-      expect(path.isClass('UpdrawPath')).toBe(true);
-      expect(path.isClass('UpdrawBaseObject')).toBe(false);
+      expect(path.isClass('UpmadePath')).toBe(true);
+      expect(path.isClass('UpmadeBaseObject')).toBe(false);
     });
   });
 });

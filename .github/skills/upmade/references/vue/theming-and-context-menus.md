@@ -2,10 +2,10 @@
 
 ## Theming
 
-Updraw theming is an `UpdrawTheme` object of design tokens (mapped to `--updraw-*` CSS variables). Two built-ins are exported: `lightTheme`, `darkTheme`.
+Upmade theming is an `UpmadeTheme` object of design tokens (mapped to `--upmade-*` CSS variables). Two built-ins are exported: `lightTheme`, `darkTheme`.
 
 ```html
-<UpdrawEditor theme="light" />           <!-- built-ins work out of the box -->
+<UpmadeEditor theme="light" />           <!-- built-ins work out of the box -->
 ```
 
 ### Custom themes — always extend a base theme
@@ -14,9 +14,9 @@ Spread a built-in theme and override sections; **give it a `name`, pass it via `
 
 ```vue
 <script setup lang="ts">
-import { UpdrawEditor, lightTheme, type UpdrawTheme } from '@updraw/vue-editor'
+import { UpmadeEditor, lightTheme, type UpmadeTheme } from '@upmade/vue-editor'
 
-const brandLight: UpdrawTheme = {
+const brandLight: UpmadeTheme = {
   ...lightTheme,
   name: 'brand',
   global:  { ...lightTheme.global,  focusRingColor: 'rgba(66, 184, 131, 0.2)' },
@@ -37,7 +37,7 @@ const themes = [brandLight]
 </script>
 
 <template>
-  <UpdrawEditor :themes="themes" theme="brand" />
+  <UpmadeEditor :themes="themes" theme="brand" />
 </template>
 ```
 
@@ -61,7 +61,7 @@ Supplying these **replaces** the defaults (the editor ships sensible defaults: p
 
 ```vue
 <script setup lang="ts">
-import { UpdrawEditor, getEditorRef, type ContextMenuItem } from '@updraw/vue-editor'
+import { UpmadeEditor, getEditorRef, type ContextMenuItem } from '@upmade/vue-editor'
 
 const editor = getEditorRef('editor')   // argument = template-ref NAME
 
@@ -90,7 +90,7 @@ const objectItems: ContextMenuItem[] = [
 </script>
 
 <template>
-  <UpdrawEditor ref="editor" :globalContextMenuItems="globalItems" :objectContextMenuItems="objectItems" />
+  <UpmadeEditor ref="editor" :globalContextMenuItems="globalItems" :objectContextMenuItems="objectItems" />
 </template>
 ```
 
@@ -99,7 +99,7 @@ const objectItems: ContextMenuItem[] = [
 | Field | Notes |
 |---|---|
 | `label` | Required display text |
-| `action(menu, objects)` | Sync or async; `menu` carries `x`, `y` (world coords), `objects` is the affected `UpdrawBaseObject[]` |
+| `action(menu, objects)` | Sync or async; `menu` carries `x`, `y` (world coords), `objects` is the affected `UpmadeBaseObject[]` |
 | `disabled` | Boolean or (async) predicate `(menu, objects) => boolean` — item shown greyed out |
 | `visible` | Boolean or (async) predicate `(menu, objects) => boolean` — item hidden |
 | `icon` | Built-in icon name (extendable via `customSvgIcons`) |
@@ -118,7 +118,7 @@ On touch devices, the engine's `@longpress` event (payload: `PointerEvent` in `(
 
 ## Object titlebars
 
-An optional bar above objects (Framer / Claude-design style). Its content and appearance are declared **once** with the `:objectTitlebar` prop (on `UpdrawEditor` and `UpdrawEngine`) and are the same for every object. Which objects get a bar is decided by `hasTitlebar` in the `:objectConfig` prop (see the object configuration section of objects.md), and each bar is titled by the object's `name`. Leaving `:objectTitlebar` unset turns the feature off; without `objectConfig.hasTitlebar` no bar renders. Pass both props.
+An optional bar above objects (Framer / Claude-design style). Its content and appearance are declared **once** with the `:objectTitlebar` prop (on `UpmadeEditor` and `UpmadeEngine`) and are the same for every object. Which objects get a bar is decided by `hasTitlebar` in the `:objectConfig` prop (see the object configuration section of objects.md), and each bar is titled by the object's `name`. Leaving `:objectTitlebar` unset turns the feature off; without `objectConfig.hasTitlebar` no bar renders. Pass both props.
 
 Define both configs as consts in `<script setup>` (never inline in the template) and handle buttons through `@objectTitlebarAction` (see events.md):
 
@@ -126,17 +126,17 @@ Define both configs as consts in `<script setup>` (never inline in the template)
 <script setup lang="ts">
 import { ref } from 'vue'
 import {
-  UpdrawEditor,
-  type UpdrawObjectConfig,
-  type UpdrawObjectTitlebarActionEvent,
-  type UpdrawObjectTitlebarConfig,
-} from '@updraw/vue-editor'
+  UpmadeEditor,
+  type UpmadeObjectConfig,
+  type UpmadeObjectTitlebarActionEvent,
+  type UpmadeObjectTitlebarConfig,
+} from '@upmade/vue-editor'
 
-const objectConfig: UpdrawObjectConfig = {
-  hasTitlebar: object => object.__class__ === 'UpdrawShape',   // without it no bar renders
+const objectConfig: UpmadeObjectConfig = {
+  hasTitlebar: object => object.__class__ === 'UpmadeShape',   // without it no bar renders
 }
 
-const objectTitlebar: UpdrawObjectTitlebarConfig = {
+const objectTitlebar: UpmadeObjectTitlebarConfig = {
   left: [
     { id: 'preview', type: 'button', icon: 'play', variant: 'filled', tooltip: 'Preview' },
     { id: 'title', type: 'title' },
@@ -148,12 +148,12 @@ const objectTitlebar: UpdrawObjectTitlebarConfig = {
 const lastAction = ref('')
 
 function onTitlebarAction(event: Event) {
-  lastAction.value = (event as CustomEvent<UpdrawObjectTitlebarActionEvent>).detail.elementId
+  lastAction.value = (event as CustomEvent<UpmadeObjectTitlebarActionEvent>).detail.elementId
 }
 </script>
 
 <template>
-  <UpdrawEditor
+  <UpmadeEditor
     :objectConfig="objectConfig"
     :objectTitlebar="objectTitlebar"
     @objectTitlebarAction="onTitlebarAction"
@@ -161,26 +161,26 @@ function onTitlebarAction(event: Event) {
 </template>
 ```
 
-`UPDRAW_DEFAULT_OBJECT_TITLEBAR` is a ready-made preset (type icon + title); pass it as the titlebar config (or spread it to change options) and pick the objects with `objectConfig`, e.g. `{ hasTitlebar: object => object.__class__ === 'UpdrawGroup' }`.
+`UPMADE_DEFAULT_OBJECT_TITLEBAR` is a ready-made preset (type icon + title); pass it as the titlebar config (or spread it to change options) and pick the objects with `objectConfig`, e.g. `{ hasTitlebar: object => object.__class__ === 'UpmadeGroup' }`.
 
 `objectConfig.hasTitlebar` is `true` / `false` for every object, or a plain function `(object) => boolean` that receives just the object:
 
 - **Default: no bars.** Without `objectConfig.hasTitlebar` nothing renders, and the engine logs a one-time `console.info` hint while `:objectTitlebar` is set. `hasTitlebar: true` gives every top-level object a bar.
 - Called **synchronously for every visible top-level object on every render**: keep it pure and cheap. Only `true` shows a bar; a non-boolean result, a throw or a returned promise counts as `false` (a throw or promise warns once).
 - Grouped children are never passed in and never get their own bar; the group is passed instead and gets a bar only if `hasTitlebar` returns `true` for it (no special group rules; its children are not asked).
-- Check types with `object.__class__` (`'UpdrawGroup'`, `'UpdrawShape'`, `'UpdrawText'`, `'UpdrawImage'`, `'UpdrawPath'`, `'UpdrawLine'`, `'UpdrawIframeObject'`, `'UpdrawDynamicObject'`). `instanceof` against the classes your Updraw package exports works too.
-- To inspect a group's children, read `childIds` (cheap) rather than the `children` getter (looks them up in the store). The function receives an `UpdrawBaseObject`, so cast after the `__class__` check, e.g. `(object as UpdrawGroup).childIds`.
+- Check types with `object.__class__` (`'UpmadeGroup'`, `'UpmadeShape'`, `'UpmadeText'`, `'UpmadeImage'`, `'UpmadePath'`, `'UpmadeLine'`, `'UpmadeIframeObject'`, `'UpmadeDynamicObject'`). `instanceof` against the classes your Upmade package exports works too.
+- To inspect a group's children, read `childIds` (cheap) rather than the `children` getter (looks them up in the store). The function receives an `UpmadeBaseObject`, so cast after the `__class__` check, e.g. `(object as UpmadeGroup).childIds`.
 
 `hasTitlebar` is only re-evaluated on renders, and a **new** `objectConfig` object triggers one. To toggle bars per object at runtime, keep the ids in a `ref`, read them inside `hasTitlebar` and derive `objectConfig` with `computed()` (replace the `Set`, never mutate it); the titlebar config itself stays constant. The ids live in the app, so they are neither persisted nor synced:
 
 ```vue
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { UPDRAW_DEFAULT_OBJECT_TITLEBAR, UpdrawEditor, type UpdrawObjectConfig } from '@updraw/vue-editor'
+import { UPMADE_DEFAULT_OBJECT_TITLEBAR, UpmadeEditor, type UpmadeObjectConfig } from '@upmade/vue-editor'
 
 const titlebarIds = ref(new Set<string>())
 
-const objectConfig = computed<UpdrawObjectConfig>(() => {
+const objectConfig = computed<UpmadeObjectConfig>(() => {
   const ids = titlebarIds.value
   return { hasTitlebar: object => ids.has(object.id) }
 })
@@ -193,7 +193,7 @@ function toggleTitlebar(id: string) {
 </script>
 
 <template>
-  <UpdrawEditor :objectConfig="objectConfig" :objectTitlebar="UPDRAW_DEFAULT_OBJECT_TITLEBAR" />
+  <UpmadeEditor :objectConfig="objectConfig" :objectTitlebar="UPMADE_DEFAULT_OBJECT_TITLEBAR" />
 </template>
 ```
 
@@ -205,7 +205,7 @@ Elements — every element needs a stable `id` (used in events and as `data-elem
 | `text` | `text`, `tone?` (`'default'` \| `'muted'` \| `'strong'`) | Arbitrary text, e.g. a size |
 | `icon` | `icon` | Registry icon name (`:customSvgIcons` extend it) |
 | `button` | `icon?`, `label?`, `tooltip?`, `variant?` (`'ghost'` \| `'filled'` \| `'outlined'`), `isDisabled?`, `isPressed?`, `action?(context, event)` | Never selects or drags; always emits `objectTitlebarAction`. `label` / `tooltip` take term keys or plain strings |
-| `menu` | `icon?`, `label?`, `tooltip?`, `variant?`, `isDisabled?`, `items` (`UpdrawTitlebarMenuItem[]` or a function of the context) | Button that opens a menu (rendered by the editor). Menu items: `id`, `label` (term key or string), `icon?`, `isVisible?`, `isDisabled?`, `action?(context, menuItem)`. Selecting one closes the menu and emits `objectTitlebarAction` with `elementId` = menu id and `menuItemId`. Closes on camera move, when the object is selected or deselected, when its titlebar is hidden, on renaming, or when the context menu opens |
+| `menu` | `icon?`, `label?`, `tooltip?`, `variant?`, `isDisabled?`, `items` (`UpmadeTitlebarMenuItem[]` or a function of the context) | Button that opens a menu (rendered by the editor). Menu items: `id`, `label` (term key or string), `icon?`, `isVisible?`, `isDisabled?`, `action?(context, menuItem)`. Selecting one closes the menu and emits `objectTitlebarAction` with `elementId` = menu id and `menuItemId`. Closes on camera move, when the object is selected or deselected, when its titlebar is hidden, on renaming, or when the context menu opens |
 | `spacer` / `separator` | — | Flexible space / thin divider |
 
 Any value may be a function `(context) => value`. It runs **synchronously on every render**: keep it pure and cheap; promises are not supported (they resolve to the fallback and warn once). The context has `object`, `objectType`, `children`, `isActive`, `title`, `size` (world units), `contentSize` (`object.width` / `height`, e.g. a frame's `1200`), `barWidth` (screen px) and `t(key, vars)`.
@@ -216,13 +216,13 @@ Behavior: the bar is active (highlighted) while its object, or something inside 
 
 ### Titlebar theme tokens
 
-The `titlebar` theme section maps to `--updraw-titlebar-<key-kebab>` variables: `height` and `offset` (px values only), `paddingX`, `gap`, `borderRadius`, `fontFamily`, `fontSize`, `fontWeight`, `titleFontWeight`, `backgroundColor`, `hoverBackgroundColor`, `activeBackgroundColor`, `border`, `activeBorder`, `boxShadow`, `activeBoxShadow`, `textColor`, `activeTextColor`, `mutedTextColor`, `activeMutedTextColor`, `inputBackgroundColor`, `inputPadding`, `selectionBackgroundColor`, `selectionColor`, `iconSize`, `iconColor`, `activeIconColor`, `buttonSize`, `buttonBorderRadius`, `buttonHoverBackgroundColor`, `buttonPressedBackgroundColor`, `buttonFilledBackgroundColor`, `activeButtonFilledBackgroundColor`, `buttonFilledColor`, `buttonOutlineColor`, `focusRing`, `transition`.
+The `titlebar` theme section maps to `--upmade-titlebar-<key-kebab>` variables: `height` and `offset` (px values only), `paddingX`, `gap`, `borderRadius`, `fontFamily`, `fontSize`, `fontWeight`, `titleFontWeight`, `backgroundColor`, `hoverBackgroundColor`, `activeBackgroundColor`, `border`, `activeBorder`, `boxShadow`, `activeBoxShadow`, `textColor`, `activeTextColor`, `mutedTextColor`, `activeMutedTextColor`, `inputBackgroundColor`, `inputPadding`, `selectionBackgroundColor`, `selectionColor`, `iconSize`, `iconColor`, `activeIconColor`, `buttonSize`, `buttonBorderRadius`, `buttonHoverBackgroundColor`, `buttonPressedBackgroundColor`, `buttonFilledBackgroundColor`, `activeButtonFilledBackgroundColor`, `buttonFilledColor`, `buttonOutlineColor`, `focusRing`, `transition`.
 
 `:themes` **replaces** the theme registry (no deep merge), so spread both the base theme and its `titlebar` section, keep the names, and register the light and dark variants. A transparent "Claude design" bar sitting close to the object:
 
 ```vue
 <script setup lang="ts">
-import { UpdrawEditor, darkTheme, lightTheme, type UpdrawTheme } from '@updraw/vue-editor'
+import { UpmadeEditor, darkTheme, lightTheme, type UpmadeTheme } from '@upmade/vue-editor'
 
 const transparentTitlebar = {
   backgroundColor: 'transparent',
@@ -232,27 +232,27 @@ const transparentTitlebar = {
   paddingX: '0',
 }
 
-const themes: UpdrawTheme[] = [
+const themes: UpmadeTheme[] = [
   { ...lightTheme, titlebar: { ...lightTheme.titlebar, ...transparentTitlebar } },
   { ...darkTheme, titlebar: { ...darkTheme.titlebar, ...transparentTitlebar } },
 ]
 </script>
 
 <template>
-  <UpdrawEditor :themes="themes" theme="light" :objectTitlebar="objectTitlebar" />
+  <UpmadeEditor :themes="themes" theme="light" :objectTitlebar="objectTitlebar" />
 </template>
 ```
 
 ### Styling with `::part()`
 
-The menu a titlebar `menu` element opens is themed by the `titlebarMenu` section (`--updraw-titlebar-menu-*`): `backgroundColor`, `border`, `borderRadius`, `boxShadow`, `fontFamily`, `gap`, `itemBorderRadius`, `itemColor`, `itemFontSize`, `itemHeight`, `itemHoverBackgroundColor`, `itemPadding`, `maxWidth`, `minWidth`, `padding`. Its defaults match the context menu (4px padding, 2px gap, 32px items).
+The menu a titlebar `menu` element opens is themed by the `titlebarMenu` section (`--upmade-titlebar-menu-*`): `backgroundColor`, `border`, `borderRadius`, `boxShadow`, `fontFamily`, `gap`, `itemBorderRadius`, `itemColor`, `itemFontSize`, `itemHeight`, `itemHoverBackgroundColor`, `itemPadding`, `maxWidth`, `minWidth`, `padding`. Its defaults match the context menu (4px padding, 2px gap, 32px items).
 
 For anything tokens do not cover, target parts on the engine: `titlebar`, `titlebar-active`, `titlebar-inactive`, `titlebar-left`, `titlebar-center`, `titlebar-right`, `titlebar-title`, `titlebar-title-input`, `titlebar-text`, `titlebar-icon`, `titlebar-button` (buttons and menu buttons), `titlebar-button-pressed` (also menu buttons of open menus), `titlebar-menu-button`, `titlebar-separator`, plus any element's own `part`. The engine is rendered by the editor (in its light DOM), not by your template, so use a non-scoped `<style>` block or a global stylesheet — `scoped` selectors never match it:
 
 ```vue
 <style>
-updraw-engine::part(titlebar-active) { box-shadow: 0 0 0 1px #42b883; }
-updraw-engine::part(titlebar-button) { border-radius: 999px; }
+upmade-engine::part(titlebar-active) { box-shadow: 0 0 0 1px #42b883; }
+upmade-engine::part(titlebar-button) { border-radius: 999px; }
 </style>
 ```
 

@@ -7,7 +7,7 @@ import ImageCard from "../Landing/ImageCard";
 import MenuButton from "../Landing/MenuButton";
 import PieChart from "./PieChart";
 import { CallToActionBar } from "./CallToActionBar";
-import UpdrawBrand from "../UpdrawBrand";
+import UpmadeBrand from "../UpmadeBrand";
 import styles from "./styles.module.css";
 
 // On phones the canvas items can't be selected by hand (see styles.module.css), so a tap anywhere in the
@@ -451,7 +451,7 @@ function HeroScene({
       } as CSSProperties}
     >
       <div ref={canvasRef} className={styles.heroCanvas}>
-        <UpdrawBrand className={styles.brand} />
+        <UpmadeBrand className={styles.brand} />
         <nav ref={navRef} aria-label="Main" className={styles.topNav}>
           <Link to="/blog" className={styles.topNavLink}>
             Blog
@@ -481,7 +481,7 @@ function HeroScene({
               accentClassName={styles.heroTitleAccent}
             />
             <p className={styles.heroSubtitle} hidden={shoeFocused && !compactViewport}>
-              Updraw is a framework-agnostic canvas library that helps you build agentic whiteboard
+              Upmade is a framework-agnostic canvas library that helps you build agentic whiteboard
               experiences with React, Vue and Angular.
             </p>
             <CallToActionBar docsPath={docsPath} />

@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef } from "react";
-import { UpdrawDynamicObjectRendererRegistry, UpdrawEditor, UpdrawWorkspace } from "@updraw/react-editor";
+import { UpmadeDynamicObjectRendererRegistry, UpmadeEditor, UpmadeWorkspace } from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createHtmlCalculator, createHtmlCalculatorObject, HTML_CALCULATOR_RENDERER_KEY, normalizeCalculatorState, type HtmlCalculatorInstance } from "./html-calculator";
 
 export function DynamicObjectsHtmlPage() {
   const mountedCalculators = useRef(new Map<string, HtmlCalculatorInstance>());
-  const workspaces = useMemo(() => [new UpdrawWorkspace({ objects: [createHtmlCalculatorObject()] })], []);
+  const workspaces = useMemo(() => [new UpmadeWorkspace({ objects: [createHtmlCalculatorObject()] })], []);
 
   useEffect(() => {
     const calculators = mountedCalculators.current;
@@ -15,7 +15,7 @@ export function DynamicObjectsHtmlPage() {
       calculators.delete(objectId);
       if (container) container.innerHTML = "";
     };
-    UpdrawDynamicObjectRendererRegistry.register(HTML_CALCULATOR_RENDERER_KEY, {
+    UpmadeDynamicObjectRendererRegistry.register(HTML_CALCULATOR_RENDERER_KEY, {
       onMount: ({ object, container, data }) => {
         if (!container) return;
         destroy(object.id, container);
@@ -34,13 +34,13 @@ export function DynamicObjectsHtmlPage() {
     return () => {
       calculators.forEach((instance) => instance.destroy());
       calculators.clear();
-      UpdrawDynamicObjectRendererRegistry.unregister(HTML_CALCULATOR_RENDERER_KEY);
+      UpmadeDynamicObjectRendererRegistry.unregister(HTML_CALCULATOR_RENDERER_KEY);
     };
   }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <UpdrawEditor
+      <UpmadeEditor
         editorId="dynamic-objects-html"
         theme="light"
         themes={[reactThemeLight, reactThemeDark]}

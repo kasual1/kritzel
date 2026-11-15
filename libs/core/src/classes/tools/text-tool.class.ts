@@ -1,10 +1,10 @@
-import { UpdrawText } from '../objects/text.class';
-import { UpdrawBaseTool } from './base-tool.class';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeText } from '../objects/text.class';
+import { UpmadeBaseTool } from './base-tool.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
+import { UpmadeCore } from '../core/core.class';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 import { DEFAULT_FONT_SIZES } from '../../constants/stroke-size.constants';
-import { UpdrawFontRegistration } from '../../interfaces/font.interface';
+import { UpmadeFontRegistration } from '../../interfaces/font.interface';
 
 /**
  * Text tool for creating and editing text objects on the canvas.
@@ -12,7 +12,7 @@ import { UpdrawFontRegistration } from '../../interfaces/font.interface';
  * Clicking on an existing text object enters edit mode for that object.
  * Supports configurable font family, size, color, and opacity.
  */
-export class UpdrawTextTool extends UpdrawBaseTool {
+export class UpmadeTextTool extends UpmadeBaseTool {
   override toolType = 'text' as const;
 
   /** Backing field for {@link fontFamily}. */
@@ -90,13 +90,13 @@ export class UpdrawTextTool extends UpdrawBaseTool {
   sizes: number[] = [...DEFAULT_FONT_SIZES];
 
   /** Optional custom font options supplied through tool config. */
-  availableFonts?: UpdrawFontRegistration[];
+  availableFonts?: UpmadeFontRegistration[];
 
   /**
-   * Creates a new instance of UpdrawTextTool.
-   * @param core - The UpdrawCore instance that provides access to application state and functionality
+   * Creates a new instance of UpmadeTextTool.
+   * @param core - The UpmadeCore instance that provides access to application state and functionality
    */
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     super(core);
   }
 
@@ -105,7 +105,7 @@ export class UpdrawTextTool extends UpdrawBaseTool {
    * Mirrors the selection tool pattern of pushing tool-config changes down to live objects,
    * but scoped to the single text in edit mode rather than the current selection.
    */
-  private applyToActiveText(updatedProperties: Partial<UpdrawText>): void {
+  private applyToActiveText(updatedProperties: Partial<UpmadeText>): void {
     const activeText = this._core?.store?.activeText;
     if (!activeText) return;
 
@@ -133,25 +133,25 @@ export class UpdrawTextTool extends UpdrawBaseTool {
 
       const activeText = this._core.store.activeText;
 
-      if (activeText === null && object instanceof UpdrawText) {
+      if (activeText === null && object instanceof UpmadeText) {
         object.edit(event);
         return;
       }
 
-      if (activeText !== null && object instanceof UpdrawText) {
+      if (activeText !== null && object instanceof UpmadeText) {
         activeText.save();
         object.edit(event);
         return;
       }
 
-      if (activeText !== null && object instanceof UpdrawText === false) {
+      if (activeText !== null && object instanceof UpmadeText === false) {
         this._core.resetActiveText();
         this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
         this.continueTitlebarPress(event);
         return;
       }
 
-      if (UpdrawEventHelper.isLeftClick(event) === false) {
+      if (UpmadeEventHelper.isLeftClick(event) === false) {
         return;
       }
 
@@ -159,7 +159,7 @@ export class UpdrawTextTool extends UpdrawBaseTool {
       const clientY = event.clientY - this._core.store.offsetY;
       const viewportScale = this._core.store.state.scale;
       const lockScale = this._core.store.state.lockDrawingScale;
-      const text = UpdrawText.create(this._core, this.fontSize, this.fontFamily, lockScale ? 1 : viewportScale);
+      const text = UpmadeText.create(this._core, this.fontSize, this.fontFamily, lockScale ? 1 : viewportScale);
 
       text.fontColor = this.fontColor;
       text.opacity = this.opacity;
@@ -184,18 +184,18 @@ export class UpdrawTextTool extends UpdrawBaseTool {
 
       const activeText = this._core.store.activeText;
 
-      if (activeText === null && object instanceof UpdrawText) {
+      if (activeText === null && object instanceof UpmadeText) {
         object.edit(event);
         return;
       }
 
-      if (activeText !== null && object instanceof UpdrawText) {
+      if (activeText !== null && object instanceof UpmadeText) {
         activeText.save();
         object.edit(event);
         return;
       }
 
-      if (activeText !== null && object instanceof UpdrawText === false) {
+      if (activeText !== null && object instanceof UpmadeText === false) {
         this._core.resetActiveText();
         this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
         this.continueTitlebarPress(event);
@@ -210,7 +210,7 @@ export class UpdrawTextTool extends UpdrawBaseTool {
       const clientY = Math.round(activePointers[0].clientY - this._core.store.offsetY);
       const viewportScale = this._core.store.state.scale;
       const lockScale = this._core.store.state.lockDrawingScale;
-      const text = UpdrawText.create(this._core, this.fontSize, this.fontFamily, lockScale ? 1 : viewportScale);
+      const text = UpmadeText.create(this._core, this.fontSize, this.fontFamily, lockScale ? 1 : viewportScale);
 
       text.fontColor = this.fontColor;
       text.opacity = this.opacity;

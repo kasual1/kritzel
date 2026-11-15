@@ -1,4 +1,4 @@
-# updraw-master-detail
+# upmade-master-detail
 
 
 
@@ -9,7 +9,7 @@
 
 | Property         | Attribute          | Description                                               | Type                        | Default     |
 | ---------------- | ------------------ | --------------------------------------------------------- | --------------------------- | ----------- |
-| `items`          | --                 | Array of menu items to display in the master (left) panel | `IUpdrawMasterDetailItem[]` | `[]`        |
+| `items`          | --                 | Array of menu items to display in the master (left) panel | `IUpmadeMasterDetailItem[]` | `[]`        |
 | `selectedItemId` | `selected-item-id` | ID of the currently selected item                         | `string`                    | `undefined` |
 
 
@@ -17,7 +17,7 @@
 
 | Event        | Description                      | Type                                          |
 | ------------ | -------------------------------- | --------------------------------------------- |
-| `itemSelect` | Emitted when an item is selected | `CustomEvent<IUpdrawMasterDetailSelectEvent>` |
+| `itemSelect` | Emitted when an item is selected | `CustomEvent<IUpmadeMasterDetailSelectEvent>` |
 
 
 ## Slots
@@ -31,18 +31,18 @@
 
 ### Used by
 
- - [updraw-settings](../updraw-settings)
+ - [upmade-settings](../upmade-settings)
 
 ### Depends on
 
-- updraw-icon
+- upmade-icon
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-master-detail --> updraw-icon
-  updraw-settings --> updraw-master-detail
-  style updraw-master-detail fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-master-detail --> upmade-icon
+  upmade-settings --> upmade-master-detail
+  style upmade-master-detail fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

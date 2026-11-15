@@ -1,17 +1,17 @@
 ﻿import { Component, Host, h, Prop } from '@stencil/core';
-import { IUpdrawUser } from '@updraw/core';
-import { UpdrawTermKey } from '@updraw/core';
+import { IUpmadeUser } from '@upmade/core';
+import { UpmadeTermKey } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-current-user',
-  styleUrl: 'updraw-current-user.css',
+  tag: 'upmade-current-user',
+  styleUrl: 'upmade-current-user.css',
   shadow: true,
 })
-export class UpdrawCurrentUser {
+export class UpmadeCurrentUser {
   /**
    * The current user to display
    */
-  @Prop() user?: IUpdrawUser;
+  @Prop() user?: IUpmadeUser;
 
   /**
    * Avatar size in pixels
@@ -19,12 +19,12 @@ export class UpdrawCurrentUser {
   @Prop() avatarSize: number = 40;
 
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpmadeTermKey, string>> = {};
 
   render() {
     return (
       <Host>
-        <updraw-avatar user={this.user} size={this.avatarSize}></updraw-avatar>
+        <upmade-avatar user={this.user} size={this.avatarSize}></upmade-avatar>
       </Host>
     );
   }

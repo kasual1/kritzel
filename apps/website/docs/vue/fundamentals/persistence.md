@@ -1,8 +1,8 @@
 ---
 sidebar_label: Persistence
 displayed_sidebar: tutorialSidebar
-title: "Persistence Concept | Updraw for Vue"
-description: "Understand how Updraw persists canvas data through sync providers such as IndexedDBSyncProvider."
+title: "Persistence Concept | Upmade for Vue"
+description: "Understand how Upmade persists canvas data through sync providers such as IndexedDBSyncProvider."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,9 +11,9 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-In Updraw, persistence is handled by sync providers. A sync provider connects the canvas to a storage medium and is registered through the editor's `syncConfig` prop. By default, Updraw uses an empty provider list, so canvas state is reset on page reload.
+In Upmade, persistence is handled by sync providers. A sync provider connects the canvas to a storage medium and is registered through the editor's `syncConfig` prop. By default, Upmade uses an empty provider list, so canvas state is reset on page reload.
 
-Updraw comes with the following built-in local providers to store your canvas state:
+Upmade comes with the following built-in local providers to store your canvas state:
 
 - [In-Memory Provider](../api-reference/providers.md#in-memory-provider)
 - [IndexedDB Provider](../api-reference/providers.md#indexeddb-provider)

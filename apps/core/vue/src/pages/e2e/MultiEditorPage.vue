@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { UpdrawEditor } from '@updraw/vue-editor'
+import { UpmadeEditor } from '@upmade/vue-editor'
 import { vueThemeLight } from '../../const/vue-theme-light'
 </script>
 
 <template>
   <div class="multi-editor-host">
     <div class="editor-container editor-container-first">
-      <UpdrawEditor id="editor-1" editor-id="e2e-editor-1" theme="light" :themes="[vueThemeLight]" />
+      <UpmadeEditor id="editor-1" editor-id="e2e-editor-1" theme="light" :themes="[vueThemeLight]" />
     </div>
     <div class="editor-container editor-container-second">
-      <UpdrawEditor id="editor-2" editor-id="e2e-editor-2" theme="light" :themes="[vueThemeLight]" />
+      <UpmadeEditor id="editor-2" editor-id="e2e-editor-2" theme="light" :themes="[vueThemeLight]" />
     </div>
   </div>
 </template>
@@ -41,7 +41,7 @@ import { vueThemeLight } from '../../const/vue-theme-light'
   border: 2px solid #d65067;
 }
 
-.editor-container :deep(updraw-editor) {
+.editor-container :deep(upmade-editor) {
   width: 100%;
   height: 100%;
   display: block;

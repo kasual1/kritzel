@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
-  UpdrawEditor,
+  UpmadeEditor,
   IndexedDBSyncProvider,
-  UpdrawBaseObject,
-  UpdrawSyncConfig,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeBaseObject,
+  UpmadeSyncConfig,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -17,7 +17,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-objects-selection',
-  imports: [UpdrawEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
+  imports: [UpmadeEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -27,7 +27,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       <app-info-panel-toggle [panel]="infoPanel"></app-info-panel-toggle>
     </app-toolbar>
     <div class="content">
-      <updraw-editor
+      <upmade-editor
         editorId="objects-selection"
         [theme]="'light'"
         [themes]="themes"
@@ -37,7 +37,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (objectsSelectionChange)="refreshSelection()"
-      ></updraw-editor>
+      ></upmade-editor>
       <app-info-panel #infoPanel [hasToolbarToggle]="true">
         <h3>Objects</h3>
         <ul>
@@ -57,7 +57,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
     .content { display: flex; flex: 1; min-height: 0; position: relative; }
-    updraw-editor { flex: 1; }
+    upmade-editor { flex: 1; }
     ul { list-style: none; margin: 0; padding: 0; }
     li { padding: 4px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
     .type { color: #333; font-weight: 500; }
@@ -66,19 +66,19 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   `],
 })
 export class ObjectsSelectionComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
-  syncConfig: UpdrawSyncConfig = {
+  syncConfig: UpmadeSyncConfig = {
     providers: [IndexedDBSyncProvider],
     
 
   };
 
-  selectedObjects = signal<UpdrawBaseObject[]>([]);
+  selectedObjects = signal<UpmadeBaseObject[]>([]);
 
   async selectAll() {
     const all = await this.editor.getAllObjects();

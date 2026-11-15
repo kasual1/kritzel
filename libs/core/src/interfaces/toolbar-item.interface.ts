@@ -1,39 +1,39 @@
-import { UpdrawBaseTool } from '../classes/tools/base-tool.class';
-import { UpdrawIconName } from '../classes/registries/icon-registry.class';
+import { UpmadeBaseTool } from '../classes/tools/base-tool.class';
+import { UpmadeIconName } from '../classes/registries/icon-registry.class';
 import { ShapeType } from '../enums/shape-type.enum';
 import { ThemeAwareColor } from '../constants/color-palette.constants';
-import { UpdrawFontRegistration } from './font.interface';
+import { UpmadeFontRegistration } from './font.interface';
 
-export interface UpdrawToolbarSubOption {
+export interface UpmadeToolbarSubOption {
   id: string;
-  icon: UpdrawIconName;
+  icon: UpmadeIconName;
   label: string;
   value: any;
   toolProperty: string;
 }
 
-export interface UpdrawToolbarItem {
+export interface UpmadeToolbarItem {
   type: 'tool' | 'config' | 'separator';
-  tool?: (new (...args: any[]) => UpdrawBaseTool) | UpdrawBaseTool;
-  icon?: UpdrawIconName;
+  tool?: (new (...args: any[]) => UpmadeBaseTool) | UpmadeBaseTool;
+  icon?: UpmadeIconName;
   isDefault?: boolean;
   isDisabled?: boolean | (() => boolean | Promise<boolean>);
   name: string;
-  config?: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig;
-  subOptions?: UpdrawToolbarSubOption[];
+  config?: UpmadeTextToolConfig | UpmadeBrushToolConfig | UpmadeLineToolConfig | UpmadeShapeToolConfig;
+  subOptions?: UpmadeToolbarSubOption[];
 }
 
-export interface UpdrawTextToolConfig {
+export interface UpmadeTextToolConfig {
   color: ThemeAwareColor;
   size: number;
   opacity?: number;
   fontFamily: string;
-  availableFonts?: UpdrawFontRegistration[];
+  availableFonts?: UpmadeFontRegistration[];
   palette: ThemeAwareColor[];
   sizes?: number[];
 }
 
-export interface UpdrawBrushToolConfig {
+export interface UpmadeBrushToolConfig {
   color: ThemeAwareColor;
   size: number;
   opacity?: number;
@@ -41,7 +41,7 @@ export interface UpdrawBrushToolConfig {
   sizes?: number[];
 }
 
-export interface UpdrawLineToolConfig {
+export interface UpmadeLineToolConfig {
   color: ThemeAwareColor;
   size: number;
   opacity?: number;
@@ -53,7 +53,7 @@ export interface UpdrawLineToolConfig {
   };
 }
 
-export interface UpdrawShapeToolConfig {
+export interface UpmadeShapeToolConfig {
   shapeType: ShapeType;
   fillColor: ThemeAwareColor;
   strokeColor: ThemeAwareColor;

@@ -1,4 +1,4 @@
-# updraw-font-size
+# upmade-font-size
 
 
 
@@ -25,18 +25,18 @@
 
 ### Used by
 
- - [updraw-tool-config](../updraw-tool-config)
+ - [upmade-tool-config](../upmade-tool-config)
 
 ### Depends on
 
-- [updraw-font](../updraw-font)
+- [upmade-font](../upmade-font)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-font-size --> updraw-font
-  updraw-tool-config --> updraw-font-size
-  style updraw-font-size fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-font-size --> upmade-font
+  upmade-tool-config --> upmade-font-size
+  style upmade-font-size fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

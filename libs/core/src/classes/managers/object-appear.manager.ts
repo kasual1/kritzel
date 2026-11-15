@@ -1,22 +1,22 @@
-import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpmadeBaseObject } from '../objects/base-object.class';
 
 /**
  * Batches bigger than this don't play the appear animation: many objects appearing at once read as a page load rather
  * than as content arriving, and animating them all costs frames.
  */
-export const UPDRAW_OBJECT_APPEAR_MAX_BATCH = 50;
+export const UPMADE_OBJECT_APPEAR_MAX_BATCH = 50;
 
 /** Objects later than this in a batch appear together with it, so a long batch doesn't keep the canvas waiting. */
-export const UPDRAW_OBJECT_APPEAR_MAX_STAGGER_INDEX = 8;
+export const UPMADE_OBJECT_APPEAR_MAX_STAGGER_INDEX = 8;
 
 /** Timing of the appear animation, from the theme (`objectAppear`), in milliseconds. */
-export interface UpdrawObjectAppearTiming {
+export interface UpmadeObjectAppearTiming {
   duration: number;
   stagger: number;
 }
 
 /** The appear state of the rendered objects, resolved once per render. */
-export interface UpdrawObjectAppearResolution {
+export interface UpmadeObjectAppearResolution {
   /** The objects whose animation runs, with their stagger index, by object ID. */
   appearing: Map<string, number>;
   /** The objects whose animation started in this render (also in `appearing`). */
@@ -25,7 +25,7 @@ export interface UpdrawObjectAppearResolution {
   pending: Set<string>;
 }
 
-interface UpdrawObjectAppearEntry {
+interface UpmadeObjectAppearEntry {
   /** Position in its batch; the animation is delayed by `index` times the theme's stagger. */
   index: number;
   /** When the animation started (`performance.now()`), once the object was first rendered ready to show. */
@@ -40,8 +40,8 @@ interface UpdrawObjectAppearEntry {
  * Purely visual: the state lives here, keyed by object ID, and never reaches the document, so it survives the object
  * being replaced by a fresh instance (e.g. after a remote update) and is never synced, persisted or copied.
  */
-export class UpdrawObjectAppearManager {
-  private readonly _entries = new Map<string, UpdrawObjectAppearEntry>();
+export class UpmadeObjectAppearManager {
+  private readonly _entries = new Map<string, UpmadeObjectAppearEntry>();
 
   /**
    * Marks inserted objects to appear: a top-level object together with its group descendants, which are rendered as
@@ -49,8 +49,8 @@ export class UpdrawObjectAppearManager {
    * @param objects - The inserted objects
    * @param index - Position of the top-level object in its batch, for the stagger
    */
-  mark(objects: UpdrawBaseObject<any>[], index = 0): void {
-    const entryIndex = Math.min(Math.max(0, Math.floor(index)), UPDRAW_OBJECT_APPEAR_MAX_STAGGER_INDEX);
+  mark(objects: UpmadeBaseObject<any>[], index = 0): void {
+    const entryIndex = Math.min(Math.max(0, Math.floor(index)), UPMADE_OBJECT_APPEAR_MAX_STAGGER_INDEX);
     objects.forEach(object => {
       if (object.id) {
         this._entries.set(object.id, { index: entryIndex });
@@ -72,11 +72,11 @@ export class UpdrawObjectAppearManager {
    * @returns The appearing, just started and pending objects
    */
   resolve(
-    renderedObjects: UpdrawBaseObject<any>[],
-    isReady: (object: UpdrawBaseObject<any>) => boolean,
-    timing: UpdrawObjectAppearTiming,
+    renderedObjects: UpmadeBaseObject<any>[],
+    isReady: (object: UpmadeBaseObject<any>) => boolean,
+    timing: UpmadeObjectAppearTiming,
     now: number,
-  ): UpdrawObjectAppearResolution {
+  ): UpmadeObjectAppearResolution {
     const appearing = new Map<string, number>();
     const started = new Set<string>();
     const pending = new Set<string>();

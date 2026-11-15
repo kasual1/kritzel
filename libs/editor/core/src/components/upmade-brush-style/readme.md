@@ -1,4 +1,4 @@
-# updraw-brush-style
+# upmade-brush-style
 
 
 
@@ -24,15 +24,15 @@
 
 ### Depends on
 
-- [updraw-dropdown](../updraw-dropdown)
-- updraw-icon
+- [upmade-dropdown](../upmade-dropdown)
+- upmade-icon
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-brush-style --> updraw-dropdown
-  updraw-brush-style --> updraw-icon
-  style updraw-brush-style fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-brush-style --> upmade-dropdown
+  upmade-brush-style --> upmade-icon
+  style upmade-brush-style fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { UpdrawEditor } from '@updraw/angular-editor';
+import { UpmadeEditor } from '@upmade/angular-editor';
 
 @Component({
-  selector: 'updraw-canvas',
+  selector: 'upmade-canvas',
   standalone: true,
-  imports: [UpdrawEditor],
-  templateUrl: './updraw-canvas.component.html',
-  styleUrls: ['./updraw-canvas.component.scss'],
+  imports: [UpmadeEditor],
+  templateUrl: './upmade-canvas.component.html',
+  styleUrls: ['./upmade-canvas.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UpdrawCanvasComponent {
-  readonly editorId = 'updraw-canvas';
+export class UpmadeCanvasComponent {
+  readonly editorId = 'upmade-canvas';
   isReady = false;
 
   onReady(): void {

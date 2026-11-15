@@ -1,21 +1,21 @@
 import { useRef } from "react";
-import { UpdrawEditor, UpdrawText, UpdrawWorkspace, type HTMLUpdrawEditorElement, type UpdrawFontMap, type UpdrawTheme } from "@updraw/react-editor";
+import { UpmadeEditor, UpmadeText, UpmadeWorkspace, type HTMLUpmadeEditorElement, type UpmadeFontMap, type UpmadeTheme } from "@upmade/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle } from "../../shared/demo-shared";
 import { Toolbar } from "../../../components/Toolbar";
 
-const fonts: UpdrawFontMap = {
+const fonts: UpmadeFontMap = {
   pacifico: { family: "Pacifico", label: "Pacifico Cursive", cssFontFamily: "'Pacifico', cursive", source: "https://fonts.googleapis.com/css2?family=Pacifico&display=swap" },
 };
 
-const themes: UpdrawTheme[] = [{ ...reactThemeLight, name: "custom", global: { ...reactThemeLight.global, fontFamily: "Pacifico" } }];
+const themes: UpmadeTheme[] = [{ ...reactThemeLight, name: "custom", global: { ...reactThemeLight.global, fontFamily: "Pacifico" } }];
 
 const workspaces = [
-  new UpdrawWorkspace({
+  new UpmadeWorkspace({
     id: "fonts-register",
     name: "Custom Fonts",
     objects: [
-      new UpdrawText({
+      new UpmadeText({
         text: "Handwritten Pacifico Font",
         translateX: -180,
         translateY: -50,
@@ -28,7 +28,7 @@ const workspaces = [
 ];
 
 export function FontsRegisterPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
 
   async function addPacificoText() {
     const editor = editorRef.current;
@@ -38,7 +38,7 @@ export function FontsRegisterPage() {
     const visibleHeight = viewport.height / viewport.scale;
     const visibleLeft = -viewport.translateX / viewport.scale;
     const visibleTop = -viewport.translateY / viewport.scale;
-    await editor.addObject(new UpdrawText({
+    await editor.addObject(new UpmadeText({
       text: "Handwritten Pacifico Font",
       translateX: visibleLeft + visibleWidth * (0.2 + Math.random() * 0.6),
       translateY: visibleTop + visibleHeight * (0.2 + Math.random() * 0.6),
@@ -51,7 +51,7 @@ export function FontsRegisterPage() {
   return (
     <div style={hostStyle}>
       <Toolbar><button onClick={() => void addPacificoText()}>Add Pacifico Text</button></Toolbar>
-      <UpdrawEditor ref={editorRef} editorId="fonts-register" customFonts={fonts} workspaces={workspaces} theme="custom" themes={themes} isPanningEnabled={false} isZoomingEnabled={false} isMoreMenuVisible style={editorStyle} />
+      <UpmadeEditor ref={editorRef} editorId="fonts-register" customFonts={fonts} workspaces={workspaces} theme="custom" themes={themes} isPanningEnabled={false} isZoomingEnabled={false} isMoreMenuVisible style={editorStyle} />
     </div>
   );
 }

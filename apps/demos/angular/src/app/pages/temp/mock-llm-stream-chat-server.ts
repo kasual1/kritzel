@@ -1,6 +1,6 @@
 // TEMP: mock of a streaming chat backend that answers with a real model, for the temp streaming demo; delete with pages/temp/.
 import Anthropic from '@anthropic-ai/sdk';
-import type { UpdrawChatStreamEvent, UpdrawChatTransport } from '@updraw/angular-editor';
+import type { UpmadeChatStreamEvent, UpmadeChatTransport } from '@upmade/angular-editor';
 import { MODEL, SERVER_SYSTEM, STOP_REASONS, client, parseJson, toAnthropicMessages } from './mock-llm-chat-server';
 
 /**
@@ -9,10 +9,10 @@ import { MODEL, SERVER_SYSTEM, STOP_REASONS, client, parseJson, toAnthropicMessa
  * the session can show a placeholder for it; it is sent complete as soon as its input is, so the session can run it
  * right away. The key is added by the dev-server proxy, as for `llmTransport`.
  */
-export const llmStreamTransport: UpdrawChatTransport = async function* (
+export const llmStreamTransport: UpmadeChatTransport = async function* (
   request,
   { signal },
-): AsyncGenerator<UpdrawChatStreamEvent> {
+): AsyncGenerator<UpmadeChatStreamEvent> {
   const stream = client.beta.messages.stream(
     {
       model: MODEL,

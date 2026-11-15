@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { UpdrawEditor, UpdrawWorkspace } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeWorkspace } from '@upmade/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-zoom-panel-toggle',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="control-panel">
@@ -15,7 +15,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         <span>Zoom panel</span>
       </label>
     </div>
-    <updraw-editor
+    <upmade-editor
       editorId="zoom-panel-toggle"
       [theme]="'light'"
       [themes]="themes"
@@ -23,13 +23,13 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isZoomPanelVisible]="isZoomPanelVisible()"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: `
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
     .control-panel { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; }
     .checkbox-control { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #333; cursor: pointer; }
-    updraw-editor { flex: 1; }
+    upmade-editor { flex: 1; }
   `,
 })
 export class ZoomPanelToggleComponent {
@@ -37,7 +37,7 @@ export class ZoomPanelToggleComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
   setZoomPanelVisible(event: Event): void {
     this.isZoomPanelVisible.set((event.target as HTMLInputElement).checked);

@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { UpdrawEditor } from '@updraw/angular-editor';
+import { UpmadeEditor } from '@upmade/angular-editor';
 import { angularThemeLight } from '../const/angular-theme-light';
 import { angularThemeDark } from '../const/angular-theme-dark';
 
 @Component({
   selector: 'app-wrapped-editor-page',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
@@ -16,11 +16,11 @@ import { angularThemeDark } from '../const/angular-theme-dark';
       [style.height.px]="wrapperHeight"
       style="box-sizing: border-box; border: 4px solid #ff0080; background: #fafafa; position: relative; overflow: hidden; margin: 24px;"
     >
-      <updraw-editor
+      <upmade-editor
         style="width: 100%; height: 100%;"
         [theme]="'light'"
         [themes]="themes"
-      ></updraw-editor>
+      ></upmade-editor>
     </div>
   `,
 })

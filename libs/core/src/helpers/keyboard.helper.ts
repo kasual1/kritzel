@@ -1,6 +1,6 @@
-import { UpdrawDevicesHelper } from './devices.helper';
+import { UpmadeDevicesHelper } from './devices.helper';
 
-export class UpdrawKeyboardHelper {
+export class UpmadeKeyboardHelper {
   static forceHideKeyboard(): void {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
@@ -59,15 +59,15 @@ export class UpdrawKeyboardHelper {
     }
     const key = Math.round(visualViewport.width);
     const height = Math.max(visualViewport.height * visualViewport.scale, window.innerHeight);
-    const baseline = UpdrawKeyboardHelper.viewportBaselineHeights.get(key) ?? 0;
+    const baseline = UpmadeKeyboardHelper.viewportBaselineHeights.get(key) ?? 0;
     if (height > baseline) {
-      UpdrawKeyboardHelper.viewportBaselineHeights.set(key, height);
+      UpmadeKeyboardHelper.viewportBaselineHeights.set(key, height);
     }
   }
 
   /** Clears the recorded viewport baselines. */
   static resetViewportBaseline(): void {
-    UpdrawKeyboardHelper.viewportBaselineHeights.clear();
+    UpmadeKeyboardHelper.viewportBaselineHeights.clear();
   }
 
   /**
@@ -77,21 +77,21 @@ export class UpdrawKeyboardHelper {
    * so it works in both portrait and landscape.
    */
   static isKeyboardOpen(visualViewport: VisualViewport | null | undefined = window.visualViewport): boolean {
-    if (!visualViewport || !UpdrawDevicesHelper.isMobile()) {
+    if (!visualViewport || !UpmadeDevicesHelper.isMobile()) {
       return false;
     }
-    UpdrawKeyboardHelper.recordViewportBaseline(visualViewport);
-    const baseline = UpdrawKeyboardHelper.viewportBaselineHeights.get(Math.round(visualViewport.width));
+    UpmadeKeyboardHelper.recordViewportBaseline(visualViewport);
+    const baseline = UpmadeKeyboardHelper.viewportBaselineHeights.get(Math.round(visualViewport.width));
     if (!baseline) {
       return false;
     }
-    return (visualViewport.height * visualViewport.scale) / baseline < UpdrawKeyboardHelper.KEYBOARD_OPEN_HEIGHT_RATIO;
+    return (visualViewport.height * visualViewport.scale) / baseline < UpmadeKeyboardHelper.KEYBOARD_OPEN_HEIGHT_RATIO;
   }
 
   static onKeyboardVisibleChanged(callback: (isOpen: boolean) => void): () => void {
     if ('visualViewport' in window) {
       const onResize = (event: Event) => {
-        callback(UpdrawKeyboardHelper.isKeyboardOpen(event.target as VisualViewport));
+        callback(UpmadeKeyboardHelper.isKeyboardOpen(event.target as VisualViewport));
       };
 
       window.visualViewport?.addEventListener('resize', onResize);

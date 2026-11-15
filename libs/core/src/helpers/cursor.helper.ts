@@ -1,6 +1,6 @@
-import { UpdrawIconName, UpdrawIconRegistry } from '../classes/registries/icon-registry.class';
+import { UpmadeIconName, UpmadeIconRegistry } from '../classes/registries/icon-registry.class';
 
-export class UpdrawCursorHelper {
+export class UpmadeCursorHelper {
   private static _pointerCursor: string | null = null;
 
   /**
@@ -16,11 +16,11 @@ export class UpdrawCursorHelper {
 
   /**
    * Returns a custom cursor CSS value with support for rotation.
-   * The icon is retrieved from the UpdrawIconRegistry.
+   * The icon is retrieved from the UpmadeIconRegistry.
    */
   static getCursor(
     options: {
-      iconName: UpdrawIconName | 'default';
+      iconName: UpmadeIconName | 'default';
       rotation?: number;
       color?: string;
       size?: number;
@@ -28,7 +28,7 @@ export class UpdrawCursorHelper {
     }
   ): string {
     const iconName = options.iconName === 'default' ? 'mousePointer' : options.iconName;
-    const iconSvg = UpdrawIconRegistry.get(iconName);
+    const iconSvg = UpmadeIconRegistry.get(iconName);
     if (!iconSvg) {
       console.warn(`Icon "${iconName}" not found in registry.`);
       return 'auto';

@@ -1,22 +1,22 @@
 ﻿import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop } from '@stencil/core';
-import { UpdrawLoginProvider } from '@updraw/core';
-import { LoginEvent } from '@updraw/core';
+import { UpmadeLoginProvider } from '@upmade/core';
+import { LoginEvent } from '@upmade/core';
 
 /**
  * Login dialog component for displaying authentication provider buttons.
  * This is a presentational component that emits events for all actions.
- * The parent component (updraw-editor) handles the actual authentication flow.
+ * The parent component (upmade-editor) handles the actual authentication flow.
  */
 @Component({
-  tag: 'updraw-login-dialog',
-  styleUrl: 'updraw-login-dialog.css',
+  tag: 'upmade-login-dialog',
+  styleUrl: 'upmade-login-dialog.css',
   shadow: true,
 })
-export class UpdrawLoginDialog {
+export class UpmadeLoginDialog {
   @Element() host!: HTMLElement;
 
   /** Array of authentication provider buttons to render */
-  @Prop() providers: UpdrawLoginProvider[] = [];
+  @Prop() providers: UpmadeLoginProvider[] = [];
 
   /** Dialog title */
   @Prop() dialogTitle: string = 'Sign in';
@@ -53,7 +53,7 @@ export class UpdrawLoginDialog {
     this.loadingProvider = provider;
   }
 
-  private handleProviderClick = (provider: UpdrawLoginProvider): void => {
+  private handleProviderClick = (provider: UpmadeLoginProvider): void => {
     if (this.loadingProvider) return;
     this.loadingProvider = provider.name;
     this.providerLogin.emit({ provider: provider.name });
@@ -68,7 +68,7 @@ export class UpdrawLoginDialog {
   render() {
     return (
       <Host>
-        <updraw-dialog
+        <upmade-dialog
           dialogTitle={this.dialogTitle}
           isOpen={this.isDialogOpen}
           onDialogClose={this.closeDialog}
@@ -95,14 +95,14 @@ export class UpdrawLoginDialog {
                   {this.loadingProvider === provider.name ? (
                     <span class="spinner"></span>
                   ) : (
-                    provider.icon && <updraw-icon name={provider.icon} size={20} />
+                    provider.icon && <upmade-icon name={provider.icon} size={20} />
                   )}
                   <span class="provider-label">{provider.label}</span>
                 </button>
               ))}
             </div>
           </div>
-        </updraw-dialog>
+        </upmade-dialog>
       </Host>
     );
   }

@@ -1,6 +1,6 @@
 # Viewport: Camera, Coordinates, Boundaries
 
-The viewport is the camera over the infinite canvas. State (`UpdrawViewportState`): `translateX`, `translateY` (pan, world coords), `scale` (zoom, default 1.0), plus viewport pixel dimensions.
+The viewport is the camera over the infinite canvas. State (`UpmadeViewportState`): `translateX`, `translateY` (pan, world coords), `scale` (zoom, default 1.0), plus viewport pixel dimensions.
 
 ## The one distinction that matters
 
@@ -61,7 +61,7 @@ Pointer/DOM events give **screen pixels**; the canvas uses **world coordinates**
 
 ```vue
 <script setup lang="ts">
-import { UpdrawEditor, UpdrawShape, ShapeType, getEditorRef } from '@updraw/vue-editor';
+import { UpmadeEditor, UpmadeShape, ShapeType, getEditorRef } from '@upmade/vue-editor';
 
 const editor = getEditorRef('editor');
 
@@ -69,7 +69,7 @@ async function onCanvasClick(ev: MouseEvent) {
   if (!editor.value) return;
   const rect = editor.value.getBoundingClientRect();
   const { x, y } = await editor.value.screenToWorld(ev.clientX - rect.left, ev.clientY - rect.top);
-  const pin = new UpdrawShape({
+  const pin = new UpmadeShape({
     shapeType: ShapeType.Ellipse,
     translateX: x - 25, translateY: y - 25,   // center the 50×50 pin on the click
     width: 50, height: 50,
@@ -83,7 +83,7 @@ async function onCanvasClick(ev: MouseEvent) {
 
 <template>
   <div @click="onCanvasClick">
-    <UpdrawEditor ref="editor" />
+    <UpmadeEditor ref="editor" />
   </div>
 </template>
 ```
@@ -95,7 +95,7 @@ Inverse: `await editor.value?.worldToScreen(x, y)` — e.g. to position a Vue ov
 Numbers and booleans need the `:` binding:
 
 ```vue
-<UpdrawEditor
+<UpmadeEditor
   ref="editor"
   :scaleMin="0.1" :scaleMax="10"
   :viewportBoundaryLeft="0"
@@ -120,23 +120,23 @@ Mirror viewport state into a Vue `ref()` from the `@viewportChange` event; the p
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { UpdrawEditor, getEditorRef, type UpdrawViewportState } from '@updraw/vue-editor';
+import { UpmadeEditor, getEditorRef, type UpmadeViewportState } from '@upmade/vue-editor';
 
 const editor = getEditorRef('editor');
-const viewport = ref<UpdrawViewportState | null>(null);
+const viewport = ref<UpmadeViewportState | null>(null);
 
-function onViewportChange(event: CustomEvent<UpdrawViewportState>) {
+function onViewportChange(event: CustomEvent<UpmadeViewportState>) {
   viewport.value = event.detail;
 }
 </script>
 
 <template>
-  <UpdrawEditor ref="editor" @viewportChange="onViewportChange" />
+  <UpmadeEditor ref="editor" @viewportChange="onViewportChange" />
   <span>Zoom: {{ Math.round((viewport?.scale ?? 1) * 100) }}%</span>
 </template>
 ```
 
-`@objectsInViewportChange` (on `<UpdrawEngine>`, not the editor) fires when the set of visible objects changes — useful for virtualized side panels.
+`@objectsInViewportChange` (on `<UpmadeEngine>`, not the editor) fires when the set of visible objects changes — useful for virtualized side panels.
 
 ## Defaults & pitfalls
 

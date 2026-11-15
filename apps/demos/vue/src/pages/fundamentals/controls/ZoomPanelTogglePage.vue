@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
+import { UpmadeEditor, UpmadeWorkspace } from '@upmade/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -8,7 +8,7 @@ import { editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
 
 const isZoomPanelVisible = ref(true)
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 
 function setZoomPanelVisible(event: Event) {
   isZoomPanelVisible.value = (event.target as HTMLInputElement).checked
@@ -23,7 +23,7 @@ function setZoomPanelVisible(event: Event) {
         <span>Zoom panel</span>
       </label>
     </div>
-    <UpdrawEditor
+    <UpmadeEditor
       editorId="zoom-panel-toggle"
       theme="light"
       :themes="themes"

@@ -1,11 +1,11 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 
 @Component({
-  tag: 'updraw-stroke-size',
-  styleUrl: 'updraw-stroke-size.css',
+  tag: 'upmade-stroke-size',
+  styleUrl: 'upmade-stroke-size.css',
   shadow: true,
 })
-export class UpdrawStrokeSize {
+export class UpmadeStrokeSize {
   @Prop() sizes: number[] = [4, 6, 8, 12, 16, 24];
   @Prop({ mutable: true }) selectedSize: number | null = null;
 
@@ -31,7 +31,7 @@ export class UpdrawStrokeSize {
               }}
               onClick={() => this.handleSizeClick(size)}
             >
-              <updraw-color value={'var(--updraw-global-text-primary)'} size={size}></updraw-color>
+              <upmade-color value={'var(--upmade-global-text-primary)'} size={size}></upmade-color>
             </div>
           ))}
         </div>

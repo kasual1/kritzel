@@ -1,19 +1,19 @@
-import type { UpdrawAgenticClickAction } from '../../interfaces/agentic-action.interface';
-import type { UpdrawPoint } from '../../interfaces/point.interface';
-import type { UpdrawBaseObject } from '../objects/base-object.class';
-import type { UpdrawObjectMap } from '../structures/object-map.structure';
-import { UpdrawZOrderHelper } from '../../helpers/z-order.helper';
-import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpmadeAgenticClickAction } from '../../interfaces/agentic-action.interface';
+import type { UpmadePoint } from '../../interfaces/point.interface';
+import type { UpmadeBaseObject } from '../objects/base-object.class';
+import type { UpmadeObjectMap } from '../structures/object-map.structure';
+import { UpmadeZOrderHelper } from '../../helpers/z-order.helper';
+import type { UpmadeAgenticActionExecutor } from '../../types/agentic-action.types';
 import { findParentGroup, isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { isPointInCorners } from '../../helpers/agentic-geometry.helper';
 import { assertElementTarget, assertTarget } from '../../helpers/agentic-validation.helper';
 import { isElementTarget, isObjectTarget } from '../../helpers/agentic-geometry.helper';
 import { performElementInteraction, prepareElementTarget } from './interact-with-element.executor';
 
-type ObjectMap = UpdrawObjectMap<UpdrawBaseObject<any>>;
+type ObjectMap = UpmadeObjectMap<UpmadeBaseObject<any>>;
 
 /** The top-most visible top-level object at a world point, or `null`. */
-export function hitTestTopMost(map: ObjectMap, point: UpdrawPoint): UpdrawBaseObject<any> | null {
+export function hitTestTopMost(map: ObjectMap, point: UpmadePoint): UpmadeBaseObject<any> | null {
   const hits = map
     .filter(object => {
       if (isSelectionObject(object) || object.isVisible === false) {
@@ -23,7 +23,7 @@ export function hitTestTopMost(map: ObjectMap, point: UpdrawPoint): UpdrawBaseOb
       const corners = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
       return isPointInCorners(point, corners) && object.hitTest(point.x, point.y);
     })
-    .sort(UpdrawZOrderHelper.compareStackOrder);
+    .sort(UpmadeZOrderHelper.compareStackOrder);
   let hit = hits.length > 0 ? hits[hits.length - 1] : null;
   // Clicks select whole groups, like the selection tool.
   const seen = new Set<string>();
@@ -42,7 +42,7 @@ export function hitTestTopMost(map: ObjectMap, point: UpdrawPoint): UpdrawBaseOb
  * `click`: flies to the target and presses. Visual only on the canvas; an element target (`{ objectId, selector }`)
  * is really clicked, see `interactWithElement`.
  */
-export const clickExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticClickAction> = {
+export const clickExecutor: UpmadeAgenticActionExecutor<UpmadeAgenticClickAction> = {
   mutates: false,
 
   validate(action) {

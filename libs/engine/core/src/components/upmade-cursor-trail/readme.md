@@ -1,4 +1,4 @@
-# updraw-cursor-trail
+# upmade-cursor-trail
 
 
 
@@ -9,20 +9,20 @@
 
 | Property            | Attribute | Description | Type         | Default     |
 | ------------------- | --------- | ----------- | ------------ | ----------- |
-| `core` _(required)_ | --        |             | `UpdrawCore` | `undefined` |
+| `core` _(required)_ | --        |             | `UpmadeCore` | `undefined` |
 
 
 ## Dependencies
 
 ### Used by
 
- - [updraw-engine](../updraw-engine)
+ - [upmade-engine](../upmade-engine)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-engine --> updraw-cursor-trail
-  style updraw-cursor-trail fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-engine --> upmade-cursor-trail
+  style upmade-cursor-trail fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

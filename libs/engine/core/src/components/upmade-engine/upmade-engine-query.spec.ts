@@ -1,45 +1,45 @@
-import { UpdrawBaseObject, UpdrawSelectionGroup, UpdrawSelectionBox } from '@updraw/core';
+import { UpmadeBaseObject, UpmadeSelectionGroup, UpmadeSelectionBox } from '@upmade/core';
 
 /**
- * Unit tests for UpdrawEngine.findObjects().
+ * Unit tests for UpmadeEngine.findObjects().
  *
- * Since UpdrawEngine.findObjects delegates to store.allNonSelectionObjects.filter(predicate),
+ * Since UpmadeEngine.findObjects delegates to store.allNonSelectionObjects.filter(predicate),
  * we test the filtering logic directly against a mock store to keep tests fast and isolated.
  */
 describe('findObjects', () => {
     /**
-     * Simulates what UpdrawEngine.findObjects does:
+     * Simulates what UpmadeEngine.findObjects does:
      * filters allNonSelectionObjects (which already excludes selection objects) with user predicate.
      */
-    function findObjects<T extends UpdrawBaseObject>(
-        allObjects: UpdrawBaseObject[],
-        predicate: (obj: UpdrawBaseObject) => boolean,
+    function findObjects<T extends UpmadeBaseObject>(
+        allObjects: UpmadeBaseObject[],
+        predicate: (obj: UpmadeBaseObject) => boolean,
     ): T[] {
         const allNonSelection = allObjects.filter(
-            o => !(o instanceof UpdrawSelectionGroup) && !(o instanceof UpdrawSelectionBox),
+            o => !(o instanceof UpmadeSelectionGroup) && !(o instanceof UpmadeSelectionBox),
         );
         return allNonSelection.filter(predicate) as T[];
     }
 
-    function createMockObject(overrides: Partial<UpdrawBaseObject> = {}): UpdrawBaseObject {
-        const obj = new UpdrawBaseObject();
+    function createMockObject(overrides: Partial<UpmadeBaseObject> = {}): UpmadeBaseObject {
+        const obj = new UpmadeBaseObject();
         Object.assign(obj, overrides);
         return obj;
     }
 
     it('should return objects matching the predicate', () => {
-        const text = createMockObject({ __class__: 'UpdrawText' });
-        const path = createMockObject({ __class__: 'UpdrawPath' });
+        const text = createMockObject({ __class__: 'UpmadeText' });
+        const path = createMockObject({ __class__: 'UpmadePath' });
 
-        const result = findObjects([text, path], obj => obj.__class__ === 'UpdrawText');
+        const result = findObjects([text, path], obj => obj.__class__ === 'UpmadeText');
 
         expect(result).toEqual([text]);
     });
 
     it('should return an empty array when no objects match', () => {
-        const path = createMockObject({ __class__: 'UpdrawPath' });
+        const path = createMockObject({ __class__: 'UpmadePath' });
 
-        const result = findObjects([path], obj => obj.__class__ === 'UpdrawImage');
+        const result = findObjects([path], obj => obj.__class__ === 'UpmadeImage');
 
         expect(result).toEqual([]);
     });
@@ -51,10 +51,10 @@ describe('findObjects', () => {
     });
 
     it('should exclude selection group objects', () => {
-        const selGroup = Object.create(UpdrawSelectionGroup.prototype) as UpdrawSelectionGroup;
-        selGroup.__class__ = 'UpdrawSelectionGroup';
+        const selGroup = Object.create(UpmadeSelectionGroup.prototype) as UpmadeSelectionGroup;
+        selGroup.__class__ = 'UpmadeSelectionGroup';
 
-        const text = createMockObject({ __class__: 'UpdrawText' });
+        const text = createMockObject({ __class__: 'UpmadeText' });
 
         const result = findObjects([selGroup, text], () => true);
 
@@ -63,10 +63,10 @@ describe('findObjects', () => {
     });
 
     it('should exclude selection box objects', () => {
-        const selBox = Object.create(UpdrawSelectionBox.prototype) as UpdrawSelectionBox;
-        selBox.__class__ = 'UpdrawSelectionBox';
+        const selBox = Object.create(UpmadeSelectionBox.prototype) as UpmadeSelectionBox;
+        selBox.__class__ = 'UpmadeSelectionBox';
 
-        const path = createMockObject({ __class__: 'UpdrawPath' });
+        const path = createMockObject({ __class__: 'UpmadePath' });
 
         const result = findObjects([selBox, path], () => true);
 
@@ -75,23 +75,23 @@ describe('findObjects', () => {
     });
 
     it('should support filtering by multiple criteria', () => {
-        const visibleText = createMockObject({ __class__: 'UpdrawText', opacity: 1 });
-        const hiddenText = createMockObject({ __class__: 'UpdrawText', opacity: 0.2 });
-        const path = createMockObject({ __class__: 'UpdrawPath', opacity: 1 });
+        const visibleText = createMockObject({ __class__: 'UpmadeText', opacity: 1 });
+        const hiddenText = createMockObject({ __class__: 'UpmadeText', opacity: 0.2 });
+        const path = createMockObject({ __class__: 'UpmadePath', opacity: 1 });
 
         const result = findObjects(
             [visibleText, hiddenText, path],
-            obj => obj.__class__ === 'UpdrawText' && obj.opacity > 0.5,
+            obj => obj.__class__ === 'UpmadeText' && obj.opacity > 0.5,
         );
 
         expect(result).toEqual([visibleText]);
     });
 
     it('should support using hitTest in the predicate', () => {
-        const obj1 = createMockObject({ __class__: 'UpdrawPath' });
+        const obj1 = createMockObject({ __class__: 'UpmadePath' });
         obj1.hitTest = jest.fn().mockReturnValue(true);
 
-        const obj2 = createMockObject({ __class__: 'UpdrawPath' });
+        const obj2 = createMockObject({ __class__: 'UpmadePath' });
         obj2.hitTest = jest.fn().mockReturnValue(false);
 
         const result = findObjects([obj1, obj2], obj => obj.hitTest(50, 50));
@@ -102,8 +102,8 @@ describe('findObjects', () => {
     });
 
     it('should return all non-selection objects when predicate always returns true', () => {
-        const text = createMockObject({ __class__: 'UpdrawText' });
-        const path = createMockObject({ __class__: 'UpdrawPath' });
+        const text = createMockObject({ __class__: 'UpmadeText' });
+        const path = createMockObject({ __class__: 'UpmadePath' });
 
         const result = findObjects([text, path], () => true);
 

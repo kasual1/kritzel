@@ -1,4 +1,4 @@
-# updraw-portal
+# upmade-portal
 
 
 
@@ -33,19 +33,19 @@
 
 ### Used by
 
- - [updraw-editor](../updraw-editor)
- - [updraw-menu-item](../updraw-menu-item)
- - [updraw-more-menu](../updraw-more-menu)
- - [updraw-split-button](../updraw-split-button)
+ - [upmade-editor](../upmade-editor)
+ - [upmade-menu-item](../upmade-menu-item)
+ - [upmade-more-menu](../upmade-more-menu)
+ - [upmade-split-button](../upmade-split-button)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-editor --> updraw-portal
-  updraw-menu-item --> updraw-portal
-  updraw-more-menu --> updraw-portal
-  updraw-split-button --> updraw-portal
-  style updraw-portal fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-editor --> upmade-portal
+  upmade-menu-item --> upmade-portal
+  upmade-more-menu --> upmade-portal
+  upmade-split-button --> upmade-portal
+  style upmade-portal fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

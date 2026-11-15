@@ -1,49 +1,49 @@
 import { Component, h, Prop, State, Element, Host, Listen, Event, EventEmitter, Method, Watch } from '@stencil/core';
-import { UpdrawBrushTool } from '@updraw/core';
-import { UpdrawLineTool } from '@updraw/core';
-import { UpdrawShapeTool } from '@updraw/core';
-import { UpdrawTextTool } from '@updraw/core';
-import { UpdrawToolbarItem, UpdrawToolbarSubOption } from '@updraw/core';
-import { UpdrawBaseTool } from '@updraw/core';
-import { UpdrawDevicesHelper } from '@updraw/core';
-import { UpdrawUndoState } from '@updraw/core';
-import { ToolDisplayValues } from '@updraw/core';
-import { UpdrawToolConfigHelper } from '@updraw/core';
-import { UpdrawColorHelper } from '@updraw/core';
-import { ThemeName } from '@updraw/core';
-import { UpdrawTermKey } from '@updraw/core';
+import { UpmadeBrushTool } from '@upmade/core';
+import { UpmadeLineTool } from '@upmade/core';
+import { UpmadeShapeTool } from '@upmade/core';
+import { UpmadeTextTool } from '@upmade/core';
+import { UpmadeToolbarItem, UpmadeToolbarSubOption } from '@upmade/core';
+import { UpmadeBaseTool } from '@upmade/core';
+import { UpmadeDevicesHelper } from '@upmade/core';
+import { UpmadeUndoState } from '@upmade/core';
+import { ToolDisplayValues } from '@upmade/core';
+import { UpmadeToolConfigHelper } from '@upmade/core';
+import { UpmadeColorHelper } from '@upmade/core';
+import { ThemeName } from '@upmade/core';
+import { UpmadeTermKey } from '@upmade/core';
 
 type ToolConfig = Record<string, any>;
 
 @Component({
-  tag: 'updraw-toolbar',
-  styleUrl: 'updraw-toolbar.css',
+  tag: 'upmade-toolbar',
+  styleUrl: 'upmade-toolbar.css',
   shadow: true,
   assetsDirs: ['../assets'],
 })
-export class UpdrawToolbar {
+export class UpmadeToolbar {
   @Element() host!: HTMLElement;
 
   @Prop() visible: boolean = true;
-  @Prop() toolbarItems: UpdrawToolbarItem[] = [];
-  @Prop({ mutable: true }) activeControl: UpdrawToolbarItem | null = null;
+  @Prop() toolbarItems: UpmadeToolbarItem[] = [];
+  @Prop({ mutable: true }) activeControl: UpmadeToolbarItem | null = null;
   @Prop() isUtilityPanelVisible: boolean = true;
-  @Prop() undoState: UpdrawUndoState = null;
+  @Prop() undoState: UpmadeUndoState = null;
   @Prop() theme: ThemeName = 'light';
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpmadeTermKey, string>> = {};
 
   @Event() isToolbarReady: EventEmitter<void>;
 
   @State() firstConfig: ToolConfig | null = null;
-  @State() isTouchDevice: boolean = UpdrawDevicesHelper.isTouchDevice();
-  @State() selectedSubOptions: Map<string, UpdrawToolbarSubOption> = new Map();
+  @State() isTouchDevice: boolean = UpmadeDevicesHelper.isTouchDevice();
+  @State() selectedSubOptions: Map<string, UpmadeToolbarSubOption> = new Map();
   @State() canScrollLeft: boolean = false;
   @State() canScrollRight: boolean = false;
   @State() needsScrolling: boolean = false;
   @State() displayValues: ToolDisplayValues | null = null;
 
-  @State() internalToolbar: UpdrawToolbarItem[] = [];
+  @State() internalToolbar: UpmadeToolbarItem[] = [];
   @State() resolvedDisabled: Map<string, boolean> = new Map();
 
   private handleActiveToolChangeBound = this.handleActiveToolChange.bind(this);
@@ -54,7 +54,7 @@ export class UpdrawToolbar {
     if (event.key === 'Escape') {
       event.preventDefault();
       this.closeTooltip();
-      this.updrawEngine?.enable();
+      this.upmadeEngine?.enable();
     }
   }
 
@@ -62,7 +62,7 @@ export class UpdrawToolbar {
     this.activeControl = this.internalToolbar.find(control => control.tool === event.detail) || null;
 
     if (this.activeControl?.tool) {
-      this.updateDisplayValues(this.activeControl.tool as UpdrawBaseTool);
+      this.updateDisplayValues(this.activeControl.tool as UpmadeBaseTool);
     }
     this.closeTooltip();
   }
@@ -76,7 +76,7 @@ export class UpdrawToolbar {
 
   @Watch('toolbarItems')
   async onToolbarItemsChange() {
-    if (this.updrawEngine) {
+    if (this.upmadeEngine) {
       await this.initializeTools();
     }
   }
@@ -84,33 +84,33 @@ export class UpdrawToolbar {
   @Watch('theme')
   onThemeChange() {
     if (this.activeControl?.tool) {
-      this.updateDisplayValues(this.activeControl.tool as UpdrawBaseTool);
+      this.updateDisplayValues(this.activeControl.tool as UpmadeBaseTool);
     }
   }
 
   @Method()
   async closeTooltip() {
-    document.dispatchEvent(new CustomEvent('updrawTooltipCloseAll'));
+    document.dispatchEvent(new CustomEvent('upmadeTooltipCloseAll'));
   }
 
-  updrawEngine: HTMLUpdrawEngineElement | null = null;
+  upmadeEngine: HTMLUpmadeEngineElement | null = null;
   toolsScrollRef: HTMLDivElement | null = null;
   private configTriggerRef: HTMLElement | null = null;
 
   get activeToolAsTextTool() {
-    return this.activeControl?.tool as UpdrawTextTool;
+    return this.activeControl?.tool as UpmadeTextTool;
   }
 
   get activeToolAsBrushTool() {
-    return this.activeControl?.tool as UpdrawBrushTool;
+    return this.activeControl?.tool as UpmadeBrushTool;
   }
 
   get activeToolAsLineTool() {
-    return this.activeControl?.tool as UpdrawLineTool;
+    return this.activeControl?.tool as UpmadeLineTool;
   }
 
   get activeToolAsShapeTool() {
-    return this.activeControl?.tool as UpdrawShapeTool;
+    return this.activeControl?.tool as UpmadeShapeTool;
   }
 
   private handleDisplayValuesChange = (event: CustomEvent<ToolDisplayValues>) => {
@@ -121,8 +121,8 @@ export class UpdrawToolbar {
     this.displayValues = newVal;
   };
 
-  private updateDisplayValues(tool: UpdrawBaseTool) {
-    const config = UpdrawToolConfigHelper.getToolConfig(tool as any);
+  private updateDisplayValues(tool: UpmadeBaseTool) {
+    const config = UpmadeToolConfigHelper.getToolConfig(tool as any);
     if (!config) {
       this.displayValues = null;
       return;
@@ -133,12 +133,12 @@ export class UpdrawToolbar {
     const size = (tool as any)[config.sizeProperty];
 
     const displayValues: ToolDisplayValues = {
-      color: UpdrawColorHelper.applyOpacity(color, opacity, this.theme),
+      color: UpmadeColorHelper.applyOpacity(color, opacity, this.theme),
       size,
     };
 
     if (tool.toolType === 'text') {
-      displayValues.fontFamily = (tool as UpdrawTextTool).fontFamily;
+      displayValues.fontFamily = (tool as UpmadeTextTool).fontFamily;
     }
 
     // Check for equality implementation to prevent unnecessary re-renders
@@ -169,9 +169,9 @@ export class UpdrawToolbar {
   }
 
   disconnectedCallback() {
-    if (this.updrawEngine) {
-      this.updrawEngine.removeEventListener('activeToolChange', this.handleActiveToolChangeBound);
-      this.updrawEngine.removeEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
+    if (this.upmadeEngine) {
+      this.upmadeEngine.removeEventListener('activeToolChange', this.handleActiveToolChangeBound);
+      this.upmadeEngine.removeEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
     }
   }
 
@@ -195,15 +195,15 @@ export class UpdrawToolbar {
   };
 
   private async initializeEngine() {
-    await customElements.whenDefined('updraw-engine');
-    this.updrawEngine = this.host.parentElement.querySelector('updraw-engine');
+    await customElements.whenDefined('upmade-engine');
+    this.upmadeEngine = this.host.parentElement.querySelector('upmade-engine');
 
-    if (!this.updrawEngine) {
-      throw new Error('updraw-engine not found in parent element.');
+    if (!this.upmadeEngine) {
+      throw new Error('upmade-engine not found in parent element.');
     }
 
-    this.updrawEngine.addEventListener('activeToolChange', this.handleActiveToolChangeBound as EventListener);
-    this.updrawEngine.addEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
+    this.upmadeEngine.addEventListener('activeToolChange', this.handleActiveToolChangeBound as EventListener);
+    this.upmadeEngine.addEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
   }
 
   private async initializeTools() {
@@ -214,16 +214,16 @@ export class UpdrawToolbar {
 
     for (const c of newToolbar) {
       if (c.type === 'tool' && c.tool) {
-        const registered = await this.updrawEngine!.getTool(c.name);
+        const registered = await this.upmadeEngine!.getTool(c.name);
         if (registered) {
           c.tool = registered;
         }
       }
 
       if (c.type === 'tool' && c.isDefault && !this.isControlDisabled(c) && c.tool) {
-        await this.updrawEngine!.setActiveTool(c.name);
+        await this.upmadeEngine!.setActiveTool(c.name);
         this.activeControl = c;
-        this.updateDisplayValues(c.tool as UpdrawBaseTool);
+        this.updateDisplayValues(c.tool as UpmadeBaseTool);
         hasDefault = true;
       }
 
@@ -242,9 +242,9 @@ export class UpdrawToolbar {
     if (!hasDefault) {
       const firstTool = this.internalToolbar.find(c => c.type === 'tool' && c.tool && !this.isControlDisabled(c));
       if (firstTool) {
-        await this.updrawEngine!.setActiveTool(firstTool.name);
+        await this.upmadeEngine!.setActiveTool(firstTool.name);
         this.activeControl = firstTool;
-        this.updateDisplayValues(firstTool.tool as UpdrawBaseTool);
+        this.updateDisplayValues(firstTool.tool as UpmadeBaseTool);
       }
     }
   }
@@ -252,7 +252,7 @@ export class UpdrawToolbar {
   /**
    * Resolves each tool's `isDisabled` (boolean or sync/async function) into `resolvedDisabled`.
    */
-  private async resolveDisabledStates(items: UpdrawToolbarItem[]): Promise<void> {
+  private async resolveDisabledStates(items: UpmadeToolbarItem[]): Promise<void> {
     const entries = await Promise.all(
       items
         .filter(item => item.type === 'tool')
@@ -272,11 +272,11 @@ export class UpdrawToolbar {
     return !!value;
   }
 
-  private isControlDisabled(control: UpdrawToolbarItem): boolean {
+  private isControlDisabled(control: UpmadeToolbarItem): boolean {
     return this.resolvedDisabled.get(control.name) ?? false;
   }
 
-  private async handleControlClick(control: UpdrawToolbarItem) {
+  private async handleControlClick(control: UpmadeToolbarItem) {
     if (this.isControlDisabled(control)) {
       return;
     }
@@ -284,21 +284,21 @@ export class UpdrawToolbar {
     this.activeControl = control;
 
     if (this.activeControl.type === 'tool') {
-      this.updateDisplayValues(this.activeControl.tool as UpdrawBaseTool);
-      await this.updrawEngine.setActiveTool(this.activeControl.name);
+      this.updateDisplayValues(this.activeControl.tool as UpmadeBaseTool);
+      await this.upmadeEngine.setActiveTool(this.activeControl.name);
     }
   }
 
   private async handleToolChange(event: CustomEvent) {
     this.activeControl = { ...this.activeControl, tool: event.detail };
-    await this.updrawEngine.setActiveTool(this.activeControl.name);
+    await this.upmadeEngine.setActiveTool(this.activeControl.name);
   }
 
   /**
    * Get the currently selected sub-option for a control.
    * Returns the first sub-option as default if none is selected.
    */
-  private getSelectedSubOption(control: UpdrawToolbarItem): UpdrawToolbarSubOption | undefined {
+  private getSelectedSubOption(control: UpmadeToolbarItem): UpmadeToolbarSubOption | undefined {
     if (!control.subOptions?.length) return undefined;
     return this.selectedSubOptions.get(control.name) || control.subOptions[0];
   }
@@ -306,7 +306,7 @@ export class UpdrawToolbar {
   /**
    * Select a sub-option and update the tool property
    */
-  private async selectSubOption(control: UpdrawToolbarItem, option: UpdrawToolbarSubOption) {
+  private async selectSubOption(control: UpmadeToolbarItem, option: UpmadeToolbarSubOption) {
     if (this.isControlDisabled(control)) {
       return;
     }
@@ -330,7 +330,7 @@ export class UpdrawToolbar {
 
   render() {
     const activeToolConfig = this.activeControl?.tool
-      ? UpdrawToolConfigHelper.getToolConfig(this.activeControl.tool as any)
+      ? UpmadeToolConfigHelper.getToolConfig(this.activeControl.tool as any)
       : null;
     const hasConfigUI = activeToolConfig !== null;
 
@@ -346,7 +346,7 @@ export class UpdrawToolbar {
         }}
       >
         {this.isUtilityPanelVisible && (
-          <updraw-utility-panel
+          <upmade-utility-panel
             style={{
               position: 'absolute',
               bottom: '56px',
@@ -354,18 +354,18 @@ export class UpdrawToolbar {
             }}
             undoState={this.undoState}
             terms={this.terms}
-            onUndo={() => this.updrawEngine?.undo()}
-            onRedo={() => this.updrawEngine?.redo()}
-            onDelete={() => this.updrawEngine?.delete()}
-          ></updraw-utility-panel>
+            onUndo={() => this.upmadeEngine?.undo()}
+            onRedo={() => this.upmadeEngine?.redo()}
+            onDelete={() => this.upmadeEngine?.delete()}
+          ></upmade-utility-panel>
         )}
 
-        <div class="updraw-toolbar">
+        <div class="upmade-toolbar">
           {/* Left scroll indicator gradient */}
           <div class={{ 'scroll-indicator-left': true, 'visible': this.canScrollLeft }}></div>
 
           {/* Scrollable tool controls container */}
-          <div class="updraw-tools-scroll" ref={el => (this.toolsScrollRef = el)} onScroll={this.handleToolsScroll}>
+          <div class="upmade-tools-scroll" ref={el => (this.toolsScrollRef = el)} onScroll={this.handleToolsScroll}>
             {toolControls.map(control => {
               // Check if this control has sub-options (split-button)
               if (control.subOptions?.length) {
@@ -376,7 +376,7 @@ export class UpdrawToolbar {
                 return (
                   <div
                     class={{
-                      'updraw-control-split': true,
+                      'upmade-control-split': true,
                       'selected': isActive,
                     }}
                     key={control.name}
@@ -387,7 +387,7 @@ export class UpdrawToolbar {
                   >
                     <button
                       class={{
-                        'updraw-control-main': true,
+                        'upmade-control-main': true,
                         'disabled': isDisabled,
                       }}
                       disabled={isDisabled}
@@ -396,11 +396,11 @@ export class UpdrawToolbar {
                       aria-disabled={isDisabled}
                       data-testid={`tool-${control.name}-main`}
                     >
-                      <updraw-icon name={selectedSubOption?.icon || control.icon}></updraw-icon>
+                      <upmade-icon name={selectedSubOption?.icon || control.icon}></upmade-icon>
                     </button>
                     <button
                       class={{
-                        'updraw-control-dropdown': true,
+                        'upmade-control-dropdown': true,
                         'visible': isActive,
                         'disabled': isDisabled,
                       }}
@@ -413,40 +413,40 @@ export class UpdrawToolbar {
                       data-testid={`tool-${control.name}-dropdown`}
                       tabIndex={isActive ? 0 : -1}
                     >
-                      <updraw-icon name="chevronDown" size={12}></updraw-icon>
+                      <upmade-icon name="chevronDown" size={12}></upmade-icon>
                     </button>
 
-                    <updraw-tooltip anchorElement={(control as any)._anchorRef} triggerElement={(control as any)._triggerRef}>
-                      <div class="updraw-submenu-content">
+                    <upmade-tooltip anchorElement={(control as any)._anchorRef} triggerElement={(control as any)._triggerRef}>
+                      <div class="upmade-submenu-content">
                         {control.subOptions.map(option => (
                           <button
                             class={{
-                              'updraw-submenu-item': true,
+                              'upmade-submenu-item': true,
                               'active': option.id === selectedSubOption?.id,
                             }}
                             key={option.id}
                             data-testid={`suboption-${option.id}`}
                             onClick={() => this.selectSubOption(control, option)}
                           >
-                            <updraw-icon name={option.icon} size={20}></updraw-icon>
+                            <upmade-icon name={option.icon} size={20}></upmade-icon>
                             <span>{option.label}</span>
                           </button>
                         ))}
                       </div>
-                    </updraw-tooltip>
+                    </upmade-tooltip>
                   </div>
                 );
               }
 
               if (control.type === 'separator') {
-                return <div class="updraw-control-separator" key={control.name}></div>;
+                return <div class="upmade-control-separator" key={control.name}></div>;
               }
 
               // Regular tool control (no sub-options)
               return (
                 <button
                   class={{
-                    'updraw-control': true,
+                    'upmade-control': true,
                     'selected': this.activeControl?.name === control?.name,
                     'disabled': this.isControlDisabled(control),
                   }}
@@ -457,7 +457,7 @@ export class UpdrawToolbar {
                   aria-label={control.name.charAt(0).toUpperCase() + control.name.slice(1)}
                   aria-disabled={this.isControlDisabled(control)}
                 >
-                  <updraw-icon name={control.icon}></updraw-icon>
+                  <upmade-icon name={control.icon}></upmade-icon>
                 </button>
               );
             })}
@@ -470,7 +470,7 @@ export class UpdrawToolbar {
           {configControl && this.activeControl && (
             <div
               class={{
-                'updraw-config-container': true,
+                'upmade-config-container': true,
                 'visible': hasConfigUI,
               }}
               key={configControl.name}
@@ -478,21 +478,21 @@ export class UpdrawToolbar {
               {/* Left gradient on config control */}
               <div class={{ 'config-gradient-left': true, 'visible': this.needsScrolling }}></div>
 
-              <updraw-tooltip anchorElement={this.host.shadowRoot?.querySelector('.updraw-config-container') as HTMLElement} triggerElement={this.configTriggerRef}>
-                <updraw-tool-config
+              <upmade-tooltip anchorElement={this.host.shadowRoot?.querySelector('.upmade-config-container') as HTMLElement} triggerElement={this.configTriggerRef}>
+                <upmade-tool-config
                   tool={this.activeControl.tool as any}
                   theme={this.theme}
-                  engine={this.updrawEngine}
+                  engine={this.upmadeEngine}
                   terms={this.terms}
                   onToolChange={event => this.handleToolChange?.(event)}
                   onDisplayValuesChange={this.handleDisplayValuesChange}
                   style={{ width: '100%', height: '100%' }}
-                ></updraw-tool-config>
-              </updraw-tooltip>
+                ></upmade-tool-config>
+              </upmade-tooltip>
 
               <div
                 tabIndex={hasConfigUI ? 0 : -1}
-                class="updraw-config"
+                class="upmade-config"
                 data-testid="tool-config"
                 ref={el => {
                   if (el) this.configTriggerRef = el;
@@ -508,7 +508,7 @@ export class UpdrawToolbar {
               >
                 {this.displayValues && (
                   <div class="color-container">
-                    <updraw-color
+                    <upmade-color
                       value={this.displayValues.color}
                       theme={this.theme}
                       size={18}
@@ -516,7 +516,7 @@ export class UpdrawToolbar {
                         borderRadius: '50%',
                         border: 'none',
                       }}
-                    ></updraw-color>
+                    ></upmade-color>
                   </div>
                 )}
               </div>

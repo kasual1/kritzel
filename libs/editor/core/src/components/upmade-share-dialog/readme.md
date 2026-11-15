@@ -1,4 +1,4 @@
-# updraw-share-dialog
+# upmade-share-dialog
 
 
 
@@ -9,7 +9,7 @@
 
 Share dialog component for managing workspace link sharing.
 This is a presentational component that emits events for all actions.
-The parent component (updraw-editor) handles the business logic.
+The parent component (upmade-editor) handles the business logic.
 
 ## Properties
 
@@ -55,22 +55,22 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [updraw-editor](../updraw-editor)
+ - [upmade-editor](../upmade-editor)
 
 ### Depends on
 
-- [updraw-dialog](../updraw-dialog)
-- [updraw-slide-toggle](../updraw-slide-toggle)
-- updraw-icon
+- [upmade-dialog](../upmade-dialog)
+- [upmade-slide-toggle](../upmade-slide-toggle)
+- upmade-icon
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-share-dialog --> updraw-dialog
-  updraw-share-dialog --> updraw-slide-toggle
-  updraw-share-dialog --> updraw-icon
-  updraw-editor --> updraw-share-dialog
-  style updraw-share-dialog fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-share-dialog --> upmade-dialog
+  upmade-share-dialog --> upmade-slide-toggle
+  upmade-share-dialog --> upmade-icon
+  upmade-editor --> upmade-share-dialog
+  style upmade-share-dialog fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

@@ -1,14 +1,14 @@
 ﻿import { Component, Host, Prop, h } from '@stencil/core';
-import { ThemeAwareColor } from '@updraw/core';
-import { ThemeName } from '@updraw/core';
-import { UpdrawColorHelper } from '@updraw/core';
+import { ThemeAwareColor } from '@upmade/core';
+import { ThemeName } from '@upmade/core';
+import { UpmadeColorHelper } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-color',
-  styleUrl: 'updraw-color.css',
+  tag: 'upmade-color',
+  styleUrl: 'upmade-color.css',
   shadow: true,
 })
-export class UpdrawColorComponent {
+export class UpmadeColorComponent {
   @Prop() value: string | ThemeAwareColor;
   @Prop() theme: ThemeName;
   @Prop() size: number = 24;
@@ -16,7 +16,7 @@ export class UpdrawColorComponent {
   private resolveColor(): string {
     if (!this.value) return '';
     if (typeof this.value === 'string') return this.value;
-    return UpdrawColorHelper.resolveThemeColor(this.value, this.theme);
+    return UpmadeColorHelper.resolveThemeColor(this.value, this.theme);
   }
 
   private isLightColor(hexColor: string): boolean {

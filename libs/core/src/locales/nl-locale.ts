@@ -1,9 +1,9 @@
-import { UpdrawLocale } from '../interfaces/localization.interface';
+import { UpmadeLocale } from '../interfaces/localization.interface';
 
 /**
  * Built-in Dutch locale.
  */
-export const NL_LOCALE: UpdrawLocale = {
+export const NL_LOCALE: UpmadeLocale = {
   code: 'nl',
   label: 'Nederlands',
   terms: {
@@ -76,7 +76,7 @@ export const NL_LOCALE: UpdrawLocale = {
     'settings.developer.showMigrationInfo.label': 'Migratie-informatie tonen',
     'settings.developer.showMigrationInfo.description': 'Toont foutopsporingsinformatie over gegevensmigraties.',
     'settings.about.title': 'Over',
-    'settings.about.description': 'Updraw - Een tekenapplicatie',
+    'settings.about.description': 'Upmade - Een tekenapplicatie',
 
     // Export dialog
     'export.dialogTitle': 'Exporteren',
@@ -134,7 +134,7 @@ export const NL_LOCALE: UpdrawLocale = {
     'moreMenu.ariaLabel': 'Meer opties',
 
     // Watermark
-    'watermark.poweredBy': 'Mogelijk gemaakt door Updraw',
+    'watermark.poweredBy': 'Mogelijk gemaakt door Upmade',
 
     // Object type labels
     'objectType.shape': 'Vorm',

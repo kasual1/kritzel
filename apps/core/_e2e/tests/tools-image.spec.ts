@@ -154,7 +154,7 @@ test.describe('Image tool', () => {
   test('should add an image by selecting a file via the file chooser', async ({ editorPage }) => {
     await selectImageFile(editorPage);
 
-    // Clear selection to exclude the UpdrawSelectionGroup from getAllObjects
+    // Clear selection to exclude the UpmadeSelectionGroup from getAllObjects
     await editorPage.clearSelection();
 
     const count = await editorPage.getObjectsTotalCount();
@@ -162,7 +162,7 @@ test.describe('Image tool', () => {
 
     const objects = await editorPage.getAllObjects<any>();
     expect(objects).toHaveLength(1);
-    expect(objects[0].__class__).toBe('UpdrawImage');
+    expect(objects[0].__class__).toBe('UpmadeImage');
     expect(objects[0].assetId).toBeTruthy();
     expect(typeof objects[0].assetId).toBe('string');
     expect(objects[0].mimeType).toMatch(/^image\//);
@@ -171,7 +171,7 @@ test.describe('Image tool', () => {
   test('should add multiple images by selecting multiple files via the file chooser', async ({ editorPage }) => {
     await selectMultipleImageFiles(editorPage, 3);
 
-    // Clear selection to exclude the UpdrawSelectionGroup from getAllObjects
+    // Clear selection to exclude the UpmadeSelectionGroup from getAllObjects
     await editorPage.clearSelection();
 
     const count = await editorPage.getObjectsTotalCount();
@@ -180,7 +180,7 @@ test.describe('Image tool', () => {
     const objects = await editorPage.getAllObjects<any>();
     expect(objects).toHaveLength(3);
     for (const obj of objects) {
-      expect(obj.__class__).toBe('UpdrawImage');
+      expect(obj.__class__).toBe('UpmadeImage');
       expect(obj.assetId).toBeTruthy();
       expect(typeof obj.assetId).toBe('string');
       expect(obj.mimeType).toMatch(/^image\//);

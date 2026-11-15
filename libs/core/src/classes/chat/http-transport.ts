@@ -1,19 +1,19 @@
 import type {
-  UpdrawChatRequest,
-  UpdrawChatResponse,
-  UpdrawChatStreamEvent,
-  UpdrawChatTransport,
+  UpmadeChatRequest,
+  UpmadeChatResponse,
+  UpmadeChatStreamEvent,
+  UpmadeChatTransport,
 } from '../../interfaces/chat-session.interface';
 
 /** Options of `createHttpTransport()`. */
-export interface UpdrawHttpTransportOptions {
+export interface UpmadeHttpTransportOptions {
   /** The endpoint of your server, e.g. `'/api/chat'`. */
   url: string | URL;
   /**
    * Headers sent with every request, e.g. `Authorization`. A function is called per request, so it can return a
    * fresh token.
    */
-  headers?: HeadersInit | ((request: UpdrawChatRequest) => HeadersInit | Promise<HeadersInit>);
+  headers?: HeadersInit | ((request: UpmadeChatRequest) => HeadersInit | Promise<HeadersInit>);
   /** Whether cookies are sent, as in `fetch()`. Defaults to the browser's default (`'same-origin'`). */
   credentials?: RequestCredentials;
   /** The `fetch` to use, e.g. for tests or a client with retries. Defaults to the global `fetch`. */
@@ -21,7 +21,7 @@ export interface UpdrawHttpTransportOptions {
 }
 
 /** Thrown by `createHttpTransport()` when the server answers with an error status. */
-export class UpdrawChatHttpError extends Error {
+export class UpmadeChatHttpError extends Error {
   /** The HTTP status, e.g. `401`. */
   readonly status: number;
   /** The body of the answer, as text. */
@@ -29,7 +29,7 @@ export class UpdrawChatHttpError extends Error {
 
   constructor(status: number, body: string, message: string) {
     super(message);
-    this.name = 'UpdrawChatHttpError';
+    this.name = 'UpmadeChatHttpError';
     this.status = status;
     this.body = body;
   }
@@ -38,15 +38,15 @@ export class UpdrawChatHttpError extends Error {
 /**
  * A transport that posts each request as JSON to your server. The server answers with one of:
  *
- * - `application/json`: an `UpdrawChatResponse`.
- * - `application/x-ndjson`: one `UpdrawChatStreamEvent` as JSON per line.
- * - `text/event-stream`: server-sent events whose `data` is one `UpdrawChatStreamEvent` as JSON.
+ * - `application/json`: an `UpmadeChatResponse`.
+ * - `application/x-ndjson`: one `UpmadeChatStreamEvent` as JSON per line.
+ * - `text/event-stream`: server-sent events whose `data` is one `UpmadeChatStreamEvent` as JSON.
  *
- * Stopping the session aborts the request. An error status throws an `UpdrawChatHttpError`, with the `error`
+ * Stopping the session aborts the request. An error status throws an `UpmadeChatHttpError`, with the `error`
  * or `message` of a JSON body as its message when there is one.
  */
-export function createHttpTransport(urlOrOptions: string | URL | UpdrawHttpTransportOptions): UpdrawChatTransport {
-  const options: UpdrawHttpTransportOptions =
+export function createHttpTransport(urlOrOptions: string | URL | UpmadeHttpTransportOptions): UpmadeChatTransport {
+  const options: UpmadeHttpTransportOptions =
     typeof urlOrOptions === 'string' || urlOrOptions instanceof URL ? { url: urlOrOptions } : urlOrOptions;
   if (!options || (typeof options.url !== 'string' && !(options.url instanceof URL))) {
     throw new TypeError('createHttpTransport() needs the URL of your chat endpoint.');
@@ -76,7 +76,7 @@ export function createHttpTransport(urlOrOptions: string | URL | UpdrawHttpTrans
 
     if (!response.ok) {
       const body = await response.text().catch(() => '');
-      throw new UpdrawChatHttpError(response.status, body, errorMessage(response.status, body));
+      throw new UpmadeChatHttpError(response.status, body, errorMessage(response.status, body));
     }
 
     const contentType = (response.headers.get('Content-Type') ?? '').toLowerCase();
@@ -90,7 +90,7 @@ export function createHttpTransport(urlOrOptions: string | URL | UpdrawHttpTrans
     if (!text.trim()) {
       throw new Error('The chat server answered with an empty body.');
     }
-    return parseJson(text) as UpdrawChatResponse;
+    return parseJson(text) as UpmadeChatResponse;
   };
 }
 
@@ -161,10 +161,10 @@ async function* readLines(response: Response): AsyncGenerator<string> {
 }
 
 /** Reads newline-delimited JSON: one event per line, blank lines skipped. */
-async function* readJsonLines(response: Response): AsyncGenerator<UpdrawChatStreamEvent> {
+async function* readJsonLines(response: Response): AsyncGenerator<UpmadeChatStreamEvent> {
   for await (const line of readLines(response)) {
     if (line.trim()) {
-      yield parseJson(line) as UpdrawChatStreamEvent;
+      yield parseJson(line) as UpmadeChatStreamEvent;
     }
   }
 }
@@ -173,10 +173,10 @@ async function* readJsonLines(response: Response): AsyncGenerator<UpdrawChatStre
  * Reads server-sent events. Each event of type `message` (the default) carries one stream event as JSON in its
  * `data`; other event types, such as keep-alive pings, and a `data` of `[DONE]` are skipped.
  */
-async function* readServerSentEvents(response: Response): AsyncGenerator<UpdrawChatStreamEvent> {
+async function* readServerSentEvents(response: Response): AsyncGenerator<UpmadeChatStreamEvent> {
   let data: string[] = [];
   let eventType = '';
-  const dispatch = (): UpdrawChatStreamEvent | undefined => {
+  const dispatch = (): UpmadeChatStreamEvent | undefined => {
     const payload = data.join('\n');
     const type = eventType;
     data = [];
@@ -184,7 +184,7 @@ async function* readServerSentEvents(response: Response): AsyncGenerator<UpdrawC
     if ((type && type !== 'message') || !payload.trim() || payload.trim() === '[DONE]') {
       return undefined;
     }
-    return parseJson(payload) as UpdrawChatStreamEvent;
+    return parseJson(payload) as UpmadeChatStreamEvent;
   };
 
   for await (const line of readLines(response)) {

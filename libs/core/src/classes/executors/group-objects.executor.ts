@@ -1,17 +1,17 @@
-import type { UpdrawAgenticGroupObjectsAction, UpdrawAgenticUngroupObjectsAction } from '../../interfaces/agentic-action.interface';
-import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
-import { UpdrawGroup } from '../objects/group.class';
+import type { UpmadeAgenticGroupObjectsAction, UpmadeAgenticUngroupObjectsAction } from '../../interfaces/agentic-action.interface';
+import type { UpmadeAgenticActionExecutor } from '../../types/agentic-action.types';
+import { UpmadeGroup } from '../objects/group.class';
 import { flyToObjects, prepareTopLevelTargets } from './select.executor';
 import { applyZIndexUpdates } from './order-objects.executor';
 import { assertObjectIds, uniqueIds } from '../../helpers/agentic-validation.helper';
 import { unionCenter } from '../../helpers/agentic-geometry.helper';
-import { UpdrawZOrderHelper } from '../../helpers/z-order.helper';
+import { UpmadeZOrderHelper } from '../../helpers/z-order.helper';
 
 /**
  * `groupObjects`: clicks the objects one after the other, so the selection builds up like shift-clicking them, and
  * groups them. The group becomes one layer at the topmost object, like `editor.group()`.
  */
-export const groupObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticGroupObjectsAction> = {
+export const groupObjectsExecutor: UpmadeAgenticActionExecutor<UpmadeAgenticGroupObjectsAction> = {
   mutates: true,
 
   validate(action) {
@@ -43,13 +43,13 @@ export const groupObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticGrou
     }
 
     const group = run.mutate(() => {
-      const { objects, items } = UpdrawZOrderHelper.collect(map.allObjects());
+      const { objects, items } = UpmadeZOrderHelper.collect(map.allObjects());
       // Top-level objects are grouped at the top level.
-      const plan = UpdrawZOrderHelper.planGroup(items, ids);
+      const plan = UpmadeZOrderHelper.planGroup(items, ids);
       if (!plan || plan.parentId !== null) {
         return null;
       }
-      const created = run.own(UpdrawGroup.createFromObjects(core, plan.childIds.map(id => objects.get(id)!)));
+      const created = run.own(UpmadeGroup.createFromObjects(core, plan.childIds.map(id => objects.get(id)!)));
       if (plan.groupZIndex !== null) {
         created.zIndex = plan.groupZIndex;
       }
@@ -69,7 +69,7 @@ export const groupObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticGrou
 };
 
 /** `ungroupObjects`: clicks the groups and dissolves them; their children keep their place in the stacking order. */
-export const ungroupObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticUngroupObjectsAction> = {
+export const ungroupObjectsExecutor: UpmadeAgenticActionExecutor<UpmadeAgenticUngroupObjectsAction> = {
   mutates: true,
 
   validate(action) {
@@ -81,7 +81,7 @@ export const ungroupObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticUn
     if ('reason' in preparation) {
       return preparation;
     }
-    const notGroups = preparation.targetIds.filter(id => !(run.map!.findById(id) instanceof UpdrawGroup));
+    const notGroups = preparation.targetIds.filter(id => !(run.map!.findById(id) instanceof UpmadeGroup));
     return notGroups.length > 0 ? { reason: 'invalid-target', objectIds: notGroups } : preparation;
   },
 
@@ -93,11 +93,11 @@ export const ungroupObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticUn
 
     const childrenByGroup = new Map<string, string[]>();
     run.mutate(() => {
-      const { items } = UpdrawZOrderHelper.collect(map.allObjects());
+      const { items } = UpmadeZOrderHelper.collect(map.allObjects());
       // Children that share a z-index get distinct ones, so they keep their order without the group.
-      const updates = UpdrawZOrderHelper.planUngroup(items, ids);
+      const updates = UpmadeZOrderHelper.planUngroup(items, ids);
       for (const id of ids) {
-        const group = map.findById(id) as UpdrawGroup | null;
+        const group = map.findById(id) as UpmadeGroup | null;
         if (!group) {
           run.stop('object-removed', [id]);
         }

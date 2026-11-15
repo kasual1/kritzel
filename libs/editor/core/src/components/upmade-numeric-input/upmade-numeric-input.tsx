@@ -1,11 +1,11 @@
 import { Component, Host, h, Prop, Event, EventEmitter, State, Watch } from '@stencil/core';
 
 @Component({
-  tag: 'updraw-numeric-input',
-  styleUrl: 'updraw-numeric-input.css',
+  tag: 'upmade-numeric-input',
+  styleUrl: 'upmade-numeric-input.css',
   shadow: true,
 })
-export class UpdrawNumericInput {
+export class UpmadeNumericInput {
   /** Current numeric value (undefined when cleared) */
   @Prop({ mutable: true }) value?: number;
 

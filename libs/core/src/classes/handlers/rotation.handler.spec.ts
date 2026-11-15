@@ -1,12 +1,12 @@
-import { UpdrawRotationHandler } from './rotation.handler';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpmadeRotationHandler } from './rotation.handler';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
 
 jest.mock('../../helpers/event.helper');
 
-describe('UpdrawRotationHandler', () => {
-  let rotationHandler: UpdrawRotationHandler;
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadeRotationHandler', () => {
+  let rotationHandler: UpmadeRotationHandler;
+  let mockCore: jest.Mocked<UpmadeCore>;
   let mockSelectionGroup: {
     width: number;
     height: number;
@@ -51,7 +51,7 @@ describe('UpdrawRotationHandler', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockSelectionGroup = null;
     mockState = {
@@ -86,9 +86,9 @@ describe('UpdrawRotationHandler', () => {
         emitObjectsRemoved: jest.fn(),
         emitObjectsUpdated: jest.fn(),
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    rotationHandler = new UpdrawRotationHandler(mockCore);
+    rotationHandler = new UpmadeRotationHandler(mockCore);
   });
 
   describe('handlePointerDown', () => {
@@ -120,7 +120,7 @@ describe('UpdrawRotationHandler', () => {
       });
 
       it('should not start rotation on non-left click', () => {
-        (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+        (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
         mockSelectionGroup = {
           width: 100,
           height: 100,

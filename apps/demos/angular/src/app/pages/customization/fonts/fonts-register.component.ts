@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { UpdrawEditor, UpdrawFontMap, UpdrawTheme, UpdrawText, UpdrawWorkspace } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeFontMap, UpmadeTheme, UpmadeText, UpmadeWorkspace } from '@upmade/angular-editor';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 
-const customFontConfig: UpdrawFontMap = {
+const customFontConfig: UpmadeFontMap = {
   'pacifico': {
     family: 'Pacifico',
     label: 'Pacifico Cursive',
@@ -14,14 +14,14 @@ const customFontConfig: UpdrawFontMap = {
 
 @Component({
   selector: 'app-fonts-register',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
       <button (click)="addPacificoText()">Add Pacifico Text</button>
     </app-toolbar>
     <div class="editor-wrap">
-      <updraw-editor
+      <upmade-editor
         editorId="fonts-register"
         [customFonts]="fonts"
         [workspaces]="workspaces()"
@@ -30,7 +30,7 @@ const customFontConfig: UpdrawFontMap = {
         [isPanningEnabled]="false"
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="true"
-      ></updraw-editor>
+      ></upmade-editor>
     </div>
   `,
   styles: [`
@@ -40,9 +40,9 @@ const customFontConfig: UpdrawFontMap = {
   `],
 })
 export class FontsRegisterComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
-  themes: UpdrawTheme[] = [{
+  themes: UpmadeTheme[] = [{
     ...angularThemeLight,
     name: 'custom',
     global: {
@@ -50,14 +50,14 @@ export class FontsRegisterComponent {
     }
   }];
 
-  fonts: UpdrawFontMap = customFontConfig;
+  fonts: UpmadeFontMap = customFontConfig;
 
   workspaces = signal([
-    new UpdrawWorkspace({
+    new UpmadeWorkspace({
       id: 'fonts-register',
       name: 'Custom Fonts',
       objects: [
-        new UpdrawText({
+        new UpmadeText({
           text: 'Handwritten Pacifico Font',
           translateX: -180,
           translateY: -50,
@@ -71,7 +71,7 @@ export class FontsRegisterComponent {
 
   async addPacificoText() {
     const position = await this.randomViewportPosition();
-    const textObj = new UpdrawText({
+    const textObj = new UpmadeText({
       text: 'Handwritten Pacifico Font',
       translateX: position.x,
       translateY: position.y,

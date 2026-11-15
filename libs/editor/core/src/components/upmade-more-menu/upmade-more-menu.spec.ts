@@ -1,4 +1,4 @@
-import { UpdrawMoreMenu } from './updraw-more-menu';
+import { UpmadeMoreMenu } from './upmade-more-menu';
 
 jest.mock('@stencil/core', () => ({
   ...jest.requireActual('@stencil/core/internal/testing'),
@@ -11,11 +11,11 @@ jest.mock('@stencil/core', () => ({
   Element: () => () => {},
 }));
 
-describe('UpdrawMoreMenu', () => {
-  let component: UpdrawMoreMenu;
+describe('UpmadeMoreMenu', () => {
+  let component: UpmadeMoreMenu;
 
   beforeEach(() => {
-    component = new UpdrawMoreMenu();
+    component = new UpmadeMoreMenu();
     component.host = document.createElement('div');
   });
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { UpdrawEditor } from '@updraw/vue-editor';
+import { UpmadeEditor } from '@upmade/vue-editor';
 
-const editorId = 'updraw-canvas';
+const editorId = 'upmade-canvas';
 const isReady = ref(false);
 
 function onReady(): void {
@@ -12,12 +12,12 @@ function onReady(): void {
 
 <template>
   <section>
-    <UpdrawEditor
+    <UpmadeEditor
       :editorId="editorId"
       @isReady="onReady"
       style="display: block; width: 100%; height: 480px"
-      aria-label="Updraw canvas"
+      aria-label="Upmade canvas"
     />
-    <p role="status">{{ isReady ? 'Updraw is ready.' : 'Loading Updraw…' }}</p>
+    <p role="status">{{ isReady ? 'Upmade is ready.' : 'Loading Upmade…' }}</p>
   </section>
 </template>

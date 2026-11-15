@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import {
-  UpdrawEditor,
-  HTMLUpdrawEditorElement,
-} from "@updraw/react-editor";
+  UpmadeEditor,
+  HTMLUpmadeEditorElement,
+} from "@upmade/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import {
@@ -15,7 +15,7 @@ import { Toolbar } from "../../../components/Toolbar";
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ThemingApplyPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const [activeName, setActiveName] = useState("light");
 
   return (
@@ -24,7 +24,7 @@ export function ThemingApplyPage() {
         <button className={activeName === "light" ? "active" : undefined} onClick={() => setActiveName("light")}>Light</button>
         <button className={activeName === "dark" ? "active" : undefined} onClick={() => setActiveName("dark")}>Dark</button>
       </Toolbar>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="theming-apply"
         theme={activeName}

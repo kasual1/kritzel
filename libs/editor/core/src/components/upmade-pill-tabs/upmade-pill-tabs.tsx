@@ -1,6 +1,6 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 
-export interface UpdrawPillTab {
+export interface UpmadePillTab {
   /** Unique identifier for the tab */
   id: string;
   /** Display label for the tab */
@@ -10,15 +10,15 @@ export interface UpdrawPillTab {
 }
 
 @Component({
-  tag: 'updraw-pill-tabs',
-  styleUrl: 'updraw-pill-tabs.css',
+  tag: 'upmade-pill-tabs',
+  styleUrl: 'upmade-pill-tabs.css',
   shadow: true,
 })
-export class UpdrawPillTabs {
+export class UpmadePillTabs {
   /**
    * Array of tab definitions to render
    */
-  @Prop() tabs: UpdrawPillTab[] = [];
+  @Prop() tabs: UpmadePillTab[] = [];
 
   /**
    * Currently selected tab ID
@@ -89,7 +89,7 @@ export class UpdrawPillTabs {
               onClick={() => this.handleTabClick(tab.id)}
               onKeyDown={(e) => this.handleKeyDown(e, index)}
             >
-              {tab.icon && <updraw-icon name={tab.icon} size={16}></updraw-icon>}
+              {tab.icon && <upmade-icon name={tab.icon} size={16}></upmade-icon>}
               <span class="pill-tab-label">{tab.label}</span>
             </button>
           ))}

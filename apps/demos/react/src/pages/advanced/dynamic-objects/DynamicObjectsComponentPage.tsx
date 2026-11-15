@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import {
-  UpdrawDynamicObject,
-  UpdrawEditor,
-  UpdrawWorkspace,
-} from "@updraw/react-editor";
-import { UpdrawDynamicObjectRendererRegistry } from "@updraw/react-editor";
+  UpmadeDynamicObject,
+  UpmadeEditor,
+  UpmadeWorkspace,
+} from "@upmade/react-editor";
+import { UpmadeDynamicObjectRendererRegistry } from "@upmade/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { CalculatorWidget } from "./CalculatorWidget";
@@ -18,21 +18,21 @@ type MountedCalculatorRenderer = {
   latestState: CalculatorState;
 };
 
-function createCalculatorObject(): UpdrawDynamicObject {
+function createCalculatorObject(): UpmadeDynamicObject {
   const placeholder = document.createElement("div");
   placeholder.textContent = "Loading Calculator...";
-  const object = new UpdrawDynamicObject({ element: placeholder, rendererKey: CALCULATOR_RENDERER_KEY, rendererData: createCalculatorInitialState(), translateX: -130, translateY: -190, width: 260, height: 320, borderRadius: 12 });
+  const object = new UpmadeDynamicObject({ element: placeholder, rendererKey: CALCULATOR_RENDERER_KEY, rendererData: createCalculatorInitialState(), translateX: -130, translateY: -190, width: 260, height: 320, borderRadius: 12 });
   object.isRotatable = false;
   return object;
 }
 
 export function DynamicObjectsComponentPage() {
   const mountedRenderers = useRef<Map<string, MountedCalculatorRenderer>>(new Map());
-  const workspaces = useMemo(() => [new UpdrawWorkspace({ objects: [createCalculatorObject()] })], []);
+  const workspaces = useMemo(() => [new UpmadeWorkspace({ objects: [createCalculatorObject()] })], []);
 
   useEffect(() => {
     const renderers = mountedRenderers.current;
-    UpdrawDynamicObjectRendererRegistry.register(CALCULATOR_RENDERER_KEY, {
+    UpmadeDynamicObjectRendererRegistry.register(CALCULATOR_RENDERER_KEY, {
       onMount: ({ object, container, data }) => {
         if (!container) {
           return;
@@ -83,13 +83,13 @@ export function DynamicObjectsComponentPage() {
         renderer.root.unmount();
       });
       renderers.clear();
-      UpdrawDynamicObjectRendererRegistry.unregister(CALCULATOR_RENDERER_KEY);
+      UpmadeDynamicObjectRendererRegistry.unregister(CALCULATOR_RENDERER_KEY);
     };
   }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <UpdrawEditor
+      <UpmadeEditor
         editorId="dynamic-objects-component"
         theme="light"
         themes={[reactThemeLight, reactThemeDark]}

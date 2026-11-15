@@ -1,12 +1,12 @@
-import { UpdrawAsset } from '../../../interfaces/asset.interface';
-import { IAssetStorageProvider, UpdrawAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
+import { UpmadeAsset } from '../../../interfaces/asset.interface';
+import { IAssetStorageProvider, UpmadeAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
 
 /**
  * Pre-signed upload descriptor returned by the host application.
  * `method` defaults to `PUT` which matches the common S3 pattern, but
  * `POST` is also supported for S3 browser-based uploads with form fields.
  */
-export interface UpdrawPresignedUpload {
+export interface UpmadePresignedUpload {
   /** Stable asset id. Host may honor metadata.id or assign a new one. */
   id: string;
   /** Fully-qualified URL bytes should be sent to. */
@@ -30,7 +30,7 @@ export interface PresignedAssetProviderOptions {
    * Returns a pre-signed upload descriptor for the given metadata. The
    * host application typically calls its backend to obtain a signed URL.
    */
-  getUploadDescriptor: (metadata: UpdrawAssetPutMetadata) => Promise<UpdrawPresignedUpload>;
+  getUploadDescriptor: (metadata: UpmadeAssetPutMetadata) => Promise<UpmadePresignedUpload>;
 
   /**
    * Returns a URL from which the given asset can be loaded (often a
@@ -85,7 +85,7 @@ export class PresignedAssetProvider implements IAssetStorageProvider {
     return true;
   }
 
-  async put(blob: Blob, metadata: UpdrawAssetPutMetadata): Promise<UpdrawAsset> {
+  async put(blob: Blob, metadata: UpmadeAssetPutMetadata): Promise<UpmadeAsset> {
     const descriptor = await this._options.getUploadDescriptor(metadata);
     const method = descriptor.method ?? 'PUT';
     const headers = { ...(descriptor.headers ?? {}) };

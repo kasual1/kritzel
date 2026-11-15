@@ -1,8 +1,8 @@
-import { UpdrawPoint } from "./point.interface";
+import { UpmadePoint } from "./point.interface";
 
-export interface UpdrawPolygon {
-  bottomLeft: UpdrawPoint;
-  bottomRight: UpdrawPoint;
-  topLeft: UpdrawPoint;
-  topRight: UpdrawPoint;
+export interface UpmadePolygon {
+  bottomLeft: UpmadePoint;
+  bottomRight: UpmadePoint;
+  topLeft: UpmadePoint;
+  topRight: UpmadePoint;
 }

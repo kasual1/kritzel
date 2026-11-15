@@ -1,8 +1,8 @@
 import { useRef } from "react";
-import { UpdrawEditor, type HTMLUpdrawEditorElement, type UpdrawFontMap, type UpdrawTheme } from "@updraw/react-editor";
+import { UpmadeEditor, type HTMLUpmadeEditorElement, type UpmadeFontMap, type UpmadeTheme } from "@upmade/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 
-const fonts: UpdrawFontMap = {
+const fonts: UpmadeFontMap = {
   pacifico: {
     family: "Pacifico",
     label: "Pacifico Cursive",
@@ -11,16 +11,16 @@ const fonts: UpdrawFontMap = {
   },
 };
 
-const themes: UpdrawTheme[] = [{
+const themes: UpmadeTheme[] = [{
   ...reactThemeLight,
   global: { ...reactThemeLight.global, fontFamily: "'Pacifico', cursive" },
 }];
 
 export function FontsUiFontFamilyPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
 
   return (
-    <UpdrawEditor
+    <UpmadeEditor
       ref={editorRef}
       editorId="fonts-ui-font-family"
       customFonts={fonts}

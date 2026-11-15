@@ -16,13 +16,13 @@
 In a `.css` file:
 ```css
 .my-element {
-  color: var(--updraw-my-component-text-color, #333333);
+  color: var(--upmade-my-component-text-color, #333333);
 }
 ```
 
 Or in a `.tsx` file (inline style):
 ```tsx
-style={{ color: 'var(--updraw-my-component-text-color, #333333)' }}
+style={{ color: 'var(--upmade-my-component-text-color, #333333)' }}
 ```
 
 ### Step 2: Run the generator
@@ -31,7 +31,7 @@ style={{ color: 'var(--updraw-my-component-text-color, #333333)' }}
 node scripts/generate-theme-interface.js
 ```
 
-This scans all `.css` and `.tsx` files for `--updraw-*` patterns and regenerates `theme.interface.ts`.
+This scans all `.css` and `.tsx` files for `--upmade-*` patterns and regenerates `theme.interface.ts`.
 
 ### Step 3: Add values to theme presets
 
@@ -62,15 +62,15 @@ npm run test
 ## Naming Convention
 
 ```
---updraw-<category>-<property-name>
+--upmade-<category>-<property-name>
 ```
 
 - Category = component or domain (e.g., `toolbar`, `menu`, `selection-box`)
 - Property = camelCase when in TypeScript, kebab-case in CSS
 
 Examples:
-- `--updraw-toolbar-background-color` â†’ `toolbar.backgroundColor`
-- `--updraw-selection-box-border-color` â†’ `selection.boxBorderColor`
+- `--upmade-toolbar-background-color` â†’ `toolbar.backgroundColor`
+- `--upmade-selection-box-border-color` â†’ `selection.boxBorderColor`
 
 ## Category Detection
 
@@ -78,10 +78,10 @@ The generator groups variables by matching known category prefixes (longest matc
 
 ## How Themes Are Applied
 
-1. `UpdrawThemeManager` holds a registry of `UpdrawTheme` objects
+1. `UpmadeThemeManager` holds a registry of `UpmadeTheme` objects
 2. `ThemeHelper.flattenThemeToVariables(theme)` converts the nested theme object to a flat `Record<string, string>` of CSS variable names â†’ values
 3. `ThemeHelper.applyVariablesToElement(vars, element)` writes them as inline styles on the host element
-4. Components read variables via `var(--updraw-*, fallback)` in their CSS
+4. Components read variables via `var(--upmade-*, fallback)` in their CSS
 
 ## ThemeAwareColor
 
@@ -91,17 +91,17 @@ For object properties that change with theme (e.g., object fill/border):
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 
 const color: ThemeAwareColor = {
-  light: 'var(--updraw-my-var)',
-  dark: 'var(--updraw-my-var)',
+  light: 'var(--upmade-my-var)',
+  dark: 'var(--upmade-my-var)',
 };
 ```
 
-Resolved at render time via `UpdrawColorHelper.resolveThemeColor(color, currentTheme)`.
+Resolved at render time via `UpmadeColorHelper.resolveThemeColor(color, currentTheme)`.
 
 ## Rules
 
 - Always provide a fallback in `var()` declarations
-- Prefix ALL custom properties with `--updraw-`
+- Prefix ALL custom properties with `--upmade-`
 - Never hardcode colors in components â€” always use CSS variables
 - Keep light and dark theme presets in sync (same keys)
 - When switching themes, remove variables applied by the previous theme that are absent from the next theme; partial custom themes must not inherit stale values

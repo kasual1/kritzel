@@ -7,11 +7,11 @@ export interface FontOption {
 }
 
 @Component({
-  tag: 'updraw-font-family',
-  styleUrl: 'updraw-font-family.css',
+  tag: 'upmade-font-family',
+  styleUrl: 'upmade-font-family.css',
   shadow: true,
 })
-export class UpdrawFontFamily {
+export class UpmadeFontFamily {
   @Prop() fontOptions: FontOption[] = [];
 
   @Prop({ mutable: true }) selectedFontFamily: string;
@@ -61,13 +61,13 @@ export class UpdrawFontFamily {
 
     return (
       <Host>
-        <updraw-dropdown
+        <upmade-dropdown
           options={dropdownOptions}
           value={this.selectedFontFamily}
           onValueChanged={this.handleDropdownValueChange}
           selectStyles={{ fontFamily: selectedFontFamily }}
         >
-        </updraw-dropdown>
+        </upmade-dropdown>
       </Host>
     );
   }

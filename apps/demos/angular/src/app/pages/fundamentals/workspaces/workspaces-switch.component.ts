@@ -5,17 +5,17 @@ import {
   signal,
 } from '@angular/core';
 import {
-  UpdrawEditor,
+  UpmadeEditor,
   ActiveWorkspaceChangeEvent,
-  UpdrawBaseObject,
-  UpdrawLine,
-  UpdrawPath,
-  UpdrawShape,
-  UpdrawWorkspace,
-  UpdrawSyncConfig,
+  UpmadeBaseObject,
+  UpmadeLine,
+  UpmadePath,
+  UpmadeShape,
+  UpmadeWorkspace,
+  UpmadeSyncConfig,
   InMemorySyncProvider,
   ShapeType,
-} from '@updraw/angular-editor';
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { InfoPanelComponent } from '../../../components/info-panel.component';
@@ -27,9 +27,9 @@ interface WorkspacePalette {
   accent: string;
 }
 
-function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
+function createWorkspaceObjects(palette: WorkspacePalette): UpmadeBaseObject[] {
   return [
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -39,7 +39,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
       strokeColor: { light: palette.stroke, dark: palette.stroke },
       strokeWidth: 3,
     }),
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -49,7 +49,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
       strokeColor: { light: palette.accent, dark: palette.accent },
       strokeWidth: 3,
     }),
-    new UpdrawLine({
+    new UpmadeLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -57,7 +57,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
       stroke: { light: palette.accent, dark: palette.accent },
       strokeWidth: 3,
     }),
-    new UpdrawPath({
+    new UpmadePath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -79,7 +79,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
 
 @Component({
   selector: 'app-workspaces-switch',
-  imports: [UpdrawEditor, InfoPanelComponent, ToolbarComponent],
+  imports: [UpmadeEditor, InfoPanelComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -93,7 +93,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
       }
     </app-toolbar>
     <div class="content">
-      <updraw-editor
+      <upmade-editor
         editorId="workspaces-switch"
         [theme]="'light'"
         [themes]="themes"
@@ -105,7 +105,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-      ></updraw-editor>
+      ></upmade-editor>
       <app-info-panel>
         <h3>Active Workspace</h3>
         <pre>{{ activeWorkspaceJson() }}</pre>
@@ -126,7 +126,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
         min-height: 0;
         position: relative;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
       }
       app-info-panel {
@@ -146,17 +146,17 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
 export class WorkspacesSwitchComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: UpdrawSyncConfig = {
+  syncConfig: UpmadeSyncConfig = {
     providers: [InMemorySyncProvider],
   };
 
-  workspaces = signal<UpdrawWorkspace[]>([
-    new UpdrawWorkspace({ id: 'coral', name: 'Coral', objects: createWorkspaceObjects({ fill: '#fce4ec', stroke: '#c62828', accent: '#ff9800' }) }),
-    new UpdrawWorkspace({ id: 'ocean', name: 'Ocean', objects: createWorkspaceObjects({ fill: '#e3f2fd', stroke: '#1565c0', accent: '#00bcd4' }) }),
-    new UpdrawWorkspace({ id: 'violet', name: 'Violet', objects: createWorkspaceObjects({ fill: '#f3e5f5', stroke: '#6a1b9a', accent: '#e91e63' }) }),
-    new UpdrawWorkspace({ id: 'meadow', name: 'Meadow', objects: createWorkspaceObjects({ fill: '#e8f5e9', stroke: '#2e7d32', accent: '#8bc34a' }) }),
-    new UpdrawWorkspace({ id: 'amber', name: 'Amber', objects: createWorkspaceObjects({ fill: '#fff3e0', stroke: '#ef6c00', accent: '#795548' }) }),
-    new UpdrawWorkspace({ id: 'lagoon', name: 'Lagoon', objects: createWorkspaceObjects({ fill: '#e0f7fa', stroke: '#00838f', accent: '#3f51b5' }) }),
+  workspaces = signal<UpmadeWorkspace[]>([
+    new UpmadeWorkspace({ id: 'coral', name: 'Coral', objects: createWorkspaceObjects({ fill: '#fce4ec', stroke: '#c62828', accent: '#ff9800' }) }),
+    new UpmadeWorkspace({ id: 'ocean', name: 'Ocean', objects: createWorkspaceObjects({ fill: '#e3f2fd', stroke: '#1565c0', accent: '#00bcd4' }) }),
+    new UpmadeWorkspace({ id: 'violet', name: 'Violet', objects: createWorkspaceObjects({ fill: '#f3e5f5', stroke: '#6a1b9a', accent: '#e91e63' }) }),
+    new UpmadeWorkspace({ id: 'meadow', name: 'Meadow', objects: createWorkspaceObjects({ fill: '#e8f5e9', stroke: '#2e7d32', accent: '#8bc34a' }) }),
+    new UpmadeWorkspace({ id: 'amber', name: 'Amber', objects: createWorkspaceObjects({ fill: '#fff3e0', stroke: '#ef6c00', accent: '#795548' }) }),
+    new UpmadeWorkspace({ id: 'lagoon', name: 'Lagoon', objects: createWorkspaceObjects({ fill: '#e0f7fa', stroke: '#00838f', accent: '#3f51b5' }) }),
   ]);
   activeWorkspaceId = signal<string | undefined>('coral');
   activeWorkspace = computed(
@@ -182,7 +182,7 @@ export class WorkspacesSwitchComponent {
     this.activeWorkspaceId.set(event.detail.id);
   }
 
-  switchTo(workspace: UpdrawWorkspace) {
+  switchTo(workspace: UpmadeWorkspace) {
     this.activeWorkspaceId.set(workspace.id);
   }
 }

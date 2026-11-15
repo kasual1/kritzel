@@ -1,4 +1,4 @@
-# updraw-watermark
+# upmade-watermark
 
 
 
@@ -7,18 +7,18 @@
 
 ## Overview
 
-"Powered by Updraw" watermark shown in the bottom-right corner of the engine.
+"Powered by Upmade" watermark shown in the bottom-right corner of the engine.
 
 Rendered inside the engine's Shadow DOM unless the engine's
-`isWatermarkVisible` prop is set to false. The badge links to the Updraw
+`isWatermarkVisible` prop is set to false. The badge links to the Upmade
 website.
 
 ## Properties
 
 | Property            | Attribute | Description                                                                                                                                                                           | Type         | Default     |
 | ------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ----------- |
-| `core` _(required)_ | --        | The core instance used to resolve localized terms.                                                                                                                                    | `UpdrawCore` | `undefined` |
-| `label`             | `label`   | Resolved "Powered by Updraw" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided. | `string`     | `undefined` |
+| `core` _(required)_ | --        | The core instance used to resolve localized terms.                                                                                                                                    | `UpmadeCore` | `undefined` |
+| `label`             | `label`   | Resolved "Powered by Upmade" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided. | `string`     | `undefined` |
 
 
 ## Shadow Parts
@@ -32,13 +32,13 @@ website.
 
 ### Used by
 
- - [updraw-engine](../updraw-engine)
+ - [upmade-engine](../upmade-engine)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-engine --> updraw-watermark
-  style updraw-watermark fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-engine --> upmade-watermark
+  style upmade-watermark fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

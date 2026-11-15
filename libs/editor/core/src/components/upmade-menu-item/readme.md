@@ -1,4 +1,4 @@
-# updraw-menu-item
+# upmade-menu-item
 
 
 
@@ -9,39 +9,39 @@
 
 | Property | Attribute | Description | Type                   | Default     |
 | -------- | --------- | ----------- | ---------------------- | ----------- |
-| `item`   | --        |             | `IUpdrawMenuItem<any>` | `undefined` |
-| `parent` | --        |             | `IUpdrawMenuItem<any>` | `null`      |
+| `item`   | --        |             | `IUpmadeMenuItem<any>` | `undefined` |
+| `parent` | --        |             | `IUpmadeMenuItem<any>` | `null`      |
 
 
 ## Events
 
 | Event                 | Description | Type                                               |
 | --------------------- | ----------- | -------------------------------------------------- |
-| `itemCancel`          |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
-| `itemCloseChildMenu`  |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
-| `itemSave`            |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
-| `itemSelect`          |             | `CustomEvent<IUpdrawMenuItemSelectEvent>`          |
-| `itemToggleChildMenu` |             | `CustomEvent<IUpdrawMenuItemToggleChildMenuEvent>` |
+| `itemCancel`          |             | `CustomEvent<IUpmadeMenuItem<any>>`                |
+| `itemCloseChildMenu`  |             | `CustomEvent<IUpmadeMenuItem<any>>`                |
+| `itemSave`            |             | `CustomEvent<IUpmadeMenuItem<any>>`                |
+| `itemSelect`          |             | `CustomEvent<IUpmadeMenuItemSelectEvent>`          |
+| `itemToggleChildMenu` |             | `CustomEvent<IUpmadeMenuItemToggleChildMenuEvent>` |
 
 
 ## Dependencies
 
 ### Used by
 
- - [updraw-menu](../updraw-menu)
+ - [upmade-menu](../upmade-menu)
 
 ### Depends on
 
-- updraw-icon
-- [updraw-portal](../updraw-portal)
+- upmade-icon
+- [upmade-portal](../upmade-portal)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-menu-item --> updraw-icon
-  updraw-menu-item --> updraw-portal
-  updraw-menu --> updraw-menu-item
-  style updraw-menu-item fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-menu-item --> upmade-icon
+  upmade-menu-item --> upmade-portal
+  upmade-menu --> upmade-menu-item
+  style upmade-menu-item fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

@@ -1,4 +1,4 @@
-# updraw-button
+# upmade-button
 
 
 
@@ -32,15 +32,15 @@
 
 ### Used by
 
- - [updraw-current-user-dialog](../updraw-current-user-dialog)
- - [updraw-editor](../updraw-editor)
+ - [upmade-current-user-dialog](../upmade-current-user-dialog)
+ - [upmade-editor](../upmade-editor)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-current-user-dialog --> updraw-button
-  updraw-editor --> updraw-button
-  style updraw-button fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-current-user-dialog --> upmade-button
+  upmade-editor --> upmade-button
+  style upmade-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

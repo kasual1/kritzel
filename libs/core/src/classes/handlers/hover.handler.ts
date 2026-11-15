@@ -1,18 +1,18 @@
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawBaseHandler } from './base.handler';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeBaseHandler } from './base.handler';
 
 /**
- * Handles hover interactions on the Updraw canvas.
+ * Handles hover interactions on the Upmade canvas.
  * Detects when the pointer moves over canvas objects and updates their hover state accordingly.
  * Currently only processes mouse input, with placeholder support for touch and pen devices.
  */
-export class UpdrawHoverHandler extends UpdrawBaseHandler {
+export class UpmadeHoverHandler extends UpmadeBaseHandler {
 
   /**
    * Creates a new instance of the hover handler.
-   * @param core - The UpdrawCore instance that provides access to canvas state and object detection.
+   * @param core - The UpmadeCore instance that provides access to canvas state and object detection.
    */
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     super(core);
   }
 

@@ -1,11 +1,11 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 
 @Component({
-  tag: 'updraw-font-size',
-  styleUrl: 'updraw-font-size.css',
+  tag: 'upmade-font-size',
+  styleUrl: 'upmade-font-size.css',
   shadow: true,
 })
-export class UpdrawFontSize {
+export class UpmadeFontSize {
   @Prop() sizes: number[] = [8, 10, 12, 16, 20, 24];
   @Prop({ mutable: true }) selectedSize: number | null = null;
   @Prop() fontFamily: string = 'Arial';
@@ -25,7 +25,7 @@ export class UpdrawFontSize {
   }
 
   render() {
-    const color = 'var(--updraw-global-text-primary)';
+    const color = 'var(--upmade-global-text-primary)';
     const sizes = this.sizes ?? [];
 
     return (
@@ -40,7 +40,7 @@ export class UpdrawFontSize {
             onClick={() => this.handleSizeClick(size)}
             onKeyDown={event => this.handleKeyDown(event, size)}
           >
-            <updraw-font fontFamily={this.fontFamily} size={size} color={color}></updraw-font>
+            <upmade-font fontFamily={this.fontFamily} size={size} color={color}></upmade-font>
           </div>
         ))}
       </Host>

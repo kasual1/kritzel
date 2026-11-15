@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
 import {
-  UpdrawAgent,
-  UpdrawAgentOptions,
-  UpdrawEditor,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeAgent,
+  UpmadeAgentOptions,
+  UpmadeEditor,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -15,7 +15,7 @@ const WRITER = 'writer';
 
 @Component({
   selector: 'app-agents-basic',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -28,7 +28,7 @@ const WRITER = 'writer';
       }
     </app-toolbar>
     <div class="editor-wrap">
-      <updraw-editor
+      <upmade-editor
         editorId="agents-basic"
         [theme]="'light'"
         [themes]="themes"
@@ -38,7 +38,7 @@ const WRITER = 'writer';
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (isReady)="addAgents()"
-      ></updraw-editor>
+      ></upmade-editor>
     </div>
   `,
   styles: [
@@ -57,19 +57,19 @@ const WRITER = 'writer';
   ],
 })
 export class AgentsBasicComponent {
-  editor = viewChild(UpdrawEditor);
+  editor = viewChild(UpmadeEditor);
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
   isRunning = signal(false);
 
   message = signal('');
 
-  private planner: UpdrawAgent | null = null;
+  private planner: UpmadeAgent | null = null;
 
-  private writer: UpdrawAgent | null = null;
+  private writer: UpmadeAgent | null = null;
 
   async addAgents(): Promise<void> {
     const editor = this.editor();
@@ -139,13 +139,13 @@ export class AgentsBasicComponent {
     this.message.set('Drag the object - the Planner cursor follows it.');
   }
 
-  private createAgent(options: UpdrawAgentOptions): UpdrawAgent {
-    const agent = new UpdrawAgent(options);
+  private createAgent(options: UpmadeAgentOptions): UpmadeAgent {
+    const agent = new UpmadeAgent(options);
     agent.on('detached', ({ reason }) => this.message.set(`"${agent.id}" detached (${reason}).`));
     return agent;
   }
 
-  private async ensureAgents(): Promise<{ planner: UpdrawAgent; writer: UpdrawAgent }> {
+  private async ensureAgents(): Promise<{ planner: UpmadeAgent; writer: UpmadeAgent }> {
     if (!this.planner?.isAdded || !this.writer?.isAdded) {
       await this.addAgents();
     }
@@ -153,7 +153,7 @@ export class AgentsBasicComponent {
   }
 
   private async getShapeIds(): Promise<string[]> {
-    const shapes = (await this.editor()?.findObjects(obj => obj.__class__ === 'UpdrawShape')) ?? [];
+    const shapes = (await this.editor()?.findObjects(obj => obj.__class__ === 'UpmadeShape')) ?? [];
     return shapes.map(shape => shape.id);
   }
 }

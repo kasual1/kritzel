@@ -181,7 +181,7 @@ test.describe('Ordering', () => {
     const getZIndices = async (editorPage: EditorPage) => {
       const allObjects = await editorPage.getAllObjects<any>();
       const zIndexOf = (id: string) => allObjects.find((o: any) => o.id === id).zIndex;
-      const group = allObjects.find((o: any) => o.__class__ === 'UpdrawGroup');
+      const group = allObjects.find((o: any) => o.__class__ === 'UpmadeGroup');
       return { zIndexOf, group };
     };
 

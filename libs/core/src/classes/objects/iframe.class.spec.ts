@@ -1,8 +1,8 @@
-import { UpdrawIframeObject, UpdrawIframeObjectLifecycleContext } from './iframe.class';
+import { UpmadeIframeObject, UpmadeIframeObjectLifecycleContext } from './iframe.class';
 import { createIframeElementBridgeScript, IFRAME_ELEMENT_MESSAGES } from './iframe-element-bridge.script';
 import { ObjectHelper } from '../../helpers/object.helper';
 
-describe('UpdrawIframeObject', () => {
+describe('UpmadeIframeObject', () => {
   const createCore = () => ({
     store: {
       state: { activeWorkspace: { id: 'workspace-1' }, scale: 2 },
@@ -13,10 +13,10 @@ describe('UpdrawIframeObject', () => {
   }) as any;
 
   it('initializes serializable iframe content and validates sandbox tokens', () => {
-    const object = new UpdrawIframeObject({
+    const object = new UpmadeIframeObject({
       html: '<main>Test</main>',
       css: 'main { color: red; }',
-      script: 'updraw.setState({ ready: true });',
+      script: 'upmade.setState({ ready: true });',
       state: { ready: false },
       title: 'Test frame',
       sandbox: ['allow-scripts', 'allow-forms', 'invalid-token', 'allow-scripts'],
@@ -38,7 +38,7 @@ describe('UpdrawIframeObject', () => {
 
   it('creates an object bound to the current core context', () => {
     const core = createCore();
-    const object = UpdrawIframeObject.create(core, { width: 100, height: 80 });
+    const object = UpmadeIframeObject.create(core, { width: 100, height: 80 });
 
     expect(object._core).toBe(core);
     expect(object.workspaceId).toBe('workspace-1');
@@ -49,7 +49,7 @@ describe('UpdrawIframeObject', () => {
 
   it('mounts srcdoc once and state updates do not reload the document', () => {
     const core = createCore();
-    const object = UpdrawIframeObject.create(core, {
+    const object = UpmadeIframeObject.create(core, {
       html: '<button>Run</button>',
       state: { count: 0 },
     });
@@ -62,7 +62,7 @@ describe('UpdrawIframeObject', () => {
     expect(iframe.getAttribute('sandbox')).toBe('allow-scripts');
     expect(initialSource).toContain('<button>Run</button>');
     expect(initialSource).toContain('"count":0');
-    expect(initialSource).toContain('--updraw-iframe-default-cursor: auto');
+    expect(initialSource).toContain('--upmade-iframe-default-cursor: auto');
 
     object.setState({ count: 1 });
 
@@ -71,40 +71,40 @@ describe('UpdrawIframeObject', () => {
     expect(core.store.objects.update).toHaveBeenCalledWith(object);
   });
 
-  it('uses separate Updraw cursors for iframe content and clickable controls', () => {
-    const object = new UpdrawIframeObject({ html: '<button>Run</button>' });
+  it('uses separate Upmade cursors for iframe content and clickable controls', () => {
+    const object = new UpmadeIframeObject({ html: '<button>Run</button>' });
     const iframe = document.createElement('iframe');
     const getComputedStyle = jest.spyOn(globalThis, 'getComputedStyle').mockReturnValue({
-      getPropertyValue: (property: string) => property === '--updraw-global-default-cursor'
+      getPropertyValue: (property: string) => property === '--upmade-global-default-cursor'
         ? 'url(default-cursor) 4 4, auto'
         : 'url(pointer-cursor) 12 12, auto',
     } as CSSStyleDeclaration);
 
     object.mount(iframe);
 
-    expect(iframe.srcdoc).toContain('--updraw-iframe-default-cursor: url(default-cursor) 4 4, auto');
-    expect(iframe.srcdoc).toContain('--updraw-iframe-pointer-cursor: url(pointer-cursor) 12 12, auto');
+    expect(iframe.srcdoc).toContain('--upmade-iframe-default-cursor: url(default-cursor) 4 4, auto');
+    expect(iframe.srcdoc).toContain('--upmade-iframe-pointer-cursor: url(pointer-cursor) 12 12, auto');
     getComputedStyle.mockRestore();
   });
 
   it('keeps the runtime API of content saved before the rename working', () => {
-    const object = new UpdrawIframeObject({ html: '<button data-kritzel-id="run">Run</button>' });
+    const object = new UpmadeIframeObject({ html: '<button data-kritzel-id="run">Run</button>' });
     const iframe = document.createElement('iframe');
 
     object.mount(iframe);
 
     // Deprecated aliases: the global, the state event and the cursor variables.
-    expect(iframe.srcdoc).toContain('globalThis.kritzel = updraw;');
-    expect(iframe.srcdoc).toContain("new CustomEvent('updrawstatechange'");
+    expect(iframe.srcdoc).toContain('globalThis.kritzel = upmade;');
+    expect(iframe.srcdoc).toContain("new CustomEvent('upmadestatechange'");
     expect(iframe.srcdoc).toContain("new CustomEvent('kritzelstatechange'");
-    expect(iframe.srcdoc).toContain('--kritzel-iframe-default-cursor: var(--updraw-iframe-default-cursor);');
-    expect(iframe.srcdoc).toContain('--kritzel-iframe-pointer-cursor: var(--updraw-iframe-pointer-cursor);');
+    expect(iframe.srcdoc).toContain('--kritzel-iframe-default-cursor: var(--upmade-iframe-default-cursor);');
+    expect(iframe.srcdoc).toContain('--kritzel-iframe-pointer-cursor: var(--upmade-iframe-pointer-cursor);');
     // Stable element ids: the current attribute first, then the legacy one.
-    expect(iframe.srcdoc).toContain('const ID_ATTRIBUTES = ["data-updraw-id","data-kritzel-id"];');
+    expect(iframe.srcdoc).toContain('const ID_ATTRIBUTES = ["data-upmade-id","data-kritzel-id"];');
   });
 
   it('reloads srcdoc when content changes', () => {
-    const object = UpdrawIframeObject.create(createCore(), { html: '<p>Before</p>' });
+    const object = UpmadeIframeObject.create(createCore(), { html: '<p>Before</p>' });
     const iframe = document.createElement('iframe');
     object.mount(iframe);
     const initialSource = iframe.srcdoc;
@@ -117,7 +117,7 @@ describe('UpdrawIframeObject', () => {
   });
 
   it('keeps its document when loading is toggled, the engine draws the loading placeholder over it', () => {
-    const object = new UpdrawIframeObject({
+    const object = new UpmadeIframeObject({
       content: { html: '<main>Ready</main>', css: 'main { color: red; }', script: '' },
       isLoading: true,
     });
@@ -133,7 +133,7 @@ describe('UpdrawIframeObject', () => {
   });
 
   it('drops the legacy loadingContent of documents saved before it was removed', () => {
-    const object = new UpdrawIframeObject();
+    const object = new UpmadeIframeObject();
     object.deserialize({
       content: { html: '<main>Ready</main>', css: '', script: '' },
       loadingContent: { html: '<main>Loading</main>', css: '', script: '' },
@@ -146,7 +146,7 @@ describe('UpdrawIframeObject', () => {
   });
 
   it('escapes serialized state and closing script tags', () => {
-    const object = new UpdrawIframeObject({
+    const object = new UpmadeIframeObject({
       state: { value: '</script><script>bad()</script>' },
       script: 'const value = "</script>";',
     });
@@ -161,40 +161,40 @@ describe('UpdrawIframeObject', () => {
 
   it('writes its content security policy first into the head and keeps it through serialize, copy and clone', () => {
     const policy = "default-src 'none'; script-src 'unsafe-inline'";
-    const object = UpdrawIframeObject.create(createCore(), { html: '<p>Hi</p>', contentSecurityPolicy: policy });
+    const object = UpmadeIframeObject.create(createCore(), { html: '<p>Hi</p>', contentSecurityPolicy: policy });
     const iframe = document.createElement('iframe');
 
     object.mount(iframe);
 
     const head = iframe.srcdoc.slice(iframe.srcdoc.indexOf('<head>'), iframe.srcdoc.indexOf('<style>'));
     expect(head).toContain(`<meta http-equiv="Content-Security-Policy" content="${policy}">`);
-    expect(new UpdrawIframeObject().deserialize<UpdrawIframeObject>(object.serialize()).contentSecurityPolicy).toBe(policy);
+    expect(new UpmadeIframeObject().deserialize<UpmadeIframeObject>(object.serialize()).contentSecurityPolicy).toBe(policy);
     expect(object.copy().contentSecurityPolicy).toBe(policy);
     expect(object.clone().contentSecurityPolicy).toBe(policy);
   });
 
   it('has no content security policy by default and escapes one that would break out of the attribute', () => {
-    const plain = UpdrawIframeObject.create(createCore(), { html: '<p>Hi</p>' });
+    const plain = UpmadeIframeObject.create(createCore(), { html: '<p>Hi</p>' });
     const plainFrame = document.createElement('iframe');
     plain.mount(plainFrame);
     expect(plainFrame.srcdoc).not.toContain('Content-Security-Policy');
 
-    const hostile = UpdrawIframeObject.create(createCore(), { contentSecurityPolicy: '"><script>alert(1)</script>' });
+    const hostile = UpmadeIframeObject.create(createCore(), { contentSecurityPolicy: '"><script>alert(1)</script>' });
     const hostileFrame = document.createElement('iframe');
     hostile.mount(hostileFrame);
     expect(hostileFrame.srcdoc).toContain('content="&quot;>&lt;script>alert(1)&lt;/script>"');
   });
 
   it('serializes lifecycle state and revives without transient mounting state', () => {
-    class StatefulIframeObject extends UpdrawIframeObject {
-      protected override onSerialize(context: UpdrawIframeObjectLifecycleContext): Record<string, unknown> {
+    class StatefulIframeObject extends UpmadeIframeObject {
+      protected override onSerialize(context: UpmadeIframeObjectLifecycleContext): Record<string, unknown> {
         return { ...context.state, serialized: true };
       }
     }
 
     const object = new StatefulIframeObject({ html: '<p>Persisted</p>', state: { count: 2 } });
     const serialized = object.serialize();
-    const revived = new UpdrawIframeObject().deserialize<UpdrawIframeObject>(serialized);
+    const revived = new UpmadeIframeObject().deserialize<UpmadeIframeObject>(serialized);
 
     expect(serialized.state).toEqual({ count: 2, serialized: true });
     expect(serialized).not.toHaveProperty('messageListener');
@@ -204,7 +204,7 @@ describe('UpdrawIframeObject', () => {
   });
 
   it('serializes while mounted without cloning the runtime listener', () => {
-    const object = new UpdrawIframeObject({ state: { count: 2 } });
+    const object = new UpmadeIframeObject({ state: { count: 2 } });
     object.mount(document.createElement('iframe'));
 
     expect(() => object.serialize()).not.toThrow();
@@ -212,14 +212,14 @@ describe('UpdrawIframeObject', () => {
   });
 
   it('adopts a mounted iframe without reloading its document', () => {
-    const previous = new UpdrawIframeObject({ html: '<p>Mounted</p>', state: { count: 1 } });
+    const previous = new UpmadeIframeObject({ html: '<p>Mounted</p>', state: { count: 1 } });
     const iframe = document.createElement('iframe');
     previous.mount(iframe);
     previous.setIsInteractive(true);
     previous.isSelected = true;
     const source = iframe.srcdoc;
 
-    const revived = new UpdrawIframeObject({ html: '<p>Mounted</p>', state: { count: 2 } });
+    const revived = new UpmadeIframeObject({ html: '<p>Mounted</p>', state: { count: 2 } });
     revived.adoptTransientStateFrom(previous);
 
     expect(revived.isMounted).toBe(true);
@@ -231,7 +231,7 @@ describe('UpdrawIframeObject', () => {
   });
 
   it('reports its document as loaded once the iframe has loaded its first document', () => {
-    const object = new UpdrawIframeObject({ html: '<p>Loaded</p>' });
+    const object = new UpmadeIframeObject({ html: '<p>Loaded</p>' });
     const iframe = document.createElement('iframe');
     const rerender = jest.fn();
     (object as any)._core = { rerender };
@@ -249,12 +249,12 @@ describe('UpdrawIframeObject', () => {
   });
 
   it('keeps the loaded document when a synced update replaces the object', () => {
-    const previous = new UpdrawIframeObject({ html: '<p>Loaded</p>' });
+    const previous = new UpmadeIframeObject({ html: '<p>Loaded</p>' });
     const iframe = document.createElement('iframe');
     previous.mount(iframe);
     iframe.dispatchEvent(new Event('load'));
 
-    const revived = new UpdrawIframeObject({ html: '<p>Loaded</p>' });
+    const revived = new UpmadeIframeObject({ html: '<p>Loaded</p>' });
     revived.adoptTransientStateFrom(previous);
 
     expect(revived.isDocumentLoaded).toBe(true);
@@ -266,7 +266,7 @@ describe('UpdrawIframeObject', () => {
       configurable: true,
       value: MouseEvent,
     });
-    const object = new UpdrawIframeObject();
+    const object = new UpmadeIframeObject();
     const iframe = document.createElement('iframe');
     const dispatchEvent = jest.spyOn(iframe, 'dispatchEvent');
     let iframeLeft = 100;
@@ -289,7 +289,7 @@ describe('UpdrawIframeObject', () => {
 
     const dispatchPointerMessage = (eventType: 'pointerdown' | 'pointermove', clientX: number, screenX: number) => {
       (object as any).dispatchPointerMessage({
-        type: 'updraw-iframe-pointer',
+        type: 'upmade-iframe-pointer',
         eventType,
         pointerId: 1,
         pointerType: 'mouse',
@@ -323,8 +323,8 @@ describe('UpdrawIframeObject', () => {
     });
   });
 
-  it('bridges the iframe contextmenu event so Updraw opens its own context menu', () => {
-    const object = new UpdrawIframeObject();
+  it('bridges the iframe contextmenu event so Upmade opens its own context menu', () => {
+    const object = new UpmadeIframeObject();
     const iframe = document.createElement('iframe');
     const dispatchEvent = jest.spyOn(iframe, 'dispatchEvent');
     jest.spyOn(iframe, 'getBoundingClientRect').mockReturnValue({
@@ -341,10 +341,10 @@ describe('UpdrawIframeObject', () => {
     object.mount(iframe);
 
     expect(iframe.srcdoc).toContain("addEventListener('contextmenu'");
-    expect(iframe.srcdoc).toContain('updraw-iframe-contextmenu');
+    expect(iframe.srcdoc).toContain('upmade-iframe-contextmenu');
 
     (object as any).dispatchContextMenuMessage({
-      type: 'updraw-iframe-contextmenu',
+      type: 'upmade-iframe-contextmenu',
       clientX: 30,
       clientY: 20,
       button: 2,
@@ -362,8 +362,8 @@ describe('UpdrawIframeObject', () => {
   });
 
   it('captures unmount state and removes runtime references', () => {
-    class StatefulIframeObject extends UpdrawIframeObject {
-      protected override onUnmount(context: UpdrawIframeObjectLifecycleContext): Record<string, unknown> {
+    class StatefulIframeObject extends UpmadeIframeObject {
+      protected override onUnmount(context: UpmadeIframeObjectLifecycleContext): Record<string, unknown> {
         return { ...context.state, unmounted: true };
       }
     }
@@ -383,7 +383,7 @@ describe('UpdrawIframeObject', () => {
   });
 
   it('copies mutable state without sharing runtime resources', () => {
-    const object = new UpdrawIframeObject({ state: { nested: { count: 1 } }, sandbox: ['allow-scripts', 'allow-forms'] });
+    const object = new UpmadeIframeObject({ state: { nested: { count: 1 } }, sandbox: ['allow-scripts', 'allow-forms'] });
     const copy = object.copy();
 
     (copy.state.nested as { count: number }).count = 2;
@@ -398,7 +398,7 @@ describe('UpdrawIframeObject', () => {
   describe('element bridge', () => {
     const element = { selector: '#run', id: 'run', tagName: 'button', classList: [], attributes: {}, text: 'Run', rect: { x: 4, y: 6, width: 20, height: 10 } };
 
-    const mountWithWindow = (object: UpdrawIframeObject) => {
+    const mountWithWindow = (object: UpmadeIframeObject) => {
       const iframe = document.createElement('iframe');
       const contentWindow = { postMessage: jest.fn() };
       Object.defineProperty(iframe, 'contentWindow', { configurable: true, value: contentWindow });
@@ -419,7 +419,7 @@ describe('UpdrawIframeObject', () => {
     };
 
     it('runs the bridge in its own script in the head, before any script of the content', () => {
-      const object = new UpdrawIframeObject({ html: '<script>const inline = 1;</script>', script: 'const marker = 1;' });
+      const object = new UpmadeIframeObject({ html: '<script>const inline = 1;</script>', script: 'const marker = 1;' });
       const iframe = document.createElement('iframe');
       object.mount(iframe);
 
@@ -429,7 +429,7 @@ describe('UpdrawIframeObject', () => {
       expect(bridgeIndex).toBeLessThan(iframe.srcdoc.indexOf('const inline = 1;'));
       expect(bridgeIndex).toBeLessThan(iframe.srcdoc.indexOf('const marker = 1;'));
       expect(iframe.srcdoc.slice(bridgeIndex, iframe.srcdoc.indexOf('</head>'))).toContain('</script>');
-      expect(iframe.srcdoc).toContain('html[data-updraw-picking]');
+      expect(iframe.srcdoc).toContain('html[data-upmade-picking]');
     });
 
     it('generates a bridge script that parses and can be inlined', () => {
@@ -441,13 +441,13 @@ describe('UpdrawIframeObject', () => {
     });
 
     it('is recognized as an element-aware object', () => {
-      expect(ObjectHelper.isUpdrawElementAwareObject(new UpdrawIframeObject())).toBe(true);
-      expect(ObjectHelper.isUpdrawElementAwareObject({ setElementPicking: () => undefined })).toBe(false);
-      expect(ObjectHelper.isUpdrawElementAwareObject(null)).toBe(false);
+      expect(ObjectHelper.isUpmadeElementAwareObject(new UpmadeIframeObject())).toBe(true);
+      expect(ObjectHelper.isUpmadeElementAwareObject({ setElementPicking: () => undefined })).toBe(false);
+      expect(ObjectHelper.isUpmadeElementAwareObject(null)).toBe(false);
     });
 
     it('sends picking and highlights once the page is ready', () => {
-      const object = UpdrawIframeObject.create(createCore());
+      const object = UpmadeIframeObject.create(createCore());
       const { receive, syncs } = mountWithWindow(object);
       object.setElementPicking(true, { selector: 'button' });
       object.setElementHighlights([{ selector: '#run', label: 'Run' }]);
@@ -461,7 +461,7 @@ describe('UpdrawIframeObject', () => {
     });
 
     it('waits for a new ready after the document is reloaded', () => {
-      const object = UpdrawIframeObject.create(createCore());
+      const object = UpmadeIframeObject.create(createCore());
       const { receive, syncs } = mountWithWindow(object);
       receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
       object.setContent({ html: '<p>New</p>' });
@@ -476,7 +476,7 @@ describe('UpdrawIframeObject', () => {
 
     it('emits hovers, clicks and picks through the engine with the object id', () => {
       const core = createEngineCore();
-      const object = UpdrawIframeObject.create(core);
+      const object = UpmadeIframeObject.create(core);
       const { receive } = mountWithWindow(object);
       object.setIsInteractive(true);
       receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
@@ -493,7 +493,7 @@ describe('UpdrawIframeObject', () => {
 
     it('ignores element messages from other windows', () => {
       const core = createEngineCore();
-      const object = UpdrawIframeObject.create(core);
+      const object = UpmadeIframeObject.create(core);
       mountWithWindow(object);
       object.setIsInteractive(true);
 
@@ -504,7 +504,7 @@ describe('UpdrawIframeObject', () => {
 
     it('reports that the hover ended when the object stops being interactive or unmounts', () => {
       const core = createEngineCore();
-      const object = UpdrawIframeObject.create(core);
+      const object = UpmadeIframeObject.create(core);
       const { receive } = mountWithWindow(object);
       object.setIsInteractive(true);
       receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element });
@@ -520,7 +520,7 @@ describe('UpdrawIframeObject', () => {
     });
 
     it('keeps element state transient: not serialized and not copied', () => {
-      const object = new UpdrawIframeObject();
+      const object = new UpmadeIframeObject();
       object.setElementHighlights([{ selector: 'p' }]);
       object.setElementPicking(true);
       object.trackElement('p');
@@ -536,7 +536,7 @@ describe('UpdrawIframeObject', () => {
 
     it('hands element state to the instance that replaces it after a synced update', () => {
       const core = createEngineCore();
-      const previous = UpdrawIframeObject.create(core);
+      const previous = UpmadeIframeObject.create(core);
       const { iframe, receive, syncs } = mountWithWindow(previous);
       receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
       previous.setIsInteractive(true);
@@ -544,7 +544,7 @@ describe('UpdrawIframeObject', () => {
       previous.trackElement('#run');
       receive({ type: IFRAME_ELEMENT_MESSAGES.rects, rects: { '#run': element.rect } });
 
-      const revived = new UpdrawIframeObject().deserialize<UpdrawIframeObject>(previous.serialize());
+      const revived = new UpmadeIframeObject().deserialize<UpmadeIframeObject>(previous.serialize());
       revived._core = core;
       revived.adoptTransientStateFrom(previous);
 
@@ -561,14 +561,14 @@ describe('UpdrawIframeObject', () => {
     });
 
     it('converts content coordinates to the object space using scale and border', () => {
-      const object = new UpdrawIframeObject({ scale: 2 });
+      const object = new UpmadeIframeObject({ scale: 2 });
       object.borderWidth = 4;
 
       expect(object.contentToObjectLocal({ x: 10, y: 20 })).toEqual({ x: 7, y: 12 });
     });
 
     it('queries elements through the page', async () => {
-      const object = UpdrawIframeObject.create(createCore());
+      const object = UpmadeIframeObject.create(createCore());
       const { receive, contentWindow } = mountWithWindow(object);
       receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
 
@@ -577,8 +577,8 @@ describe('UpdrawIframeObject', () => {
       receive({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, elements: [element] });
 
       await expect(promise).resolves.toEqual([expect.objectContaining({ selector: '#run' })]);
-      await expect(new UpdrawIframeObject().queryElements('button')).rejects.toThrow('is not mounted');
-      await expect(new UpdrawIframeObject({ sandbox: ['allow-forms'] }).queryElements('button')).rejects.toThrow('without scripts');
+      await expect(new UpmadeIframeObject().queryElements('button')).rejects.toThrow('is not mounted');
+      await expect(new UpmadeIframeObject({ sandbox: ['allow-forms'] }).queryElements('button')).rejects.toThrow('without scripts');
     });
   });
 });

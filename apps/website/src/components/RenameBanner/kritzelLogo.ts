@@ -1,4 +1,4 @@
-// The Kritzel logo (the scribble), as it was before the rename to Updraw: the path of
+// The Kritzel logo (the scribble), as it was before the rename to Upmade: the path of
 // apps/website/static/img/logo_dark.svg at commit 1ecf9fd8~1. Only the rename banner shows it.
 // It was drawn filled and outlined in the same colour (1 unit), nonzero fill.
 export const KRITZEL_LOGO_VIEWBOX = "0 0 321.05759 277.97299";

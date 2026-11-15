@@ -1,4 +1,4 @@
-# updraw-dropdown
+# upmade-dropdown
 
 
 
@@ -35,19 +35,19 @@
 
 ### Used by
 
- - [updraw-brush-style](../updraw-brush-style)
- - [updraw-export](../updraw-export)
- - [updraw-font-family](../updraw-font-family)
- - [updraw-settings](../updraw-settings)
+ - [upmade-brush-style](../upmade-brush-style)
+ - [upmade-export](../upmade-export)
+ - [upmade-font-family](../upmade-font-family)
+ - [upmade-settings](../upmade-settings)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-brush-style --> updraw-dropdown
-  updraw-export --> updraw-dropdown
-  updraw-font-family --> updraw-dropdown
-  updraw-settings --> updraw-dropdown
-  style updraw-dropdown fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-brush-style --> upmade-dropdown
+  upmade-export --> upmade-dropdown
+  upmade-font-family --> upmade-dropdown
+  upmade-settings --> upmade-dropdown
+  style upmade-dropdown fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

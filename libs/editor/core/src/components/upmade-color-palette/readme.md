@@ -1,4 +1,4 @@
-# updraw-color-palette
+# upmade-color-palette
 
 
 
@@ -28,18 +28,18 @@
 
 ### Used by
 
- - [updraw-tool-config](../updraw-tool-config)
+ - [upmade-tool-config](../upmade-tool-config)
 
 ### Depends on
 
-- [updraw-color](../updraw-color)
+- [upmade-color](../upmade-color)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-color-palette --> updraw-color
-  updraw-tool-config --> updraw-color-palette
-  style updraw-color-palette fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-color-palette --> upmade-color
+  upmade-tool-config --> upmade-color-palette
+  style upmade-color-palette fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

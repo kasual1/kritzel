@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, effect, signal, ViewChild } from '@angular/core';
 import {
-  UpdrawBaseObject,
-  UpdrawChatBoxChip,
-  UpdrawChatSession,
-  UpdrawEditor,
-  UpdrawObjectTitlebarActionEvent,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeBaseObject,
+  UpmadeChatBoxChip,
+  UpmadeChatSession,
+  UpmadeEditor,
+  UpmadeObjectTitlebarActionEvent,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createBrowserTransport, type Credentials } from './browser-transport';
@@ -28,7 +28,7 @@ import { WelcomePanelComponent } from './welcome-panel.component';
 
 @Component({
   selector: 'app-generative-ui',
-  imports: [UpdrawEditor, UiPreviewComponent, WelcomePanelComponent],
+  imports: [UpmadeEditor, UiPreviewComponent, WelcomePanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   // The welcome guide takes its accent from the theme, like the editor's own controls.
   host: {
@@ -36,7 +36,7 @@ import { WelcomePanelComponent } from './welcome-panel.component';
     '[style.--gen-ui-accent-hover]': 'accentHoverColor',
   },
   template: `
-    <updraw-editor
+    <upmade-editor
       editorId="generative-ui"
       [theme]="'light'"
       [themes]="themes"
@@ -52,7 +52,7 @@ import { WelcomePanelComponent } from './welcome-panel.component';
       (objectsSelectionChange)="onSelectionChange($event)"
       (chatChipRemove)="onChipRemove($event)"
       (objectTitlebarAction)="onTitlebarAction($event)"
-    ></updraw-editor>
+    ></upmade-editor>
 
     <app-welcome-panel
       [isVisible]="!hasUis() && !isWorking()"
@@ -76,10 +76,10 @@ import { WelcomePanelComponent } from './welcome-panel.component';
       height: 100%;
       font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       /* UIs resize from their corners like frames in a design tool, without the corner squares. */
-      --updraw-selection-resize-handle-visibility: hidden;
+      --upmade-selection-resize-handle-visibility: hidden;
     }
 
-    updraw-editor {
+    upmade-editor {
       display: block;
       width: 100%;
       height: 100%;
@@ -87,12 +87,12 @@ import { WelcomePanelComponent } from './welcome-panel.component';
   `],
 })
 export class GenerativeUiComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   readonly themes = [withUiFrames(angularThemeLight), withUiFrames(angularThemeDark)];
   readonly accentColor = angularThemeLight.global?.primaryColor;
   readonly accentHoverColor = angularThemeLight.global?.primaryHoverColor;
-  readonly workspaces = [new UpdrawWorkspace({ name: 'Generative UI', objects: [] })];
+  readonly workspaces = [new UpmadeWorkspace({ name: 'Generative UI', objects: [] })];
   readonly objectConfig = objectConfig;
   readonly objectTitlebar = objectTitlebar;
 
@@ -100,14 +100,14 @@ export class GenerativeUiComponent {
   readonly credentials = signal<Credentials | null>(null);
   // One session per mode, created once: choosing a mode binds its session to the editor.
   private readonly browser = createBrowserTransport();
-  private readonly sessions: Record<RequestMode, UpdrawChatSession> = {
+  private readonly sessions: Record<RequestMode, UpmadeChatSession> = {
     live: createGenerativeUiSession(this.browser.transport),
     mock: createGenerativeUiSession(createMockTransport()),
   };
   readonly mode = signal<RequestMode | null>(null);
   readonly keyError = signal('');
   readonly hasUis = signal(false);
-  readonly chips = signal<UpdrawChatBoxChip[]>([]);
+  readonly chips = signal<UpmadeChatBoxChip[]>([]);
   readonly preview = signal<{ title: string; document: string } | null>(null);
   readonly session = computed(() => {
     const mode = this.mode();
@@ -160,19 +160,19 @@ export class GenerativeUiComponent {
     this.keyError.set('');
   }
 
-  onObjectsChange(event: CustomEvent<UpdrawBaseObject[]>) {
+  onObjectsChange(event: CustomEvent<UpmadeBaseObject[]>) {
     this.hasUis.set(event.detail.some(isUi));
   }
 
-  onSelectionChange(event: CustomEvent<UpdrawBaseObject[]>) {
+  onSelectionChange(event: CustomEvent<UpmadeBaseObject[]>) {
     this.chips.set(getUiChips(event.detail));
   }
 
-  onChipRemove(event: CustomEvent<UpdrawChatBoxChip>) {
+  onChipRemove(event: CustomEvent<UpmadeChatBoxChip>) {
     this.chips.update(chips => chips.filter(chip => chip.id !== event.detail.id));
   }
 
-  async onTitlebarAction(event: CustomEvent<UpdrawObjectTitlebarActionEvent>) {
+  async onTitlebarAction(event: CustomEvent<UpmadeObjectTitlebarActionEvent>) {
     const { elementId, objectId } = event.detail;
     const ui = await this.editor.getObjectById(objectId);
     if (elementId === 'play' && ui && isUi(ui) && !ui.isLoading) {

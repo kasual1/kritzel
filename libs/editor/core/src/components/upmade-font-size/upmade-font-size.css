@@ -13,18 +13,18 @@
   width: 32px;
   height: 32px;
   border-radius: 4px;
-  cursor: var(--updraw-global-pointer-cursor, pointer);
+  cursor: var(--upmade-global-pointer-cursor, pointer);
   border: 2px solid transparent;
   box-sizing: border-box;
   border-radius: 50%;
 }
 
 .size-container:hover {
-  background-color: var(--updraw-font-size-hover-background-color, #ebebeb);
+  background-color: var(--upmade-font-size-hover-background-color, #ebebeb);
 }
 
 .size-container.selected {
-  border-color: var(--updraw-selection-border-color, #007AFF);
-  background-color: var(--updraw-font-size-selected-background-color, #e0e0e0);
+  border-color: var(--upmade-selection-border-color, #007AFF);
+  background-color: var(--upmade-font-size-selected-background-color, #e0e0e0);
 }
 

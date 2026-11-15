@@ -1,5 +1,5 @@
 ﻿import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
-import { ArrowHeadStyle, LineArrowConfig } from '@updraw/core';
+import { ArrowHeadStyle, LineArrowConfig } from '@upmade/core';
 
 export type LineEndingType = 'none' | ArrowHeadStyle;
 
@@ -9,11 +9,11 @@ export interface LineEndingsValue {
 }
 
 @Component({
-  tag: 'updraw-line-endings',
-  styleUrl: 'updraw-line-endings.css',
+  tag: 'upmade-line-endings',
+  styleUrl: 'upmade-line-endings.css',
   shadow: true,
 })
-export class UpdrawLineEndings {
+export class UpmadeLineEndings {
   /** Available ending styles */
   @Prop() styles: LineEndingType[] = ['none', 'triangle'];
 
@@ -70,7 +70,7 @@ export class UpdrawLineEndings {
   }
 
   private renderEndingIcon(type: LineEndingType, isStart: boolean) {
-    const color = 'var(--updraw-global-text-primary)';
+    const color = 'var(--upmade-global-text-primary)';
     if (type === 'none') {
       return (
         <svg viewBox="0 0 24 12" class="ending-icon">

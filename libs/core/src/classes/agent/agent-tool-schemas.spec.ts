@@ -1,6 +1,6 @@
-import { AGENT_TOOL_SPECS, agentToolInputSchema, type UpdrawJsonSchemaNode } from './agent-tool-schemas';
-import { UPDRAW_CANVAS_TOOLS } from './canvas-tool-definitions';
-import { bindCanvasTool, canvasToolSchema, canvasToolText, isCanvasToolOffered, type UpdrawCanvasToolEnv } from './canvas-tool';
+import { AGENT_TOOL_SPECS, agentToolInputSchema, type UpmadeJsonSchemaNode } from './agent-tool-schemas';
+import { UPMADE_CANVAS_TOOLS } from './canvas-tool-definitions';
+import { bindCanvasTool, canvasToolSchema, canvasToolText, isCanvasToolOffered, type UpmadeCanvasToolEnv } from './canvas-tool';
 import { AGENTIC_ACTION_EXECUTORS, getAgenticActionExecutor } from '../registries/agentic-action-executor.registry';
 import {
   AGENTIC_ANCHORS,
@@ -10,17 +10,17 @@ import {
 } from '../../helpers/agentic-validation.helper';
 import { AGENTIC_ANCHOR_FACTORS } from '../../helpers/agentic-geometry.helper';
 import { ShapeType } from '../../enums/shape-type.enum';
-import type { UpdrawAgentToolsOptions } from '../../interfaces/agent.interface';
-import type { UpdrawAgenticActionType } from '../../interfaces/agentic-action.interface';
+import type { UpmadeAgentToolsOptions } from '../../interfaces/agent.interface';
+import type { UpmadeAgenticActionType } from '../../interfaces/agentic-action.interface';
 
 const ALLOWED_KEYWORDS = new Set(['type', 'description', 'properties', 'required', 'items', 'enum', 'minItems', 'additionalProperties']);
 
 /** Every way a tool can be bound: both actor kinds, with the option values that change texts or schemas. */
-const ENVS: UpdrawCanvasToolEnv[] = (['agent', 'user'] as const).flatMap(kind =>
-  ([{ iframes: true }, { iframes: true, images: { urls: true } }] as UpdrawAgentToolsOptions[]).map(options => ({ kind, options })),
+const ENVS: UpmadeCanvasToolEnv[] = (['agent', 'user'] as const).flatMap(kind =>
+  ([{ iframes: true }, { iframes: true, images: { urls: true } }] as UpmadeAgentToolsOptions[]).map(options => ({ kind, options })),
 );
 
-function walk(node: UpdrawJsonSchemaNode, path: string, visit: (node: UpdrawJsonSchemaNode, path: string) => void): void {
+function walk(node: UpmadeJsonSchemaNode, path: string, visit: (node: UpmadeJsonSchemaNode, path: string) => void): void {
   visit(node, path);
   Object.entries(node.properties ?? {}).forEach(([key, child]) => walk(child, `${path}.${key}`, visit));
   if (node.items) {
@@ -40,7 +40,7 @@ const fakeActor = (kind: 'agent' | 'user') => ({
 });
 
 describe('agent tool schemas', () => {
-  const specs = Object.entries(AGENT_TOOL_SPECS).filter(([, spec]) => spec !== null) as [UpdrawAgenticActionType, NonNullable<(typeof AGENT_TOOL_SPECS)[UpdrawAgenticActionType]>][];
+  const specs = Object.entries(AGENT_TOOL_SPECS).filter(([, spec]) => spec !== null) as [UpmadeAgenticActionType, NonNullable<(typeof AGENT_TOOL_SPECS)[UpmadeAgenticActionType]>][];
 
   it('has a decision for every action type', () => {
     expect(Object.keys(AGENT_TOOL_SPECS).sort()).toEqual(Object.keys(AGENTIC_ACTION_EXECUTORS).sort());
@@ -48,7 +48,7 @@ describe('agent tool schemas', () => {
   });
 
   it('defines every tool once, with a unique snake_case name', () => {
-    const names = UPDRAW_CANVAS_TOOLS.map(definition => definition.name);
+    const names = UPMADE_CANVAS_TOOLS.map(definition => definition.name);
     names.forEach(name => expect(name).toMatch(/^[a-z][a-z0-9_]{0,63}$/));
     expect(new Set(names).size).toBe(names.length);
     expect(names).toEqual(
@@ -59,9 +59,9 @@ describe('agent tool schemas', () => {
 
   it('uses only portable keywords, closes every object and keeps required fields defined, in every environment', () => {
     for (const env of ENVS) {
-      for (const definition of UPDRAW_CANVAS_TOOLS) {
+      for (const definition of UPMADE_CANVAS_TOOLS) {
         expect(canvasToolText(definition.description, env)).toEqual(expect.any(String));
-        walk(canvasToolSchema(definition, env) as unknown as UpdrawJsonSchemaNode, `${definition.name} (${env.kind})`, (node, path) => {
+        walk(canvasToolSchema(definition, env) as unknown as UpmadeJsonSchemaNode, `${definition.name} (${env.kind})`, (node, path) => {
           Object.keys(node).forEach(key => expect({ path, key, allowed: ALLOWED_KEYWORDS.has(key) }).toEqual({ path, key, allowed: true }));
           if (node.type === 'object') {
             expect({ path, additionalProperties: node.additionalProperties }).toEqual({ path, additionalProperties: false });
@@ -73,8 +73,8 @@ describe('agent tool schemas', () => {
     }
   });
 
-  it.each(UPDRAW_CANVAS_TOOLS.map(definition => definition.name))('runs %s with its example wherever it is offered', async name => {
-    const definition = UPDRAW_CANVAS_TOOLS.find(candidate => candidate.name === name)!;
+  it.each(UPMADE_CANVAS_TOOLS.map(definition => definition.name))('runs %s with its example wherever it is offered', async name => {
+    const definition = UPMADE_CANVAS_TOOLS.find(candidate => candidate.name === name)!;
     for (const env of ENVS.filter(candidate => isCanvasToolOffered(definition, candidate))) {
       const actor = fakeActor(env.kind);
       const answer = JSON.parse(await bindCanvasTool(actor, definition, env.options).run(definition.example));

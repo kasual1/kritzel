@@ -1,24 +1,24 @@
 ﻿import { Component, Host, h, State, Event, EventEmitter, Method, Prop } from '@stencil/core';
-import { DropdownOption } from '../updraw-dropdown/updraw-dropdown';
-import { UpdrawPillTab } from '../updraw-pill-tabs/updraw-pill-tabs';
-import { UpdrawTermKey } from '@updraw/core';
+import { DropdownOption } from '../upmade-dropdown/upmade-dropdown';
+import { UpmadePillTab } from '../upmade-pill-tabs/upmade-pill-tabs';
+import { UpmadeTermKey } from '@upmade/core';
 
 type ExportTab = 'viewport' | 'workspace';
 type ViewportExportFormat = 'png' | 'svg';
 
 @Component({
-  tag: 'updraw-export',
-  styleUrl: 'updraw-export.css',
+  tag: 'upmade-export',
+  styleUrl: 'upmade-export.css',
   shadow: true,
 })
-export class UpdrawExport {
+export class UpmadeExport {
   /**
    * The name of the current workspace, used as default filename
    */
   @Prop() workspaceName: string = 'workspace';
 
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpmadeTermKey, string>> = {};
 
   @State() isDialogOpen: boolean = false;
   @State() previewUrl: string;
@@ -31,7 +31,7 @@ export class UpdrawExport {
   @Event() exportSvg: EventEmitter<void>;
   @Event() exportJson: EventEmitter<string>;
 
-  private get tabs(): UpdrawPillTab[] {
+  private get tabs(): UpmadePillTab[] {
     return [
       { id: 'viewport', label: this.terms['export.tabs.viewport'] ?? 'Export Viewport' },
       { id: 'workspace', label: this.terms['export.tabs.workspace'] ?? 'Export Workspace' },
@@ -99,21 +99,21 @@ export class UpdrawExport {
             <img src={this.previewUrl} alt="Viewport Preview" />
           </div>
         )}
-        <updraw-input
+        <upmade-input
           label={this.terms['export.filename.label'] ?? 'Filename'}
           value={this.exportFilename}
           placeholder={this.terms['export.filename.placeholder'] ?? 'Enter filename'}
           suffix={`.${this.viewportExportFormat}`}
           onValueChange={this.handleFilenameChange}
-        ></updraw-input>
+        ></upmade-input>
         <div class="format-selection">
           <label>{this.terms['export.format.label'] ?? 'Format'}</label>
-          <updraw-dropdown
+          <upmade-dropdown
             options={this.viewportFormatOptions}
             value={this.viewportExportFormat}
             forceOpenDirection="up"
             onValueChanged={this.handleViewportFormatChange}
-          ></updraw-dropdown>
+          ></upmade-dropdown>
         </div>
       </div>
     );
@@ -122,13 +122,13 @@ export class UpdrawExport {
   private renderWorkspaceExport() {
     return (
       <div class="export-tab-content">
-        <updraw-input
+        <upmade-input
           label={this.terms['export.filename.label'] ?? 'Filename'}
           value={this.exportFilename}
           placeholder={this.terms['export.filename.placeholder'] ?? 'Enter filename'}
           suffix=".json"
           onValueChange={this.handleFilenameChange}
-        ></updraw-input>
+        ></upmade-input>
       </div>
     );
   }
@@ -136,7 +136,7 @@ export class UpdrawExport {
   render() {
     return (
       <Host>
-        <updraw-dialog
+        <upmade-dialog
           isOpen={this.isDialogOpen}
           dialogTitle={this.terms['export.dialogTitle'] ?? 'Export'}
           closable={true}
@@ -144,11 +144,11 @@ export class UpdrawExport {
           onDialogClose={this.closeDialog}
         >
           <div class="export-content">
-            <updraw-pill-tabs
+            <upmade-pill-tabs
               tabs={this.tabs}
               value={this.activeTab}
               onValueChange={this.handleTabChange}
-            ></updraw-pill-tabs>
+            ></upmade-pill-tabs>
 
             {this.activeTab === 'viewport' && this.renderViewportExport()}
             {this.activeTab === 'workspace' && this.renderWorkspaceExport()}
@@ -158,7 +158,7 @@ export class UpdrawExport {
               {this.terms['export.exportButton'] ?? 'Export'}
             </button>
           </div>
-        </updraw-dialog>
+        </upmade-dialog>
       </Host>
     );
   }

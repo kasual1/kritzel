@@ -1,4 +1,4 @@
-/** Document-name prefix from before the rebrand. The api migration renamed these documents to `updraw-…`. */
+/** Document-name prefix from before the rebrand. The api migration renamed these documents to `upmade-…`. */
 export const LEGACY_DOCUMENT_NAME_PREFIX = "kritzel-";
 
 /**
@@ -8,7 +8,7 @@ export const LEGACY_DOCUMENT_NAME_PREFIX = "kritzel-";
 export function assertCurrentDocumentName(documentName: string): void {
   if (documentName.startsWith(LEGACY_DOCUMENT_NAME_PREFIX)) {
     throw new Error(
-      `Document "${documentName}" was renamed to "updraw-${documentName.slice(LEGACY_DOCUMENT_NAME_PREFIX.length)}"; reload the app to get the current client.`,
+      `Document "${documentName}" was renamed to "upmade-${documentName.slice(LEGACY_DOCUMENT_NAME_PREFIX.length)}"; reload the app to get the current client.`,
     );
   }
 }

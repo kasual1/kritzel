@@ -1,20 +1,20 @@
-import { UpdrawLineHandleHandler } from './line-handle.handler';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
-import { UpdrawLine } from '../objects/line.class';
-import { UpdrawColorHelper } from '../../helpers/color.helper';
+import { UpmadeLineHandleHandler } from './line-handle.handler';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
+import { UpmadeLine } from '../objects/line.class';
+import { UpmadeColorHelper } from '../../helpers/color.helper';
 
 jest.mock('../../helpers/event.helper');
 jest.mock('../../helpers/color.helper', () => ({
-  UpdrawColorHelper: {
+  UpmadeColorHelper: {
     resolveThemeColor: jest.fn().mockImplementation(color => color),
   },
 }));
 
-describe('UpdrawLineHandleHandler', () => {
-  let lineHandleHandler: UpdrawLineHandleHandler;
-  let mockCore: jest.Mocked<UpdrawCore>;
-  let mockLine: jest.Mocked<UpdrawLine>;
+describe('UpmadeLineHandleHandler', () => {
+  let lineHandleHandler: UpmadeLineHandleHandler;
+  let mockCore: jest.Mocked<UpmadeCore>;
+  let mockLine: jest.Mocked<UpmadeLine>;
   let mockSelectionGroup: {
     objects: unknown[];
     refreshObjectDimensions: jest.Mock;
@@ -53,9 +53,9 @@ describe('UpdrawLineHandleHandler', () => {
     } as PointerEvent;
   };
 
-  const createMockLine = (): jest.Mocked<UpdrawLine> => {
+  const createMockLine = (): jest.Mocked<UpmadeLine> => {
     const line = {
-      __class__: 'UpdrawLine',
+      __class__: 'UpmadeLine',
       id: 'line-1',
       startX: 0,
       startY: 0,
@@ -85,15 +85,15 @@ describe('UpdrawLineHandleHandler', () => {
       updateControlPoint: jest.fn(),
       _adjustedPoints: null,
       _clipInfo: null,
-    } as unknown as jest.Mocked<UpdrawLine>;
+    } as unknown as jest.Mocked<UpmadeLine>;
 
-    Object.setPrototypeOf(line, UpdrawLine.prototype);
+    Object.setPrototypeOf(line, UpmadeLine.prototype);
     return line;
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockLine = createMockLine();
     mockSelectionGroup = null;
@@ -149,9 +149,9 @@ describe('UpdrawLineHandleHandler', () => {
         computeAnchorClipInfo: jest.fn().mockReturnValue(null),
       },
       rerender: jest.fn(),
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    lineHandleHandler = new UpdrawLineHandleHandler(mockCore);
+    lineHandleHandler = new UpmadeLineHandleHandler(mockCore);
   });
 
   describe('handlePointerDown', () => {
@@ -183,7 +183,7 @@ describe('UpdrawLineHandleHandler', () => {
       });
 
       it('should not start handle drag on non-left click', () => {
-        (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+        (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
         mockSelectionGroup = {
           objects: [mockLine],
           refreshObjectDimensions: jest.fn(),
@@ -575,7 +575,7 @@ describe('UpdrawLineHandleHandler', () => {
 
         expect(mockCore.anchorManager.setSnapCandidate).toHaveBeenCalled();
         expect(mockCore.anchorManager.setSnapPreviewCandidate).toHaveBeenCalledWith(null);
-        expect(UpdrawColorHelper.resolveThemeColor).toHaveBeenCalledWith(mockLine.stroke, 'dark');
+        expect(UpmadeColorHelper.resolveThemeColor).toHaveBeenCalledWith(mockLine.stroke, 'dark');
       });
 
       it('should set a preview candidate before actual snapping engages', () => {

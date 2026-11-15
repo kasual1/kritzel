@@ -3,7 +3,7 @@ import { ProviderConfig, ProviderFactory, SyncProviderType } from './sync-provid
 /**
  * Configuration for workspace synchronization providers
  */
-export interface UpdrawSyncConfig {
+export interface UpmadeSyncConfig {
   /**
    * Array of provider configurations to enable for synchronization.
    * Can include provider classes directly or factory functions with options.
@@ -53,7 +53,7 @@ function getProviderConfigType(config: ProviderConfig): SyncProviderType | undef
  * Returns `true` when the given sync configuration contains at least one remote
  * (network) provider, meaning the share option should be available in the UI.
  */
-export function hasRemoteSyncProvider(syncConfig?: UpdrawSyncConfig): boolean {
+export function hasRemoteSyncProvider(syncConfig?: UpmadeSyncConfig): boolean {
   if (!syncConfig?.providers?.length) {
     return false;
   }

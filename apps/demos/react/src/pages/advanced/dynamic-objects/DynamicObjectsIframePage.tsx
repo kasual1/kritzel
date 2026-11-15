@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { UpdrawEditor, UpdrawIframeObject, UpdrawWorkspace } from "@updraw/react-editor";
+import { UpmadeEditor, UpmadeIframeObject, UpmadeWorkspace } from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { mockChatPrompts, mockComponentDefinitions } from "./iframe-calculator-definitions";
@@ -21,9 +21,9 @@ function NavButton({ label, disabled, onClick, children }: { label: string; disa
   );
 }
 
-function createRuntimeObject(): UpdrawIframeObject {
+function createRuntimeObject(): UpmadeIframeObject {
   const definition = mockComponentDefinitions[0];
-  const object = new UpdrawIframeObject({
+  const object = new UpmadeIframeObject({
     content: definition.content,
     state: definition.initialState,
     title: definition.name,
@@ -40,7 +40,7 @@ function createRuntimeObject(): UpdrawIframeObject {
 
 export function DynamicObjectsIframePage() {
   const runtimeObject = useMemo(() => createRuntimeObject(), []);
-  const workspaces = useMemo(() => [new UpdrawWorkspace({ objects: [runtimeObject] })], [runtimeObject]);
+  const workspaces = useMemo(() => [new UpmadeWorkspace({ objects: [runtimeObject] })], [runtimeObject]);
   const [promptIndex, setPromptIndex] = useState(0);
   const [promptText, setPromptText] = useState(mockChatPrompts[0]);
   const responseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -69,7 +69,7 @@ export function DynamicObjectsIframePage() {
 
   return (
     <div style={{ position: "relative", height: "100%" }}>
-      <UpdrawEditor
+      <UpmadeEditor
         editorId="dynamic-objects-iframe"
         theme="light"
         themes={[reactThemeLight, reactThemeDark]}

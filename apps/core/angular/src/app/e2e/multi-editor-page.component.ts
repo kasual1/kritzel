@@ -1,20 +1,20 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { UpdrawEditor } from '@updraw/angular-editor';
+import { UpmadeEditor } from '@upmade/angular-editor';
 import { angularThemeLight } from '../const/angular-theme-light';
 import { angularThemeDark } from '../const/angular-theme-dark';
 
 @Component({
   selector: 'app-multi-editor-page',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="multi-editor-host">
       <div class="editor-container editor-container-first">
-        <updraw-editor id="editor-1" editorId="e2e-editor-1" class="editor" [theme]="'light'" [themes]="themes"></updraw-editor>
+        <upmade-editor id="editor-1" editorId="e2e-editor-1" class="editor" [theme]="'light'" [themes]="themes"></upmade-editor>
       </div>
 
       <div class="editor-container editor-container-second">
-        <updraw-editor id="editor-2" editorId="e2e-editor-2" class="editor" [theme]="'light'" [themes]="themes"></updraw-editor>
+        <upmade-editor id="editor-2" editorId="e2e-editor-2" class="editor" [theme]="'light'" [themes]="themes"></upmade-editor>
       </div>
     </div>
   `,

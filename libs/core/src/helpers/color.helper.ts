@@ -1,8 +1,8 @@
 import { ThemeAwareColor, resolveColor } from '../constants/color-palette.constants';
 import { ThemeName } from '../interfaces/theme.interface';
-import { UpdrawThemeManager } from '../classes/managers/theme.manager';
+import { UpmadeThemeManager } from '../classes/managers/theme.manager';
 
-export class UpdrawColorHelper {
+export class UpmadeColorHelper {
   /**
    * Resolves a color value based on the current theme.
    * Handles both simple string colors and theme-aware color objects.
@@ -15,7 +15,7 @@ export class UpdrawColorHelper {
       return '';
     }
     
-    const currentTheme = theme ?? UpdrawThemeManager.getStoredTheme();
+    const currentTheme = theme ?? UpmadeThemeManager.getStoredTheme();
     return resolveColor(color, currentTheme as ThemeName);
   }
 

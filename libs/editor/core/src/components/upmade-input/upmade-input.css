@@ -11,25 +11,25 @@
 .input-label {
   font-size: 14px;
   font-weight: 500;
-  color: var(--updraw-text-input-label-color, #333333);
+  color: var(--upmade-text-input-label-color, #333333);
 }
 
 .input-wrapper {
   display: flex;
   align-items: center;
-  border: 1px solid var(--updraw-text-input-border-color, #ebebeb);
-  border-radius: var(--updraw-text-input-border-radius, 6px);
+  border: 1px solid var(--upmade-text-input-border-color, #ebebeb);
+  border-radius: var(--upmade-text-input-border-radius, 6px);
   overflow: hidden;
-  background: var(--updraw-text-input-background, #ffffff);
+  background: var(--upmade-text-input-background, #ffffff);
   transition: border-color 150ms ease;
 }
 
 .input-wrapper:hover:not(:focus-within) {
-  border-color: var(--updraw-text-input-hover-border-color, #cccccc);
+  border-color: var(--upmade-text-input-hover-border-color, #cccccc);
 }
 
 .input-wrapper:focus-within {
-  border-color: var(--updraw-text-input-focus-border-color, #007AFF);
+  border-color: var(--upmade-text-input-focus-border-color, #007AFF);
   border-width: 2px;
 }
 
@@ -41,17 +41,17 @@
   font-size: 14px;
   font-family: inherit;
   background: transparent;
-  color: var(--updraw-text-input-text-color, #333333);
+  color: var(--upmade-text-input-text-color, #333333);
   box-sizing: border-box;
 }
 
 .text-input::placeholder {
-  color: var(--updraw-text-input-placeholder-color, #999999);
+  color: var(--upmade-text-input-placeholder-color, #999999);
 }
 
 .text-input::selection {
-  background-color: var(--updraw-text-input-selection-background, #007AFF);
-  color: var(--updraw-text-input-selection-color, #ffffff);
+  background-color: var(--upmade-text-input-selection-background, #007AFF);
+  color: var(--upmade-text-input-selection-color, #ffffff);
 }
 
 .text-input:disabled {
@@ -61,9 +61,9 @@
 
 .input-suffix {
   padding: 10px 12px;
-  background: var(--updraw-text-input-suffix-background, #f5f5f5);
-  color: var(--updraw-text-input-suffix-color, #666666);
+  background: var(--upmade-text-input-suffix-background, #f5f5f5);
+  color: var(--upmade-text-input-suffix-color, #666666);
   font-size: 14px;
-  border-left: 1px solid var(--updraw-text-input-border-color, #ebebeb);
+  border-left: 1px solid var(--upmade-text-input-border-color, #ebebeb);
   flex-shrink: 0;
 }

@@ -1,7 +1,7 @@
-import { UpdrawEventHelper } from '../../helpers/event.helper';
-import { UpdrawBaseHandler } from './base.handler';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawLine } from '../objects/line.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
+import { UpmadeBaseHandler } from './base.handler';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeLine } from '../objects/line.class';
 
 /** Threshold in screen pixels for disconnecting anchored lines during drag */
 const ANCHOR_DISCONNECT_THRESHOLD = 30;
@@ -12,7 +12,7 @@ const ANCHOR_DISCONNECT_THRESHOLD = 30;
  * of selected objects on the canvas. Also manages anchor disconnection when
  * lines are dragged beyond a threshold distance.
  */
-export class UpdrawMoveHandler extends UpdrawBaseHandler {
+export class UpmadeMoveHandler extends UpmadeBaseHandler {
   /** X coordinate where the drag started (updates during drag for incremental movement) */
   dragStartX: number = 0;
   /** Y coordinate where the drag started (updates during drag for incremental movement) */
@@ -41,10 +41,10 @@ export class UpdrawMoveHandler extends UpdrawBaseHandler {
   private trackedPointerId: number | null = null;
 
   /**
-   * Creates a new instance of UpdrawMoveHandler.
-   * @param core - The UpdrawCore instance providing access to store, engine, and other core services
+   * Creates a new instance of UpmadeMoveHandler.
+   * @param core - The UpmadeCore instance providing access to store, engine, and other core services
    */
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     super(core);
   }
 
@@ -90,7 +90,7 @@ export class UpdrawMoveHandler extends UpdrawBaseHandler {
    */
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      if (UpdrawEventHelper.isLeftClick(event)) {
+      if (UpmadeEventHelper.isLeftClick(event)) {
         const selectionGroup = this._core.store.selectionGroup;
         const isAdditive = event.shiftKey || event.ctrlKey;
         if (selectionGroup?.isSelected && !this._core.store.state.isResizeHandleSelected && !this._core.store.state.isRotationHandleSelected && !this._core.store.state.isLineHandleSelected && !isAdditive) {
@@ -275,7 +275,7 @@ export class UpdrawMoveHandler extends UpdrawBaseHandler {
 
   /**
    * Checks if the total accumulated drag distance exceeds the anchor disconnect threshold.
-   * If so, disconnects all anchors from any UpdrawLine objects in the selection group.
+   * If so, disconnects all anchors from any UpmadeLine objects in the selection group.
    * This allows anchored lines to be freely moved after dragging beyond the threshold.
    * 
    * Only disconnects anchors when the selection contains exclusively line objects.
@@ -304,7 +304,7 @@ export class UpdrawMoveHandler extends UpdrawBaseHandler {
     // If moving lines with other objects (e.g. shapes they might be anchored to), prevent auto-disconnect.
     // Cache objects once to avoid repeated getter calls
     const children = selectionGroup.objects;
-    const onlyLines = children.every(obj => obj instanceof UpdrawLine);
+    const onlyLines = children.every(obj => obj instanceof UpmadeLine);
     if (!onlyLines) {
       return;
     }
@@ -317,7 +317,7 @@ export class UpdrawMoveHandler extends UpdrawBaseHandler {
       }
 
       // Check if this is a line with anchors
-      if (obj instanceof UpdrawLine) {
+      if (obj instanceof UpmadeLine) {
         const line = obj;
         const hasAnchors = line.startAnchor || line.endAnchor;
 

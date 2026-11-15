@@ -4,16 +4,16 @@
   align-items: center;
   font-family: sans-serif;
   z-index: 1;
-  padding: var(--updraw-split-button-padding, 4px);
-  background-color: var(--updraw-split-button-background-color, #ffffff);
-  border-radius: var(--updraw-split-button-border-radius, 12px);
-  box-shadow: var(--updraw-split-button-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
-  border: var(--updraw-split-button-border, 1px solid #ebebeb);
-  gap: var(--updraw-split-button-gap, 4px);
+  padding: var(--upmade-split-button-padding, 4px);
+  background-color: var(--upmade-split-button-background-color, #ffffff);
+  border-radius: var(--upmade-split-button-border-radius, 12px);
+  box-shadow: var(--upmade-split-button-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  border: var(--upmade-split-button-border, 1px solid #ebebeb);
+  gap: var(--upmade-split-button-gap, 4px);
 }
 
 :host(.mobile){
-  --updraw-split-button-hover-background-color: transparent;
+  --upmade-split-button-hover-background-color: transparent;
 }
 
 button {
@@ -23,11 +23,11 @@ button {
   margin: 0;
   font-family: inherit;
   font-size: inherit;
-  color: var(--updraw-split-button-color, #000000);
+  color: var(--upmade-split-button-color, #000000);
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  cursor: var(--updraw-global-pointer-cursor, pointer);
+  cursor: var(--upmade-global-pointer-cursor, pointer);
   text-align: center;
   display: flex;
   align-items: center;
@@ -41,24 +41,24 @@ button {
   height: auto;
   display: flex;
   align-items: center;
-  padding: var(--updraw-split-button-padding, 8px);
-  background-color: var(--updraw-split-button-background-color, #ffffff);
-  border-radius: var(--updraw-split-button-border-radius, 12px);
-  font-size: var(--updraw-split-button-font-size, 14px);
+  padding: var(--upmade-split-button-padding, 8px);
+  background-color: var(--upmade-split-button-background-color, #ffffff);
+  border-radius: var(--upmade-split-button-border-radius, 12px);
+  font-size: var(--upmade-split-button-font-size, 14px);
 }
 
 .split-main-button:hover,
 .split-menu-button:hover {
-  background-color: var(--updraw-split-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--upmade-split-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 .split-main-button:focus,
 .split-menu-button:focus {
-  background-color: var(--updraw-split-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--upmade-split-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 .split-main-button {
-  gap: var(--updraw-split-button-gap, 4px);
+  gap: var(--upmade-split-button-gap, 4px);
 }
 
 .split-menu-button {
@@ -67,9 +67,9 @@ button {
 }
 
 .split-divider {
-  width: var(--updraw-split-button-divider-width, 1px);
+  width: var(--upmade-split-button-divider-width, 1px);
   height: 24px;
-  background-color: var(--updraw-split-button-divider-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--upmade-split-button-divider-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 :disabled {

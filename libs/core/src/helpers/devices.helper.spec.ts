@@ -1,6 +1,6 @@
-import { UpdrawDevicesHelper } from './devices.helper';
+import { UpmadeDevicesHelper } from './devices.helper';
 
-describe('UpdrawDevicesHelper', () => {
+describe('UpmadeDevicesHelper', () => {
   describe('isTouchDevice', () => {
     const originalMatchMedia = window.matchMedia;
 
@@ -20,7 +20,7 @@ describe('UpdrawDevicesHelper', () => {
         dispatchEvent: jest.fn(),
       }));
 
-      expect(UpdrawDevicesHelper.isTouchDevice()).toBe(true);
+      expect(UpmadeDevicesHelper.isTouchDevice()).toBe(true);
     });
 
     it('should return false when matchMedia does not indicate a coarse pointer', () => {
@@ -35,7 +35,7 @@ describe('UpdrawDevicesHelper', () => {
         dispatchEvent: jest.fn(),
       }));
 
-      expect(UpdrawDevicesHelper.isTouchDevice()).toBe(false);
+      expect(UpmadeDevicesHelper.isTouchDevice()).toBe(false);
     });
   });
 
@@ -55,7 +55,7 @@ describe('UpdrawDevicesHelper', () => {
         configurable: true,
       });
 
-      expect(UpdrawDevicesHelper.isMobile()).toBe(true);
+      expect(UpmadeDevicesHelper.isMobile()).toBe(true);
     });
 
     it('should return true for Android devices', () => {
@@ -64,7 +64,7 @@ describe('UpdrawDevicesHelper', () => {
         configurable: true,
       });
 
-      expect(UpdrawDevicesHelper.isMobile()).toBe(true);
+      expect(UpmadeDevicesHelper.isMobile()).toBe(true);
     });
 
     it('should return false for non-mobile devices', () => {
@@ -73,7 +73,7 @@ describe('UpdrawDevicesHelper', () => {
         configurable: true,
       });
 
-      expect(UpdrawDevicesHelper.isMobile()).toBe(false);
+      expect(UpmadeDevicesHelper.isMobile()).toBe(false);
     });
   });
   describe('isIPadOS', () => {
@@ -92,22 +92,22 @@ describe('UpdrawDevicesHelper', () => {
     it('should detect an iPad reporting a desktop Mac user agent', () => {
       setNavigator('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15', 5);
 
-      expect(UpdrawDevicesHelper.isIPadOS()).toBe(true);
-      expect(UpdrawDevicesHelper.isIOS()).toBe(true);
-      expect(UpdrawDevicesHelper.isMobile()).toBe(true);
+      expect(UpmadeDevicesHelper.isIPadOS()).toBe(true);
+      expect(UpmadeDevicesHelper.isIOS()).toBe(true);
+      expect(UpmadeDevicesHelper.isMobile()).toBe(true);
     });
 
     it('should not treat a desktop Mac without touch as mobile', () => {
       setNavigator('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15', 0);
 
-      expect(UpdrawDevicesHelper.isIPadOS()).toBe(false);
-      expect(UpdrawDevicesHelper.isMobile()).toBe(false);
+      expect(UpmadeDevicesHelper.isIPadOS()).toBe(false);
+      expect(UpmadeDevicesHelper.isMobile()).toBe(false);
     });
 
     it('should not treat a Windows touch laptop as mobile', () => {
       setNavigator('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36', 10);
 
-      expect(UpdrawDevicesHelper.isMobile()).toBe(false);
+      expect(UpmadeDevicesHelper.isMobile()).toBe(false);
     });
   });
 });

@@ -1,11 +1,11 @@
 import { Component, Host, Prop, h } from '@stencil/core';
 
 @Component({
-  tag: 'updraw-font',
-  styleUrl: 'updraw-font.css',
+  tag: 'upmade-font',
+  styleUrl: 'upmade-font.css',
   shadow: true,
 })
-export class UpdrawFont {
+export class UpmadeFont {
   @Prop() fontFamily: string = 'Arial, sans-serif';
   @Prop() size: number = 24;
   @Prop() color: string = '#000000';

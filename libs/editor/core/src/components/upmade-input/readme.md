@@ -1,16 +1,16 @@
-# updraw-input
+# upmade-input
 
 A text input component with optional label and suffix support.
 
 ## Usage
 
 ```html
-<updraw-input
+<upmade-input
   label="Filename"
   value="my-file"
   placeholder="Enter filename"
   suffix=".json"
-></updraw-input>
+></upmade-input>
 ```
 
 <!-- Auto Generated Below -->
@@ -39,13 +39,13 @@ A text input component with optional label and suffix support.
 
 ### Used by
 
- - [updraw-export](../updraw-export)
+ - [upmade-export](../upmade-export)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-export --> updraw-input
-  style updraw-input fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-export --> upmade-input
+  style upmade-input fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

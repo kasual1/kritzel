@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onBeforeUnmount } from 'vue'
 import {
-  UpdrawDynamicObjectRendererRegistry,
-  UpdrawEditor,
-  UpdrawWorkspace,
-} from '@updraw/vue-editor'
+  UpmadeDynamicObjectRendererRegistry,
+  UpmadeEditor,
+  UpmadeWorkspace,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
@@ -26,7 +26,7 @@ function destroyCalculator(objectId: string, container: HTMLElement | null): voi
   }
 }
 
-UpdrawDynamicObjectRendererRegistry.register(HTML_CALCULATOR_RENDERER_KEY, {
+UpmadeDynamicObjectRendererRegistry.register(HTML_CALCULATOR_RENDERER_KEY, {
   onMount: ({ object, container, data }) => {
     if (!container) {
       return
@@ -46,17 +46,17 @@ UpdrawDynamicObjectRendererRegistry.register(HTML_CALCULATOR_RENDERER_KEY, {
   },
 })
 
-const workspaces = [new UpdrawWorkspace({ objects: [createHtmlCalculatorObject()] })]
+const workspaces = [new UpmadeWorkspace({ objects: [createHtmlCalculatorObject()] })]
 
 onBeforeUnmount(() => {
   mountedCalculators.forEach((calculator) => calculator.destroy())
   mountedCalculators.clear()
-  UpdrawDynamicObjectRendererRegistry.unregister(HTML_CALCULATOR_RENDERER_KEY)
+  UpmadeDynamicObjectRendererRegistry.unregister(HTML_CALCULATOR_RENDERER_KEY)
 })
 </script>
 
 <template>
-  <UpdrawEditor
+  <UpmadeEditor
     editorId="dynamic-objects-html"
     theme="light"
     :themes="themes"

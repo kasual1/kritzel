@@ -1,32 +1,32 @@
 import { Component, Host, Prop, h, Event, EventEmitter, State, Watch } from '@stencil/core';
-import { ConfigurableTool, ToolConfigDefinition, ToolDisplayValues } from '@updraw/core';
-import { UpdrawToolConfigHelper } from '@updraw/core';
-import { UpdrawTextTool } from '@updraw/core';
-import { ShapeFillType } from '../updraw-shape-fill/updraw-shape-fill';
-import { LineArrowConfig } from '@updraw/core';
-import { UpdrawColorHelper } from '@updraw/core';
-import { ThemeAwareColor } from '@updraw/core';
-import { ThemeName } from '@updraw/core';
-import { UpdrawTermKey } from '@updraw/core';
-import { UpdrawFontRegistration } from '@updraw/core';
-import { FontOption } from '../updraw-font-family/updraw-font-family';
-import { resolveTextToolAvailableFonts } from '@updraw/core';
-import { UpdrawFontRegistry } from '@updraw/core';
+import { ConfigurableTool, ToolConfigDefinition, ToolDisplayValues } from '@upmade/core';
+import { UpmadeToolConfigHelper } from '@upmade/core';
+import { UpmadeTextTool } from '@upmade/core';
+import { ShapeFillType } from '../upmade-shape-fill/upmade-shape-fill';
+import { LineArrowConfig } from '@upmade/core';
+import { UpmadeColorHelper } from '@upmade/core';
+import { ThemeAwareColor } from '@upmade/core';
+import { ThemeName } from '@upmade/core';
+import { UpmadeTermKey } from '@upmade/core';
+import { UpmadeFontRegistration } from '@upmade/core';
+import { FontOption } from '../upmade-font-family/upmade-font-family';
+import { resolveTextToolAvailableFonts } from '@upmade/core';
+import { UpmadeFontRegistry } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-tool-config',
-  styleUrl: 'updraw-tool-config.css',
+  tag: 'upmade-tool-config',
+  styleUrl: 'upmade-tool-config.css',
   shadow: true,
 })
-export class UpdrawToolConfig {
+export class UpmadeToolConfig {
   @Prop({ mutable: true }) tool: ConfigurableTool;
   @Watch('tool')
   handleToolChange(newTool: ConfigurableTool, oldTool: ConfigurableTool) {
-    const newConfig = UpdrawToolConfigHelper.getToolConfig(newTool);
+    const newConfig = UpmadeToolConfigHelper.getToolConfig(newTool);
     
     // Maintain settings when switching between shape tools
     if (oldTool && newTool && newConfig?.type === 'shape') {
-      const oldConfig = UpdrawToolConfigHelper.getToolConfig(oldTool);
+      const oldConfig = UpmadeToolConfigHelper.getToolConfig(oldTool);
       if (oldConfig?.type === 'shape') {
         // Copy properties that should persist
         const propsToCopy = [
@@ -59,7 +59,7 @@ export class UpdrawToolConfig {
   @Prop() theme: ThemeName;
   @Prop() engine: HTMLElement;
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpmadeTermKey, string>> = {};
 
   private handleSelectionChangeBound = this.handleSelectionChange.bind(this);
 
@@ -88,7 +88,7 @@ export class UpdrawToolConfig {
   @State() private updateTrigger: number = 0;
 
   private getFontOptionsFromTool(): FontOption[] | undefined {
-    const configuredFonts = resolveTextToolAvailableFonts((this.tool as { availableFonts?: UpdrawFontRegistration[] }).availableFonts).map(font => {
+    const configuredFonts = resolveTextToolAvailableFonts((this.tool as { availableFonts?: UpmadeFontRegistration[] }).availableFonts).map(font => {
       const registeredFont = typeof font === 'string'
         ? {
             family: font,
@@ -111,7 +111,7 @@ export class UpdrawToolConfig {
     const mergedFonts = [...configuredFonts];
     const seenFonts = new Set(mergedFonts.map(font => font.value.trim().toLocaleLowerCase()));
 
-    for (const font of UpdrawFontRegistry.list()) {
+    for (const font of UpmadeFontRegistry.list()) {
       const normalizedValue = font.family.trim().toLocaleLowerCase();
       if (seenFonts.has(normalizedValue)) {
         continue;
@@ -130,7 +130,7 @@ export class UpdrawToolConfig {
 
   handleSelectionChange() {
     if (this.tool?.toolType === 'selection') {
-      this.config = UpdrawToolConfigHelper.getToolConfig(this.tool);
+      this.config = UpmadeToolConfigHelper.getToolConfig(this.tool);
       if (this.config) {
         this.updatePalette();
         this.updateSizes();
@@ -147,7 +147,7 @@ export class UpdrawToolConfig {
   }
 
   componentWillLoad() {
-    this.config = UpdrawToolConfigHelper.getToolConfig(this.tool);
+    this.config = UpmadeToolConfigHelper.getToolConfig(this.tool);
     if (this.config) {
       this.updatePalette();
       this.updateSizes();
@@ -167,12 +167,12 @@ export class UpdrawToolConfig {
     const size = (this.tool as any)[this.config.sizeProperty];
 
     const displayValues: ToolDisplayValues = {
-      color: UpdrawColorHelper.applyOpacity(color, opacity, this.theme),
+      color: UpmadeColorHelper.applyOpacity(color, opacity, this.theme),
       size,
     };
 
     if (this.tool.toolType === 'text') {
-      displayValues.fontFamily = (this.tool as UpdrawTextTool).fontFamily;
+      displayValues.fontFamily = (this.tool as UpmadeTextTool).fontFamily;
     }
 
     this.displayValuesChange.emit(displayValues);
@@ -267,57 +267,57 @@ export class UpdrawToolConfig {
     switch (control.type) {
       case 'stroke-size':
         return (
-          <updraw-stroke-size
+          <upmade-stroke-size
             key={control.type}
             sizes={this.sizes}
             selectedSize={value}
             onSizeChange={this.handleSizeChange}
-          ></updraw-stroke-size>
+          ></upmade-stroke-size>
         );
 
       case 'font-size':
         return (
-          <updraw-font-size
+          <upmade-font-size
             key={control.type}
             sizes={this.sizes}
             selectedSize={value}
             fontFamily={(this.tool as any).fontFamily}
             onSizeChange={this.handleSizeChange}
-          ></updraw-font-size>
+          ></upmade-font-size>
         );
 
       case 'line-endings':
         return (
-          <updraw-line-endings
+          <upmade-line-endings
             key={control.type}
             value={value}
             onValueChange={(event: CustomEvent<LineArrowConfig>) =>
               this.handlePropertyChange(control.propertyName, event.detail)
             }
-          ></updraw-line-endings>
+          ></upmade-line-endings>
         );
 
       case 'shape-fill':
         return (
-          <updraw-shape-fill
+          <upmade-shape-fill
             key={control.type}
             value={this.getShapeFillValue()}
             onValueChange={(event: CustomEvent<ShapeFillType>) =>
               this.handlePropertyChange(control.propertyName, event.detail)
             }
-          ></updraw-shape-fill>
+          ></upmade-shape-fill>
         );
 
       case 'font-family':
         return (
-          <updraw-font-family
+          <upmade-font-family
             key={control.type}
             fontOptions={this.getFontOptionsFromTool()}
             selectedFontFamily={value}
             onFontFamilyChange={(event: CustomEvent<string>) =>
               this.handlePropertyChange(control.propertyName, event.detail)
             }
-          ></updraw-font-family>
+          ></upmade-font-family>
         );
 
       default:
@@ -356,7 +356,7 @@ export class UpdrawToolConfig {
           >
             {/* Color palette - only show when colors are available */}
             {shouldShowColorPalette && (
-              <updraw-color-palette
+              <upmade-color-palette
                 colors={this.palette}
                 selectedColor={(this.tool as any)[this.config.colorProperty]}
                 isExpanded={this.isExpanded}
@@ -364,16 +364,16 @@ export class UpdrawToolConfig {
                 opacity={this.currentOpacity}
                 theme={this.theme}
                 onColorChange={this.handleColorChange}
-              ></updraw-color-palette>
+              ></upmade-color-palette>
             )}
 
             {sizeControl && this.renderControl(sizeControl)}
 
-            <updraw-opacity-slider
+            <upmade-opacity-slider
               value={(this.tool as any)[this.config.opacityProperty]}
               previewColor={(this.tool as any)[this.config.colorProperty]}
               onValueChange={this.handleOpacityChange}
-            ></updraw-opacity-slider>
+            ></upmade-opacity-slider>
 
             {/* Tool-specific controls with dividers */}
             {otherControls.map((control) => [
@@ -395,7 +395,7 @@ export class UpdrawToolConfig {
                 onClick={this.handleToggleExpand}
                 title={this.isExpanded ? (this.terms['toolConfig.collapse'] ?? 'Collapse') : (this.terms['toolConfig.expand'] ?? 'Expand')}
               >
-                <updraw-icon name={this.isExpanded ? 'chevronUp' : 'chevronDown'}></updraw-icon>
+                <upmade-icon name={this.isExpanded ? 'chevronUp' : 'chevronDown'}></upmade-icon>
               </button>
             </div>
           )}

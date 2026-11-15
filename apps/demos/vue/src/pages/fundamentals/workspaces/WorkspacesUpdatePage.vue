@@ -3,15 +3,15 @@ import { computed, shallowRef, type CSSProperties } from 'vue'
 import {
   getEditorRef,
   InMemorySyncProvider,
-  UpdrawEditor,
-  UpdrawLine,
-  UpdrawPath,
-  UpdrawShape,
+  UpmadeEditor,
+  UpmadeLine,
+  UpmadePath,
+  UpmadeShape,
   ShapeType,
-  type UpdrawBaseObject,
-  type UpdrawSyncConfig,
-  type UpdrawWorkspace,
-} from '@updraw/vue-editor'
+  type UpmadeBaseObject,
+  type UpmadeSyncConfig,
+  type UpmadeWorkspace,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
@@ -113,9 +113,9 @@ const workspaceVariants: WorkspaceVariant[] = [
   },
 ]
 
-function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
+function createVariantObjects(variant: WorkspaceVariant): UpmadeBaseObject[] {
   return [
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -125,7 +125,7 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
       strokeColor: variant.stroke,
       strokeWidth: 3,
     }),
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -136,7 +136,7 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
       strokeWidth: 3,
       rotation: variant.rotation,
     }),
-    new UpdrawLine({
+    new UpmadeLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -144,7 +144,7 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
       stroke: variant.accent,
       strokeWidth: 3,
     }),
-    new UpdrawPath({
+    new UpmadePath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -167,10 +167,10 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const syncConfig: UpdrawSyncConfig = {
+const syncConfig: UpmadeSyncConfig = {
   providers: [InMemorySyncProvider],
 }
-const activeWorkspace = shallowRef<UpdrawWorkspace | null>(null)
+const activeWorkspace = shallowRef<UpmadeWorkspace | null>(null)
 const activeWorkspaceJson = computed(() =>
   activeWorkspace.value
     ? JSON.stringify(
@@ -230,7 +230,7 @@ async function updateWorkspace() {
       <span>Current: {{ activeWorkspace?.name }}</span>
     </Toolbar>
     <div :style="contentStyle">
-      <UpdrawEditor
+      <UpmadeEditor
         ref="editor"
         editorId="workspaces-update"
         theme="light"

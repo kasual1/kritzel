@@ -1,4 +1,4 @@
-export interface UpdrawNotification {
+export interface UpmadeNotification {
   /** Unique identifier for the notification */
   id: string;
   /** Type of the notification (e.g., 'info', 'warning', 'error') */

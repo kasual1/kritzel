@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
-import { UpdrawEditor, UpdrawWorkspace } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeWorkspace } from '@upmade/angular-editor';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -7,13 +7,13 @@ import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-import-dialog',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
       <button type="button" (click)="openDialog()">Open import dialog</button>
     </app-toolbar>
-    <updraw-editor
+    <upmade-editor
       editorId="import-dialog"
       [theme]="'light'"
       [themes]="themes"
@@ -25,19 +25,19 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isWorkspaceManagerVisible]="false"
       [isMoreMenuVisible]="false"
       [isZoomPanelVisible]="false"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: `
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    updraw-editor { flex: 1; }
+    upmade-editor { flex: 1; }
   `,
 })
 export class ImportDialogComponent {
-  editor = viewChild(UpdrawEditor);
+  editor = viewChild(UpmadeEditor);
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
   async openDialog(): Promise<void> {
     await this.editor()?.openImportDialog();

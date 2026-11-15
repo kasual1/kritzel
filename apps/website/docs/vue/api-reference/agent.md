@@ -1,19 +1,19 @@
 ---
 sidebar_label: Agent
 displayed_sidebar: tutorialSidebar
-title: "Agent API Reference | Updraw for Vue"
-description: "API reference for UpdrawAgent: constructor options, properties, state, presence and action methods, events, errors, and related types."
+title: "Agent API Reference | Upmade for Vue"
+description: "API reference for UpmadeAgent: constructor options, properties, state, presence and action methods, events, errors, and related types."
 toc_max_heading_level: 2
 ---
 
 # Agent
 
-`UpdrawAgent` is a participant on the canvas that is driven by code instead of a pointer device, for example an AI assistant. An agent has a cursor, a name and a color, and its own selection, action queue, and undo history. Create an agent, add it to the editor with `addAgent()` once the editor is ready, then let it act:
+`UpmadeAgent` is a participant on the canvas that is driven by code instead of a pointer device, for example an AI assistant. An agent has a cursor, a name and a color, and its own selection, action queue, and undo history. Create an agent, add it to the editor with `addAgent()` once the editor is ready, then let it act:
 
 ```ts
-import { UpdrawAgent } from '@updraw/vue-editor';
+import { UpmadeAgent } from '@upmade/vue-editor';
 
-const agent = new UpdrawAgent({ name: 'Planner', color: '#7C3AED' });
+const agent = new UpmadeAgent({ name: 'Planner', color: '#7C3AED' });
 
 await editor.addAgent(agent);
 await agent.createShape({ x: 0, y: 0, width: 160, height: 80, text: 'Idea' });
@@ -24,7 +24,7 @@ For a guided introduction, see [Agents](../advanced/agents.md). The editor metho
 ## Constructor
 
 ```ts
-new UpdrawAgent(options: UpdrawAgentOptions)
+new UpmadeAgent(options: UpmadeAgentOptions)
 ```
 
 Throws a `TypeError` when `name` is missing or empty.
@@ -39,9 +39,9 @@ Throws a `TypeError` when `name` is missing or empty.
 | broadcast | boolean | `true` | Whether collaborators see the agent. See [Collaboration](#collaboration). |
 | status | string | — | Status message shown below the cursor label. |
 | visible | boolean | `true` | Whether the cursor is visible. |
-| position | UpdrawAgenticTarget | Center of the viewport | Where the cursor starts when the agent is added. An object target sticks the cursor to that object. An element target starts at the center of the object and sticks the cursor to the element once the page has reported it. If the object does not exist then, for example because it was deleted or the editor shows another document, the cursor starts at the center of the viewport. |
+| position | UpmadeAgenticTarget | Center of the viewport | Where the cursor starts when the agent is added. An object target sticks the cursor to that object. An element target starts at the center of the object and sticks the cursor to the element once the page has reported it. If the object does not exist then, for example because it was deleted or the editor shows another document, the cursor starts at the center of the viewport. |
 
-`isUpdrawAgent(value)` returns whether a value is an `UpdrawAgent`, also when it comes from another copy of the package.
+`isUpmadeAgent(value)` returns whether a value is an `UpmadeAgent`, also when it comes from another copy of the package.
 
 ---
 
@@ -52,31 +52,31 @@ Throws a `TypeError` when `name` is missing or empty.
 | id | string | Read-only. Unique ID; the `userId` of the objects the agent creates. |
 | kind | `'agent'` | Read-only. Always `'agent'`. |
 | name | string | Name shown in the cursor label. Setting it renames the label. |
-| displayName | string | Read-only. Same as `name`, so an agent can be used where an `IUpdrawUser` is expected. |
+| displayName | string | Read-only. Same as `name`, so an agent can be used where an `IUpmadeUser` is expected. |
 | color | string | Any CSS color. Setting it recolors the cursor and the agent's selection. |
 | avatarUrl | string \| undefined | URL of the avatar image. |
 | profileImageUrl | string \| undefined | Read-only. Same as `avatarUrl`. |
 | speed | number \| undefined | Default speed of moves and actions in screen pixels per second. `undefined` uses `1200`. |
 | broadcast | boolean | Whether collaborators see the agent. Setting it takes effect at once: `false` removes the agent from the presence of collaborators, `true` shares it again. Objects that the agent changes sync either way. |
 | isAdded | boolean | Read-only. Whether the agent is added to an editor. |
-| state | UpdrawAgentState | Read-only. A snapshot of the agent's state. See [State](#state). |
+| state | UpmadeAgentState | Read-only. A snapshot of the agent's state. See [State](#state). |
 
 ---
 
 ## State
 
-`agent.state` returns a new `UpdrawAgentState` snapshot on every read. Subscribe to the [`change` event](#events) to be notified when it changes.
+`agent.state` returns a new `UpmadeAgentState` snapshot on every read. Subscribe to the [`change` event](#events) to be notified when it changes.
 
 | Field | Type | Description |
 |-------|------|-------------|
 | isAdded | boolean | Whether the agent is added to an editor. |
-| position | UpdrawPoint \| null | Cursor position in world coordinates, or `null` while the agent is not added. |
-| attachedTo | UpdrawAgenticAttachment \| null | The object the cursor sticks to, or `null`. Includes the `selector` while it sticks to an element inside the object. |
+| position | UpmadePoint \| null | Cursor position in world coordinates, or `null` while the agent is not added. |
+| attachedTo | UpmadeAgenticAttachment \| null | The object the cursor sticks to, or `null`. Includes the `selector` while it sticks to an element inside the object. |
 | isMoving | boolean | Whether the cursor is animating. |
 | status | string \| null | The status message, or `null`. |
 | visible | boolean | Whether the cursor is visible. |
 | selection | string[] | IDs of the objects the agent selected with `select()`. |
-| activeAction | UpdrawAgenticActionType \| null | Type of the running action, or `null` when the agent is idle. |
+| activeAction | UpmadeAgenticActionType \| null | Type of the running action, or `null` when the agent is idle. |
 | queueLength | number | Number of actions waiting behind the running one. |
 | canUndo | boolean | Whether `undo()` has a step to undo. |
 | canRedo | boolean | Whether `redo()` has a step to redo. |
@@ -118,7 +118,7 @@ hide(): void
 Animates the cursor to a point in world coordinates, to an anchor on an object, or to an element inside an object's content, such as a button in an iframe object (`{ objectId, selector, anchor?, offset? }`), where it sticks by default. Resolves when the cursor arrives; `completed` is `false` when another move, the removal of the agent, or the deletion of the target interrupted it. A running action of the agent stops with `'agent-moved'`. Rejects when the agent is not added, for an invalid target, for an object that does not exist, and when an element target's object isn't mounted or has no visible element that matches the selector. See [Driving Agents from Code](../advanced/agents.md#driving-agents-from-code).
 
 ```ts
-moveTo(target: UpdrawAgenticTarget, options?: UpdrawAgenticMoveOptions): Promise<UpdrawAgenticMoveResult>
+moveTo(target: UpmadeAgenticTarget, options?: UpmadeAgenticMoveOptions): Promise<UpmadeAgenticMoveResult>
 ```
 
 ### detach
@@ -134,7 +134,7 @@ detach(): void
 Returns the agent as it appears in the `agentsChange` event of the editor.
 
 ```ts
-toPresence(): UpdrawAgentPresence
+toPresence(): UpmadeAgentPresence
 ```
 
 ---
@@ -143,16 +143,16 @@ toPresence(): UpdrawAgentPresence
 
 In an action, the cursor flies to the target, presses, and animates the change. Changes are saved and synced like the user's edits, but they are recorded in the agent's own history. Actions of one agent run one after another, in the order they are called, while different agents work at the same time.
 
-Every action resolves with a [`UpdrawAgenticActionResult`](#updrawagenticactionresult) when it ends. `completed` is `false` with a `reason` when the action was refused or stopped. The promise rejects for an invalid action (`TypeError`) and when the agent is not added to an editor. An action that starts while a [`task()`](#task) runs belongs to that task: if it does not complete and the task is still running when it ends, it rejects with a [`UpdrawAgentActionError`](#updrawagentactionerror) instead.
+Every action resolves with a [`UpmadeAgenticActionResult`](#upmadeagenticactionresult) when it ends. `completed` is `false` with a `reason` when the action was refused or stopped. The promise rejects for an invalid action (`TypeError`) and when the agent is not added to an editor. An action that starts while a [`task()`](#task) runs belongs to that task: if it does not complete and the task is still running when it ends, it rejects with a [`UpmadeAgentActionError`](#upmadeagentactionerror) instead.
 
-Object IDs must belong to top-level objects. Every action takes [`UpdrawAgenticActionOptions`](#updrawagenticactionoptions) as its last argument.
+Object IDs must belong to top-level objects. Every action takes [`UpmadeAgenticActionOptions`](#upmadeagenticactionoptions) as its last argument.
 
 ### perform
 
 Performs an action from an action object. All other action methods are shortcuts for it.
 
 ```ts
-perform(action: UpdrawAgenticAction, options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+perform(action: UpmadeAgenticAction, options?: UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### click
@@ -161,23 +161,23 @@ Presses at a point or an object anchor. Nothing changes; `objectIds` holds the o
 
 ```ts
 click(
-  target: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget | UpdrawAgenticElementTarget,
-  options?: { count?: 1 | 2 } & UpdrawAgenticActionOptions,
-): Promise<UpdrawAgenticActionResult>
+  target: UpmadeAgenticPointTarget | UpmadeAgenticObjectTarget | UpmadeAgenticElementTarget,
+  options?: { count?: 1 | 2 } & UpmadeAgenticActionOptions,
+): Promise<UpmadeAgenticActionResult>
 ```
 
 ### interactWithElement
 
-Uses an element inside an object's content as a user would, for example the play button of an iframe widget. The cursor flies to the element and presses while the content performs the [interaction](#updrawobjectelementinteraction): a click, hover, fill, check, key press, or scroll. Before the cursor moves, the content scrolls the element into view and checks that it is visible, enabled, and not covered. On success, `objectIds` holds the object and `element` the element afterwards, with its state and value; the cursor stays on the element. When the element refuses, the result has `reason: 'element-interaction-failed'`, an [`elementReason`](#updrawobjectelementinteractionfailurereason), and a `message`.
+Uses an element inside an object's content as a user would, for example the play button of an iframe widget. The cursor flies to the element and presses while the content performs the [interaction](#upmadeobjectelementinteraction): a click, hover, fill, check, key press, or scroll. Before the cursor moves, the content scrolls the element into view and checks that it is visible, enabled, and not covered. On success, `objectIds` holds the object and `element` the element afterwards, with its state and value; the cursor stays on the element. When the element refuses, the result has `reason: 'element-interaction-failed'`, an [`elementReason`](#upmadeobjectelementinteractionfailurereason), and a `message`.
 
 The interaction changes the content's own state, not the object, so it has no undo step. The object must be mounted, which it is while it is in or near the viewport. The object does not need to be selected.
 
 ```ts
 interactWithElement(
-  target: UpdrawAgenticElementTarget,
-  interaction: UpdrawObjectElementInteraction,
-  options?: UpdrawAgenticActionOptions,
-): Promise<UpdrawAgenticActionResult>
+  target: UpmadeAgenticElementTarget,
+  interaction: UpmadeObjectElementInteraction,
+  options?: UpmadeAgenticActionOptions,
+): Promise<UpmadeAgenticActionResult>
 ```
 
 ```ts
@@ -192,7 +192,7 @@ The interaction is performed with DOM events, so the content's handlers run as f
 Selects objects for the agent. Agent selections are outlined in the agent's color and never change the user's selection. `additive: true` adds to the agent's selection instead of replacing it.
 
 ```ts
-select(objectIds: string[], options?: { additive?: boolean } & UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+select(objectIds: string[], options?: { additive?: boolean } & UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### clearSelection
@@ -200,7 +200,7 @@ select(objectIds: string[], options?: { additive?: boolean } & UpdrawAgenticActi
 Clears the agent's selection.
 
 ```ts
-clearSelection(options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+clearSelection(options?: UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### moveObject
@@ -208,7 +208,7 @@ clearSelection(options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActio
 Drags an object so that its `align` point (default `'center'`) lands on `to`, a point or an anchor on another object.
 
 ```ts
-moveObject(objectId: string, to: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget, options?: { align?: UpdrawAgenticAnchor } & UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+moveObject(objectId: string, to: UpmadeAgenticPointTarget | UpmadeAgenticObjectTarget, options?: { align?: UpmadeAgenticAnchor } & UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### resizeObject
@@ -218,9 +218,9 @@ Drags a corner handle (default `'bottom-right'`) until the object has the new si
 ```ts
 resizeObject(
   objectId: string,
-  size: { width?: number; height?: number; keepAspectRatio?: boolean; handle?: UpdrawAgenticResizeHandle },
-  options?: UpdrawAgenticActionOptions,
-): Promise<UpdrawAgenticActionResult>
+  size: { width?: number; height?: number; keepAspectRatio?: boolean; handle?: UpmadeAgenticResizeHandle },
+  options?: UpmadeAgenticActionOptions,
+): Promise<UpmadeAgenticActionResult>
 ```
 
 ### rotateObject
@@ -228,7 +228,7 @@ resizeObject(
 Turns an object with the rotation handle to `angle` degrees clockwise, the short way round, or by `angle` degrees with `relative: true`.
 
 ```ts
-rotateObject(objectId: string, angle: number, options?: { relative?: boolean } & UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+rotateObject(objectId: string, angle: number, options?: { relative?: boolean } & UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### copyObjects
@@ -238,8 +238,8 @@ Duplicates objects like Alt-dragging them: the copies appear on the originals an
 ```ts
 copyObjects(
   objectIds: string[],
-  options?: { to?: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget } & UpdrawAgenticActionOptions,
-): Promise<UpdrawAgenticActionResult>
+  options?: { to?: UpmadeAgenticPointTarget | UpmadeAgenticObjectTarget } & UpmadeAgenticActionOptions,
+): Promise<UpmadeAgenticActionResult>
 ```
 
 ### groupObjects
@@ -247,7 +247,7 @@ copyObjects(
 Clicks the objects one after the other and groups them, like `group()` on the editor. The group becomes one layer at the position of the topmost object and takes the place of the objects in the agent's selection. Needs at least two objects. `objectIds` holds the ID of the group.
 
 ```ts
-groupObjects(objectIds: string[], options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+groupObjects(objectIds: string[], options?: UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### ungroupObjects
@@ -255,7 +255,7 @@ groupObjects(objectIds: string[], options?: UpdrawAgenticActionOptions): Promise
 Dissolves groups. Their children keep their place in the stacking order and take the place of the groups in the agent's selection. Resolves with `'invalid-target'` for an object that is not a group. `objectIds` holds the IDs of the children.
 
 ```ts
-ungroupObjects(objectIds: string[], options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+ungroupObjects(objectIds: string[], options?: UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### orderObjects
@@ -263,7 +263,7 @@ ungroupObjects(objectIds: string[], options?: UpdrawAgenticActionOptions): Promi
 Moves objects in the stacking order, like `bringToFront()`, `sendToBack()`, `bringForward()`, and `sendBackward()` on the editor. A group moves with its children.
 
 ```ts
-orderObjects(objectIds: string[], order: 'front' | 'back' | 'forward' | 'backward', options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+orderObjects(objectIds: string[], order: 'front' | 'back' | 'forward' | 'backward', options?: UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### createShape
@@ -272,9 +272,9 @@ Drags out a new shape with its top-left corner at `x`, `y` and optionally types 
 
 ```ts
 createShape(
-  shape: { x: number; y: number; width: number; height: number; shapeType?: ShapeType; text?: string; style?: UpdrawAgenticShapeStyle },
-  options?: UpdrawAgenticActionOptions,
-): Promise<UpdrawAgenticActionResult>
+  shape: { x: number; y: number; width: number; height: number; shapeType?: ShapeType; text?: string; style?: UpmadeAgenticShapeStyle },
+  options?: UpmadeAgenticActionOptions,
+): Promise<UpmadeAgenticActionResult>
 ```
 
 ### createText
@@ -283,9 +283,9 @@ Creates a text object with its top-left corner at `x`, `y` and types `text` into
 
 ```ts
 createText(
-  text: { x: number; y: number; text: string; style?: UpdrawAgenticTextStyle },
-  options?: UpdrawAgenticActionOptions,
-): Promise<UpdrawAgenticActionResult>
+  text: { x: number; y: number; text: string; style?: UpmadeAgenticTextStyle },
+  options?: UpmadeAgenticActionOptions,
+): Promise<UpmadeAgenticActionResult>
 ```
 
 ### typeText
@@ -293,7 +293,7 @@ createText(
 Types into a text or a shape. `mode: 'append'` (default) types after the existing content, `mode: 'replace'` clears it first.
 
 ```ts
-typeText(objectId: string, text: string, options?: { mode?: 'append' | 'replace' } & UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+typeText(objectId: string, text: string, options?: { mode?: 'append' | 'replace' } & UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### drawPath
@@ -301,7 +301,7 @@ typeText(objectId: string, text: string, options?: { mode?: 'append' | 'replace'
 Draws a freehand stroke through at least two points in world coordinates.
 
 ```ts
-drawPath(points: UpdrawPoint[], options?: { style?: UpdrawAgenticStrokeStyle } & UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+drawPath(points: UpmadePoint[], options?: { style?: UpmadeAgenticStrokeStyle } & UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### connect
@@ -309,7 +309,7 @@ drawPath(points: UpdrawPoint[], options?: { style?: UpdrawAgenticStrokeStyle } &
 Draws a line from one object to another and anchors both ends, so the line follows the objects.
 
 ```ts
-connect(from: string, to: string, options?: { style?: UpdrawAgenticLineStyle } & UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+connect(from: string, to: string, options?: { style?: UpmadeAgenticLineStyle } & UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### setStyle
@@ -317,7 +317,7 @@ connect(from: string, to: string, options?: { style?: UpdrawAgenticLineStyle } &
 Restyles objects; groups style their children. `style` needs at least one field. Fields apply where they make sense and are ignored elsewhere: `fillColor` to shapes; `strokeColor` and `strokeWidth` to shapes, strokes, and lines; `fontSize`, `fontFamily`, and `fontColor` to shapes and texts; `arrows` to lines, where an end that `arrows` leaves out keeps its arrow head; `opacity` to all objects.
 
 ```ts
-setStyle(objectIds: string[], style: UpdrawAgenticObjectStyle, options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+setStyle(objectIds: string[], style: UpmadeAgenticObjectStyle, options?: UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### updateIframe
@@ -325,20 +325,20 @@ setStyle(objectIds: string[], style: UpdrawAgenticObjectStyle, options?: UpdrawA
 Replaces parts of an iframe's code and its name; parts left out stay, and the iframe reloads with the new code. Works on iframes inside groups too. Resolves with `'invalid-target'` for objects that are not iframes.
 
 ```ts
-updateIframe(objectId: string, changes: { name?: string; html?: string; css?: string; script?: string }, options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+updateIframe(objectId: string, changes: { name?: string; html?: string; css?: string; script?: string }, options?: UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### addObject
 
-Places an object that the app built, for example an `UpdrawIframeObject`, as the agent's change: the cursor hops to the object and it appears, with the theme's appear animation (see [Object Appear](./theming.md#object-appear)). The object gets a new ID, which `objectIds` reports. Unlike the editor's `addObject()`, the user's selection and undo history stay untouched. Selections can't be added.
+Places an object that the app built, for example an `UpmadeIframeObject`, as the agent's change: the cursor hops to the object and it appears, with the theme's appear animation (see [Object Appear](./theming.md#object-appear)). The object gets a new ID, which `objectIds` reports. Unlike the editor's `addObject()`, the user's selection and undo history stay untouched. Selections can't be added.
 
 The object is not changed until the insert: the object and the children of a group get their new IDs and their z-index only then, on top of the objects on the canvas at that moment. An action that stops before the insert leaves the object as it was, so it can be added later. Resolves with `'invalid-target'` for an object that is already on the canvas, for a group with a child that is already on the canvas or that holds the same object twice, and for a group without children, either empty or with children that were inserted before.
 
 ```ts
-addObject(object: UpdrawBaseObject, options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+addObject(object: UpmadeBaseObject, options?: UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
-To show the object before its content is ready, perform the action with a `fill`, a promise of a [`UpdrawAgenticFill`](#updrawagenticfill): `perform({ type: 'addObject', object, fill })`. The object is placed as a [loading placeholder](./objects.md#loading-state), and the action stays open until `fill` resolves. Then `content` is prepared like an added object, so an image is fetched and stored, `apply` copies it onto the placeholder, and loading ends. Placing and filling are one step of the agent's history.
+To show the object before its content is ready, perform the action with a `fill`, a promise of a [`UpmadeAgenticFill`](#upmadeagenticfill): `perform({ type: 'addObject', object, fill })`. The object is placed as a [loading placeholder](./objects.md#loading-state), and the action stays open until `fill` resolves. Then `content` is prepared like an added object, so an image is fetched and stored, `apply` copies it onto the placeholder, and loading ends. Placing and filling are one step of the agent's history.
 
 - While the action waits, the placeholder is the user's: the user can move, resize, or delete it, and it is filled in where the user left it. These changes belong to the action's step, so stopping the action or undoing it removes the placeholder with them. Changes a collaborator makes meanwhile are not part of it.
 - A rejected `fill` and a stopped action roll the whole action back and resolve with `'aborted'`. A deleted placeholder resolves with `'object-removed'`.
@@ -350,7 +350,7 @@ To show the object before its content is ready, perform the action with a `fill`
 Deletes objects. Children of a group are deleted with their group.
 
 ```ts
-deleteObjects(objectIds: string[], options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+deleteObjects(objectIds: string[], options?: UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### undo
@@ -358,7 +358,7 @@ deleteObjects(objectIds: string[], options?: UpdrawAgenticActionOptions): Promis
 Undoes the agent's last action. Never touches the history of the user or of other agents. Resolves with `'nothing-to-undo'` when the agent's history is empty.
 
 ```ts
-undo(options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+undo(options?: UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ### redo
@@ -366,7 +366,7 @@ undo(options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
 Redoes the agent's last undone action. Resolves with `'nothing-to-redo'` when there is nothing to redo.
 
 ```ts
-redo(options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>
+redo(options?: UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>
 ```
 
 ---
@@ -383,9 +383,9 @@ cancel(): void
 
 ### task
 
-Runs a script of actions as one task. `label` is shown as the status while the task runs, and the previous status comes back when it ends. The first action that does not complete throws an `UpdrawAgentActionError` out of `fn`. An agent runs one task at a time; calling `task()` while another task of the agent is running rejects.
+Runs a script of actions as one task. `label` is shown as the status while the task runs, and the previous status comes back when it ends. The first action that does not complete throws an `UpmadeAgentActionError` out of `fn`. An agent runs one task at a time; calling `task()` while another task of the agent is running rejects.
 
-An action belongs to the task that runs when the action starts. Every action of the agent that starts while the task runs belongs to it, also one started outside `fn`, for example from a button. When it does not complete, its promise rejects with an `UpdrawAgentActionError`. An action that started before the task, or that starts after the task has ended, resolves with its result and never throws.
+An action belongs to the task that runs when the action starts. Every action of the agent that starts while the task runs belongs to it, also one started outside `fn`, for example from a button. When it does not complete, its promise rejects with an `UpmadeAgentActionError`. An action that started before the task, or that starts after the task has ended, resolves with its result and never throws.
 
 ```ts
 task<T>(label: string, fn: () => Promise<T> | T): Promise<T>
@@ -402,13 +402,13 @@ Provider-neutral tool definitions and a canvas snapshot for LLMs. To connect the
 Returns tool definitions for any LLM provider: `observe_canvas`, `inspect_elements`, and one tool per action. Hand `name`, `description`, and `inputSchema` to the model, and call `run(input, { signal })` with the model's input. Every call returns new tool objects. A tool keeps working when it is copied, as some tool runners do, and while the agent is not added, `run()` resolves with `reason: 'agent-removed'`.
 
 ```ts
-tools(options?: UpdrawAgentToolsOptions): UpdrawAgentTool[]
+tools(options?: UpmadeAgentToolsOptions): UpmadeAgentTool[]
 ```
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | only | string[] | All tools | Only these tools, by name without `prefix`. |
-| prefix | string | `''` | Put in front of every tool name, for example `'updraw_'`, to avoid clashes with other tools. |
+| prefix | string | `''` | Put in front of every tool name, for example `'upmade_'`, to avoid clashes with other tools. |
 | maxTextLength | number | `2000` | Longest `text` that `create_shape`, `create_text`, or `type_text` may type. Longer input is rejected with `'invalid-input'`. |
 | instant | boolean | `false` | Skips all animation in the actions of these tools: the changes appear at once. Placed objects still play the theme's appear animation. |
 | images | `boolean \| { urls?: boolean }` | `true` | Offers `create_image`, which places images drawn as SVG markup by the model. `{ urls: true }` also loads images from URLs that the model chooses, fetched by the user's browser. |
@@ -439,8 +439,8 @@ tools(options?: UpdrawAgentToolsOptions): UpdrawAgentTool[]
 | delete_objects | [`deleteObjects()`](#deleteobjects) | `objectIds` |
 | undo | [`undo()`](#undo) | — |
 | redo | [`redo()`](#redo) | — |
-| create_image | [`addObject()`](#addobject) with an `UpdrawImage` of the SVG markup or, with `images: { urls: true }`, of the URL | `name?`, `x`, `y`, `width?`, `height?` (together; the image's own size, fitted into 300×300, when left out), `svg` (with `urls`, exactly one of `svg?` and `url?`) |
-| create_iframe | [`addObject()`](#addobject) with an `UpdrawIframeObject` sandboxed to scripts only, with `MODEL_IFRAME_CONTENT_SECURITY_POLICY`, which blocks network access | `name`, `x`, `y`, `width`, `height`, `html`, `css?`, `script?` |
+| create_image | [`addObject()`](#addobject) with an `UpmadeImage` of the SVG markup or, with `images: { urls: true }`, of the URL | `name?`, `x`, `y`, `width?`, `height?` (together; the image's own size, fitted into 300×300, when left out), `svg` (with `urls`, exactly one of `svg?` and `url?`) |
+| create_iframe | [`addObject()`](#addobject) with an `UpmadeIframeObject` sandboxed to scripts only, with `MODEL_IFRAME_CONTENT_SECURITY_POLICY`, which blocks network access | `name`, `x`, `y`, `width`, `height`, `html`, `css?`, `script?` |
 | read_iframe | — | `objectId` |
 | update_iframe | [`updateIframe()`](#updateiframe) | `objectId`, `name?`, `html?`, `css?`, `script?`, `edits?` |
 | set_viewport | The engine's viewport | `x?`, `y?` (together), `zoom?` or `zoomBy?` |
@@ -448,26 +448,26 @@ tools(options?: UpdrawAgentToolsOptions): UpdrawAgentTool[]
 
 `addObject()` has no tool of its own, because it needs an object that the app builds; `create_image` and `create_iframe` place the objects they build with it. A target (`target`, `to`) is one object in the schema: a point `{ x, y }` or a point on an object `{ objectId, anchor?, offset? }`, where `objectId` wins. The `click` tool clicks on the canvas only; models use widgets with `interact_with_element`, whose `interaction` is one object in the schema with a `type` and the fields of that type. Colors are CSS color strings.
 
-`inspect_elements` lists the elements inside a widget (an object whose content has elements, such as an iframe object), so the model can find the selectors to use with `interact_with_element`. Without a `selector`, it lists the elements a user can interact with: buttons, links, form fields, elements with an interactive ARIA role, and elements that show a pointer cursor. It resolves with the `elements` as [`UpdrawCanvasElement`](#updrawcanvaselement) objects, at most `limit` (default 50, at most 200), and `truncated: true` when more matched. Both tools are offered to agents and to chat sessions that work as the user.
+`inspect_elements` lists the elements inside a widget (an object whose content has elements, such as an iframe object), so the model can find the selectors to use with `interact_with_element`. Without a `selector`, it lists the elements a user can interact with: buttons, links, form fields, elements with an interactive ARIA role, and elements that show a pointer cursor. It resolves with the `elements` as [`UpmadeCanvasElement`](#upmadecanvaselement) objects, at most `limit` (default 50, at most 200), and `truncated: true` when more matched. Both tools are offered to agents and to chat sessions that work as the user.
 
 `run()` works as follows:
 
 - It accepts the input as an object or as a JSON string, as some providers send it. `null` counts as a missing field. Unknown fields, missing required fields, and invalid values resolve with `reason: 'invalid-input'` and a `message` that names the field.
 - An action tool runs [`perform()`](#perform) with the `signal` of the context. Calls that run in parallel queue up in call order, and `observe_canvas` waits until the queued actions of the agent are done, so its snapshot shows their result.
-- An action tool resolves with a [`UpdrawAgentToolResult`](#updrawagenttoolresult) as JSON. On success, it has the `objectIds` of the action and, except for `click`, `select`, `clear_selection`, and `delete_objects`, the `objects` that were created or changed (up to 10). On failure, it has the `reason`, the `objectIds` that caused it, and a `hint` from [`AGENT_TOOL_REASON_HINTS`](#agent_tool_reason_hints). Inside [`task()`](#task), refusals are reported the same way instead of being thrown.
+- An action tool resolves with a [`UpmadeAgentToolResult`](#upmadeagenttoolresult) as JSON. On success, it has the `objectIds` of the action and, except for `click`, `select`, `clear_selection`, and `delete_objects`, the `objects` that were created or changed (up to 10). On failure, it has the `reason`, the `objectIds` that caused it, and a `hint` from [`AGENT_TOOL_REASON_HINTS`](#agent_tool_reason_hints). Inside [`task()`](#task), refusals are reported the same way instead of being thrown.
 - `read_iframe` and `update_iframe` only work on widgets that `create_iframe` placed: iframes sandboxed to scripts only, with the content security policy of model-written code. Other iframes of your app resolve with `'not-allowed'`, so a model never puts code into an iframe that runs with more rights. `read_iframe` resolves with the widget's `name`, `html`, `css`, and `script`. `edits` of `update_iframe` are find-and-replace changes `{ part, find, replace }`, applied in order; each `find` must occur exactly once in its part, otherwise the call resolves with `'invalid-input'` and a `message` that says why.
 - `set_viewport` and `fit_viewport` move only the view of the local user, never objects, and never the view of collaborators. They wait until the queued actions of the agent are done, so they can show what the same reply created, and resolve with `{ completed: true, viewport }`, the visible area as `observe_canvas` reports it. The zoom is clamped to the allowed range.
-- `observe_canvas` resolves with a [`UpdrawCanvasSnapshot`](#updrawcanvassnapshot) as JSON. It uses the defaults of `observe()`; `maxTextLength` of `tools()` does not change them.
+- `observe_canvas` resolves with a [`UpmadeCanvasSnapshot`](#upmadecanvassnapshot) as JSON. It uses the defaults of `observe()`; `maxTextLength` of `tools()` does not change them.
 - It never rejects for mistakes of the model, only for unexpected errors.
 
-`create_iframe` and `create_image` also have [`begin()`](#updrawagenttool), which a runner that streams tool calls, such as a [chat session](../advanced/agents.md#streaming), calls while the model writes a call. They place a loading placeholder as soon as the position and size are written, `create_image` only with a `width` and `height`, and fill it in when the call finishes. Their schemas list the position and size before the content, because models write the fields in the order of the schema. Runners that don't stream tool calls only call `run()`.
+`create_iframe` and `create_image` also have [`begin()`](#upmadeagenttool), which a runner that streams tool calls, such as a [chat session](../advanced/agents.md#streaming), calls while the model writes a call. They place a loading placeholder as soon as the position and size are written, `create_image` only with a `width` and `height`, and fill it in when the call finishes. Their schemas list the position and size before the content, because models write the fields in the order of the schema. Runners that don't stream tool calls only call `run()`.
 
 ### observe
 
 Returns what the agent sees of the canvas: the visible area, the user's selection, the agent's cursor and selection, and the objects, back to front, with their geometry, text, connections, style, and creator. Coordinates are world units, rounded to one decimal. Image data, iframe content, the points of strokes, and hidden objects are left out. Rejects while the agent is not added and while no workspace is loaded.
 
 ```ts
-observe(options?: UpdrawObserveOptions): Promise<UpdrawCanvasSnapshot>
+observe(options?: UpmadeObserveOptions): Promise<UpmadeCanvasSnapshot>
 ```
 
 | Option | Type | Default | Description |
@@ -492,19 +492,19 @@ for (const object of snapshot.objects) {
 Formats a result as the JSON string that the tools return. Use it in your own tools to answer the same way as the tools of the agent.
 
 ```ts
-formatAgentToolResult(result: UpdrawAgentToolResult): string
+formatAgentToolResult(result: UpmadeAgentToolResult): string
 ```
 
 ### parsePartialJson
 
-Reads JSON text that may stop anywhere, such as the input of a tool call while the model writes it. Open objects and arrays are closed, and values that the text has not finished are left out: a string without its closing quote, a number that may go on, a half-written literal, and a key without its value. Returns `undefined` when the text holds no value yet or is not the start of valid JSON. Use it in the `update()` of a [begun tool call](#updrawagenttool).
+Reads JSON text that may stop anywhere, such as the input of a tool call while the model writes it. Open objects and arrays are closed, and values that the text has not finished are left out: a string without its closing quote, a number that may go on, a half-written literal, and a key without its value. Returns `undefined` when the text holds no value yet or is not the start of valid JSON. Use it in the `update()` of a [begun tool call](#upmadeagenttool).
 
 ```ts
 parsePartialJson(text: string): unknown
 ```
 
 ```ts
-import { parsePartialJson } from '@updraw/vue-editor';
+import { parsePartialJson } from '@upmade/vue-editor';
 
 parsePartialJson('{"x":10,"y":2'); // { x: 10 }
 parsePartialJson('{"x":10,"y":2,'); // { x: 10, y: 2 }
@@ -515,11 +515,11 @@ parsePartialJson('{"x":10,"y":2,'); // { x: 10, y: 2 }
 What a model should do about each failure reason, as used for the `hint` of tool results.
 
 ```ts
-const AGENT_TOOL_REASON_HINTS: Record<UpdrawAgenticActionFailureReason | 'invalid-input', string>;
+const AGENT_TOOL_REASON_HINTS: Record<UpmadeAgenticActionFailureReason | 'invalid-input', string>;
 ```
 
 ```ts
-import { AGENT_TOOL_REASON_HINTS, formatAgentToolResult } from '@updraw/vue-editor';
+import { AGENT_TOOL_REASON_HINTS, formatAgentToolResult } from '@upmade/vue-editor';
 
 const result = await agent.addObject(page);
 const json = formatAgentToolResult(result.reason ? { ...result, hint: AGENT_TOOL_REASON_HINTS[result.reason] } : result);
@@ -536,7 +536,7 @@ When the editor shares presence with collaborators, it shares every agent whose 
 - **Limits:** the status is cut to 200 characters, and the selection and the objects of the running action to 50 IDs each.
 - **Requirement:** a sync provider with awareness, such as the WebSocket and Hocuspocus providers, or `BroadcastSyncProvider.with({ awareness: true })` between tabs. Without one, nothing is shared. See [Providers](./providers.md).
 
-The editors of collaborators show the agent's cursor, dashed outlines around its selection and the objects of its running action, and its avatar. They list it as a [`UpdrawRemoteAgentPresence`](#updrawremoteagentpresence) in `getRemoteAgents()` and `agentsChange`, but `getAgent()` does not return it there. Their agents refuse objects that it has selected or is working on with `'claimed-by-agent'`. An avatar URL from a collaborator is only used when it is an `http:`, `https:`, `data:image/`, or relative URL.
+The editors of collaborators show the agent's cursor, dashed outlines around its selection and the objects of its running action, and its avatar. They list it as a [`UpmadeRemoteAgentPresence`](#upmaderemoteagentpresence) in `getRemoteAgents()` and `agentsChange`, but `getAgent()` does not return it there. Their agents refuse objects that it has selected or is working on with `'claimed-by-agent'`. An avatar URL from a collaborator is only used when it is an `http:`, `https:`, `data:image/`, or relative URL.
 
 ---
 
@@ -547,49 +547,49 @@ The editors of collaborators show the agent's cursor, dashed outlines around its
 Subscribes to an event of the agent and returns a function that unsubscribes. Errors thrown by a listener are logged and don't affect other listeners.
 
 ```ts
-on<K extends keyof UpdrawAgentEventMap>(event: K, listener: (payload: UpdrawAgentEventMap[K]) => void): () => void
+on<K extends keyof UpmadeAgentEventMap>(event: K, listener: (payload: UpmadeAgentEventMap[K]) => void): () => void
 ```
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| change | UpdrawAgentState | The state changed: the agent was added or removed (`isAdded`), or its status, visibility, name, color, avatar, `broadcast`, activity, selection, history, or attachment changed. Also emitted for these changes while the agent is not added, and when a workspace switch drops the history (`canUndo` and `canRedo`). Not emitted for plain cursor motion. |
-| detached | UpdrawAgentDetachedEvent | The cursor stopped sticking to an object or an element inside it, because the object was deleted (`'object-removed'`) or after `detach()` (`'manual'`). |
-| interrupted | UpdrawAgentInterruptedEvent | Someone took over the objects of a running action: the user selected or grabbed them, a collaborator started editing them, or they were changed elsewhere. |
+| change | UpmadeAgentState | The state changed: the agent was added or removed (`isAdded`), or its status, visibility, name, color, avatar, `broadcast`, activity, selection, history, or attachment changed. Also emitted for these changes while the agent is not added, and when a workspace switch drops the history (`canUndo` and `canRedo`). Not emitted for plain cursor motion. |
+| detached | UpmadeAgentDetachedEvent | The cursor stopped sticking to an object or an element inside it, because the object was deleted (`'object-removed'`) or after `detach()` (`'manual'`). |
+| interrupted | UpmadeAgentInterruptedEvent | Someone took over the objects of a running action: the user selected or grabbed them, a collaborator started editing them, or they were changed elsewhere. |
 | removed | void | The agent was removed from its editor. |
 
-The editor emits `agentsChange` with a [`UpdrawAgentsChangeEvent`](#updrawagentschangeevent) when agents are added or removed, or when their presence changes.
+The editor emits `agentsChange` with a [`UpmadeAgentsChangeEvent`](#upmadeagentschangeevent) when agents are added or removed, or when their presence changes.
 
 ---
 
 ## Errors
 
-### UpdrawAgentActionError
+### UpmadeAgentActionError
 
 Thrown when an action that belongs to a running [`task()`](#task) does not complete, for example because the user has the target selected. An action belongs to the task when it starts while the task runs.
 
 ```ts
-class UpdrawAgentActionError extends Error {
-  readonly name: 'UpdrawAgentActionError';
+class UpmadeAgentActionError extends Error {
+  readonly name: 'UpmadeAgentActionError';
   /** The action that did not complete. */
-  readonly action: UpdrawAgenticAction;
+  readonly action: UpmadeAgenticAction;
   /** Its result, with `completed: false`. */
-  readonly result: UpdrawAgenticActionResult;
+  readonly result: UpmadeAgenticActionResult;
   /** Why the action did not complete. */
-  readonly reason: UpdrawAgenticActionFailureReason | undefined;
+  readonly reason: UpmadeAgenticActionFailureReason | undefined;
   /** The objects that caused it, when known. */
   readonly objectIds: string[];
 }
 ```
 
 ```ts
-import { UpdrawAgentActionError } from '@updraw/vue-editor';
+import { UpmadeAgentActionError } from '@upmade/vue-editor';
 
 try {
   await agent.task('Arranging', async () => {
     await agent.moveObject(shape.id, { x: 200, y: 0 });
   });
 } catch (error) {
-  if (error instanceof UpdrawAgentActionError && error.reason === 'user-selected') {
+  if (error instanceof UpmadeAgentActionError && error.reason === 'user-selected') {
     // The user is working on the shape
   }
 }
@@ -599,7 +599,7 @@ try {
 
 | Situation | Error |
 |-----------|-------|
-| `new UpdrawAgent()` without a `name` | Throws a `TypeError`. |
+| `new UpmadeAgent()` without a `name` | Throws a `TypeError`. |
 | An action or `moveTo()` while the agent is not added | Rejects with an `Error`. |
 | An action with an unknown `type` or invalid fields | Rejects with a `TypeError`. |
 | `moveTo()` with an invalid target or to an object that does not exist | Rejects with an `Error`. |
@@ -608,21 +608,21 @@ try {
 | `interactWithElement()`, or `click()` with an element target, with an empty selector or an invalid interaction | Rejects with a `TypeError`. |
 | `task()` while another task of the agent is running | Rejects with an `Error`. |
 | `observe()` while the agent is not added or no workspace is loaded | Rejects with an `Error`. |
-| `addAgent()` with a value that is not an `UpdrawAgent` | Rejects with a `TypeError`. |
+| `addAgent()` with a value that is not an `UpmadeAgent` | Rejects with a `TypeError`. |
 | `addAgent()` with a second agent that has the same ID, or with an agent of another editor | Rejects with an `Error`. |
 
-Runtime conditions, such as a user who has a target selected, never reject. They resolve with `completed: false` and a [failure reason](#updrawagenticactionfailurereason).
+Runtime conditions, such as a user who has a target selected, never reject. They resolve with `completed: false` and a [failure reason](#upmadeagenticactionfailurereason).
 
 ---
 
 ## Related Types
 
-### UpdrawAgentOptions
+### UpmadeAgentOptions
 
 Passed to the [constructor](#constructor).
 
 ```ts
-interface UpdrawAgentOptions {
+interface UpmadeAgentOptions {
   id?: string;
   name: string;
   color?: string;
@@ -631,36 +631,36 @@ interface UpdrawAgentOptions {
   broadcast?: boolean;
   status?: string;
   visible?: boolean;
-  position?: UpdrawAgenticTarget;
+  position?: UpmadeAgenticTarget;
 }
 ```
 
-### UpdrawAgentState
+### UpmadeAgentState
 
 Returned by [`agent.state`](#state) and passed to `change` listeners.
 
 ```ts
-interface UpdrawAgentState {
+interface UpmadeAgentState {
   isAdded: boolean;
-  position: UpdrawPoint | null;
-  attachedTo: UpdrawAgenticAttachment | null;
+  position: UpmadePoint | null;
+  attachedTo: UpmadeAgenticAttachment | null;
   isMoving: boolean;
   status: string | null;
   visible: boolean;
   selection: string[];
-  activeAction: UpdrawAgenticActionType | null;
+  activeAction: UpmadeAgenticActionType | null;
   queueLength: number;
   canUndo: boolean;
   canRedo: boolean;
 }
 ```
 
-### UpdrawAgentPresence
+### UpmadeAgentPresence
 
-An agent as reported by `toPresence()` and `agentsChange`. `displayName` and `profileImageUrl` repeat `name` and `avatarUrl` for components that render `IUpdrawUser` objects. `isRemote` is always `false`. Agents of collaborators are [`UpdrawRemoteAgentPresence`](#updrawremoteagentpresence) objects with `isRemote: true`.
+An agent as reported by `toPresence()` and `agentsChange`. `displayName` and `profileImageUrl` repeat `name` and `avatarUrl` for components that render `IUpmadeUser` objects. `isRemote` is always `false`. Agents of collaborators are [`UpmadeRemoteAgentPresence`](#upmaderemoteagentpresence) objects with `isRemote: true`.
 
 ```ts
-interface UpdrawAgentPresence {
+interface UpmadeAgentPresence {
   id: string;
   kind: 'agent';
   name: string;
@@ -670,28 +670,28 @@ interface UpdrawAgentPresence {
   profileImageUrl?: string;
   status: string | null;
   visible: boolean;
-  activeAction: UpdrawAgenticActionType | null;
+  activeAction: UpmadeAgenticActionType | null;
   queueLength: number;
   isRemote: false;
 }
 ```
 
-### UpdrawAgentsChangeEvent
+### UpmadeAgentsChangeEvent
 
-Detail of the editor's `agentsChange` event. Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes, in this editor or in the editor of a collaborator. Never emitted for plain cursor motion. Lists the agents of this editor first, then the agents of collaborators. `isRemote` tells them apart: `if (agent.isRemote)` narrows an entry to an `UpdrawRemoteAgentPresence`.
+Detail of the editor's `agentsChange` event. Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes, in this editor or in the editor of a collaborator. Never emitted for plain cursor motion. Lists the agents of this editor first, then the agents of collaborators. `isRemote` tells them apart: `if (agent.isRemote)` narrows an entry to an `UpmadeRemoteAgentPresence`.
 
 ```ts
-interface UpdrawAgentsChangeEvent {
-  agents: (UpdrawAgentPresence | UpdrawRemoteAgentPresence)[];
+interface UpmadeAgentsChangeEvent {
+  agents: (UpmadeAgentPresence | UpmadeRemoteAgentPresence)[];
 }
 ```
 
-### UpdrawRemoteAgentPresence
+### UpmadeRemoteAgentPresence
 
-An agent of a collaborator, as returned by `getRemoteAgents()` and listed in `agentsChange` after the agents of the editor. The same agent ID can appear for several collaborators; `clientId` and `id` together are unique. In `agentsChange`, `if (agent.isRemote)` narrows an entry to this type. To filter the list, use a type predicate such as `(agent): agent is UpdrawRemoteAgentPresence => agent.isRemote`.
+An agent of a collaborator, as returned by `getRemoteAgents()` and listed in `agentsChange` after the agents of the editor. The same agent ID can appear for several collaborators; `clientId` and `id` together are unique. In `agentsChange`, `if (agent.isRemote)` narrows an entry to this type. To filter the list, use a type predicate such as `(agent): agent is UpmadeRemoteAgentPresence => agent.isRemote`.
 
 ```ts
-interface UpdrawRemoteAgentPresence extends Omit<UpdrawAgentPresence, 'isRemote'> {
+interface UpmadeRemoteAgentPresence extends Omit<UpmadeAgentPresence, 'isRemote'> {
   isRemote: true;
   /** Awareness client ID of the collaborator's connection. */
   clientId: number;
@@ -700,26 +700,26 @@ interface UpdrawRemoteAgentPresence extends Omit<UpdrawAgentPresence, 'isRemote'
 }
 ```
 
-### UpdrawAgentEventMap
+### UpmadeAgentEventMap
 
 The events of [`agent.on()`](#on) and their payloads.
 
 ```ts
-interface UpdrawAgentEventMap {
-  change: UpdrawAgentState;
-  detached: UpdrawAgentDetachedEvent;
-  interrupted: UpdrawAgentInterruptedEvent;
+interface UpmadeAgentEventMap {
+  change: UpmadeAgentState;
+  detached: UpmadeAgentDetachedEvent;
+  interrupted: UpmadeAgentInterruptedEvent;
   removed: void;
 }
 
-interface UpdrawAgentDetachedEvent {
+interface UpmadeAgentDetachedEvent {
   objectId: string;
   reason: 'object-removed' | 'manual';
 }
 
-interface UpdrawAgentInterruptedEvent {
-  action: UpdrawAgenticAction;
-  reason: UpdrawAgenticActionFailureReason;
+interface UpmadeAgentInterruptedEvent {
+  action: UpmadeAgenticAction;
+  reason: UpmadeAgenticActionFailureReason;
   /** The objects that caused the interruption. */
   objectIds: string[];
   /** Whether the changes made before the interruption were kept as one step of the agent's history. */
@@ -729,73 +729,73 @@ interface UpdrawAgentInterruptedEvent {
 
 `interrupted` is emitted for the reasons `'user-selected'`, `'user-interaction'`, `'collaborator-editing'`, and `'conflict'` once the action has started. Changes are kept only when the user took over (`'user-selected'` or `'user-interaction'`).
 
-### UpdrawAgenticTarget
+### UpmadeAgenticTarget
 
-A point in world coordinates, an anchor on an object, or an element inside an object's content, such as a button in an iframe object. Used by `moveTo()` and the `position` option, which point the cursor at an element, and by `click()` and `interactWithElement()`, which use it. `moveObject()` and `copyObjects()` take only point and object targets (`UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget`). Anchors rotate with the object, and `offset` is in world units of the object's unrotated space. For an element target, the first element that matches `selector` is used, and `anchor` and `offset` are relative to the element's box. While the cursor sticks to an element, it follows the element inside the content; if the element disappears or is scrolled out of view, the cursor stays at its last visible position and returns once it reappears.
+A point in world coordinates, an anchor on an object, or an element inside an object's content, such as a button in an iframe object. Used by `moveTo()` and the `position` option, which point the cursor at an element, and by `click()` and `interactWithElement()`, which use it. `moveObject()` and `copyObjects()` take only point and object targets (`UpmadeAgenticPointTarget | UpmadeAgenticObjectTarget`). Anchors rotate with the object, and `offset` is in world units of the object's unrotated space. For an element target, the first element that matches `selector` is used, and `anchor` and `offset` are relative to the element's box. While the cursor sticks to an element, it follows the element inside the content; if the element disappears or is scrolled out of view, the cursor stays at its last visible position and returns once it reappears.
 
 ```ts
-type UpdrawAgenticTarget = UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget | UpdrawAgenticElementTarget;
+type UpmadeAgenticTarget = UpmadeAgenticPointTarget | UpmadeAgenticObjectTarget | UpmadeAgenticElementTarget;
 
-interface UpdrawAgenticPointTarget {
+interface UpmadeAgenticPointTarget {
   x: number;
   y: number;
 }
 
-interface UpdrawAgenticObjectTarget {
+interface UpmadeAgenticObjectTarget {
   objectId: string;
-  anchor?: UpdrawAgenticAnchor; // defaults to 'center'
-  offset?: UpdrawPoint;
+  anchor?: UpmadeAgenticAnchor; // defaults to 'center'
+  offset?: UpmadePoint;
 }
 
 // An element inside an object's content, such as a button in an iframe object
-interface UpdrawAgenticElementTarget {
+interface UpmadeAgenticElementTarget {
   objectId: string;
   selector: string; // CSS selector, the first match is used
-  anchor?: UpdrawAgenticAnchor; // on the element, defaults to 'center'
-  offset?: UpdrawPoint;
+  anchor?: UpmadeAgenticAnchor; // on the element, defaults to 'center'
+  offset?: UpmadePoint;
 }
 
-type UpdrawAgenticAnchor =
+type UpmadeAgenticAnchor =
   | 'center' | 'top-left' | 'top' | 'top-right' | 'right'
   | 'bottom-right' | 'bottom' | 'bottom-left' | 'left';
 
-interface UpdrawAgenticAttachment {
+interface UpmadeAgenticAttachment {
   objectId: string;
   selector?: string; // set when the cursor sticks to an element inside the object
-  anchor: UpdrawAgenticAnchor;
-  offset: UpdrawPoint;
+  anchor: UpmadeAgenticAnchor;
+  offset: UpmadePoint;
 }
 ```
 
-### UpdrawAgenticMoveOptions
+### UpmadeAgenticMoveOptions
 
 Passed to `moveTo()`.
 
 ```ts
-interface UpdrawAgenticMoveOptions {
+interface UpmadeAgenticMoveOptions {
   /** Fixed duration in milliseconds. When omitted, the duration follows from the distance and `speed`. */
   duration?: number;
   /** Defaults to 'ease-in-out'. */
-  easing?: UpdrawEasing;
+  easing?: UpmadeEasing;
   /** Screen pixels per second. Defaults to the agent's `speed`, or 1200. */
   speed?: number;
   /** Whether the cursor sticks to an object or element target after arriving. Defaults to true. */
   attach?: boolean;
 }
 
-interface UpdrawAgenticMoveResult {
+interface UpmadeAgenticMoveResult {
   completed: boolean;
 }
 
-type UpdrawEasing = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | ((t: number) => number);
+type UpmadeEasing = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | ((t: number) => number);
 ```
 
-### UpdrawObjectElementInteraction
+### UpmadeObjectElementInteraction
 
 What [`interactWithElement()`](#interactwithelement) does to the element, as a user would with the mouse or keyboard. The content performs it with DOM events: its handlers run as for a real press, but CSS `:hover` and `:active` styles don't apply, and APIs that need a user gesture may refuse to work.
 
 ```ts
-type UpdrawObjectElementInteraction =
+type UpmadeObjectElementInteraction =
   /** Clicks the center of the element's visible part; count: 2 double-clicks. */
   | { type: 'click'; count?: 1 | 2 }
   /** Moves the pointer onto the element. */
@@ -812,7 +812,7 @@ type UpdrawObjectElementInteraction =
   | { type: 'scroll'; deltaX?: number; deltaY?: number };
 ```
 
-### UpdrawObjectElementInteractionFailureReason
+### UpmadeObjectElementInteractionFailureReason
 
 Why an element refused an interaction: `elementReason` of an action result with `reason: 'element-interaction-failed'`, and `reason` of the result of the object's `interactWithElement()`.
 
@@ -828,12 +828,12 @@ Why an element refused an interaction: `elementReason` of an action result with 
 | `'invalid-value'` | The value, option, or key was not accepted. A field that refused a value is left as it was. |
 | `'unavailable'` | The object is not mounted, its content runs without scripts, or it did not respond or reloaded meanwhile. |
 
-### UpdrawObjectElementState
+### UpmadeObjectElementState
 
-The `state` of an element in a [`UpdrawCanvasElement`](#updrawcanvaselement) and in element descriptions: what the element's attributes don't show. Only the fields that apply are set.
+The `state` of an element in a [`UpmadeCanvasElement`](#upmadecanvaselement) and in element descriptions: what the element's attributes don't show. Only the fields that apply are set.
 
 ```ts
-interface UpdrawObjectElementState {
+interface UpmadeObjectElementState {
   disabled?: boolean;          // disabled, aria-disabled="true", or inside an inert subtree
   checked?: boolean | 'mixed'; // checkboxes, radio buttons, and switches, also by ARIA role
   selected?: boolean;          // <option>
@@ -844,53 +844,53 @@ interface UpdrawObjectElementState {
 }
 ```
 
-### UpdrawAgenticAction
+### UpmadeAgenticAction
 
 Passed to `perform()`. Each action method builds one of these objects. Coordinates and sizes are in world units, angles in degrees.
 
 ```ts
-type UpdrawAgenticAction =
-  | { type: 'click'; target: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget | UpdrawAgenticElementTarget; count?: 1 | 2 }
-  | { type: 'interactWithElement'; target: UpdrawAgenticElementTarget; interaction: UpdrawObjectElementInteraction }
+type UpmadeAgenticAction =
+  | { type: 'click'; target: UpmadeAgenticPointTarget | UpmadeAgenticObjectTarget | UpmadeAgenticElementTarget; count?: 1 | 2 }
+  | { type: 'interactWithElement'; target: UpmadeAgenticElementTarget; interaction: UpmadeObjectElementInteraction }
   | { type: 'select'; objectIds: string[]; additive?: boolean }
   | { type: 'clearSelection' }
-  | { type: 'moveObject'; objectId: string; to: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget; align?: UpdrawAgenticAnchor }
-  | { type: 'resizeObject'; objectId: string; width?: number; height?: number; keepAspectRatio?: boolean; handle?: UpdrawAgenticResizeHandle }
+  | { type: 'moveObject'; objectId: string; to: UpmadeAgenticPointTarget | UpmadeAgenticObjectTarget; align?: UpmadeAgenticAnchor }
+  | { type: 'resizeObject'; objectId: string; width?: number; height?: number; keepAspectRatio?: boolean; handle?: UpmadeAgenticResizeHandle }
   | { type: 'rotateObject'; objectId: string; angle: number; relative?: boolean }
-  | { type: 'copyObjects'; objectIds: string[]; to?: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget }
+  | { type: 'copyObjects'; objectIds: string[]; to?: UpmadeAgenticPointTarget | UpmadeAgenticObjectTarget }
   | { type: 'groupObjects'; objectIds: string[] }
   | { type: 'ungroupObjects'; objectIds: string[] }
-  | { type: 'orderObjects'; objectIds: string[]; order: UpdrawAgenticOrder }
-  | { type: 'createShape'; x: number; y: number; width: number; height: number; shapeType?: ShapeType; text?: string; style?: UpdrawAgenticShapeStyle }
-  | { type: 'createText'; x: number; y: number; text: string; style?: UpdrawAgenticTextStyle }
+  | { type: 'orderObjects'; objectIds: string[]; order: UpmadeAgenticOrder }
+  | { type: 'createShape'; x: number; y: number; width: number; height: number; shapeType?: ShapeType; text?: string; style?: UpmadeAgenticShapeStyle }
+  | { type: 'createText'; x: number; y: number; text: string; style?: UpmadeAgenticTextStyle }
   | { type: 'typeText'; objectId: string; text: string; mode?: 'append' | 'replace' }
-  | { type: 'drawPath'; points: UpdrawPoint[]; style?: UpdrawAgenticStrokeStyle }
-  | { type: 'connect'; from: string; to: string; style?: UpdrawAgenticLineStyle }
-  | { type: 'setStyle'; objectIds: string[]; style: UpdrawAgenticObjectStyle }
-  | { type: 'addObject'; object: UpdrawBaseObject; fill?: Promise<UpdrawAgenticFill> }
+  | { type: 'drawPath'; points: UpmadePoint[]; style?: UpmadeAgenticStrokeStyle }
+  | { type: 'connect'; from: string; to: string; style?: UpmadeAgenticLineStyle }
+  | { type: 'setStyle'; objectIds: string[]; style: UpmadeAgenticObjectStyle }
+  | { type: 'addObject'; object: UpmadeBaseObject; fill?: Promise<UpmadeAgenticFill> }
   | { type: 'deleteObjects'; objectIds: string[] }
   | { type: 'undo' }
   | { type: 'redo' };
 
-type UpdrawAgenticActionType = UpdrawAgenticAction['type'];
+type UpmadeAgenticActionType = UpmadeAgenticAction['type'];
 
-type UpdrawAgenticResizeHandle = 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left';
+type UpmadeAgenticResizeHandle = 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left';
 
-type UpdrawAgenticOrder = 'front' | 'back' | 'forward' | 'backward';
+type UpmadeAgenticOrder = 'front' | 'back' | 'forward' | 'backward';
 ```
 
-Each member is also exported as its own interface, for example `UpdrawAgenticMoveObjectAction`, `UpdrawAgenticSetStyleAction`, and `UpdrawAgenticAddObjectAction`.
+Each member is also exported as its own interface, for example `UpmadeAgenticMoveObjectAction`, `UpmadeAgenticSetStyleAction`, and `UpmadeAgenticAddObjectAction`.
 
-### UpdrawAgenticFill
+### UpmadeAgenticFill
 
 What fills in the placeholder of an `addObject` action with a `fill`. See [addObject](#addobject).
 
 ```ts
-interface UpdrawAgenticFill {
+interface UpmadeAgenticFill {
   /** The object the placeholder stands in for. It is prepared like an added object, but never inserted. */
-  content: UpdrawBaseObject;
+  content: UpmadeBaseObject;
   /** Copies `content` onto the placeholder, for example a widget's code. Runs synchronously inside the action. */
-  apply(placeholder: UpdrawBaseObject, content: UpdrawBaseObject): void;
+  apply(placeholder: UpmadeBaseObject, content: UpmadeBaseObject): void;
 }
 ```
 
@@ -901,54 +901,54 @@ interface UpdrawAgenticFill {
 Styles of created and restyled objects. Colors are any CSS color or a theme-aware `{ light, dark }` color. Unset fields of a created object use the current settings of the matching tool.
 
 ```ts
-type UpdrawAgenticColor = string | ThemeAwareColor;
+type UpmadeAgenticColor = string | ThemeAwareColor;
 
-interface UpdrawAgenticShapeStyle {
-  fillColor?: UpdrawAgenticColor;
-  strokeColor?: UpdrawAgenticColor;
+interface UpmadeAgenticShapeStyle {
+  fillColor?: UpmadeAgenticColor;
+  strokeColor?: UpmadeAgenticColor;
   strokeWidth?: number;
   opacity?: number;
   fontSize?: number;
   fontFamily?: string;
-  fontColor?: UpdrawAgenticColor;
+  fontColor?: UpmadeAgenticColor;
 }
 
-interface UpdrawAgenticTextStyle {
+interface UpmadeAgenticTextStyle {
   fontSize?: number;
   fontFamily?: string;
-  fontColor?: UpdrawAgenticColor;
+  fontColor?: UpmadeAgenticColor;
   opacity?: number;
 }
 
-interface UpdrawAgenticStrokeStyle {
-  strokeColor?: UpdrawAgenticColor;
+interface UpmadeAgenticStrokeStyle {
+  strokeColor?: UpmadeAgenticColor;
   strokeWidth?: number;
   opacity?: number;
 }
 
-interface UpdrawAgenticLineStyle extends UpdrawAgenticStrokeStyle {
+interface UpmadeAgenticLineStyle extends UpmadeAgenticStrokeStyle {
   arrows?: LineArrowConfig;
 }
 
-interface UpdrawAgenticObjectStyle {
-  fillColor?: UpdrawAgenticColor;
-  strokeColor?: UpdrawAgenticColor;
+interface UpmadeAgenticObjectStyle {
+  fillColor?: UpmadeAgenticColor;
+  strokeColor?: UpmadeAgenticColor;
   strokeWidth?: number;
   opacity?: number;
   fontSize?: number;
   fontFamily?: string;
-  fontColor?: UpdrawAgenticColor;
+  fontColor?: UpmadeAgenticColor;
   /** Per end: an end left out keeps its arrow head. */
   arrows?: LineArrowConfig;
 }
 ```
 
-### UpdrawAgenticActionOptions
+### UpmadeAgenticActionOptions
 
 The last argument of every action.
 
 ```ts
-interface UpdrawAgenticActionOptions {
+interface UpmadeAgenticActionOptions {
   /** Screen pixels per second. Defaults to the agent's `speed`, or 1200. Also scales presses, drags, drawing, and typing. */
   speed?: number;
   /** Skips all animation and applies the change at once; a placed object still plays the theme's appear animation. Defaults to false. */
@@ -956,20 +956,20 @@ interface UpdrawAgenticActionOptions {
   /** Stops the action, also while it waits in the queue. Its changes are rolled back. */
   signal?: AbortSignal;
   /** Easing of the cursor flight and of drags. Defaults to 'ease-in-out'. */
-  easing?: UpdrawEasing;
+  easing?: UpmadeEasing;
 }
 ```
 
-### UpdrawAgenticActionResult
+### UpmadeAgenticActionResult
 
 Returned by every action.
 
 ```ts
-interface UpdrawAgenticActionResult {
+interface UpmadeAgenticActionResult {
   /** true when the action ran to the end. */
   completed: boolean;
   /** Set only when `completed` is false. */
-  reason?: UpdrawAgenticActionFailureReason;
+  reason?: UpmadeAgenticActionFailureReason;
   /**
    * On success: the created or added object, the new selection of the agent, the changed or deleted objects,
    * the object under a click (empty on a miss), or the objects changed by undo or redo.
@@ -980,20 +980,20 @@ interface UpdrawAgenticActionResult {
    * For interactions with elements: the element afterwards, or the element that refused the interaction,
    * as the object's content describes it (the content may be untrusted).
    */
-  element?: UpdrawObjectElementInfo;
+  element?: UpmadeObjectElementInfo;
   /** For 'element-interaction-failed': why the element refused the interaction. */
-  elementReason?: UpdrawObjectElementInteractionFailureReason;
+  elementReason?: UpmadeObjectElementInteractionFailureReason;
   /** For 'element-interaction-failed': what went wrong, in words. */
   message?: string;
 }
 ```
 
-### UpdrawAgenticActionFailureReason
+### UpmadeAgenticActionFailureReason
 
 Why an action did not complete. Apart from `'user-selected'` and `'user-interaction'`, the changes of a stopped action are rolled back.
 
 ```ts
-type UpdrawAgenticActionFailureReason =
+type UpmadeAgenticActionFailureReason =
   | 'aborted'
   | 'agent-moved'
   | 'agent-removed'
@@ -1030,41 +1030,41 @@ type UpdrawAgenticActionFailureReason =
 | `'engine-disconnected'` | No workspace is ready, for example while the editor is loading or after it was removed from the page. |
 | `'element-interaction-failed'` | An element inside an object refused an interaction; `elementReason` and `message` say why, for example because it is disabled or covered. |
 
-### UpdrawAgentChangeSource
+### UpmadeAgentChangeSource
 
 The `source` of the `objectsAdded`, `objectsUpdated`, and `objectsRemoved` events when an agent made the change. `actionType` is `'undo'` or `'redo'` for changes from the agent's own history. Changes by the user, collaborators, sync, and the user's undo and redo have no `source`.
 
 ```ts
-interface UpdrawAgentChangeSource {
+interface UpmadeAgentChangeSource {
   type: 'agent';
   agentId: string;
-  actionType: UpdrawAgenticActionType;
+  actionType: UpmadeAgenticActionType;
 }
 ```
 
-### UpdrawAgentTool
+### UpmadeAgentTool
 
 A tool definition returned by [`tools()`](#tools). Anthropic calls the schema `input_schema`, OpenAI calls it `parameters`.
 
 ```ts
-interface UpdrawAgentTool {
+interface UpmadeAgentTool {
   name: string;
   description: string;
-  inputSchema: UpdrawAgentToolSchema;
+  inputSchema: UpmadeAgentToolSchema;
   /** Runs the tool with the model's input (an object or a JSON string) and resolves with a JSON result. */
-  run: (input: unknown, context?: UpdrawAgentToolContext) => Promise<string>;
+  run: (input: unknown, context?: UpmadeAgentToolContext) => Promise<string>;
   /** Optional: begins a call while the model is still writing its input. */
-  begin?: (context: UpdrawAgentToolContext) => UpdrawAgentToolCall;
+  begin?: (context: UpmadeAgentToolContext) => UpmadeAgentToolCall;
 }
 
-interface UpdrawAgentToolContext {
+interface UpmadeAgentToolContext {
   /** Stops the action like the `signal` of an action. */
   signal?: AbortSignal | null;
   /** The ID of the tool call being run, when the runner has one. A chat session always passes it. */
   toolCallId?: string;
 }
 
-interface UpdrawAgentToolCall {
+interface UpmadeAgentToolCall {
   /** More input arrived: the input's JSON text written so far. */
   update(inputText: string): void;
   /** The input is complete: finishes the call and resolves with its result, exactly like `run()`. */
@@ -1074,14 +1074,14 @@ interface UpdrawAgentToolCall {
 }
 ```
 
-`begin()` is optional. A runner that streams tool calls, such as a [chat session](../advanced/agents.md#streaming), calls it when the model starts a call and gets an `UpdrawAgentToolCall`. It passes the input written so far to `update()` as the input streams, then either calls `finish()` with the complete input instead of `run()`, or `cancel()` when the call won't run, for example because it was dropped or the prompt was stopped. A begun call is finished or cancelled exactly once. Runners that don't stream tool calls only call `run()`. `create_iframe` and `create_image` use `begin()` to show a loading placeholder while the model writes, and [`parsePartialJson()`](#parsepartialjson) reads the input written so far.
+`begin()` is optional. A runner that streams tool calls, such as a [chat session](../advanced/agents.md#streaming), calls it when the model starts a call and gets an `UpmadeAgentToolCall`. It passes the input written so far to `update()` as the input streams, then either calls `finish()` with the complete input instead of `run()`, or `cancel()` when the call won't run, for example because it was dropped or the prompt was stopped. A begun call is finished or cancelled exactly once. Runners that don't stream tool calls only call `run()`. `create_iframe` and `create_image` use `begin()` to show a loading placeholder while the model writes, and [`parsePartialJson()`](#parsepartialjson) reads the input written so far.
 
-### UpdrawAgentToolSchema
+### UpmadeAgentToolSchema
 
 The JSON Schema of a tool's input. It uses only keywords that the major LLM providers accept: no `anyOf`, `const`, `$ref`, or minimum and maximum values. It is a type alias, not an interface, so that it fits SDK types that index schemas by string. The schemas are made for standard tool use, not for strict modes, so send the tools without strict mode: leave `strict` off with Anthropic and in OpenAI's Chat Completions API, and set `strict: false` in OpenAI's Responses API and Agents SDK.
 
 ```ts
-type UpdrawAgentToolSchema = {
+type UpmadeAgentToolSchema = {
   type: 'object';
   description?: string;
   properties: Record<string, object>;
@@ -1090,52 +1090,52 @@ type UpdrawAgentToolSchema = {
 };
 ```
 
-### UpdrawAgentToolsOptions
+### UpmadeAgentToolsOptions
 
 Options of [`tools()`](#tools).
 
 ```ts
-interface UpdrawAgentToolsOptions {
+interface UpmadeAgentToolsOptions {
   /** Only these tools (names without prefix), e.g. ['observe_canvas', 'create_shape']. */
   only?: string[];
-  /** Prefix for every tool name, e.g. 'updraw_'. */
+  /** Prefix for every tool name, e.g. 'upmade_'. */
   prefix?: string;
   /** Longest text an action may type. Defaults to 2000 characters. */
   maxTextLength?: number;
 }
 ```
 
-### UpdrawAgentToolResult
+### UpmadeAgentToolResult
 
 What the `run()` of an action tool resolves with, as JSON. `formatAgentToolResult()` formats it.
 
 ```ts
-interface UpdrawAgentToolResult {
+interface UpmadeAgentToolResult {
   completed: boolean;
   /** Why the action did not complete; 'invalid-input' when the input was rejected. */
-  reason?: UpdrawAgenticActionFailureReason | 'invalid-input';
+  reason?: UpmadeAgenticActionFailureReason | 'invalid-input';
   objectIds?: string[];
   /** What was wrong with the input, or why an element refused an interaction. */
   message?: string;
   /** What to do about the failure. */
   hint?: string;
   /** Snapshots of the objects the action created or changed. */
-  objects?: UpdrawCanvasObject[];
+  objects?: UpmadeCanvasObject[];
   /** The element an interaction acted on, as it is afterwards (interact_with_element). */
-  element?: UpdrawCanvasElement;
+  element?: UpmadeCanvasElement;
   /** The elements inside an object (inspect_elements). */
-  elements?: UpdrawCanvasElement[];
+  elements?: UpmadeCanvasElement[];
   /** Whether more elements matched than were returned. */
   truncated?: boolean;
 }
 ```
 
-### UpdrawCanvasElement
+### UpmadeCanvasElement
 
 An element inside an object's content as `inspect_elements` and `interact_with_element` describe it to models. Its strings come from the content, which may be untrusted.
 
 ```ts
-interface UpdrawCanvasElement {
+interface UpmadeCanvasElement {
   /** CSS selector of the element; pass it to interact_with_element. */
   selector: string;
   tagName: string;
@@ -1145,7 +1145,7 @@ interface UpdrawCanvasElement {
   /** Descriptive attributes such as role, aria-*, type, placeholder, or title. */
   attributes?: Record<string, string>;
   /** State such as disabled, checked, or focused. */
-  state?: UpdrawObjectElementState;
+  state?: UpmadeObjectElementState;
   /** The value of a form field; never of password fields. */
   value?: string;
   /** Whether part of the element can be seen. */
@@ -1153,12 +1153,12 @@ interface UpdrawCanvasElement {
 }
 ```
 
-### UpdrawObserveOptions
+### UpmadeObserveOptions
 
 Options of [`observe()`](#observe).
 
 ```ts
-interface UpdrawObserveOptions {
+interface UpmadeObserveOptions {
   /** 'all' (default) or only objects in the viewport. */
   scope?: 'all' | 'viewport';
   /** Only these objects (and their group children). */
@@ -1170,20 +1170,20 @@ interface UpdrawObserveOptions {
 }
 ```
 
-### UpdrawCanvasSnapshot
+### UpmadeCanvasSnapshot
 
 Returned by [`observe()`](#observe) and by the `observe_canvas` tool.
 
 ```ts
-interface UpdrawCanvasSnapshot {
+interface UpmadeCanvasSnapshot {
   /** The visible part of the canvas in world coordinates. */
   viewport: { x: number; y: number; width: number; height: number; scale: number };
   theme: string;
   /** Objects the user has selected. */
   userSelection: string[];
-  agent: { id: string; position: UpdrawPoint | null; selection: string[] };
+  agent: { id: string; position: UpmadePoint | null; selection: string[] };
   /** Back to front. */
-  objects: UpdrawCanvasObject[];
+  objects: UpmadeCanvasObject[];
   /** Number of objects that matched, before `maxObjects`. */
   totalObjects: number;
   /** true when objects were left out because of `maxObjects`. */
@@ -1191,12 +1191,12 @@ interface UpdrawCanvasSnapshot {
 }
 ```
 
-### UpdrawCanvasObject
+### UpmadeCanvasObject
 
 One object of a snapshot. Coordinates are world units, and the box is the box of the unrotated object. Colors are resolved for the current theme.
 
 ```ts
-interface UpdrawCanvasObject {
+interface UpmadeCanvasObject {
   id: string;
   type: 'shape' | 'text' | 'path' | 'line' | 'image' | 'iframe' | 'group' | 'custom' | 'object';
   shapeType?: string;

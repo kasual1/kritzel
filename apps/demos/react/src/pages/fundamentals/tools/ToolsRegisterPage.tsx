@@ -1,30 +1,30 @@
 import { useRef } from "react";
 import {
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawSelectionTool,
-  UpdrawTextTool,
-  type HTMLUpdrawEditorElement,
-  type UpdrawToolbarItem,
-} from "@updraw/react-editor";
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeSelectionTool,
+  UpmadeTextTool,
+  type HTMLUpmadeEditorElement,
+  type UpmadeToolbarItem,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
 
 const themes = [reactThemeLight, reactThemeDark];
 
-const toolbarItems: UpdrawToolbarItem[] = [
+const toolbarItems: UpmadeToolbarItem[] = [
   {
     name: "select",
     type: "tool",
-    tool: UpdrawSelectionTool,
+    tool: UpmadeSelectionTool,
     icon: "cursor",
     isDefault: true,
   },
   {
     name: "brush",
     type: "tool",
-    tool: UpdrawBrushTool,
+    tool: UpmadeBrushTool,
     icon: "pen",
     config: {
       color: { light: "#1f2937", dark: "#f3f4f6" },
@@ -38,7 +38,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
   {
     name: "highlighter",
     type: "tool",
-    tool: UpdrawBrushTool,
+    tool: UpmadeBrushTool,
     icon: "highlighter",
     config: {
       color: { light: "#ffeb3b", dark: "#fff176" },
@@ -53,7 +53,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
   {
     name: "text",
     type: "tool",
-    tool: UpdrawTextTool,
+    tool: UpmadeTextTool,
     icon: "type",
     config: {
       color: { light: "#1f2937", dark: "#f3f4f6" },
@@ -72,11 +72,11 @@ const toolbarItems: UpdrawToolbarItem[] = [
 ];
 
 export function ToolsRegisterPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
 
   return (
     <div style={hostStyle}>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="tools-register"
         theme="light"

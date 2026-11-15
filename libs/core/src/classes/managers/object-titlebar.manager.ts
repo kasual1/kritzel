@@ -1,77 +1,77 @@
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawSelectionBox } from '../objects/selection-box.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeSelectionBox } from '../objects/selection-box.class';
 import {
-  UPDRAW_TITLEBAR_DEFAULT_HEIGHT,
-  UPDRAW_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH,
-  UPDRAW_TITLEBAR_DEFAULT_OFFSET,
-  UpdrawObjectTitlebarHelper,
+  UPMADE_TITLEBAR_DEFAULT_HEIGHT,
+  UPMADE_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH,
+  UPMADE_TITLEBAR_DEFAULT_OFFSET,
+  UpmadeObjectTitlebarHelper,
 } from '../../helpers/object-titlebar.helper';
 import {
-  UpdrawObjectTitlebarConfig,
-  UpdrawObjectTitlebarContext,
-  UpdrawObjectTitlebarMenuState,
-  UpdrawTitlebarElement,
-  UpdrawTitlebarMenu,
-  UpdrawTitlebarMenuItem,
-  UpdrawTitlebarSection,
-  UpdrawTitlebarValue,
+  UpmadeObjectTitlebarConfig,
+  UpmadeObjectTitlebarContext,
+  UpmadeObjectTitlebarMenuState,
+  UpmadeTitlebarElement,
+  UpmadeTitlebarMenu,
+  UpmadeTitlebarMenuItem,
+  UpmadeTitlebarSection,
+  UpmadeTitlebarValue,
 } from '../../interfaces/object-titlebar.interface';
-import { UpdrawTermKey } from '../../interfaces/localization.interface';
-import { UpdrawIconName } from '../registries/icon-registry.class';
-import { UPDRAW_ROTATION_HANDLE_DISTANCE } from '../../constants/engine.constants';
+import { UpmadeTermKey } from '../../interfaces/localization.interface';
+import { UpmadeIconName } from '../registries/icon-registry.class';
+import { UPMADE_ROTATION_HANDLE_DISTANCE } from '../../constants/engine.constants';
 
 /** Marks titlebar elements that resolve to their owner object (the drag surface). */
-export const UPDRAW_TITLEBAR_OWNER_ATTRIBUTE = 'data-titlebar-owner-id';
+export const UPMADE_TITLEBAR_OWNER_ATTRIBUTE = 'data-titlebar-owner-id';
 /** Marks interactive titlebar elements; pointer input on them never reaches the active tool. */
-export const UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE = 'data-updraw-titlebar-control';
+export const UPMADE_TITLEBAR_CONTROL_ATTRIBUTE = 'data-upmade-titlebar-control';
 /** Marks an editable title; its value is the id of the title element. */
-export const UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE = 'data-updraw-titlebar-editable-title';
+export const UPMADE_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE = 'data-upmade-titlebar-editable-title';
 /** Marks the input used to rename an object; keyboard input in it never reaches canvas shortcuts. */
-export const UPDRAW_TITLEBAR_TITLE_INPUT_ATTRIBUTE = 'data-updraw-titlebar-title-input';
+export const UPMADE_TITLEBAR_TITLE_INPUT_ATTRIBUTE = 'data-upmade-titlebar-title-input';
 
-const DEFAULT_LEFT_ELEMENTS: UpdrawTitlebarElement[] = [{ id: 'title', type: 'title' }];
-const SECTIONS: UpdrawTitlebarSection[] = ['left', 'center', 'right'];
+const DEFAULT_LEFT_ELEMENTS: UpmadeTitlebarElement[] = [{ id: 'title', type: 'title' }];
+const SECTIONS: UpmadeTitlebarSection[] = ['left', 'center', 'right'];
 
-const OBJECT_TYPE_TERMS: Record<string, UpdrawTermKey> = {
-  UpdrawShape: 'objectType.shape',
-  UpdrawText: 'objectType.text',
-  UpdrawImage: 'objectType.image',
-  UpdrawPath: 'objectType.path',
-  UpdrawLine: 'objectType.line',
-  UpdrawGroup: 'objectType.group',
-  UpdrawIframeObject: 'objectType.iframe',
-  UpdrawDynamicObject: 'objectType.dynamic',
+const OBJECT_TYPE_TERMS: Record<string, UpmadeTermKey> = {
+  UpmadeShape: 'objectType.shape',
+  UpmadeText: 'objectType.text',
+  UpmadeImage: 'objectType.image',
+  UpmadePath: 'objectType.path',
+  UpmadeLine: 'objectType.line',
+  UpmadeGroup: 'objectType.group',
+  UpmadeIframeObject: 'objectType.iframe',
+  UpmadeDynamicObject: 'objectType.dynamic',
 };
 
 /** Icons from the default registry that represent each object type. */
-export const UPDRAW_OBJECT_TYPE_ICONS: Record<string, UpdrawIconName> = {
-  UpdrawShape: 'shapes',
-  UpdrawText: 'type',
-  UpdrawImage: 'image',
-  UpdrawPath: 'pen',
-  UpdrawLine: 'arrow',
-  UpdrawGroup: 'group',
-  UpdrawIframeObject: 'layoutTemplate',
-  UpdrawDynamicObject: 'braces',
+export const UPMADE_OBJECT_TYPE_ICONS: Record<string, UpmadeIconName> = {
+  UpmadeShape: 'shapes',
+  UpmadeText: 'type',
+  UpmadeImage: 'image',
+  UpmadePath: 'pen',
+  UpmadeLine: 'arrow',
+  UpmadeGroup: 'group',
+  UpmadeIframeObject: 'layoutTemplate',
+  UpmadeDynamicObject: 'braces',
 };
 
 /** Default titlebar: the object's type icon followed by its title. */
-export const UPDRAW_DEFAULT_OBJECT_TITLEBAR: UpdrawObjectTitlebarConfig = {
+export const UPMADE_DEFAULT_OBJECT_TITLEBAR: UpmadeObjectTitlebarConfig = {
   left: [
-    { id: 'type-icon', type: 'icon', icon: context => UPDRAW_OBJECT_TYPE_ICONS[context.objectType] ?? 'square' },
+    { id: 'type-icon', type: 'icon', icon: context => UPMADE_OBJECT_TYPE_ICONS[context.objectType] ?? 'square' },
     { id: 'title', type: 'title' },
   ],
 };
 
 /** The open titlebar menu. */
-interface UpdrawOpenTitlebarMenu {
+interface UpmadeOpenTitlebarMenu {
   ownerId: string;
   elementId: string;
-  section: UpdrawTitlebarSection;
-  items: UpdrawTitlebarMenuItem[];
+  section: UpmadeTitlebarSection;
+  items: UpmadeTitlebarMenuItem[];
   anchor: HTMLElement;
   anchorRect: DOMRect;
   /** Camera when the menu opened; the menu closes once it moves. */
@@ -81,17 +81,17 @@ interface UpdrawOpenTitlebarMenu {
 }
 
 /** Size of the titlebar band, read from the theme on every render. */
-export interface UpdrawTitlebarMetrics {
+export interface UpmadeTitlebarMetrics {
   height: number;
   offset: number;
 }
 
 /** An element with all of its dynamic values evaluated for one titlebar. */
-export interface UpdrawResolvedTitlebarElement {
-  element: UpdrawTitlebarElement;
-  section: UpdrawTitlebarSection;
+export interface UpmadeResolvedTitlebarElement {
+  element: UpmadeTitlebarElement;
+  section: UpmadeTitlebarSection;
   text?: string;
-  icon?: UpdrawIconName;
+  icon?: UpmadeIconName;
   label?: string;
   tooltip?: string;
   isDisabled?: boolean;
@@ -103,9 +103,9 @@ export interface UpdrawResolvedTitlebarElement {
 }
 
 /** Everything needed to render one titlebar. */
-export interface UpdrawResolvedTitlebar {
-  owner: UpdrawBaseObject<any>;
-  context: UpdrawObjectTitlebarContext;
+export interface UpmadeResolvedTitlebar {
+  owner: UpmadeBaseObject<any>;
+  context: UpmadeObjectTitlebarContext;
   isActive: boolean;
   /** CSS transform of the anchor inside the origin layer. */
   transform: string;
@@ -113,7 +113,7 @@ export interface UpdrawResolvedTitlebar {
   width: number;
   /** Id of the title element currently being edited, if any. */
   editingElementId?: string;
-  sections: Record<UpdrawTitlebarSection, UpdrawResolvedTitlebarElement[]>;
+  sections: Record<UpmadeTitlebarSection, UpmadeResolvedTitlebarElement[]>;
 }
 
 /**
@@ -121,21 +121,21 @@ export interface UpdrawResolvedTitlebar {
  * titlebar button clicks and menus. The configuration is read live from the engine's
  * `objectTitlebar` prop, so late prop updates from framework wrappers always apply.
  */
-export class UpdrawObjectTitlebarManager {
-  private readonly _core: UpdrawCore;
+export class UpmadeObjectTitlebarManager {
+  private readonly _core: UpmadeCore;
   private readonly _warnedElements = new Set<string>();
   private _hasReportedMissingHasTitlebar = false;
   private _editingTitle: { ownerId: string; elementId: string } | null = null;
-  private _openMenu: UpdrawOpenTitlebarMenu | null = null;
+  private _openMenu: UpmadeOpenTitlebarMenu | null = null;
   /** Latest input value of the title being edited, committed if the edit ends without a blur. */
   private _titleDraft: string | null = null;
 
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     this._core = core;
   }
 
   /** The current titlebar configuration, or `undefined` when titlebars are disabled. */
-  get config(): UpdrawObjectTitlebarConfig | undefined {
+  get config(): UpmadeObjectTitlebarConfig | undefined {
     return this._core.engine?.objectTitlebar ?? undefined;
   }
 
@@ -151,19 +151,19 @@ export class UpdrawObjectTitlebarManager {
   }
 
   /** Reads the titlebar height and offset tokens, falling back to defaults for non-pixel values. */
-  getMetrics(style: Pick<CSSStyleDeclaration, 'getPropertyValue'> | null | undefined): UpdrawTitlebarMetrics {
+  getMetrics(style: Pick<CSSStyleDeclaration, 'getPropertyValue'> | null | undefined): UpmadeTitlebarMetrics {
     return {
-      height: UpdrawObjectTitlebarHelper.parsePixels(style?.getPropertyValue('--updraw-titlebar-height'), UPDRAW_TITLEBAR_DEFAULT_HEIGHT),
-      offset: UpdrawObjectTitlebarHelper.parsePixels(style?.getPropertyValue('--updraw-titlebar-offset'), UPDRAW_TITLEBAR_DEFAULT_OFFSET),
+      height: UpmadeObjectTitlebarHelper.parsePixels(style?.getPropertyValue('--upmade-titlebar-height'), UPMADE_TITLEBAR_DEFAULT_HEIGHT),
+      offset: UpmadeObjectTitlebarHelper.parsePixels(style?.getPropertyValue('--upmade-titlebar-offset'), UPMADE_TITLEBAR_DEFAULT_OFFSET),
     };
   }
 
   /** World units by which the render query must be widened so titlebars hanging into view are rendered. */
-  getCullingPadding(metrics: UpdrawTitlebarMetrics): number {
+  getCullingPadding(metrics: UpmadeTitlebarMetrics): number {
     if (!this.isEnabled) {
       return 0;
     }
-    return UpdrawObjectTitlebarHelper.getCullingPadding(metrics.height, metrics.offset, this._core.store.state.scale);
+    return UpmadeObjectTitlebarHelper.getCullingPadding(metrics.height, metrics.offset, this._core.store.state.scale);
   }
 
   /**
@@ -171,19 +171,19 @@ export class UpdrawObjectTitlebarManager {
    * (not children of a candidate group) for which `objectConfig.hasTitlebar` is true.
    * A group's bounds contain its children, so a visible child's group is always a candidate.
    */
-  getOwners(candidates: UpdrawBaseObject<any>[]): UpdrawBaseObject<any>[] {
+  getOwners(candidates: UpmadeBaseObject<any>[]): UpmadeBaseObject<any>[] {
     const objectConfigManager = this._core.objectConfigManager;
     if (!objectConfigManager.isConfigured('hasTitlebar')) {
       if (this.isEnabled && !this._hasReportedMissingHasTitlebar) {
         this._hasReportedMissingHasTitlebar = true;
-        console.info("[UpdrawObjectTitlebar] No titlebars are rendered because `objectConfig.hasTitlebar` is not set, e.g. `objectConfig = { hasTitlebar: object => object.__class__ === 'UpdrawGroup' }`.");
+        console.info("[UpmadeObjectTitlebar] No titlebars are rendered because `objectConfig.hasTitlebar` is not set, e.g. `objectConfig = { hasTitlebar: object => object.__class__ === 'UpmadeGroup' }`.");
       }
       return [];
     }
 
     const childIds = new Set<string>();
     for (const candidate of candidates) {
-      if (candidate instanceof UpdrawGroup) {
+      if (candidate instanceof UpmadeGroup) {
         for (const childId of candidate.childIds) {
           childIds.add(childId);
         }
@@ -194,8 +194,8 @@ export class UpdrawObjectTitlebarManager {
       candidate =>
         !candidate.markedForRemoval &&
         !childIds.has(candidate.id) &&
-        !(candidate instanceof UpdrawSelectionGroup) &&
-        !(candidate instanceof UpdrawSelectionBox) &&
+        !(candidate instanceof UpmadeSelectionGroup) &&
+        !(candidate instanceof UpmadeSelectionBox) &&
         objectConfigManager.hasTitlebar(candidate),
     );
   }
@@ -204,7 +204,7 @@ export class UpdrawObjectTitlebarManager {
    * Returns the ids of titlebar owners that are active: selected themselves, or containing
    * a selected object (nested groups resolve selection to their direct parent).
    */
-  getActiveOwnerIds(candidates: UpdrawBaseObject<any>[]): Set<string> {
+  getActiveOwnerIds(candidates: UpmadeBaseObject<any>[]): Set<string> {
     const selectedIds = this._core.store.selectionGroup?.objectIds ?? [];
     const active = new Set<string>();
     if (selectedIds.length === 0) {
@@ -213,7 +213,7 @@ export class UpdrawObjectTitlebarManager {
 
     const parentOf = new Map<string, string>();
     for (const candidate of candidates) {
-      if (candidate instanceof UpdrawGroup) {
+      if (candidate instanceof UpmadeGroup) {
         for (const childId of candidate.childIds) {
           parentOf.set(childId, candidate.id);
         }
@@ -239,21 +239,21 @@ export class UpdrawObjectTitlebarManager {
    * The engine passes the titlebars and metrics of its render; without them, only the titlebar `target` shows on its
    * own is considered, by the rules of `resolveTitlebars` but without its side effects on open edits and menus.
    */
-  getRotationHandleDistance(target: UpdrawBaseObject<any>, rendered?: { titlebars: UpdrawResolvedTitlebar[]; metrics: UpdrawTitlebarMetrics }): number {
+  getRotationHandleDistance(target: UpmadeBaseObject<any>, rendered?: { titlebars: UpmadeResolvedTitlebar[]; metrics: UpmadeTitlebarMetrics }): number {
     if (!this.coversTopEdge(target, rendered?.titlebars ?? this.getOwnTitlebar(target))) {
-      return UPDRAW_ROTATION_HANDLE_DISTANCE;
+      return UPMADE_ROTATION_HANDLE_DISTANCE;
     }
     const host = this._core.engine?.host;
     const { height, offset } = rendered?.metrics ?? this.getMetrics(host && typeof getComputedStyle === 'function' ? getComputedStyle(host) : null);
-    return UPDRAW_ROTATION_HANDLE_DISTANCE + height + offset;
+    return UPMADE_ROTATION_HANDLE_DISTANCE + height + offset;
   }
 
   /** Whether one of the shown titlebars sits on the top edge of `target`, where its rotation handle starts. */
-  private coversTopEdge(target: UpdrawBaseObject<any>, titlebars: Pick<UpdrawResolvedTitlebar, 'owner' | 'isActive'>[]): boolean {
+  private coversTopEdge(target: UpmadeBaseObject<any>, titlebars: Pick<UpmadeResolvedTitlebar, 'owner' | 'isActive'>[]): boolean {
     if (titlebars.length === 0) {
       return false;
     }
-    const ids = target instanceof UpdrawSelectionGroup ? target.objectIds : [target.id];
+    const ids = target instanceof UpmadeSelectionGroup ? target.objectIds : [target.id];
     if (ids.length === 1 && titlebars.some(titlebar => titlebar.owner.id === ids[0])) {
       return true;
     }
@@ -264,35 +264,35 @@ export class UpdrawObjectTitlebarManager {
   }
 
   /** The titlebar `object` shows on its own, if any. */
-  private getOwnTitlebar(object: UpdrawBaseObject<any>): Pick<UpdrawResolvedTitlebar, 'owner' | 'isActive'>[] {
+  private getOwnTitlebar(object: UpmadeBaseObject<any>): Pick<UpmadeResolvedTitlebar, 'owner' | 'isActive'>[] {
     const config = this.config;
     if (!config || this.getOwners([object]).length === 0) {
       return [];
     }
     const isActive = this.getActiveOwnerIds(this.withNestedGroups(object)).has(object.id);
-    const anchor = UpdrawObjectTitlebarHelper.getAnchor(object, this._core.store.state, config.rotation ?? 'follow');
+    const anchor = UpmadeObjectTitlebarHelper.getAnchor(object, this._core.store.state, config.rotation ?? 'follow');
     return this.isShown(object, isActive, anchor.width, config) ? [{ owner: object, isActive }] : [];
   }
 
   /** The visibility rules: a titlebar being edited stays visible until the edit ends. */
-  private isShown(owner: UpdrawBaseObject<any>, isActive: boolean, width: number, config: UpdrawObjectTitlebarConfig): boolean {
+  private isShown(owner: UpmadeBaseObject<any>, isActive: boolean, width: number, config: UpmadeObjectTitlebarConfig): boolean {
     if (this._editingTitle?.ownerId === owner.id) {
       return true;
     }
-    return (config.visibility !== 'active' || isActive) && width >= (config.hideBelowWidth ?? UPDRAW_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH);
+    return (config.visibility !== 'active' || isActive) && width >= (config.hideBelowWidth ?? UPMADE_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH);
   }
 
   /** The object and the groups nested in it, so that a selected descendant makes it active. */
-  private withNestedGroups(object: UpdrawBaseObject<any>): UpdrawBaseObject<any>[] {
+  private withNestedGroups(object: UpmadeBaseObject<any>): UpmadeBaseObject<any>[] {
     const result = [object];
     const seen = new Set([object.id]);
     for (let i = 0; i < result.length; i++) {
       const current = result[i];
-      if (!(current instanceof UpdrawGroup)) {
+      if (!(current instanceof UpmadeGroup)) {
         continue;
       }
       for (const child of current.children) {
-        if (child instanceof UpdrawGroup && !seen.has(child.id)) {
+        if (child instanceof UpmadeGroup && !seen.has(child.id)) {
           seen.add(child.id);
           result.push(child);
         }
@@ -302,7 +302,7 @@ export class UpdrawObjectTitlebarManager {
   }
 
   /** Resolves the titlebars to render for the given candidate objects. */
-  resolveTitlebars(candidates: UpdrawBaseObject<any>[]): UpdrawResolvedTitlebar[] {
+  resolveTitlebars(candidates: UpmadeBaseObject<any>[]): UpmadeResolvedTitlebar[] {
     const config = this.config;
     if (!config) {
       this.closeMenu();
@@ -315,13 +315,13 @@ export class UpdrawObjectTitlebarManager {
     const owners = this.getOwners(candidates);
 
     const activeOwnerIds = this.getActiveOwnerIds(candidates);
-    const titlebars: UpdrawResolvedTitlebar[] = [];
+    const titlebars: UpmadeResolvedTitlebar[] = [];
     const editing = this._editingTitle;
 
     for (const owner of owners) {
       const isActive = activeOwnerIds.has(owner.id);
       const isEditing = editing?.ownerId === owner.id;
-      const anchor = UpdrawObjectTitlebarHelper.getAnchor(owner, viewport, config.rotation ?? 'follow');
+      const anchor = UpmadeObjectTitlebarHelper.getAnchor(owner, viewport, config.rotation ?? 'follow');
       if (!this.isShown(owner, isActive, anchor.width, config)) {
         continue;
       }
@@ -337,7 +337,7 @@ export class UpdrawObjectTitlebarManager {
         owner,
         context,
         isActive,
-        transform: UpdrawObjectTitlebarHelper.getTransform(anchor, viewport.scale),
+        transform: UpmadeObjectTitlebarHelper.getTransform(anchor, viewport.scale),
         width: anchor.width,
         editingElementId: isEditedElementShown ? editing.elementId : undefined,
         sections,
@@ -372,7 +372,7 @@ export class UpdrawObjectTitlebarManager {
   }
 
   /** Builds the context passed to dynamic element values and actions. */
-  createContext(owner: UpdrawBaseObject<any>, isActive: boolean, barWidth: number): UpdrawObjectTitlebarContext {
+  createContext(owner: UpmadeBaseObject<any>, isActive: boolean, barWidth: number): UpmadeObjectTitlebarContext {
     const bounds = owner.boundingBox;
     const translate = this.translate;
     const title = this.resolveTitle(owner);
@@ -381,8 +381,8 @@ export class UpdrawObjectTitlebarManager {
       object: owner,
       objectType: owner.__class__,
       // Resolving group children scans the store, so only do it when a callback asks for them.
-      get children(): UpdrawBaseObject[] {
-        return owner instanceof UpdrawGroup ? owner.children : [];
+      get children(): UpmadeBaseObject[] {
+        return owner instanceof UpmadeGroup ? owner.children : [];
       },
       isActive,
       title,
@@ -394,7 +394,7 @@ export class UpdrawObjectTitlebarManager {
   }
 
   /** Resolves an object's title: config resolver, then object name, then a localized type label. */
-  resolveTitle(owner: UpdrawBaseObject<any>): string {
+  resolveTitle(owner: UpmadeBaseObject<any>): string {
     const resolver = this.config?.title;
     if (resolver) {
       try {
@@ -424,17 +424,17 @@ export class UpdrawObjectTitlebarManager {
   getOwnerFromEvent(
     event: Pick<PointerEvent, 'clientX' | 'clientY'> & { composedPath?: () => EventTarget[] },
     options: { includeControls?: boolean } = {},
-  ): UpdrawBaseObject<any> | null {
+  ): UpmadeBaseObject<any> | null {
     if (!this.isEnabled) {
       return null;
     }
 
     for (const target of event.composedPath?.() ?? []) {
-      if (!options.includeControls && this.hasAttribute(target, UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE)) {
+      if (!options.includeControls && this.hasAttribute(target, UPMADE_TITLEBAR_CONTROL_ATTRIBUTE)) {
         return null;
       }
-      if (this.hasAttribute(target, UPDRAW_TITLEBAR_OWNER_ATTRIBUTE)) {
-        return this.findOwnerById((target as Element).getAttribute(UPDRAW_TITLEBAR_OWNER_ATTRIBUTE));
+      if (this.hasAttribute(target, UPMADE_TITLEBAR_OWNER_ATTRIBUTE)) {
+        return this.findOwnerById((target as Element).getAttribute(UPMADE_TITLEBAR_OWNER_ATTRIBUTE));
       }
     }
 
@@ -443,17 +443,17 @@ export class UpdrawObjectTitlebarManager {
     if (!topmost) {
       return null;
     }
-    if (!options.includeControls && topmost.closest(`[${UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE}]`)) {
+    if (!options.includeControls && topmost.closest(`[${UPMADE_TITLEBAR_CONTROL_ATTRIBUTE}]`)) {
       return null;
     }
-    const surface = topmost.closest(`[${UPDRAW_TITLEBAR_OWNER_ATTRIBUTE}]`);
-    return this.findOwnerById(surface?.getAttribute(UPDRAW_TITLEBAR_OWNER_ATTRIBUTE));
+    const surface = topmost.closest(`[${UPMADE_TITLEBAR_OWNER_ATTRIBUTE}]`);
+    return this.findOwnerById(surface?.getAttribute(UPMADE_TITLEBAR_OWNER_ATTRIBUTE));
   }
 
   /** Whether the event originated on an interactive titlebar control. */
   isControlEvent(event: { composedPath?: () => EventTarget[] }): boolean {
     const path = event.composedPath?.() ?? [];
-    return path.some(target => this.hasAttribute(target, UPDRAW_TITLEBAR_CONTROL_ATTRIBUTE));
+    return path.some(target => this.hasAttribute(target, UPMADE_TITLEBAR_CONTROL_ATTRIBUTE));
   }
 
   /**
@@ -461,7 +461,7 @@ export class UpdrawObjectTitlebarManager {
    * `action` and emits `objectTitlebarAction`; a menu opens or closes and emits `objectTitlebarMenuStateChange`.
    * Does nothing while the engine is disabled.
    */
-  invokeElement(ownerId: string, section: UpdrawTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement): void {
+  invokeElement(ownerId: string, section: UpmadeTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement): void {
     if (this._core.store.isDisabled) {
       return;
     }
@@ -486,14 +486,14 @@ export class UpdrawObjectTitlebarManager {
     try {
       element.action?.(context, event);
     } catch (error) {
-      console.error(`[UpdrawObjectTitlebar] Action of element "${element.id}" failed:`, error);
+      console.error(`[UpmadeObjectTitlebar] Action of element "${element.id}" failed:`, error);
     }
 
     this.emitAction(owner, section, element.id, anchor.getBoundingClientRect());
   }
 
   /** The state of the titlebar menu, as emitted with `objectTitlebarMenuStateChange`. */
-  get menuState(): UpdrawObjectTitlebarMenuState {
+  get menuState(): UpmadeObjectTitlebarMenuState {
     const menu = this._openMenu;
     if (!menu) {
       return { isVisible: false, items: [] };
@@ -547,13 +547,13 @@ export class UpdrawObjectTitlebarManager {
     try {
       menuItem.action?.(context, menuItem);
     } catch (error) {
-      console.error(`[UpdrawObjectTitlebar] Action of menu item "${menuItemId}" in "${element.id}" failed:`, error);
+      console.error(`[UpmadeObjectTitlebar] Action of menu item "${menuItemId}" in "${element.id}" failed:`, error);
     }
 
     this.emitAction(owner, menu.section, element.id, menu.anchorRect, menuItemId);
   }
 
-  private toggleMenu(owner: UpdrawBaseObject<any>, section: UpdrawTitlebarSection, element: UpdrawTitlebarMenu, context: UpdrawObjectTitlebarContext, anchor: HTMLElement): void {
+  private toggleMenu(owner: UpmadeBaseObject<any>, section: UpmadeTitlebarSection, element: UpmadeTitlebarMenu, context: UpmadeObjectTitlebarContext, anchor: HTMLElement): void {
     const isOpen = this._openMenu?.ownerId === owner.id && this._openMenu.elementId === element.id;
     if (isOpen) {
       this.closeMenu();
@@ -576,7 +576,7 @@ export class UpdrawObjectTitlebarManager {
   }
 
   /** Resolves the visible items of a menu, with labels translated and `isDisabled` evaluated. */
-  private resolveMenuItems(element: UpdrawTitlebarMenu, context: UpdrawObjectTitlebarContext): UpdrawTitlebarMenuItem[] {
+  private resolveMenuItems(element: UpmadeTitlebarMenu, context: UpmadeObjectTitlebarContext): UpmadeTitlebarMenuItem[] {
     const items = this.evaluate(element.items, context, [], element.id);
     if (!Array.isArray(items)) {
       return [];
@@ -596,7 +596,7 @@ export class UpdrawObjectTitlebarManager {
    * nor deselected, and the camera has not moved, since the menu is anchored to where the button was.
    * Menus also open on inactive titlebars, because clicking a titlebar button never changes the selection.
    */
-  private isMenuStillValid(menu: UpdrawOpenTitlebarMenu, titlebars: UpdrawResolvedTitlebar[]): boolean {
+  private isMenuStillValid(menu: UpmadeOpenTitlebarMenu, titlebars: UpmadeResolvedTitlebar[]): boolean {
     const { scale, translateX, translateY } = this._core.store.state;
     const hasViewportChanged = scale !== menu.viewport.scale || translateX !== menu.viewport.translateX || translateY !== menu.viewport.translateY;
     const titlebar = titlebars.find(candidate => candidate.owner.id === menu.ownerId);
@@ -605,14 +605,14 @@ export class UpdrawObjectTitlebarManager {
   }
 
   /** Builds the context of an owner outside of a render, e.g. for a click. */
-  private createLiveContext(owner: UpdrawBaseObject<any>): UpdrawObjectTitlebarContext {
+  private createLiveContext(owner: UpmadeBaseObject<any>): UpmadeObjectTitlebarContext {
     const state = this._core.store.state;
-    const anchor = UpdrawObjectTitlebarHelper.getAnchor(owner, { scale: state.scale, translateX: state.translateX, translateY: state.translateY }, this.config?.rotation ?? 'follow');
+    const anchor = UpmadeObjectTitlebarHelper.getAnchor(owner, { scale: state.scale, translateX: state.translateX, translateY: state.translateY }, this.config?.rotation ?? 'follow');
     const isActive = this.getActiveOwnerIds(this._core.store.allObjects).has(owner.id);
     return this.createContext(owner, isActive, anchor.width);
   }
 
-  private emitAction(owner: UpdrawBaseObject<any>, section: UpdrawTitlebarSection, elementId: string, anchorRect: DOMRect, menuItemId?: string): void {
+  private emitAction(owner: UpmadeBaseObject<any>, section: UpmadeTitlebarSection, elementId: string, anchorRect: DOMRect, menuItemId?: string): void {
     this._core.engine?.emitObjectTitlebarAction({
       elementId,
       ...(menuItemId === undefined ? {} : { menuItemId }),
@@ -625,11 +625,11 @@ export class UpdrawObjectTitlebarManager {
   }
 
   private readonly translate = (key: string, vars?: Record<string, string | number>): string => {
-    return this._core.localizationManager.translate(key as UpdrawTermKey, vars);
+    return this._core.localizationManager.translate(key as UpmadeTermKey, vars);
   };
 
-  private resolveElements(elements: UpdrawTitlebarElement[], section: UpdrawTitlebarSection, context: UpdrawObjectTitlebarContext): UpdrawResolvedTitlebarElement[] {
-    const resolved: UpdrawResolvedTitlebarElement[] = [];
+  private resolveElements(elements: UpmadeTitlebarElement[], section: UpmadeTitlebarSection, context: UpmadeObjectTitlebarContext): UpmadeResolvedTitlebarElement[] {
+    const resolved: UpmadeResolvedTitlebarElement[] = [];
 
     for (const element of elements) {
       const showWhen = element.showWhen ?? 'always';
@@ -692,7 +692,7 @@ export class UpdrawObjectTitlebarManager {
    * Evaluates a static or dynamic value. Failing callbacks and promises (which are not
    * supported because values are evaluated during render) resolve to the fallback.
    */
-  private evaluate<T>(value: UpdrawTitlebarValue<T> | undefined, context: UpdrawObjectTitlebarContext, fallback: T, elementId: string): T {
+  private evaluate<T>(value: UpmadeTitlebarValue<T> | undefined, context: UpmadeObjectTitlebarContext, fallback: T, elementId: string): T {
     if (value === undefined) {
       return fallback;
     }
@@ -701,7 +701,7 @@ export class UpdrawObjectTitlebarManager {
     }
 
     try {
-      const result = (value as (context: UpdrawObjectTitlebarContext) => T)(context);
+      const result = (value as (context: UpmadeObjectTitlebarContext) => T)(context);
       if (result && typeof (result as unknown as PromiseLike<T>).then === 'function') {
         this.warnOnce(elementId, 'Titlebar values must be synchronous; promises are not supported.');
         return (typeof fallback === 'boolean' ? false : fallback) as T;
@@ -718,10 +718,10 @@ export class UpdrawObjectTitlebarManager {
       return;
     }
     this._warnedElements.add(elementId);
-    console.warn(`[UpdrawObjectTitlebar] Element "${elementId}" could not be resolved:`, error);
+    console.warn(`[UpmadeObjectTitlebar] Element "${elementId}" could not be resolved:`, error);
   }
 
-  private getSectionElements(config: UpdrawObjectTitlebarConfig | undefined, section: UpdrawTitlebarSection): UpdrawTitlebarElement[] {
+  private getSectionElements(config: UpmadeObjectTitlebarConfig | undefined, section: UpmadeTitlebarSection): UpmadeTitlebarElement[] {
     if (!config || !SECTIONS.includes(section)) {
       return [];
     }
@@ -745,21 +745,21 @@ export class UpdrawObjectTitlebarManager {
       return null;
     }
 
-    let title = (event.composedPath?.() ?? []).find(target => this.hasAttribute(target, UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE)) as Element | undefined;
+    let title = (event.composedPath?.() ?? []).find(target => this.hasAttribute(target, UPMADE_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE)) as Element | undefined;
     if (!title) {
       const topmost = this._core.engine?.host?.shadowRoot?.elementsFromPoint?.(event.clientX, event.clientY)?.[0];
-      title = topmost?.closest(`[${UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE}]`) ?? undefined;
+      title = topmost?.closest(`[${UPMADE_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE}]`) ?? undefined;
     }
 
-    const ownerId = title?.closest(`[${UPDRAW_TITLEBAR_OWNER_ATTRIBUTE}]`)?.getAttribute(UPDRAW_TITLEBAR_OWNER_ATTRIBUTE);
-    const elementId = title?.getAttribute(UPDRAW_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE);
+    const ownerId = title?.closest(`[${UPMADE_TITLEBAR_OWNER_ATTRIBUTE}]`)?.getAttribute(UPMADE_TITLEBAR_OWNER_ATTRIBUTE);
+    const elementId = title?.getAttribute(UPMADE_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE);
     return ownerId && elementId ? { ownerId, elementId } : null;
   }
 
   /** Whether the event originated in the input used to rename an object. */
   isTitleInputEvent(event: { composedPath?: () => EventTarget[] }): boolean {
     const path = event.composedPath?.() ?? [];
-    return path.some(target => this.hasAttribute(target, UPDRAW_TITLEBAR_TITLE_INPUT_ATTRIBUTE));
+    return path.some(target => this.hasAttribute(target, UPMADE_TITLEBAR_TITLE_INPUT_ATTRIBUTE));
   }
 
   /** Starts renaming an object through the given title element of its titlebar. */
@@ -815,13 +815,13 @@ export class UpdrawObjectTitlebarManager {
     this._core.rerender();
   }
 
-  private isTitleEditStillValid(editing: { ownerId: string; elementId: string }, titlebars: UpdrawResolvedTitlebar[]): boolean {
+  private isTitleEditStillValid(editing: { ownerId: string; elementId: string }, titlebars: UpmadeResolvedTitlebar[]): boolean {
     const owner = this.findOwnerById(editing.ownerId);
     const isSelected = !!this._core.store.selectionGroup?.objectIds.includes(editing.ownerId);
     return !!owner && !owner.markedForRemoval && isSelected && titlebars.some(titlebar => titlebar.editingElementId === editing.elementId && titlebar.owner.id === editing.ownerId);
   }
 
-  private findOwnerById(id: string | null | undefined): UpdrawBaseObject<any> | null {
+  private findOwnerById(id: string | null | undefined): UpmadeBaseObject<any> | null {
     if (!id) {
       return null;
     }

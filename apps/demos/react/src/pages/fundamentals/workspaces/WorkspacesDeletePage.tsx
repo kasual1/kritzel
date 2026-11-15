@@ -1,12 +1,12 @@
 import { useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import {
   InMemorySyncProvider,
-  UpdrawEditor,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeWorkspace,
   type ActiveWorkspaceChangeEvent,
-  type HTMLUpdrawEditorElement,
-  type UpdrawSyncConfig,
-} from "@updraw/react-editor";
+  type HTMLUpmadeEditorElement,
+  type UpmadeSyncConfig,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -14,7 +14,7 @@ import { editorStyle, hostStyle } from "../../shared/demo-shared";
 import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
-const syncConfig: UpdrawSyncConfig = {
+const syncConfig: UpmadeSyncConfig = {
   providers: [InMemorySyncProvider],
 };
 const tabStyle: CSSProperties = {
@@ -52,7 +52,7 @@ function createInitialWorkspaces() {
   return Array.from(
     { length: 6 },
     (_, index) =>
-      new UpdrawWorkspace({
+      new UpmadeWorkspace({
         id: `board-${index + 1}`,
         name: `Board ${index + 1}`,
         objects: createSeedObjects(),
@@ -61,7 +61,7 @@ function createInitialWorkspaces() {
 }
 
 export function WorkspacesDeletePage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const [workspaces, setWorkspaces] = useState(createInitialWorkspaces);
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | undefined>(
     "board-1",
@@ -73,12 +73,12 @@ export function WorkspacesDeletePage() {
     setActiveWorkspaceId(event.detail.id);
   }
 
-  async function switchTo(workspace: UpdrawWorkspace) {
+  async function switchTo(workspace: UpmadeWorkspace) {
     await editorRef.current?.setActiveWorkspace(workspace.id);
   }
 
   async function deleteWorkspace(
-    workspace: UpdrawWorkspace,
+    workspace: UpmadeWorkspace,
     event: MouseEvent<HTMLButtonElement>,
   ) {
     event.stopPropagation();
@@ -136,7 +136,7 @@ export function WorkspacesDeletePage() {
           );
         })}
       </Toolbar>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="workspaces-delete"
         theme="light"

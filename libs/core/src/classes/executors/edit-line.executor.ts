@@ -1,6 +1,6 @@
-import type { UpdrawAgenticEditLineAction } from '../../interfaces/agentic-action.interface';
-import { UpdrawLine } from '../objects/line.class';
-import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpmadeAgenticEditLineAction } from '../../interfaces/agentic-action.interface';
+import { UpmadeLine } from '../objects/line.class';
+import type { UpmadeAgenticActionExecutor } from '../../types/agentic-action.types';
 import { assertObjectId } from '../../helpers/agentic-validation.helper';
 import { prepareTopLevelTargets } from './select.executor';
 import { assertLineEnd, assertOptionalPoint, bendLine, dragLineEnd, isObjectEnd, LINE_GEOMETRY_PROPERTIES, refuseUnanchorable } from './line-handles';
@@ -9,7 +9,7 @@ import { assertLineEnd, assertOptionalPoint, bendLine, dragLineEnd, isObjectEnd,
  * `editLine`: changes a line with its handles, like the user does: drags the start, then the end (detaching an
  * end on the way and attaching it to an object on release), then the middle handle to bend or straighten it.
  */
-export const editLineExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticEditLineAction> = {
+export const editLineExecutor: UpmadeAgenticActionExecutor<UpmadeAgenticEditLineAction> = {
   mutates: true,
 
   validate(action) {
@@ -34,7 +34,7 @@ export const editLineExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticEditLine
       return preparation;
     }
     const line = run.map!.findById(action.lineId);
-    if (!(line instanceof UpdrawLine)) {
+    if (!(line instanceof UpmadeLine)) {
       return { reason: 'invalid-target', objectIds: [action.lineId] };
     }
     const objectIds = [action.from, action.to].filter(end => end !== undefined && isObjectEnd(end)).map(end => (end as { objectId: string }).objectId);

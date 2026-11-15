@@ -1,6 +1,6 @@
 import { LEGACY_CLIPBOARD_PAYLOAD_PREFIX } from '../../migrations/legacy-brand';
 
-export const CLIPBOARD_PAYLOAD_PREFIX = 'updraw-clipboard/v1:';
+export const CLIPBOARD_PAYLOAD_PREFIX = 'upmade-clipboard/v1:';
 
 /**
  * Returns the JSON part of a serialized clipboard payload, including payloads copied
@@ -25,14 +25,14 @@ export interface SerializedClipboardObject {
   __children__?: SerializedClipboardObject[];
 }
 
-export interface UpdrawClipboardPayload {
+export interface UpmadeClipboardPayload {
   version: 1;
   sourceWorkspaceId?: string;
   objects: SerializedClipboardObject[];
 }
 
 export type PasteIntent =
-  | { type: 'updraw_objects'; payload: UpdrawClipboardPayload }
+  | { type: 'upmade_objects'; payload: UpmadeClipboardPayload }
   | { type: 'image_files'; files: File[] }
   | { type: 'plain_text'; text: string }
   | { type: 'unknown' };

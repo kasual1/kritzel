@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type UpdrawBaseObject,
-} from '@updraw/vue-editor'
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type UpmadeBaseObject,
+} from '@upmade/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -18,10 +18,10 @@ import { useInfoPanel } from '../../../components/info-panel'
 const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
 const editor = getEditorRef('editor')
-const selected = ref<UpdrawBaseObject | null>(null)
+const selected = ref<UpmadeBaseObject | null>(null)
 const selectionCount = ref(0)
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 
 async function refreshSelection() {
   const selection = (await editor.value?.getSelectedObjects()) ?? []
@@ -96,7 +96,7 @@ async function toggleOpacity() {
       <InfoPanelToggle :panel="infoPanel" />
     </Toolbar>
     <div class="content">
-      <UpdrawEditor
+      <UpmadeEditor
         ref="editor"
         editorId="objects-update"
         theme="light"

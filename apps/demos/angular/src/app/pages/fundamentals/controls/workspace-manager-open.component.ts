@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
-import { UpdrawEditor, UpdrawSyncConfig, UpdrawWorkspace, InMemorySyncProvider } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeSyncConfig, UpmadeWorkspace, InMemorySyncProvider } from '@upmade/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-workspace-manager-open',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="control-panel">
@@ -15,7 +15,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         <span>Workspace manager</span>
       </label>
     </div>
-    <updraw-editor
+    <upmade-editor
       editorId="workspace-manager-open"
       [theme]="'light'"
       [themes]="themes"
@@ -25,25 +25,25 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isWorkspaceManagerVisible]="isWorkspaceManagerVisible()"
       (isReady)="onReady()"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: `
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
     .control-panel { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; }
     .checkbox-control { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #333; cursor: pointer; }
-    updraw-editor { flex: 1; }
+    upmade-editor { flex: 1; }
   `,
 })
 export class WorkspaceManagerOpenComponent {
-  editor = viewChild(UpdrawEditor);
+  editor = viewChild(UpmadeEditor);
 
   isWorkspaceManagerVisible = signal(true);
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
-  syncConfig: UpdrawSyncConfig = {
+  syncConfig: UpmadeSyncConfig = {
     providers: [InMemorySyncProvider],
   };
 

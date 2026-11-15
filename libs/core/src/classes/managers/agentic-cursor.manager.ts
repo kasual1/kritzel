@@ -1,41 +1,41 @@
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeCore } from '../core/core.class';
 import {
-  UpdrawAgenticCursor,
-  UpdrawAgenticAttachment,
-  UpdrawAgenticCursorDetachedEvent,
-  UpdrawAgenticElementTarget,
-  UpdrawAgenticMoveOptions,
-  UpdrawAgenticMoveResult,
-  UpdrawAgenticObjectTarget,
-  UpdrawAgenticCursorOptions,
-  UpdrawAgenticCursorAppearance,
-  UpdrawAgenticRotationHandle,
-  UpdrawAgenticTarget,
+  UpmadeAgenticCursor,
+  UpmadeAgenticAttachment,
+  UpmadeAgenticCursorDetachedEvent,
+  UpmadeAgenticElementTarget,
+  UpmadeAgenticMoveOptions,
+  UpmadeAgenticMoveResult,
+  UpmadeAgenticObjectTarget,
+  UpmadeAgenticCursorOptions,
+  UpmadeAgenticCursorAppearance,
+  UpmadeAgenticRotationHandle,
+  UpmadeAgenticTarget,
 } from '../../interfaces/agentic-cursor.interface';
-import type { UpdrawAgenticActionType } from '../../interfaces/agentic-action.interface';
-import type { UpdrawBaseObject } from '../objects/base-object.class';
-import { UPDRAW_ROTATION_HANDLE_DISTANCE } from '../../constants/engine.constants';
-import { UpdrawPoint } from '../../interfaces/point.interface';
-import { UpdrawElementAwareObject } from '../../interfaces/object-element.interface';
-import { UpdrawEasingHelper } from '../../helpers/easing.helper';
+import type { UpmadeAgenticActionType } from '../../interfaces/agentic-action.interface';
+import type { UpmadeBaseObject } from '../objects/base-object.class';
+import { UPMADE_ROTATION_HANDLE_DISTANCE } from '../../constants/engine.constants';
+import { UpmadePoint } from '../../interfaces/point.interface';
+import { UpmadeElementAwareObject } from '../../interfaces/object-element.interface';
+import { UpmadeEasingHelper } from '../../helpers/easing.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor, isElementTarget, isObjectTarget, UpdrawAnchorableGeometry, resolveObjectAnchor } from '../../helpers/agentic-geometry.helper';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor, isElementTarget, isObjectTarget, UpmadeAnchorableGeometry, resolveObjectAnchor } from '../../helpers/agentic-geometry.helper';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
 
 export const AGENTIC_CURSOR_DEFAULT_SPEED = 1200;
 export const AGENTIC_CURSOR_MIN_DURATION = 250;
 export const AGENTIC_CURSOR_MAX_DURATION = 1200;
 
 interface AgenticCursorAnimation {
-  from: UpdrawPoint;
-  target: UpdrawAgenticTarget;
+  from: UpmadePoint;
+  target: UpmadeAgenticTarget;
   startTime: number;
   duration: number;
   easing: (t: number) => number;
   attach: boolean;
   /** Whether the host started the move (`move()`), not an agentic action (`fly()`). */
   host: boolean;
-  resolve: (result: UpdrawAgenticMoveResult) => void;
+  resolve: (result: UpmadeAgenticMoveResult) => void;
 }
 
 interface AgenticCursorTrackedElement {
@@ -45,14 +45,14 @@ interface AgenticCursorTrackedElement {
 
 interface AgenticCursorEntry {
   id: string;
-  appearance: UpdrawAgenticCursorAppearance;
-  position: UpdrawPoint;
-  attachedTo: UpdrawAgenticAttachment | null;
+  appearance: UpmadeAgenticCursorAppearance;
+  position: UpmadePoint;
+  attachedTo: UpmadeAgenticAttachment | null;
   animation: AgenticCursorAnimation | null;
   isPressed: boolean;
   pressCount: number;
   selectedObjectIds: string[];
-  activeAction: UpdrawAgenticActionType | null;
+  activeAction: UpmadeAgenticActionType | null;
   queueLength: number;
   /** Incremented by every public `move()`, so a running action can tell that the host took over. */
   hostMoveGeneration: number;
@@ -65,7 +65,7 @@ interface AgenticCursorEntry {
 }
 
 /** Undo availability of a cursor's own history; provided by the agentic action manager. */
-export type UpdrawAgenticCursorHistoryProvider = (cursorId: string) => { canUndo: boolean; canRedo: boolean };
+export type UpmadeAgenticCursorHistoryProvider = (cursorId: string) => { canUndo: boolean; canRedo: boolean };
 
 /**
  * Manages locally rendered, programmatically controlled ("agentic") cursors.
@@ -79,31 +79,31 @@ export type UpdrawAgenticCursorHistoryProvider = (cursorId: string) => { canUndo
  * tracks the element and reports its position asynchronously, so a cursor reads
  * the last reported position every frame.
  */
-export class UpdrawAgenticCursorManager {
-  private readonly _core: UpdrawCore;
+export class UpmadeAgenticCursorManager {
+  private readonly _core: UpmadeCore;
   private readonly _cursors = new Map<string, AgenticCursorEntry>();
   private readonly _changeListeners = new Set<(id?: string) => void>();
   private readonly _frameListeners = new Set<() => void>();
   private readonly _beforeFrameListeners = new Set<(now: number) => void>();
   private readonly _removedListeners = new Set<(id: string) => void>();
-  private readonly _detachedListeners = new Set<(event: UpdrawAgenticCursorDetachedEvent) => void>();
-  private _historyProvider: UpdrawAgenticCursorHistoryProvider | null = null;
+  private readonly _detachedListeners = new Set<(event: UpmadeAgenticCursorDetachedEvent) => void>();
+  private _historyProvider: UpmadeAgenticCursorHistoryProvider | null = null;
   private _frameDemand: (() => boolean) | null = null;
   private _rafId: number | null = null;
 
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     this._core = core;
   }
 
   /** Creates the cursor of an agent. Throws if a cursor with the same ID exists. */
-  add(options: UpdrawAgenticCursorOptions): UpdrawAgenticCursor {
+  add(options: UpmadeAgenticCursorOptions): UpmadeAgenticCursor {
     const id = options.id;
     if (this._cursors.has(id)) {
       throw new Error(`Agentic cursor "${id}" already exists.`);
     }
 
     let position = this.getViewportCenter();
-    let attachedTo: UpdrawAgenticAttachment | null = null;
+    let attachedTo: UpmadeAgenticAttachment | null = null;
     let trackedElement: AgenticCursorTrackedElement | null = null;
     if (options.position) {
       if (isElementTarget(options.position)) {
@@ -154,7 +154,7 @@ export class UpdrawAgenticCursorManager {
    * has no visible element that matches the selector. Until the element is found, the cursor keeps its current
    * attachment and host move (the flight of an interrupted action stops right away).
    */
-  move(id: string, target: UpdrawAgenticTarget, options: UpdrawAgenticMoveOptions = {}): Promise<UpdrawAgenticMoveResult> {
+  move(id: string, target: UpmadeAgenticTarget, options: UpmadeAgenticMoveOptions = {}): Promise<UpmadeAgenticMoveResult> {
     const entry = this.getEntryOrThrow(id);
     if (isElementTarget(target)) {
       return this.moveToElement(entry, target, options);
@@ -173,7 +173,7 @@ export class UpdrawAgenticCursorManager {
    * Element targets are not supported.
    * @internal
    */
-  fly(id: string, target: UpdrawAgenticTarget, options: UpdrawAgenticMoveOptions = {}): Promise<UpdrawAgenticMoveResult> {
+  fly(id: string, target: UpmadeAgenticTarget, options: UpmadeAgenticMoveOptions = {}): Promise<UpmadeAgenticMoveResult> {
     const entry = this.getEntryOrThrow(id);
     if (isElementTarget(target)) {
       throw new Error('Invalid agentic cursor target. Actions cannot target elements inside objects.');
@@ -202,7 +202,7 @@ export class UpdrawAgenticCursorManager {
   }
 
   /** Places a cursor at a world point immediately, cancelling any animation and attachment. @internal */
-  setPosition(id: string, point: UpdrawPoint): void {
+  setPosition(id: string, point: UpmadePoint): void {
     const entry = this._cursors.get(id);
     if (!entry || !Number.isFinite(point.x) || !Number.isFinite(point.y)) return;
     const wasAnimating = entry.animation !== null;
@@ -215,7 +215,7 @@ export class UpdrawAgenticCursorManager {
   }
 
   /** Attaches a cursor to an object anchor or an element inside an object and moves it there immediately. @internal */
-  attach(id: string, target: UpdrawAgenticObjectTarget | UpdrawAgenticElementTarget): void {
+  attach(id: string, target: UpmadeAgenticObjectTarget | UpmadeAgenticElementTarget): void {
     const entry = this._cursors.get(id);
     if (!entry) return;
     const point = this.resolveTarget(target);
@@ -248,7 +248,7 @@ export class UpdrawAgenticCursorManager {
   }
 
   /** Sets the running action type and queue length. @internal */
-  setActivity(id: string, activeAction: UpdrawAgenticActionType | null, queueLength: number): void {
+  setActivity(id: string, activeAction: UpmadeAgenticActionType | null, queueLength: number): void {
     const entry = this._cursors.get(id);
     if (!entry || (entry.activeAction === activeAction && entry.queueLength === queueLength)) return;
     entry.activeAction = activeAction;
@@ -257,7 +257,7 @@ export class UpdrawAgenticCursorManager {
   }
 
   /** Sets the provider of `canUndo` / `canRedo` for snapshots. @internal */
-  setHistoryProvider(provider: UpdrawAgenticCursorHistoryProvider | null): void {
+  setHistoryProvider(provider: UpmadeAgenticCursorHistoryProvider | null): void {
     this._historyProvider = provider;
   }
 
@@ -286,12 +286,12 @@ export class UpdrawAgenticCursorManager {
     return true;
   }
 
-  get(id: string): UpdrawAgenticCursor | null {
+  get(id: string): UpmadeAgenticCursor | null {
     const entry = this._cursors.get(id);
     return entry ? this.toSnapshot(entry) : null;
   }
 
-  getAll(): UpdrawAgenticCursor[] {
+  getAll(): UpmadeAgenticCursor[] {
     return Array.from(this._cursors.values()).map(entry => this.toSnapshot(entry));
   }
 
@@ -323,7 +323,7 @@ export class UpdrawAgenticCursorManager {
   }
 
   /** Subscribes to detach events. */
-  onDetached(listener: (event: UpdrawAgenticCursorDetachedEvent) => void): () => void {
+  onDetached(listener: (event: UpmadeAgenticCursorDetachedEvent) => void): () => void {
     this._detachedListeners.add(listener);
     return () => this._detachedListeners.delete(listener);
   }
@@ -347,7 +347,7 @@ export class UpdrawAgenticCursorManager {
    * Called by the internal animation loop; public for testing.
    */
   tick(now: number = performance.now()): void {
-    this._beforeFrameListeners.forEach(listener => UpdrawEventHelper.callListener(() => listener(now), 'Agentic cursor listener'));
+    this._beforeFrameListeners.forEach(listener => UpmadeEventHelper.callListener(() => listener(now), 'Agentic cursor listener'));
 
     let structuralChange = false;
 
@@ -362,7 +362,7 @@ export class UpdrawAgenticCursorManager {
           entry.trackedElement = null;
           animation.resolve({ completed: false });
           structuralChange = true;
-          this.emitDetached({ id: entry.id, objectId: (animation.target as UpdrawAgenticObjectTarget).objectId, reason: 'object-removed' });
+          this.emitDetached({ id: entry.id, objectId: (animation.target as UpmadeAgenticObjectTarget).objectId, reason: 'object-removed' });
           return;
         }
 
@@ -402,7 +402,7 @@ export class UpdrawAgenticCursorManager {
     });
 
     if (structuralChange) this.emitChange();
-    this._frameListeners.forEach(listener => UpdrawEventHelper.callListener(listener, 'Agentic cursor listener'));
+    this._frameListeners.forEach(listener => UpmadeEventHelper.callListener(listener, 'Agentic cursor listener'));
   }
 
   /**
@@ -410,7 +410,7 @@ export class UpdrawAgenticCursorManager {
    * An element target resolves to the element's last reported position, or to the
    * center of its object while the element hasn't been reported yet.
    */
-  resolveTarget(target: UpdrawAgenticTarget): UpdrawPoint | null {
+  resolveTarget(target: UpmadeAgenticTarget): UpmadePoint | null {
     if (!isObjectTarget(target)) {
       return { x: target.x, y: target.y };
     }
@@ -428,13 +428,13 @@ export class UpdrawAgenticCursorManager {
    * Target on the rotation handle of an object, where agents grab it. Like the engine's handle, it sits a
    * fixed screen distance above the middle of the top edge (above a shown titlebar) and turns with the object.
    */
-  getRotationHandleTarget(objectId: string): UpdrawAgenticObjectTarget {
+  getRotationHandleTarget(objectId: string): UpmadeAgenticObjectTarget {
     const object = this._core.store.objects?.findById(objectId);
     return { objectId, anchor: 'top', offset: { x: 0, y: -this.getRotationHandleDistance(object) } };
   }
 
   /** World points of an object's rotation handle as agents show it, or `null` if the object doesn't exist. */
-  getRotationHandle(objectId: string): UpdrawAgenticRotationHandle | null {
+  getRotationHandle(objectId: string): UpmadeAgenticRotationHandle | null {
     const object = this._core.store.objects?.findById(objectId);
     if (!object) return null;
     return {
@@ -444,8 +444,8 @@ export class UpdrawAgenticCursorManager {
   }
 
   /** World distance of the rotation handle above the top edge, for the current zoom. */
-  private getRotationHandleDistance(object: UpdrawBaseObject<any> | null | undefined): number {
-    const distance = object ? this._core.objectTitlebarManager.getRotationHandleDistance(object) : UPDRAW_ROTATION_HANDLE_DISTANCE;
+  private getRotationHandleDistance(object: UpmadeBaseObject<any> | null | undefined): number {
+    const distance = object ? this._core.objectTitlebarManager.getRotationHandleDistance(object) : UPMADE_ROTATION_HANDLE_DISTANCE;
     return distance / (this._core.store.state.scale || 1);
   }
 
@@ -470,11 +470,11 @@ export class UpdrawAgenticCursorManager {
 
   private startMove(
     entry: AgenticCursorEntry,
-    target: UpdrawAgenticTarget,
-    destination: UpdrawPoint,
-    options: UpdrawAgenticMoveOptions,
+    target: UpmadeAgenticTarget,
+    destination: UpmadePoint,
+    options: UpmadeAgenticMoveOptions,
     host: boolean,
-  ): Promise<UpdrawAgenticMoveResult> {
+  ): Promise<UpmadeAgenticMoveResult> {
     this.finishAnimation(entry, false);
     entry.attachedTo = null;
     this.setTrackedElement(entry, null);
@@ -483,20 +483,20 @@ export class UpdrawAgenticCursorManager {
 
   private startAnimation(
     entry: AgenticCursorEntry,
-    target: UpdrawAgenticTarget,
-    destination: UpdrawPoint,
-    options: UpdrawAgenticMoveOptions,
+    target: UpmadeAgenticTarget,
+    destination: UpmadePoint,
+    options: UpmadeAgenticMoveOptions,
     host: boolean,
-  ): Promise<UpdrawAgenticMoveResult> {
+  ): Promise<UpmadeAgenticMoveResult> {
     const duration = options.duration ?? this.computeDuration(entry.position, destination, options.speed);
 
-    return new Promise<UpdrawAgenticMoveResult>(resolve => {
+    return new Promise<UpmadeAgenticMoveResult>(resolve => {
       entry.animation = {
         from: { ...entry.position },
         target,
         startTime: performance.now(),
         duration: Math.max(0, duration),
-        easing: UpdrawEasingHelper.resolve(options.easing),
+        easing: UpmadeEasingHelper.resolve(options.easing),
         attach: options.attach ?? true,
         host,
         resolve,
@@ -522,9 +522,9 @@ export class UpdrawAgenticCursorManager {
    */
   private moveToElement(
     entry: AgenticCursorEntry,
-    target: UpdrawAgenticElementTarget,
-    options: UpdrawAgenticMoveOptions,
-  ): Promise<UpdrawAgenticMoveResult> {
+    target: UpmadeAgenticElementTarget,
+    options: UpmadeAgenticMoveOptions,
+  ): Promise<UpmadeAgenticMoveResult> {
     const object = this.validateElementTarget(target);
     const lookup: AgenticCursorTrackedElement = { objectId: target.objectId, selector: target.selector };
     // The lookup tracks the element, so the object keeps the element's position from the lookup's answer.
@@ -540,7 +540,7 @@ export class UpdrawAgenticCursorManager {
     const token = entry.moveToken;
     const isCurrent = () => entry.moveToken === token && this._cursors.get(entry.id) === entry;
 
-    return new Promise<UpdrawAgenticMoveResult>((resolve, reject) => {
+    return new Promise<UpmadeAgenticMoveResult>((resolve, reject) => {
       let settled = false;
       const settle = (callback: () => void) => {
         if (!settled) {
@@ -588,8 +588,8 @@ export class UpdrawAgenticCursorManager {
   }
 
   /** World point of an element target: its anchor on the last reported element box, or the object center until then. */
-  private resolveElementTarget(object: UpdrawAnchorableGeometry, target: UpdrawAgenticElementTarget): UpdrawPoint {
-    const elementAware = ObjectHelper.isUpdrawElementAwareObject(object) ? object : null;
+  private resolveElementTarget(object: UpmadeAnchorableGeometry, target: UpmadeAgenticElementTarget): UpmadePoint {
+    const elementAware = ObjectHelper.isUpmadeElementAwareObject(object) ? object : null;
     const rect = elementAware?.getTrackedElementRect(target.selector) ?? null;
     if (!elementAware || !rect) {
       return resolveObjectAnchor(object, 'center', target.offset);
@@ -603,7 +603,7 @@ export class UpdrawAgenticCursorManager {
   }
 
   /** Throws unless the target names an existing object that supports elements and a non-empty selector. */
-  private validateElementTarget(target: UpdrawAgenticElementTarget): UpdrawElementAwareObject {
+  private validateElementTarget(target: UpmadeAgenticElementTarget): UpmadeElementAwareObject {
     if (typeof target.selector !== 'string' || target.selector.trim() === '') {
       throw new Error('Invalid agentic cursor target. An element target needs a non-empty selector.');
     }
@@ -611,7 +611,7 @@ export class UpdrawAgenticCursorManager {
     if (!object) {
       throw new Error(`Object "${target.objectId}" not found.`);
     }
-    if (!ObjectHelper.isUpdrawElementAwareObject(object)) {
+    if (!ObjectHelper.isUpmadeElementAwareObject(object)) {
       throw new Error(`Object "${target.objectId}" has no elements a cursor can point at.`);
     }
     return object;
@@ -619,7 +619,7 @@ export class UpdrawAgenticCursorManager {
 
   private untrack(tracked: AgenticCursorTrackedElement): void {
     const object = this._core.store.objects?.findById(tracked.objectId);
-    if (ObjectHelper.isUpdrawElementAwareObject(object)) {
+    if (ObjectHelper.isUpmadeElementAwareObject(object)) {
       object.untrackElement(tracked.selector);
     }
   }
@@ -632,7 +632,7 @@ export class UpdrawAgenticCursorManager {
     }
     if (next) {
       const object = this._core.store.objects?.findById(next.objectId);
-      if (ObjectHelper.isUpdrawElementAwareObject(object)) {
+      if (ObjectHelper.isUpmadeElementAwareObject(object)) {
         object.trackElement(next.selector);
       }
     }
@@ -649,11 +649,11 @@ export class UpdrawAgenticCursorManager {
     }
   }
 
-  private toTrackedElement(target: UpdrawAgenticTarget): AgenticCursorTrackedElement | null {
+  private toTrackedElement(target: UpmadeAgenticTarget): AgenticCursorTrackedElement | null {
     return isElementTarget(target) ? { objectId: target.objectId, selector: target.selector } : null;
   }
 
-  private computeDuration(from: UpdrawPoint, to: UpdrawPoint, speed: number = AGENTIC_CURSOR_DEFAULT_SPEED): number {
+  private computeDuration(from: UpmadePoint, to: UpmadePoint, speed: number = AGENTIC_CURSOR_DEFAULT_SPEED): number {
     const scale = this._core.store.state.scale || 1;
     const screenDistance = Math.hypot(to.x - from.x, to.y - from.y) * scale;
     const effectiveSpeed = speed > 0 ? speed : AGENTIC_CURSOR_DEFAULT_SPEED;
@@ -668,7 +668,7 @@ export class UpdrawAgenticCursorManager {
     resolve({ completed });
   }
 
-  private getViewportCenter(): UpdrawPoint {
+  private getViewportCenter(): UpmadePoint {
     const { translateX, translateY, scale, viewportWidth, viewportHeight } = this._core.store.state;
     const s = scale || 1;
     return {
@@ -677,8 +677,8 @@ export class UpdrawAgenticCursorManager {
     };
   }
 
-  private toAttachment(target: UpdrawAgenticObjectTarget | UpdrawAgenticElementTarget): UpdrawAgenticAttachment {
-    const attachment: UpdrawAgenticAttachment = {
+  private toAttachment(target: UpmadeAgenticObjectTarget | UpmadeAgenticElementTarget): UpmadeAgenticAttachment {
+    const attachment: UpmadeAgenticAttachment = {
       objectId: target.objectId,
       anchor: target.anchor ?? 'center',
       offset: { x: target.offset?.x ?? 0, y: target.offset?.y ?? 0 },
@@ -689,17 +689,17 @@ export class UpdrawAgenticCursorManager {
     return attachment;
   }
 
-  private resolveTargetOrThrow(target: UpdrawAgenticTarget): UpdrawPoint {
+  private resolveTargetOrThrow(target: UpmadeAgenticTarget): UpmadePoint {
     if (!target || (!isObjectTarget(target) && (!Number.isFinite(target.x) || !Number.isFinite(target.y)))) {
       throw new Error('Invalid agentic cursor target. Expected { x, y } with finite numbers, { objectId } or { objectId, selector }.');
     }
     const point = this.resolveTarget(target);
     if (!point) {
-      throw new Error(`Object "${(target as UpdrawAgenticObjectTarget).objectId}" not found.`);
+      throw new Error(`Object "${(target as UpmadeAgenticObjectTarget).objectId}" not found.`);
     }
     // An object without geometry (e.g. an empty group) must not move the cursor to NaN, where it would stay.
     if (!Number.isFinite(point.x) || !Number.isFinite(point.y)) {
-      throw new Error(`Object "${(target as UpdrawAgenticObjectTarget).objectId}" has no position.`);
+      throw new Error(`Object "${(target as UpmadeAgenticObjectTarget).objectId}" has no position.`);
     }
     return point;
   }
@@ -712,7 +712,7 @@ export class UpdrawAgenticCursorManager {
     return entry;
   }
 
-  private toSnapshot(entry: AgenticCursorEntry): UpdrawAgenticCursor {
+  private toSnapshot(entry: AgenticCursorEntry): UpmadeAgenticCursor {
     const history = this._historyProvider?.(entry.id) ?? { canUndo: false, canRedo: false };
     return {
       id: entry.id,
@@ -734,15 +734,15 @@ export class UpdrawAgenticCursorManager {
   }
 
   private emitChange(id?: string): void {
-    this._changeListeners.forEach(listener => UpdrawEventHelper.callListener(() => listener(id), 'Agentic cursor listener'));
+    this._changeListeners.forEach(listener => UpmadeEventHelper.callListener(() => listener(id), 'Agentic cursor listener'));
   }
 
-  private emitDetached(event: UpdrawAgenticCursorDetachedEvent): void {
-    this._detachedListeners.forEach(listener => UpdrawEventHelper.callListener(() => listener(event), 'Agentic cursor listener'));
+  private emitDetached(event: UpmadeAgenticCursorDetachedEvent): void {
+    this._detachedListeners.forEach(listener => UpmadeEventHelper.callListener(() => listener(event), 'Agentic cursor listener'));
   }
 
   private emitRemoved(id: string): void {
-    this._removedListeners.forEach(listener => UpdrawEventHelper.callListener(() => listener(id), 'Agentic cursor listener'));
+    this._removedListeners.forEach(listener => UpmadeEventHelper.callListener(() => listener(id), 'Agentic cursor listener'));
   }
 
   /** Runs a listener so that one failing listener never stops the others or the frame loop. */
@@ -754,7 +754,7 @@ export class UpdrawAgenticCursorManager {
     try {
       return this._frameDemand();
     } catch (error) {
-      console.error('[Updraw] Agentic frame demand failed:', error);
+      console.error('[Upmade] Agentic frame demand failed:', error);
       return false;
     }
   }

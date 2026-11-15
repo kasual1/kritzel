@@ -1,22 +1,22 @@
 import { Component, Element, Event, EventEmitter, Host, h, Prop, State, Watch } from '@stencil/core';
-import { IUpdrawMasterDetailItem, IUpdrawMasterDetailSelectEvent } from '@updraw/core';
+import { IUpmadeMasterDetailItem, IUpmadeMasterDetailSelectEvent } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-master-detail',
-  styleUrl: 'updraw-master-detail.css',
+  tag: 'upmade-master-detail',
+  styleUrl: 'upmade-master-detail.css',
   shadow: true,
 })
-export class UpdrawMasterDetail {
+export class UpmadeMasterDetail {
   @Element() host: HTMLElement;
 
   /** Array of menu items to display in the master (left) panel */
-  @Prop() items: IUpdrawMasterDetailItem[] = [];
+  @Prop() items: IUpmadeMasterDetailItem[] = [];
 
   /** ID of the currently selected item */
   @Prop() selectedItemId: string;
 
   /** Emitted when an item is selected */
-  @Event() itemSelect: EventEmitter<IUpdrawMasterDetailSelectEvent>;
+  @Event() itemSelect: EventEmitter<IUpmadeMasterDetailSelectEvent>;
 
   @State() focusedIndex: number = -1;
   @State() showMobileDetail: boolean = false;
@@ -34,7 +34,7 @@ export class UpdrawMasterDetail {
     this.tabRefs = [];
   }
 
-  private handleItemClick = (item: IUpdrawMasterDetailItem) => {
+  private handleItemClick = (item: IUpmadeMasterDetailItem) => {
     if (item.disabled) return;
     this.itemSelect.emit({ item });
     this.showMobileDetail = true;
@@ -44,7 +44,7 @@ export class UpdrawMasterDetail {
     this.showMobileDetail = false;
   };
 
-  private handleKeyDown = (event: KeyboardEvent, item: IUpdrawMasterDetailItem, index: number) => {
+  private handleKeyDown = (event: KeyboardEvent, item: IUpmadeMasterDetailItem, index: number) => {
     const enabledIndices = this.items
       .map((it, idx) => (!it.disabled ? idx : -1))
       .filter(idx => idx !== -1);
@@ -105,7 +105,7 @@ export class UpdrawMasterDetail {
     }
   };
 
-  private getTabIndex(item: IUpdrawMasterDetailItem, _index: number): number {
+  private getTabIndex(item: IUpmadeMasterDetailItem, _index: number): number {
     if (item.disabled) return -1;
     return 0;
   }
@@ -150,7 +150,7 @@ export class UpdrawMasterDetail {
                 onBlur={this.handleBlur}
               >
                 {item.icon && (
-                  <updraw-icon name={item.icon} size={20} class="menu-item-icon"></updraw-icon>
+                  <upmade-icon name={item.icon} size={20} class="menu-item-icon"></upmade-icon>
                 )}
                 <span class="menu-item-label">{item.label}</span>
                 <span class="menu-item-chevron" aria-hidden="true">
@@ -169,7 +169,7 @@ export class UpdrawMasterDetail {
             aria-labelledby={selectedTabId}
           >
             <button class="mobile-back-button" onClick={this.handleBackClick} aria-label="Back to menu">
-              <updraw-icon name="chevronLeft" size={20} class="mobile-back-icon"></updraw-icon>
+              <upmade-icon name="chevronLeft" size={20} class="mobile-back-icon"></upmade-icon>
               Back
             </button>
             <slot></slot>

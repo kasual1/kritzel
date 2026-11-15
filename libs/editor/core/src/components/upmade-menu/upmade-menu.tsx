@@ -1,22 +1,22 @@
 ﻿import { Component, Host, Prop, h, State, Event, EventEmitter, Element, Method } from '@stencil/core';
-import { IUpdrawMenuItem, IUpdrawMenuItemSelectEvent, IUpdrawMenuItemToggleChildMenuEvent } from '@updraw/core';
+import { IUpmadeMenuItem, IUpmadeMenuItemSelectEvent, IUpmadeMenuItemToggleChildMenuEvent } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-menu',
-  styleUrl: 'updraw-menu.css',
+  tag: 'upmade-menu',
+  styleUrl: 'upmade-menu.css',
   shadow: true,
 })
-export class UpdrawMenu {
+export class UpmadeMenu {
   @Element() host: HTMLElement;
 
-  @Prop() items: IUpdrawMenuItem[];
-  @Prop() parent: IUpdrawMenuItem = null;
+  @Prop() items: IUpmadeMenuItem[];
+  @Prop() parent: IUpmadeMenuItem = null;
 
-  @Event() itemSelect: EventEmitter<IUpdrawMenuItemSelectEvent>;
-  @Event() itemSave: EventEmitter<IUpdrawMenuItem>;
-  @Event() itemCancel: EventEmitter<IUpdrawMenuItem>;
-  @Event() itemToggleChildMenu: EventEmitter<IUpdrawMenuItemToggleChildMenuEvent>;
-  @Event() itemCloseChildMenu: EventEmitter<IUpdrawMenuItem>;
+  @Event() itemSelect: EventEmitter<IUpmadeMenuItemSelectEvent>;
+  @Event() itemSave: EventEmitter<IUpmadeMenuItem>;
+  @Event() itemCancel: EventEmitter<IUpmadeMenuItem>;
+  @Event() itemToggleChildMenu: EventEmitter<IUpmadeMenuItemToggleChildMenuEvent>;
+  @Event() itemCloseChildMenu: EventEmitter<IUpmadeMenuItem>;
   @Event() close: EventEmitter<void>;
 
   @State() selectedIndex: number | null = null;
@@ -29,7 +29,7 @@ export class UpdrawMenu {
 
   @Method()
   async setFocus() {
-    const firstItem = this.host.shadowRoot.querySelector('updraw-menu-item');
+    const firstItem = this.host.shadowRoot.querySelector('upmade-menu-item');
     if (firstItem) {
       firstItem.focus();
     }
@@ -48,27 +48,27 @@ export class UpdrawMenu {
     this.itemCloseChildMenu.emit(this.openChildMenuItem);
   };
 
-  private handleItemSelect = (event: CustomEvent<{ item: IUpdrawMenuItem; parent: IUpdrawMenuItem }>) => {
+  private handleItemSelect = (event: CustomEvent<{ item: IUpmadeMenuItem; parent: IUpmadeMenuItem }>) => {
     event.stopPropagation();
     this.itemSelect.emit(event.detail);
   };
 
-  private handleSave = (event: CustomEvent<IUpdrawMenuItem>) => {
+  private handleSave = (event: CustomEvent<IUpmadeMenuItem>) => {
     event.stopPropagation();
     this.itemSave.emit(event.detail);
   };
 
-  private handleCancel = (event: CustomEvent<IUpdrawMenuItem>) => {
+  private handleCancel = (event: CustomEvent<IUpmadeMenuItem>) => {
     event.stopPropagation();
     this.itemCancel.emit(event.detail);
   };
 
-  private handleToggleChildMenu = (event: CustomEvent<{ item: IUpdrawMenuItem; childMenuAnchor: HTMLElement }>) => {
+  private handleToggleChildMenu = (event: CustomEvent<{ item: IUpmadeMenuItem; childMenuAnchor: HTMLElement }>) => {
     event.stopPropagation();
     this.itemToggleChildMenu.emit(event.detail);
   };
 
-  private handleCloseChildMenu = (event: CustomEvent<IUpdrawMenuItem>) => {
+  private handleCloseChildMenu = (event: CustomEvent<IUpmadeMenuItem>) => {
     event.stopPropagation();
     this.itemCloseChildMenu.emit(event.detail);
   };
@@ -78,7 +78,7 @@ export class UpdrawMenu {
       <Host tabIndex={0} onClick={e => e.stopPropagation()}>
         {this.openChildMenuItem && <div class="has-open-child-overlay" onClick={this.onOverlayClick}></div>}
         {this.items.map(item => (
-          <updraw-menu-item
+          <upmade-menu-item
             key={item.id}
             data-testid={`menu-item-${item.id}`}
             item={item}
@@ -89,7 +89,7 @@ export class UpdrawMenu {
             onItemCancel={this.handleCancel}
             onItemToggleChildMenu={this.handleToggleChildMenu}
             onItemCloseChildMenu={this.handleCloseChildMenu}
-          ></updraw-menu-item>
+          ></upmade-menu-item>
         ))}
       </Host>
     );

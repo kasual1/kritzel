@@ -1,10 +1,10 @@
 import { useRef } from "react";
 import {
   IndexedDBSyncProvider,
-  UpdrawEditor,
-  type HTMLUpdrawEditorElement,
-  type UpdrawSyncConfig,
-} from "@updraw/react-editor";
+  UpmadeEditor,
+  type HTMLUpmadeEditorElement,
+  type UpmadeSyncConfig,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -14,13 +14,13 @@ import {
 } from "../../shared/demo-shared";
 
 const themes = [reactThemeLight, reactThemeDark];
-const syncConfig: UpdrawSyncConfig = {
+const syncConfig: UpmadeSyncConfig = {
   providers: [IndexedDBSyncProvider],
   appStateId: "persistence-local",
 };
 
 export function PersistenceLocalPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
 
   async function onReady() {
     const editor = editorRef.current;
@@ -34,7 +34,7 @@ export function PersistenceLocalPage() {
 
   return (
     <div style={{ ...hostStyle, background: "linear-gradient(180deg, #f3fbff 0%, #ffffff 100%)" }}>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="persistence-local"
         syncConfig={syncConfig}

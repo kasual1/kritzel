@@ -1,10 +1,10 @@
 import * as Y from 'yjs';
-import { UpdrawObjectMap } from '../structures/object-map.structure';
-import { UpdrawAgenticCursorManager } from './agentic-cursor.manager';
-import { UpdrawAgenticActionManager } from './agentic-action.manager';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import type { UpdrawCore } from '../core/core.class';
-import type { UpdrawAgenticActionResult } from '../../interfaces/agentic-action.interface';
+import { UpmadeObjectMap } from '../structures/object-map.structure';
+import { UpmadeAgenticCursorManager } from './agentic-cursor.manager';
+import { UpmadeAgenticActionManager } from './agentic-action.manager';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import type { UpmadeCore } from '../core/core.class';
+import type { UpmadeAgenticActionResult } from '../../interfaces/agentic-action.interface';
 
 /** How the test agent's cursor looks; agents own these values in the editor. */
 const AGENT_APPEARANCE = { name: 'Agent', color: '#7C3AED', status: null, visible: true };
@@ -66,7 +66,7 @@ class MockObject {
 
 /** A selection group with just what the map and the conflict checks use. */
 function createMockSelection(objectIds: string[], clientId: number | undefined, id = `sg-${Math.round(Math.random() * 1e9)}`) {
-  const group = Object.create(UpdrawSelectionGroup.prototype);
+  const group = Object.create(UpmadeSelectionGroup.prototype);
   const fields: Record<string, unknown> = {
     objectIds,
     id,
@@ -86,7 +86,7 @@ function createMockSelection(objectIds: string[], clientId: number | undefined, 
 }
 
 jest.mock('../core/reviver.class', () => ({
-  UpdrawReviver: jest.fn().mockImplementation((core: any) => ({
+  UpmadeReviver: jest.fn().mockImplementation((core: any) => ({
     revive: (data: any) => {
       if (data.__class__ === 'MockSelection') {
         return createMockSelection(data.objectIds, data.clientId, data.id);
@@ -104,11 +104,11 @@ const flushMicrotasks = async () => {
   }
 };
 
-describe('UpdrawAgenticActionManager', () => {
+describe('UpmadeAgenticActionManager', () => {
   let now: number;
-  let map: UpdrawObjectMap<any>;
-  let cursors: UpdrawAgenticCursorManager;
-  let actions: UpdrawAgenticActionManager;
+  let map: UpmadeObjectMap<any>;
+  let cursors: UpmadeAgenticCursorManager;
+  let actions: UpmadeAgenticActionManager;
   let core: any;
   let state: any;
 
@@ -151,7 +151,7 @@ describe('UpdrawAgenticActionManager', () => {
 
   const makeSelection = (objectIds: string[], clientId: number | undefined = map.docClientId ?? undefined) => createMockSelection(objectIds, clientId);
 
-  const selectionGroups = () => map.filter(o => o instanceof UpdrawSelectionGroup) as any[];
+  const selectionGroups = () => map.filter(o => o instanceof UpmadeSelectionGroup) as any[];
 
   const ydoc = () => (map as unknown as { _ydoc: Y.Doc })._ydoc;
 
@@ -225,11 +225,11 @@ describe('UpdrawAgenticActionManager', () => {
       }),
       removeObject: jest.fn((object: any) => map.remove((o: any) => o.id === object.id)),
     };
-    map = new UpdrawObjectMap<any>();
-    await map.initialize(core as unknown as UpdrawCore, 'ws', { providers: [] });
-    cursors = new UpdrawAgenticCursorManager(core);
+    map = new UpmadeObjectMap<any>();
+    await map.initialize(core as unknown as UpmadeCore, 'ws', { providers: [] });
+    cursors = new UpmadeAgenticCursorManager(core);
     core.agenticCursorManager = cursors;
-    actions = new UpdrawAgenticActionManager(core);
+    actions = new UpmadeAgenticActionManager(core);
     core.agenticActionManager = actions;
     cursors.add({ appearance: AGENT_APPEARANCE, id: 'agent', position: { x: 0, y: 0 } });
   });
@@ -602,7 +602,7 @@ describe('UpdrawAgenticActionManager', () => {
       await settle(actions.perform('agent', { type: 'select', objectIds: ['b'], additive: true }, { instant: true }));
       expect(cursors.get('agent')!.selectedObjectIds).toEqual(['a', 'b']);
       expect(obj('a')!.isSelected).toBe(false);
-      expect(map.filter(o => o instanceof UpdrawSelectionGroup)).toHaveLength(0);
+      expect(map.filter(o => o instanceof UpmadeSelectionGroup)).toHaveLength(0);
       expect(map.getAgentUndoStackLength('agent')).toBe(0);
 
       await settle(actions.perform('agent', { type: 'clearSelection' }));
@@ -815,4 +815,4 @@ describe('UpdrawAgenticActionManager', () => {
 });
 
 // Keep the type import used.
-export type _Result = UpdrawAgenticActionResult;
+export type _Result = UpmadeAgenticActionResult;

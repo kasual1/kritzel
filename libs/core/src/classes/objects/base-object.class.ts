@@ -1,23 +1,23 @@
-import { UpdrawBoundingBox } from '../../interfaces/bounding-box.interface';
-import { UpdrawObject } from '../../interfaces/object.interface';
-import { UpdrawPolygon } from '../../interfaces/polygon.interface';
-import { UpdrawSerializable } from '../../interfaces/serializable.interface';
+import { UpmadeBoundingBox } from '../../interfaces/bounding-box.interface';
+import { UpmadeObject } from '../../interfaces/object.interface';
+import { UpmadePolygon } from '../../interfaces/polygon.interface';
+import { UpmadeSerializable } from '../../interfaces/serializable.interface';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { UpdrawGeometryHelper } from '../../helpers/geometry.helper';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawClonable } from '../../interfaces/clonable.interface';
+import { UpmadeGeometryHelper } from '../../helpers/geometry.helper';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeClonable } from '../../interfaces/clonable.interface';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 
 /**
- * Base class for all objects that can be rendered on the Updraw canvas.
+ * Base class for all objects that can be rendered on the Upmade canvas.
  * Provides common functionality for positioning, transformation, hit testing,
  * serialization, and lifecycle management.
  * @template T - The type of the underlying DOM element (HTMLElement or SVGElement)
  */
-export class UpdrawBaseObject<T extends Element = HTMLElement | SVGElement> implements UpdrawObject<T>, UpdrawSerializable, UpdrawClonable<UpdrawBaseObject<T>> {
-  __class__: string = 'UpdrawBaseObject';
+export class UpmadeBaseObject<T extends Element = HTMLElement | SVGElement> implements UpmadeObject<T>, UpmadeSerializable, UpmadeClonable<UpmadeBaseObject<T>> {
+  __class__: string = 'UpmadeBaseObject';
 
-  _core!: UpdrawCore;
+  _core!: UpmadeCore;
   _elementRef!: T;
 
   id: string;
@@ -92,7 +92,7 @@ export class UpdrawBaseObject<T extends Element = HTMLElement | SVGElement> impl
    * Gets the axis-aligned bounding box of the object without rotation.
    * @returns The bounding box with position, scale, and dimensions
    */
-  get boundingBox(): UpdrawBoundingBox {
+  get boundingBox(): UpmadeBoundingBox {
     return {
       x: this.translateX,
       y: this.translateY,
@@ -107,7 +107,7 @@ export class UpdrawBaseObject<T extends Element = HTMLElement | SVGElement> impl
    * Calculates the smallest rectangle that contains all four rotated corners.
    * @returns The bounding box accounting for rotation
    */
-  get rotatedBoundingBox(): UpdrawBoundingBox {
+  get rotatedBoundingBox(): UpmadeBoundingBox {
     const polygon = this.rotatedPolygon;
     const xValues = [polygon.topLeft.x, polygon.topRight.x, polygon.bottomRight.x, polygon.bottomLeft.x];
     const yValues = [polygon.topLeft.y, polygon.topRight.y, polygon.bottomRight.y, polygon.bottomLeft.y];
@@ -131,7 +131,7 @@ export class UpdrawBaseObject<T extends Element = HTMLElement | SVGElement> impl
    * Uses optimized trigonometric calculations with precomputed cos/sin values.
    * @returns A polygon with topLeft, topRight, bottomRight, and bottomLeft coordinates
    */
-  get rotatedPolygon(): UpdrawPolygon {
+  get rotatedPolygon(): UpmadePolygon {
     const cx = this.translateX + this.totalWidth / 2 / this.scale;
     const cy = this.translateY + this.totalHeight / 2 / this.scale;
     const angle = this.rotation;
@@ -239,20 +239,20 @@ export class UpdrawBaseObject<T extends Element = HTMLElement | SVGElement> impl
   }
 
   /**
-   * Creates a new UpdrawBaseObject instance with a generated unique ID.
+   * Creates a new UpmadeBaseObject instance with a generated unique ID.
    */
   constructor() {
     this.id = this.generateId();
   }
 
   /**
-   * Factory method to create a new UpdrawBaseObject with core context.
+   * Factory method to create a new UpmadeBaseObject with core context.
    * Automatically assigns the current z-index and active workspace ID.
-   * @param core - The UpdrawCore instance providing context and state
-   * @returns A new UpdrawBaseObject instance configured with core context
+   * @param core - The UpmadeCore instance providing context and state
+   * @returns A new UpmadeBaseObject instance configured with core context
    */
-  static create(core: UpdrawCore): UpdrawBaseObject<Element> {
-    const object = new UpdrawBaseObject();
+  static create(core: UpmadeCore): UpmadeBaseObject<Element> {
+    const object = new UpmadeBaseObject();
 
     object._core = core;
     object.zIndex = core.store.currentZIndex;
@@ -301,7 +301,7 @@ export class UpdrawBaseObject<T extends Element = HTMLElement | SVGElement> impl
     }
 
 
-    const viewportBounds: UpdrawBoundingBox = {
+    const viewportBounds: UpmadeBoundingBox = {
       x: -this._core.store.state.translateX / this._core.store.state.scale,
       y: -this._core.store.state.translateY / this._core.store.state.scale,
       z: this._core.store.state.scale,
@@ -421,7 +421,7 @@ export class UpdrawBaseObject<T extends Element = HTMLElement | SVGElement> impl
    * The clone shares the same prototype and copies all properties.
    * @returns A new instance with identical properties including the same ID
    */
-  clone(): UpdrawBaseObject<T> {
+  clone(): UpmadeBaseObject<T> {
     const clone = Object.create(Object.getPrototypeOf(this));
     Object.assign(clone, this);
     clone.id = this.id;
@@ -434,8 +434,8 @@ export class UpdrawBaseObject<T extends Element = HTMLElement | SVGElement> impl
    * The copied object is not mounted by default.
    * @returns A new instance with copied properties and a new unique ID
    */
-  copy(): UpdrawBaseObject<T> {
-    const copiedObject: UpdrawBaseObject<T> = Object.create(Object.getPrototypeOf(this));
+  copy(): UpmadeBaseObject<T> {
+    const copiedObject: UpmadeBaseObject<T> = Object.create(Object.getPrototypeOf(this));
     Object.assign(copiedObject, this);
     copiedObject.id = this.generateId();
     copiedObject.isMounted = false;
@@ -518,18 +518,18 @@ export class UpdrawBaseObject<T extends Element = HTMLElement | SVGElement> impl
    * should override.
    * @param previous - The previous local instance being replaced.
    */
-  adoptTransientStateFrom(_previous: UpdrawBaseObject<any>): void {
+  adoptTransientStateFrom(_previous: UpmadeBaseObject<any>): void {
     // no-op by default
   }
 
   /**
    * Type guard to check if this object is of a specific class type.
    * Compares against the __class__ property.
-   * @template T - The expected class type extending UpdrawBaseObject
+   * @template T - The expected class type extending UpmadeBaseObject
    * @param className - The class name to check against
    * @returns True if this object's __class__ matches the given class name
    */
-  isClass<T extends UpdrawBaseObject>(this: T, className: string): this is T {
+  isClass<T extends UpmadeBaseObject>(this: T, className: string): this is T {
     return this.__class__ === className;
   }
 
@@ -568,9 +568,9 @@ export class UpdrawBaseObject<T extends Element = HTMLElement | SVGElement> impl
    * @param polygon - The polygon to test intersection against
    * @returns True if the polygons intersect
    */
-  hitTestPolygon(polygon: UpdrawPolygon): boolean {
+  hitTestPolygon(polygon: UpmadePolygon): boolean {
     const objectPolygon = this.rotatedPolygon;
-    return UpdrawGeometryHelper.doPolygonsIntersect(objectPolygon, polygon);
+    return UpmadeGeometryHelper.doPolygonsIntersect(objectPolygon, polygon);
   }
 
   /**

@@ -1,5 +1,5 @@
 import { Component, Host, Prop, State, h } from '@stencil/core';
-import { UpdrawCore, UpdrawPath, UpdrawLine, UpdrawRemoteCursorState, IUpdrawUser, UpdrawViewportOverlayHelper } from '@updraw/core';
+import { UpmadeCore, UpmadePath, UpmadeLine, UpmadeRemoteCursorState, IUpmadeUser, UpmadeViewportOverlayHelper } from '@upmade/core';
 import { CursorArrow, CursorLabel, EdgeIndicator } from '../shared/cursor/cursor-visuals';
 
 const STALE_THRESHOLD_MS = 10_000;
@@ -7,16 +7,16 @@ const REMOVE_THRESHOLD_MS = 30_000;
 const CLEANUP_INTERVAL_MS = 3_000;
 
 @Component({
-  tag: 'updraw-awareness-cursors',
-  styleUrls: ['../shared/cursor/cursor-visuals.css', 'updraw-awareness-cursors.css'],
+  tag: 'upmade-awareness-cursors',
+  styleUrls: ['../shared/cursor/cursor-visuals.css', 'upmade-awareness-cursors.css'],
   shadow: true,
 })
-export class UpdrawAwarenessCursors {
-  @Prop() core!: UpdrawCore;
+export class UpmadeAwarenessCursors {
+  @Prop() core!: UpmadeCore;
   @Prop() showEdgeIndicators: boolean = true;
   @Prop() edgeIndicatorPadding: number = 8;
 
-  @State() remoteCursors: Map<number, UpdrawRemoteCursorState> = new Map();
+  @State() remoteCursors: Map<number, UpmadeRemoteCursorState> = new Map();
   @State() objectVersion: number = 0;
 
   private cleanupIntervalId: ReturnType<typeof setInterval> | undefined;
@@ -75,7 +75,7 @@ export class UpdrawAwarenessCursors {
 
       activeClientIds.add(clientId);
 
-      const user = state.user as IUpdrawUser;
+      const user = state.user as IUpmadeUser;
       const cursor = state.cursor as { x: number; y: number } | null;
       const activeObjectId = (state.activeObjectId as string) || null;
       const selectionBox = (state.selectionBox as { x: number; y: number; width: number; height: number }) || null;
@@ -126,7 +126,7 @@ export class UpdrawAwarenessCursors {
     }
   }
 
-  private isStale(cursor: UpdrawRemoteCursorState): boolean {
+  private isStale(cursor: UpmadeRemoteCursorState): boolean {
     return Date.now() - cursor.lastCursorMove > STALE_THRESHOLD_MS;
   }
 
@@ -152,7 +152,7 @@ export class UpdrawAwarenessCursors {
     const obj = this.core.store.objects?.findById(objectId);
     if (!obj) return null;
 
-    if (obj instanceof UpdrawPath && !obj.isCompleted) {
+    if (obj instanceof UpmadePath && !obj.isCompleted) {
       const lastPoint = obj.points[obj.points.length - 1];
       if (!lastPoint) return null;
       return {
@@ -161,7 +161,7 @@ export class UpdrawAwarenessCursors {
       };
     }
 
-    if (obj instanceof UpdrawLine && !obj.isCompleted) {
+    if (obj instanceof UpmadeLine && !obj.isCompleted) {
       return {
         x: (obj.endX - obj.x) / obj.scale + obj.translateX,
         y: (obj.endY - obj.y) / obj.scale + obj.translateY,
@@ -176,14 +176,14 @@ export class UpdrawAwarenessCursors {
   }
 
   private worldToScreen(worldX: number, worldY: number): { x: number; y: number } {
-    return UpdrawViewportOverlayHelper.worldToScreen(this.core.store.state, worldX, worldY);
+    return UpmadeViewportOverlayHelper.worldToScreen(this.core.store.state, worldX, worldY);
   }
 
   private isInViewport(screenX: number, screenY: number): boolean {
-    return UpdrawViewportOverlayHelper.isInViewport(this.core.store.state, screenX, screenY);
+    return UpmadeViewportOverlayHelper.isInViewport(this.core.store.state, screenX, screenY);
   }
 
-  private getUserDisplayName(user: IUpdrawUser): string {
+  private getUserDisplayName(user: IUpmadeUser): string {
     if (user.displayName) return user.displayName;
     if (user.firstName || user.lastName) {
       return [user.firstName, user.lastName].filter(Boolean).join(' ');
@@ -270,7 +270,7 @@ export class UpdrawAwarenessCursors {
   }
 
   private renderCursor(
-    cursor: UpdrawRemoteCursorState,
+    cursor: UpmadeRemoteCursorState,
     screenX: number,
     screenY: number,
     color: string,
@@ -290,14 +290,14 @@ export class UpdrawAwarenessCursors {
   }
 
   private renderEdgeIndicator(
-    cursor: UpdrawRemoteCursorState,
+    cursor: UpmadeRemoteCursorState,
     screenX: number,
     screenY: number,
     color: string,
     stale: boolean,
     trackingObject: boolean,
   ) {
-    const clamped = UpdrawViewportOverlayHelper.clampToEdge(this.core.store.state, screenX, screenY, this.edgeIndicatorPadding);
+    const clamped = UpmadeViewportOverlayHelper.clampToEdge(this.core.store.state, screenX, screenY, this.edgeIndicatorPadding);
     const displayName = this.getUserDisplayName(cursor.user);
 
     return (
@@ -308,7 +308,7 @@ export class UpdrawAwarenessCursors {
         angle={clamped.angle}
         edge={clamped.edge}
         color={color}
-        label={UpdrawViewportOverlayHelper.getInitials(displayName)}
+        label={UpmadeViewportOverlayHelper.getInitials(displayName)}
         classes={{ stale, 'tracking-object': trackingObject }}
       />
     );

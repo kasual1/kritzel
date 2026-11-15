@@ -5,9 +5,9 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  UpdrawEditor,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeEditor,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -15,14 +15,14 @@ import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-export-dialog',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
       <button type="button" (click)="openDialog()">Open export dialog</button>
       <button type="button" (click)="closeDialog()">Close export dialog</button>
     </app-toolbar>
-    <updraw-editor
+    <upmade-editor
       editorId="export-dialog"
       [theme]="'light'"
       [themes]="themes"
@@ -35,19 +35,19 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isMoreMenuVisible]="false"
       [isZoomPanelVisible]="false"
       (isReady)="onReady()"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: `
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    updraw-editor { flex: 1; }
+    upmade-editor { flex: 1; }
   `,
 })
 export class ExportDialogComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
   async onReady(): Promise<void> {
     setTimeout(async () => await this.openDialog(), 100); // Ensure the dialog opens after seed objects are created

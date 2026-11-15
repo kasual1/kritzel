@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { UpdrawBaseObject } from "@updraw/react-editor";
+import type { UpmadeBaseObject } from "@upmade/react-editor";
 import { createSeedObjects } from "../getting-started/seed-objects";
 
 export const hostStyle: CSSProperties = {
@@ -48,8 +48,8 @@ export function buttonStyle(active = false): CSSProperties {
   };
 }
 
-export async function seedEditor(editor: HTMLUpdrawEditorElement) {
+export async function seedEditor(editor: HTMLUpmadeEditorElement) {
   for (const obj of createSeedObjects()) {
-    await editor.addObject(obj as UpdrawBaseObject<HTMLElement | SVGElement>);
+    await editor.addObject(obj as UpmadeBaseObject<HTMLElement | SVGElement>);
   }
 }

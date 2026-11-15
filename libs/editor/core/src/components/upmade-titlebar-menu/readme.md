@@ -1,4 +1,4 @@
-# updraw-titlebar-menu
+# upmade-titlebar-menu
 
 
 
@@ -7,14 +7,14 @@
 
 ## Overview
 
-The menu opened from a titlebar `menu` element: a compact `updraw-menu` styled like the
-context menu through the `--updraw-titlebar-menu-*` theme variables.
+The menu opened from a titlebar `menu` element: a compact `upmade-menu` styled like the
+context menu through the `--upmade-titlebar-menu-*` theme variables.
 
 ## Properties
 
 | Property | Attribute | Description                                                      | Type                       | Default |
 | -------- | --------- | ---------------------------------------------------------------- | -------------------------- | ------- |
-| `items`  | --        | Menu items of the open titlebar menu, as resolved by the engine. | `UpdrawTitlebarMenuItem[]` | `[]`    |
+| `items`  | --        | Menu items of the open titlebar menu, as resolved by the engine. | `UpmadeTitlebarMenuItem[]` | `[]`    |
 
 
 ## Events
@@ -28,21 +28,21 @@ context menu through the `--updraw-titlebar-menu-*` theme variables.
 
 ### Used by
 
- - [updraw-editor](../updraw-editor)
+ - [upmade-editor](../upmade-editor)
 
 ### Depends on
 
-- [updraw-menu](../updraw-menu)
+- [upmade-menu](../upmade-menu)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-titlebar-menu --> updraw-menu
-  updraw-menu --> updraw-menu-item
-  updraw-menu-item --> updraw-icon
-  updraw-menu-item --> updraw-portal
-  updraw-editor --> updraw-titlebar-menu
-  style updraw-titlebar-menu fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-titlebar-menu --> upmade-menu
+  upmade-menu --> upmade-menu-item
+  upmade-menu-item --> upmade-icon
+  upmade-menu-item --> upmade-portal
+  upmade-editor --> upmade-titlebar-menu
+  style upmade-titlebar-menu fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

@@ -1,23 +1,23 @@
 import { Component, Event, EventEmitter, Host, Prop, h } from '@stencil/core';
-import { IUpdrawMenuItem, IUpdrawMenuItemSelectEvent, UpdrawTitlebarMenuItem } from '@updraw/core';
+import { IUpmadeMenuItem, IUpmadeMenuItemSelectEvent, UpmadeTitlebarMenuItem } from '@upmade/core';
 
 /**
- * The menu opened from a titlebar `menu` element: a compact `updraw-menu` styled like the
- * context menu through the `--updraw-titlebar-menu-*` theme variables.
+ * The menu opened from a titlebar `menu` element: a compact `upmade-menu` styled like the
+ * context menu through the `--upmade-titlebar-menu-*` theme variables.
  */
 @Component({
-  tag: 'updraw-titlebar-menu',
-  styleUrl: 'updraw-titlebar-menu.css',
+  tag: 'upmade-titlebar-menu',
+  styleUrl: 'upmade-titlebar-menu.css',
   shadow: true,
 })
-export class UpdrawTitlebarMenu {
+export class UpmadeTitlebarMenu {
   /** Menu items of the open titlebar menu, as resolved by the engine. */
-  @Prop() items: UpdrawTitlebarMenuItem[] = [];
+  @Prop() items: UpmadeTitlebarMenuItem[] = [];
 
   /** Emitted with the id of the selected menu item. */
   @Event() menuItemSelect: EventEmitter<string>;
 
-  private get menuItems(): IUpdrawMenuItem[] {
+  private get menuItems(): IUpmadeMenuItem[] {
     return (this.items ?? []).map(item => ({
       id: item.id,
       label: item.label,
@@ -26,7 +26,7 @@ export class UpdrawTitlebarMenu {
     }));
   }
 
-  private handleItemSelect = (event: CustomEvent<IUpdrawMenuItemSelectEvent>) => {
+  private handleItemSelect = (event: CustomEvent<IUpmadeMenuItemSelectEvent>) => {
     event.stopPropagation();
     this.menuItemSelect.emit(event.detail.item.id);
   };
@@ -34,7 +34,7 @@ export class UpdrawTitlebarMenu {
   render() {
     return (
       <Host>
-        <updraw-menu data-testid="object-titlebar-menu" items={this.menuItems} onItemSelect={this.handleItemSelect}></updraw-menu>
+        <upmade-menu data-testid="object-titlebar-menu" items={this.menuItems} onItemSelect={this.handleItemSelect}></upmade-menu>
       </Host>
     );
   }

@@ -3,7 +3,7 @@
 // from the repository variables WEBSITE_URL and APP_URL.
 
 /**
- * Reads an origin such as `https://updraw.io` from an environment variable.
+ * Reads an origin such as `https://upmade.io` from an environment variable.
  * @param {string} name - Environment variable name
  * @param {string} fallback - Origin used when the variable is unset or empty
  * @returns {string} The origin, without a trailing slash
@@ -23,7 +23,7 @@ function readOrigin(name, fallback) {
 }
 
 /** Origin the website is served from; used for canonical URLs, the sitemap, robots.txt and llms.txt. */
-export const SITE_URL = readOrigin('UPDRAW_WEBSITE_URL', 'https://updraw.io');
+export const SITE_URL = readOrigin('UPMADE_WEBSITE_URL', 'https://upmade.io');
 
 /** Origin of the hosted app that the website links to. */
-export const APP_URL = readOrigin('UPDRAW_APP_URL', 'https://app.updraw.io');
+export const APP_URL = readOrigin('UPMADE_APP_URL', 'https://app.upmade.io');

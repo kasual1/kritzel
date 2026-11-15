@@ -1,42 +1,42 @@
 import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
-import { UpdrawDevicesHelper } from '@updraw/core';
-import { IUpdrawMenuItem, IUpdrawMenuItemSelectEvent, IUpdrawMenuItemToggleChildMenuEvent } from '@updraw/core';
+import { UpmadeDevicesHelper } from '@upmade/core';
+import { IUpmadeMenuItem, IUpmadeMenuItemSelectEvent, IUpmadeMenuItemToggleChildMenuEvent } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-split-button',
-  styleUrl: 'updraw-split-button.css',
+  tag: 'upmade-split-button',
+  styleUrl: 'upmade-split-button.css',
   shadow: true,
 })
-export class UpdrawSplitButton {
+export class UpmadeSplitButton {
   @Element() host!: HTMLElement;
 
   @Prop() buttonIcon: string = 'plus';
   @Prop() dropdownIcon: string = 'chevronDown';
-  @Prop() items: IUpdrawMenuItem[] = [];
+  @Prop() items: IUpmadeMenuItem[] = [];
   @Prop() mainButtonDisabled = false;
   @Prop() menuButtonDisabled = false;
 
   @Event() mainButtonClick: EventEmitter<void>;
-  @Event() itemSelect: EventEmitter<IUpdrawMenuItemSelectEvent>;
-  @Event() itemSave: EventEmitter<IUpdrawMenuItem>;
-  @Event() itemCancel: EventEmitter<IUpdrawMenuItem>;
-  @Event() itemToggleChildMenu: EventEmitter<IUpdrawMenuItemToggleChildMenuEvent>;
-  @Event() itemCloseChildMenu: EventEmitter<IUpdrawMenuItem>;
+  @Event() itemSelect: EventEmitter<IUpmadeMenuItemSelectEvent>;
+  @Event() itemSave: EventEmitter<IUpmadeMenuItem>;
+  @Event() itemCancel: EventEmitter<IUpmadeMenuItem>;
+  @Event() itemToggleChildMenu: EventEmitter<IUpmadeMenuItemToggleChildMenuEvent>;
+  @Event() itemCloseChildMenu: EventEmitter<IUpmadeMenuItem>;
   @Event() menuOpen: EventEmitter<void>;
   @Event() menuClose: EventEmitter<void>;
 
   @State() isMenuOpen = false;
-  @State() isTouchDevice: boolean = UpdrawDevicesHelper.isTouchDevice();
+  @State() isTouchDevice: boolean = UpmadeDevicesHelper.isTouchDevice();
   @State() anchorElement: HTMLElement;
   @State() menuScrollTop: number = 0;
 
   splitMenuButtonRef: HTMLButtonElement;
-  menuRef: HTMLUpdrawMenuElement;
+  menuRef: HTMLUpmadeMenuElement;
 
   @Method()
   async open() {
     if (this.isMenuOpen) return;
-    window.dispatchEvent(new CustomEvent('updraw-dismiss-menus'));
+    window.dispatchEvent(new CustomEvent('upmade-dismiss-menus'));
     this.isMenuOpen = true;
     this.anchorElement = this.host;
     this.menuOpen.emit();
@@ -70,7 +70,7 @@ export class UpdrawSplitButton {
 
   private openMenu = (event: MouseEvent) => {
     event.stopPropagation();
-    window.dispatchEvent(new CustomEvent('updraw-dismiss-menus'));
+    window.dispatchEvent(new CustomEvent('upmade-dismiss-menus'));
     this.isMenuOpen = true;
     this.anchorElement = this.host;
     this.menuOpen.emit();
@@ -115,17 +115,17 @@ export class UpdrawSplitButton {
     return (
       <Host class={{ mobile: this.isTouchDevice }}>
         <button class="split-main-button" tabIndex={0} onClick={this.handleButtonClick} disabled={this.mainButtonDisabled} aria-label="Main action">
-          {this.buttonIcon && <updraw-icon name={this.buttonIcon}></updraw-icon>}
+          {this.buttonIcon && <upmade-icon name={this.buttonIcon}></upmade-icon>}
         </button>
 
         <div class="split-divider"></div>
 
         <button ref={el => (this.splitMenuButtonRef = el)} class="split-menu-button" tabIndex={0} onClick={this.toggleMenu} disabled={this.menuButtonDisabled} aria-label="Open menu">
-          <updraw-icon name={this.dropdownIcon}></updraw-icon>
+          <upmade-icon name={this.dropdownIcon}></upmade-icon>
         </button>
 
-        <updraw-portal anchor={this.anchorElement} offsetY={4} onClose={this.closeMenu}>
-          <updraw-menu
+        <upmade-portal anchor={this.anchorElement} offsetY={4} onClose={this.closeMenu}>
+          <upmade-menu
             ref={el => (this.menuRef = el)}
             items={this.items}
             onItemSelect={this.handleItemSelect}
@@ -135,8 +135,8 @@ export class UpdrawSplitButton {
             onItemCloseChildMenu={this.handleItemCloseChildMenu}
             onClose={this.closeMenu}
             onScroll={this.handleScroll}
-          ></updraw-menu>
-        </updraw-portal>
+          ></upmade-menu>
+        </upmade-portal>
       </Host>
     );
   }

@@ -1,5 +1,5 @@
-import { UpdrawBaseObject } from '../classes/objects/base-object.class';
-import { UpdrawAlignment } from '../enums/alignment.enum';
+import { UpmadeBaseObject } from '../classes/objects/base-object.class';
+import { UpmadeAlignment } from '../enums/alignment.enum';
 
 /**
  * Helper class for aligning objects within a selection group.
@@ -8,7 +8,7 @@ export class AlignmentHelper {
   /**
    * Calculates the selection bounds from all objects' rotated bounding boxes.
    */
-  private static calculateSelectionBounds(objects: UpdrawBaseObject[]): {
+  private static calculateSelectionBounds(objects: UpmadeBaseObject[]): {
     minX: number;
     minY: number;
     maxX: number;
@@ -31,8 +31,8 @@ export class AlignmentHelper {
    * @returns A map of object IDs to their new translateX and translateY values
    */
   static calculateAlignedPositions(
-    objects: UpdrawBaseObject[],
-    alignment: UpdrawAlignment
+    objects: UpmadeBaseObject[],
+    alignment: UpmadeAlignment
   ): Map<string, { translateX: number; translateY: number }> {
     const result = new Map<string, { translateX: number; translateY: number }>();
 
@@ -52,37 +52,37 @@ export class AlignmentHelper {
       const offsetY = objBounds.y - obj.translateY;
 
       switch (alignment) {
-        case UpdrawAlignment.StartHorizontal:
+        case UpmadeAlignment.StartHorizontal:
           // Align left edges to selection's left edge
           newTranslateX = selectionBounds.minX - offsetX;
           break;
 
-        case UpdrawAlignment.CenterHorizontal:
+        case UpmadeAlignment.CenterHorizontal:
           // Align centers horizontally
           const selectionCenterX = (selectionBounds.minX + selectionBounds.maxX) / 2;
           const objCenterX = objBounds.x + objBounds.width / 2;
           newTranslateX = obj.translateX + (selectionCenterX - objCenterX);
           break;
 
-        case UpdrawAlignment.EndHorizontal:
+        case UpmadeAlignment.EndHorizontal:
           // Align right edges to selection's right edge
           const objRightEdge = objBounds.x + objBounds.width;
           newTranslateX = obj.translateX + (selectionBounds.maxX - objRightEdge);
           break;
 
-        case UpdrawAlignment.StartVertical:
+        case UpmadeAlignment.StartVertical:
           // Align top edges to selection's top edge
           newTranslateY = selectionBounds.minY - offsetY;
           break;
 
-        case UpdrawAlignment.CenterVertical:
+        case UpmadeAlignment.CenterVertical:
           // Align centers vertically
           const selectionCenterY = (selectionBounds.minY + selectionBounds.maxY) / 2;
           const objCenterY = objBounds.y + objBounds.height / 2;
           newTranslateY = obj.translateY + (selectionCenterY - objCenterY);
           break;
 
-        case UpdrawAlignment.EndVertical:
+        case UpmadeAlignment.EndVertical:
           // Align bottom edges to selection's bottom edge
           const objBottomEdge = objBounds.y + objBounds.height;
           newTranslateY = obj.translateY + (selectionBounds.maxY - objBottomEdge);

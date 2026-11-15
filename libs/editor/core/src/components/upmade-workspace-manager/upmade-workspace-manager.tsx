@@ -1,14 +1,14 @@
-import { UpdrawWorkspace } from '@updraw/core';
-import { IUpdrawMenuItem } from '@updraw/core';
-import { UpdrawTermKey } from '@updraw/core';
+import { UpmadeWorkspace } from '@upmade/core';
+import { IUpmadeMenuItem } from '@upmade/core';
+import { UpmadeTermKey } from '@upmade/core';
 import { Host, h, Component, State, Prop, Event, EventEmitter, Element, Listen, Method } from '@stencil/core';
 
 @Component({
-  tag: 'updraw-workspace-manager',
-  styleUrl: 'updraw-workspace-manager.css',
+  tag: 'upmade-workspace-manager',
+  styleUrl: 'upmade-workspace-manager.css',
   shadow: true,
 })
-export class UpdrawWorkspaceManager {
+export class UpmadeWorkspaceManager {
   @Element() host!: HTMLElement;
 
   /**
@@ -16,18 +16,18 @@ export class UpdrawWorkspaceManager {
    */
   @Prop() visible: boolean = false;
 
-  @Prop({ mutable: true }) activeWorkspace: UpdrawWorkspace;
-  @Prop() workspaces: UpdrawWorkspace[] = [];
+  @Prop({ mutable: true }) activeWorkspace: UpmadeWorkspace;
+  @Prop() workspaces: UpmadeWorkspace[] = [];
 
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpmadeTermKey, string>> = {};
 
   @Event() isWorkspaceManagerReady: EventEmitter<void>;
-  @Event() workspaceChange: EventEmitter<UpdrawWorkspace>;
+  @Event() workspaceChange: EventEmitter<UpmadeWorkspace>;
 
   @State() childMenuAnchor: HTMLElement = null;
-  @State() openChildMenuItem: IUpdrawMenuItem = null;
-  @State() newWorkspace: UpdrawWorkspace | null = null;
+  @State() openChildMenuItem: IUpmadeMenuItem = null;
+  @State() newWorkspace: UpmadeWorkspace | null = null;
   @State() editingItemId: string | null = null;
 
   @Listen('wheel', { target: 'window', passive: false })
@@ -37,8 +37,8 @@ export class UpdrawWorkspaceManager {
     }
   }
 
-  updrawEngineRef: HTMLUpdrawEngineElement | null = null;
-  splitButtonRef!: HTMLUpdrawSplitButtonElement;
+  upmadeEngineRef: HTMLUpmadeEngineElement | null = null;
+  splitButtonRef!: HTMLUpmadeSplitButtonElement;
 
   get sortedWorkspaces() {
     return [this.newWorkspace, ...this.workspaces].filter(ws => ws != null).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -64,17 +64,17 @@ export class UpdrawWorkspaceManager {
   }
 
   private async initializeEngine() {
-    await customElements.whenDefined('updraw-engine');
-    // Search for updraw-engine in the closest updraw-editor ancestor
-    const editor = this.host.closest('updraw-editor');
-    this.updrawEngineRef = editor?.querySelector('updraw-engine') ?? null;
+    await customElements.whenDefined('upmade-engine');
+    // Search for upmade-engine in the closest upmade-editor ancestor
+    const editor = this.host.closest('upmade-editor');
+    this.upmadeEngineRef = editor?.querySelector('upmade-engine') ?? null;
 
-    if (!this.updrawEngineRef) {
-      console.warn('updraw-engine not found in updraw-editor.');
+    if (!this.upmadeEngineRef) {
+      console.warn('upmade-engine not found in upmade-editor.');
     }
   }
 
-  private async select(item: IUpdrawMenuItem, parent: IUpdrawMenuItem) {
+  private async select(item: IUpmadeMenuItem, parent: IUpmadeMenuItem) {
     if (this.editingItemId) {
       return;
     }
@@ -89,11 +89,11 @@ export class UpdrawWorkspaceManager {
 
   private async add() {
     await this.splitButtonRef.open();
-    this.newWorkspace = new UpdrawWorkspace({ name: 'New Workspace' });
+    this.newWorkspace = new UpmadeWorkspace({ name: 'New Workspace' });
     this.editingItemId = this.newWorkspace.id;
   }
 
-  private edit(item: IUpdrawMenuItem) {
+  private edit(item: IUpmadeMenuItem) {
     this.openChildMenuItem = null;
     this.childMenuAnchor = null;
     requestAnimationFrame(() => {
@@ -101,15 +101,15 @@ export class UpdrawWorkspaceManager {
     });
   }
 
-  private async save(item: IUpdrawMenuItem) {
+  private async save(item: IUpmadeMenuItem) {
     if (this.newWorkspace) {
       this.newWorkspace.name = item.label;
-      await this.updrawEngineRef?.createWorkspace(this.newWorkspace);
+      await this.upmadeEngineRef?.createWorkspace(this.newWorkspace);
       this.workspaceChange.emit(this.newWorkspace);
     } else {
       const workspace = item.value;
       workspace.name = item.label;
-      await this.updrawEngineRef?.updateWorkspace(workspace);
+      await this.upmadeEngineRef?.updateWorkspace(workspace);
     }
 
     this.editingItemId = null;
@@ -121,11 +121,11 @@ export class UpdrawWorkspaceManager {
     this.editingItemId = null;
   }
 
-  private async delete(item: IUpdrawMenuItem) {
+  private async delete(item: IUpmadeMenuItem) {
     this.openChildMenuItem = null;
     this.childMenuAnchor = null;
 
-    await this.updrawEngineRef?.deleteWorkspace(item.value);
+    await this.upmadeEngineRef?.deleteWorkspace(item.value);
 
     if (item.value.id === this.activeWorkspace?.id) {
       this.activeWorkspace = this.sortedWorkspaces.find(ws => ws.id !== item.value.id) || null;
@@ -135,7 +135,7 @@ export class UpdrawWorkspaceManager {
     await this.splitButtonRef.focusMenu();
   }
 
-  private toggleChildMenu(item: IUpdrawMenuItem, anchor: HTMLElement) {
+  private toggleChildMenu(item: IUpmadeMenuItem, anchor: HTMLElement) {
     this.openChildMenuItem = item;
     this.childMenuAnchor = anchor;
   }
@@ -191,7 +191,7 @@ export class UpdrawWorkspaceManager {
     return (
       <Host style={{ display: this.visible ? '' : 'none' }}>
         <div class={{ manager: true, visible: this.visible }}>
-          <updraw-split-button
+          <upmade-split-button
             ref={el => (this.splitButtonRef = el)}
             items={menuItems}
             mainButtonDisabled={this.editingItemId != null}
@@ -203,7 +203,7 @@ export class UpdrawWorkspaceManager {
             onItemCloseChildMenu={() => this.closeChildMenu()}
             onMenuOpen={() => this.handleMenuOpen()}
             onMenuClose={() => this.handleMenuClose()}
-          ></updraw-split-button>
+          ></upmade-split-button>
         </div>
       </Host>
     );

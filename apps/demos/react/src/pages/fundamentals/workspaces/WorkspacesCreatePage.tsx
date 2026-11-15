@@ -1,12 +1,12 @@
 import { useRef, useState } from "react";
 import {
   InMemorySyncProvider,
-  UpdrawEditor,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeWorkspace,
   type ActiveWorkspaceChangeEvent,
-  type HTMLUpdrawEditorElement,
-  type UpdrawSyncConfig,
-} from "@updraw/react-editor";
+  type HTMLUpmadeEditorElement,
+  type UpmadeSyncConfig,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -17,13 +17,13 @@ import {
 import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
-const syncConfig: UpdrawSyncConfig = {
+const syncConfig: UpmadeSyncConfig = {
   providers: [InMemorySyncProvider],
 };
 
 function createInitialWorkspaces() {
   return [
-    new UpdrawWorkspace({
+    new UpmadeWorkspace({
       id: "board-1",
       name: "Board 1",
       objects: createSeedObjects(),
@@ -32,7 +32,7 @@ function createInitialWorkspaces() {
 }
 
 export function WorkspacesCreatePage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const [workspaces, setWorkspaces] = useState(createInitialWorkspaces);
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | undefined>(
     "board-1",
@@ -50,7 +50,7 @@ export function WorkspacesCreatePage() {
 
     const workspaceNumber = workspaces.length + 1;
     const workspace = await editor.createWorkspace(
-      new UpdrawWorkspace({
+      new UpmadeWorkspace({
         id: `board-${workspaceNumber}`,
         name: `Board ${workspaceNumber}`,
         objects: createSeedObjects(),
@@ -64,7 +64,7 @@ export function WorkspacesCreatePage() {
     }
   }
 
-  async function switchTo(workspace: UpdrawWorkspace) {
+  async function switchTo(workspace: UpmadeWorkspace) {
     await editorRef.current?.setActiveWorkspace(workspace.id);
   }
 
@@ -84,7 +84,7 @@ export function WorkspacesCreatePage() {
           </button>
         ))}
       </Toolbar>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="workspaces-create"
         theme="light"

@@ -1,6 +1,6 @@
 import { Component, Host, h, Prop, Event, EventEmitter, State, Watch, Listen, Element } from '@stencil/core';
-import { ContextMenuItem } from '@updraw/core';
-import { UpdrawBaseObject } from '@updraw/core';
+import { ContextMenuItem } from '@upmade/core';
+import { UpmadeBaseObject } from '@upmade/core';
 
 interface ProcessedMenuItem {
   item: ContextMenuItem;
@@ -13,11 +13,11 @@ const SUBMENU_DELAY = 150;
 const ESTIMATED_SUBMENU_WIDTH = 160; // Estimated width for pre-calculation
 
 @Component({
-  tag: 'updraw-context-menu',
-  styleUrl: 'updraw-context-menu.css',
+  tag: 'upmade-context-menu',
+  styleUrl: 'upmade-context-menu.css',
   shadow: true,
 })
-export class UpdrawContextMenu {
+export class UpmadeContextMenu {
   @Element() host: HTMLElement;
 
   @Prop() items: ContextMenuItem[];
@@ -26,7 +26,7 @@ export class UpdrawContextMenu {
     this.updateMenuItems();
   }
 
-  @Prop() objects: UpdrawBaseObject[];
+  @Prop() objects: UpmadeBaseObject[];
 
   @Event() actionSelected: EventEmitter<ContextMenuItem>;
   @Event() close: EventEmitter<void>;
@@ -259,7 +259,7 @@ export class UpdrawContextMenu {
     return processed;
   }
 
-  private async evaluateProperty(value: boolean | ((obj: UpdrawBaseObject, objs: UpdrawBaseObject[]) => boolean | Promise<boolean>), defaultValue: boolean): Promise<boolean> {
+  private async evaluateProperty(value: boolean | ((obj: UpmadeBaseObject, objs: UpmadeBaseObject[]) => boolean | Promise<boolean>), defaultValue: boolean): Promise<boolean> {
     if (typeof value === 'boolean') {
       return value;
     }
@@ -291,9 +291,9 @@ export class UpdrawContextMenu {
             onClick={() => this.handleItemClick(item, isDisabled, hasChildren)}
             disabled={isDisabled && !hasChildren}
           >
-            {item.icon && <updraw-icon name={item.icon} size={16}></updraw-icon>}
+            {item.icon && <upmade-icon name={item.icon} size={16}></upmade-icon>}
             <span class="label">{item.label}</span>
-            {hasChildren && <updraw-icon name="chevronRight" size={12} class="submenu-arrow"></updraw-icon>}
+            {hasChildren && <upmade-icon name="chevronRight" size={12} class="submenu-arrow"></upmade-icon>}
           </button>
           {hasChildren && submenuOpen && this.renderSubmenu(processedChildren!, path)}
         </div>,

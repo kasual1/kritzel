@@ -10,8 +10,8 @@
 
 export type * from './components';
 
-export type HTMLUpdrawEngineElement = HTMLElementTagNameMap['updraw-engine'];
+export type HTMLUpmadeEngineElement = HTMLElementTagNameMap['upmade-engine'];
 
-// The engine's classes, helpers and types live in @updraw/core. Re-exporting them keeps
-// existing `@updraw/engine` imports working and shares one copy of every class.
-export * from '@updraw/core';
+// The engine's classes, helpers and types live in @upmade/core. Re-exporting them keeps
+// existing `@upmade/engine` imports working and shares one copy of every class.
+export * from '@upmade/core';

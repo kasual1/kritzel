@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { UpdrawEditor, UpdrawTheme, UpdrawWorkspace } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeTheme, UpmadeWorkspace } from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -11,7 +11,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-theming-listen',
-  imports: [UpdrawEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
+  imports: [UpmadeEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -22,7 +22,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
     <div class="content">
       <div class="editor-wrap">
-        <updraw-editor
+        <upmade-editor
           editorId="theming-listen"
           [theme]="activeTheme()"
           [themes]="themes"
@@ -33,7 +33,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
           [isWorkspaceManagerVisible]="true"
           (isReady)="onReady()"
           (themeChange)="onThemeChange($event)"
-        ></updraw-editor>
+        ></upmade-editor>
       </div>
 
       <app-info-panel #infoPanel [hasToolbarToggle]="true">
@@ -85,9 +85,9 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   `],
 })
 export class ThemingListenComponent {
-  themes: UpdrawTheme[] = [angularThemeLight, angularThemeDark];
+  themes: UpmadeTheme[] = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
   activeTheme = signal<string>('light');
   themeHistory = signal<string[]>([]);

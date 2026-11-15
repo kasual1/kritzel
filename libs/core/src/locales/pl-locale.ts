@@ -1,9 +1,9 @@
-import { UpdrawLocale } from '../interfaces/localization.interface';
+import { UpmadeLocale } from '../interfaces/localization.interface';
 
 /**
  * Built-in Polish locale.
  */
-export const PL_LOCALE: UpdrawLocale = {
+export const PL_LOCALE: UpmadeLocale = {
   code: 'pl',
   label: 'Polski',
   terms: {
@@ -76,7 +76,7 @@ export const PL_LOCALE: UpdrawLocale = {
     'settings.developer.showMigrationInfo.label': 'Pokaż informacje o migracji',
     'settings.developer.showMigrationInfo.description': 'Wyświetla informacje diagnostyczne o migracjach danych.',
     'settings.about.title': 'Informacje',
-    'settings.about.description': 'Updraw — aplikacja do rysowania',
+    'settings.about.description': 'Upmade — aplikacja do rysowania',
 
     // Export dialog
     'export.dialogTitle': 'Eksportuj',
@@ -134,7 +134,7 @@ export const PL_LOCALE: UpdrawLocale = {
     'moreMenu.ariaLabel': 'Więcej opcji',
 
     // Watermark
-    'watermark.poweredBy': 'Obsługiwane przez Updraw',
+    'watermark.poweredBy': 'Obsługiwane przez Upmade',
 
     // Object type labels
     'objectType.shape': 'Kształt',

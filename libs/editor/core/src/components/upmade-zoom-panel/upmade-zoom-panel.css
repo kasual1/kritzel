@@ -8,12 +8,12 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: var(--updraw-zoom-panel-gap, 4px);
-  padding: var(--updraw-zoom-panel-padding, 4px);
-  border: var(--updraw-zoom-panel-border, 1px solid #ebebeb);
-  border-radius: var(--updraw-zoom-panel-border-radius, 12px);
-  background-color: var(--updraw-zoom-panel-background-color, #ffffff);
-  box-shadow: var(--updraw-zoom-panel-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  gap: var(--upmade-zoom-panel-gap, 4px);
+  padding: var(--upmade-zoom-panel-padding, 4px);
+  border: var(--upmade-zoom-panel-border, 1px solid #ebebeb);
+  border-radius: var(--upmade-zoom-panel-border-radius, 12px);
+  background-color: var(--upmade-zoom-panel-background-color, #ffffff);
+  box-shadow: var(--upmade-zoom-panel-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease-out;
@@ -29,8 +29,8 @@
   align-items: center;
   justify-content: center;
   min-width: 46px;
-  color: var(--updraw-zoom-panel-icon-color, #000000);
-  font-family: var(--updraw-global-font-family, sans-serif);
+  color: var(--upmade-zoom-panel-icon-color, #000000);
+  font-family: var(--upmade-global-font-family, sans-serif);
   font-size: 12px;
   font-weight: 500;
   line-height: 1;
@@ -42,28 +42,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--updraw-zoom-panel-button-size, 32px);
-  height: var(--updraw-zoom-panel-button-size, 32px);
+  width: var(--upmade-zoom-panel-button-size, 32px);
+  height: var(--upmade-zoom-panel-button-size, 32px);
   padding: 0;
   border: 0;
-  border-radius: var(--updraw-zoom-panel-button-border-radius, 8px);
+  border-radius: var(--upmade-zoom-panel-button-border-radius, 8px);
   background: transparent;
   background-color: transparent;
-  color: var(--updraw-zoom-panel-icon-color, #000000);
-  --updraw-icon-color: var(--updraw-zoom-panel-icon-color, #000000);
+  color: var(--upmade-zoom-panel-icon-color, #000000);
+  --upmade-icon-color: var(--upmade-zoom-panel-icon-color, #000000);
   box-shadow: none;
   appearance: none;
-  cursor: var(--updraw-global-pointer-cursor, pointer);
+  cursor: var(--upmade-global-pointer-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
 }
 
 .zoom-button:hover,
 .zoom-button:focus-visible {
-  background-color: var(--updraw-zoom-panel-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--upmade-zoom-panel-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 .zoom-button:active {
-  background-color: var(--updraw-zoom-panel-button-active-background-color, hsl(0, 0%, 0%, 8.6%));
+  background-color: var(--upmade-zoom-panel-button-active-background-color, hsl(0, 0%, 0%, 8.6%));
 }
 
 .zoom-button:disabled {

@@ -1,8 +1,8 @@
-import type { UpdrawIframeContent } from '@updraw/vue-editor'
+import type { UpmadeIframeContent } from '@upmade/vue-editor'
 
 export interface RuntimeIframeDefinition {
   name: string
-  content: UpdrawIframeContent
+  content: UpmadeIframeContent
   initialState: Record<string, unknown>
 }
 
@@ -24,7 +24,7 @@ const calculatorCss = `
   .keypad { display: grid; gap: 6px; min-height: 0; }
   .simple-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); }
   .scientific-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); }
-  button { min-width: 0; min-height: 0; border: 1px solid #dadce0; border-radius: 7px; background: #ffffff; color: #202124; cursor: var(--updraw-iframe-pointer-cursor, pointer); font: inherit; font-size: 14px; font-weight: 700; line-height: 1; }
+  button { min-width: 0; min-height: 0; border: 1px solid #dadce0; border-radius: 7px; background: #ffffff; color: #202124; cursor: var(--upmade-iframe-pointer-cursor, pointer); font: inherit; font-size: 14px; font-weight: 700; line-height: 1; }
   button:hover { background: #f3f4f6; }
   .operator { border-color: #42b883; color: #167a55; }
   .muted { color: #5f6368; }
@@ -47,15 +47,15 @@ const calculatorScript = `
   const operatorLabels = { add: '+', subtract: '-', multiply: 'x', divide: '/' };
 
   const getState = () => ({
-    displayValue: String(updraw.state.displayValue ?? '0'),
-    storedValue: typeof updraw.state.storedValue === 'number' ? updraw.state.storedValue : null,
-    pendingOperator: updraw.state.pendingOperator ?? null,
-    shouldReplaceDisplay: typeof updraw.state.shouldReplaceDisplay === 'boolean' ? updraw.state.shouldReplaceDisplay : true,
-    mode: updraw.state.mode === 'scientific' ? 'scientific' : 'simple',
+    displayValue: String(upmade.state.displayValue ?? '0'),
+    storedValue: typeof upmade.state.storedValue === 'number' ? upmade.state.storedValue : null,
+    pendingOperator: upmade.state.pendingOperator ?? null,
+    shouldReplaceDisplay: typeof upmade.state.shouldReplaceDisplay === 'boolean' ? upmade.state.shouldReplaceDisplay : true,
+    mode: upmade.state.mode === 'scientific' ? 'scientific' : 'simple',
   });
 
   const setState = (nextState) => {
-    updraw.setState({ ...getState(), ...nextState });
+    upmade.setState({ ...getState(), ...nextState });
     render();
   };
 
@@ -133,7 +133,7 @@ const calculatorScript = `
   document.querySelectorAll('[data-operator]').forEach((button) => button.addEventListener('click', () => chooseOperator(button.dataset.operator)));
   document.querySelectorAll('[data-action]').forEach((button) => button.addEventListener('click', () => button.dataset.action === 'equals' ? calculate() : applyFunction(button.dataset.action)));
   toggleButtons.forEach((button) => button.addEventListener('click', () => setState({ mode: button.dataset.mode })));
-  addEventListener('updrawstatechange', render);
+  addEventListener('upmadestatechange', render);
   render();
 `
 

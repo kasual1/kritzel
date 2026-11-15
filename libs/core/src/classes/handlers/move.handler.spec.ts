@@ -1,13 +1,13 @@
-import { UpdrawMoveHandler } from './move.handler';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
-import { UpdrawLine } from '../objects/line.class';
+import { UpmadeMoveHandler } from './move.handler';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
+import { UpmadeLine } from '../objects/line.class';
 
 jest.mock('../../helpers/event.helper');
 
-describe('UpdrawMoveHandler', () => {
-  let moveHandler: UpdrawMoveHandler;
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadeMoveHandler', () => {
+  let moveHandler: UpmadeMoveHandler;
+  let mockCore: jest.Mocked<UpmadeCore>;
   let mockSelectionGroup: {
     isSelected: boolean;
     objects: unknown[];
@@ -50,7 +50,7 @@ describe('UpdrawMoveHandler', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockSelectionGroup = null;
     mockState = {
@@ -86,9 +86,9 @@ describe('UpdrawMoveHandler', () => {
       anchorManager: {
         removeAnchor: jest.fn(),
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    moveHandler = new UpdrawMoveHandler(mockCore);
+    moveHandler = new UpmadeMoveHandler(mockCore);
   });
 
   describe('cancelPendingDrag', () => {
@@ -133,7 +133,7 @@ describe('UpdrawMoveHandler', () => {
       });
 
       it('should not start drag on non-left click', () => {
-        (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+        (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
         mockSelectionGroup = {
           isSelected: true,
           objects: [],
@@ -734,18 +734,18 @@ describe('UpdrawMoveHandler', () => {
   });
 
   describe('anchor disconnection', () => {
-    let mockLine: jest.Mocked<UpdrawLine>;
+    let mockLine: jest.Mocked<UpmadeLine>;
 
     beforeEach(() => {
       mockLine = {
-        __class__: 'UpdrawLine',
+        __class__: 'UpmadeLine',
         id: 'line-1',
         startAnchor: { objectId: 'obj-1', position: 'top' },
         endAnchor: { objectId: 'obj-2', position: 'bottom' },
-      } as unknown as jest.Mocked<UpdrawLine>;
+      } as unknown as jest.Mocked<UpmadeLine>;
 
       // Make mockLine pass instanceof check
-      Object.setPrototypeOf(mockLine, UpdrawLine.prototype);
+      Object.setPrototypeOf(mockLine, UpmadeLine.prototype);
 
       mockSelectionGroup = {
         isSelected: true,

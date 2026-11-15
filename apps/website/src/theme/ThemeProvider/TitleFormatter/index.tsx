@@ -4,8 +4,8 @@ import { TitleFormatterProvider } from '@docusaurus/theme-common/internal';
 type Formatter = ComponentProps<typeof TitleFormatterProvider>['formatter'];
 
 /**
- * Appends the site title only to page titles that don't already name Updraw, so docs titles like
- * "Quick Start | Updraw for React" stay as they are while "Blog" becomes "Blog | Updraw".
+ * Appends the site title only to page titles that don't already name Upmade, so docs titles like
+ * "Quick Start | Upmade for React" stay as they are while "Blog" becomes "Blog | Upmade".
  */
 const formatter: Formatter = (params) => {
   const title = params.title?.trim();

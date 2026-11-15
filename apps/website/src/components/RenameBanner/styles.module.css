@@ -24,7 +24,7 @@
 }
 
 /*
- * Each name's logo, in the text colour and centred on it. The Kritzel scribble is wide and dense and the Updraw mark
+ * Each name's logo, in the text colour and centred on it. The Kritzel scribble is wide and dense and the Upmade mark
  * is thin, so the scribble is a bit smaller and the mark a bit larger to look the same size. Gaps to the names:
  * 0.18em (about 2.5 px) after the scribble, about 3.4 px after the mark.
  * The --rename-* variables are only there for fine-tuning previews.

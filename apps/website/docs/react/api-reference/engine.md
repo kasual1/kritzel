@@ -2,14 +2,14 @@
 
 sidebar_label: Engine
 displayed_sidebar: tutorialSidebar
-title: "Engine API Reference | Updraw for React"
-description: "Complete API reference for the headless Updraw engine: rendering, viewport, pointer events, and workspace management."
+title: "Engine API Reference | Upmade for React"
+description: "Complete API reference for the headless Upmade engine: rendering, viewport, pointer events, and workspace management."
 toc_max_heading_level: 2
 ---
 
 # Engine
 
-The `<UpdrawEngine>` is the low-level headless canvas primitive. It handles rendering, viewport management, pointer events, undo/redo, and workspace management with no built-in controls.
+The `<UpmadeEngine>` is the low-level headless canvas primitive. It handles rendering, viewport management, pointer events, undo/redo, and workspace management with no built-in controls.
 
 ## Object
 
@@ -17,14 +17,14 @@ The `<UpdrawEngine>` is the low-level headless canvas primitive. It handles rend
 
 | Property | Type | Description |
 |----------|------|-------------|
-| objectConfig | UpdrawObjectConfig | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object. See [Configuring Objects](../fundamentals/objects.md#configuring-objects). |
+| objectConfig | UpmadeObjectConfig | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object. See [Configuring Objects](../fundamentals/objects.md#configuring-objects). |
 
 ### Events
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
 | objectsAdded | ObjectsAddedEvent | Emitted when one or more objects are added to the canvas. `source` is set when an agent made the change. |
-| objectsChange | UpdrawBaseObject[] | Emitted when objects on the canvas are added, removed, or modified. |
+| objectsChange | UpmadeBaseObject[] | Emitted when objects on the canvas are added, removed, or modified. |
 | objectsRemoved | ObjectsRemovedEvent | Emitted when one or more objects are removed from the canvas. `source` is set when an agent made the change. |
 | objectsUpdated | ObjectsUpdatedEvent | Emitted when one or more objects are updated on the canvas. `source` is set when an agent made the change. |
 
@@ -35,7 +35,7 @@ The `<UpdrawEngine>` is the low-level headless canvas primitive. It handles rend
 Adds a new object to the canvas. The object is automatically assigned an ID, core reference, and z-index.
 
 ```ts
-addObject<T extends UpdrawBaseObject>(object: T): Promise<T | null>
+addObject<T extends UpmadeBaseObject>(object: T): Promise<T | null>
 ```
 
 #### addObjects
@@ -43,7 +43,7 @@ addObject<T extends UpdrawBaseObject>(object: T): Promise<T | null>
 Adds multiple objects to the canvas in a single batch operation within one undo step and render cycle.
 
 ```ts
-addObjects<T extends UpdrawBaseObject>(objects: T[]): Promise<T[]>
+addObjects<T extends UpmadeBaseObject>(objects: T[]): Promise<T[]>
 ```
 
 #### removeObject
@@ -51,7 +51,7 @@ addObjects<T extends UpdrawBaseObject>(objects: T[]): Promise<T[]>
 Removes an object from the canvas.
 
 ```ts
-removeObject<T extends UpdrawBaseObject>(object: T): Promise<T | null>
+removeObject<T extends UpmadeBaseObject>(object: T): Promise<T | null>
 ```
 
 #### removeObjects
@@ -59,7 +59,7 @@ removeObject<T extends UpdrawBaseObject>(object: T): Promise<T | null>
 Removes multiple objects from the canvas in a single batch operation.
 
 ```ts
-removeObjects<T extends UpdrawBaseObject>(objects: T[]): Promise<T[]>
+removeObjects<T extends UpmadeBaseObject>(objects: T[]): Promise<T[]>
 ```
 
 #### updateObject
@@ -67,7 +67,7 @@ removeObjects<T extends UpdrawBaseObject>(objects: T[]): Promise<T[]>
 Updates properties of an existing canvas object.
 
 ```ts
-updateObject<T extends UpdrawBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null>
+updateObject<T extends UpmadeBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null>
 ```
 
 #### getObjectById
@@ -75,7 +75,7 @@ updateObject<T extends UpdrawBaseObject>(object: T, updatedProperties: Partial<T
 Retrieves a canvas object by its unique ID.
 
 ```ts
-getObjectById<T extends UpdrawBaseObject>(id: string): Promise<T | null>
+getObjectById<T extends UpmadeBaseObject>(id: string): Promise<T | null>
 ```
 
 #### getAllObjects
@@ -83,7 +83,7 @@ getObjectById<T extends UpdrawBaseObject>(id: string): Promise<T | null>
 Returns all objects on the canvas across all layers.
 
 ```ts
-getAllObjects<T extends UpdrawBaseObject>(): Promise<T[]>
+getAllObjects<T extends UpmadeBaseObject>(): Promise<T[]>
 ```
 
 #### findObjects
@@ -91,7 +91,7 @@ getAllObjects<T extends UpdrawBaseObject>(): Promise<T[]>
 Returns all objects matching the given predicate. Excludes internal selection-related objects.
 
 ```ts
-findObjects<T extends UpdrawBaseObject>(predicate: (obj: UpdrawBaseObject) => boolean): Promise<T[]>
+findObjects<T extends UpmadeBaseObject>(predicate: (obj: UpmadeBaseObject) => boolean): Promise<T[]>
 ```
 
 #### getObjectsTotalCount
@@ -107,7 +107,7 @@ getObjectsTotalCount(): Promise<number>
 Returns all objects currently visible within the viewport bounds.
 
 ```ts
-getObjectsInViewport(): Promise<UpdrawBaseObject[]>
+getObjectsInViewport(): Promise<UpmadeBaseObject[]>
 ```
 
 ---
@@ -131,7 +131,7 @@ No selection-specific props.
 Returns the currently selected objects. Returns an empty array if nothing is selected.
 
 ```ts
-getSelectedObjects(): Promise<UpdrawBaseObject[]>
+getSelectedObjects(): Promise<UpmadeBaseObject[]>
 ```
 
 #### selectObjects
@@ -139,7 +139,7 @@ getSelectedObjects(): Promise<UpdrawBaseObject[]>
 Programmatically selects the given objects. Switches to the selection tool automatically.
 
 ```ts
-selectObjects(objects: UpdrawBaseObject[]): Promise<void>
+selectObjects(objects: UpmadeBaseObject[]): Promise<void>
 ```
 
 #### selectAllObjectsInViewport
@@ -187,8 +187,8 @@ triggerSelectionChange(): Promise<void>
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| viewportChange | UpdrawViewportState | Emitted on viewport pan, zoom, or resize. |
-| objectsInViewportChange | UpdrawBaseObject[] | Emitted when the set of objects visible in the current viewport changes. |
+| viewportChange | UpmadeViewportState | Emitted on viewport pan, zoom, or resize. |
+| objectsInViewportChange | UpmadeBaseObject[] | Emitted when the set of objects visible in the current viewport changes. |
 
 ### Methods
 
@@ -197,7 +197,7 @@ triggerSelectionChange(): Promise<void>
 Returns the current viewport state including position, scale, and dimensions.
 
 ```ts
-getViewport(): Promise<UpdrawViewportState>
+getViewport(): Promise<UpmadeViewportState>
 ```
 
 #### setViewport
@@ -221,7 +221,7 @@ panTo(x: number, y: number): Promise<void>
 Pans the viewport to center on the specified object without changing the scale.
 
 ```ts
-panToObject(object: UpdrawBaseObject): Promise<void>
+panToObject(object: UpmadeBaseObject): Promise<void>
 ```
 
 #### zoomTo
@@ -253,7 +253,7 @@ zoomOut(factor?: number, duration?: number): Promise<void>
 Moves the given object to the center of the current viewport and returns the updated object. Use `panToObject` or `centerObjects` when you want to move the camera instead.
 
 ```ts
-centerObjectInViewport(object: UpdrawBaseObject): Promise<UpdrawBaseObject>
+centerObjectInViewport(object: UpmadeBaseObject): Promise<UpmadeBaseObject>
 ```
 
 #### centerObjects
@@ -261,7 +261,7 @@ centerObjectInViewport(object: UpdrawBaseObject): Promise<UpdrawBaseObject>
 Pans and zooms the viewport to fit the provided objects.
 
 ```ts
-centerObjects(objects: UpdrawBaseObject[], animate?: boolean): Promise<boolean>
+centerObjects(objects: UpmadeBaseObject[], animate?: boolean): Promise<boolean>
 ```
 
 #### centerAllObjects
@@ -305,17 +305,17 @@ worldToScreen(x: number, y: number): Promise<{ x: number; y: number }>
 | Property | Type | Description |
 |----------|------|-------------|
 | activeWorkspaceId | string | Optional workspace ID to load. |
-| workspaces | UpdrawWorkspace[] | Optional authoritative workspace catalog for this engine instance. |
-| syncConfig | UpdrawSyncConfig | Configuration for synchronization providers. |
-| user | IUpdrawUser | Current user for awareness broadcasting. |
+| workspaces | UpmadeWorkspace[] | Optional authoritative workspace catalog for this engine instance. |
+| syncConfig | UpmadeSyncConfig | Configuration for synchronization providers. |
+| user | IUpmadeUser | Current user for awareness broadcasting. |
 | isLoading | boolean | External loading state merged with internal workspace loading state. |
 
 ### Events
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| activeWorkspaceChange | UpdrawWorkspace | Emitted when the active workspace changes. |
-| workspacesChange | UpdrawWorkspace[] | Emitted when workspaces are created, updated, or deleted. |
+| activeWorkspaceChange | UpmadeWorkspace | Emitted when the active workspace changes. |
+| workspacesChange | UpmadeWorkspace[] | Emitted when workspaces are created, updated, or deleted. |
 | awarenessChange | AwarenessStateMap | Emitted when awareness state changes. |
 | syncingChange | boolean | Emitted when remote workspace synchronization status changes. |
 | loadingChange | boolean | Emitted when the combined loading state changes. |
@@ -332,10 +332,10 @@ setActiveWorkspace(id: string): Promise<void>
 
 #### createWorkspace
 
-Creates a new workspace and emits a `workspacesChange` event. Accepts an `UpdrawWorkspace` instance.
+Creates a new workspace and emits a `workspacesChange` event. Accepts an `UpmadeWorkspace` instance.
 
 ```ts
-createWorkspace(workspace: UpdrawWorkspace): Promise<UpdrawWorkspace | null>
+createWorkspace(workspace: UpmadeWorkspace): Promise<UpmadeWorkspace | null>
 ```
 
 #### updateWorkspace
@@ -343,7 +343,7 @@ createWorkspace(workspace: UpdrawWorkspace): Promise<UpdrawWorkspace | null>
 Applies a workspace as declared and emits a `workspacesChange` event. Metadata and viewport are always applied. When `workspace.objects` is set it is treated as the complete desired object set: objects are matched by ID, unknown IDs are added, known IDs are updated, and objects missing from the list are removed. Leave `objects` `undefined` to keep the current objects, or pass `[]` to remove them all. Updating the objects of a workspace that is not currently active requires a configured sync provider.
 
 ```ts
-updateWorkspace(workspace: UpdrawWorkspace): Promise<void>
+updateWorkspace(workspace: UpmadeWorkspace): Promise<void>
 ```
 
 #### deleteWorkspace
@@ -351,7 +351,7 @@ updateWorkspace(workspace: UpdrawWorkspace): Promise<void>
 Deletes a workspace and emits a `workspacesChange` event.
 
 ```ts
-deleteWorkspace(workspace: UpdrawWorkspace): Promise<void>
+deleteWorkspace(workspace: UpmadeWorkspace): Promise<void>
 ```
 
 #### getWorkspaces
@@ -359,7 +359,7 @@ deleteWorkspace(workspace: UpdrawWorkspace): Promise<void>
 Returns all available workspaces.
 
 ```ts
-getWorkspaces(): Promise<UpdrawWorkspace[]>
+getWorkspaces(): Promise<UpmadeWorkspace[]>
 ```
 
 #### getActiveWorkspace
@@ -367,7 +367,7 @@ getWorkspaces(): Promise<UpdrawWorkspace[]>
 Returns the currently active workspace.
 
 ```ts
-getActiveWorkspace(): Promise<UpdrawWorkspace>
+getActiveWorkspace(): Promise<UpmadeWorkspace>
 ```
 
 #### getIsPublic
@@ -406,7 +406,7 @@ No tool-specific props.
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| activeToolChange | UpdrawBaseTool | Emitted when the active drawing tool changes. |
+| activeToolChange | UpmadeBaseTool | Emitted when the active drawing tool changes. |
 
 ### Methods
 
@@ -418,8 +418,8 @@ Registers a new drawing tool with the engine.
 registerTool(
   toolName: string,
   toolClass: any,
-  toolConfig?: UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawTextToolConfig | UpdrawShapeToolConfig
-): Promise<UpdrawBaseTool | null>
+  toolConfig?: UpmadeBrushToolConfig | UpmadeLineToolConfig | UpmadeTextToolConfig | UpmadeShapeToolConfig
+): Promise<UpmadeBaseTool | null>
 ```
 
 #### setActiveTool
@@ -511,7 +511,7 @@ No ordering-specific events.
 Moves an object one layer forward in the z-order, past the next layer above it. If omitted, applies to the current selection and moves each selected layer. A group is one layer, so all of its children move together; a grouped object moves within its group.
 
 ```ts
-bringForward(object?: UpdrawBaseObject): Promise<void>
+bringForward(object?: UpmadeBaseObject): Promise<void>
 ```
 
 #### sendBackward
@@ -519,7 +519,7 @@ bringForward(object?: UpdrawBaseObject): Promise<void>
 Moves an object one layer backward in the z-order, past the next layer below it. If omitted, applies to the current selection and moves each selected layer. A group is one layer, so all of its children move together; a grouped object moves within its group.
 
 ```ts
-sendBackward(object?: UpdrawBaseObject): Promise<void>
+sendBackward(object?: UpmadeBaseObject): Promise<void>
 ```
 
 #### bringToFront
@@ -527,7 +527,7 @@ sendBackward(object?: UpdrawBaseObject): Promise<void>
 Moves an object to the very front of the z-order. If omitted, applies to the current selection, keeping the relative order of the selected layers. A group moves together with all of its children; a grouped object moves to the front of its group.
 
 ```ts
-bringToFront(object?: UpdrawBaseObject): Promise<void>
+bringToFront(object?: UpmadeBaseObject): Promise<void>
 ```
 
 #### sendToBack
@@ -535,7 +535,7 @@ bringToFront(object?: UpdrawBaseObject): Promise<void>
 Moves an object to the very back of the z-order. If omitted, applies to the current selection, keeping the relative order of the selected layers. A group moves together with all of its children; a grouped object moves to the back of its group.
 
 ```ts
-sendToBack(object?: UpdrawBaseObject): Promise<void>
+sendToBack(object?: UpmadeBaseObject): Promise<void>
 ```
 
 ---
@@ -557,7 +557,7 @@ No alignment-specific events.
 Aligns the currently selected objects according to the specified alignment.
 
 ```ts
-alignObjects(alignment: UpdrawAlignment): Promise<void>
+alignObjects(alignment: UpmadeAlignment): Promise<void>
 ```
 
 Alignment values: `StartHorizontal`, `CenterHorizontal`, `EndHorizontal`, `StartVertical`, `CenterVertical`, `EndVertical`.
@@ -578,18 +578,18 @@ No grouping-specific events.
 
 #### group
 
-Creates a group (`UpdrawGroup`) from the given objects. Requires at least two objects. They become one layer at the position of the topmost object, in a single undoable step. Objects are resolved by id, so stale references work; objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. Selected objects that end up in the group are replaced by the group in the selection. Resolves to the created group, or `null` (with a console warning) when fewer than two objects could be grouped. To group the current selection, pass `await getSelectedObjects()`.
+Creates a group (`UpmadeGroup`) from the given objects. Requires at least two objects. They become one layer at the position of the topmost object, in a single undoable step. Objects are resolved by id, so stale references work; objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. Selected objects that end up in the group are replaced by the group in the selection. Resolves to the created group, or `null` (with a console warning) when fewer than two objects could be grouped. To group the current selection, pass `await getSelectedObjects()`.
 
 ```ts
-group(objects: UpdrawBaseObject[]): Promise<UpdrawGroup | null>
+group(objects: UpmadeBaseObject[]): Promise<UpmadeGroup | null>
 ```
 
 #### ungroup
 
-Ungroups the given groups. Their children become individual objects again and keep their stacking order; the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step. Groups are resolved by id, so stale references work; entries that are not an `UpdrawGroup` or not in the active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their children. Resolves to the extracted children. To ungroup the current selection, pass the `UpdrawGroup` objects from `await getSelectedObjects()`.
+Ungroups the given groups. Their children become individual objects again and keep their stacking order; the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step. Groups are resolved by id, so stale references work; entries that are not an `UpmadeGroup` or not in the active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their children. Resolves to the extracted children. To ungroup the current selection, pass the `UpmadeGroup` objects from `await getSelectedObjects()`.
 
 ```ts
-ungroup(groups: UpdrawGroup[]): Promise<UpdrawBaseObject[]>
+ungroup(groups: UpmadeGroup[]): Promise<UpmadeBaseObject[]>
 ```
 
 ---
@@ -604,7 +604,7 @@ No undo/redo-specific props.
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| undoStateChange | UpdrawUndoState | Emitted when undo/redo availability changes. |
+| undoStateChange | UpmadeUndoState | Emitted when undo/redo availability changes. |
 
 ### Methods
 
@@ -667,7 +667,7 @@ exportViewportAsSvg(): Promise<void>
 Checks whether the currently selected object supports a specific export format.
 
 ```ts
-canExportSelectedObjectAs(format: UpdrawObjectExportFormat): Promise<boolean>
+canExportSelectedObjectAs(format: UpmadeObjectExportFormat): Promise<boolean>
 ```
 
 #### exportSelectedObject
@@ -675,7 +675,7 @@ canExportSelectedObjectAs(format: UpdrawObjectExportFormat): Promise<boolean>
 Exports the currently selected object in the specified format.
 
 ```ts
-exportSelectedObject(format: UpdrawObjectExportFormat): Promise<void>
+exportSelectedObject(format: UpmadeObjectExportFormat): Promise<void>
 ```
 
 #### getSelectedObjectSupportedExportFormats
@@ -683,7 +683,7 @@ exportSelectedObject(format: UpdrawObjectExportFormat): Promise<void>
 Returns the export formats supported by the currently selected object.
 
 ```ts
-getSelectedObjectSupportedExportFormats(): Promise<UpdrawObjectExportFormat[]>
+getSelectedObjectSupportedExportFormats(): Promise<UpmadeObjectExportFormat[]>
 ```
 
 #### exportAsJson
@@ -736,9 +736,9 @@ importFromFile(): Promise<void>
 |----------|------|-------------|
 | fallbackLocale | LocaleCode | Locale used to resolve terms missing from the active locale. |
 | locale | LocaleCode | Current locale code. |
-| locales | UpdrawLocale[] | Available locale definitions. |
+| locales | UpmadeLocale[] | Available locale definitions. |
 | theme | ThemeCode | Current theme. |
-| themes | UpdrawTheme[] | Available themes. |
+| themes | UpmadeTheme[] | Available themes. |
 
 ### Events
 
@@ -749,7 +749,7 @@ No localization/settings-specific events.
 #### registerLocales
 
 ```ts
-registerLocales(locales: UpdrawLocale[]): Promise<void>
+registerLocales(locales: UpmadeLocale[]): Promise<void>
 ```
 
 #### setLocale
@@ -779,25 +779,25 @@ getAvailableLocaleOptions(): Promise<{ code: LocaleCode; label: string }[]>
 #### t
 
 ```ts
-t(key: UpdrawTermKey, vars?: UpdrawTermVars): Promise<string>
+t(key: UpmadeTermKey, vars?: UpmadeTermVars): Promise<string>
 ```
 
 #### getResolvedTerms
 
 ```ts
-getResolvedTerms(): Promise<Partial<Record<UpdrawTermKey, string>>>
+getResolvedTerms(): Promise<Partial<Record<UpmadeTermKey, string>>>
 ```
 
 #### saveSettings
 
 ```ts
-saveSettings(settings: UpdrawSettingsConfig): Promise<void>
+saveSettings(settings: UpmadeSettingsConfig): Promise<void>
 ```
 
 #### loadSettings
 
 ```ts
-loadSettings(): Promise<Partial<UpdrawSettingsConfig> | null>
+loadSettings(): Promise<Partial<UpmadeSettingsConfig> | null>
 ```
 
 ---
@@ -808,12 +808,12 @@ loadSettings(): Promise<Partial<UpdrawSettingsConfig> | null>
 
 | Property | Type | Description |
 |----------|------|-------------|
-| assetStorageConfig | UpdrawAssetStorageConfig | Binary asset storage provider configuration. |
+| assetStorageConfig | UpmadeAssetStorageConfig | Binary asset storage provider configuration. |
 | cursorTarget | HTMLElement | Element to apply cursor styles to. |
-| debugInfo | UpdrawDebugInfo | Debug overlay configuration. |
+| debugInfo | UpmadeDebugInfo | Debug overlay configuration. |
 | editorId | string | Identifier for namespacing storage keys. |
 | globalContextMenuItems | ContextMenuItem[] | Canvas background menu items. |
-| isWatermarkVisible | boolean | Show or hide the "Powered by Updraw" watermark (default `true`). Keeping it visible helps support the project. |
+| isWatermarkVisible | boolean | Show or hide the "Powered by Upmade" watermark (default `true`). Keeping it visible helps support the project. |
 | lockDrawingScale | boolean | Keeps objects at a fixed visual size across zoom. |
 | objectContextMenuItems | ContextMenuItem[] | Selected-object menu items. |
 
@@ -821,10 +821,10 @@ loadSettings(): Promise<Partial<UpdrawSettingsConfig> | null>
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| contextMenuStateChange | UpdrawContextMenuState | Emitted when context-menu state changes. |
-| isEngineReady | UpdrawEngineState | Emitted when the engine is ready. |
+| contextMenuStateChange | UpmadeContextMenuState | Emitted when context-menu state changes. |
+| isEngineReady | UpmadeEngineState | Emitted when the engine is ready. |
 | longpress | PointerEvent | Emitted on touch or pen long-press. |
-| notificationsChange | UpdrawNotification | Emitted when notifications change. |
+| notificationsChange | UpmadeNotification | Emitted when notifications change. |
 
 ### Methods
 
@@ -847,7 +847,7 @@ hideContextMenu(): Promise<void>
 Returns all registered keyboard shortcuts (without action/condition) for display in a help UI.
 
 ```ts
-getDisplayableShortcuts(): Promise<Omit<UpdrawShortcut, "action" | "condition">[]>
+getDisplayableShortcuts(): Promise<Omit<UpmadeShortcut, "action" | "condition">[]>
 ```
 
 #### beginSceneBootstrap
@@ -864,28 +864,28 @@ endSceneBootstrap(): Promise<void>
 
 ## Agents
 
-Agents are participants on the canvas that are driven by code, for example an AI assistant. Each agent is a [`UpdrawAgent`](./agent.md) with its own cursor, actions, and undo history. See [Agents](../advanced/agents.md) for a guide. When the editor shares presence, collaborators see its agents, and it shows theirs; see [Collaboration](../advanced/agents.md#collaboration).
+Agents are participants on the canvas that are driven by code, for example an AI assistant. Each agent is a [`UpmadeAgent`](./agent.md) with its own cursor, actions, and undo history. See [Agents](../advanced/agents.md) for a guide. When the editor shares presence, collaborators see its agents, and it shows theirs; see [Collaboration](../advanced/agents.md#collaboration).
 
 ### Props
 
 | Property | Type | Description |
 |----------|------|-------------|
-| chatSession | UpdrawChatSession | A [chat session](./chat-session.md) whose tools act on this canvas. Its agent, if any, is added here. A session that is replaced finishes its running prompt first. See [Agents](../advanced/agents.md). |
+| chatSession | UpmadeChatSession | A [chat session](./chat-session.md) whose tools act on this canvas. Its agent, if any, is added here. A session that is replaced finishes its running prompt first. See [Agents](../advanced/agents.md). |
 
 ### Events
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| agentsChange | UpdrawAgentsChangeEvent | Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes, in this editor or in the editor of a collaborator. Lists the agents of this editor first, then the agents of collaborators (`isRemote: true`). Never emitted for plain cursor motion. |
+| agentsChange | UpmadeAgentsChangeEvent | Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes, in this editor or in the editor of a collaborator. Lists the agents of this editor first, then the agents of collaborators (`isRemote: true`). Never emitted for plain cursor motion. |
 
 ### Methods
 
 #### addAgent
 
-Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to one editor at a time; an agent of an editor that was removed from the page moves here. Call it after the engine emitted `isEngineReady`. Rejects for a value that is not an `UpdrawAgent`, for a second agent with the same ID, and for an agent of another editor.
+Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to one editor at a time; an agent of an editor that was removed from the page moves here. Call it after the engine emitted `isEngineReady`. Rejects for a value that is not an `UpmadeAgent`, for a second agent with the same ID, and for an agent of another editor.
 
 ```ts
-addAgent(agent: UpdrawAgent): Promise<UpdrawAgent>
+addAgent(agent: UpmadeAgent): Promise<UpmadeAgent>
 ```
 
 #### removeAgent
@@ -893,7 +893,7 @@ addAgent(agent: UpdrawAgent): Promise<UpdrawAgent>
 Removes an agent, given the agent or its ID: its running action is rolled back, its queued actions resolve with `'agent-removed'`, and its cursor and history are dropped. The agent can be added again. Resolves with `false` if the agent was not added.
 
 ```ts
-removeAgent(agent: UpdrawAgent | string): Promise<boolean>
+removeAgent(agent: UpmadeAgent | string): Promise<boolean>
 ```
 
 #### getAgent
@@ -901,7 +901,7 @@ removeAgent(agent: UpdrawAgent | string): Promise<boolean>
 Returns an agent added to this editor by its ID, or `null` if there is none. Agents of collaborators are never returned; see `getRemoteAgents`.
 
 ```ts
-getAgent(id: string): Promise<UpdrawAgent | null>
+getAgent(id: string): Promise<UpmadeAgent | null>
 ```
 
 #### getAgents
@@ -909,15 +909,15 @@ getAgent(id: string): Promise<UpdrawAgent | null>
 Returns the agents added to this editor.
 
 ```ts
-getAgents(): Promise<UpdrawAgent[]>
+getAgents(): Promise<UpmadeAgent[]>
 ```
 
 #### getRemoteAgents
 
-Returns the agents of collaborators, as they share them through presence. They are descriptions, not `UpdrawAgent` objects, and cannot be controlled from here. Empty without a sync provider that shares presence. See [`UpdrawRemoteAgentPresence`](./agent.md#updrawremoteagentpresence).
+Returns the agents of collaborators, as they share them through presence. They are descriptions, not `UpmadeAgent` objects, and cannot be controlled from here. Empty without a sync provider that shares presence. See [`UpmadeRemoteAgentPresence`](./agent.md#upmaderemoteagentpresence).
 
 ```ts
-getRemoteAgents(): Promise<UpdrawRemoteAgentPresence[]>
+getRemoteAgents(): Promise<UpmadeRemoteAgentPresence[]>
 ```
 
 ---
@@ -928,14 +928,14 @@ getRemoteAgents(): Promise<UpdrawRemoteAgentPresence[]>
 
 | Property | Type | Description |
 |----------|------|-------------|
-| objectTitlebar | UpdrawObjectTitlebarConfig | Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars. See [Object Titlebar](../fundamentals/controls.md#object-titlebar). |
+| objectTitlebar | UpmadeObjectTitlebarConfig | Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars. See [Object Titlebar](../fundamentals/controls.md#object-titlebar). |
 
 ### Events
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| objectTitlebarAction | UpdrawObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked or a menu item of a titlebar menu is selected, in addition to calling the optional `action` callback of the button or menu item. |
-| objectTitlebarMenuStateChange | UpdrawObjectTitlebarMenuState | Emitted when a titlebar menu opens or closes. Contains the resolved menu items and the menu button as `anchor`, so that a host can render the menu. `<UpdrawEditor>` renders titlebar menus itself and does not re-emit this event. |
+| objectTitlebarAction | UpmadeObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked or a menu item of a titlebar menu is selected, in addition to calling the optional `action` callback of the button or menu item. |
+| objectTitlebarMenuStateChange | UpmadeObjectTitlebarMenuState | Emitted when a titlebar menu opens or closes. Contains the resolved menu items and the menu button as `anchor`, so that a host can render the menu. `<UpmadeEditor>` renders titlebar menus itself and does not re-emit this event. |
 
 ### Methods
 
@@ -961,7 +961,7 @@ Use [updateObject](#updateobject) to change the `name` of an existing object.
 
 ## Object Elements
 
-Elements inside the content of objects such as `UpdrawIframeObject`. See [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content).
+Elements inside the content of objects such as `UpmadeIframeObject`. See [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content).
 
 ### Props
 
@@ -971,9 +971,9 @@ No object-element-specific props.
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| objectElementHover | UpdrawObjectElementHoverEvent | Emitted when the mouse or pen pointer moves onto another element inside the content of a selected object, such as an iframe object, and with `element: null` when it leaves the content or the object is deselected. |
-| objectElementClick | UpdrawObjectElementClickEvent | Emitted when the user clicks an element inside the content of a selected object. The click works as usual. |
-| objectElementPick | UpdrawObjectElementPickEvent | Emitted when the user picks an element inside an object that is picking elements. The click doesn't reach the content. See [setObjectElementPicking](#setobjectelementpicking). |
+| objectElementHover | UpmadeObjectElementHoverEvent | Emitted when the mouse or pen pointer moves onto another element inside the content of a selected object, such as an iframe object, and with `element: null` when it leaves the content or the object is deselected. |
+| objectElementClick | UpmadeObjectElementClickEvent | Emitted when the user clicks an element inside the content of a selected object. The click works as usual. |
+| objectElementPick | UpmadeObjectElementPickEvent | Emitted when the user picks an element inside an object that is picking elements. The click doesn't reach the content. See [setObjectElementPicking](#setobjectelementpicking). |
 
 ### Methods
 
@@ -982,7 +982,7 @@ No object-element-specific props.
 Turns element picking on or off for an object whose content has elements, such as an iframe object. While picking, the element under the pointer is highlighted, and a press or click emits `objectElementPick` instead of reaching the content. Picking works while the object is selected and stays on until it is turned off. `selector` limits picking to the closest matching ancestor of the element under the pointer, `color` sets the highlight color.
 
 ```ts
-setObjectElementPicking(objectId: string, enabled: boolean, options?: UpdrawObjectElementPickingOptions): Promise<void>
+setObjectElementPicking(objectId: string, enabled: boolean, options?: UpmadeObjectElementPickingOptions): Promise<void>
 ```
 
 #### highlightObjectElements
@@ -990,7 +990,7 @@ setObjectElementPicking(objectId: string, enabled: boolean, options?: UpdrawObje
 Highlights elements inside an object's content, replacing the object's previous highlights. Each entry is `{ selector, color?, label? }`, and every element that matches its selector is highlighted, up to 100 per selector. Highlights are local: they are neither saved nor shown to collaborators.
 
 ```ts
-highlightObjectElements(objectId: string, highlights: UpdrawObjectElementHighlight[]): Promise<void>
+highlightObjectElements(objectId: string, highlights: UpmadeObjectElementHighlight[]): Promise<void>
 ```
 
 #### clearObjectElementHighlights
@@ -1003,10 +1003,10 @@ clearObjectElementHighlights(objectId?: string): Promise<void>
 
 #### queryObjectElements
 
-Describes the elements inside an object's content that match a CSS selector, in document order. Each result has a `selector` that can be used to highlight the element or point an agent's cursor at it (`agent.moveTo({ objectId, selector })`, see [UpdrawAgenticTarget](./agent.md#updrawagentictarget)). `limit` defaults to 100 and can be at most 500. The object must be mounted, which it is while it is in or near the viewport. Rejects when the content does not answer within 3 seconds, or within 15 seconds while it is still loading.
+Describes the elements inside an object's content that match a CSS selector, in document order. Each result has a `selector` that can be used to highlight the element or point an agent's cursor at it (`agent.moveTo({ objectId, selector })`, see [UpmadeAgenticTarget](./agent.md#upmadeagentictarget)). `limit` defaults to 100 and can be at most 500. The object must be mounted, which it is while it is in or near the viewport. Rejects when the content does not answer within 3 seconds, or within 15 seconds while it is still loading.
 
 ```ts
-queryObjectElements(objectId: string, selector: string, limit?: number): Promise<UpdrawObjectElementInfo[]>
+queryObjectElements(objectId: string, selector: string, limit?: number): Promise<UpmadeObjectElementInfo[]>
 ```
 
 All object element methods reject for invalid selectors and for objects that don't exist or have no content elements.

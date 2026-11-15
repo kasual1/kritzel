@@ -1,13 +1,13 @@
 import { useRef, useState, type CSSProperties } from "react";
 import {
   darkTheme,
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawImage,
-  UpdrawTextTool,
-  type HTMLUpdrawEditorElement,
-  type UpdrawTheme,
-} from "@updraw/react-editor";
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeImage,
+  UpmadeTextTool,
+  type HTMLUpmadeEditorElement,
+  type UpmadeTheme,
+} from "@upmade/react-editor";
 
 type AnnotationMode = "sketch" | "text";
 
@@ -17,7 +17,7 @@ type ColorTool = {
   color: string;
 };
 
-const annotationThemeDark: UpdrawTheme = {
+const annotationThemeDark: UpmadeTheme = {
   ...darkTheme,
   name: "dark",
   engine: {
@@ -197,13 +197,13 @@ const MinusIcon = () => (
 );
 
 export function ImageAnnotationStudioPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const [activeMode, setActiveMode] = useState<AnnotationMode>("sketch");
   const [activeSketchTool, setActiveSketchTool] = useState<string>("ink-red");
 
-  async function registerColorTools(editor: HTMLUpdrawEditorElement) {
+  async function registerColorTools(editor: HTMLUpmadeEditorElement) {
     for (const tool of colorTools) {
-      await editor.registerTool(tool.name, UpdrawBrushTool, {
+      await editor.registerTool(tool.name, UpmadeBrushTool, {
         color: { light: tool.color, dark: tool.color },
         size: 5,
         palette: [{ light: tool.color, dark: tool.color, label: tool.label }],
@@ -227,18 +227,18 @@ export function ImageAnnotationStudioPage() {
     // aligned with the currently selected sketch swatch.
     const textToolConfig = {
       fontColor: textColor,
-    } as unknown as Parameters<HTMLUpdrawEditorElement["registerTool"]>[2];
+    } as unknown as Parameters<HTMLUpmadeEditorElement["registerTool"]>[2];
 
-    await editor.registerTool("text", UpdrawTextTool, textToolConfig);
+    await editor.registerTool("text", UpmadeTextTool, textToolConfig);
   }
 
-  async function ensureSeedImage(editor: HTMLUpdrawEditorElement) {
+  async function ensureSeedImage(editor: HTMLUpmadeEditorElement) {
     const existing = await editor.getAllObjects();
-    if (existing.some((object) => object instanceof UpdrawImage)) {
+    if (existing.some((object) => object instanceof UpmadeImage)) {
       return;
     }
 
-    const image = await UpdrawImage.fromUrl(
+    const image = await UpmadeImage.fromUrl(
       "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1800&q=80",
       { maxWidth: 660, maxHeight: 360 },
     );
@@ -311,7 +311,7 @@ export function ImageAnnotationStudioPage() {
 
   return (
     <div style={hostStyle}>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="image-annotation-studio"
         theme="dark"

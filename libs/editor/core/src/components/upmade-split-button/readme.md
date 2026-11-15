@@ -1,4 +1,4 @@
-# updraw-split-button
+# upmade-split-button
 
 
 
@@ -11,7 +11,7 @@
 | -------------------- | ---------------------- | ----------- | ------------------------ | --------------- |
 | `buttonIcon`         | `button-icon`          |             | `string`                 | `'plus'`        |
 | `dropdownIcon`       | `dropdown-icon`        |             | `string`                 | `'chevronDown'` |
-| `items`              | --                     |             | `IUpdrawMenuItem<any>[]` | `[]`            |
+| `items`              | --                     |             | `IUpmadeMenuItem<any>[]` | `[]`            |
 | `mainButtonDisabled` | `main-button-disabled` |             | `boolean`                | `false`         |
 | `menuButtonDisabled` | `menu-button-disabled` |             | `boolean`                | `false`         |
 
@@ -20,11 +20,11 @@
 
 | Event                 | Description | Type                                               |
 | --------------------- | ----------- | -------------------------------------------------- |
-| `itemCancel`          |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
-| `itemCloseChildMenu`  |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
-| `itemSave`            |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
-| `itemSelect`          |             | `CustomEvent<IUpdrawMenuItemSelectEvent>`          |
-| `itemToggleChildMenu` |             | `CustomEvent<IUpdrawMenuItemToggleChildMenuEvent>` |
+| `itemCancel`          |             | `CustomEvent<IUpmadeMenuItem<any>>`                |
+| `itemCloseChildMenu`  |             | `CustomEvent<IUpmadeMenuItem<any>>`                |
+| `itemSave`            |             | `CustomEvent<IUpmadeMenuItem<any>>`                |
+| `itemSelect`          |             | `CustomEvent<IUpmadeMenuItemSelectEvent>`          |
+| `itemToggleChildMenu` |             | `CustomEvent<IUpmadeMenuItemToggleChildMenuEvent>` |
 | `mainButtonClick`     |             | `CustomEvent<void>`                                |
 | `menuClose`           |             | `CustomEvent<void>`                                |
 | `menuOpen`            |             | `CustomEvent<void>`                                |
@@ -67,25 +67,25 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [updraw-workspace-manager](../updraw-workspace-manager)
+ - [upmade-workspace-manager](../upmade-workspace-manager)
 
 ### Depends on
 
-- updraw-icon
-- [updraw-portal](../updraw-portal)
-- [updraw-menu](../updraw-menu)
+- upmade-icon
+- [upmade-portal](../upmade-portal)
+- [upmade-menu](../upmade-menu)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-split-button --> updraw-icon
-  updraw-split-button --> updraw-portal
-  updraw-split-button --> updraw-menu
-  updraw-menu --> updraw-menu-item
-  updraw-menu-item --> updraw-icon
-  updraw-menu-item --> updraw-portal
-  updraw-workspace-manager --> updraw-split-button
-  style updraw-split-button fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-split-button --> upmade-icon
+  upmade-split-button --> upmade-portal
+  upmade-split-button --> upmade-menu
+  upmade-menu --> upmade-menu-item
+  upmade-menu-item --> upmade-icon
+  upmade-menu-item --> upmade-portal
+  upmade-workspace-manager --> upmade-split-button
+  style upmade-split-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

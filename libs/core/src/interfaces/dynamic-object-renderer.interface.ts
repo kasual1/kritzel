@@ -1,11 +1,11 @@
-import { UpdrawDynamicObject } from '../classes/objects/dynamic-object.class';
+import { UpmadeDynamicObject } from '../classes/objects/dynamic-object.class';
 
 /**
  * Context passed to a renderer when mounting, updating, or unmounting.
  */
-export interface UpdrawDynamicObjectRenderContext {
+export interface UpmadeDynamicObjectRenderContext {
   /** The dynamic object object being rendered. */
-  object: UpdrawDynamicObject;
+  object: UpmadeDynamicObject;
   /** Container element to render into (mount) or receive lifecycle notifications (unmount). */
   container: HTMLElement | null;
   /** Custom data payload for the renderer (e.g., component props, state). */
@@ -16,13 +16,13 @@ export interface UpdrawDynamicObjectRenderContext {
  * Renderer implementation for dynamic objects on the canvas.
  * Handles framework-specific mounting, updating, and cleanup.
  */
-export interface UpdrawDynamicObjectRenderer {
+export interface UpmadeDynamicObjectRenderer {
   /**
    * Called when the dynamic object enters the viewport or is first added to canvas.
    * Renderer is responsible for creating and appending DOM to context.container.
    * @param context - Render context with object, container, and data
    */
-  onMount(context: UpdrawDynamicObjectRenderContext): void;
+  onMount(context: UpmadeDynamicObjectRenderContext): void;
 
   /**
    * Called when object properties (position, size, rotation, etc.) change.
@@ -31,7 +31,7 @@ export interface UpdrawDynamicObjectRenderer {
    * @param context - Render context with updated object and data
    * @param changedProperties - Array of property names that changed
    */
-  onUpdate?(context: UpdrawDynamicObjectRenderContext, changedProperties: string[]): void;
+  onUpdate?(context: UpmadeDynamicObjectRenderContext, changedProperties: string[]): void;
 
   /**
    * Called when the object is serialized, including clipboard copy and workspace export.
@@ -39,7 +39,7 @@ export interface UpdrawDynamicObjectRenderer {
    * @param context - Render context with object, mounted container when available, and current data
    * @returns Serializable renderer data to persist on the object
    */
-  onSerialize?(context: UpdrawDynamicObjectRenderContext): unknown;
+  onSerialize?(context: UpmadeDynamicObjectRenderContext): unknown;
 
   /**
    * Called when the object leaves the viewport, is deleted, or workspace is unloaded.
@@ -48,5 +48,5 @@ export interface UpdrawDynamicObjectRenderer {
    * @param context - Render context with object and container
    * @returns Optional updated data payload to persist
    */
-  onUnmount(context: UpdrawDynamicObjectRenderContext): unknown;
+  onUnmount(context: UpmadeDynamicObjectRenderContext): unknown;
 }

@@ -55,20 +55,20 @@ describe('routeSource', () => {
   });
 
   test('resolves blog post routes to their markdown file', () => {
-    expect(routeSource('/blog/2026/10/22/updraw-is-now-open-source/')).toBe(
-      'blog/2026-10-22-updraw-is-now-open-source.md',
+    expect(routeSource('/blog/2026/10/22/upmade-is-now-open-source/')).toBe(
+      'blog/2026-10-22-upmade-is-now-open-source.md',
     );
-    expect(routeSource('/blog/2026/08/02/introducing-updraw')).toBe('blog/2026-08-02-introducing-updraw.md');
-    expect(routeSource('/blog/2026/10/23/updraw-is-now-open-source/')).toBeUndefined();
+    expect(routeSource('/blog/2026/08/02/introducing-upmade')).toBe('blog/2026-08-02-introducing-upmade.md');
+    expect(routeSource('/blog/2026/10/23/upmade-is-now-open-source/')).toBeUndefined();
     expect(routeSource('/blog/2026/10/22/no-such-post/')).toBeUndefined();
   });
 
   test('resolves images and videos to static files', () => {
-    expect(routeSource('/img/blog/updraw-is-now-open-source.png')).toBe(
-      'static/img/blog/updraw-is-now-open-source.png',
+    expect(routeSource('/img/blog/upmade-is-now-open-source.png')).toBe(
+      'static/img/blog/upmade-is-now-open-source.png',
     );
-    expect(routeSource('/videos/2026_10_22_Updraw_Open_Source.mp4')).toBe(
-      'static/videos/2026_10_22_Updraw_Open_Source.mp4',
+    expect(routeSource('/videos/2026_10_22_Upmade_Open_Source.mp4')).toBe(
+      'static/videos/2026_10_22_Upmade_Open_Source.mp4',
     );
     expect(routeSource('/img/blog/no-such-image.png')).toBeUndefined();
     expect(routeSource('/videos/no-such-video.mp4')).toBeUndefined();

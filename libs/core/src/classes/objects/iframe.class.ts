@@ -1,20 +1,20 @@
-import { UpdrawMathHelper } from '../../helpers/math.helper';
-import { UpdrawEmbeddedObject } from '../../interfaces/embedded-object.interface';
+import { UpmadeMathHelper } from '../../helpers/math.helper';
+import { UpmadeEmbeddedObject } from '../../interfaces/embedded-object.interface';
 import {
-  UpdrawElementAwareObject,
-  UpdrawObjectElementHighlight,
-  UpdrawObjectElementInfo,
-  UpdrawObjectElementInteraction,
-  UpdrawObjectElementInteractionOptions,
-  UpdrawObjectElementInteractionResult,
-  UpdrawObjectElementQueryOptions,
-  UpdrawObjectElementPickingOptions,
-  UpdrawObjectElementRect,
+  UpmadeElementAwareObject,
+  UpmadeObjectElementHighlight,
+  UpmadeObjectElementInfo,
+  UpmadeObjectElementInteraction,
+  UpmadeObjectElementInteractionOptions,
+  UpmadeObjectElementInteractionResult,
+  UpmadeObjectElementQueryOptions,
+  UpmadeObjectElementPickingOptions,
+  UpmadeObjectElementRect,
 } from '../../interfaces/object-element.interface';
-import { UpdrawPoint } from '../../interfaces/point.interface';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawBaseObject } from './base-object.class';
-import { UpdrawIframeElementBridge, UpdrawIframeElementBridgeOwner } from './iframe-element-bridge.class';
+import { UpmadePoint } from '../../interfaces/point.interface';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeBaseObject } from './base-object.class';
+import { UpmadeIframeElementBridge, UpmadeIframeElementBridgeOwner } from './iframe-element-bridge.class';
 import { createIframeElementBridgeScript, IFRAME_ELEMENT_PICKING_CSS } from './iframe-element-bridge.script';
 import { LEGACY_CONTENT_CSS_VARIABLES, LEGACY_IFRAME_GLOBAL, LEGACY_IFRAME_STATE_EVENT } from '../../migrations/legacy-brand';
 
@@ -22,10 +22,10 @@ import { LEGACY_CONTENT_CSS_VARIABLES, LEGACY_IFRAME_GLOBAL, LEGACY_IFRAME_STATE
 const LEGACY_IFRAME_CSS_VARIABLES = Object.entries(LEGACY_CONTENT_CSS_VARIABLES)
   .map(([legacyName, name]) => `${legacyName}: var(${name});`)
   .join(' ');
-const IFRAME_STATE_MESSAGE = 'updraw-iframe-state';
-const IFRAME_PARENT_STATE_MESSAGE = 'updraw-iframe-parent-state';
-const IFRAME_POINTER_MESSAGE = 'updraw-iframe-pointer';
-const IFRAME_CONTEXT_MENU_MESSAGE = 'updraw-iframe-contextmenu';
+const IFRAME_STATE_MESSAGE = 'upmade-iframe-state';
+const IFRAME_PARENT_STATE_MESSAGE = 'upmade-iframe-parent-state';
+const IFRAME_POINTER_MESSAGE = 'upmade-iframe-pointer';
+const IFRAME_CONTEXT_MENU_MESSAGE = 'upmade-iframe-contextmenu';
 
 const SUPPORTED_SANDBOX_TOKENS = new Set([
   'allow-downloads',
@@ -41,17 +41,17 @@ const SUPPORTED_SANDBOX_TOKENS = new Set([
   'allow-top-navigation-by-user-activation',
 ]);
 
-export interface UpdrawIframeContent {
+export interface UpmadeIframeContent {
   html: string;
   css: string;
   script: string;
 }
 
-export interface UpdrawIframeObjectConfig extends Partial<UpdrawIframeContent> {
+export interface UpmadeIframeObjectConfig extends Partial<UpmadeIframeContent> {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
-  content?: Partial<UpdrawIframeContent>;
-  /** Whether the engine's loading placeholder is drawn over the object, see `UpdrawBaseObject.setLoading()`. */
+  content?: Partial<UpmadeIframeContent>;
+  /** Whether the engine's loading placeholder is drawn over the object, see `UpmadeBaseObject.setLoading()`. */
   isLoading?: boolean;
   state?: Record<string, unknown>;
   title?: string;
@@ -71,13 +71,13 @@ export interface UpdrawIframeObjectConfig extends Partial<UpdrawIframeContent> {
   boxShadow?: string;
 }
 
-export interface UpdrawIframeObjectLifecycleContext {
-  object: UpdrawIframeObject;
+export interface UpmadeIframeObjectLifecycleContext {
+  object: UpmadeIframeObject;
   iframe: HTMLIFrameElement | null;
   state: Record<string, unknown>;
 }
 
-interface UpdrawIframePointerMessage {
+interface UpmadeIframePointerMessage {
   type: typeof IFRAME_POINTER_MESSAGE;
   eventType: 'pointerdown' | 'pointermove' | 'pointerup' | 'pointercancel';
   pointerId: number;
@@ -94,7 +94,7 @@ interface UpdrawIframePointerMessage {
   metaKey: boolean;
 }
 
-interface UpdrawIframePointerBridgeStart {
+interface UpmadeIframePointerBridgeStart {
   pointerId: number;
   clientX: number;
   clientY: number;
@@ -102,7 +102,7 @@ interface UpdrawIframePointerBridgeStart {
   screenY: number;
 }
 
-interface UpdrawIframeContextMenuMessage {
+interface UpmadeIframeContextMenuMessage {
   type: typeof IFRAME_CONTEXT_MENU_MESSAGE;
   clientX: number;
   clientY: number;
@@ -113,13 +113,13 @@ interface UpdrawIframeContextMenuMessage {
   metaKey: boolean;
 }
 
-const iframePointerBridgeStarts = new WeakMap<HTMLIFrameElement, UpdrawIframePointerBridgeStart>();
+const iframePointerBridgeStarts = new WeakMap<HTMLIFrameElement, UpmadeIframePointerBridgeStart>();
 
 /**
  * Element bridges are transient: kept outside the instances so they are never serialized, cloned or copied,
  * and handed to the instance that replaces an object after a synced update (see `adoptTransientStateFrom`).
  */
-const iframeElementBridges = new WeakMap<UpdrawIframeObject, UpdrawIframeElementBridge>();
+const iframeElementBridges = new WeakMap<UpmadeIframeObject, UpmadeIframeElementBridge>();
 
 /**
  * Iframes that have loaded their first document. Kept per element, so the state is never serialized and stays with
@@ -127,10 +127,10 @@ const iframeElementBridges = new WeakMap<UpdrawIframeObject, UpdrawIframeElement
  */
 const loadedIframes = new WeakSet<HTMLIFrameElement>();
 
-export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> implements UpdrawEmbeddedObject, UpdrawElementAwareObject {
-  override __class__: string = 'UpdrawIframeObject';
+export class UpmadeIframeObject extends UpmadeBaseObject<HTMLIFrameElement> implements UpmadeEmbeddedObject, UpmadeElementAwareObject {
+  override __class__: string = 'UpmadeIframeObject';
 
-  content: UpdrawIframeContent = { html: '', css: '', script: '' };
+  content: UpmadeIframeContent = { html: '', css: '', script: '' };
   state: Record<string, unknown> = {};
   title: string = 'Embedded content';
   sandbox: string[] = ['allow-scripts'];
@@ -152,7 +152,7 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
 
   private messageListener: ((event: MessageEvent<unknown>) => void) | null = null;
 
-  constructor(config?: UpdrawIframeObjectConfig) {
+  constructor(config?: UpmadeIframeObjectConfig) {
     super();
     this.name = config?.name;
     this.content = {
@@ -169,14 +169,14 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     this.boxShadow = config?.boxShadow;
     this.translateX = config?.translateX ?? 0;
     this.translateY = config?.translateY ?? 0;
-    this.rotation = UpdrawMathHelper.degreesToRadians(config?.rotation ?? 0);
+    this.rotation = UpmadeMathHelper.degreesToRadians(config?.rotation ?? 0);
     this.scale = config?.scale ?? 1;
     this.width = config?.width ?? 0;
     this.height = config?.height ?? 0;
   }
 
-  static override create(core: UpdrawCore, config?: UpdrawIframeObjectConfig): UpdrawIframeObject {
-    const object = new UpdrawIframeObject(config);
+  static override create(core: UpmadeCore, config?: UpmadeIframeObjectConfig): UpmadeIframeObject {
+    const object = new UpmadeIframeObject(config);
     object._core = core;
     object.id = object.generateId();
     object.workspaceId = core.store.state.activeWorkspace!.id;
@@ -246,7 +246,7 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     iframeElementBridges.get(this)?.onUnmounted();
   }
 
-  setContent(content: Partial<UpdrawIframeContent>): void {
+  setContent(content: Partial<UpmadeIframeContent>): void {
     this.content = {
       html: content.html ?? this.content.html,
       css: content.css ?? this.content.css,
@@ -289,16 +289,16 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
    * picks it (the engine emits `objectElementPick`) instead of reaching the page. Picking needs the object to
    * be interactive, which it is while selected; until then the setting waits.
    */
-  setElementPicking(enabled: boolean, options?: UpdrawObjectElementPickingOptions): void {
+  setElementPicking(enabled: boolean, options?: UpmadeObjectElementPickingOptions): void {
     this.elementBridge.setPicking(enabled, options);
   }
 
   /** Replaces the element highlights drawn inside the page. Pass an empty array to remove them. */
-  setElementHighlights(highlights: UpdrawObjectElementHighlight[]): void {
+  setElementHighlights(highlights: UpmadeObjectElementHighlight[]): void {
     this.elementBridge.setHighlights(highlights);
   }
 
-  getElementHighlights(): UpdrawObjectElementHighlight[] {
+  getElementHighlights(): UpmadeObjectElementHighlight[] {
     return iframeElementBridges.get(this)?.getHighlights() ?? [];
   }
 
@@ -306,7 +306,7 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
    * Describes the elements of the page that match a CSS selector, in document order.
    * Rejects if the selector is invalid, the object isn't mounted or the page doesn't respond.
    */
-  queryElements(selector: string, limitOrOptions?: number | UpdrawObjectElementQueryOptions): Promise<UpdrawObjectElementInfo[]> {
+  queryElements(selector: string, limitOrOptions?: number | UpmadeObjectElementQueryOptions): Promise<UpmadeObjectElementInfo[]> {
     if (!this.sandbox.includes('allow-scripts')) {
       return Promise.reject(new Error(`Object "${this.id}" runs its content without scripts, so its elements can't be reached.`));
     }
@@ -320,9 +320,9 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
    */
   interactWithElement(
     selector: string,
-    interaction: UpdrawObjectElementInteraction,
-    options?: UpdrawObjectElementInteractionOptions,
-  ): Promise<UpdrawObjectElementInteractionResult> {
+    interaction: UpmadeObjectElementInteraction,
+    options?: UpmadeObjectElementInteractionOptions,
+  ): Promise<UpmadeObjectElementInteractionResult> {
     if (!this.sandbox.includes('allow-scripts')) {
       return Promise.resolve({
         completed: false,
@@ -341,11 +341,11 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     iframeElementBridges.get(this)?.untrack(selector);
   }
 
-  getTrackedElementRect(selector: string): UpdrawObjectElementRect | null {
+  getTrackedElementRect(selector: string): UpmadeObjectElementRect | null {
     return iframeElementBridges.get(this)?.getRect(selector) ?? null;
   }
 
-  contentToObjectLocal(point: UpdrawPoint): UpdrawPoint {
+  contentToObjectLocal(point: UpmadePoint): UpmadePoint {
     const scale = this.scale || 1;
     const inset = this.borderWidth || 0;
     return { x: (inset + point.x) / scale, y: (inset + point.y) / scale };
@@ -356,11 +356,11 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
   }
 
   adoptElementStateFrom(previous: unknown): void {
-    const elementBridge = previous instanceof UpdrawIframeObject && previous !== this ? iframeElementBridges.get(previous) : undefined;
+    const elementBridge = previous instanceof UpmadeIframeObject && previous !== this ? iframeElementBridges.get(previous) : undefined;
     if (!elementBridge) {
       return;
     }
-    iframeElementBridges.delete(previous as UpdrawIframeObject);
+    iframeElementBridges.delete(previous as UpmadeIframeObject);
     iframeElementBridges.set(this, elementBridge);
     elementBridge.attach(this.createElementBridgeOwner());
   }
@@ -373,13 +373,13 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     return this.isMounted && this.elementRef instanceof HTMLElement && this.elementRef.tagName === 'IFRAME' ? [this.elementRef] : [];
   }
 
-  protected onMount(_context: UpdrawIframeObjectLifecycleContext): void {}
+  protected onMount(_context: UpmadeIframeObjectLifecycleContext): void {}
 
-  protected onSerialize(context: UpdrawIframeObjectLifecycleContext): Record<string, unknown> {
+  protected onSerialize(context: UpmadeIframeObjectLifecycleContext): Record<string, unknown> {
     return context.state;
   }
 
-  protected onUnmount(context: UpdrawIframeObjectLifecycleContext): Record<string, unknown> | undefined {
+  protected onUnmount(context: UpmadeIframeObjectLifecycleContext): Record<string, unknown> | undefined {
     return context.state;
   }
 
@@ -399,8 +399,8 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
   }
 
   override deserialize<T>(object: Record<string, unknown>): T {
-    super.deserialize<UpdrawIframeObject>(object);
-    const nextContent = object.content && typeof object.content === 'object' ? object.content as Partial<UpdrawIframeContent> : {};
+    super.deserialize<UpmadeIframeObject>(object);
+    const nextContent = object.content && typeof object.content === 'object' ? object.content as Partial<UpmadeIframeContent> : {};
     this.content = {
       html: typeof nextContent.html === 'string' ? nextContent.html : typeof object.html === 'string' ? object.html : '',
       css: typeof nextContent.css === 'string' ? nextContent.css : typeof object.css === 'string' ? object.css : '',
@@ -418,8 +418,8 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     return this as unknown as T;
   }
 
-  override copy(): UpdrawIframeObject {
-    const copiedObject = super.copy() as UpdrawIframeObject;
+  override copy(): UpmadeIframeObject {
+    const copiedObject = super.copy() as UpmadeIframeObject;
     copiedObject.content = { ...this.content };
     copiedObject.state = structuredClone(this.state);
     copiedObject.sandbox = [...this.sandbox];
@@ -431,8 +431,8 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     return copiedObject;
   }
 
-  override clone(): UpdrawIframeObject {
-    const clonedObject = super.clone() as UpdrawIframeObject;
+  override clone(): UpmadeIframeObject {
+    const clonedObject = super.clone() as UpmadeIframeObject;
     clonedObject.content = { ...this.content };
     clonedObject.state = structuredClone(this.state);
     clonedObject.sandbox = [...this.sandbox];
@@ -445,8 +445,8 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     return clonedObject;
   }
 
-  override adoptTransientStateFrom(previous: UpdrawBaseObject<any>): void {
-    if (!(previous instanceof UpdrawIframeObject)) {
+  override adoptTransientStateFrom(previous: UpmadeBaseObject<any>): void {
+    if (!(previous instanceof UpmadeIframeObject)) {
       return;
     }
 
@@ -475,16 +475,16 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     previous._elementRef = null as unknown as HTMLIFrameElement;
   }
 
-  private get elementBridge(): UpdrawIframeElementBridge {
+  private get elementBridge(): UpmadeIframeElementBridge {
     let bridge = iframeElementBridges.get(this);
     if (!bridge) {
-      bridge = new UpdrawIframeElementBridge(this.createElementBridgeOwner());
+      bridge = new UpmadeIframeElementBridge(this.createElementBridgeOwner());
       iframeElementBridges.set(this, bridge);
     }
     return bridge;
   }
 
-  private createElementBridgeOwner(): UpdrawIframeElementBridgeOwner {
+  private createElementBridgeOwner(): UpmadeIframeElementBridgeOwner {
     const object = this;
     return {
       get id() { return object.id; },
@@ -498,7 +498,7 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     };
   }
 
-  private createLifecycleContext(): UpdrawIframeObjectLifecycleContext {
+  private createLifecycleContext(): UpmadeIframeObjectLifecycleContext {
     return {
       object: this,
       iframe: this.isMounted ? this.elementRef : null,
@@ -518,12 +518,12 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     const css = content.css.replace(/<\/style/gi, '<\\/style');
     const script = content.script.replace(/<\/script/gi, '<\\/script');
     const computedStyle = this.isMounted ? getComputedStyle(this.elementRef) : null;
-    const defaultCursor = computedStyle?.getPropertyValue('--updraw-global-default-cursor').trim() || 'auto';
+    const defaultCursor = computedStyle?.getPropertyValue('--upmade-global-default-cursor').trim() || 'auto';
     // First in the head, so it covers everything after it.
     const csp = this.contentSecurityPolicy
       ? `<meta http-equiv="Content-Security-Policy" content="${this.contentSecurityPolicy.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')}">`
       : '';
-    const pointerCursor = computedStyle?.getPropertyValue('--updraw-global-pointer-cursor').trim() || defaultCursor;
+    const pointerCursor = computedStyle?.getPropertyValue('--upmade-global-pointer-cursor').trim() || defaultCursor;
 
     return `<!doctype html>
 <html>
@@ -532,12 +532,12 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     ${csp}
     <style>
       :root {
-        --updraw-iframe-default-cursor: ${defaultCursor};
-        --updraw-iframe-pointer-cursor: ${pointerCursor};
+        --upmade-iframe-default-cursor: ${defaultCursor};
+        --upmade-iframe-pointer-cursor: ${pointerCursor};
         ${LEGACY_IFRAME_CSS_VARIABLES}
       }
-      html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; cursor: var(--updraw-iframe-default-cursor); }
-      button, button *, a, a *, input, textarea, select { cursor: var(--updraw-iframe-pointer-cursor) !important; }
+      html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; cursor: var(--upmade-iframe-default-cursor); }
+      button, button *, a, a *, input, textarea, select { cursor: var(--upmade-iframe-pointer-cursor) !important; }
       ${IFRAME_ELEMENT_PICKING_CSS}
       ${css}
     </style>
@@ -546,7 +546,7 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
   <body>
     ${content.html}
     <script>
-      const updraw = globalThis.updraw = {
+      const upmade = globalThis.upmade = {
         state: ${state},
         setState(nextState) {
           this.state = nextState;
@@ -554,12 +554,12 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
         },
       };
       // Deprecated alias for content written before the rename.
-      globalThis.${LEGACY_IFRAME_GLOBAL} = updraw;
+      globalThis.${LEGACY_IFRAME_GLOBAL} = upmade;
       globalThis.addEventListener('message', event => {
         if (event.data?.type === '${IFRAME_PARENT_STATE_MESSAGE}' && event.data.state && typeof event.data.state === 'object') {
-          updraw.state = event.data.state;
-          globalThis.dispatchEvent(new CustomEvent('updrawstatechange', { detail: updraw.state }));
-          globalThis.dispatchEvent(new CustomEvent('${LEGACY_IFRAME_STATE_EVENT}', { detail: updraw.state }));
+          upmade.state = event.data.state;
+          globalThis.dispatchEvent(new CustomEvent('upmadestatechange', { detail: upmade.state }));
+          globalThis.dispatchEvent(new CustomEvent('${LEGACY_IFRAME_STATE_EVENT}', { detail: upmade.state }));
         }
       });
       let bridgedPointerId = null;
@@ -629,12 +629,12 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     }
 
     if (message.type === IFRAME_POINTER_MESSAGE) {
-      this.dispatchPointerMessage(event.data as UpdrawIframePointerMessage);
+      this.dispatchPointerMessage(event.data as UpmadeIframePointerMessage);
       return;
     }
 
     if (message.type === IFRAME_CONTEXT_MENU_MESSAGE) {
-      this.dispatchContextMenuMessage(event.data as UpdrawIframeContextMenuMessage);
+      this.dispatchContextMenuMessage(event.data as UpmadeIframeContextMenuMessage);
       return;
     }
 
@@ -646,7 +646,7 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     this.persistUpdate();
   }
 
-  private dispatchPointerMessage(message: UpdrawIframePointerMessage): void {
+  private dispatchPointerMessage(message: UpmadeIframePointerMessage): void {
     if (!this.isMounted || !this.elementRef || !['pointerdown', 'pointermove', 'pointerup', 'pointercancel'].includes(message.eventType)) {
       return;
     }
@@ -692,7 +692,7 @@ export class UpdrawIframeObject extends UpdrawBaseObject<HTMLIFrameElement> impl
     }
   }
 
-  private dispatchContextMenuMessage(message: UpdrawIframeContextMenuMessage): void {
+  private dispatchContextMenuMessage(message: UpmadeIframeContextMenuMessage): void {
     if (!this.isMounted || !this.elementRef) {
       return;
     }

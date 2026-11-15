@@ -1,14 +1,14 @@
 import { Component, Host, h, Prop, EventEmitter, Event } from '@stencil/core';
-import { DropdownOption } from '../updraw-dropdown/updraw-dropdown'; // Import DropdownOption
+import { DropdownOption } from '../upmade-dropdown/upmade-dropdown'; // Import DropdownOption
 
 export interface BrushStyleOption extends DropdownOption {}
 
 @Component({
-  tag: 'updraw-brush-style',
-  styleUrl: 'updraw-brush-style.css',
+  tag: 'upmade-brush-style',
+  styleUrl: 'upmade-brush-style.css',
   shadow: true,
 })
-export class UpdrawBrushStyle {
+export class UpmadeBrushStyle {
   @Prop() type: 'pen' | 'highlighter' = 'pen';
   @Prop() brushOptions: BrushStyleOption[] = [
     { value: 'pen', label: 'Pen' },
@@ -29,11 +29,11 @@ export class UpdrawBrushStyle {
 
     return (
       <Host>
-        <updraw-dropdown options={dropdownOptions} value={this.type} onValueChanged={event => this.handleDropdownValueChange(event)}>
+        <upmade-dropdown options={dropdownOptions} value={this.type} onValueChanged={event => this.handleDropdownValueChange(event)}>
           <button class="brush-style-button" slot="prefix">
-            <updraw-icon name={this.type} size={16}></updraw-icon>
+            <upmade-icon name={this.type} size={16}></upmade-icon>
           </button>
-        </updraw-dropdown>
+        </upmade-dropdown>
       </Host>
     );
   }

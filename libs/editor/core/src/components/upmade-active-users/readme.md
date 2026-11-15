@@ -1,4 +1,4 @@
-# updraw-active-users
+# upmade-active-users
 
 
 
@@ -9,29 +9,29 @@
 
 | Property     | Attribute     | Description                                                                                                                                                  | Type                                                   | Default |
 | ------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | ------- |
-| `agents`     | --            | Agents to display after the users: local agents and agents of collaborators. Shown with a bot badge, a ring while they work and their status in the tooltip. | `(UpdrawAgentPresence \| UpdrawRemoteAgentPresence)[]` | `[]`    |
+| `agents`     | --            | Agents to display after the users: local agents and agents of collaborators. Shown with a bot badge, a ring while they work and their status in the tooltip. | `(UpmadeAgentPresence \| UpmadeRemoteAgentPresence)[]` | `[]`    |
 | `avatarSize` | `avatar-size` | Avatar size in pixels                                                                                                                                        | `number`                                               | `40`    |
 | `maxVisible` | `max-visible` | Maximum number of avatars to show before overflow text                                                                                                       | `number`                                               | `3`     |
 | `overlap`    | `overlap`     | Overlap offset in pixels (negative margin between avatars)                                                                                                   | `number`                                               | `20`    |
-| `users`      | --            | Array of active users to display                                                                                                                             | `IUpdrawUser[]`                                        | `[]`    |
+| `users`      | --            | Array of active users to display                                                                                                                             | `IUpmadeUser[]`                                        | `[]`    |
 
 
 ## Dependencies
 
 ### Used by
 
- - [updraw-editor](../updraw-editor)
+ - [upmade-editor](../upmade-editor)
 
 ### Depends on
 
-- [updraw-avatar](../updraw-avatar)
+- [upmade-avatar](../upmade-avatar)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-active-users --> updraw-avatar
-  updraw-editor --> updraw-active-users
-  style updraw-active-users fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-active-users --> upmade-avatar
+  upmade-editor --> upmade-active-users
+  style upmade-active-users fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

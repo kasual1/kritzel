@@ -1,24 +1,24 @@
 import { Component, Host, Prop, h } from '@stencil/core';
-import { UpdrawCore, UPDRAW_WEBSITE_URL } from '@updraw/core';
+import { UpmadeCore, UPMADE_WEBSITE_URL } from '@upmade/core';
 
 /**
- * "Powered by Updraw" watermark shown in the bottom-right corner of the engine.
+ * "Powered by Upmade" watermark shown in the bottom-right corner of the engine.
  *
  * Rendered inside the engine's Shadow DOM unless the engine's
- * `isWatermarkVisible` prop is set to false. The badge links to the Updraw
+ * `isWatermarkVisible` prop is set to false. The badge links to the Upmade
  * website.
  */
 @Component({
-  tag: 'updraw-watermark',
-  styleUrl: 'updraw-watermark.css',
+  tag: 'upmade-watermark',
+  styleUrl: 'upmade-watermark.css',
   shadow: true,
 })
-export class UpdrawWatermark {
+export class UpmadeWatermark {
   /** The core instance used to resolve localized terms. */
-  @Prop() core!: UpdrawCore;
+  @Prop() core!: UpmadeCore;
 
   /**
-   * Resolved "Powered by Updraw" label. Passed in by the engine so the badge
+   * Resolved "Powered by Upmade" label. Passed in by the engine so the badge
    * re-renders when the active locale changes. Falls back to resolving the term
    * from the core when not provided.
    */
@@ -31,7 +31,7 @@ export class UpdrawWatermark {
       <Host>
         <a
           class="watermark-link"
-          href={UPDRAW_WEBSITE_URL}
+          href={UPMADE_WEBSITE_URL}
           target="_blank"
           rel="noopener noreferrer"
           part="watermark"

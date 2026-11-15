@@ -1,30 +1,30 @@
 import * as Y from 'yjs';
 
 /**
- * Names from before the rebrand (Kritzel → Updraw) that can still be found in stored documents.
+ * Names from before the rebrand (Kritzel → Upmade) that can still be found in stored documents.
  * Used by the RenameLegacyBrandDocumentIds migration; keep every legacy string in this block.
  */
 export const LEGACY_DOCUMENT_ID_PREFIX = 'kritzel-';
-export const DOCUMENT_ID_PREFIX = 'updraw-';
+export const DOCUMENT_ID_PREFIX = 'upmade-';
 export const LEGACY_CLASS_NAME_PREFIX = 'Kritzel';
-export const CLASS_NAME_PREFIX = 'Updraw';
+export const CLASS_NAME_PREFIX = 'Upmade';
 /** Legacy classes whose new name is more than a prefix swap. */
 export const LEGACY_CLASS_NAME_RENAMES: ReadonlyMap<string, string> = new Map([
-  ['KritzelCustomElement', 'UpdrawDynamicObject'],
+  ['KritzelCustomElement', 'UpmadeDynamicObject'],
 ]);
 
 /** Y.Doc maps whose values are serialized objects with a `__class__` discriminator. */
 export const CLASS_NAME_MAPS = ['objects', 'workspaces'] as const;
 const CLASS_NAME_KEY = '__class__';
 
-/** `kritzel-…` → `updraw-…`; null when the id has no legacy prefix. */
+/** `kritzel-…` → `upmade-…`; null when the id has no legacy prefix. */
 export function toCurrentDocumentId(id: string): string | null {
   return id.startsWith(LEGACY_DOCUMENT_ID_PREFIX)
     ? DOCUMENT_ID_PREFIX + id.slice(LEGACY_DOCUMENT_ID_PREFIX.length)
     : null;
 }
 
-/** `updraw-…` → `kritzel-…`; null when the id has no current prefix. */
+/** `upmade-…` → `kritzel-…`; null when the id has no current prefix. */
 export function toLegacyDocumentId(id: string): string | null {
   return id.startsWith(DOCUMENT_ID_PREFIX)
     ? LEGACY_DOCUMENT_ID_PREFIX + id.slice(DOCUMENT_ID_PREFIX.length)

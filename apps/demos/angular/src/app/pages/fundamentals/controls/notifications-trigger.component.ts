@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { UpdrawEditor, UpdrawWorkspace } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeWorkspace } from '@upmade/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { ToolbarComponent } from '../../../components/toolbar.component';
@@ -7,7 +7,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-notifications-trigger',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -15,7 +15,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       <button type="button" (click)="notify('warning')">Show warning</button>
       <button type="button" (click)="notify('error')">Show error</button>
     </app-toolbar>
-    <updraw-editor
+    <upmade-editor
       #editor
       editorId="notifications-trigger"
       [theme]="'light'"
@@ -25,21 +25,21 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: `
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
     button { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; font-size: 13px; }
     button:hover { background: #dd0031; border-color: #dd0031; color: #fff; }
-    updraw-editor { flex: 1; }
+    upmade-editor { flex: 1; }
   `,
 })
 export class NotificationsTriggerComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
   async notify(type: 'info' | 'warning' | 'error'): Promise<void> {
     await this.editor.triggerNotification({

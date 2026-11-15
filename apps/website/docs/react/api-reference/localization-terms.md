@@ -1,21 +1,21 @@
 ---
 sidebar_label: Localization Terms
 displayed_sidebar: tutorialSidebar
-title: "Localization Terms | Updraw for React"
-description: "Reference for all built-in localization keys and their default English text in Updraw."
+title: "Localization Terms | Upmade for React"
+description: "Reference for all built-in localization keys and their default English text in Upmade."
 toc_max_heading_level: 4
 ---
 
 # Localization Terms
 
-This is the API reference for all built-in localization keys in Updraw. Every key has a default English text that can be overridden by custom locales.
+This is the API reference for all built-in localization keys in Upmade. Every key has a default English text that can be overridden by custom locales.
 
 Override selected keys by providing a partial custom locale. Keys you omit continue to use the default English text.
 
 ```tsx
-import { UpdrawEditor, type UpdrawLocale } from '@updraw/react-editor';
+import { UpmadeEditor, type UpmadeLocale } from '@upmade/react-editor';
 
-const customEnglish: UpdrawLocale = {
+const customEnglish: UpmadeLocale = {
   code: 'en',
   label: 'English',
   terms: {
@@ -25,7 +25,7 @@ const customEnglish: UpdrawLocale = {
 };
 
 export function Editor() {
-  return <UpdrawEditor locales={[customEnglish]} />;
+  return <UpmadeEditor locales={[customEnglish]} />;
 }
 ```
 
@@ -122,7 +122,7 @@ export function Editor() {
 | settings.developer.showMigrationInfo.description | Display debug information about data migrations. |
 | settings.categories.about | About |
 | settings.about.title | About |
-| settings.about.description | Updraw - A drawing application |
+| settings.about.description | Upmade - A drawing application |
 
 ### Export dialog
 
@@ -201,7 +201,7 @@ export function Editor() {
 
 | Key | Default text |
 |------|--------------|
-| watermark.poweredBy | Powered by Updraw |
+| watermark.poweredBy | Powered by Upmade |
 
 ### Object type labels
 

@@ -1,4 +1,4 @@
-import { UpdrawAsset } from './asset.interface';
+import { UpmadeAsset } from './asset.interface';
 
 /**
  * Distinguishes local-only asset providers (IndexedDB) from network providers
@@ -10,13 +10,13 @@ export type AssetProviderType = 'local' | 'remote';
  * Metadata supplied when uploading a new asset. The provider is free to
  * use or ignore hints (e.g. width/height) but MUST persist `mimeType`.
  */
-export interface UpdrawAssetPutMetadata {
+export interface UpmadeAssetPutMetadata {
   mimeType: string;
   width?: number;
   height?: number;
   durationMs?: number;
   originalFilename?: string;
-  kind?: UpdrawAsset['kind'];
+  kind?: UpmadeAsset['kind'];
   /**
    * Optional pre-assigned asset id. When provided, the provider should
    * use this id instead of generating one. This allows the resolver to
@@ -64,7 +64,7 @@ export interface IAssetStorageProvider {
    * Persists the given bytes and returns the resulting asset descriptor.
    * If `metadata.id` is provided, the provider MUST use that id.
    */
-  put(blob: Blob, metadata: UpdrawAssetPutMetadata): Promise<UpdrawAsset>;
+  put(blob: Blob, metadata: UpmadeAssetPutMetadata): Promise<UpmadeAsset>;
 
   /**
    * Returns a URL usable directly as an `<img src>` / `<video src>`.
@@ -95,7 +95,7 @@ export interface AssetProviderFactory {
 }
 
 /**
- * Configuration value accepted by `UpdrawAssetStorageConfig.providers`:
+ * Configuration value accepted by `UpmadeAssetStorageConfig.providers`:
  * either a zero-arg class constructor or a factory object.
  */
 export type AssetProviderConfig = (new () => IAssetStorageProvider) | AssetProviderFactory;

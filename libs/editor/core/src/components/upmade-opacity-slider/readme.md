@@ -1,4 +1,4 @@
-# updraw-opacity-slider
+# upmade-opacity-slider
 
 A range slider component for adjusting opacity values. Displays a preview swatch with the current opacity applied, along with a percentage indicator.
 
@@ -27,13 +27,13 @@ A range slider component for adjusting opacity values. Displays a preview swatch
 
 ### Used by
 
- - [updraw-tool-config](../updraw-tool-config)
+ - [upmade-tool-config](../upmade-tool-config)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-tool-config --> updraw-opacity-slider
-  style updraw-opacity-slider fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-tool-config --> upmade-opacity-slider
+  style upmade-opacity-slider fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

@@ -1,4 +1,4 @@
-# updraw-pill-tabs
+# upmade-pill-tabs
 
 
 
@@ -9,7 +9,7 @@
 
 | Property | Attribute | Description                        | Type              | Default     |
 | -------- | --------- | ---------------------------------- | ----------------- | ----------- |
-| `tabs`   | --        | Array of tab definitions to render | `UpdrawPillTab[]` | `[]`        |
+| `tabs`   | --        | Array of tab definitions to render | `UpmadePillTab[]` | `[]`        |
 | `value`  | `value`   | Currently selected tab ID          | `string`          | `undefined` |
 
 
@@ -24,18 +24,18 @@
 
 ### Used by
 
- - [updraw-export](../updraw-export)
+ - [upmade-export](../upmade-export)
 
 ### Depends on
 
-- updraw-icon
+- upmade-icon
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-pill-tabs --> updraw-icon
-  updraw-export --> updraw-pill-tabs
-  style updraw-pill-tabs fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-pill-tabs --> upmade-icon
+  upmade-export --> upmade-pill-tabs
+  style upmade-pill-tabs fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

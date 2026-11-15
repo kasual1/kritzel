@@ -1,11 +1,11 @@
 import { Component, Host, h, Prop, Event, EventEmitter, State, Watch } from '@stencil/core';
 
 @Component({
-  tag: 'updraw-input',
-  styleUrl: 'updraw-input.css',
+  tag: 'upmade-input',
+  styleUrl: 'upmade-input.css',
   shadow: true,
 })
-export class UpdrawInput {
+export class UpmadeInput {
   /** Current text value */
   @Prop({ mutable: true }) value: string = '';
 

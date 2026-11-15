@@ -1,4 +1,4 @@
-# updraw-login-dialog
+# upmade-login-dialog
 
 
 
@@ -9,14 +9,14 @@
 
 Login dialog component for displaying authentication provider buttons.
 This is a presentational component that emits events for all actions.
-The parent component (updraw-editor) handles the actual authentication flow.
+The parent component (upmade-editor) handles the actual authentication flow.
 
 ## Properties
 
 | Property      | Attribute      | Description                                        | Type                    | Default     |
 | ------------- | -------------- | -------------------------------------------------- | ----------------------- | ----------- |
 | `dialogTitle` | `dialog-title` | Dialog title                                       | `string`                | `'Sign in'` |
-| `providers`   | --             | Array of authentication provider buttons to render | `UpdrawLoginProvider[]` | `[]`        |
+| `providers`   | --             | Array of authentication provider buttons to render | `UpmadeLoginProvider[]` | `[]`        |
 | `subtitle`    | `subtitle`     | Optional subtitle text displayed below the title   | `string`                | `undefined` |
 
 
@@ -71,20 +71,20 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [updraw-editor](../updraw-editor)
+ - [upmade-editor](../upmade-editor)
 
 ### Depends on
 
-- [updraw-dialog](../updraw-dialog)
-- updraw-icon
+- [upmade-dialog](../upmade-dialog)
+- upmade-icon
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-login-dialog --> updraw-dialog
-  updraw-login-dialog --> updraw-icon
-  updraw-editor --> updraw-login-dialog
-  style updraw-login-dialog fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-login-dialog --> upmade-dialog
+  upmade-login-dialog --> upmade-icon
+  upmade-editor --> upmade-login-dialog
+  style upmade-login-dialog fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

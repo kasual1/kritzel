@@ -1,8 +1,8 @@
 ---
 sidebar_label: Objects
 displayed_sidebar: tutorialSidebar
-title: "Objects Concept | Updraw for Vue"
-description: "Understand the core concept of Objects in Updraw."
+title: "Objects Concept | Upmade for Vue"
+description: "Understand the core concept of Objects in Upmade."
 heading_badges:
   configuring-objects: Preview
 ---
@@ -13,9 +13,9 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Everything placed on the Updraw canvas is considered an object. Objects can be either added using a tool from the toolbar or programmatically through the editor's API.
+Everything placed on the Upmade canvas is considered an object. Objects can be either added using a tool from the toolbar or programmatically through the editor's API.
 
-Updraw comes with the following built-in objects:
+Upmade comes with the following built-in objects:
 
 - [Path](../api-reference/objects.md#path)
 - [Line](../api-reference/objects.md#line)
@@ -69,7 +69,7 @@ You can programmatically retrieve the currently selected objects, select specifi
 
 ## Filtering Objects
 
-Use `getAllObjects()` to retrieve the current canvas objects, or `findObjects()` to return only the objects that match a predicate. `findObjects()` excludes Updraw's internal selection-related objects.
+Use `getAllObjects()` to retrieve the current canvas objects, or `findObjects()` to return only the objects that match a predicate. `findObjects()` excludes Upmade's internal selection-related objects.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
@@ -99,15 +99,15 @@ Objects' z-index can be changed to control their visual stacking order, for exam
 
 ## Configuring Objects
 
-Bind an `UpdrawObjectConfig` to `:objectConfig` to decide in one place which objects can be rotated or resized and which get a [titlebar](./controls.md#object-titlebar). Each option is either a boolean for every object or a function that receives an object and returns a boolean. Decide by type with `instanceof` against the classes your Updraw package exports, or compare `object.__class__` as below.
+Bind an `UpmadeObjectConfig` to `:objectConfig` to decide in one place which objects can be rotated or resized and which get a [titlebar](./controls.md#object-titlebar). Each option is either a boolean for every object or a function that receives an object and returns a boolean. Decide by type with `instanceof` against the classes your Upmade package exports, or compare `object.__class__` as below.
 
 ```ts
-import type { UpdrawObjectConfig } from '@updraw/vue-editor'
+import type { UpmadeObjectConfig } from '@upmade/vue-editor'
 
-const objectConfig: UpdrawObjectConfig = {
+const objectConfig: UpmadeObjectConfig = {
   hasTitlebar: object => !!object.name,
-  isRotatable: object => object.__class__ !== 'UpdrawText',
-  isResizable: object => object.__class__ !== 'UpdrawImage',
+  isRotatable: object => object.__class__ !== 'UpmadeText',
+  isResizable: object => object.__class__ !== 'UpmadeImage',
 }
 ```
 

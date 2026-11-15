@@ -8,7 +8,7 @@ import HeroTitle from "./HeroTitle";
 import ImageCard from "./ImageCard";
 import MenuButton from "./MenuButton";
 import { HELLO_DOT, HELLO_EXCLAMATION, HELLO_STROKES } from "./paths";
-import UpdrawBrand from "../UpdrawBrand";
+import UpmadeBrand from "../UpmadeBrand";
 import { TOOLS } from "./tools";
 import styles from "./styles.module.css";
 import { useAppUrl } from "@site/src/utils/siteUrls";
@@ -324,7 +324,7 @@ export default function Hero({
   return (
     <div ref={wrapperRef} className={styles.heroWrapper}>
       <div ref={canvasRef} className={styles.heroCanvas}>
-        <UpdrawBrand className={styles.brand} />
+        <UpmadeBrand className={styles.brand} />
         <nav ref={navRef} aria-label="Main" className={styles.topNav}>
           <Link to="/blog" className={styles.topNavLink}>
             Blog
@@ -350,7 +350,7 @@ export default function Hero({
             </nav>
             <HeroTitle />
             <p className={styles.heroSubtitle}>
-              Updraw is a framework-agnostic infinite canvas library that helps you build custom whiteboard
+              Upmade is a framework-agnostic infinite canvas library that helps you build custom whiteboard
               experiences with React, Vue and Angular.
             </p>
             <CallToActionBar docsPath={docsPath} />

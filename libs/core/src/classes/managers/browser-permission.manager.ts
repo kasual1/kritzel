@@ -1,4 +1,4 @@
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeCore } from '../core/core.class';
 
 type BrowserPermissionHandler = () => Promise<PermissionState> | PermissionState;
 
@@ -8,16 +8,16 @@ type BrowserPermissionHandler = () => Promise<PermissionState> | PermissionState
  * Permission-specific prompt logic is routed through a handler registry so new
  * permissions can be added without changing the core control flow.
  */
-export class UpdrawBrowserPermissionManager {
+export class UpmadeBrowserPermissionManager {
   private readonly _isFirefox = /firefox|fxios/i.test(navigator.userAgent);
   private readonly _isSafari = /safari/i.test(navigator.userAgent) && !/chrome|chromium|crios|android|edg/i.test(navigator.userAgent);
   private readonly _requestHandlers = new Map<string, BrowserPermissionHandler>();
 
   /**
-   * Creates a new UpdrawBrowserPermissionManager instance.
-   * @param core - The UpdrawCore instance this manager belongs to
+   * Creates a new UpmadeBrowserPermissionManager instance.
+   * @param core - The UpmadeCore instance this manager belongs to
    */
-  constructor(_core: UpdrawCore) {
+  constructor(_core: UpmadeCore) {
     this.registerRequestPermissionHandler('clipboard-read', async () => {
       // Firefox and Safari open native paste menus when the clipboard is read
       // proactively, so rely on the permission state instead of an eager read.

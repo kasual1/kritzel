@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
+import { UpmadeEditor, UpmadeWorkspace } from '@upmade/vue-editor'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import { createSeedObjects } from './seed-objects'
 
 const themes = [vueThemeLight]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 </script>
 
 <template>
     <div class="host">
-        <UpdrawEditor
+        <UpmadeEditor
             editorId="quickstart"
             theme="light"
             :themes="themes"

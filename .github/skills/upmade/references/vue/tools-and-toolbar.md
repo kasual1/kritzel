@@ -1,20 +1,20 @@
 # Tools & Toolbar
 
-A *tool* is the active pointer-interaction mode; exactly one is active at a time. The default `<UpdrawEditor>` toolbar registers these tools under these names:
+A *tool* is the active pointer-interaction mode; exactly one is active at a time. The default `<UpmadeEditor>` toolbar registers these tools under these names:
 
 | Name | Class | Creates |
 |---|---|---|
-| `selection` (default active) | `UpdrawSelectionTool` | â€” selects/transforms |
-| `brush` | `UpdrawBrushTool` | `UpdrawPath` |
-| `eraser` | `UpdrawEraserTool` | â€” removes objects |
-| `line` | `UpdrawLineTool` | `UpdrawLine` |
-| `shape` | `UpdrawShapeTool` | `UpdrawShape` |
-| `text` | `UpdrawTextTool` | `UpdrawText` |
-| `image` | `UpdrawImageTool` | `UpdrawImage` |
+| `selection` (default active) | `UpmadeSelectionTool` | â€” selects/transforms |
+| `brush` | `UpmadeBrushTool` | `UpmadePath` |
+| `eraser` | `UpmadeEraserTool` | â€” removes objects |
+| `line` | `UpmadeLineTool` | `UpmadeLine` |
+| `shape` | `UpmadeShapeTool` | `UpmadeShape` |
+| `text` | `UpmadeTextTool` | `UpmadeText` |
+| `image` | `UpmadeImageTool` | `UpmadeImage` |
 
-Tool *names are whatever the toolbar config / `registerTool` call says* â€” when you customize the toolbar, `changeActiveToolByName` must use your names. `<UpdrawEngine>` registers none â€” with the engine, register every tool yourself (e.g. `await engine.value.registerTool('brush', UpdrawBrushTool)` in the `@isEngineReady` handler, using `getEngineRef`).
+Tool *names are whatever the toolbar config / `registerTool` call says* â€” when you customize the toolbar, `changeActiveToolByName` must use your names. `<UpmadeEngine>` registers none â€” with the engine, register every tool yourself (e.g. `await engine.value.registerTool('brush', UpmadeBrushTool)` in the `@isEngineReady` handler, using `getEngineRef`).
 
-In the snippets below, `editor` is the computed ref to the native element (`getEditorRef('editor')` at the top level of `<script setup>`, paired with `<UpdrawEditor ref="editor">` â€” see objects.md).
+In the snippets below, `editor` is the computed ref to the native element (`getEditorRef('editor')` at the top level of `<script setup>`, paired with `<UpmadeEditor ref="editor">` â€” see objects.md).
 
 ## Switching tools
 
@@ -35,14 +35,14 @@ await editor.value?.enable();
 ## Tool config interfaces
 
 ```ts
-interface UpdrawBrushToolConfig {
+interface UpmadeBrushToolConfig {
   color: ThemeAwareColor;                 // { light, dark }
   size: number;
   palette: ThemeAwareColor[];             // [] disables the picker
   opacity?: number;                       // highlighters typically ~0.6
 }
 
-interface UpdrawLineToolConfig {
+interface UpmadeLineToolConfig {
   color: ThemeAwareColor;
   size: number;
   palette: ThemeAwareColor[];
@@ -52,7 +52,7 @@ interface UpdrawLineToolConfig {
   };
 }
 
-interface UpdrawShapeToolConfig {
+interface UpmadeShapeToolConfig {
   shapeType: ShapeType;
   fillColor: ThemeAwareColor;
   strokeColor: ThemeAwareColor;
@@ -63,7 +63,7 @@ interface UpdrawShapeToolConfig {
   palette: ThemeAwareColor[];
 }
 
-interface UpdrawTextToolConfig {
+interface UpmadeTextToolConfig {
   color: ThemeAwareColor;
   size: number;
   fontFamily: string;
@@ -71,7 +71,7 @@ interface UpdrawTextToolConfig {
 }
 ```
 
-All config types are exported from `@updraw/vue-editor`. Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` â€” spread them to tweak a single field.
+All config types are exported from `@upmade/vue-editor`. Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` â€” spread them to tweak a single field.
 
 ## Registering preconfigured tool variants
 
@@ -79,11 +79,11 @@ The most common customization: several variants of a built-in tool under distinc
 
 ```vue
 <script setup lang="ts">
-import { UpdrawBrushTool, UpdrawEditor, getEditorRef, type UpdrawBrushToolConfig } from '@updraw/vue-editor'
+import { UpmadeBrushTool, UpmadeEditor, getEditorRef, type UpmadeBrushToolConfig } from '@upmade/vue-editor'
 
 const editor = getEditorRef('editor')
 
-const red: UpdrawBrushToolConfig = {
+const red: UpmadeBrushToolConfig = {
   color: { light: '#ff0000', dark: '#ff6666' },
   size: 16,
   palette: [],                 // empty → no color picker, color is locked
@@ -91,13 +91,13 @@ const red: UpdrawBrushToolConfig = {
 
 async function onReady() {
   if (!editor.value) return
-  await editor.value.registerTool('red-brush', UpdrawBrushTool, red)
+  await editor.value.registerTool('red-brush', UpmadeBrushTool, red)
   await editor.value.changeActiveToolByName('red-brush')
 }
 </script>
 
 <template>
-  <UpdrawEditor ref="editor" @isReady="onReady" />
+  <UpmadeEditor ref="editor" @isReady="onReady" />
 </template>
 ```
 
@@ -105,19 +105,19 @@ async function onReady() {
 
 ## Customizing the toolbar (`toolbarItems` prop)
 
-Replace the editor's toolbar wholesale with an `UpdrawToolbarItem[]`. **Define the array as a `const` in `<script setup>`** â€” never inline in the template (an inline literal is recreated every render and re-triggers the toolbar setup):
+Replace the editor's toolbar wholesale with an `UpmadeToolbarItem[]`. **Define the array as a `const` in `<script setup>`** â€” never inline in the template (an inline literal is recreated every render and re-triggers the toolbar setup):
 
 ```vue
 <script setup lang="ts">
 import {
-  UpdrawEditor, UpdrawSelectionTool, UpdrawBrushTool, UpdrawTextTool,
-  type UpdrawToolbarItem,
-} from '@updraw/vue-editor'
+  UpmadeEditor, UpmadeSelectionTool, UpmadeBrushTool, UpmadeTextTool,
+  type UpmadeToolbarItem,
+} from '@upmade/vue-editor'
 
-const toolbarItems: UpdrawToolbarItem[] = [
-  { name: 'select', type: 'tool', isDefault: true, tool: UpdrawSelectionTool, icon: 'cursor' },
+const toolbarItems: UpmadeToolbarItem[] = [
+  { name: 'select', type: 'tool', isDefault: true, tool: UpmadeSelectionTool, icon: 'cursor' },
   {
-    name: 'brush', type: 'tool', tool: UpdrawBrushTool, icon: 'pen',
+    name: 'brush', type: 'tool', tool: UpmadeBrushTool, icon: 'pen',
     config: {
       color: { light: '#1f2937', dark: '#f3f4f6' },
       size: 6,
@@ -128,7 +128,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
     },
   },
   {
-    name: 'highlighter', type: 'tool', tool: UpdrawBrushTool, icon: 'highlighter',
+    name: 'highlighter', type: 'tool', tool: UpmadeBrushTool, icon: 'highlighter',
     config: {
       color: { light: '#ffeb3b', dark: '#fff176' },
       size: 20, opacity: 0.6,
@@ -136,7 +136,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
     },
   },
   {
-    name: 'text', type: 'tool', tool: UpdrawTextTool, icon: 'type',
+    name: 'text', type: 'tool', tool: UpmadeTextTool, icon: 'type',
     config: {
       color: { light: '#1f2937', dark: '#f3f4f6' },
       size: 18, fontFamily: 'Arial',
@@ -148,7 +148,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
 </script>
 
 <template>
-  <UpdrawEditor :toolbarItems="toolbarItems" />
+  <UpmadeEditor :toolbarItems="toolbarItems" />
 </template>
 ```
 
@@ -164,7 +164,7 @@ To hide the toolbar entirely and drive tools from your own Vue UI: `:isToolbarVi
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { UpdrawEditor, getEditorRef } from '@updraw/vue-editor'
+import { UpmadeEditor, getEditorRef } from '@upmade/vue-editor'
 
 const editor = getEditorRef('editor')
 const activeTool = ref('select')
@@ -180,18 +180,18 @@ async function setTool(name: string) {
     :class="{ active: activeTool === name }" @click="setTool(name)">
     {{ name }}
   </button>
-  <UpdrawEditor ref="editor" :isToolbarVisible="false" />
+  <UpmadeEditor ref="editor" :isToolbarVisible="false" />
 </template>
 ```
 
 ## Fully custom tool classes
 
-For new interaction behavior, extend `UpdrawBaseTool` (exported from `@updraw/vue-editor`) and override the lifecycle/pointer hooks:
+For new interaction behavior, extend `UpmadeBaseTool` (exported from `@upmade/vue-editor`) and override the lifecycle/pointer hooks:
 
 ```ts
-import { UpdrawBaseTool } from '@updraw/vue-editor';
+import { UpmadeBaseTool } from '@upmade/vue-editor';
 
-export class StampTool extends UpdrawBaseTool {
+export class StampTool extends UpmadeBaseTool {
   override onActivate(): void {}
   override onDeactivate(): void {}
   override handlePointerDown(ev: PointerEvent): void { /* place a stamp */ }

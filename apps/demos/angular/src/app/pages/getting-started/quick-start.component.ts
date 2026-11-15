@@ -1,14 +1,14 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
-import { UpdrawEditor, UpdrawWorkspace } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeWorkspace } from '@upmade/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
   selector: 'app-quickstart',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       editorId="quickstart"
       [theme]="'angular-theme-light'"
       [themes]="themes"
@@ -17,7 +17,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [
     `
@@ -31,6 +31,6 @@ import { createSeedObjects } from '../../const/seed-objects';
 export class QuickStartComponent {
   themes = [angularThemeLight];
   workspaces = signal([
-    new UpdrawWorkspace({ objects: createSeedObjects() }),
+    new UpmadeWorkspace({ objects: createSeedObjects() }),
   ]);
 }

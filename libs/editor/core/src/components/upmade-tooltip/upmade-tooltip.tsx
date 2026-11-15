@@ -1,12 +1,12 @@
 ﻿import { Component, Host, Prop, h, Element, State, Listen, Method, Event, EventEmitter, Watch } from '@stencil/core';
-import { UpdrawHTMLHelper } from '@updraw/core';
+import { UpmadeHTMLHelper } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-tooltip',
-  styleUrl: 'updraw-tooltip.css',
+  tag: 'upmade-tooltip',
+  styleUrl: 'upmade-tooltip.css',
   shadow: true,
 })
-export class UpdrawTooltip {
+export class UpmadeTooltip {
   @Element() host: HTMLElement;
 
   @Prop({ mutable: true }) isVisible: boolean = false;
@@ -48,7 +48,7 @@ export class UpdrawTooltip {
     }
   }
 
-  @Listen('updrawTooltipCloseAll', { target: 'document' })
+  @Listen('upmadeTooltipCloseAll', { target: 'document' })
   handleCloseAll(event: CustomEvent) {
     if (event.detail !== this.host) {
       this.close();
@@ -83,7 +83,7 @@ export class UpdrawTooltip {
   @Method()
   async open() {
     if (this.isVisible) return;
-    document.dispatchEvent(new CustomEvent('updrawTooltipCloseAll', { detail: this.host }));
+    document.dispatchEvent(new CustomEvent('upmadeTooltipCloseAll', { detail: this.host }));
     this.isVisible = true;
     this.tooltipOpened.emit();
   }
@@ -106,7 +106,7 @@ export class UpdrawTooltip {
 
   @Method()
   async focusContent() {
-    const focusableElements = UpdrawHTMLHelper.getFocusableElements(this.host);
+    const focusableElements = UpmadeHTMLHelper.getFocusableElements(this.host);
     if (focusableElements.length > 0) {
       focusableElements[0].focus();
     }

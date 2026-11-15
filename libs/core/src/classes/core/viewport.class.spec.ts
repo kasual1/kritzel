@@ -1,9 +1,9 @@
-import { UpdrawViewport } from './viewport.class';
-import { UpdrawCore } from './core.class';
-import { UpdrawMouseButton } from '../../enums/event-button.enum';
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawKeyboardHelper } from '../../helpers/keyboard.helper';
-import { UpdrawDevicesHelper } from '../../helpers/devices.helper';
+import { UpmadeViewport } from './viewport.class';
+import { UpmadeCore } from './core.class';
+import { UpmadeMouseButton } from '../../enums/event-button.enum';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeKeyboardHelper } from '../../helpers/keyboard.helper';
+import { UpmadeDevicesHelper } from '../../helpers/devices.helper';
 
 jest.mock('lodash/debounce', () => ({
   __esModule: true,
@@ -14,9 +14,9 @@ jest.mock('lodash/debounce', () => ({
   },
 }));
 
-describe('UpdrawViewport', () => {
-  let viewport: UpdrawViewport;
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadeViewport', () => {
+  let viewport: UpmadeViewport;
+  let mockCore: jest.Mocked<UpmadeCore>;
   let mockHost: HTMLElement;
   let mockState: any;
 
@@ -33,7 +33,7 @@ describe('UpdrawViewport', () => {
     } as unknown as HTMLElement;
   };
 
-  const createMockCore = (): jest.Mocked<UpdrawCore> => {
+  const createMockCore = (): jest.Mocked<UpmadeCore> => {
     mockState = {
       host: null,
       viewportWidth: 0,
@@ -89,7 +89,7 @@ describe('UpdrawViewport', () => {
       },
       rerender: jest.fn(),
       updateWorkspaceViewport: jest.fn(),
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
   };
 
   const createPointerEvent = (options: Partial<PointerEvent> = {}): PointerEvent => {
@@ -98,7 +98,7 @@ describe('UpdrawViewport', () => {
       pointerId: 1,
       clientX: 0,
       clientY: 0,
-      button: UpdrawMouseButton.Left,
+      button: UpmadeMouseButton.Left,
       ...options,
     } as PointerEvent;
   };
@@ -117,7 +117,7 @@ describe('UpdrawViewport', () => {
   beforeEach(() => {
     mockHost = createMockHost();
     mockCore = createMockCore();
-    viewport = new UpdrawViewport(mockCore, mockHost);
+    viewport = new UpmadeViewport(mockCore, mockHost);
 
     jest.spyOn(global, 'requestAnimationFrame').mockImplementation((_cb) => {
       return 1;
@@ -190,7 +190,7 @@ describe('UpdrawViewport', () => {
       it('should start panning on right-click', () => {
         const event = createPointerEvent({
           pointerType: 'mouse',
-          button: UpdrawMouseButton.Right,
+          button: UpmadeMouseButton.Right,
           clientX: 100,
           clientY: 200,
         });
@@ -205,7 +205,7 @@ describe('UpdrawViewport', () => {
       it('should not start panning on left-click', () => {
         const event = createPointerEvent({
           pointerType: 'mouse',
-          button: UpdrawMouseButton.Left,
+          button: UpmadeMouseButton.Left,
           clientX: 100,
           clientY: 200,
         });
@@ -970,7 +970,7 @@ describe('UpdrawViewport', () => {
 
       const mockObject = {
         rotatedBoundingBox: { x: 100, y: 100, width: 200, height: 200 },
-      } as unknown as UpdrawBaseObject;
+      } as unknown as UpmadeBaseObject;
 
       viewport.centerInViewport(mockObject);
 
@@ -990,7 +990,7 @@ describe('UpdrawViewport', () => {
 
       const mockObject = {
         rotatedBoundingBox: { x: 0, y: 0, width: 100, height: 100 },
-      } as unknown as UpdrawBaseObject;
+      } as unknown as UpmadeBaseObject;
 
       viewport.centerInViewport(mockObject);
 
@@ -1011,7 +1011,7 @@ describe('UpdrawViewport', () => {
 
       const mockObject = {
         rotatedBoundingBox: { x: 0, y: 0, width: 500, height: 500 },
-      } as unknown as UpdrawBaseObject;
+      } as unknown as UpmadeBaseObject;
 
       viewport.centerFitInViewport(mockObject);
 
@@ -1035,7 +1035,7 @@ describe('UpdrawViewport', () => {
 
       const mockObject = {
         rotatedBoundingBox: { x: 0, y: 0, width: 10, height: 10 },
-      } as unknown as UpdrawBaseObject;
+      } as unknown as UpmadeBaseObject;
 
       viewport.centerFitInViewport(mockObject);
 
@@ -1203,7 +1203,7 @@ describe('UpdrawViewport', () => {
       const objects = [
         { rotatedBoundingBox: { x: 100, y: 50, width: 200, height: 100 } },
         { rotatedBoundingBox: { x: 600, y: 450, width: 100, height: 150 } },
-      ] as unknown as UpdrawBaseObject[];
+      ] as unknown as UpmadeBaseObject[];
 
       const result = viewport.centerFitObjects(objects, false);
 
@@ -1216,7 +1216,7 @@ describe('UpdrawViewport', () => {
     it('should delegate to centerFitObjects with all non-selection objects', () => {
       const allObjects = [
         { rotatedBoundingBox: { x: 10, y: 20, width: 30, height: 40 } },
-      ] as unknown as UpdrawBaseObject[];
+      ] as unknown as UpmadeBaseObject[];
       (mockCore.store as any).allNonSelectionObjects = allObjects;
       const centerFitObjectsSpy = jest.spyOn(viewport, 'centerFitObjects').mockReturnValue(true);
 
@@ -1480,7 +1480,7 @@ describe('UpdrawViewport', () => {
         // Large object that would require scale < boundary minimum
         const mockObject = {
           rotatedBoundingBox: { x: 0, y: 0, width: 5000, height: 4000 },
-        } as UpdrawBaseObject;
+        } as UpmadeBaseObject;
 
         viewport.centerFitInViewport(mockObject);
 
@@ -1878,7 +1878,7 @@ describe('UpdrawViewport', () => {
         value: { offsetTop: 0, height: 400, addEventListener: jest.fn(), removeEventListener: jest.fn() },
       });
       animateSpy = jest.spyOn(viewport, 'animateViewportTo').mockImplementation(() => Promise.resolve());
-      jest.spyOn(UpdrawDevicesHelper, 'isMobile').mockReturnValue(true);
+      jest.spyOn(UpmadeDevicesHelper, 'isMobile').mockReturnValue(true);
       mockState.translateX = 10;
       mockState.translateY = 50;
       mockState.scale = 2;
@@ -1948,7 +1948,7 @@ describe('UpdrawViewport', () => {
     });
 
     it('should not run on visual viewport resize on non-mobile devices', () => {
-      (UpdrawDevicesHelper.isMobile as jest.Mock).mockReturnValue(false);
+      (UpmadeDevicesHelper.isMobile as jest.Mock).mockReturnValue(false);
       (mockCore.store as any).activeText = createEditingObject(600, 620);
 
       viewport.handleVisualViewportResize();
@@ -1957,7 +1957,7 @@ describe('UpdrawViewport', () => {
     });
 
     it('should not run on window resize on non-mobile devices', () => {
-      (UpdrawDevicesHelper.isMobile as jest.Mock).mockReturnValue(false);
+      (UpmadeDevicesHelper.isMobile as jest.Mock).mockReturnValue(false);
       (mockCore.store as any).activeText = createEditingObject(600, 620);
 
       viewport.handleResize();
@@ -1969,7 +1969,7 @@ describe('UpdrawViewport', () => {
       let isKeyboardOpenSpy: jest.SpyInstance;
 
       beforeEach(() => {
-        isKeyboardOpenSpy = jest.spyOn(UpdrawKeyboardHelper, 'isKeyboardOpen').mockReturnValue(true);
+        isKeyboardOpenSpy = jest.spyOn(UpmadeKeyboardHelper, 'isKeyboardOpen').mockReturnValue(true);
       });
 
       it('should pan back by the applied offset once the keyboard closes', () => {

@@ -1,21 +1,21 @@
 ---
 sidebar_label: Localization Terms
 displayed_sidebar: tutorialSidebar
-title: "Localization Terms | Updraw for Angular"
-description: "Reference for all built-in localization keys and their default English text in Updraw."
+title: "Localization Terms | Upmade for Angular"
+description: "Reference for all built-in localization keys and their default English text in Upmade."
 toc_max_heading_level: 4
 ---
 
 # Localization Terms
 
-This is the API reference for all built-in localization keys in Updraw. Every key has a default English text that can be overridden by custom locales.
+This is the API reference for all built-in localization keys in Upmade. Every key has a default English text that can be overridden by custom locales.
 
 Override selected keys by providing a partial custom locale. Keys you omit continue to use the default English text.
 
 ```ts
-import { UpdrawLocale } from '@updraw/angular-editor';
+import { UpmadeLocale } from '@upmade/angular-editor';
 
-const customEnglish: UpdrawLocale = {
+const customEnglish: UpmadeLocale = {
 	code: 'en',
 	label: 'English',
 	terms: {
@@ -24,11 +24,11 @@ const customEnglish: UpdrawLocale = {
 	},
 };
 
-customLocales: UpdrawLocale[] = [customEnglish];
+customLocales: UpmadeLocale[] = [customEnglish];
 ```
 
 ```html
-<updraw-editor [locales]="customLocales"></updraw-editor>
+<upmade-editor [locales]="customLocales"></upmade-editor>
 ```
 
 ## Built-in localization keys
@@ -124,7 +124,7 @@ customLocales: UpdrawLocale[] = [customEnglish];
 | settings.developer.showMigrationInfo.description | Display debug information about data migrations. |
 | settings.categories.about | About |
 | settings.about.title | About |
-| settings.about.description | Updraw - A drawing application |
+| settings.about.description | Upmade - A drawing application |
 
 ### Export dialog
 
@@ -203,7 +203,7 @@ customLocales: UpdrawLocale[] = [customEnglish];
 
 | Key | Default text |
 |------|--------------|
-| watermark.poweredBy | Powered by Updraw |
+| watermark.poweredBy | Powered by Upmade |
 
 ### Object type labels
 

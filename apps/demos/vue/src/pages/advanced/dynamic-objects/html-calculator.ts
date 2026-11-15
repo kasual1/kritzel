@@ -1,4 +1,4 @@
-import { UpdrawDynamicObject } from '@updraw/vue-editor'
+import { UpmadeDynamicObject } from '@upmade/vue-editor'
 import {
   calculatorOperatorLabels,
   createCalculatorInitialState,
@@ -123,10 +123,10 @@ export function createHtmlCalculator(initialState: CalculatorState): HtmlCalcula
   }
 }
 
-export function createHtmlCalculatorObject(): UpdrawDynamicObject {
+export function createHtmlCalculatorObject(): UpmadeDynamicObject {
   const placeholder = document.createElement('div')
   placeholder.textContent = 'Loading Calculator...'
-  const object = new UpdrawDynamicObject({
+  const object = new UpmadeDynamicObject({
     element: placeholder,
     rendererKey: HTML_CALCULATOR_RENDERER_KEY,
     rendererData: createCalculatorInitialState(),

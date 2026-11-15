@@ -1,7 +1,7 @@
-import { UpdrawText } from './text.class';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawKeyboardHelper } from '../../helpers/keyboard.helper';
-import { UpdrawDevicesHelper } from '../../helpers/devices.helper';
+import { UpmadeText } from './text.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeKeyboardHelper } from '../../helpers/keyboard.helper';
+import { UpmadeDevicesHelper } from '../../helpers/devices.helper';
 
 // Mock prosemirror modules
 jest.mock('prosemirror-state', () => ({
@@ -91,7 +91,7 @@ jest.mock('prosemirror-commands', () => ({
 }));
 
 jest.mock('../../helpers/keyboard.helper', () => ({
-  UpdrawKeyboardHelper: {
+  UpmadeKeyboardHelper: {
     disableInteractiveWidget: jest.fn(),
     enableInteractiveWidget: jest.fn(),
     forceHideKeyboard: jest.fn(),
@@ -99,15 +99,15 @@ jest.mock('../../helpers/keyboard.helper', () => ({
 }));
 
 jest.mock('../../helpers/devices.helper', () => ({
-  UpdrawDevicesHelper: {
+  UpmadeDevicesHelper: {
     isIOS: jest.fn(() => false),
     isTouchDevice: jest.fn(() => false),
   },
 }));
 
-describe('UpdrawText', () => {
-  let textObject: UpdrawText;
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadeText', () => {
+  let textObject: UpmadeText;
+  let mockCore: jest.Mocked<UpmadeCore>;
   let mockObjectsUpdate: jest.Mock;
   let mockObjectsConsolidate: jest.Mock;
   let mockSetState: jest.Mock;
@@ -116,7 +116,7 @@ describe('UpdrawText', () => {
   let mockEmitObjectsAdded: jest.Mock;
   let mockEmitObjectsUpdated: jest.Mock;
 
-  const createMockCore = (): jest.Mocked<UpdrawCore> => {
+  const createMockCore = (): jest.Mocked<UpmadeCore> => {
     const objectsUpdate = jest.fn();
     const objectsConsolidate = jest.fn();
     const setState = jest.fn();
@@ -169,14 +169,14 @@ describe('UpdrawText', () => {
       toolRegistry: {
         getTool: jest.fn(() => ({ name: 'text' })),
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
   };
 
   beforeEach(() => {
     mockCore = createMockCore();
 
     // Use static create method to properly initialize the text object
-    textObject = UpdrawText.create(mockCore, 12, 'Helvetica');
+    textObject = UpmadeText.create(mockCore, 12, 'Helvetica');
     textObject.translateX = 10;
     textObject.translateY = 20;
     textObject.fontColor = { light: '#ff0000', dark: '#ff0000' };
@@ -188,12 +188,12 @@ describe('UpdrawText', () => {
 
   describe('constructor', () => {
     it('should create a text object with default values when no config provided', () => {
-      const defaultText = new UpdrawText();
+      const defaultText = new UpmadeText();
 
       expect(defaultText.fontFamily).toBe('Arial');
       expect(defaultText.fontSize).toBe(8);
       expect(defaultText.fontColor).toEqual({ light: '#000000', dark: '#ffffff' });
-      expect(defaultText.__class__).toBe('UpdrawText');
+      expect(defaultText.__class__).toBe('UpmadeText');
       expect(defaultText.isEditable).toBe(true);
       expect(defaultText.isEditing).toBe(false);
       expect(defaultText.rows).toBe(1);
@@ -208,7 +208,7 @@ describe('UpdrawText', () => {
     });
 
     it('should convert constructor rotation from degrees to radians', () => {
-      const configuredText = new UpdrawText({
+      const configuredText = new UpmadeText({
         text: 'Hello',
         rotation: -90,
       });
@@ -219,7 +219,7 @@ describe('UpdrawText', () => {
 
   describe('static create', () => {
     it('should create a text object with core reference and workspace id', () => {
-      const createdText = UpdrawText.create(mockCore, 14, 'Georgia');
+      const createdText = UpmadeText.create(mockCore, 14, 'Georgia');
 
       expect(createdText._core).toBe(mockCore);
       expect(createdText.workspaceId).toBe('workspace-1');
@@ -229,8 +229,8 @@ describe('UpdrawText', () => {
     });
 
     it('should generate a unique id', () => {
-      const text1 = UpdrawText.create(mockCore);
-      const text2 = UpdrawText.create(mockCore);
+      const text1 = UpmadeText.create(mockCore);
+      const text2 = UpmadeText.create(mockCore);
 
       expect(text1.id).toBeDefined();
       expect(text2.id).toBeDefined();
@@ -238,19 +238,19 @@ describe('UpdrawText', () => {
     });
 
     it('should set transparent background', () => {
-      const createdText = UpdrawText.create(mockCore);
+      const createdText = UpmadeText.create(mockCore);
 
       expect(createdText.backgroundColor).toEqual({ light: 'transparent', dark: 'transparent' });
     });
 
     it('should create an editor', () => {
-      const createdText = UpdrawText.create(mockCore);
+      const createdText = UpmadeText.create(mockCore);
 
       expect(createdText.editor).toBeDefined();
     });
 
     it('should convert create rotation from degrees to radians', () => {
-      const createdText = UpdrawText.create(mockCore, 12, 'Helvetica', undefined, -90);
+      const createdText = UpmadeText.create(mockCore, 12, 'Helvetica', undefined, -90);
 
       expect(createdText.rotation).toBeCloseTo(-Math.PI / 2);
     });
@@ -499,7 +499,7 @@ describe('UpdrawText', () => {
 
     it('should scroll into view on iOS', () => {
       jest.useFakeTimers();
-      (UpdrawDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
+      (UpmadeDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
 
       const scrollIntoViewMock = jest.fn();
       textObject.editor!.dom.scrollIntoView = scrollIntoViewMock;
@@ -524,14 +524,14 @@ describe('UpdrawText', () => {
 
       textObject.edit();
 
-      expect(UpdrawKeyboardHelper.disableInteractiveWidget).not.toHaveBeenCalled();
+      expect(UpmadeKeyboardHelper.disableInteractiveWidget).not.toHaveBeenCalled();
       expect(textObject.uneditedObject).toBeNull();
     });
 
     it('should disable interactive widget', () => {
       textObject.edit();
 
-      expect(UpdrawKeyboardHelper.disableInteractiveWidget).toHaveBeenCalled();
+      expect(UpmadeKeyboardHelper.disableInteractiveWidget).toHaveBeenCalled();
     });
 
     it('should clone current object as uneditedObject', () => {
@@ -569,7 +569,7 @@ describe('UpdrawText', () => {
     it('should enable interactive widget', () => {
       textObject.edit();
 
-      expect(UpdrawKeyboardHelper.enableInteractiveWidget).toHaveBeenCalled();
+      expect(UpmadeKeyboardHelper.enableInteractiveWidget).toHaveBeenCalled();
     });
   });
 
@@ -764,7 +764,7 @@ describe('UpdrawText', () => {
     });
 
     it('should exclude uneditedObject from serialization', () => {
-      textObject.uneditedObject = textObject.clone() as UpdrawText;
+      textObject.uneditedObject = textObject.clone() as UpmadeText;
       const serialized = textObject.serialize();
 
       expect(serialized.uneditedObject).toBeUndefined();

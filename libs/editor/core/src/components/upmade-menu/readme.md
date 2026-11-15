@@ -1,4 +1,4 @@
-# updraw-menu
+# upmade-menu
 
 
 
@@ -9,8 +9,8 @@
 
 | Property | Attribute | Description | Type                     | Default     |
 | -------- | --------- | ----------- | ------------------------ | ----------- |
-| `items`  | --        |             | `IUpdrawMenuItem<any>[]` | `undefined` |
-| `parent` | --        |             | `IUpdrawMenuItem<any>`   | `null`      |
+| `items`  | --        |             | `IUpmadeMenuItem<any>[]` | `undefined` |
+| `parent` | --        |             | `IUpmadeMenuItem<any>`   | `null`      |
 
 
 ## Events
@@ -18,11 +18,11 @@
 | Event                 | Description | Type                                               |
 | --------------------- | ----------- | -------------------------------------------------- |
 | `close`               |             | `CustomEvent<void>`                                |
-| `itemCancel`          |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
-| `itemCloseChildMenu`  |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
-| `itemSave`            |             | `CustomEvent<IUpdrawMenuItem<any>>`                |
-| `itemSelect`          |             | `CustomEvent<IUpdrawMenuItemSelectEvent>`          |
-| `itemToggleChildMenu` |             | `CustomEvent<IUpdrawMenuItemToggleChildMenuEvent>` |
+| `itemCancel`          |             | `CustomEvent<IUpmadeMenuItem<any>>`                |
+| `itemCloseChildMenu`  |             | `CustomEvent<IUpmadeMenuItem<any>>`                |
+| `itemSave`            |             | `CustomEvent<IUpmadeMenuItem<any>>`                |
+| `itemSelect`          |             | `CustomEvent<IUpmadeMenuItemSelectEvent>`          |
+| `itemToggleChildMenu` |             | `CustomEvent<IUpmadeMenuItemToggleChildMenuEvent>` |
 
 
 ## Methods
@@ -58,24 +58,24 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [updraw-more-menu](../updraw-more-menu)
- - [updraw-split-button](../updraw-split-button)
- - [updraw-titlebar-menu](../updraw-titlebar-menu)
+ - [upmade-more-menu](../upmade-more-menu)
+ - [upmade-split-button](../upmade-split-button)
+ - [upmade-titlebar-menu](../upmade-titlebar-menu)
 
 ### Depends on
 
-- [updraw-menu-item](../updraw-menu-item)
+- [upmade-menu-item](../upmade-menu-item)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-menu --> updraw-menu-item
-  updraw-menu-item --> updraw-icon
-  updraw-menu-item --> updraw-portal
-  updraw-more-menu --> updraw-menu
-  updraw-split-button --> updraw-menu
-  updraw-titlebar-menu --> updraw-menu
-  style updraw-menu fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-menu --> upmade-menu-item
+  upmade-menu-item --> upmade-icon
+  upmade-menu-item --> upmade-portal
+  upmade-more-menu --> upmade-menu
+  upmade-split-button --> upmade-menu
+  upmade-titlebar-menu --> upmade-menu
+  style upmade-menu fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

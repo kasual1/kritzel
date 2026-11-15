@@ -1,23 +1,23 @@
-import { UpdrawEventHelper } from '../../helpers/event.helper';
-import { UpdrawBaseTool } from './base-tool.class';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
+import { UpmadeBaseTool } from './base-tool.class';
+import { UpmadeCore } from '../core/core.class';
 
 /**
  * Eraser tool for removing objects from the canvas.
  * Objects touched by the eraser during a drag gesture are marked for removal
  * and deleted when the gesture completes. Supports mouse, touch, and pen input.
  */
-export class UpdrawEraserTool extends UpdrawBaseTool {
+export class UpmadeEraserTool extends UpmadeBaseTool {
   override toolType = 'eraser' as const;
 
   /** Timeout handle for delayed touch start activation to prevent accidental erasing */
   touchStartTimeout: any = null;
 
   /**
-   * Creates a new instance of UpdrawEraserTool.
-   * @param core - The UpdrawCore instance that provides access to application state and functionality
+   * Creates a new instance of UpmadeEraserTool.
+   * @param core - The UpmadeCore instance that provides access to application state and functionality
    */
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     super(core);
   }
 
@@ -29,7 +29,7 @@ export class UpdrawEraserTool extends UpdrawBaseTool {
    */
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      if (UpdrawEventHelper.isLeftClick(event)) {
+      if (UpmadeEventHelper.isLeftClick(event)) {
         this._core.store.state.isErasing = true;
       }
     }

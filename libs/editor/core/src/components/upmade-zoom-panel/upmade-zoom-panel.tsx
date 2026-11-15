@@ -1,12 +1,12 @@
 ﻿import { Component, Event, EventEmitter, h, Host, Prop } from '@stencil/core';
-import { UpdrawTermKey } from '@updraw/core';
+import { UpmadeTermKey } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-zoom-panel',
-  styleUrl: 'updraw-zoom-panel.css',
+  tag: 'upmade-zoom-panel',
+  styleUrl: 'upmade-zoom-panel.css',
   shadow: true,
 })
-export class UpdrawZoomPanel {
+export class UpmadeZoomPanel {
   /** Whether the zoom panel is visible. */
   @Prop() visible: boolean = true;
 
@@ -17,7 +17,7 @@ export class UpdrawZoomPanel {
   @Prop() zoomPercent: number = 100;
 
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpmadeTermKey, string>> = {};
 
   /** Emitted when the zoom-in button is clicked. */
   @Event() zoomIn!: EventEmitter<void>;
@@ -46,11 +46,11 @@ export class UpdrawZoomPanel {
       <Host>
         <div class={{ panel: true, visible: this.visible }}>
           <button class="zoom-button" type="button" aria-label={this.terms['zoom.zoomOut'] ?? 'Zoom out'} disabled={this.disabled} onClick={this.handleZoomOut}>
-            <updraw-icon name="minus"></updraw-icon>
+            <upmade-icon name="minus"></upmade-icon>
           </button>
           <span class="zoom-level" aria-live="polite">{this.normalizedZoomPercent}%</span>
           <button class="zoom-button" type="button" aria-label={this.terms['zoom.zoomIn'] ?? 'Zoom in'} disabled={this.disabled} onClick={this.handleZoomIn}>
-            <updraw-icon name="plus"></updraw-icon>
+            <upmade-icon name="plus"></upmade-icon>
           </button>
         </div>
       </Host>

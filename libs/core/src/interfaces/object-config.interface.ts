@@ -1,4 +1,4 @@
-import { UpdrawBaseObject } from '../classes/objects/base-object.class';
+import { UpmadeBaseObject } from '../classes/objects/base-object.class';
 
 /**
  * Configures how objects behave, in one place for all objects.
@@ -6,26 +6,26 @@ import { UpdrawBaseObject } from '../classes/objects/base-object.class';
  * Every option is a fixed value for every object, or a function deciding per object.
  * Functions are called synchronously while the engine renders or handles input, so they must be
  * cheap and must not return a promise. A function that throws resolves to the option's default.
- * Check types with `instanceof` or by comparing `object.__class__` (e.g. `'UpdrawGroup'`).
+ * Check types with `instanceof` or by comparing `object.__class__` (e.g. `'UpmadeGroup'`).
  *
  * Restrictions combine with the persisted flags of each object: an object can only be rotated
  * when both its own `isRotatable` flag and `isRotatable` here allow it.
  */
-export interface UpdrawObjectConfig {
+export interface UpmadeObjectConfig {
   /**
    * Whether an object gets a titlebar. Defaults to `false`; titlebars also require the
    * `objectTitlebar` prop. Called for every visible top-level object on every render.
    * Objects inside a group never get their own titlebar; the group is passed in instead.
    */
-  hasTitlebar?: boolean | ((object: UpdrawBaseObject) => boolean);
+  hasTitlebar?: boolean | ((object: UpmadeBaseObject) => boolean);
   /**
    * Whether an object can be rotated. Defaults to `true`. A group can only be rotated when
    * the group and all objects inside it can be rotated.
    */
-  isRotatable?: boolean | ((object: UpdrawBaseObject) => boolean);
+  isRotatable?: boolean | ((object: UpmadeBaseObject) => boolean);
   /**
    * Whether an object can be resized. Defaults to `true`. A group can only be resized when
    * the group and all objects inside it can be resized.
    */
-  isResizable?: boolean | ((object: UpdrawBaseObject) => boolean);
+  isResizable?: boolean | ((object: UpmadeBaseObject) => boolean);
 }

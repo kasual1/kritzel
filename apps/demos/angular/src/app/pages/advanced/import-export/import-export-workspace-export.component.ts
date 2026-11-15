@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal, viewChild } from '@angular/core';
-import { UpdrawEditor, UpdrawWorkspace } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeWorkspace } from '@upmade/angular-editor';
 import { InfoPanelComponent } from '../../../components/info-panel.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -8,7 +8,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-import-export-workspace-export',
-  imports: [InfoPanelComponent, UpdrawEditor, ToolbarComponent],
+  imports: [InfoPanelComponent, UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -17,7 +17,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
     </app-toolbar>
     <div class="content">
       <div class="editor-wrap">
-        <updraw-editor
+        <upmade-editor
           editorId="import-export-workspace-export"
           [theme]="'light'"
           [themes]="themes"
@@ -26,7 +26,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
           [isZoomingEnabled]="false"
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"
-        ></updraw-editor>
+        ></upmade-editor>
       </div>
       <app-info-panel>
         <h3>Exported Workspace</h3>
@@ -51,7 +51,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         flex: 1 1 60%;
         position: relative;
       }
-      updraw-editor {
+      upmade-editor {
         display: block;
         height: 100%;
       }
@@ -70,12 +70,12 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   ],
 })
 export class ImportExportWorkspaceExportComponent {
-  editor = viewChild(UpdrawEditor);
+  editor = viewChild(UpmadeEditor);
 
   jsonPreview = signal('Click "Preview as JSON" to see the exported workspace.');
   themes = [angularThemeLight, angularThemeDark];
   workspaces = signal([
-    new UpdrawWorkspace({
+    new UpmadeWorkspace({
       id: 'workspace-export',
       name: 'Workspace Export',
       objects: createSeedObjects(),

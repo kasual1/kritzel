@@ -143,21 +143,21 @@ function createQueryRunner(rows: FakeDocumentRow[]) {
 
 describe('legacy brand helpers', () => {
   it('maps document ids between the legacy and current prefix', () => {
-    expect(toCurrentDocumentId(LEGACY_WORKSPACE_ID)).toBe('updraw-workspace-1');
-    expect(toCurrentDocumentId('updraw-workspace-1')).toBeNull();
-    expect(toLegacyDocumentId('updraw-workspace-1')).toBe(LEGACY_WORKSPACE_ID);
+    expect(toCurrentDocumentId(LEGACY_WORKSPACE_ID)).toBe('upmade-workspace-1');
+    expect(toCurrentDocumentId('upmade-workspace-1')).toBeNull();
+    expect(toLegacyDocumentId('upmade-workspace-1')).toBe(LEGACY_WORKSPACE_ID);
     expect(toLegacyDocumentId('other-workspace-1')).toBeNull();
   });
 
   it('normalizes legacy class names', () => {
     expect(normalizeLegacyClassName(LEGACY_CUSTOM_ELEMENT)).toBe(
-      'UpdrawDynamicObject',
+      'UpmadeDynamicObject',
     );
     expect(normalizeLegacyClassName(LEGACY_DYNAMIC_OBJECT)).toBe(
-      'UpdrawDynamicObject',
+      'UpmadeDynamicObject',
     );
-    expect(normalizeLegacyClassName(LEGACY_PATH)).toBe('UpdrawPath');
-    expect(normalizeLegacyClassName('UpdrawPath')).toBe('UpdrawPath');
+    expect(normalizeLegacyClassName(LEGACY_PATH)).toBe('UpmadePath');
+    expect(normalizeLegacyClassName('UpmadePath')).toBe('UpmadePath');
     expect(normalizeLegacyClassName('constructor')).toBe('constructor');
   });
 
@@ -167,7 +167,7 @@ describe('legacy brand helpers', () => {
       id: 'group-1',
       children: [
         { __class__: LEGACY_CUSTOM_ELEMENT, id: 'child-1', html: '<p></p>' },
-        { __class__: 'UpdrawText', id: 'child-2' },
+        { __class__: 'UpmadeText', id: 'child-2' },
       ],
       style: { stroke: '#000' },
     };
@@ -177,11 +177,11 @@ describe('legacy brand helpers', () => {
 
     expect(group).toEqual(snapshot);
     expect(renamed).toEqual({
-      __class__: 'UpdrawGroup',
+      __class__: 'UpmadeGroup',
       id: 'group-1',
       children: [
-        { __class__: 'UpdrawDynamicObject', id: 'child-1', html: '<p></p>' },
-        { __class__: 'UpdrawText', id: 'child-2' },
+        { __class__: 'UpmadeDynamicObject', id: 'child-1', html: '<p></p>' },
+        { __class__: 'UpmadeText', id: 'child-2' },
       ],
       style: { stroke: '#000' },
     });
@@ -190,7 +190,7 @@ describe('legacy brand helpers', () => {
   });
 
   it('returns the same reference when nothing is legacy', () => {
-    const value = { __class__: 'UpdrawPath', points: [[0, 0]] };
+    const value = { __class__: 'UpmadePath', points: [[0, 0]] };
     expect(renameLegacyClasses(value)).toBe(value);
   });
 
@@ -212,10 +212,10 @@ describe('legacy brand helpers', () => {
 
     expect(renamed).not.toBeNull();
     expect(decodeDocument(renamed!)).toEqual({
-      objects: { 'path-1': { __class__: 'UpdrawPath', id: 'path-1' } },
+      objects: { 'path-1': { __class__: 'UpmadePath', id: 'path-1' } },
       workspaces: {
         'workspace-1': {
-          __class__: 'UpdrawWorkspace',
+          __class__: 'UpmadeWorkspace',
           id: 'workspace-1',
           name: 'Board',
         },
@@ -226,7 +226,7 @@ describe('legacy brand helpers', () => {
 
   it('returns null for a document without legacy classes', () => {
     const data = createWorkspaceDocument({
-      'path-1': { __class__: 'UpdrawPath', id: 'path-1' },
+      'path-1': { __class__: 'UpmadePath', id: 'path-1' },
     });
     expect(renameLegacyClassesInDocument(data)).toBeNull();
   });
@@ -265,14 +265,14 @@ describe('RenameLegacyBrandDocumentIds migration', () => {
 
     await migration.up(queryRunner);
 
-    expect([...documents.keys()]).toEqual(['updraw-workspace-1']);
-    const migrated = documents.get('updraw-workspace-1')!;
+    expect([...documents.keys()]).toEqual(['upmade-workspace-1']);
+    const migrated = documents.get('upmade-workspace-1')!;
     expect(migrated).toMatchObject({ public: true, user_id: 'owner' });
     expect(decodeDocument(migrated.data!).objects).toEqual({
       'group-1': {
-        __class__: 'UpdrawGroup',
+        __class__: 'UpmadeGroup',
         id: 'group-1',
-        children: [{ __class__: 'UpdrawDynamicObject', id: 'child-1' }],
+        children: [{ __class__: 'UpmadeDynamicObject', id: 'child-1' }],
       },
     });
   });
@@ -287,9 +287,9 @@ describe('RenameLegacyBrandDocumentIds migration', () => {
         { user_id: 'owner', public: true },
       ),
       row(
-        'updraw-workspace-1',
+        'upmade-workspace-1',
         createWorkspaceDocument({
-          'path-2': { __class__: 'UpdrawPath', id: 'path-2' },
+          'path-2': { __class__: 'UpmadePath', id: 'path-2' },
         }),
         { user_id: 'owner', public: false, type: 'state' },
       ),
@@ -297,23 +297,23 @@ describe('RenameLegacyBrandDocumentIds migration', () => {
 
     await migration.up(queryRunner);
 
-    expect([...documents.keys()]).toEqual(['updraw-workspace-1']);
-    const merged = documents.get('updraw-workspace-1')!;
+    expect([...documents.keys()]).toEqual(['upmade-workspace-1']);
+    const merged = documents.get('upmade-workspace-1')!;
     expect(merged).toMatchObject({
       user_id: 'owner',
       public: true,
       type: 'workspace',
     });
     expect(decodeDocument(merged.data!).objects).toEqual({
-      'path-1': { __class__: 'UpdrawPath', id: 'path-1' },
-      'path-2': { __class__: 'UpdrawPath', id: 'path-2' },
+      'path-1': { __class__: 'UpmadePath', id: 'path-1' },
+      'path-2': { __class__: 'UpmadePath', id: 'path-2' },
     });
   });
 
   it('sets a target created by another user aside instead of merging it', async () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const squatted = createWorkspaceDocument({
-      'path-2': { __class__: 'UpdrawPath', id: 'path-2' },
+      'path-2': { __class__: 'UpmadePath', id: 'path-2' },
     });
     const { queryRunner, documents } = createQueryRunner([
       row(
@@ -323,23 +323,23 @@ describe('RenameLegacyBrandDocumentIds migration', () => {
         }),
         { user_id: 'owner', public: true },
       ),
-      row('updraw-workspace-1', squatted, { user_id: 'someone-else' }),
-      row('rename-conflict-updraw-workspace-1', null, { user_id: 'x' }),
+      row('upmade-workspace-1', squatted, { user_id: 'someone-else' }),
+      row('rename-conflict-upmade-workspace-1', null, { user_id: 'x' }),
     ]);
 
     await migration.up(queryRunner);
 
     expect([...documents.keys()].sort()).toEqual([
-      'rename-conflict-2-updraw-workspace-1',
-      'rename-conflict-updraw-workspace-1',
-      'updraw-workspace-1',
+      'rename-conflict-2-upmade-workspace-1',
+      'rename-conflict-upmade-workspace-1',
+      'upmade-workspace-1',
     ]);
-    const original = documents.get('updraw-workspace-1')!;
+    const original = documents.get('upmade-workspace-1')!;
     expect(original).toMatchObject({ user_id: 'owner', public: true });
     expect(decodeDocument(original.data!).objects).toEqual({
-      'path-1': { __class__: 'UpdrawPath', id: 'path-1' },
+      'path-1': { __class__: 'UpmadePath', id: 'path-1' },
     });
-    expect(documents.get('rename-conflict-2-updraw-workspace-1')).toMatchObject(
+    expect(documents.get('rename-conflict-2-upmade-workspace-1')).toMatchObject(
       {
         user_id: 'someone-else',
         data: squatted,
@@ -353,34 +353,34 @@ describe('RenameLegacyBrandDocumentIds migration', () => {
     const target = createWorkspaceDocument({ b: { id: 'b' } });
     const { queryRunner, documents, dataUpdates } = createQueryRunner([
       row(LEGACY_WORKSPACE_ID, null),
-      row('updraw-workspace-1', target),
+      row('upmade-workspace-1', target),
       row(LEGACY_APP_STATE_ID, null, { type: 'state' }),
     ]);
 
     await migration.up(queryRunner);
 
     expect([...documents.keys()].sort()).toEqual([
-      'updraw-app-state-user-1',
-      'updraw-workspace-1',
+      'upmade-app-state-user-1',
+      'upmade-workspace-1',
     ]);
     // The original (legacy) row is kept and receives the target's state.
-    expect(documents.get('updraw-workspace-1')!.data).toEqual(target);
-    expect(documents.get('updraw-app-state-user-1')!.data).toBeNull();
+    expect(documents.get('upmade-workspace-1')!.data).toEqual(target);
+    expect(documents.get('upmade-app-state-user-1')!.data).toBeNull();
     expect(dataUpdates()).toBe(1);
   });
 
   it('only rewrites documents that contain legacy classes', async () => {
     const current = createWorkspaceDocument({
-      'path-1': { __class__: 'UpdrawPath', id: 'path-1' },
+      'path-1': { __class__: 'UpmadePath', id: 'path-1' },
     });
     const { queryRunner, documents, dataUpdates } = createQueryRunner([
-      row('updraw-workspace-1', current),
+      row('upmade-workspace-1', current),
     ]);
 
     await migration.up(queryRunner);
 
     expect(dataUpdates()).toBe(0);
-    expect(documents.get('updraw-workspace-1')!.data).toBe(current);
+    expect(documents.get('upmade-workspace-1')!.data).toBe(current);
   });
 
   it('leaves undecodable documents in place', async () => {
@@ -389,16 +389,16 @@ describe('RenameLegacyBrandDocumentIds migration', () => {
     const target = createWorkspaceDocument({ b: { id: 'b' } });
     const { queryRunner, documents, dataUpdates } = createQueryRunner([
       row(LEGACY_WORKSPACE_ID, corrupt),
-      row('updraw-workspace-1', target),
+      row('upmade-workspace-1', target),
     ]);
 
     await migration.up(queryRunner);
 
     expect([...documents.keys()]).toEqual([
       LEGACY_WORKSPACE_ID,
-      'updraw-workspace-1',
+      'upmade-workspace-1',
     ]);
-    expect(documents.get('updraw-workspace-1')!.data).toBe(target);
+    expect(documents.get('upmade-workspace-1')!.data).toBe(target);
     expect(dataUpdates()).toBe(0);
     expect(warn).toHaveBeenCalledTimes(2);
     warn.mockRestore();
@@ -406,8 +406,8 @@ describe('RenameLegacyBrandDocumentIds migration', () => {
 
   it('reverts the id rename unless the legacy id exists', async () => {
     const { queryRunner, documents } = createQueryRunner([
-      row('updraw-workspace-1', null),
-      row('updraw-app-state-user-1', null),
+      row('upmade-workspace-1', null),
+      row('upmade-app-state-user-1', null),
       row(LEGACY_APP_STATE_ID, null),
       row('other-document', null),
     ]);
@@ -418,7 +418,7 @@ describe('RenameLegacyBrandDocumentIds migration', () => {
       LEGACY_APP_STATE_ID,
       LEGACY_WORKSPACE_ID,
       'other-document',
-      'updraw-app-state-user-1',
+      'upmade-app-state-user-1',
     ]);
   });
 });

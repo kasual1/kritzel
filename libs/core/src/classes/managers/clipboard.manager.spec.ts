@@ -1,9 +1,9 @@
-import { UpdrawClipboardManager } from './clipboard.manager';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawLine } from '../objects/line.class';
-import { UpdrawReviver } from '../core/reviver.class';
-import { UpdrawImage } from '../objects/image.class';
+import { UpmadeClipboardManager } from './clipboard.manager';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeLine } from '../objects/line.class';
+import { UpmadeReviver } from '../core/reviver.class';
+import { UpmadeImage } from '../objects/image.class';
 import imageCompression from 'browser-image-compression';
 
 jest.mock('browser-image-compression', () => ({
@@ -12,7 +12,7 @@ jest.mock('browser-image-compression', () => ({
 }));
 
 jest.mock('../objects/selection-group.class', () => ({
-  UpdrawSelectionGroup: {
+  UpmadeSelectionGroup: {
     create: jest.fn(),
   },
 }));
@@ -22,12 +22,12 @@ const withPrototype = (cls: { prototype: object }, fields: Record<string, any>):
 
 /** Prototypes for fake revived objects, keyed by their `__class__`. */
 const PROTOTYPES_BY_CLASS: Record<string, { prototype: object }> = {
-  UpdrawGroup,
-  UpdrawLine,
+  UpmadeGroup,
+  UpmadeLine,
 };
 
-describe('UpdrawClipboardManager', () => {
-  let manager: UpdrawClipboardManager;
+describe('UpmadeClipboardManager', () => {
+  let manager: UpmadeClipboardManager;
   let mockCore: any;
 
   beforeEach(() => {
@@ -73,7 +73,7 @@ describe('UpdrawClipboardManager', () => {
       },
     };
 
-    manager = new UpdrawClipboardManager(mockCore);
+    manager = new UpmadeClipboardManager(mockCore);
   });
 
   afterEach(() => {
@@ -81,11 +81,11 @@ describe('UpdrawClipboardManager', () => {
   });
 
   describe('copy', () => {
-    const PAYLOAD_PREFIX = 'updraw-clipboard/v1:';
+    const PAYLOAD_PREFIX = 'upmade-clipboard/v1:';
 
-    it('writes an updraw clipboard payload to the DOM clipboard event, sorted by zIndex', () => {
-      const objA = { id: 'a', zIndex: 5, serialize: jest.fn().mockReturnValue({ id: 'a', __class__: 'UpdrawShape' }) } as any;
-      const objB = { id: 'b', zIndex: 1, serialize: jest.fn().mockReturnValue({ id: 'b', __class__: 'UpdrawShape' }) } as any;
+    it('writes an upmade clipboard payload to the DOM clipboard event, sorted by zIndex', () => {
+      const objA = { id: 'a', zIndex: 5, serialize: jest.fn().mockReturnValue({ id: 'a', __class__: 'UpmadeShape' }) } as any;
+      const objB = { id: 'b', zIndex: 1, serialize: jest.fn().mockReturnValue({ id: 'b', __class__: 'UpmadeShape' }) } as any;
       const setData = jest.fn();
 
       mockCore.store.selectionGroup = { objects: [objA, objB] };
@@ -103,13 +103,13 @@ describe('UpdrawClipboardManager', () => {
     });
 
     it('embeds group children under __children__', () => {
-      const child = { id: 'child', zIndex: 0, serialize: jest.fn().mockReturnValue({ id: 'child', __class__: 'UpdrawShape' }) } as any;
+      const child = { id: 'child', zIndex: 0, serialize: jest.fn().mockReturnValue({ id: 'child', __class__: 'UpmadeShape' }) } as any;
       // Without a core, a group's children are its pending children.
-      const group = withPrototype(UpdrawGroup, {
+      const group = withPrototype(UpmadeGroup, {
         id: 'group',
         zIndex: 1,
         _pendingChildren: [child],
-        serialize: jest.fn().mockReturnValue({ id: 'group', __class__: 'UpdrawGroup' }),
+        serialize: jest.fn().mockReturnValue({ id: 'group', __class__: 'UpmadeGroup' }),
       });
       const setData = jest.fn();
 
@@ -133,7 +133,7 @@ describe('UpdrawClipboardManager', () => {
     });
 
     it('mirrors the copied payload into the in-memory session buffer', () => {
-      const obj = { id: 'a', zIndex: 1, serialize: jest.fn().mockReturnValue({ id: 'a', __class__: 'UpdrawShape' }) } as any;
+      const obj = { id: 'a', zIndex: 1, serialize: jest.fn().mockReturnValue({ id: 'a', __class__: 'UpmadeShape' }) } as any;
       mockCore.store.selectionGroup = { objects: [obj] };
 
       manager.copy({ clipboardData: { setData: jest.fn() } } as any);
@@ -154,7 +154,7 @@ describe('UpdrawClipboardManager', () => {
 
     it('copies then deletes selected objects', () => {
       const setData = jest.fn();
-      const obj = { id: 'obj-1', zIndex: 2, serialize: jest.fn().mockReturnValue({ id: 'obj-1', __class__: 'UpdrawShape' }) } as any;
+      const obj = { id: 'obj-1', zIndex: 2, serialize: jest.fn().mockReturnValue({ id: 'obj-1', __class__: 'UpmadeShape' }) } as any;
       mockCore.store.selectionGroup = { objects: [obj] };
 
       manager.cut({ clipboardData: { setData } } as any);
@@ -165,7 +165,7 @@ describe('UpdrawClipboardManager', () => {
   });
 
   describe('paste', () => {
-    const PAYLOAD_PREFIX = 'updraw-clipboard/v1:';
+    const PAYLOAD_PREFIX = 'upmade-clipboard/v1:';
 
     /** Fake revived object; gets the prototype of the class named by `__class__` (if any) so `instanceof` checks match. */
     const makeRevived = (overrides: Record<string, any> = {}): any => {
@@ -222,7 +222,7 @@ describe('UpdrawClipboardManager', () => {
 
     it('is a no-op when there is no active workspace', async () => {
       mockCore.store.state.activeWorkspace = null;
-      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(makeRevived());
+      jest.spyOn(UpmadeReviver.prototype, 'revive').mockReturnValue(makeRevived());
 
       await manager.paste(undefined, undefined);
 
@@ -233,12 +233,12 @@ describe('UpdrawClipboardManager', () => {
 
     it('revives, regenerates ids and inserts objects from a DOM clipboard payload', async () => {
       const revived = makeRevived();
-      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(revived);
+      jest.spyOn(UpmadeReviver.prototype, 'revive').mockReturnValue(revived);
 
       const selectionGroup = makeSelectionGroup();
-      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
+      (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
 
-      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpdrawShape' }] })}`);
+      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpmadeShape' }] })}`);
 
       await manager.paste(undefined, undefined);
 
@@ -261,8 +261,8 @@ describe('UpdrawClipboardManager', () => {
 
     it('pastes payloads copied before the rename', async () => {
       const revived = makeRevived();
-      const revive = jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(revived);
-      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      const revive = jest.spyOn(UpmadeReviver.prototype, 'revive').mockReturnValue(revived);
+      (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
       setClipboardText(`kritzel-clipboard/v1:${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`);
 
@@ -274,17 +274,17 @@ describe('UpdrawClipboardManager', () => {
 
     it('drops anchors to external objects when pasting a line-only clipboard payload', async () => {
       const revivedLine = makeRevived({
-        __class__: 'UpdrawLine',
+        __class__: 'UpmadeLine',
         id: 'line-1',
         startAnchor: { objectId: 'external-shape' },
         endAnchor: { objectId: 'external-shape-2' },
         generateId: jest.fn().mockReturnValue('fresh-line-1'),
       });
 
-      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(revivedLine);
-      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      jest.spyOn(UpmadeReviver.prototype, 'revive').mockReturnValue(revivedLine);
+      (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
-      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'line-1', __class__: 'UpdrawLine' }] })}`);
+      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'line-1', __class__: 'UpmadeLine' }] })}`);
 
       await manager.paste(undefined, undefined);
 
@@ -294,22 +294,22 @@ describe('UpdrawClipboardManager', () => {
 
     it('remaps anchors between copied lines when pasting a line-only clipboard payload', async () => {
       const firstLine = makeRevived({
-        __class__: 'UpdrawLine',
+        __class__: 'UpmadeLine',
         id: 'line-1',
         endAnchor: { objectId: 'line-2' },
         generateId: jest.fn().mockReturnValue('fresh-line-1'),
       });
       const secondLine = makeRevived({
-        __class__: 'UpdrawLine',
+        __class__: 'UpmadeLine',
         id: 'line-2',
         generateId: jest.fn().mockReturnValue('fresh-line-2'),
       });
 
-      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValueOnce(firstLine).mockReturnValueOnce(secondLine);
-      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      jest.spyOn(UpmadeReviver.prototype, 'revive').mockReturnValueOnce(firstLine).mockReturnValueOnce(secondLine);
+      (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
       setClipboardText(
-        `${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'line-1', __class__: 'UpdrawLine' }, { id: 'line-2', __class__: 'UpdrawLine' }] })}`,
+        `${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'line-1', __class__: 'UpmadeLine' }, { id: 'line-2', __class__: 'UpmadeLine' }] })}`,
       );
 
       await manager.paste(undefined, undefined);
@@ -319,13 +319,13 @@ describe('UpdrawClipboardManager', () => {
 
     it('reads the async Clipboard API when no DOM event is provided', async () => {
       const revived = makeRevived();
-      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(revived);
-      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      jest.spyOn(UpmadeReviver.prototype, 'revive').mockReturnValue(revived);
+      (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
       Object.defineProperty(navigator, 'clipboard', {
         value: {
           read: jest.fn().mockResolvedValue([]),
-          readText: jest.fn().mockResolvedValue(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpdrawShape' }] })}`),
+          readText: jest.fn().mockResolvedValue(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpmadeShape' }] })}`),
         },
         configurable: true,
       });
@@ -340,8 +340,8 @@ describe('UpdrawClipboardManager', () => {
 
     it('requests clipboard-read permission when the current state is not yet granted', async () => {
       const revived = makeRevived();
-      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(revived);
-      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      jest.spyOn(UpmadeReviver.prototype, 'revive').mockReturnValue(revived);
+      (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
       mockCore.permissionManager.checkPermission.mockResolvedValueOnce('prompt');
       mockCore.permissionManager.requestPermission.mockResolvedValueOnce('granted');
@@ -349,7 +349,7 @@ describe('UpdrawClipboardManager', () => {
       Object.defineProperty(navigator, 'clipboard', {
         value: {
           read: jest.fn().mockResolvedValue([]),
-          readText: jest.fn().mockResolvedValue(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpdrawShape' }] })}`),
+          readText: jest.fn().mockResolvedValue(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpmadeShape' }] })}`),
         },
         configurable: true,
       });
@@ -367,8 +367,8 @@ describe('UpdrawClipboardManager', () => {
       const imageObject = makeRevived();
 
       (imageCompression as unknown as jest.Mock).mockResolvedValue(compressedFile);
-      jest.spyOn(UpdrawImage, 'fromBlob').mockResolvedValue(imageObject);
-      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      jest.spyOn(UpmadeImage, 'fromBlob').mockResolvedValue(imageObject);
+      (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
       await manager.paste(undefined, undefined, {
         clipboardData: {
@@ -379,7 +379,7 @@ describe('UpdrawClipboardManager', () => {
       } as any);
 
       expect(imageCompression).toHaveBeenCalledWith(imageFile, { maxWidthOrHeight: 1200 });
-      expect(UpdrawImage.fromBlob).toHaveBeenCalledWith(mockCore, compressedFile, { translateX: 0, translateY: 0 });
+      expect(UpmadeImage.fromBlob).toHaveBeenCalledWith(mockCore, compressedFile, { translateX: 0, translateY: 0 });
       expect(mockCore.permissionManager.checkPermission).not.toHaveBeenCalled();
       expect(mockCore.addObject).toHaveBeenCalledWith(imageObject);
     });
@@ -388,8 +388,8 @@ describe('UpdrawClipboardManager', () => {
       const gifFile = new File(['gif-data'], 'animated.gif', { type: 'image/gif' });
       const imageObject = makeRevived();
 
-      jest.spyOn(UpdrawImage, 'fromBlob').mockResolvedValue(imageObject);
-      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      jest.spyOn(UpmadeImage, 'fromBlob').mockResolvedValue(imageObject);
+      (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
       await manager.paste(undefined, undefined, {
         clipboardData: {
@@ -400,17 +400,17 @@ describe('UpdrawClipboardManager', () => {
       } as any);
 
       expect(imageCompression).not.toHaveBeenCalled();
-      expect(UpdrawImage.fromBlob).toHaveBeenCalledWith(mockCore, gifFile, { translateX: 0, translateY: 0 });
+      expect(UpmadeImage.fromBlob).toHaveBeenCalledWith(mockCore, gifFile, { translateX: 0, translateY: 0 });
       expect(mockCore.addObject).toHaveBeenCalledWith(imageObject);
     });
 
     it('keeps an explicit paste position', async () => {
       const revived = makeRevived();
-      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValue(revived);
+      jest.spyOn(UpmadeReviver.prototype, 'revive').mockReturnValue(revived);
       const selectionGroup = makeSelectionGroup();
-      (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
+      (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
 
-      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpdrawShape' }] })}`);
+      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpmadeShape' }] })}`);
 
       await manager.paste(300, 400);
 
@@ -419,13 +419,13 @@ describe('UpdrawClipboardManager', () => {
     });
 
     it('cascades successive same-content pastes', async () => {
-      (UpdrawSelectionGroup.create as jest.Mock).mockImplementation(() => makeSelectionGroup());
+      (UpmadeSelectionGroup.create as jest.Mock).mockImplementation(() => makeSelectionGroup());
 
       const first = makeRevived();
       const second = makeRevived();
-      jest.spyOn(UpdrawReviver.prototype, 'revive').mockReturnValueOnce(first).mockReturnValueOnce(second);
+      jest.spyOn(UpmadeReviver.prototype, 'revive').mockReturnValueOnce(first).mockReturnValueOnce(second);
 
-      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpdrawShape' }] })}`);
+      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'UpmadeShape' }] })}`);
 
       await manager.paste(undefined, undefined);
       await manager.paste(undefined, undefined);
@@ -444,14 +444,14 @@ describe('UpdrawClipboardManager', () => {
       beforeEach(() => {
         inserted = {};
         mockCore.addObject.mockImplementation((object: any) => (inserted[object.id] = object.zIndex));
-          (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+          (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
       });
 
       /** Puts the entries on the clipboard and lets the reviver return a matching object (keeping its id) per entry. */
       const setClipboardObjects = (entries: PasteEntry[]): void => {
         const revivedById: Record<string, any> = {};
         const serialize = (entry: PasteEntry): Record<string, any> => {
-          const __class__ = entry.children ? 'UpdrawGroup' : 'UpdrawShape';
+          const __class__ = entry.children ? 'UpmadeGroup' : 'UpmadeShape';
           revivedById[entry.id] = makeRevived({
             __class__,
             id: entry.id,
@@ -463,7 +463,7 @@ describe('UpdrawClipboardManager', () => {
         };
         const objects = entries.map(serialize);
 
-        jest.spyOn(UpdrawReviver.prototype, 'revive').mockImplementation((data: any) => revivedById[data.id]);
+        jest.spyOn(UpmadeReviver.prototype, 'revive').mockImplementation((data: any) => revivedById[data.id]);
         setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects })}`);
       };
 
@@ -524,7 +524,7 @@ describe('UpdrawClipboardManager', () => {
           [first, makeRevived({ id: 'img-1', zIndex: 10 })],
           [second, makeRevived({ id: 'img-2', zIndex: 10 })],
         ]);
-        jest.spyOn(UpdrawImage, 'fromBlob').mockImplementation(async (_core: any, file: any) => images.get(file));
+        jest.spyOn(UpmadeImage, 'fromBlob').mockImplementation(async (_core: any, file: any) => images.get(file));
 
         await manager.paste(undefined, undefined, {
           clipboardData: {

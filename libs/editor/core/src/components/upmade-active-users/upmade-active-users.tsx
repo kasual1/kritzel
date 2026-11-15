@@ -1,24 +1,24 @@
 ﻿import { Component, Host, h, Prop } from '@stencil/core';
-import { IUpdrawUser, UpdrawAgentPresence, UpdrawRemoteAgentPresence } from '@updraw/core';
+import { IUpmadeUser, UpmadeAgentPresence, UpmadeRemoteAgentPresence } from '@upmade/core';
 
-type StackEntry = { kind: 'user'; user: IUpdrawUser } | { kind: 'agent'; agent: UpdrawAgentPresence | UpdrawRemoteAgentPresence };
+type StackEntry = { kind: 'user'; user: IUpmadeUser } | { kind: 'agent'; agent: UpmadeAgentPresence | UpmadeRemoteAgentPresence };
 
 @Component({
-  tag: 'updraw-active-users',
-  styleUrl: 'updraw-active-users.css',
+  tag: 'upmade-active-users',
+  styleUrl: 'upmade-active-users.css',
   shadow: true,
 })
-export class UpdrawActiveUsers {
+export class UpmadeActiveUsers {
   /**
    * Array of active users to display
    */
-  @Prop() users: IUpdrawUser[] = [];
+  @Prop() users: IUpmadeUser[] = [];
 
   /**
    * Agents to display after the users: local agents and agents of collaborators. Shown with a bot badge,
    * a ring while they work and their status in the tooltip.
    */
-  @Prop() agents: (UpdrawAgentPresence | UpdrawRemoteAgentPresence)[] = [];
+  @Prop() agents: (UpmadeAgentPresence | UpmadeRemoteAgentPresence)[] = [];
 
   /**
    * Avatar size in pixels
@@ -35,7 +35,7 @@ export class UpdrawActiveUsers {
    */
   @Prop() overlap: number = 20;
 
-  private getDisplayName(user: IUpdrawUser): string {
+  private getDisplayName(user: IUpmadeUser): string {
     return (
       user.displayName ??
       ([user.firstName, user.lastName].filter(Boolean).join(' ') ||
@@ -103,7 +103,7 @@ export class UpdrawActiveUsers {
                   ...(isAgent ? { '--agent-color': entry.agent.color } : {}),
                 }}
               >
-                <updraw-avatar user={entry.kind === 'user' ? entry.user : entry.agent} size={this.avatarSize}></updraw-avatar>
+                <upmade-avatar user={entry.kind === 'user' ? entry.user : entry.agent} size={this.avatarSize}></upmade-avatar>
                 {isAgent && (
                   <span class="agent-badge" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="currentColor">

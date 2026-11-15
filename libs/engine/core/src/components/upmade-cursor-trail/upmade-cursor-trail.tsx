@@ -1,13 +1,13 @@
 import { Component, Host, Listen, Prop, State, h } from '@stencil/core';
-import { UpdrawMouseButton, UpdrawCore } from '@updraw/core';
+import { UpmadeMouseButton, UpmadeCore } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-cursor-trail',
-  styleUrl: 'updraw-cursor-trail.css',
+  tag: 'upmade-cursor-trail',
+  styleUrl: 'upmade-cursor-trail.css',
   shadow: true,
 })
-export class UpdrawCursorTrail {
-  @Prop() core!: UpdrawCore;
+export class UpmadeCursorTrail {
+  @Prop() core!: UpmadeCore;
 
   @State() cursorTrailPoints: Array<{ x: number; y: number; timestamp: number }> = [];
   @State() isLeftButtonDown: boolean = false;
@@ -15,7 +15,7 @@ export class UpdrawCursorTrail {
   @Listen('pointerdown', { target: 'window', passive: true })
   handleMouseDown(ev: PointerEvent) {
     if (ev.pointerType === 'mouse') {
-      if (ev.button === UpdrawMouseButton.Left) {
+      if (ev.button === UpmadeMouseButton.Left) {
         this.isLeftButtonDown = true;
         this.cursorTrailPoints = [];
       }
@@ -46,7 +46,7 @@ export class UpdrawCursorTrail {
   @Listen('pointerup', { target: 'window', passive: true })
   handlePointerUp(ev: PointerEvent) {
     if (ev.pointerType === 'mouse') {
-      if (ev.button === UpdrawMouseButton.Left) {
+      if (ev.button === UpmadeMouseButton.Left) {
         this.isLeftButtonDown = false;
         this.cursorTrailPoints = [];
       }
@@ -96,7 +96,7 @@ export class UpdrawCursorTrail {
               width: '100%',
               height: '100%',
               pointerEvents: 'none',
-              opacity: 'var(--updraw-cursor-trail-opacity, var(--updraw-global-cursor-trail-opacity, 0.6))',
+              opacity: 'var(--upmade-cursor-trail-opacity, var(--upmade-global-cursor-trail-opacity, 0.6))',
               zIndex: '9000',
             }}
           >
@@ -117,7 +117,7 @@ export class UpdrawCursorTrail {
                   y1={prevPoint.y.toString()}
                   x2={point.x.toString()}
                   y2={point.y.toString()}
-                  stroke="var(--updraw-cursor-trail-color, var(--updraw-global-cursor-trail-color, rgb(228, 228, 228)))"
+                  stroke="var(--upmade-cursor-trail-color, var(--upmade-global-cursor-trail-color, rgb(228, 228, 228)))"
                   stroke-width={baseStrokeWidth.toString()}
                   stroke-linecap="round"
                 />

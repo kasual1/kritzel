@@ -1,7 +1,7 @@
 # Objects: Create, Update, Query, Organize
 
-All canvas content is an `UpdrawBaseObject` subclass. Import all classes from `@updraw/react-editor`:
-`UpdrawPath`, `UpdrawLine`, `UpdrawShape`, `UpdrawText`, `UpdrawImage`, `UpdrawGroup`, plus `ShapeType` and `UpdrawAlignment` enums.
+All canvas content is an `UpmadeBaseObject` subclass. Import all classes from `@upmade/react-editor`:
+`UpmadePath`, `UpmadeLine`, `UpmadeShape`, `UpmadeText`, `UpmadeImage`, `UpmadeGroup`, plus `ShapeType` and `UpmadeAlignment` enums.
 
 In the snippets below, `editor` is the ref element (`const editor = editorRef.current; if (!editor) return;`).
 
@@ -19,7 +19,7 @@ In the snippets below, `editor` is the ref element (`const editor = editorRef.cu
 | `isVisible`, `isSelected`, `isEditable`, `isInteractive` | State flags |
 | `centerX`, `centerY` | Computed center (read-only getters) |
 | `boundingBox`, `rotatedBoundingBox`, `rotatedPolygon` | Computed bounds |
-| `__class__` | Type discriminator string, e.g. `'UpdrawShape'` |
+| `__class__` | Type discriminator string, e.g. `'UpmadeShape'` |
 | `workspaceId` | Set automatically when added |
 | `name` | Optional user-facing name; the default title of the object's titlebar. Persisted and synced |
 | `isRotatable`, `isResizable` | Per-object flags (default `true`), persisted and synced. Combine with the editor's `objectConfig` (see below): either can forbid |
@@ -32,7 +32,7 @@ Colors everywhere are **theme-aware**: `{ light: '#hex', dark: '#hex', label?: s
 ### Text
 
 ```tsx
-const text = new UpdrawText({
+const text = new UpmadeText({
   text: 'Programmatic text!',          // NOTE: property is `text`
   translateX: 0,
   translateY: 0,
@@ -46,9 +46,9 @@ await editor.addObject(text);
 ### Shape (rectangle / ellipse / triangle)
 
 ```tsx
-import { ShapeType } from '@updraw/react-editor';
+import { ShapeType } from '@upmade/react-editor';
 
-const shape = new UpdrawShape({
+const shape = new UpmadeShape({
   translateX: 20,
   translateY: -150,
   width: 120,
@@ -69,7 +69,7 @@ Property names are `fillColor`/`strokeColor` — NOT `backgroundColor`/`borderCo
 ### Path (freehand stroke)
 
 ```tsx
-const path = new UpdrawPath({
+const path = new UpmadePath({
   points: [[0, 0, 0.5], [15, -20, 0.5], [30, -40, 0.5]], // [x, y, pressure?]
   translateX: -75,
   translateY: 125,
@@ -83,7 +83,7 @@ await editor.addObject(path);
 ### Line (straight or curved, optional arrowheads)
 
 ```tsx
-const line = new UpdrawLine({
+const line = new UpmadeLine({
   startX: -170, startY: 10,
   endX: 130,   endY: 10,
   // controlX / controlY: optional quadratic-bezier control point for curves
@@ -100,7 +100,7 @@ Properties are `stroke`/`strokeWidth`/`arrows` — NOT `color`/`size`/`startArro
 
 ```tsx
 // From a URL or data URI — async factory, scales to fit maxWidth/maxHeight
-const img = await UpdrawImage.fromUrl('https://example.com/photo.jpg', {
+const img = await UpmadeImage.fromUrl('https://example.com/photo.jpg', {
   maxWidth: 300,
   maxHeight: 300,
 });
@@ -110,7 +110,7 @@ img.isEditable = false; // optional: lock as background scenery
 await editor.addObject(img);
 ```
 
-`fromUrl(src, config?: Partial<UpdrawImage>)` — the second argument is a partial config object, not separate width/height arguments. `maxWidth`/`maxHeight` (default 300) constrain the rendered size while keeping aspect ratio.
+`fromUrl(src, config?: Partial<UpmadeImage>)` — the second argument is a partial config object, not separate width/height arguments. `maxWidth`/`maxHeight` (default 300) constrain the rendered size while keeping aspect ratio.
 
 ## CRUD operations
 
@@ -128,11 +128,11 @@ await editor.removeObject(obj);
 await editor.removeObjects([a, b]);
 
 // Read
-const one = await editor.getObjectById<UpdrawShape>('some-id');   // null if missing
+const one = await editor.getObjectById<UpmadeShape>('some-id');   // null if missing
 const all = await editor.getAllObjects();
 const count = await editor.getObjectsTotalCount();
 const visible = await editor.getObjectsInViewport();
-const shapes = await editor.findObjects(o => o.__class__ === 'UpdrawShape');
+const shapes = await editor.findObjects(o => o.__class__ === 'UpmadeShape');
 ```
 
 Batch updates run concurrently fine:
@@ -162,20 +162,20 @@ Switching the active tool clears the selection by design. To preserve it: read `
 
 ```tsx
 const selected = await editor.getSelectedObjects();
-const group = await editor.group(selected);  // pass the objects explicitly (needs ≥ 2); resolves to the UpdrawGroup or null
-const groups = selected.filter((o): o is UpdrawGroup => o.__class__ === 'UpdrawGroup');
-await editor.ungroup(groups);       // only UpdrawGroup entries
+const group = await editor.group(selected);  // pass the objects explicitly (needs ≥ 2); resolves to the UpmadeGroup or null
+const groups = selected.filter((o): o is UpmadeGroup => o.__class__ === 'UpmadeGroup');
+await editor.ungroup(groups);       // only UpmadeGroup entries
 
 await editor.bringToFront(obj);        // omit obj → applies to selection
 await editor.sendToBack();
 await editor.bringForward();
 await editor.sendBackward();
 
-import { UpdrawAlignment } from '@updraw/react-editor';
-await editor.alignObjects(UpdrawAlignment.CenterHorizontal); // needs ≥ 2 selected
+import { UpmadeAlignment } from '@upmade/react-editor';
+await editor.alignObjects(UpmadeAlignment.CenterHorizontal); // needs ≥ 2 selected
 ```
 
-`UpdrawAlignment` values: `StartHorizontal`, `CenterHorizontal`, `EndHorizontal`, `StartVertical`, `CenterVertical`, `EndVertical`.
+`UpmadeAlignment` values: `StartHorizontal`, `CenterHorizontal`, `EndHorizontal`, `StartVertical`, `CenterVertical`, `EndVertical`.
 
 Groups expose their children via `childIds: string[]`; resolve children with `getObjectById`.
 
@@ -184,16 +184,16 @@ Groups expose their children via `childIds: string[]`; resolve children with `ge
 The `objectConfig` prop (on the editor and the engine) configures how objects behave, in one place for all objects. Each option is a boolean for every object, or a function `(object) => boolean` deciding per object:
 
 ```tsx
-import { UpdrawEditor, type UpdrawObjectConfig } from '@updraw/react-editor';
+import { UpmadeEditor, type UpmadeObjectConfig } from '@upmade/react-editor';
 
 // Module scope (or useMemo): a new object on every render re-evaluates every option.
-const objectConfig: UpdrawObjectConfig = {
-  hasTitlebar: object => object.__class__ === 'UpdrawGroup',
-  isRotatable: object => object.__class__ !== 'UpdrawText',
+const objectConfig: UpmadeObjectConfig = {
+  hasTitlebar: object => object.__class__ === 'UpmadeGroup',
+  isRotatable: object => object.__class__ !== 'UpmadeText',
   isResizable: true,
 };
 
-<UpdrawEditor objectConfig={objectConfig} />
+<UpmadeEditor objectConfig={objectConfig} />
 ```
 
 | Option | Default | Meaning |
@@ -206,7 +206,7 @@ const objectConfig: UpdrawObjectConfig = {
 - Groups and multi-selections can be rotated / resized only when every selected object and everything nested inside groups allows it; the function is called for each of them. `hasTitlebar` is only asked about the top-level object or group itself.
 - A forbidden handle is hidden and dragging it does nothing. Line endpoint handles are not covered by `isResizable`. Programmatic API calls (`updateObject`, alignment, …) are not restricted.
 - Functions run **synchronously while rendering and handling input**: keep them pure and cheap. A non-boolean result, a throw or a returned promise resolves to the option's default; a throw or promise warns once per option (re-armed when a new config object is passed).
-- Check types with `instanceof` against the classes your Updraw package exports, or compare `object.__class__` (e.g. `'UpdrawGroup'`). To inspect a group's children, read `childIds` rather than the `children` getter.
+- Check types with `instanceof` against the classes your Upmade package exports, or compare `object.__class__` (e.g. `'UpmadeGroup'`). To inspect a group's children, read `childIds` rather than the `children` getter.
 - The config is read live, belongs to this editor instance and is neither persisted nor synced. Functions are re-evaluated on every render; when they depend on app state, pass a **new** config object after that state changes (derive it with `useMemo`) so the canvas rerenders.
 
 ## Names and titlebars
@@ -214,7 +214,7 @@ const objectConfig: UpdrawObjectConfig = {
 Every object constructor accepts `name`, the default title of its titlebar. Which objects get a bar is decided by `objectConfig.hasTitlebar` (see above); the bar's content comes from the `objectTitlebar` prop (see the titlebar section of theming-and-context-menus.md). Without both, nothing is rendered.
 
 ```tsx
-const frame = new UpdrawShape({
+const frame = new UpmadeShape({
   translateX: 0,
   translateY: 0,
   width: 400,
@@ -246,12 +246,12 @@ await editor.delete();                 // deletes selection
 ```tsx
 await editor.undo();
 await editor.redo();
-// availability: listen via onUndoStateChange → CustomEvent<UpdrawUndoState>
+// availability: listen via onUndoStateChange → CustomEvent<UpmadeUndoState>
 ```
 
 ## Elements inside iframe objects
 
-The page of an `UpdrawIframeObject` can be observed and controlled per element by CSS selector: `setObjectElementPicking`, `highlightObjectElements`, `clearObjectElementHighlights`, `queryObjectElements`, and agents that point their cursor at an element with `agent.moveTo({ objectId, selector })`. Hover, click and pick events and the rules for these methods are in the "Elements inside iframe objects" section of events.md.
+The page of an `UpmadeIframeObject` can be observed and controlled per element by CSS selector: `setObjectElementPicking`, `highlightObjectElements`, `clearObjectElementHighlights`, `queryObjectElements`, and agents that point their cursor at an element with `agent.moveTo({ objectId, selector })`. Hover, click and pick events and the rules for these methods are in the "Elements inside iframe objects" section of events.md.
 
 ## Pitfalls
 
@@ -259,4 +259,4 @@ The page of an `UpdrawIframeObject` can be observed and controlled per element b
 - `centerObjectInViewport(obj)` **moves the object**; to look at it instead, move the camera (see viewport.md).
 - New objects land where you put them in world space — content at far coordinates may be off-screen; follow up with `backToContent()` or `centerAllObjects()`.
 - Plain string colors (`'#ff0000'`) lose dark-mode support; always pass `{ light, dark }`.
-- Don't keep live `UpdrawBaseObject` references in React state for long-lived UI; store `id`s and re-fetch with `getObjectById` when acting (objects can be replaced by sync/undo).
+- Don't keep live `UpmadeBaseObject` references in React state for long-lived UI; store `id`s and re-fetch with `getObjectById` when acting (objects can be replaced by sync/undo).

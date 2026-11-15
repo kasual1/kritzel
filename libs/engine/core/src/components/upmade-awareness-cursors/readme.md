@@ -1,4 +1,4 @@
-# updraw-awareness-cursors
+# upmade-awareness-cursors
 
 
 
@@ -9,7 +9,7 @@
 
 | Property               | Attribute                | Description | Type         | Default     |
 | ---------------------- | ------------------------ | ----------- | ------------ | ----------- |
-| `core` _(required)_    | --                       |             | `UpdrawCore` | `undefined` |
+| `core` _(required)_    | --                       |             | `UpmadeCore` | `undefined` |
 | `edgeIndicatorPadding` | `edge-indicator-padding` |             | `number`     | `8`         |
 | `showEdgeIndicators`   | `show-edge-indicators`   |             | `boolean`    | `true`      |
 
@@ -18,13 +18,13 @@
 
 ### Used by
 
- - [updraw-engine](../updraw-engine)
+ - [upmade-engine](../upmade-engine)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-engine --> updraw-awareness-cursors
-  style updraw-awareness-cursors fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-engine --> upmade-awareness-cursors
+  style upmade-awareness-cursors fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

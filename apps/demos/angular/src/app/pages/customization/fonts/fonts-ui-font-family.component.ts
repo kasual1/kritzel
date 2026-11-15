@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { UpdrawEditor, UpdrawFontMap, UpdrawTheme } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeFontMap, UpmadeTheme } from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 
-const customFonts: UpdrawFontMap = {
+const customFonts: UpmadeFontMap = {
   pacifico: {
     family: 'Pacifico',
     label: 'Pacifico Cursive',
@@ -13,11 +13,11 @@ const customFonts: UpdrawFontMap = {
 
 @Component({
   selector: 'app-fonts-ui-font-family',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="editor-wrap">
-      <updraw-editor
+      <upmade-editor
         editorId="fonts-ui-font-family"
         [customFonts]="fonts"
         [theme]="'light'"
@@ -26,7 +26,7 @@ const customFonts: UpdrawFontMap = {
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="true"
         (isReady)="onReady()"
-      ></updraw-editor>
+      ></upmade-editor>
     </div>
   `,
   styles: [`
@@ -35,11 +35,11 @@ const customFonts: UpdrawFontMap = {
   `],
 })
 export class FontsUiFontFamilyComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   fonts = customFonts;
 
-  themes: UpdrawTheme[] = [{
+  themes: UpmadeTheme[] = [{
     ...angularThemeLight,
     global: {
       ...angularThemeLight.global,

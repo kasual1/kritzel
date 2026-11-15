@@ -1,4 +1,4 @@
-# updraw-line-endings
+# upmade-line-endings
 
 A component for selecting line ending styles (arrows) for both the start and end of a line.
 
@@ -24,13 +24,13 @@ A component for selecting line ending styles (arrows) for both the start and end
 
 ### Used by
 
- - [updraw-tool-config](../updraw-tool-config)
+ - [upmade-tool-config](../upmade-tool-config)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-tool-config --> updraw-line-endings
-  style updraw-line-endings fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-tool-config --> upmade-line-endings
+  style upmade-line-endings fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

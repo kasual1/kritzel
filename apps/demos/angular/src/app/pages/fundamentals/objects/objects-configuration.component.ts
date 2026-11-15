@@ -1,17 +1,17 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import {
-  UPDRAW_DEFAULT_OBJECT_TITLEBAR,
-  UpdrawEditor,
-  UpdrawObjectConfig,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UPMADE_DEFAULT_OBJECT_TITLEBAR,
+  UpmadeEditor,
+  UpmadeObjectConfig,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-objects-configuration',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="control-panel">
@@ -24,7 +24,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         <span>Resize shapes</span>
       </label>
     </div>
-    <updraw-editor
+    <upmade-editor
       editorId="objects-configuration"
       [theme]="'light'"
       [themes]="themes"
@@ -35,36 +35,36 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isWorkspaceManagerVisible]="false"
       [objectTitlebar]="objectTitlebar"
       [objectConfig]="objectConfig()"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: `
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
     .control-panel { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; }
     .checkbox-control { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #333; cursor: pointer; }
-    updraw-editor { flex: 1; }
+    upmade-editor { flex: 1; }
   `,
 })
 export class ObjectsConfigurationComponent {
   readonly areShapesRotatable = signal(false);
   readonly areShapesResizable = signal(false);
 
-  readonly objectTitlebar = UPDRAW_DEFAULT_OBJECT_TITLEBAR;
+  readonly objectTitlebar = UPMADE_DEFAULT_OBJECT_TITLEBAR;
 
   // A new object on every change, so that the editor rerenders with the new rules.
-  readonly objectConfig = computed<UpdrawObjectConfig>(() => {
+  readonly objectConfig = computed<UpmadeObjectConfig>(() => {
     const isRotatable = this.areShapesRotatable();
     const isResizable = this.areShapesResizable();
 
     return {
-      hasTitlebar: (object) => object.__class__ === 'UpdrawShape',
-      isRotatable: (object) => isRotatable || object.__class__ !== 'UpdrawShape',
-      isResizable: (object) => isResizable || object.__class__ !== 'UpdrawShape',
+      hasTitlebar: (object) => object.__class__ === 'UpmadeShape',
+      isRotatable: (object) => isRotatable || object.__class__ !== 'UpmadeShape',
+      isResizable: (object) => isResizable || object.__class__ !== 'UpmadeShape',
     };
   });
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
   setShapesRotatable(event: Event): void {
     this.areShapesRotatable.set((event.target as HTMLInputElement).checked);

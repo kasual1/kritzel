@@ -1,5 +1,5 @@
-export interface UpdrawSerializable {
+export interface UpmadeSerializable {
   __class__: string;
   serialize(): any;
-  deserialize(object: any): UpdrawSerializable;
+  deserialize(object: any): UpmadeSerializable;
 }

@@ -1,5 +1,5 @@
-import { UpdrawThemeManager } from './theme.manager';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeThemeManager } from './theme.manager';
+import { UpmadeCore } from '../core/core.class';
 import { ThemeHelper } from '../../helpers/theme.helper';
 import { lightTheme } from '../../themes/light-theme';
 import { darkTheme } from '../../themes/dark-theme';
@@ -7,8 +7,8 @@ import { darkTheme } from '../../themes/dark-theme';
 jest.mock('../core/core.class');
 jest.mock('../../helpers/theme.helper');
 
-describe('UpdrawThemeManager', () => {
-  let manager: UpdrawThemeManager;
+describe('UpmadeThemeManager', () => {
+  let manager: UpmadeThemeManager;
   let mockCore: any;
 
   const createMockElement = (): HTMLElement => {
@@ -24,9 +24,9 @@ describe('UpdrawThemeManager', () => {
     jest.clearAllMocks();
     localStorage.clear();
 
-    mockCore = {} as unknown as jest.Mocked<UpdrawCore>;
+    mockCore = {} as unknown as jest.Mocked<UpmadeCore>;
 
-    manager = new UpdrawThemeManager(mockCore);
+    manager = new UpmadeThemeManager(mockCore);
   });
 
   afterEach(() => {
@@ -44,26 +44,26 @@ describe('UpdrawThemeManager', () => {
     });
 
     it('should restore stored theme from settings object', () => {
-      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'dark' }));
+      localStorage.setItem('upmade-settings', JSON.stringify({ theme: 'dark' }));
 
-      const freshManager = new UpdrawThemeManager(mockCore);
+      const freshManager = new UpmadeThemeManager(mockCore);
 
       expect(freshManager.currentTheme).toBe('dark');
     });
 
     it('should allow unregistered themes to be loaded from settings', () => {
-      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'neon' }));
+      localStorage.setItem('upmade-settings', JSON.stringify({ theme: 'neon' }));
 
-      const freshManager = new UpdrawThemeManager(mockCore);
+      const freshManager = new UpmadeThemeManager(mockCore);
 
       // The manager allows unregistered themes because they might be registered later
       expect(freshManager.currentTheme).toBe('neon');
     });
 
     it('should fallback to default theme when applying an unregistered theme', () => {
-      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'neon' }));
+      localStorage.setItem('upmade-settings', JSON.stringify({ theme: 'neon' }));
 
-      const freshManager = new UpdrawThemeManager(mockCore);
+      const freshManager = new UpmadeThemeManager(mockCore);
       const element = createMockElement();
       freshManager.setTargetElement(element);
 
@@ -72,17 +72,17 @@ describe('UpdrawThemeManager', () => {
     });
 
     it('should default to light when settings object has no theme', () => {
-      localStorage.setItem('updraw-settings', JSON.stringify({ scaleMin: 0.1 }));
+      localStorage.setItem('upmade-settings', JSON.stringify({ scaleMin: 0.1 }));
 
-      const freshManager = new UpdrawThemeManager(mockCore);
+      const freshManager = new UpmadeThemeManager(mockCore);
 
       expect(freshManager.currentTheme).toBe('light');
     });
 
     it('should default to light when settings value is invalid JSON', () => {
-      localStorage.setItem('updraw-settings', 'not-json');
+      localStorage.setItem('upmade-settings', 'not-json');
 
-      const freshManager = new UpdrawThemeManager(mockCore);
+      const freshManager = new UpmadeThemeManager(mockCore);
 
       expect(freshManager.currentTheme).toBe('light');
     });
@@ -96,44 +96,44 @@ describe('UpdrawThemeManager', () => {
     let mockCoreWithId: any;
 
     beforeEach(() => {
-      mockCoreWithId = { editorId: 'homepage' } as unknown as jest.Mocked<UpdrawCore>;
+      mockCoreWithId = { editorId: 'homepage' } as unknown as jest.Mocked<UpmadeCore>;
     });
 
     it('should restore theme from namespaced settings key', () => {
-      localStorage.setItem('updraw-settings-homepage', JSON.stringify({ theme: 'dark' }));
+      localStorage.setItem('upmade-settings-homepage', JSON.stringify({ theme: 'dark' }));
 
-      const freshManager = new UpdrawThemeManager(mockCoreWithId);
+      const freshManager = new UpmadeThemeManager(mockCoreWithId);
 
       expect(freshManager.currentTheme).toBe('dark');
     });
 
     it('should not read from the non-namespaced key when editorId is set', () => {
-      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'dark' }));
+      localStorage.setItem('upmade-settings', JSON.stringify({ theme: 'dark' }));
 
-      const freshManager = new UpdrawThemeManager(mockCoreWithId);
+      const freshManager = new UpmadeThemeManager(mockCoreWithId);
 
       expect(freshManager.currentTheme).toBe('light');
     });
 
     it('should isolate storage between different editorIds', () => {
-      const mockCoreA = { editorId: 'editor-a' } as unknown as jest.Mocked<UpdrawCore>;
-      const mockCoreB = { editorId: 'editor-b' } as unknown as jest.Mocked<UpdrawCore>;
+      const mockCoreA = { editorId: 'editor-a' } as unknown as jest.Mocked<UpmadeCore>;
+      const mockCoreB = { editorId: 'editor-b' } as unknown as jest.Mocked<UpmadeCore>;
 
-      localStorage.setItem('updraw-settings-editor-a', JSON.stringify({ theme: 'dark' }));
-      localStorage.setItem('updraw-settings-editor-b', JSON.stringify({ theme: 'light' }));
+      localStorage.setItem('upmade-settings-editor-a', JSON.stringify({ theme: 'dark' }));
+      localStorage.setItem('upmade-settings-editor-b', JSON.stringify({ theme: 'light' }));
 
-      const managerA = new UpdrawThemeManager(mockCoreA);
-      const managerB = new UpdrawThemeManager(mockCoreB);
+      const managerA = new UpmadeThemeManager(mockCoreA);
+      const managerB = new UpmadeThemeManager(mockCoreB);
 
       expect(managerA.currentTheme).toBe('dark');
       expect(managerB.currentTheme).toBe('light');
     });
 
     it('should use default key when editorId is undefined', () => {
-      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'dark' }));
-      const noIdCore = { editorId: undefined } as unknown as jest.Mocked<UpdrawCore>;
+      localStorage.setItem('upmade-settings', JSON.stringify({ theme: 'dark' }));
+      const noIdCore = { editorId: undefined } as unknown as jest.Mocked<UpmadeCore>;
 
-      const noIdManager = new UpdrawThemeManager(noIdCore);
+      const noIdManager = new UpmadeThemeManager(noIdCore);
 
       expect(noIdManager.currentTheme).toBe('dark');
     });
@@ -161,8 +161,8 @@ describe('UpdrawThemeManager', () => {
     });
 
     it('should apply dark theme when current theme is dark', () => {
-      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'dark' }));
-      const darkManager = new UpdrawThemeManager(mockCore);
+      localStorage.setItem('upmade-settings', JSON.stringify({ theme: 'dark' }));
+      const darkManager = new UpmadeThemeManager(mockCore);
       const element = createMockElement();
 
       darkManager.setTargetElement(element);
@@ -221,31 +221,31 @@ describe('UpdrawThemeManager', () => {
 
   describe('getStoredTheme', () => {
     it('should return light when nothing is stored', () => {
-      expect(UpdrawThemeManager.getStoredTheme()).toBe('light');
+      expect(UpmadeThemeManager.getStoredTheme()).toBe('light');
     });
 
     it('should return dark when dark is stored in settings', () => {
-      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'dark' }));
+      localStorage.setItem('upmade-settings', JSON.stringify({ theme: 'dark' }));
 
-      expect(UpdrawThemeManager.getStoredTheme()).toBe('dark');
+      expect(UpmadeThemeManager.getStoredTheme()).toBe('dark');
     });
 
     it('should return light when light is stored in settings', () => {
-      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'light' }));
+      localStorage.setItem('upmade-settings', JSON.stringify({ theme: 'light' }));
 
-      expect(UpdrawThemeManager.getStoredTheme()).toBe('light');
+      expect(UpmadeThemeManager.getStoredTheme()).toBe('light');
     });
 
     it('should return the theme name from settings even if unregistered', () => {
-      localStorage.setItem('updraw-settings', JSON.stringify({ theme: 'invalid' }));
+      localStorage.setItem('upmade-settings', JSON.stringify({ theme: 'invalid' }));
 
-      expect(UpdrawThemeManager.getStoredTheme()).toBe('invalid');
+      expect(UpmadeThemeManager.getStoredTheme()).toBe('invalid');
     });
 
     it('should return light for invalid JSON', () => {
-      localStorage.setItem('updraw-settings', 'not-json');
+      localStorage.setItem('upmade-settings', 'not-json');
 
-      expect(UpdrawThemeManager.getStoredTheme()).toBe('light');
+      expect(UpmadeThemeManager.getStoredTheme()).toBe('light');
     });
   });
 
@@ -263,7 +263,7 @@ describe('UpdrawThemeManager', () => {
     it('should not persist the theme to localStorage', () => {
       manager.setTheme('dark');
 
-      expect(localStorage.getItem('updraw-settings')).toBeNull();
+      expect(localStorage.getItem('upmade-settings')).toBeNull();
     });
 
     it('should apply theme to target element when one is set', () => {

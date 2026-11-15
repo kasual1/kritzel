@@ -2,11 +2,11 @@
 import { ref } from 'vue'
 import {
   getEditorRef,
-  UpdrawEditor,
-  UpdrawImage,
-  UpdrawShape,
+  UpmadeEditor,
+  UpmadeImage,
+  UpmadeShape,
   ShapeType,
-} from '@updraw/vue-editor'
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../const/vue-theme-dark'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import InfoPanel from '../../components/InfoPanel.vue'
@@ -67,7 +67,7 @@ async function initializeBlueprint() {
   }
 
   // 1. Load the blueprint floorplan as unselectable background scenery.
-  const bg = await UpdrawImage.fromUrl('/floorplan.png', {
+  const bg = await UpmadeImage.fromUrl('/floorplan.png', {
     maxWidth: 660,
     maxHeight: 360,
   })
@@ -101,7 +101,7 @@ async function initializeBlueprint() {
 
   for (const d of seedPins) {
     const pinId = `pin-${d.id}`
-    const pin = new UpdrawShape({
+    const pin = new UpmadeShape({
       translateX: d.x - pinSize / 2,
       translateY: d.y - pinSize / 2,
       width: pinSize,
@@ -134,7 +134,7 @@ async function normalizeSeedPin(pinId: string, center: { x: number; y: number })
     return
   }
 
-  const pin = (await editor.value.getObjectById(pinId)) as UpdrawShape | undefined
+  const pin = (await editor.value.getObjectById(pinId)) as UpmadeShape | undefined
   if (!pin) {
     return
   }
@@ -154,8 +154,8 @@ async function restoreDefectsFromCanvas() {
 
   const all = await editor.value.getAllObjects()
   const pinObjects = all.filter(
-    (o) => o.id.startsWith('pin-') && o instanceof UpdrawShape,
-  ) as UpdrawShape[]
+    (o) => o.id.startsWith('pin-') && o instanceof UpmadeShape,
+  ) as UpmadeShape[]
 
   const restoredList: Defect[] = []
   pinObjects.forEach((pin) => {
@@ -234,7 +234,7 @@ async function onCanvasClick(event: MouseEvent) {
   const defectId = `defect-user-${++nextDefectId}`
   const pinId = `pin-${defectId}`
 
-  const pin = new UpdrawShape({
+  const pin = new UpmadeShape({
     translateX: worldPos.x - pinSize / 2,
     translateY: worldPos.y - pinSize / 2,
     width: pinSize,
@@ -280,7 +280,7 @@ async function changeDefectStatus(defect: Defect, newStatus: DefectStatus) {
   )
 
   const pin = (await editor.value?.getObjectById(defect.pinId)) as
-    | UpdrawShape
+    | UpmadeShape
     | undefined
   if (pin) {
     await editor.value?.updateObject(pin, {
@@ -289,7 +289,7 @@ async function changeDefectStatus(defect: Defect, newStatus: DefectStatus) {
   }
 }
 
-async function findPinsForDefect(defect: Defect): Promise<UpdrawShape[]> {
+async function findPinsForDefect(defect: Defect): Promise<UpmadeShape[]> {
   if (!editor.value) {
     return []
   }
@@ -298,10 +298,10 @@ async function findPinsForDefect(defect: Defect): Promise<UpdrawShape[]> {
     new Set([defect.pinId, `pin-${defect.id}`, defect.id]),
   )
 
-  const directMatches: UpdrawShape[] = []
+  const directMatches: UpmadeShape[] = []
   for (const id of idCandidates) {
-    const pin = (await editor.value.getObjectById(id)) as UpdrawShape | null
-    if (pin && pin instanceof UpdrawShape && pin.shapeType === ShapeType.Ellipse) {
+    const pin = (await editor.value.getObjectById(id)) as UpmadeShape | null
+    if (pin && pin instanceof UpmadeShape && pin.shapeType === ShapeType.Ellipse) {
       directMatches.push(pin)
     }
   }
@@ -313,10 +313,10 @@ async function findPinsForDefect(defect: Defect): Promise<UpdrawShape[]> {
   const all = await editor.value.getAllObjects()
   const idMatches = all.filter(
     (obj) =>
-      obj instanceof UpdrawShape &&
+      obj instanceof UpmadeShape &&
       obj.shapeType === ShapeType.Ellipse &&
       idCandidates.includes(obj.id),
-  ) as UpdrawShape[]
+  ) as UpmadeShape[]
 
   if (idMatches.length > 0) {
     return idMatches
@@ -324,11 +324,11 @@ async function findPinsForDefect(defect: Defect): Promise<UpdrawShape[]> {
 
   // Fallback for legacy/persisted IDs: match the nearest pin to the defect.
   const ellipsePins = all.filter(
-    (obj) => obj instanceof UpdrawShape && obj.shapeType === ShapeType.Ellipse,
-  ) as UpdrawShape[]
+    (obj) => obj instanceof UpmadeShape && obj.shapeType === ShapeType.Ellipse,
+  ) as UpmadeShape[]
 
   const maxDistance = pinSize
-  let bestMatch: UpdrawShape | null = null
+  let bestMatch: UpmadeShape | null = null
   let bestDistance = Number.POSITIVE_INFINITY
 
   for (const pin of ellipsePins) {
@@ -365,7 +365,7 @@ function statusClass(status: DefectStatus): string {
 <template>
   <div class="mapper-workspace">
     <div class="editor-pane">
-      <UpdrawEditor
+      <UpmadeEditor
         ref="editor"
         editorId="blueprint-defect-mapper"
         theme="light"

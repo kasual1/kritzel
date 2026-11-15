@@ -1,9 +1,9 @@
-import { UpdrawLocale } from '../interfaces/localization.interface';
+import { UpmadeLocale } from '../interfaces/localization.interface';
 
 /**
  * Built-in French locale.
  */
-export const FR_LOCALE: UpdrawLocale = {
+export const FR_LOCALE: UpmadeLocale = {
   code: 'fr',
   label: 'Français',
   terms: {
@@ -76,7 +76,7 @@ export const FR_LOCALE: UpdrawLocale = {
     'settings.developer.showMigrationInfo.label': 'Afficher les infos de migration',
     'settings.developer.showMigrationInfo.description': 'Affiche les informations de débogage sur les migrations de données.',
     'settings.about.title': 'À propos',
-    'settings.about.description': 'Updraw - Une application de dessin',
+    'settings.about.description': 'Upmade - Une application de dessin',
 
     // Export dialog
     'export.dialogTitle': 'Exporter',
@@ -134,7 +134,7 @@ export const FR_LOCALE: UpdrawLocale = {
     'moreMenu.ariaLabel': "Plus d'options",
 
     // Watermark
-    'watermark.poweredBy': 'Propulsé par Updraw',
+    'watermark.poweredBy': 'Propulsé par Upmade',
 
     // Object type labels
     'objectType.shape': 'Forme',

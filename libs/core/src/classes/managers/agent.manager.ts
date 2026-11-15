@@ -1,7 +1,7 @@
-import type { UpdrawCore } from '../core/core.class';
-import { UpdrawAgent, isUpdrawAgent } from '../agent/agent.class';
-import type { UpdrawAgentPresence } from '../../interfaces/agent.interface';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
+import type { UpmadeCore } from '../core/core.class';
+import { UpmadeAgent, isUpmadeAgent } from '../agent/agent.class';
+import type { UpmadeAgentPresence } from '../../interfaces/agent.interface';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
 
 /**
  * The agents added to one editor. Behind `editor.addAgent()`, `removeAgent()`, `getAgent()`,
@@ -11,15 +11,15 @@ import { UpdrawEventHelper } from '../../helpers/event.helper';
  * (Stencil disconnects and reconnects elements that move in the DOM); an agent of an engine that was
  * torn down can be added to another editor, which removes it from the old one.
  */
-export class UpdrawAgentManager {
-  private readonly _core: UpdrawCore;
-  private readonly _agents = new Map<string, UpdrawAgent>();
+export class UpmadeAgentManager {
+  private readonly _core: UpmadeCore;
+  private readonly _agents = new Map<string, UpmadeAgent>();
   private readonly _agentSubscriptions = new Map<string, () => void>();
   private readonly _changeListeners = new Set<() => void>();
   private _changeScheduled = false;
   private _disposed = false;
 
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     this._core = core;
   }
 
@@ -35,12 +35,12 @@ export class UpdrawAgentManager {
 
   /**
    * Adds an agent and shows its cursor. Adding the same agent again does nothing.
-   * Throws for anything that is not an `UpdrawAgent`, for a second agent with the same ID, and for an
+   * Throws for anything that is not an `UpmadeAgent`, for a second agent with the same ID, and for an
    * agent that belongs to another editor that is still connected.
    */
-  add(agent: UpdrawAgent): UpdrawAgent {
-    if (!isUpdrawAgent(agent)) {
-      throw new TypeError('addAgent() expects an UpdrawAgent.');
+  add(agent: UpmadeAgent): UpmadeAgent {
+    if (!isUpmadeAgent(agent)) {
+      throw new TypeError('addAgent() expects an UpmadeAgent.');
     }
     const existing = this._agents.get(agent.id);
     if (existing === agent) {
@@ -68,7 +68,7 @@ export class UpdrawAgentManager {
    * Removes an agent: its running action is rolled back, queued actions resolve with `'agent-removed'`,
    * and its cursor and history are dropped. Returns `false` if the agent was not added.
    */
-  remove(agentOrId: UpdrawAgent | string): boolean {
+  remove(agentOrId: UpmadeAgent | string): boolean {
     const id = typeof agentOrId === 'string' ? agentOrId : agentOrId?.id;
     const agent = id !== undefined ? this._agents.get(id) : undefined;
     if (!agent || (typeof agentOrId !== 'string' && agentOrId !== agent)) {
@@ -82,16 +82,16 @@ export class UpdrawAgentManager {
     return true;
   }
 
-  get(id: string): UpdrawAgent | null {
+  get(id: string): UpmadeAgent | null {
     return this._agents.get(id) ?? null;
   }
 
-  getAll(): UpdrawAgent[] {
+  getAll(): UpmadeAgent[] {
     return Array.from(this._agents.values());
   }
 
   /** The added agents as shown in the avatar stack. */
-  getPresences(): UpdrawAgentPresence[] {
+  getPresences(): UpmadeAgentPresence[] {
     return this.getAll().map(agent => agent.toPresence());
   }
 
@@ -111,7 +111,7 @@ export class UpdrawAgentManager {
     this._changeScheduled = true;
     queueMicrotask(() => {
       this._changeScheduled = false;
-      this._changeListeners.forEach(listener => UpdrawEventHelper.callListener(listener, 'Agents change listener'));
+      this._changeListeners.forEach(listener => UpmadeEventHelper.callListener(listener, 'Agents change listener'));
     });
   }
 }

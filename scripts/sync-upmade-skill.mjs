@@ -3,12 +3,12 @@ import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promi
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const source = `${root}.github/skills/updraw`;
+const source = `${root}.github/skills/upmade`;
 const skill = await readFile(`${source}/SKILL.md`, 'utf8');
-if (!/^---\r?\nname: updraw\r?\n/.test(skill)) throw new Error('Invalid canonical Updraw skill frontmatter.');
-const marker = '.updraw-generated';
+if (!/^---\r?\nname: upmade\r?\n/.test(skill)) throw new Error('Invalid canonical Upmade skill frontmatter.');
+const marker = '.upmade-generated';
 const agents = ['.agents', '.claude'];
-const markerPrefix = 'Generated from .github/skills/updraw\n';
+const markerPrefix = 'Generated from .github/skills/upmade\n';
 
 async function fingerprint(directory) {
   const hash = createHash('sha256');
@@ -46,7 +46,7 @@ for (const agent of agents) {
 }
 
 for (const agent of agents) {
-  const destination = `${root}${agent}/skills/updraw`;
+  const destination = `${root}${agent}/skills/upmade`;
   const exists = await stat(destination).then(() => true, error => {
     if (error.code !== 'ENOENT') throw error;
     return false;
@@ -58,19 +58,19 @@ for (const agent of agents) {
     });
     const currentFingerprint = await fingerprint(destination);
     if (generated !== `${markerPrefix}${currentFingerprint}\n` && !(generated === markerPrefix && currentFingerprint === sourceFingerprint)) {
-      throw new Error(`Refusing to replace existing ${agent}/skills/updraw; move it aside before syncing.`);
+      throw new Error(`Refusing to replace existing ${agent}/skills/upmade; move it aside before syncing.`);
     }
   }
 }
 
 for (const agent of agents) {
   const parent = `${root}${agent}/skills`;
-  const destination = `${parent}/updraw`;
+  const destination = `${parent}/upmade`;
   await mkdir(parent, { recursive: true });
   await rm(destination, { recursive: true, force: true });
   await cp(source, destination, { recursive: true });
   const files = await readdir(`${destination}/references`);
   if (!files.includes('api.md')) throw new Error(`Missing generated API in ${destination}; run npm run skill:api first.`);
   await writeFile(`${destination}/${marker}`, `${markerPrefix}${sourceFingerprint}\n`);
-  console.log(`Synced Updraw skill to ${agent}/skills/updraw`);
+  console.log(`Synced Upmade skill to ${agent}/skills/upmade`);
 }

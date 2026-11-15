@@ -7,11 +7,11 @@ export interface DropdownOption {
 }
 
 @Component({
-  tag: 'updraw-dropdown',
-  styleUrl: 'updraw-dropdown.css',
+  tag: 'upmade-dropdown',
+  styleUrl: 'upmade-dropdown.css',
   shadow: true,
 })
-export class UpdrawDropdown {
+export class UpmadeDropdown {
   @Element() el: HTMLElement;
 
   @Prop() options: DropdownOption[] = [];

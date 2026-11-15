@@ -1,37 +1,37 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import {
-  UpdrawBrushTool,
-  UpdrawEngine,
-  UpdrawEraserTool,
-  UpdrawSelectionTool,
-} from '@updraw/angular-engine';
+  UpmadeBrushTool,
+  UpmadeEngine,
+  UpmadeEraserTool,
+  UpmadeSelectionTool,
+} from '@upmade/angular-engine';
 
 @Component({
-  selector: 'updraw-canvas',
+  selector: 'upmade-canvas',
   standalone: true,
-  imports: [UpdrawEngine],
-  templateUrl: './updraw-canvas.component.html',
-  styleUrls: ['./updraw-canvas.component.scss'],
+  imports: [UpmadeEngine],
+  templateUrl: './upmade-canvas.component.html',
+  styleUrls: ['./upmade-canvas.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UpdrawCanvasComponent {
-  @ViewChild(UpdrawEngine, { static: true }) private engine!: UpdrawEngine;
+export class UpmadeCanvasComponent {
+  @ViewChild(UpmadeEngine, { static: true }) private engine!: UpmadeEngine;
 
-  readonly editorId = 'updraw-canvas';
+  readonly editorId = 'upmade-canvas';
   initializationError = '';
 
   constructor(private readonly changeDetector: ChangeDetectorRef) {}
 
   async onEngineReady(): Promise<void> {
     try {
-      if (!(await this.engine.registerTool('selection', UpdrawSelectionTool))) {
-        throw new Error('Updraw could not register the selection tool.');
+      if (!(await this.engine.registerTool('selection', UpmadeSelectionTool))) {
+        throw new Error('Upmade could not register the selection tool.');
       }
-      if (!(await this.engine.registerTool('brush', UpdrawBrushTool))) {
-        throw new Error('Updraw could not register the brush tool.');
+      if (!(await this.engine.registerTool('brush', UpmadeBrushTool))) {
+        throw new Error('Upmade could not register the brush tool.');
       }
-      if (!(await this.engine.registerTool('eraser', UpdrawEraserTool))) {
-        throw new Error('Updraw could not register the eraser tool.');
+      if (!(await this.engine.registerTool('eraser', UpmadeEraserTool))) {
+        throw new Error('Upmade could not register the eraser tool.');
       }
       await this.engine.setActiveTool('brush');
     } catch (error: unknown) {

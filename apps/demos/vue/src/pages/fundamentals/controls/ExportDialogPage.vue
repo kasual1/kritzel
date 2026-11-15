@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getEditorRef, UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
+import { getEditorRef, UpmadeEditor, UpmadeWorkspace } from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -8,7 +8,7 @@ import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 
 async function openDialog() {
   await editor.value?.openExportDialog()
@@ -30,7 +30,7 @@ async function onReady() {
       <button type="button" @click="openDialog">Open export dialog</button>
       <button type="button" @click="closeDialog">Close export dialog</button>
     </Toolbar>
-    <UpdrawEditor
+    <UpmadeEditor
       ref="editor"
       editorId="export-dialog"
       theme="light"

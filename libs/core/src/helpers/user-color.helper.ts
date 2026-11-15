@@ -1,4 +1,4 @@
-export class UpdrawUserColorHelper {
+export class UpmadeUserColorHelper {
   /**
    * Generates a stable HSL color from a name (used for user and agentic cursor colors).
    */

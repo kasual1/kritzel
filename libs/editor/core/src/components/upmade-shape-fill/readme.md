@@ -1,4 +1,4 @@
-# updraw-shape-fill
+# upmade-shape-fill
 
 A component for selecting shape fill style (transparent or filled background).
 
@@ -23,13 +23,13 @@ A component for selecting shape fill style (transparent or filled background).
 
 ### Used by
 
- - [updraw-tool-config](../updraw-tool-config)
+ - [upmade-tool-config](../upmade-tool-config)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-tool-config --> updraw-shape-fill
-  style updraw-shape-fill fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-tool-config --> upmade-shape-fill
+  style upmade-shape-fill fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

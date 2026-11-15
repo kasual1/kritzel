@@ -1,6 +1,6 @@
-import { UpdrawEasing } from '../interfaces/easing.interface';
+import { UpmadeEasing } from '../interfaces/easing.interface';
 
-export class UpdrawEasingHelper {
+export class UpmadeEasingHelper {
   static linear(t: number): number {
     return t;
   }
@@ -21,20 +21,20 @@ export class UpdrawEasingHelper {
    * Resolves a named easing or custom easing function to a function.
    * Unknown names fall back to `ease-in-out`.
    */
-  static resolve(easing: UpdrawEasing | undefined): (t: number) => number {
+  static resolve(easing: UpmadeEasing | undefined): (t: number) => number {
     if (typeof easing === 'function') {
       return easing;
     }
     switch (easing) {
       case 'linear':
-        return UpdrawEasingHelper.linear;
+        return UpmadeEasingHelper.linear;
       case 'ease-in':
-        return UpdrawEasingHelper.easeInCubic;
+        return UpmadeEasingHelper.easeInCubic;
       case 'ease-out':
-        return UpdrawEasingHelper.easeOutCubic;
+        return UpmadeEasingHelper.easeOutCubic;
       case 'ease-in-out':
       default:
-        return UpdrawEasingHelper.easeInOutCubic;
+        return UpmadeEasingHelper.easeInOutCubic;
     }
   }
 }

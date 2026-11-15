@@ -1,11 +1,11 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 
 @Component({
-  tag: 'updraw-back-to-content',
-  styleUrl: 'updraw-back-to-content.css',
+  tag: 'upmade-back-to-content',
+  styleUrl: 'upmade-back-to-content.css',
   shadow: true,
 })
-export class UpdrawBackToContent {
+export class UpmadeBackToContent {
   /**
    * Whether the button is visible
    */
@@ -33,7 +33,7 @@ export class UpdrawBackToContent {
           onClick={this.handleClick}
           aria-label={this.text}
         >
-          <updraw-icon name="chevronsLeft"></updraw-icon>
+          <upmade-icon name="chevronsLeft"></upmade-icon>
         </button>
       </Host>
     );

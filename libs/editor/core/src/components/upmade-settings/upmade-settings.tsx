@@ -1,12 +1,12 @@
 ﻿import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop, Watch } from '@stencil/core';
-import { IUpdrawMasterDetailItem, IUpdrawMasterDetailSelectEvent } from '@updraw/core';
-import { UpdrawSettingsConfig } from '@updraw/core';
-import { UpdrawDebugInfo } from '@updraw/core';
-import { UPDRAW_VERSION } from '@updraw/core';
-import { CURRENT_APP_STATE_SCHEMA_VERSION, CURRENT_WORKSPACE_SCHEMA_VERSION } from '@updraw/core';
-import { ThemeName } from '@updraw/core';
-import { UpdrawShortcut } from '@updraw/core';
-import { LocaleCode, UpdrawTermKey } from '@updraw/core';
+import { IUpmadeMasterDetailItem, IUpmadeMasterDetailSelectEvent } from '@upmade/core';
+import { UpmadeSettingsConfig } from '@upmade/core';
+import { UpmadeDebugInfo } from '@upmade/core';
+import { UPMADE_VERSION } from '@upmade/core';
+import { CURRENT_APP_STATE_SCHEMA_VERSION, CURRENT_WORKSPACE_SCHEMA_VERSION } from '@upmade/core';
+import { ThemeName } from '@upmade/core';
+import { UpmadeShortcut } from '@upmade/core';
+import { LocaleCode, UpmadeTermKey } from '@upmade/core';
 const DEFAULT_SCALE_MIN = 0.0001;
 const DEFAULT_SCALE_MAX = 1000;
 const DEFAULT_LOCK_DRAWING_SCALE = true;
@@ -15,7 +15,7 @@ const DEFAULT_VIEWPORT_BOUNDARY_RIGHT = Infinity;
 const DEFAULT_VIEWPORT_BOUNDARY_TOP = -Infinity;
 const DEFAULT_VIEWPORT_BOUNDARY_BOTTOM = Infinity;
 
-const DEFAULT_DEBUG_INFO: UpdrawDebugInfo = {
+const DEFAULT_DEBUG_INFO: UpmadeDebugInfo = {
   showViewportInfo: false,
   showObjectInfo: false,
   showSyncProviderInfo: true,
@@ -26,25 +26,25 @@ const DEFAULT_DEBUG_INFO: UpdrawDebugInfo = {
 const SETTINGS_CATEGORY_IDS = ['general', 'viewport', 'shortcuts', 'developer', 'about'] as const;
 
 @Component({
-  tag: 'updraw-settings',
-  styleUrl: 'updraw-settings.css',
+  tag: 'upmade-settings',
+  styleUrl: 'upmade-settings.css',
   shadow: true,
 })
-export class UpdrawSettings {
+export class UpmadeSettings {
   @Element() host!: HTMLElement;
 
   /** Keyboard shortcuts to display in the settings dialog */
   @Prop() availableThemes: string[] = ['light', 'dark'];
   /** Available locales as `{ code, label }` options for the language selector. */
   @Prop() availableLocales: { code: LocaleCode; label: string }[] = [];
-  @Prop() shortcuts: Omit<UpdrawShortcut, 'action' | 'condition'>[] = [];
+  @Prop() shortcuts: Omit<UpmadeShortcut, 'action' | 'condition'>[] = [];
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpmadeTermKey, string>> = {};
 
   /** Current settings values. Used to initialize and sync the component's internal state. */
-  @Prop() settings?: Partial<UpdrawSettingsConfig>;
+  @Prop() settings?: Partial<UpmadeSettingsConfig>;
   @Watch('settings')
-  onSettingsPropChange(newSettings?: Partial<UpdrawSettingsConfig>) {
+  onSettingsPropChange(newSettings?: Partial<UpmadeSettingsConfig>) {
     if (newSettings) {
       this.applySettings(newSettings);
     }
@@ -61,10 +61,10 @@ export class UpdrawSettings {
   @State() viewportBoundaryRight: number = DEFAULT_VIEWPORT_BOUNDARY_RIGHT;
   @State() viewportBoundaryTop: number = DEFAULT_VIEWPORT_BOUNDARY_TOP;
   @State() viewportBoundaryBottom: number = DEFAULT_VIEWPORT_BOUNDARY_BOTTOM;
-  @State() debugInfo: UpdrawDebugInfo = { ...DEFAULT_DEBUG_INFO };
+  @State() debugInfo: UpmadeDebugInfo = { ...DEFAULT_DEBUG_INFO };
 
   /** Emitted when settings change */
-  @Event() settingsChange: EventEmitter<UpdrawSettingsConfig>;
+  @Event() settingsChange: EventEmitter<UpmadeSettingsConfig>;
 
   componentWillLoad(): void {
     if (this.settings) {
@@ -72,7 +72,7 @@ export class UpdrawSettings {
     }
   }
 
-  private applySettings(settings: Partial<UpdrawSettingsConfig>): void {
+  private applySettings(settings: Partial<UpmadeSettingsConfig>): void {
     if (typeof settings.scaleMin === 'number') {
       this.scaleMin = settings.scaleMin;
     }
@@ -106,7 +106,7 @@ export class UpdrawSettings {
   }
 
   private emitSettings(): void {
-    const settings: UpdrawSettingsConfig = {
+    const settings: UpmadeSettingsConfig = {
       scaleMin: this.scaleMin,
       scaleMax: this.scaleMax,
       lockDrawingScale: this.lockDrawingScale,
@@ -166,7 +166,7 @@ export class UpdrawSettings {
     this.emitSettings();
   };
 
-  private handleDebugInfoChange = (key: keyof UpdrawDebugInfo) => (event: CustomEvent<boolean>): void => {
+  private handleDebugInfoChange = (key: keyof UpmadeDebugInfo) => (event: CustomEvent<boolean>): void => {
     this.debugInfo = { ...this.debugInfo, [key]: event.detail };
     this.emitSettings();
   };
@@ -185,11 +185,11 @@ export class UpdrawSettings {
     this.isDialogOpen = false;
   };
 
-  private handleCategorySelect = (event: CustomEvent<IUpdrawMasterDetailSelectEvent>): void => {
+  private handleCategorySelect = (event: CustomEvent<IUpmadeMasterDetailSelectEvent>): void => {
     this.selectedCategoryId = event.detail.item.id;
   };
 
-  private formatKeyCombo(shortcut: Omit<UpdrawShortcut, 'action' | 'condition'>): string {
+  private formatKeyCombo(shortcut: Omit<UpmadeShortcut, 'action' | 'condition'>): string {
     const parts: string[] = [];
     if (shortcut.ctrl) parts.push('Ctrl');
     if (shortcut.shift) parts.push('Shift');
@@ -206,8 +206,8 @@ export class UpdrawSettings {
     return keyMap[key] ?? key.toUpperCase();
   }
 
-  private groupShortcutsByCategory(): Map<string, Omit<UpdrawShortcut, 'action' | 'condition'>[]> {
-    const grouped = new Map<string, Omit<UpdrawShortcut, 'action' | 'condition'>[]>();
+  private groupShortcutsByCategory(): Map<string, Omit<UpmadeShortcut, 'action' | 'condition'>[]> {
+    const grouped = new Map<string, Omit<UpmadeShortcut, 'action' | 'condition'>[]>();
     for (const shortcut of this.shortcuts) {
       const existing = grouped.get(shortcut.category) || [];
       existing.push(shortcut);
@@ -220,11 +220,11 @@ export class UpdrawSettings {
    * Resolves a localized string from the supplied {@link terms} map, falling
    * back to the provided English default when the key is missing.
    */
-  private t(key: UpdrawTermKey, fallback: string): string {
+  private t(key: UpmadeTermKey, fallback: string): string {
     return this.terms[key] ?? fallback;
   }
 
-  private get categories(): IUpdrawMasterDetailItem[] {
+  private get categories(): IUpmadeMasterDetailItem[] {
     const icons: Record<(typeof SETTINGS_CATEGORY_IDS)[number], string> = {
       general: 'settings',
       viewport: 'viewport',
@@ -232,7 +232,7 @@ export class UpdrawSettings {
       developer: 'braces',
       about: 'info',
     };
-    const labels: Record<(typeof SETTINGS_CATEGORY_IDS)[number], { key: UpdrawTermKey; fallback: string }> = {
+    const labels: Record<(typeof SETTINGS_CATEGORY_IDS)[number], { key: UpmadeTermKey; fallback: string }> = {
       general: { key: 'settings.categories.general', fallback: 'General' },
       viewport: { key: 'settings.categories.viewport', fallback: 'Viewport' },
       shortcuts: { key: 'settings.categories.shortcuts', fallback: 'Keyboard Shortcuts' },
@@ -258,11 +258,11 @@ export class UpdrawSettings {
                 <p class="settings-description">
                   {this.t('settings.general.theme.description', 'Select a registered color theme for the editor interface.')}
                 </p>
-                <updraw-dropdown
+                <upmade-dropdown
                   options={this.availableThemes.map(t => ({ value: t, label: t }))}
                   value={this.theme}
                   onValueChanged={this.handleThemeChange}
-                ></updraw-dropdown>
+                ></upmade-dropdown>
               </div>
               {this.availableLocales.length > 0 && (
                 <div class="settings-item">
@@ -270,11 +270,11 @@ export class UpdrawSettings {
                   <p class="settings-description">
                     {this.t('settings.general.language.description', 'Select the display language for the editor interface.')}
                   </p>
-                  <updraw-dropdown
+                  <upmade-dropdown
                     options={this.availableLocales.map(l => ({ value: l.code, label: l.label }))}
                     value={this.locale}
                     onValueChanged={this.handleLocaleChange}
-                  ></updraw-dropdown>
+                  ></upmade-dropdown>
                 </div>
               )}
               <div class="settings-item">
@@ -282,7 +282,7 @@ export class UpdrawSettings {
                 <p class="settings-description">
                   {this.t('settings.general.lockDrawingScale.description', 'When enabled, drawn objects maintain a fixed visual size regardless of the current zoom level.')}
                 </p>
-                <updraw-slide-toggle
+                <upmade-slide-toggle
                   checked={this.lockDrawingScale}
                   label={this.t('settings.general.lockDrawingScale.label', 'Lock Drawing Scale')}
                   onCheckedChange={this.handleLockDrawingScaleChange}
@@ -301,7 +301,7 @@ export class UpdrawSettings {
                 <p class="settings-description">
                   {this.t('settings.viewport.minZoom.description', 'Sets the minimum zoom level. Lower values allow zooming out further to see more of the canvas.')}
                 </p>
-                <updraw-numeric-input
+                <upmade-numeric-input
                   value={this.scaleMin}
                   min={0.0001}
                   max={1}
@@ -314,7 +314,7 @@ export class UpdrawSettings {
                 <p class="settings-description">
                   {this.t('settings.viewport.maxZoom.description', 'Sets the maximum zoom level. Higher values allow zooming in closer for detailed work.')}
                 </p>
-                <updraw-numeric-input
+                <upmade-numeric-input
                   value={this.scaleMax}
                   min={1}
                   max={1000}
@@ -327,7 +327,7 @@ export class UpdrawSettings {
                 <p class="settings-description">
                   {this.t('settings.viewport.boundaryLeft.description', 'Left boundary in world coordinates. Set to limit how far left the viewport can pan.')}
                 </p>
-                <updraw-numeric-input
+                <upmade-numeric-input
                   value={this.viewportBoundaryLeft}
                   step={100}
                   placeholder={this.t('settings.viewport.boundaryPlaceholder', 'Infinite')}
@@ -339,7 +339,7 @@ export class UpdrawSettings {
                 <p class="settings-description">
                   {this.t('settings.viewport.boundaryRight.description', 'Right boundary in world coordinates. Set to limit how far right the viewport can pan.')}
                 </p>
-                <updraw-numeric-input
+                <upmade-numeric-input
                   value={this.viewportBoundaryRight}
                   step={100}
                   placeholder={this.t('settings.viewport.boundaryPlaceholder', 'Infinite')}
@@ -351,7 +351,7 @@ export class UpdrawSettings {
                 <p class="settings-description">
                   {this.t('settings.viewport.boundaryTop.description', 'Top boundary in world coordinates. Set to limit how far up the viewport can pan.')}
                 </p>
-                <updraw-numeric-input
+                <upmade-numeric-input
                   value={this.viewportBoundaryTop}
                   step={100}
                   placeholder={this.t('settings.viewport.boundaryPlaceholder', 'Infinite')}
@@ -363,7 +363,7 @@ export class UpdrawSettings {
                 <p class="settings-description">
                   {this.t('settings.viewport.boundaryBottom.description', 'Bottom boundary in world coordinates. Set to limit how far down the viewport can pan.')}
                 </p>
-                <updraw-numeric-input
+                <upmade-numeric-input
                   value={this.viewportBoundaryBottom}
                   step={100}
                   placeholder={this.t('settings.viewport.boundaryPlaceholder', 'Infinite')}
@@ -404,7 +404,7 @@ export class UpdrawSettings {
                 <p class="settings-description">
                   {this.t('settings.developer.showViewportInfo.description', 'Display viewport debug information such as position, zoom level, and boundaries.')}
                 </p>
-                <updraw-slide-toggle
+                <upmade-slide-toggle
                   checked={this.debugInfo.showViewportInfo}
                   label={this.t('settings.developer.showViewportInfo.label', 'Show Viewport Info')}
                   onCheckedChange={this.handleDebugInfoChange('showViewportInfo')}
@@ -415,7 +415,7 @@ export class UpdrawSettings {
                 <p class="settings-description">
                   {this.t('settings.developer.showObjectInfo.description', 'Display debug information about objects on the canvas.')}
                 </p>
-                <updraw-slide-toggle
+                <upmade-slide-toggle
                   checked={this.debugInfo.showObjectInfo}
                   label={this.t('settings.developer.showObjectInfo.label', 'Show Object Info')}
                   onCheckedChange={this.handleDebugInfoChange('showObjectInfo')}
@@ -426,7 +426,7 @@ export class UpdrawSettings {
                 <p class="settings-description">
                   {this.t('settings.developer.showSyncProviderInfo.description', 'Display debug information about the sync provider connection status.')}
                 </p>
-                <updraw-slide-toggle
+                <upmade-slide-toggle
                   checked={this.debugInfo.showSyncProviderInfo}
                   label={this.t('settings.developer.showSyncProviderInfo.label', 'Show Sync Provider Info')}
                   onCheckedChange={this.handleDebugInfoChange('showSyncProviderInfo')}
@@ -437,7 +437,7 @@ export class UpdrawSettings {
                 <p class="settings-description">
                   {this.t('settings.developer.showMigrationInfo.description', 'Display debug information about data migrations.')}
                 </p>
-                <updraw-slide-toggle
+                <upmade-slide-toggle
                   checked={this.debugInfo.showMigrationInfo}
                   label={this.t('settings.developer.showMigrationInfo.label', 'Show Migration Info')}
                   onCheckedChange={this.handleDebugInfoChange('showMigrationInfo')}
@@ -450,8 +450,8 @@ export class UpdrawSettings {
         <div class={{ 'settings-tab-panel': true, 'is-active': this.selectedCategoryId === 'about' }}>
           <div class="settings-content">
             <h3>{this.t('settings.about.title', 'About')}</h3>
-            <p>{this.t('settings.about.description', 'Updraw - A drawing application')}</p>
-            <p class="version-info">Version {UPDRAW_VERSION}</p>
+            <p>{this.t('settings.about.description', 'Upmade - A drawing application')}</p>
+            <p class="version-info">Version {UPMADE_VERSION}</p>
             <p class="version-info">App-State Schema v{CURRENT_APP_STATE_SCHEMA_VERSION}</p>
             <p class="version-info">Workspace Schema v{CURRENT_WORKSPACE_SCHEMA_VERSION}</p>
           </div>
@@ -463,21 +463,21 @@ export class UpdrawSettings {
   render() {
     return (
       <Host>
-        <updraw-dialog
+        <upmade-dialog
           isOpen={this.isDialogOpen}
           dialogTitle={this.t('settings.dialogTitle', 'Settings')}
           size="large"
           contained={true}
           onDialogClose={this.closeDialog}
         >
-          <updraw-master-detail
+          <upmade-master-detail
             items={this.categories}
             selectedItemId={this.selectedCategoryId}
             onItemSelect={this.handleCategorySelect}
           >
             {this.renderCategoryContent()}
-          </updraw-master-detail>
-        </updraw-dialog>
+          </upmade-master-detail>
+        </upmade-dialog>
       </Host>
     );
   }

@@ -1,4 +1,4 @@
-# updraw-font-family
+# upmade-font-family
 
 
 
@@ -24,18 +24,18 @@
 
 ### Used by
 
- - [updraw-tool-config](../updraw-tool-config)
+ - [upmade-tool-config](../upmade-tool-config)
 
 ### Depends on
 
-- [updraw-dropdown](../updraw-dropdown)
+- [upmade-dropdown](../upmade-dropdown)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-font-family --> updraw-dropdown
-  updraw-tool-config --> updraw-font-family
-  style updraw-font-family fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-font-family --> upmade-dropdown
+  upmade-tool-config --> upmade-font-family
+  style upmade-font-family fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

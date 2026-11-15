@@ -1,10 +1,10 @@
-import { UpdrawAsset } from '../../../interfaces/asset.interface';
-import { IAssetStorageProvider, UpdrawAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
+import { UpmadeAsset } from '../../../interfaces/asset.interface';
+import { IAssetStorageProvider, UpmadeAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
 import { LEGACY_ASSET_DB_NAME } from '../../../migrations/legacy-brand';
 import { indexedDbExists, isLegacyDatabaseImported, markLegacyDatabaseImported } from '../../../migrations/legacy-indexeddb';
 
 /** Default database name used by IndexedDBAssetProvider. */
-const DEFAULT_DB_NAME = 'updraw-assets';
+const DEFAULT_DB_NAME = 'upmade-assets';
 /** Object store holding the binary payloads. */
 const BLOB_STORE = 'blobs';
 /** Object store holding the asset metadata. */
@@ -17,7 +17,7 @@ const DB_VERSION = 1;
  */
 export interface IndexedDBAssetProviderOptions {
   /**
-   * Custom database name. Defaults to `updraw-assets`. With the default name, assets saved before
+   * Custom database name. Defaults to `upmade-assets`. With the default name, assets saved before
    * the rename are copied over on first use.
    */
   dbName?: string;
@@ -55,7 +55,7 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
 
   /**
    * Factory helper enabling use as `IndexedDBAssetProvider.with({ dbName: '...' })`
-   * inside an `UpdrawAssetStorageConfig.providers` array.
+   * inside an `UpmadeAssetStorageConfig.providers` array.
    */
   static with(options: IndexedDBAssetProviderOptions): { create: () => IAssetStorageProvider } {
     return { create: () => new IndexedDBAssetProvider(options) };
@@ -91,10 +91,10 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
     return this._knownIds.has(id);
   }
 
-  async put(blob: Blob, metadata: UpdrawAssetPutMetadata): Promise<UpdrawAsset> {
+  async put(blob: Blob, metadata: UpmadeAssetPutMetadata): Promise<UpmadeAsset> {
     const db = await this.ensureDb();
     const id = metadata.id ?? this.generateUuid();
-    const asset: UpdrawAsset = {
+    const asset: UpmadeAsset = {
       id,
       kind: metadata.kind ?? 'file',
       mimeType: metadata.mimeType,
@@ -171,12 +171,12 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
    * Returns the metadata record for a stored asset, or `undefined` when
    * the asset is not present locally.
    */
-  async getMetadata(id: string): Promise<UpdrawAsset | undefined> {
+  async getMetadata(id: string): Promise<UpmadeAsset | undefined> {
     const db = await this.ensureDb();
-    return new Promise<UpdrawAsset | undefined>((resolve, reject) => {
+    return new Promise<UpmadeAsset | undefined>((resolve, reject) => {
       const tx = db.transaction(META_STORE, 'readonly');
       const req = tx.objectStore(META_STORE).get(id);
-      req.onsuccess = () => resolve(req.result as UpdrawAsset | undefined);
+      req.onsuccess = () => resolve(req.result as UpmadeAsset | undefined);
       req.onerror = () => reject(req.error);
     });
   }
@@ -187,13 +187,13 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
    * re-enqueue uploads that were interrupted (e.g. the user reloaded
    * the tab while a background upload was retrying).
    */
-  async listAssetsWithPendingRemotes(): Promise<UpdrawAsset[]> {
+  async listAssetsWithPendingRemotes(): Promise<UpmadeAsset[]> {
     const db = await this.ensureDb();
-    return new Promise<UpdrawAsset[]>((resolve, reject) => {
+    return new Promise<UpmadeAsset[]>((resolve, reject) => {
       const tx = db.transaction(META_STORE, 'readonly');
       const req = tx.objectStore(META_STORE).getAll();
       req.onsuccess = () => {
-        const all = (req.result as UpdrawAsset[]) ?? [];
+        const all = (req.result as UpmadeAsset[]) ?? [];
         resolve(all.filter(a => Array.isArray(a.pendingRemotes) && a.pendingRemotes.length > 0));
       };
       req.onerror = () => reject(req.error);
@@ -213,9 +213,9 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
       const store = tx.objectStore(META_STORE);
       const req = store.get(id);
       req.onsuccess = () => {
-        const existing = req.result as UpdrawAsset | undefined;
+        const existing = req.result as UpmadeAsset | undefined;
         if (!existing) return; // Asset gone; nothing to update.
-        const updated: UpdrawAsset = { ...existing };
+        const updated: UpmadeAsset = { ...existing };
         if (providerNames.length > 0) {
           updated.pendingRemotes = providerNames;
         } else {
@@ -303,14 +303,14 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
     });
   }
 
-  private readRecord(db: IDBDatabase, id: IDBValidKey): Promise<{ blob: Blob; metadata: UpdrawAsset } | null> {
+  private readRecord(db: IDBDatabase, id: IDBValidKey): Promise<{ blob: Blob; metadata: UpmadeAsset } | null> {
     return new Promise((resolve, reject) => {
       const tx = db.transaction([BLOB_STORE, META_STORE], 'readonly');
       const blobReq = tx.objectStore(BLOB_STORE).get(id);
       const metaReq = tx.objectStore(META_STORE).get(id);
       tx.oncomplete = () => {
         const blob = blobReq.result as Blob | undefined;
-        const metadata = metaReq.result as UpdrawAsset | undefined;
+        const metadata = metaReq.result as UpmadeAsset | undefined;
         resolve(blob && metadata ? { blob, metadata } : null);
       };
       tx.onerror = () => reject(tx.error);

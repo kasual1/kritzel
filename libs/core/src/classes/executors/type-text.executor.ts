@@ -1,21 +1,21 @@
-import type { UpdrawAgenticTypeTextAction } from '../../interfaces/agentic-action.interface';
+import type { UpmadeAgenticTypeTextAction } from '../../interfaces/agentic-action.interface';
 import type { EditorView } from 'prosemirror-view';
-import { UpdrawText } from '../objects/text.class';
-import { UpdrawShape } from '../objects/shape.class';
-import { UpdrawRichTextHelper } from '../../helpers/rich-text.helper';
+import { UpmadeText } from '../objects/text.class';
+import { UpmadeShape } from '../objects/shape.class';
+import { UpmadeRichTextHelper } from '../../helpers/rich-text.helper';
 import { AGENTIC_ACTION_TYPING_CPS } from '../../constants/agentic-action.constants';
-import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
-import type { UpdrawAgenticActionRun } from '../managers/agentic-action-run.class';
+import type { UpmadeAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpmadeAgenticActionRun } from '../managers/agentic-action-run.class';
 import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { assertObjectId } from '../../helpers/agentic-validation.helper';
 
-type TypeableObject = UpdrawText | UpdrawShape;
+type TypeableObject = UpmadeText | UpmadeShape;
 
 function isTypeable(object: unknown): object is TypeableObject {
-  return object instanceof UpdrawText || object instanceof UpdrawShape;
+  return object instanceof UpmadeText || object instanceof UpmadeShape;
 }
 
-function editorOf(run: UpdrawAgenticActionRun, objectId: string): { object: TypeableObject; editor: EditorView } {
+function editorOf(run: UpmadeAgenticActionRun, objectId: string): { object: TypeableObject; editor: EditorView } {
   const object = run.map!.findById(objectId);
   if (!isTypeable(object) || !object.editor) {
     run.stop('object-removed', [objectId]);
@@ -27,7 +27,7 @@ function editorOf(run: UpdrawAgenticActionRun, objectId: string): { object: Type
  * Types `text` into a text or shape character by character. The object's own editor
  * handling updates its content and size; writes go to the agent's history.
  */
-export async function typeInto(run: UpdrawAgenticActionRun, objectId: string, text: string): Promise<void> {
+export async function typeInto(run: UpmadeAgenticActionRun, objectId: string, text: string): Promise<void> {
   const characters = Array.from(text);
   const cursors = run.cursorManager;
   let typed = 0;
@@ -47,7 +47,7 @@ export async function typeInto(run: UpdrawAgenticActionRun, objectId: string, te
         const next = isLast ? characters.length : Math.floor(raw * characters.length);
         if (next > typed) {
           const chunk = characters.slice(typed, next).join('');
-          run.mutate(() => UpdrawRichTextHelper.appendText(editorOf(run, objectId).editor, chunk), isLast ? 'final' : 'throttled');
+          run.mutate(() => UpmadeRichTextHelper.appendText(editorOf(run, objectId).editor, chunk), isLast ? 'final' : 'throttled');
           typed = next;
         }
         follow();
@@ -59,7 +59,7 @@ export async function typeInto(run: UpdrawAgenticActionRun, objectId: string, te
   // Measure once more (the DOM has the final text) and persist the final size.
   run.mutate(() => {
     const { object } = editorOf(run, objectId);
-    if (object instanceof UpdrawText) {
+    if (object instanceof UpmadeText) {
       object.adjustSizeOnInput();
     }
     run.map!.update(object);
@@ -68,7 +68,7 @@ export async function typeInto(run: UpdrawAgenticActionRun, objectId: string, te
 }
 
 /** `typeText`: clicks into a text or shape and types. */
-export const typeTextExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticTypeTextAction> = {
+export const typeTextExecutor: UpmadeAgenticActionExecutor<UpmadeAgenticTypeTextAction> = {
   mutates: true,
 
   validate(action) {
@@ -102,12 +102,12 @@ export const typeTextExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticTypeText
     await run.click();
 
     if (action.mode === 'replace') {
-      run.mutate(() => UpdrawRichTextHelper.clear(editorOf(run, id).editor));
+      run.mutate(() => UpmadeRichTextHelper.clear(editorOf(run, id).editor));
     }
     await typeInto(run, id, action.text);
 
     const { object } = editorOf(run, id);
-    run.changedProperties.set(id, object instanceof UpdrawText ? ['content', 'width', 'height'] : ['content']);
+    run.changedProperties.set(id, object instanceof UpmadeText ? ['content', 'width', 'height'] : ['content']);
     run.finalAttachment = { objectId: id, anchor: 'right' };
     return [id];
   },

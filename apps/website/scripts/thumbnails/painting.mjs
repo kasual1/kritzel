@@ -7,7 +7,7 @@
 //   4. resolution steps across the width (smooth, 3, 6, 9, 12px): each cell takes the mean paint color and
 //      is ordered-dithered in lightness only (OKLab), so pixels keep their hue and read as grain.
 //
-// The image is fully determined by its seed, an arbitrary string (e.g. `5b1192ef` or `hello updraw`), and
+// The image is fully determined by its seed, an arbitrary string (e.g. `5b1192ef` or `hello upmade`), and
 // resolution independent: geometry lives in logical 1200×630 units, loops run over output pixels at
 // an integer `scale`, so a seed renders the same picture at 1×, 2×, 4×… This module is browser-safe.
 import { W, H, oklch, hexToRgb, rgbToOklab, oklabToRgb, bayer8, hashString, mulberry32, createNoise2D } from './lib.mjs';
@@ -347,9 +347,9 @@ export function renderArtwork(seedText, { scale = 1, scheme = SCHEME, steps = ST
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-// The text overlay as an SVG document in logical units, sized for `scale`: a darkening gradient, the Updraw
+// The text overlay as an SVG document in logical units, sized for `scale`: a darkening gradient, the Upmade
 // logo (`logo` = { d, w, h, stroke } of the navbar logo path: filled, and outlined `stroke` units wide if non-zero),
-// "updraw / blog" and the seed. `imageHref` (a data URL of the artwork) is drawn underneath when given, so the
+// "upmade / blog" and the seed. `imageHref` (a data URL of the artwork) is drawn underneath when given, so the
 // result is the complete thumbnail.
 export function thumbnailSvg({ seed, label, logo, scale = 1, imageHref = null }) {
   const font = `font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"`;
@@ -364,7 +364,7 @@ export function thumbnailSvg({ seed, label, logo, scale = 1, imageHref = null })
   <rect width="${W}" height="${H}" fill="url(#shade)"/>
   <g fill="${label.color}" fill-opacity="0.85" ${font} font-size="22">
     <g opacity="0.85"><path fill-opacity="1"${logo.stroke ? ` stroke="${label.color}" stroke-width="${logo.stroke}" stroke-linejoin="round"` : ''} transform="translate(56 ${baseline - 8 - logoH / 2}) scale(${(logoH / logo.h).toFixed(5)})" d="${logo.d}"/></g>
-    <text x="${56 + logoW + 10}" y="${baseline}" font-weight="700" letter-spacing="-0.3">updraw<tspan font-weight="400" fill-opacity="0.6" dx="7">/ blog</tspan></text>
+    <text x="${56 + logoW + 10}" y="${baseline}" font-weight="700" letter-spacing="-0.3">upmade<tspan font-weight="400" fill-opacity="0.6" dx="7">/ blog</tspan></text>
     <text x="${W - 56}" y="${baseline}" text-anchor="end" font-weight="400" fill-opacity="0.6">${esc(seed)}</text>
   </g>
 </svg>`;

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { UpdrawEditor, UpdrawWorkspace, LocaleCode } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeWorkspace, LocaleCode } from '@upmade/angular-editor';
 import { createSeedObjects } from '../../../const/seed-objects';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -7,7 +7,7 @@ import { angularThemeDark } from '../../../const/angular-theme-dark';
 
 @Component({
   selector: 'app-localization-switch',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -16,7 +16,7 @@ import { angularThemeDark } from '../../../const/angular-theme-dark';
       <button [class.active]="activeLocale() === 'fr'" (click)="setLocale('fr')">French</button>
     </app-toolbar>
     <div class="editor-wrap">
-      <updraw-editor
+      <upmade-editor
         editorId="localization-switch"
         [locale]="activeLocale()"
         [workspaces]="workspaces()"
@@ -27,7 +27,7 @@ import { angularThemeDark } from '../../../const/angular-theme-dark';
         [isMoreMenuVisible]="true"
         [isWorkspaceManagerVisible]="true"
         (localeChange)="onLocaleChange($event)"
-      ></updraw-editor>
+      ></upmade-editor>
     </div>
   `,
   styles: [`
@@ -39,7 +39,7 @@ import { angularThemeDark } from '../../../const/angular-theme-dark';
 export class LocalizationSwitchComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
   
   activeLocale = signal<LocaleCode>('en');
 

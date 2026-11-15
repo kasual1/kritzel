@@ -1,4 +1,4 @@
-# updraw-export
+# upmade-export
 
 
 
@@ -55,25 +55,25 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [updraw-editor](../updraw-editor)
+ - [upmade-editor](../upmade-editor)
 
 ### Depends on
 
-- [updraw-input](../updraw-input)
-- [updraw-dropdown](../updraw-dropdown)
-- [updraw-dialog](../updraw-dialog)
-- [updraw-pill-tabs](../updraw-pill-tabs)
+- [upmade-input](../upmade-input)
+- [upmade-dropdown](../upmade-dropdown)
+- [upmade-dialog](../upmade-dialog)
+- [upmade-pill-tabs](../upmade-pill-tabs)
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-export --> updraw-input
-  updraw-export --> updraw-dropdown
-  updraw-export --> updraw-dialog
-  updraw-export --> updraw-pill-tabs
-  updraw-pill-tabs --> updraw-icon
-  updraw-editor --> updraw-export
-  style updraw-export fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-export --> upmade-input
+  upmade-export --> upmade-dropdown
+  upmade-export --> upmade-dialog
+  upmade-export --> upmade-pill-tabs
+  upmade-pill-tabs --> upmade-icon
+  upmade-editor --> upmade-export
+  style upmade-export fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

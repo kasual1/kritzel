@@ -1,19 +1,19 @@
 ﻿import { Component, Host, h, Prop, Method, State, Element, Event, EventEmitter } from '@stencil/core';
-import { IUpdrawUser } from '@updraw/core';
-import { UpdrawTermKey } from '@updraw/core';
+import { IUpmadeUser } from '@upmade/core';
+import { UpmadeTermKey } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-current-user-dialog',
-  styleUrl: 'updraw-current-user-dialog.css',
+  tag: 'upmade-current-user-dialog',
+  styleUrl: 'upmade-current-user-dialog.css',
   shadow: true,
 })
-export class UpdrawCurrentUserDialog {
+export class UpmadeCurrentUserDialog {
   @Element() host!: HTMLElement;
 
-  @Prop() user?: IUpdrawUser;
+  @Prop() user?: IUpmadeUser;
 
   /** Resolved localized strings keyed by term key, supplied by the editor. */
-  @Prop() terms: Partial<Record<UpdrawTermKey, string>> = {};
+  @Prop() terms: Partial<Record<UpmadeTermKey, string>> = {};
 
   @State() isDialogOpen: boolean = false;
 
@@ -53,7 +53,7 @@ export class UpdrawCurrentUserDialog {
 
     return (
       <Host>
-        <updraw-dialog
+        <upmade-dialog
           dialogTitle={this.terms['currentUser.dialogTitle'] ?? 'Account'}
           isOpen={this.isDialogOpen}
           onDialogClose={this.closeDialog}
@@ -61,16 +61,16 @@ export class UpdrawCurrentUserDialog {
           contained={true}
         >
           <div class="user-info">
-            <updraw-avatar user={this.user} size={80}></updraw-avatar>
+            <upmade-avatar user={this.user} size={80}></upmade-avatar>
 
             {displayName && <div class="user-name">{displayName}</div>}
             {this.user?.email && <div class="user-email">{this.user.email}</div>}
 
-            <updraw-button class="logout-button" variant="primary" onButtonClick={this.handleLogout}>
+            <upmade-button class="logout-button" variant="primary" onButtonClick={this.handleLogout}>
               {this.terms['menu.logout'] ?? 'Logout'}
-            </updraw-button>
+            </upmade-button>
           </div>
-        </updraw-dialog>
+        </upmade-dialog>
       </Host>
     );
   }

@@ -1,6 +1,6 @@
-import type { UpdrawAgenticCreateShapeAction } from '../../interfaces/agentic-action.interface';
-import { UpdrawShape } from '../objects/shape.class';
-import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpmadeAgenticCreateShapeAction } from '../../interfaces/agentic-action.interface';
+import { UpmadeShape } from '../objects/shape.class';
+import type { UpmadeAgenticActionExecutor } from '../../types/agentic-action.types';
 import { resolveShapeStyle } from '../../helpers/agentic-style.helper';
 import { typeInto } from './type-text.executor';
 import { AGENTIC_SHAPE_STYLE_KEYS, AGENTIC_SHAPE_TYPES, assertStyle } from '../../helpers/agentic-validation.helper';
@@ -12,7 +12,7 @@ function assertFinite(value: unknown, field: string, min = -Infinity): void {
 }
 
 /** `createShape`: presses at the top-left corner and drags the shape out to its size. */
-export const createShapeExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticCreateShapeAction> = {
+export const createShapeExecutor: UpmadeAgenticActionExecutor<UpmadeAgenticCreateShapeAction> = {
   mutates: true,
 
   validate(action) {
@@ -47,7 +47,7 @@ export const createShapeExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticCreat
     await run.press();
 
     const shape = run.mutate(() => {
-      const created = UpdrawShape.create(core, {
+      const created = UpmadeShape.create(core, {
         x: x * scale,
         y: y * scale,
         translateX: 0,
@@ -75,7 +75,7 @@ export const createShapeExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticCreat
       run.dragDuration(distance),
       (eased, _raw, isLast) => {
         run.mutate(() => {
-          const current = map.findById(shape.id) as UpdrawShape | undefined;
+          const current = map.findById(shape.id) as UpmadeShape | undefined;
           if (!current) {
             return;
           }

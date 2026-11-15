@@ -1,13 +1,13 @@
 ﻿import { Component, Host, Listen, Prop, Watch, h, Event, EventEmitter, Element } from '@stencil/core';
-import { ObjectHelper } from '@updraw/core';
-import { UpdrawHTMLHelper } from '@updraw/core';
-import { UpdrawKeyboardHelper } from '@updraw/core';
+import { ObjectHelper } from '@upmade/core';
+import { UpmadeHTMLHelper } from '@upmade/core';
+import { UpmadeKeyboardHelper } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-portal',
+  tag: 'upmade-portal',
   shadow: true,
 })
-export class UpdrawPortal {
+export class UpmadePortal {
   @Element() host: HTMLElement;
 
   @Prop() anchor: HTMLElement;
@@ -38,7 +38,7 @@ export class UpdrawPortal {
 
   @Event() close: EventEmitter<void>;
 
-  @Listen('updraw-dismiss-menus', { target: 'window' })
+  @Listen('upmade-dismiss-menus', { target: 'window' })
   handleDismissMenus() {
     if (this.portal) {
       this.close.emit();
@@ -128,7 +128,7 @@ export class UpdrawPortal {
       return;
     }
 
-    const isInViewport = UpdrawHTMLHelper.isElementInViewport(this.anchor);
+    const isInViewport = UpmadeHTMLHelper.isElementInViewport(this.anchor);
 
     if (!isInViewport) {
       this.anchor?.blur();
@@ -181,7 +181,7 @@ export class UpdrawPortal {
   }
 
   private trapFocus(event: KeyboardEvent) {
-    const focusableElements = UpdrawHTMLHelper.getFocusableElements(this.host);
+    const focusableElements = UpmadeHTMLHelper.getFocusableElements(this.host);
     if (focusableElements.length === 0) return;
 
     const firstFocusable = focusableElements[0];
@@ -208,7 +208,7 @@ export class UpdrawPortal {
     const firstAssigned = slotEl?.assignedElements({ flatten: true })[0] as HTMLElement | undefined;
     if (!firstAssigned) return null;
 
-    const focusable = UpdrawHTMLHelper.getFocusableElements(firstAssigned);
+    const focusable = UpmadeHTMLHelper.getFocusableElements(firstAssigned);
     return focusable[0] ?? firstAssigned;
   }
 
@@ -259,7 +259,7 @@ export class UpdrawPortal {
     const spaceAbove = refRect.top - offset - padding;
 
     // Reset max-height CSS custom property  
-    this.host.style.removeProperty('--updraw-portal-max-height');
+    this.host.style.removeProperty('--upmade-portal-max-height');
 
     if (portalRect.height <= spaceBelow) {
       // Fits below the anchor
@@ -272,11 +272,11 @@ export class UpdrawPortal {
       if (spaceBelow >= spaceAbove) {
         // More space below, keep it below with constrained height
         top = refRect.bottom + offset;
-        this.host.style.setProperty('--updraw-portal-max-height', `${spaceBelow}px`);
+        this.host.style.setProperty('--upmade-portal-max-height', `${spaceBelow}px`);
       } else {
         // More space above, position above with constrained height
         top = padding;
-        this.host.style.setProperty('--updraw-portal-max-height', `${spaceAbove}px`);
+        this.host.style.setProperty('--upmade-portal-max-height', `${spaceAbove}px`);
       }
     }
 
@@ -288,7 +288,7 @@ export class UpdrawPortal {
 
     let current: HTMLElement | null = this.anchor;
     while (current) {
-      const provider = current.closest('updraw-editor');
+      const provider = current.closest('upmade-editor');
       if (provider instanceof HTMLElement) {
         return provider;
       }
@@ -323,7 +323,7 @@ export class UpdrawPortal {
         if (!this.portal) return;
         for (let i = 0; i < themeProvider.style.length; i++) {
           const prop = themeProvider.style[i];
-          if (prop.startsWith('--updraw-')) {
+          if (prop.startsWith('--upmade-')) {
             this.portal.style.setProperty(prop, themeProvider.style.getPropertyValue(prop));
           }
         }
@@ -381,7 +381,7 @@ export class UpdrawPortal {
     if (!this.anchor || !this.portal) return;
 
     const isPositioned = this.portal.style.visibility === 'visible';
-    if (isPositioned && UpdrawKeyboardHelper.isKeyboardOpen()) {
+    if (isPositioned && UpmadeKeyboardHelper.isKeyboardOpen()) {
       this.keepFocusedFieldVisible();
       return;
     }
@@ -406,7 +406,7 @@ export class UpdrawPortal {
     if (rect.top >= visibleTop && rect.bottom <= visibleBottom) return;
 
     if (rect.bottom > visibleBottom) {
-      const scrollContainer = UpdrawHTMLHelper.getScrollableParent(field);
+      const scrollContainer = UpmadeHTMLHelper.getScrollableParent(field);
       if (scrollContainer instanceof HTMLElement && this.isInsideHost(scrollContainer)) {
         // Scroll no further than bringing the field to the top of the scroll container.
         const maxScroll = Math.max(0, rect.top - scrollContainer.getBoundingClientRect().top - this.keyboardPadding);

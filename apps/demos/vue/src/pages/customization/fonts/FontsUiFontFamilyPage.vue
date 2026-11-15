@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  UpdrawEditor,
-  type UpdrawFontMap,
-  type UpdrawTheme,
-} from '@updraw/vue-editor'
+  UpmadeEditor,
+  type UpmadeFontMap,
+  type UpmadeTheme,
+} from '@upmade/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
 
 const editor = getEditorRef('editor')
-const fonts: UpdrawFontMap = {
+const fonts: UpmadeFontMap = {
   pacifico: {
     family: 'Pacifico',
     label: 'Pacifico Cursive',
@@ -17,7 +17,7 @@ const fonts: UpdrawFontMap = {
     source: 'https://fonts.googleapis.com/css2?family=Pacifico&display=swap',
   },
 }
-const themes: UpdrawTheme[] = [{
+const themes: UpmadeTheme[] = [{
   ...vueThemeLight,
   global: {
     ...vueThemeLight.global,
@@ -32,7 +32,7 @@ function onReady() {
 
 <template>
   <div :style="hostStyle">
-    <UpdrawEditor
+    <UpmadeEditor
       ref="editor"
       editorId="fonts-ui-font-family"
       :customFonts="fonts"

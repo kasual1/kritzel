@@ -1,4 +1,4 @@
-export interface UpdrawViewportState {
+export interface UpmadeViewportState {
     translateX: number;
     translateY: number;
     scale: number;

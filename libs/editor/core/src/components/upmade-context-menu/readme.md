@@ -1,4 +1,4 @@
-# updraw-context-menu
+# upmade-context-menu
 
 
 
@@ -10,7 +10,7 @@
 | Property  | Attribute | Description | Type                                            | Default     |
 | --------- | --------- | ----------- | ----------------------------------------------- | ----------- |
 | `items`   | --        |             | `ContextMenuItem[]`                             | `undefined` |
-| `objects` | --        |             | `UpdrawBaseObject<HTMLElement \| SVGElement>[]` | `undefined` |
+| `objects` | --        |             | `UpmadeBaseObject<HTMLElement \| SVGElement>[]` | `undefined` |
 
 
 ## Events
@@ -25,18 +25,18 @@
 
 ### Used by
 
- - [updraw-editor](../updraw-editor)
+ - [upmade-editor](../upmade-editor)
 
 ### Depends on
 
-- updraw-icon
+- upmade-icon
 
 ### Graph
 ```mermaid
 graph TD;
-  updraw-context-menu --> updraw-icon
-  updraw-editor --> updraw-context-menu
-  style updraw-context-menu fill:#f9f,stroke:#333,stroke-width:4px
+  upmade-context-menu --> upmade-icon
+  upmade-editor --> upmade-context-menu
+  style upmade-context-menu fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

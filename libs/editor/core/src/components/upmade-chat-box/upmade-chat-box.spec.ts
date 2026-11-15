@@ -11,7 +11,7 @@ jest.mock('@stencil/core', () => ({
   h: (tag: any, props: any, ...children: any[]) => ({ type: tag, props, children }),
 }));
 
-import { UpdrawChatBox } from './updraw-chat-box';
+import { UpmadeChatBox } from './upmade-chat-box';
 
 function findNode(node: any, predicate: (value: any) => boolean): any {
   if (!node || typeof node !== 'object') {
@@ -43,9 +43,9 @@ function findNode(node: any, predicate: (value: any) => boolean): any {
   return null;
 }
 
-describe('updraw-chat-box', () => {
+describe('upmade-chat-box', () => {
   it('keeps the stop button enabled while loading, even with no draft text', () => {
-    const component = new UpdrawChatBox();
+    const component = new UpmadeChatBox();
     component.loading = true;
     const emitStop = jest.fn();
     Object.defineProperty(component, 'chatStop', { value: { emit: emitStop } });
@@ -61,7 +61,7 @@ describe('updraw-chat-box', () => {
   });
 
   it('still respects the disabled state while loading', () => {
-    const component = new UpdrawChatBox();
+    const component = new UpmadeChatBox();
     component.loading = true;
     component.disabled = true;
 
@@ -71,7 +71,7 @@ describe('updraw-chat-box', () => {
   });
 
   it('submits text when not loading', () => {
-    const component = new UpdrawChatBox();
+    const component = new UpmadeChatBox();
     component.loading = false;
     component.value = 'Draw a tree';
     const emitSubmit = jest.fn();
@@ -87,7 +87,7 @@ describe('updraw-chat-box', () => {
   });
 
   it('keeps the draft when Enter is pressed while loading', () => {
-    const component = new UpdrawChatBox();
+    const component = new UpmadeChatBox();
     component.loading = true;
     component.value = 'Next idea';
     const emitSubmit = jest.fn();
@@ -114,7 +114,7 @@ describe('updraw-chat-box', () => {
     const tipChip = { id: 'tip', label: 'Weather', hint: 'Pick an element' };
 
     it('renders an empty, polite chip row before the card', () => {
-      const tree = new UpdrawChatBox().render();
+      const tree = new UpmadeChatBox().render();
 
       expect(tree.children[0].props.class).toBe('chat-chips');
       expect(tree.children[0].props['aria-live']).toBe('polite');
@@ -123,7 +123,7 @@ describe('updraw-chat-box', () => {
     });
 
     it('renders chips set after creation', () => {
-      const component = new UpdrawChatBox();
+      const component = new UpmadeChatBox();
       component.chips = [pageChip, tipChip];
       const tree = component.render();
 
@@ -151,7 +151,7 @@ describe('updraw-chat-box', () => {
     });
 
     it('emits chatChipRemove with the chip from the remove button', () => {
-      const component = new UpdrawChatBox();
+      const component = new UpmadeChatBox();
       const chips = [pageChip];
       component.chips = chips;
       const emit = jest.fn();
@@ -173,7 +173,7 @@ describe('updraw-chat-box', () => {
     });
 
     it('moves focus to the input only after keyboard activation', () => {
-      const component = new UpdrawChatBox();
+      const component = new UpmadeChatBox();
       component.chips = [pageChip];
       const emit = jest.fn();
       Object.defineProperty(component, 'chatChipRemove', { value: { emit } });
@@ -193,7 +193,7 @@ describe('updraw-chat-box', () => {
     });
 
     it('keeps focus in the input when a chip is pressed', () => {
-      const component = new UpdrawChatBox();
+      const component = new UpmadeChatBox();
       component.chips = [pageChip];
       const preventDefault = jest.fn();
 
@@ -203,7 +203,7 @@ describe('updraw-chat-box', () => {
     });
 
     it('localizes the remove label, including late terms updates', () => {
-      const component = new UpdrawChatBox();
+      const component = new UpmadeChatBox();
       component.chips = [pageChip];
       expect(findNode(component.render(), byClass('chat-chip-remove')).props['aria-label']).toBe('Remove');
 
@@ -215,7 +215,7 @@ describe('updraw-chat-box', () => {
     });
 
     it('shows at most three chips and summarizes the rest', () => {
-      const component = new UpdrawChatBox();
+      const component = new UpmadeChatBox();
       component.chips = ['a', 'b', 'c', 'd', 'e'].map(id => ({ id, label: id }));
       const findAll = (node: any, out: any[] = []): any[] => {
         if (!node || typeof node !== 'object') return out;
@@ -239,7 +239,7 @@ describe('updraw-chat-box', () => {
     });
 
     it('disables remove buttons only while the chat box is disabled', () => {
-      const component = new UpdrawChatBox();
+      const component = new UpmadeChatBox();
       component.chips = [pageChip];
       component.disabled = true;
       expect(findNode(component.render(), byClass('chat-chip-remove')).props.disabled).toBe(true);

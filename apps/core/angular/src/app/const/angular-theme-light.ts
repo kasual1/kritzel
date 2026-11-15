@@ -1,6 +1,6 @@
-import { lightTheme, UpdrawTheme } from "@updraw/angular-editor";
+import { lightTheme, UpmadeTheme } from "@upmade/angular-editor";
 
-export const angularThemeLight: UpdrawTheme = {
+export const angularThemeLight: UpmadeTheme = {
   ...lightTheme,
   name: 'light',
   global: {

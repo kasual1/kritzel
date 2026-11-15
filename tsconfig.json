@@ -22,16 +22,16 @@
 		"removeComments": false,
 		"strictPropertyInitialization": false,
 		"paths": {
-			"@updraw/stencil": [
+			"@upmade/stencil": [
 				"./libs/engine/core"
 			],
-			"@updraw/stencil/loader": [
+			"@upmade/stencil/loader": [
 				"./libs/engine/core/loader"
 			],
-			"@updraw/angular": [
+			"@upmade/angular": [
 				"./libs/editor/angular/dist/lib"
 			],
-			"@updraw/react": [
+			"@upmade/react": [
 				"./libs/editor/react/dist/lib"
 			]
 		}

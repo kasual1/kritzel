@@ -5,7 +5,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-updraw-avatar {
-  cursor: var(--updraw-global-pointer-cursor, pointer);
+upmade-avatar {
+  cursor: var(--upmade-global-pointer-cursor, pointer);
   border-radius: 50%;
 }

@@ -2,8 +2,8 @@
   display: contents;
 }
 
-updraw-dialog {
-  --updraw-dialog-width-small: 420px;
+upmade-dialog {
+  --upmade-dialog-width-small: 420px;
 }
 
 .share-content {
@@ -20,7 +20,7 @@ updraw-dialog {
 
 .share-section-revoke {
   padding-top: 12px;
-  border-top: 1px solid var(--updraw-share-dialog-border-color, #e5e5e5);
+  border-top: 1px solid var(--upmade-share-dialog-border-color, #e5e5e5);
 }
 
 .share-row {
@@ -40,13 +40,13 @@ updraw-dialog {
 .share-label {
   font-size: 14px;
   font-weight: 600;
-  color: var(--updraw-share-dialog-label-color, #333333);
+  color: var(--upmade-share-dialog-label-color, #333333);
   margin: 0;
 }
 
 .share-description {
   font-size: 12px;
-  color: var(--updraw-share-dialog-description-color, #666666);
+  color: var(--upmade-share-dialog-description-color, #666666);
   margin: 0;
   line-height: 1.4;
 }
@@ -56,8 +56,8 @@ updraw-dialog {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--updraw-share-dialog-input-background, #f5f5f5);
-  border: 1px solid var(--updraw-share-dialog-input-border-color, #e0e0e0);
+  background: var(--upmade-share-dialog-input-background, #f5f5f5);
+  border: 1px solid var(--upmade-share-dialog-input-border-color, #e0e0e0);
   border-radius: 6px;
   padding: 4px 4px 4px 12px;
 }
@@ -73,8 +73,8 @@ updraw-dialog {
   width: 180px;
   height: 180px;
   border-radius: 8px;
-  border: 1px solid var(--updraw-share-dialog-qr-border-color, #e0e0e0);
-  background: var(--updraw-share-dialog-qr-background, #ffffff);
+  border: 1px solid var(--upmade-share-dialog-qr-border-color, #e0e0e0);
+  background: var(--upmade-share-dialog-qr-background, #ffffff);
   padding: 8px;
   box-sizing: border-box;
 }
@@ -84,7 +84,7 @@ updraw-dialog {
   border: none;
   background: transparent;
   font-size: 13px;
-  color: var(--updraw-share-dialog-input-text-color, #333333);
+  color: var(--upmade-share-dialog-input-text-color, #333333);
   outline: none;
   min-width: 0;
   padding: 8px 0;
@@ -95,7 +95,7 @@ updraw-dialog {
 }
 
 .share-url-input::selection {
-  background: var(--updraw-share-dialog-selection-color, #cce5ff);
+  background: var(--upmade-share-dialog-selection-color, #cce5ff);
 }
 
 /* Copy Button */
@@ -107,31 +107,31 @@ updraw-dialog {
   height: 36px;
   border: none;
   border-radius: 4px;
-  background: var(--updraw-share-dialog-copy-button-background, #ffffff);
-  color: var(--updraw-share-dialog-copy-button-color, #666666);
+  background: var(--upmade-share-dialog-copy-button-background, #ffffff);
+  color: var(--upmade-share-dialog-copy-button-color, #666666);
   cursor: pointer;
   transition: all 0.15s ease;
   flex-shrink: 0;
 }
 
 .copy-button:hover {
-  background: var(--updraw-share-dialog-copy-button-hover-background, #e8e8e8);
-  color: var(--updraw-share-dialog-copy-button-hover-color, #333333);
+  background: var(--upmade-share-dialog-copy-button-hover-background, #e8e8e8);
+  color: var(--upmade-share-dialog-copy-button-hover-color, #333333);
 }
 
 .copy-button.copy-success {
-  background: var(--updraw-share-dialog-copy-success-background, #d4edda);
-  color: var(--updraw-share-dialog-copy-success-color, #28a745);
+  background: var(--upmade-share-dialog-copy-success-background, #d4edda);
+  color: var(--upmade-share-dialog-copy-success-color, #28a745);
 }
 
 /* Revoke Button */
 .revoke-button {
   align-self: flex-start;
   padding: 8px 16px;
-  border: 1px solid var(--updraw-share-dialog-revoke-button-border-color, #dc3545);
+  border: 1px solid var(--upmade-share-dialog-revoke-button-border-color, #dc3545);
   border-radius: 6px;
   background: transparent;
-  color: var(--updraw-share-dialog-revoke-button-color, #dc3545);
+  color: var(--upmade-share-dialog-revoke-button-color, #dc3545);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -139,12 +139,12 @@ updraw-dialog {
 }
 
 .revoke-button:hover {
-  background: var(--updraw-share-dialog-revoke-button-hover-background, #dc3545);
-  color: var(--updraw-share-dialog-revoke-button-hover-color, #ffffff);
+  background: var(--upmade-share-dialog-revoke-button-hover-background, #dc3545);
+  color: var(--upmade-share-dialog-revoke-button-hover-color, #ffffff);
 }
 
 /* Dropdown styling within the dialog */
-updraw-dropdown {
-  --updraw-dropdown-trigger-padding: 8px 12px;
-  --updraw-dropdown-trigger-font-size: 13px;
+upmade-dropdown {
+  --upmade-dropdown-trigger-padding: 8px 12px;
+  --upmade-dropdown-trigger-font-size: 13px;
 }

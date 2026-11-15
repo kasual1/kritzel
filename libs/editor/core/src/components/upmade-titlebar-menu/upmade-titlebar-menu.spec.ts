@@ -5,22 +5,22 @@ jest.mock('@stencil/core', () => ({
   Event: () => () => {},
 }));
 
-import { UpdrawTitlebarMenu } from './updraw-titlebar-menu';
+import { UpmadeTitlebarMenu } from './upmade-titlebar-menu';
 
-describe('UpdrawTitlebarMenu', () => {
-  let component: UpdrawTitlebarMenu;
+describe('UpmadeTitlebarMenu', () => {
+  let component: UpmadeTitlebarMenu;
 
   const renderMenu = (): any => {
     const host: any = component.render();
-    return host.$children$.find((child: any) => child.$tag$ === 'updraw-menu');
+    return host.$children$.find((child: any) => child.$tag$ === 'upmade-menu');
   };
 
   beforeEach(() => {
-    component = new UpdrawTitlebarMenu();
+    component = new UpmadeTitlebarMenu();
     component.menuItemSelect = { emit: jest.fn() } as any;
   });
 
-  it('passes the resolved menu items to updraw-menu without their actions', () => {
+  it('passes the resolved menu items to upmade-menu without their actions', () => {
     component.items = [
       { id: 'copy', label: 'Copy', icon: 'copy', isDisabled: false, action: jest.fn() },
       { id: 'lock', label: 'Lock', isDisabled: true },
@@ -32,7 +32,7 @@ describe('UpdrawTitlebarMenu', () => {
     ]);
   });
 
-  it('reports the id of the selected menu item and stops the updraw-menu event', () => {
+  it('reports the id of the selected menu item and stops the upmade-menu event', () => {
     component.items = [{ id: 'copy', label: 'Copy' }];
     const event = { detail: { item: { id: 'copy' }, parent: null }, stopPropagation: jest.fn() };
 

@@ -1,31 +1,31 @@
 import * as Y from 'yjs';
 import { Awareness } from 'y-protocols/awareness';
-import { UpdrawReviver } from '../core/reviver.class';
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawLine } from '../objects/line.class';
-import { UpdrawSelectionBox } from '../objects/selection-box.class';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import type { UpdrawCore } from '../core/core.class';
+import { UpmadeReviver } from '../core/reviver.class';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeLine } from '../objects/line.class';
+import { UpmadeSelectionBox } from '../objects/selection-box.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import type { UpmadeCore } from '../core/core.class';
 import { ISyncProvider } from '../../interfaces/sync-provider.interface';
-import { UpdrawSyncConfig } from '../../interfaces/sync-config.interface';
+import { UpmadeSyncConfig } from '../../interfaces/sync-config.interface';
 import { DEFAULT_SYNC_CONFIG } from '../../configs/default-sync.config';
-import { UpdrawUndoState } from '../../interfaces/undo-state.interface';
-import { UpdrawDocumentType } from '../../interfaces/document-metadata.interface';
+import { UpmadeUndoState } from '../../interfaces/undo-state.interface';
+import { UpmadeDocumentType } from '../../interfaces/document-metadata.interface';
 import { CURRENT_WORKSPACE_SCHEMA_VERSION } from '../../constants/schema.constants';
-import { UpdrawQuadtree } from './quadtree.structure';
-import { IUpdrawUser } from '../../interfaces/user.interface';
+import { UpmadeQuadtree } from './quadtree.structure';
+import { IUpmadeUser } from '../../interfaces/user.interface';
 import { runMigrations } from '../../helpers/migration.helper';
 import { WORKSPACE_MIGRATIONS } from '../../migrations/workspace.migrations';
-import { UpdrawUserColorHelper } from '../../helpers/user-color.helper';
+import { UpmadeUserColorHelper } from '../../helpers/user-color.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { UpdrawAgentOrigin } from './agent-origin.class';
-import type { UpdrawObjectChangeSource } from '../../interfaces/object-change-event.interface';
-import type { UpdrawAwarenessAgent } from '../../interfaces/agent.interface';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpmadeAgentOrigin } from './agent-origin.class';
+import type { UpmadeObjectChangeSource } from '../../interfaces/object-change-event.interface';
+import type { UpmadeAwarenessAgent } from '../../interfaces/agent.interface';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
 
 /** Per-agent history of an agentic cursor. */
-interface UpdrawAgentHistory {
-  origin: UpdrawAgentOrigin;
+interface UpmadeAgentHistory {
+  origin: UpmadeAgentOrigin;
   undoManager: Y.UndoManager;
   /** Set while this agent's undo/redo runs, so the resulting events carry a source. */
   historyAction: 'undo' | 'redo' | null;
@@ -34,7 +34,7 @@ interface UpdrawAgentHistory {
 }
 
 /** Result of an agent undo or redo. */
-export interface UpdrawAgentHistoryResult {
+export interface UpmadeAgentHistoryResult {
   /** `'empty'`: nothing to undo/redo. `'conflict'`: the step was fully superseded by other changes and dropped. */
   status: 'done' | 'empty' | 'conflict';
   /** IDs of the objects the step touched. */
@@ -46,17 +46,17 @@ export interface UpdrawAgentHistoryResult {
  * This structure integrates with Yjs for real-time collaboration and persistence,
  * uses a quadtree for efficient spatial queries, and provides undo/redo functionality.
  *
- * @template T - The type of objects stored, must extend UpdrawBaseObject
+ * @template T - The type of objects stored, must extend UpmadeBaseObject
  */
-export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
-  private quadtree: UpdrawQuadtree<T>;
+export class UpmadeObjectMap<T extends UpmadeBaseObject<any>> {
+  private quadtree: UpmadeQuadtree<T>;
   private _ydoc: Y.Doc | null = null;
   private _objectsMap: Y.Map<any> | null = null;
   private _metadataMap: Y.Map<any> | null = null;
   private _providers: ISyncProvider[] = [];
   private _undoManager: Y.UndoManager | null = null;
-  private _reviver: UpdrawReviver | null = null;
-  private _core: UpdrawCore | null = null;
+  private _reviver: UpmadeReviver | null = null;
+  private _core: UpmadeCore | null = null;
   private _workspaceId: string | null = null;
   private _isReady: boolean = false;
   private _temporaryItemsCount: number = 0;
@@ -86,23 +86,23 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
   private _localOnlyDepth = 0;
 
   /** Stack of agent origins; writes use the top one instead of `'local'`. */
-  private _originStack: UpdrawAgentOrigin[] = [];
+  private _originStack: UpmadeAgentOrigin[] = [];
   /** Objects whose local writes go to an agent's running action (see `routeLocalWrites`). */
-  private readonly _routedObjects = new Map<string, UpdrawAgentOrigin>();
+  private readonly _routedObjects = new Map<string, UpmadeAgentOrigin>();
   /** Routed objects a running `transaction()` changed: written once it ends. */
-  private readonly _deferredRoutedWrites = new Map<string, UpdrawAgentOrigin>();
+  private readonly _deferredRoutedWrites = new Map<string, UpmadeAgentOrigin>();
   /** Nesting depth of `transaction()`. */
   private _transactionDepth = 0;
   /** Per-agent histories, keyed by agentic cursor ID. */
-  private _agents = new Map<string, UpdrawAgentHistory>();
+  private _agents = new Map<string, UpmadeAgentHistory>();
   private _beforeDestroyCallbacks: (() => void)[] = [];
   private _historyClearedCallbacks: (() => void)[] = [];
   /** Object the local user is drawing; also tracked without awareness. */
   private _localActiveDrawingObjectId: string | null = null;
   /** Stack item meta key holding the object IDs an agent step touched. */
-  private static readonly AGENT_IDS_META = 'updraw:objectIds';
+  private static readonly AGENT_IDS_META = 'upmade:objectIds';
   /** Stack item meta key holding the group (e.g. a chat prompt) of steps moved to the user's history. */
-  private static readonly ACTOR_GROUP_META = 'updraw:actorGroup';
+  private static readonly ACTOR_GROUP_META = 'upmade:actorGroup';
 
   /**
    * Tracks whether we're currently executing inside a `transaction()`
@@ -170,12 +170,12 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
   }
 
   /** The agent origin writes currently use, or `null` for regular `'local'` writes. */
-  get activeAgentOrigin(): UpdrawAgentOrigin | null {
+  get activeAgentOrigin(): UpmadeAgentOrigin | null {
     return this._originStack.length > 0 ? this._originStack[this._originStack.length - 1] : null;
   }
 
   /** Origin for persisted writes. */
-  private get writeOrigin(): 'local' | UpdrawAgentOrigin {
+  private get writeOrigin(): 'local' | UpmadeAgentOrigin {
     return this.activeAgentOrigin ?? 'local';
   }
 
@@ -185,7 +185,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
    * so rolling the action back or undoing it covers them too. Inside `transaction()` they are written right after
    * it, in a transaction of their own. @internal
    */
-  routeLocalWrites(objectId: string, origin: UpdrawAgentOrigin): () => void {
+  routeLocalWrites(objectId: string, origin: UpmadeAgentOrigin): () => void {
     this._routedObjects.set(objectId, origin);
     return () => {
       if (this._routedObjects.get(objectId) === origin) {
@@ -195,7 +195,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
   }
 
   /** The origin a local write to an object is routed through, if any (see `routeLocalWrites`). */
-  private routedOrigin(objectId: string): UpdrawAgentOrigin | undefined {
+  private routedOrigin(objectId: string): UpmadeAgentOrigin | undefined {
     return this.activeAgentOrigin ? undefined : this._routedObjects.get(objectId);
   }
 
@@ -231,7 +231,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
    * Runs `fn` with an agent origin: every write inside goes to that agent's history instead of the
    * user's. `fn` must be synchronous so the origin never leaks to other code.
    */
-  withOrigin<R>(origin: UpdrawAgentOrigin, fn: () => R): R {
+  withOrigin<R>(origin: UpmadeAgentOrigin, fn: () => R): R {
     if (!origin) {
       throw new TypeError('An agent origin is required.');
     }
@@ -251,7 +251,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
    * Sets the local user identity in the awareness state.
    * This broadcasts the user's identity to all connected peers.
    */
-  setLocalUser(user?: IUpdrawUser): void {
+  setLocalUser(user?: IUpmadeUser): void {
     if (!this._awareness || !user) {
       return;
     }
@@ -259,7 +259,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
     this._awareness.setLocalStateField('user', {
       id: user.id,
       displayName,
-      color: user.color || UpdrawUserColorHelper.generateColorFromName(displayName),
+      color: user.color || UpmadeUserColorHelper.generateColorFromName(displayName),
     });
   }
 
@@ -267,7 +267,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
    * Shares the agents of this client with collaborators (awareness field `agents`); `null` or an
    * empty list removes the field. No-op without awareness and for background maps.
    */
-  setLocalAgents(agents: UpdrawAwarenessAgent[] | null): void {
+  setLocalAgents(agents: UpmadeAwarenessAgent[] | null): void {
     if (!this._awareness || this._headless) {
       return;
     }
@@ -352,7 +352,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
     const localUserId = this._core?.user?.id;
 
     const orphanedGroups = this.quadtree.filter(
-      o => o instanceof UpdrawSelectionGroup
+      o => o instanceof UpmadeSelectionGroup
         && o.userId != null
         && o.userId !== localUserId
         && !activeUserIds.has(o.userId),
@@ -440,7 +440,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
    * Returns the current state of the undo/redo system.
    * @returns An object containing undo/redo availability and stack sizes
    */
-  get undoState(): UpdrawUndoState {
+  get undoState(): UpmadeUndoState {
     return {
       canUndo: this._undoManager ? this._undoManager.canUndo() : false,
       canRedo: this._undoManager ? this._undoManager.canRedo() : false,
@@ -467,11 +467,11 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
   }
 
   /**
-   * Creates a new UpdrawObjectMap instance with an empty quadtree.
+   * Creates a new UpmadeObjectMap instance with an empty quadtree.
    * The map must be initialized with `initialize()` before use.
    */
   constructor() {
-    this.quadtree = new UpdrawQuadtree<T>(
+    this.quadtree = new UpmadeQuadtree<T>(
       {
         x: -Infinity,
         y: -Infinity,
@@ -487,7 +487,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
    * Initializes the object map with Yjs document, sync providers, and undo manager.
    * This must be called before using any other methods on the object map.
    *
-   * @param core - The UpdrawCore instance that owns this object map
+   * @param core - The UpmadeCore instance that owns this object map
    * @param workspaceId - A unique identifier for the workspace, used to namespace the Yjs document
    * @param config - Optional sync configuration; defaults to DEFAULT_SYNC_CONFIG if not provided
    * @param options - Optional behavior flags
@@ -496,22 +496,22 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
    * @returns A promise that resolves when all providers are connected and the map is ready
    */
   async initialize(
-    core: UpdrawCore,
+    core: UpmadeCore,
     workspaceId: string,
-    config?: UpdrawSyncConfig,
+    config?: UpmadeSyncConfig,
     options?: { headless?: boolean; workspaceName?: string },
   ): Promise<void> {
     this._core = core;
     this._workspaceId = workspaceId;
     this._headless = options?.headless ?? false;
-    this._reviver = new UpdrawReviver(core);
+    this._reviver = new UpmadeReviver(core);
 
     // Create a dedicated Y.Doc for this workspace
     this._ydoc = new Y.Doc();
     this._objectsMap = this._ydoc.getMap('objects');
     this._metadataMap = this._ydoc.getMap('metadata');
 
-    const docName = core.editorId ? `updraw-workspace-${core.editorId}-${workspaceId}` : `updraw-workspace-${workspaceId}`;
+    const docName = core.editorId ? `upmade-workspace-${core.editorId}-${workspaceId}` : `upmade-workspace-${workspaceId}`;
     const finalConfig = config ?? DEFAULT_SYNC_CONFIG;
 
     // Instantiate providers from configuration
@@ -534,7 +534,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
 
     if (showSyncProviderInfo) {
       const providerList = this._providers.map(p => `${p.constructor.name} (${p.type})`).join(', ');
-      console.info(`[Updraw] Workspace sync providers initialized for ${docName}: ${providerList || 'none'}`);
+      console.info(`[Upmade] Workspace sync providers initialized for ${docName}: ${providerList || 'none'}`);
     }
 
     // captureTimeout is effectively infinite — undo-step boundaries are
@@ -585,22 +585,22 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
     const localResults = await Promise.allSettled(localProviders.map(p => p.connect()));
     if (showSyncProviderInfo) {
       const connectedLocalCount = localResults.filter(result => result.status === 'fulfilled').length;
-      console.info(`[Updraw] Workspace local providers connected: ${connectedLocalCount}/${localProviders.length}`);
+      console.info(`[Upmade] Workspace local providers connected: ${connectedLocalCount}/${localProviders.length}`);
     }
     localResults.forEach((result, i) => {
       if (showSyncProviderInfo && result.status === 'rejected') {
-        console.error(`[Updraw] Sync provider "${localProviders[i]?.constructor.name}" failed to connect:`, result.reason);
+        console.error(`[Upmade] Sync provider "${localProviders[i]?.constructor.name}" failed to connect:`, result.reason);
       }
     });
 
     // Connect network providers in the background (remote data arrives via Yjs observers)
     if (showSyncProviderInfo && networkProviders.length > 0) {
-      console.info(`[Updraw] Workspace network providers connecting in background: ${networkProviders.length}`);
+      console.info(`[Upmade] Workspace network providers connecting in background: ${networkProviders.length}`);
     }
     const networkConnectPromises = networkProviders.map(provider =>
       provider.connect().catch(err => {
         if (showSyncProviderInfo) {
-          console.error(`[Updraw] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
+          console.error(`[Upmade] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
         }
       }),
     );
@@ -684,7 +684,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
 
     // Agent changes are local too: the instances are already up to date. Record the changed
     // keys for the running action and keep selection frames that contain them in sync.
-    if (origin instanceof UpdrawAgentOrigin) {
+    if (origin instanceof UpmadeAgentOrigin) {
       origin.recordKeyChanges(event.changes.keys as Map<string, { action: 'add' | 'update' | 'delete' }>);
       this.refreshSelectionGroupsContaining(new Set(event.keysChanged), new Set());
       this.requestRerender();
@@ -699,7 +699,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
         // A local write saved the whole instance, including any pending agent changes:
         // agents must not write these objects again when they commit.
         this._agents.forEach(agent => agent.origin.forgetLocalOnly(keys));
-        this._localObjectsChangeCallbacks.forEach(callback => UpdrawEventHelper.callListener(() => callback(keys), 'Local objects change callback'));
+        this._localObjectsChangeCallbacks.forEach(callback => UpmadeEventHelper.callListener(() => callback(keys), 'Local objects change callback'));
       }
       this.requestRerender();
       return;
@@ -712,7 +712,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
 
     const changedKeys = Array.from(event.keysChanged);
     const objectsToUpdate: any[] = [];
-    const selectionGroupsToUpdate: UpdrawSelectionGroup[] = [];
+    const selectionGroupsToUpdate: UpmadeSelectionGroup[] = [];
     const objectsToDelete: any[] = [];
 
     // The reverse anchor index (targetObjectId -> anchored lines) is derived runtime
@@ -727,7 +727,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
 
       if (change && change.action === 'delete') {
         objectsToDelete.push(key);
-        if (this._idMap.get(key) instanceof UpdrawLine) {
+        if (this._idMap.get(key) instanceof UpmadeLine) {
           anchorIndexNeedsRebuild = true;
         }
       } else {
@@ -736,11 +736,11 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
           const object = this._reviver?.revive(serialized);
 
           // Separate SelectionGroups to process them after regular objects
-          if (object instanceof UpdrawSelectionGroup) {
+          if (object instanceof UpmadeSelectionGroup) {
             selectionGroupsToUpdate.push(object);
           } else {
             objectsToUpdate.push(object);
-            if (object instanceof UpdrawLine) {
+            if (object instanceof UpmadeLine) {
               anchorIndexNeedsRebuild = true;
             }
           }
@@ -751,7 +751,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
     // Delete objects from local map
     objectsToDelete.forEach(objectId => {
       const existingObject = this._idMap.get(objectId);
-      if (existingObject instanceof UpdrawSelectionGroup) {
+      if (existingObject instanceof UpmadeSelectionGroup) {
         // Remote deletion of a selection group must also clear the transient
         // selection flags it had applied to its children locally.
         existingObject.deselectAllChildren?.();
@@ -760,7 +760,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
       // Deletes from collaborators, undo/redo and agent rollbacks never pass through
       // core.removeObject(), and the viewport sweep can no longer find the object once it
       // is gone: release iframes and renderers here, or their listeners leak.
-      if (ObjectHelper.isUpdrawEmbeddedObject(existingObject)) {
+      if (ObjectHelper.isUpmadeEmbeddedObject(existingObject)) {
         existingObject.unmount();
       }
 
@@ -769,8 +769,8 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
     });
 
     // Track which objects are added vs updated for granular events
-    const addedObjects: UpdrawBaseObject<any>[] = [];
-    const updatedObjects: UpdrawBaseObject<any>[] = [];
+    const addedObjects: UpmadeBaseObject<any>[] = [];
+    const updatedObjects: UpmadeBaseObject<any>[] = [];
 
     // First, update or insert regular objects
     objectsToUpdate.forEach(object => {
@@ -836,7 +836,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
     // Changes made by an agent's undo/redo carry that agent as source; its rollbacks are silent.
     const agent = this.findAgentByUndoManager(origin);
     const suppressEvents = !!agent?.suppressEvents;
-    const source: UpdrawObjectChangeSource | undefined = agent?.historyAction
+    const source: UpmadeObjectChangeSource | undefined = agent?.historyAction
       ? { type: 'agent', agentId: agent.origin.agentId, actionType: agent.historyAction }
       : undefined;
 
@@ -864,7 +864,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
       if (objectsToDelete.length > 0) {
         // For deleted objects we only have IDs, not the full objects
         // Create minimal object references with the IDs
-        const removedObjects = objectsToDelete.map(id => ({ id } as UpdrawBaseObject<any>));
+        const removedObjects = objectsToDelete.map(id => ({ id } as UpmadeBaseObject<any>));
         if (source) {
           this._core?.engine.emitObjectsRemoved(removedObjects, source);
         } else {
@@ -899,8 +899,8 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
     const state = this._core?.store?.state;
     const isTransforming = !!state && (state.isDragging || state.isResizing || state.isRotating);
     const selectionGroups = this.quadtree.filter(
-      o => o instanceof UpdrawSelectionGroup && !skipGroupIds.has(o.id),
-    ) as unknown as UpdrawSelectionGroup[];
+      o => o instanceof UpmadeSelectionGroup && !skipGroupIds.has(o.id),
+    ) as unknown as UpmadeSelectionGroup[];
 
     for (const selectionGroup of selectionGroups) {
       if (!selectionGroup.objectIds.some(id => changedIds.has(id))) {
@@ -920,7 +920,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
    * Initializes document metadata if not already set.
    * Uses 'metadata' transaction origin which is NOT tracked by the UndoManager.
    */
-  private initializeMetadata(type: UpdrawDocumentType, workspaceId: string, workspaceName: string): void {
+  private initializeMetadata(type: UpmadeDocumentType, workspaceId: string, workspaceName: string): void {
     if (!this._metadataMap || !this._ydoc) {
       return;
     }
@@ -965,7 +965,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
   /**
    * Returns the document type stored in metadata.
    */
-  getDocumentType(): UpdrawDocumentType {
+  getDocumentType(): UpmadeDocumentType {
     return this._metadataMap?.get('type') ?? 'workspace';
   }
 
@@ -1083,7 +1083,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
 
       // Remove remote selection groups on startup — they are transient UI state
       // that should not survive an app restart. The owning user's session is gone.
-      if (object instanceof UpdrawSelectionGroup && object.userId != null && object.userId !== localUserId) {
+      if (object instanceof UpmadeSelectionGroup && object.userId != null && object.userId !== localUserId) {
         staleSelectionGroupIds.push(key);
         return;
       }
@@ -1271,7 +1271,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
    * @returns `true` if the object should be persisted, `false` otherwise
    */
   private isPersistable(object: T): boolean {
-    if (object instanceof UpdrawSelectionBox) {
+    if (object instanceof UpmadeSelectionBox) {
       return false;
     }
 
@@ -1331,7 +1331,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
       this._temporaryItemsCount = 0;
     }
     this._agents.forEach(agent => agent.undoManager.clear());
-    this._historyClearedCallbacks.forEach(callback => UpdrawEventHelper.callListener(callback, 'onHistoryCleared callback'));
+    this._historyClearedCallbacks.forEach(callback => UpmadeEventHelper.callListener(callback, 'onHistoryCleared callback'));
   }
 
   /**
@@ -1351,13 +1351,13 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
    * Returns the origin of an agentic cursor, creating its history on first use.
    * Returns `null` when the map is not initialized or headless.
    */
-  getAgentOrigin(cursorId: string): UpdrawAgentOrigin | null {
+  getAgentOrigin(cursorId: string): UpmadeAgentOrigin | null {
     if (!this._objectsMap || !this._ydoc || this._headless) {
       return null;
     }
     let agent = this._agents.get(cursorId);
     if (!agent) {
-      const origin = new UpdrawAgentOrigin(cursorId);
+      const origin = new UpmadeAgentOrigin(cursorId);
       const undoManager = new Y.UndoManager([this._objectsMap], {
         captureTimeout: Number.MAX_SAFE_INTEGER,
         // Track exactly this origin instance (never the class: Yjs also matches origin.constructor).
@@ -1382,7 +1382,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
   }
 
   /** Undo state of an agent's history. */
-  getAgentUndoState(cursorId: string): UpdrawUndoState {
+  getAgentUndoState(cursorId: string): UpmadeUndoState {
     const undoManager = this._agents.get(cursorId)?.undoManager;
     return {
       canUndo: !!undoManager && undoManager.undoStack.length > 0,
@@ -1396,7 +1396,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
   tagLastAgentStackItem(cursorId: string, objectIds: string[]): void {
     const stack = this._agents.get(cursorId)?.undoManager.undoStack;
     if (stack && stack.length > 0) {
-      stack[stack.length - 1].meta.set(UpdrawObjectMap.AGENT_IDS_META, [...objectIds]);
+      stack[stack.length - 1].meta.set(UpmadeObjectMap.AGENT_IDS_META, [...objectIds]);
     }
   }
 
@@ -1407,17 +1407,17 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
     if (!items || items.length === 0) {
       return [];
     }
-    const ids = items[items.length - 1].meta.get(UpdrawObjectMap.AGENT_IDS_META) as string[] | undefined;
+    const ids = items[items.length - 1].meta.get(UpmadeObjectMap.AGENT_IDS_META) as string[] | undefined;
     return ids ? [...ids] : [];
   }
 
   /** Undoes the newest step of an agent's history. Older steps are never touched. */
-  undoAgent(cursorId: string): UpdrawAgentHistoryResult {
+  undoAgent(cursorId: string): UpmadeAgentHistoryResult {
     return this.applyAgentHistory(cursorId, 'undo');
   }
 
   /** Redoes the newest undone step of an agent's history. */
-  redoAgent(cursorId: string): UpdrawAgentHistoryResult {
+  redoAgent(cursorId: string): UpmadeAgentHistoryResult {
     return this.applyAgentHistory(cursorId, 'redo');
   }
 
@@ -1505,7 +1505,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
 
     const items = actorUndo.undoStack.splice(from);
     const ids = new Set<string>();
-    items.forEach(item => ((item.meta.get(UpdrawObjectMap.AGENT_IDS_META) as string[] | undefined) ?? []).forEach(id => ids.add(id)));
+    items.forEach(item => ((item.meta.get(UpmadeObjectMap.AGENT_IDS_META) as string[] | undefined) ?? []).forEach(id => ids.add(id)));
     const step = items[0];
     if (items.length > 1) {
       step.insertions = Y.mergeDeleteSets(items.map(item => item.insertions));
@@ -1519,18 +1519,18 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
     const index = Math.min(Math.max(0, options.userIndex), top);
     const below = index > 0 ? stack[index - 1] : undefined;
 
-    if (options.group !== undefined && below && below.meta.get(UpdrawObjectMap.ACTOR_GROUP_META) === options.group) {
+    if (options.group !== undefined && below && below.meta.get(UpmadeObjectMap.ACTOR_GROUP_META) === options.group) {
       below.insertions = Y.mergeDeleteSets([below.insertions, step.insertions]);
       below.deletions = Y.mergeDeleteSets([below.deletions, step.deletions]);
-      const merged = new Set<string>((below.meta.get(UpdrawObjectMap.AGENT_IDS_META) as string[] | undefined) ?? []);
+      const merged = new Set<string>((below.meta.get(UpmadeObjectMap.AGENT_IDS_META) as string[] | undefined) ?? []);
       ids.forEach(id => merged.add(id));
-      below.meta.set(UpdrawObjectMap.AGENT_IDS_META, Array.from(merged));
+      below.meta.set(UpmadeObjectMap.AGENT_IDS_META, Array.from(merged));
     } else {
-      step.meta.set(UpdrawObjectMap.AGENT_IDS_META, Array.from(ids));
+      step.meta.set(UpmadeObjectMap.AGENT_IDS_META, Array.from(ids));
       if (options.group !== undefined) {
-        step.meta.set(UpdrawObjectMap.ACTOR_GROUP_META, options.group);
+        step.meta.set(UpmadeObjectMap.ACTOR_GROUP_META, options.group);
       } else {
-        step.meta.delete(UpdrawObjectMap.ACTOR_GROUP_META);
+        step.meta.delete(UpmadeObjectMap.ACTOR_GROUP_META);
       }
       stack.splice(index, 0, step);
     }
@@ -1561,7 +1561,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
     };
   }
 
-  private applyAgentHistory(cursorId: string, direction: 'undo' | 'redo'): UpdrawAgentHistoryResult {
+  private applyAgentHistory(cursorId: string, direction: 'undo' | 'redo'): UpmadeAgentHistoryResult {
     this.assertNotInsideYjsCallback();
     const agent = this._agents.get(cursorId);
     const undoManager = agent?.undoManager;
@@ -1570,7 +1570,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
       return { status: 'empty', objectIds: [] };
     }
     undoManager.stopCapturing();
-    const objectIds = (stack[stack.length - 1].meta.get(UpdrawObjectMap.AGENT_IDS_META) as string[] | undefined) ?? [];
+    const objectIds = (stack[stack.length - 1].meta.get(UpmadeObjectMap.AGENT_IDS_META) as string[] | undefined) ?? [];
 
     // Isolate the top step: Yjs keeps popping until a step changes something, which would
     // otherwise apply older steps that were never conflict-checked.
@@ -1591,14 +1591,14 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
 
     const target = direction === 'undo' ? undoManager.redoStack : undoManager.undoStack;
     if (target.length > 0) {
-      target[target.length - 1].meta.set(UpdrawObjectMap.AGENT_IDS_META, [...objectIds]);
+      target[target.length - 1].meta.set(UpmadeObjectMap.AGENT_IDS_META, [...objectIds]);
     }
     this._core?.anchorManager.rebuildIndex();
     this._core?.engine.emitObjectsChange();
     return { status: 'done', objectIds: [...objectIds] };
   }
 
-  private findAgentByUndoManager(origin: unknown): UpdrawAgentHistory | null {
+  private findAgentByUndoManager(origin: unknown): UpmadeAgentHistory | null {
     if (!origin || this._agents.size === 0) {
       return null;
     }
@@ -1718,7 +1718,7 @@ export class UpdrawObjectMap<T extends UpdrawBaseObject<any>> {
     // Let owners (e.g. running agentic actions) clean up while the map is still usable
     const beforeDestroyCallbacks = this._beforeDestroyCallbacks;
     this._beforeDestroyCallbacks = [];
-    beforeDestroyCallbacks.forEach(callback => UpdrawEventHelper.callListener(callback, 'onBeforeDestroy callback'));
+    beforeDestroyCallbacks.forEach(callback => UpmadeEventHelper.callListener(callback, 'onBeforeDestroy callback'));
 
     // Destroy agent histories
     this._agents.forEach(agent => agent.undoManager.destroy());

@@ -1,14 +1,14 @@
 ﻿import { Component, Host, h, Prop, EventEmitter, Event } from '@stencil/core';
-import { UpdrawColorHelper } from '@updraw/core';
-import { ThemeAwareColor } from '@updraw/core';
-import { ThemeName } from '@updraw/core';
+import { UpmadeColorHelper } from '@upmade/core';
+import { ThemeAwareColor } from '@upmade/core';
+import { ThemeName } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-color-palette',
-  styleUrl: 'updraw-color-palette.css',
+  tag: 'upmade-color-palette',
+  styleUrl: 'upmade-color-palette.css',
   shadow: true,
 })
-export class UpdrawColorPalette {
+export class UpmadeColorPalette {
   @Prop() colors: ThemeAwareColor[] = [];
   @Prop({ mutable: true }) selectedColor: ThemeAwareColor | null = null;
   @Prop() isExpanded: boolean = false;
@@ -69,7 +69,7 @@ export class UpdrawColorPalette {
                 onClick={() => this.handleColorClick(color)}
                 onKeyDown={event => this.handleKeyDown(event, color)}
               >
-                <updraw-color value={UpdrawColorHelper.applyOpacity(color, this.opacity, this.theme)} theme={this.theme}></updraw-color>
+                <upmade-color value={UpmadeColorHelper.applyOpacity(color, this.opacity, this.theme)} theme={this.theme}></upmade-color>
               </div>
             );
           })}

@@ -1,14 +1,14 @@
 ﻿import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
-import { UpdrawNotification } from '@updraw/core';
+import { UpmadeNotification } from '@upmade/core';
 
 @Component({
-  tag: 'updraw-notification-card',
-  styleUrl: 'updraw-notification-card.css',
+  tag: 'upmade-notification-card',
+  styleUrl: 'upmade-notification-card.css',
   shadow: true,
 })
-export class UpdrawNotificationCard {
+export class UpmadeNotificationCard {
   /** Notification data rendered by this card. */
-  @Prop() notification?: UpdrawNotification;
+  @Prop() notification?: UpmadeNotification;
 
   /** Whether a formatted timestamp should be displayed when available. */
   @Prop() showTimestamp: boolean = true;
@@ -35,7 +35,7 @@ export class UpdrawNotificationCard {
     this.hoverChange.emit(false);
   };
 
-  private get type(): UpdrawNotification['type'] {
+  private get type(): UpmadeNotification['type'] {
     return this.notification?.type ?? 'info';
   }
 
@@ -43,7 +43,7 @@ export class UpdrawNotificationCard {
     return this.type === 'error' ? 'alert' : 'status';
   }
 
-  private getTypeLabel(type: UpdrawNotification['type']): string {
+  private getTypeLabel(type: UpmadeNotification['type']): string {
     switch (type) {
       case 'warning':
         return 'Warning';
@@ -91,7 +91,7 @@ export class UpdrawNotificationCard {
                 </time>
               )}
               <button class="dismiss-button" type="button" aria-label="Dismiss notification" onClick={this.handleDismissClick}>
-                <updraw-icon name="x" size={16}></updraw-icon>
+                <upmade-icon name="x" size={16}></upmade-icon>
               </button>
             </div>
           </header>

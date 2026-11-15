@@ -5,5 +5,5 @@
   "lib": {
     "entryFile": "src/public-api.ts"
   },
-  "allowedNonPeerDependencies": ["@updraw/editor", "@updraw/engine"]
+  "allowedNonPeerDependencies": ["@upmade/editor", "@upmade/engine"]
 }
