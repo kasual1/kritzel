@@ -57,6 +57,7 @@
     "record": "node ./tools/recorder/record.js",
     "videos:optimize": "node ./tools/blog-videos/optimize.mjs",
     "videos:check": "node ./tools/blog-videos/optimize.mjs --check",
+    "logo:generate": "node ./tools/logo/generate.mjs",
     "demo:angular": "npm run start -w apps/demos/angular",
     "demo:react": "npm run start -w apps/demos/react",
     "demo:vue": "npm run start -w apps/demos/vue",

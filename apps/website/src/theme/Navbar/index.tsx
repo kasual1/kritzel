@@ -5,7 +5,7 @@ import Link from '@docusaurus/Link';
 import { ArrowLeft } from 'lucide-react';
 import NavbarLayout from '@theme/Navbar/Layout';
 import NavbarContent from '@theme/Navbar/Content';
-import { UPDRAW_LOGO_PATH } from '@site/src/components/Landing/paths';
+import { UPDRAW_LOGO_PATH, UPDRAW_LOGO_STROKE_WIDTH, UPDRAW_LOGO_VIEWBOX } from '@site/src/components/Landing/paths';
 
 export default function Navbar(): ReactNode {
   const { pathname } = useLocation();
@@ -19,8 +19,14 @@ export default function Navbar(): ReactNode {
             <div className="blog-navigation-brand">
               {/* same logo and wordmark as the landing pages' hero (Landing/Hero.tsx) */}
               <Link to="/" className="blog-navigation-logo">
-                <svg width="40" height="35" viewBox="0 0 321.05759 277.97299" aria-hidden="true">
-                  <path fill="currentColor" d={UPDRAW_LOGO_PATH} />
+                <svg width="40" viewBox={UPDRAW_LOGO_VIEWBOX} aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    stroke="currentColor"
+                    strokeWidth={UPDRAW_LOGO_STROKE_WIDTH}
+                    strokeLinejoin="round"
+                    d={UPDRAW_LOGO_PATH}
+                  />
                 </svg>
                 Updraw
               </Link>
