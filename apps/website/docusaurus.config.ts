@@ -306,6 +306,15 @@ const config: Config = {
       },
     },
     image: "img/docusaurus-social-card.jpg",
+    // Shown above the navbar on every page. src/theme/AnnouncementBar renders it as the RenameBanner component
+    // (the names with their logos); `content` is only the plain-text fallback.
+    announcementBar: {
+      id: "kritzel-is-now-updraw",
+      content: "Kritzel is now Updraw",
+      backgroundColor: "#0a0a0a",
+      textColor: "#ffffff",
+      isCloseable: false,
+    },
     navbar: {
       title: "Updraw",
       logo: {

@@ -3,7 +3,10 @@ import { UPDRAW_LOGO_PATH, UPDRAW_LOGO_STROKE_WIDTH, UPDRAW_LOGO_VIEWBOX } from 
 import { KRITZEL_LOGO_PATH, KRITZEL_LOGO_VIEWBOX } from "./kritzelLogo";
 import styles from "./styles.module.css";
 
-/** Black notification bar shown at the top of the landing pages announcing the rename, each name with its logo. */
+/**
+ * Black notification bar announcing the rename, each name with its logo. Rendered on every page as Docusaurus'
+ * announcement bar (src/theme/AnnouncementBar, themeConfig.announcementBar).
+ */
 export default function RenameBanner(): ReactNode {
   return (
     <div className={styles.banner} role="status">

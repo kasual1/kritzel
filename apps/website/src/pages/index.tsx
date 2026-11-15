@@ -11,7 +11,6 @@ import {
   PerformanceSection,
   Wordmark,
 } from "@site/src/components/Landing/Sections";
-import RenameBanner from "@site/src/components/RenameBanner";
 import styles from "@site/src/components/Landing/styles.module.css";
 import {
   frameworkPaths,
@@ -47,7 +46,6 @@ export default function Home(): ReactNode {
           <meta name="twitter:title" content={TITLE} />
         </Head>
         <main className={styles.page}>
-          <RenameBanner />
           <div className={styles.heroArea}>
             <Hero docsPath={docsPath} />
             <div aria-hidden="true" className={styles.heroSpacer} />

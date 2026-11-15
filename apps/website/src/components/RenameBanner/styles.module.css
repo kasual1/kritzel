@@ -14,6 +14,15 @@
   font-weight: 700;
 }
 
+/* The banner is Docusaurus' announcement bar (src/theme/AnnouncementBar). Its one-line height, so the docs sidebar
+   (which reserves the bar's height while the page is scrolled to the top) matches it. `html:root` outranks the
+   theme's own 30px default. */
+@media (min-width: 997px) {
+  :global(html:root) {
+    --docusaurus-announcement-bar-height: 39.6px;
+  }
+}
+
 /*
  * Each name's logo, in the text colour and centred on it. The Kritzel scribble is wide and dense and the Updraw mark
  * is thin, so the scribble is a bit smaller and the mark a bit larger to look the same size. The Updraw mark sits a
