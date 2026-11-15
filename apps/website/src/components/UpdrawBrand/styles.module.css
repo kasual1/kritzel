@@ -6,7 +6,8 @@ a.brand,
 a.brand:hover {
   display: flex;
   align-items: center;
-  gap: 10px;
+  /* 6 px next to the 26 px name, scaling with it (~5 px on phones). The "U" adds ~1 px of its own. */
+  gap: calc(6em / 26);
   color: #0a0a0a;
   font-size: 26px;
   font-weight: 700;
