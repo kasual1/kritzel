@@ -40,7 +40,7 @@ It needs Chromium for Playwright (`npx playwright install chromium`), which rend
 | Dark tile (app)             | `apps/website/static/img/favicon_dark.svg`, and in `apps/app/client/public/`: `favicon-96x96.png`, `apple-touch-icon.png`, `web-app-manifest-192x192.png`, `web-app-manifest-512x512.png` |
 | App tab icon (dark, bigger) | `apps/app/client/public/favicon.svg`, `apps/app/client/public/favicon.ico`                                                |
 | Inline mark on the website  | `UPDRAW_LOGO_PATH`, `UPDRAW_LOGO_VIEWBOX` and `UPDRAW_LOGO_STROKE_WIDTH` in `apps/website/src/components/Landing/paths.ts`, drawn by the landing and agentic heroes and the blog navigation. Their CSS sets only a height, so the width follows the logo's aspect ratio. |
-| README badge                | `logo.svg`: white rounded tile with a light grey border. Not written while `README_BADGE` is `null`                      |
+| README badge                | `logo.svg` (repo root): white rounded tile with a light grey border, shown at 160 px in the main README                  |
 
 The framework favicons in `apps/core/*` and `apps/demos/*` (Angular, Vue) aren't ours and aren't touched.
 
@@ -54,8 +54,8 @@ These are constants at the top of `generate.mjs`:
 - **Line weight** (`WEIGHT`, or `--weight` for a one-off run): an optional same-coloured outline around every stroke,
   in path units. The current mark is drawn at its final weight, so it's 0. The website constants and the blog
   thumbnails draw the same outline when it's set.
-- **README badge** (`README_BADGE`): `null` leaves the committed `logo.svg` as it is; it still shows an earlier
-  version of the logo for now. Set it to `{ frac: SIZES.light }` to generate the badge from the mark.
+- **README badge** (`README_BADGE`): the mark's size in the badge, the same 66 % as the light tile. `null` would
+  leave the committed `logo.svg` as it is.
 - **Optical centering** (`LIFT`): lifts the mark by this fraction of its height inside the tiles; 0 for the current
   mark.
 - **Small sizes** (`BOOST`): in a favicon the mark's lines are under a pixel at 16 px and only 1–2.5 px at 24–48 px,
