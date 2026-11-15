@@ -9,19 +9,24 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 
-// Mark width as a fraction of the tile width. The light and dark tiles and the README badge (the light tile with a
-// border) hold the mark at the same size; the app's tab icon is a bit bigger so it reads in a browser tab.
-const SIZES = { light: 0.59, readme: 0.59, dark: 0.59, app: 0.64 };
+// Mark width as a fraction of the tile width. The light and dark tiles hold the mark at the same size; the app's tab
+// icon is a bit bigger so it reads in a browser tab.
+const SIZES = { light: 0.543, dark: 0.543, app: 0.589 };
 
 // Line weight of the logo: every variant draws the mark with a same-coloured outline of this many path units
-// around the drawn stroke (the drawn lines are roughly 8-10 units thick, so 6 makes them clearly bolder).
-// `--weight` overrides it and `--size` scales SIZES, e.g. to preview a variant into `--out` first.
-const WEIGHT = 6;
+// around the drawn stroke (the drawn lines are roughly 8-10 units thick). 7.5 keeps the lines bold while the
+// triangle's open interior stays compact. `--weight` overrides it and `--size` scales SIZES, e.g. to preview a
+// variant into `--out` first.
+const WEIGHT = 7.5;
+
+// The README badge (repo-root logo.svg, shown in the main README) is pinned to an earlier version of the logo for
+// now: its own outline and mark size, not affected by WEIGHT, SIZES or the command-line options.
+const README_BADGE = { weight: 6, frac: 0.59 };
 
 // Optical centering: an upward triangle carries its weight low, so it's lifted by this fraction of its height.
 const LIFT = 0.035;
 
-// In a favicon the mark is only 9-30 px wide, so even with the outline its lines get thinner than a pixel. The
+// In a favicon the mark is only about 9-28 px wide, so even with the outline its lines get thinner than a pixel. The
 // tiles therefore widen the outline to at least this many output pixels on top of it at 56 px and below. SVGs do
 // it with size media queries (they see the size the image is drawn at), the small rasters have it baked in.
 // Nothing changes at 64 px and up. The bare mark doesn't need it: at its smallest use (24 px) its lines are
@@ -105,7 +110,7 @@ function bareMark({ d, w, h }) {
 function variants({ d, w, h }) {
   const s = weight;
   const outline = (fg) => (s ? ` stroke="${fg}" stroke-width="${fmt(s)}" stroke-linejoin="round"` : '');
-  // <style> that thickens the mark when the image is drawn small (browser tabs, the 24 px docs navbar).
+  // <style> that thickens the tile icons' mark when the image is drawn small (browser tabs, bookmarks).
   // non-scaling-stroke makes stroke-width mean output pixels, so it matches the baked-in raster boost.
   // Widest band first so the narrower ones override it, without gaps at fractional sizes.
   // `extraPx(at)` is a tile's own extra weight in output pixels at that size: when the mark already has an outline,
@@ -157,12 +162,13 @@ function variants({ d, w, h }) {
       '</svg>\n';
   };
 
-  // README badge: white tile with a light grey border, shown at 160 px on GitHub.
+  // README badge: white tile with a light grey border, shown at 160 px on GitHub (see README_BADGE).
   const S = 1162.5;
+  const rs = README_BADGE.weight;
   const readme =
     `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}">` +
     `<rect x="9.38" y="9.38" width="1143.75" height="1143.75" rx="365.63" ry="365.63" fill="${PAPER}" stroke="${BORDER}" stroke-width="18.75"/>` +
-    placed(S, SIZES.readme * sizeFactor, INK, outline(INK), s) +
+    placed(S, README_BADGE.frac, INK, rs ? ` stroke="${INK}" stroke-width="${fmt(rs)}" stroke-linejoin="round"` : '', rs) +
     '</svg>\n';
 
   const light = { bg: PAPER, fg: INK, frac: SIZES.light };
