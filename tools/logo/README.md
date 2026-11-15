@@ -15,9 +15,11 @@ npm run logo:generate -- path/to/updraw-export.json    # or a mark drawn in Updr
 into a p), drawn in the Updraw app, then refined and redrawn with the Updraw pen. It's two pen strokes, the arrowhead
 and the body, each a filled outline in the same `M/Q/T` path data the app exports.
 
-To change the logo, replace that file (any SVG whose `<path d>` elements, filled with nonzero, make up the mark) or
-pass an Updraw workspace export that holds the mark drawn as a single stroke. The tool only moves the paths so the
-mark starts at 0,0; it never scales them out of proportion, redraws or smooths them.
+To change the logo, replace that file or pass an Updraw workspace export that holds the mark drawn as a single
+stroke. An SVG source must be filled `<path d>` elements in one coordinate space, using absolute `M L Q T C S Z`
+commands: no transforms, nested `<svg>`, other shapes, unfilled or even-odd paths (the tool refuses those with an
+error; flatten such a file first, e.g. in a vector editor). The tool only moves the paths so the mark starts at 0,0;
+it never scales them out of proportion, redraws or smooths them.
 
 After running it:
 
@@ -56,8 +58,8 @@ These are constants at the top of `generate.mjs`:
   version of the logo for now. Set it to `{ frac: SIZES.light }` to generate the badge from the mark.
 - **Optical centering** (`LIFT`): lifts the mark by this fraction of its height inside the tiles; 0 for the current
   mark.
-- **Small sizes** (`BOOST`): in a 16–48 px favicon the mark is so small that its lines get thinner than a pixel, so
-  the tile icons widen the strokes by 0.25–0.4 px there.
+- **Small sizes** (`BOOST`): in a favicon the mark's lines are under a pixel at 16 px and only 1–2.5 px at 24–48 px,
+  so the tile icons widen the strokes by 0.25–0.4 px there to keep them crisp.
   - SVGs do this with size media queries plus `vector-effect: non-scaling-stroke`. The queries see the size the image
     is drawn at, so a large icon is untouched.
   - The small ICO frames have it baked in.

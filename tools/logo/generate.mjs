@@ -26,8 +26,8 @@ const README_BADGE = null;
 // Optical centering: the mark is lifted by this fraction of its height inside the tiles.
 const LIFT = 0;
 
-// In a favicon the mark is only about 10-35 px tall, so its lines get thinner than a pixel. The tiles therefore
-// widen the strokes by at least this many output pixels at 56 px and below. SVGs do it with size media queries (they
+// In a favicon the mark is only about 10-35 px tall: at 16 px its lines are under a pixel and at 24-48 px only
+// 1-2.5 px. The tiles therefore widen the strokes by this many output pixels at 56 px and below to keep them crisp. SVGs do it with size media queries (they
 // see the size the image is drawn at), the small rasters have it baked in. Nothing changes at 64 px and up. The bare
 // mark doesn't need it: at its smallest use (24 px) it stays identical to the inline mark on the website.
 // `at` is the typical size in each band, used to convert a tile's extra weight to output pixels.
@@ -70,21 +70,46 @@ const fmt = (n) => {
   return s === '-0' ? '0' : s;
 };
 
-// The mark's path data. An SVG contributes every <path d> (each stroke a closed subpath, filled with nonzero);
-// an Updraw workspace export must hold exactly one drawn path.
+// The mark's path data. An SVG contributes every <path d> as filled (nonzero) outlines in one coordinate space; the
+// tool refuses what it can't reproduce faithfully (transforms, nested <svg>, other shapes, unfilled or even-odd
+// paths) instead of silently drawing a different mark. An Updraw workspace export must hold exactly one drawn path.
 function readMark(file) {
-  if (file.endsWith('.svg')) {
-    const paths = [...fs.readFileSync(file, 'utf8').matchAll(/<path\b[^>]*\sd="([^"]+)"/g)].map((m) => m[1].trim());
-    if (!paths.length) throw new Error(`${file}: no <path d="..."> found`);
-    return paths.join(' ');
+  const text = fs.readFileSync(file, 'utf8');
+  let d;
+  if (/\.svg$/i.test(file)) {
+    const fail = (why) => {
+      throw new Error(`${file}: ${why}. The mark must be filled <path d> elements in one coordinate space, using ` +
+        'absolute M L Q T C S Z commands (flatten other SVGs first, e.g. in a vector editor).');
+    };
+    const inner = text.replace(/^[\s\S]*?<svg\b[^>]*>/, ''); // everything inside the outer <svg>
+    if (/<svg\b/.test(inner)) fail('nested <svg> elements are not supported');
+    if (/\stransform\s*=/.test(text)) fail('transform attributes are not supported');
+    if (/<(rect|circle|ellipse|line|polyline|polygon|use|image|text)\b/.test(inner)) fail('only <path> elements are supported');
+    if (/fill\s*[:=]\s*["']?\s*none/.test(text)) fail('unfilled (stroke-only) paths are not supported');
+    if (/evenodd/.test(text)) fail('fill-rule evenodd is not supported');
+    const paths = [...text.matchAll(/<path\b[^>]*?\sd\s*=\s*(["'])([\s\S]*?)\1/g)].map((m) => m[2].trim());
+    if (!paths.length) fail('no <path d="..."> found');
+    d = paths.join(' ');
+  } else {
+    let workspace;
+    try {
+      workspace = JSON.parse(text);
+    } catch {
+      throw new Error(`${file}: neither an .svg file nor valid JSON (an Updraw workspace export)`);
+    }
+    const paths = (workspace.objects ?? []).filter((o) => o.__class__ === 'KritzelPath');
+    if (paths.length !== 1) {
+      throw new Error(`${file}: expected exactly one drawn path (KritzelPath), found ${paths.length}. ` +
+        'Export a workspace that holds only the logo, drawn as a single stroke, or pass the mark as an SVG.');
+    }
+    d = paths[0].d;
   }
-  const workspace = JSON.parse(fs.readFileSync(file, 'utf8'));
-  const paths = (workspace.objects ?? []).filter((o) => o.__class__ === 'KritzelPath');
-  if (paths.length !== 1) {
-    throw new Error(`${file}: expected exactly one drawn path (KritzelPath), found ${paths.length}. ` +
-      'Export a workspace that holds only the logo, drawn as a single stroke, or pass the mark as an SVG.');
+  try {
+    translatePath(d, 0, 0); // validates the commands and coordinates up front
+  } catch (error) {
+    throw new Error(`${file}: ${error.message}`);
   }
-  return paths[0].d;
+  return d;
 }
 
 // Moves every coordinate of an absolute path by (dx, dy). Updraw exports filled outlines as M/Q/T/Z.

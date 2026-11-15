@@ -311,7 +311,7 @@ const config: Config = {
       logo: {
         alt: "Updraw Infinite Canvas",
         src: "img/logo.svg",
-        width: 24,
+        width: 19,
         height: 24,
       },
       items: [
