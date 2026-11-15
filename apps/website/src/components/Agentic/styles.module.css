@@ -58,28 +58,13 @@
   overflow: hidden;
 }
 
+/* Positions the logo + name (UpdrawBrand, which styles it). */
 .brand {
   position: absolute;
   top: 20px;
   left: 32px;
   z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 10px;
   min-height: 48px;
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.page .brand,
-.page .brand:hover {
-  color: var(--landing-ink);
-}
-
-.brand svg {
-  width: auto;
-  height: 34px;
 }
 
 .topNav {
@@ -1530,12 +1515,6 @@
   .brand {
     top: 10px;
     left: 16px;
-    font-size: 22px;
-  }
-
-  .brand svg {
-    width: auto;
-    height: 28px;
   }
 
   .topNav {
