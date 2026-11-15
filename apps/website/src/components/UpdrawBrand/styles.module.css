@@ -10,8 +10,11 @@ a.brand:hover {
   gap: calc(6em / 26);
   color: #0a0a0a;
   font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  /* The wordmark: lowercase like the hand-drawn "up", semibold to sit closer to the mark's thin lines, set tight.
+     The HTML keeps "Updraw"; browsers show, read out and copy it as "updraw". */
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  text-transform: lowercase;
   text-decoration: none;
 }
 
