@@ -41,6 +41,14 @@ h3 {
   opacity: 1;
 }
 
+/* Blog and docs headings set a little tight, close to the landing headlines (-0.035em to -0.045em) and the header
+   wordmark (-0.04em) while staying comfortable on reading pages. Scoped to content and post/card titles so other
+   headings keep their own spacing. */
+.markdown :is(h1, h2, h3),
+article header :is(h1, h2) {
+  letter-spacing: -0.02em;
+}
+
 .markdown h3 {
   font-size: 1.35rem;
 }
