@@ -11,7 +11,7 @@ export default function RenameBanner(): ReactNode {
         <path fill="currentColor" stroke="currentColor" d={KRITZEL_LOGO_PATH} />
       </svg>
       <strong>Kritzel</strong> is now{" "}
-      <svg className={styles.logo} viewBox={UPDRAW_LOGO_VIEWBOX} aria-hidden="true">
+      <svg className={`${styles.logo} ${styles.newLogo}`} viewBox={UPDRAW_LOGO_VIEWBOX} aria-hidden="true">
         <path
           fill="currentColor"
           stroke="currentColor"
