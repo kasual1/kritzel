@@ -78,7 +78,8 @@
 }
 
 .brand svg {
-  width: 36px;
+  width: auto;
+  height: 34px;
 }
 
 .topNav {
@@ -1533,7 +1534,8 @@
   }
 
   .brand svg {
-    width: 28px;
+    width: auto;
+    height: 28px;
   }
 
   .topNav {

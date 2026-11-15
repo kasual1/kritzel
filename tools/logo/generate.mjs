@@ -1,36 +1,35 @@
-// Generates every Updraw logo variant from a workspace export that holds the drawn mark.
-// See README.md for what it writes and why.
+// Generates every Updraw logo variant from the mark: by default tools/logo/source/updraw-mark.svg, or an Updraw
+// workspace export that holds the mark drawn as a single stroke. See README.md for what it writes and why.
 //
-//   npm run logo:generate -- <workspace-export.json> [--out <dir>] [--weight <units>] [--size <factor>]
+//   npm run logo:generate -- [<mark.svg | workspace-export.json>] [--out <dir>] [--weight <units>] [--size <factor>]
 import { chromium } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
+const SOURCE = 'tools/logo/source/updraw-mark.svg';
 
-// Mark width as a fraction of the tile width. The light and dark tiles hold the mark at the same size; the app's tab
-// icon is a bit bigger so it reads in a browser tab.
-const SIZES = { light: 0.543, dark: 0.543, app: 0.589 };
+// The mark's larger side (its height, for the current mark) as a fraction of the tile. The light and dark tiles hold
+// the mark at the same size; the app's tab icon is a bit bigger so it reads in a browser tab.
+const SIZES = { light: 0.66, dark: 0.66, app: 0.72 };
 
-// Line weight of the logo: every variant draws the mark with a same-coloured outline of this many path units
-// around the drawn stroke (the drawn lines are roughly 8-10 units thick). 7.5 keeps the lines bold while the
-// triangle's open interior stays compact. `--weight` overrides it and `--size` scales SIZES, e.g. to preview a
-// variant into `--out` first.
-const WEIGHT = 7.5;
+// Extra line weight: a same-coloured outline of this many path units around every stroke of the mark, in every
+// variant. The current mark is drawn at its final weight already, so it's 0. `--weight` overrides it and `--size`
+// scales SIZES, e.g. to preview a variant into `--out` first.
+const WEIGHT = 0;
 
-// The README badge (repo-root logo.svg, shown in the main README) is pinned to an earlier version of the logo for
-// now: its own outline and mark size, not affected by WEIGHT, SIZES or the command-line options.
-const README_BADGE = { weight: 6, frac: 0.59 };
+// The README badge (repo-root logo.svg, shown in the main README). null leaves the committed badge as it is (it
+// still shows an earlier version of the logo for now); { frac } generates it from the mark at that size.
+const README_BADGE = null;
 
-// Optical centering: an upward triangle carries its weight low, so it's lifted by this fraction of its height.
-const LIFT = 0.035;
+// Optical centering: the mark is lifted by this fraction of its height inside the tiles.
+const LIFT = 0;
 
-// In a favicon the mark is only about 9-28 px wide, so even with the outline its lines get thinner than a pixel. The
-// tiles therefore widen the outline to at least this many output pixels on top of it at 56 px and below. SVGs do
-// it with size media queries (they see the size the image is drawn at), the small rasters have it baked in.
-// Nothing changes at 64 px and up. The bare mark doesn't need it: at its smallest use (24 px) its lines are
-// already over a pixel wide, and it stays identical to the inline mark on the website.
+// In a favicon the mark is only about 10-35 px tall, so its lines get thinner than a pixel. The tiles therefore
+// widen the strokes by at least this many output pixels at 56 px and below. SVGs do it with size media queries (they
+// see the size the image is drawn at), the small rasters have it baked in. Nothing changes at 64 px and up. The bare
+// mark doesn't need it: at its smallest use (24 px) it stays identical to the inline mark on the website.
 // `at` is the typical size in each band, used to convert a tile's extra weight to output pixels.
 const BOOST = [
   { max: 24, at: 16, px: 0.4 },
@@ -47,7 +46,7 @@ const PATHS_TS = 'apps/website/src/components/Landing/paths.ts';
 
 // ---------- arguments ----------
 
-const USAGE = 'usage: npm run logo:generate -- <workspace-export.json> [--out <dir>] [--weight <units>] [--size <factor>]';
+const USAGE = 'usage: npm run logo:generate -- [<mark.svg | workspace-export.json>] [--out <dir>] [--weight <units>] [--size <factor>]';
 const args = process.argv.slice(2);
 const OPTIONS = ['--out', '--weight', '--size'];
 const option = (name) => {
@@ -55,11 +54,11 @@ const option = (name) => {
   return i >= 0 ? args[i + 1] : undefined;
 };
 const optionValues = new Set(OPTIONS.map((o) => args.indexOf(o)).filter((i) => i >= 0).map((i) => i + 1));
-const exportFile = args.find((a, i) => !a.startsWith('--') && !optionValues.has(i));
+const sourceFile = args.find((a, i) => !a.startsWith('--') && !optionValues.has(i)) ?? path.join(ROOT, SOURCE);
 const outRoot = option('--out') ? path.resolve(option('--out')) : ROOT;
 const weight = Number(option('--weight') ?? WEIGHT);
 const sizeFactor = Number(option('--size') ?? 1);
-if (!exportFile || !(weight >= 0) || !(sizeFactor > 0)) {
+if (!(weight >= 0) || !(sizeFactor > 0)) {
   console.error(USAGE);
   process.exit(1);
 }
@@ -71,12 +70,19 @@ const fmt = (n) => {
   return s === '-0' ? '0' : s;
 };
 
+// The mark's path data. An SVG contributes every <path d> (each stroke a closed subpath, filled with nonzero);
+// an Updraw workspace export must hold exactly one drawn path.
 function readMark(file) {
+  if (file.endsWith('.svg')) {
+    const paths = [...fs.readFileSync(file, 'utf8').matchAll(/<path\b[^>]*\sd="([^"]+)"/g)].map((m) => m[1].trim());
+    if (!paths.length) throw new Error(`${file}: no <path d="..."> found`);
+    return paths.join(' ');
+  }
   const workspace = JSON.parse(fs.readFileSync(file, 'utf8'));
   const paths = (workspace.objects ?? []).filter((o) => o.__class__ === 'KritzelPath');
   if (paths.length !== 1) {
     throw new Error(`${file}: expected exactly one drawn path (KritzelPath), found ${paths.length}. ` +
-      'Export a workspace that holds only the logo, drawn as a single stroke.');
+      'Export a workspace that holds only the logo, drawn as a single stroke, or pass the mark as an SVG.');
   }
   return paths[0].d;
 }
@@ -131,10 +137,11 @@ function variants({ d, w, h }) {
     `<svg xmlns="http://www.w3.org/2000/svg" width="${b.w}" height="${b.h}" viewBox="0 0 ${b.w} ${b.h}">` +
     `<path${outline(fill)} fill="${fill}" d="${b.d}"/></svg>\n`;
 
-  // The mark in a `size` square, `frac` of its width wide, centred and lifted. With an outline of `s` path units
-  // the mark is that much bigger, so its outer edge is what gets `frac` of the width.
+  // The mark in a `size` square, its larger side `frac` of the tile, centred and lifted. With an outline of `s` path
+  // units the mark is that much bigger, so its outer edge is what gets `frac` of the tile.
+  const side = (s) => Math.max(w + s, h + s);
   const placed = (size, frac, fill, attrs = '', s = 0) => {
-    const k = (size * frac) / (w + s);
+    const k = (size * frac) / side(s);
     const tx = (size - (w + s) * k) / 2 + (s / 2) * k;
     const ty = (size - (h + s) * k) / 2 - LIFT * (h + s) * k + (s / 2) * k;
     return `<path${attrs} fill="${fill}" transform="translate(${fmt(tx)} ${fmt(ty)}) scale(${+k.toFixed(5)})" d="${d}"/>`;
@@ -144,7 +151,7 @@ function variants({ d, w, h }) {
   // the media-query version.
   const tile = ({ bg, fg, frac: baseFrac, rounded = true, hinted = false, rasterSize = 0 }) => {
     const frac = baseFrac * sizeFactor;
-    const unitsPerPx = (px) => ((w + s) * 1000) / (px * frac * 1000); // path units per output px at that size
+    const unitsPerPx = (px) => side(s) / (px * frac); // path units per output px at that size
     const extraPx = (px) => s / unitsPerPx(px);
     let attrs = '';
     if (rasterSize) {
@@ -164,11 +171,10 @@ function variants({ d, w, h }) {
 
   // README badge: white tile with a light grey border, shown at 160 px on GitHub (see README_BADGE).
   const S = 1162.5;
-  const rs = README_BADGE.weight;
-  const readme =
+  const readme = README_BADGE &&
     `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}">` +
     `<rect x="9.38" y="9.38" width="1143.75" height="1143.75" rx="365.63" ry="365.63" fill="${PAPER}" stroke="${BORDER}" stroke-width="18.75"/>` +
-    placed(S, README_BADGE.frac, INK, rs ? ` stroke="${INK}" stroke-width="${fmt(rs)}" stroke-linejoin="round"` : '', rs) +
+    placed(S, README_BADGE.frac, INK, outline(INK), s) +
     '</svg>\n';
 
   const light = { bg: PAPER, fg: INK, frac: SIZES.light };
@@ -177,7 +183,7 @@ function variants({ d, w, h }) {
 
   return {
     svg: {
-      'logo.svg': readme,
+      ...(readme ? { 'logo.svg': readme } : {}),
       'apps/website/static/img/logo.svg': bare(INK),
       'apps/website/static/img/logo_dark.svg': bare(PAPER),
       'apps/website/static/img/favicon.svg': tile({ ...light, hinted: true }),
@@ -239,7 +245,7 @@ function updatePathsTs(file, { d, w, h }) {
 
 let drawn;
 try {
-  drawn = readMark(exportFile);
+  drawn = readMark(sourceFile);
 } catch (error) {
   console.error(error.message);
   process.exit(1);

@@ -107,7 +107,8 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
 }
 
 .blog-navigation-logo svg {
-  width: 36px;
+  width: auto;
+  height: 34px;
 }
 
 @media (max-width: 768px) {
@@ -117,7 +118,8 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
   }
 
   .blog-navigation-logo svg {
-    width: 28px;
+    width: auto;
+    height: 28px;
   }
 }
 
