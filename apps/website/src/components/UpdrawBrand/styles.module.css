@@ -18,13 +18,6 @@ a.brand:hover {
   text-decoration: none;
 }
 
-/* "up" in italic, leaning like the mark's arrow; "draw" stays upright. The italic "p" leans towards the "d",
-   so it gets a hair of extra space. */
-.up {
-  font-style: italic;
-  margin-right: 0.02em;
-}
-
 /* Sized by height: the mark is taller than wide. */
 .mark {
   flex: none;
