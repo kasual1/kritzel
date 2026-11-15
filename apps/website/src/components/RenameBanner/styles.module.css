@@ -13,3 +13,18 @@
 .banner strong {
   font-weight: 700;
 }
+
+/* Each name's logo, in the text colour, sized by height and centred on the lowercase letters. */
+.logo {
+  display: inline-block;
+  width: auto;
+  height: var(--rename-logo-height, 1.15em);
+  margin-right: var(--rename-logo-gap, 0.35em);
+  vertical-align: var(--rename-logo-shift, -0.22em);
+}
+
+.oldLogo {
+  height: var(--rename-old-logo-height, var(--rename-logo-height, 1.15em));
+  vertical-align: var(--rename-old-logo-shift, var(--rename-logo-shift, -0.22em));
+  opacity: var(--rename-old-logo-opacity, 1);
+}
