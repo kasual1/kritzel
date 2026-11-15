@@ -18,6 +18,11 @@ a.brand:hover {
   text-decoration: none;
 }
 
+/* "up" regular, "draw" semibold: the word's weight sits on "draw" and "up" feels lighter, like it's rising. */
+.up {
+  font-weight: 400;
+}
+
 /* Sized by height: the mark is taller than wide. */
 .mark {
   flex: none;
