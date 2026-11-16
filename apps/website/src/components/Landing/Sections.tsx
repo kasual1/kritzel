@@ -1000,8 +1000,8 @@ export function Faq({ variant = "default" }: { variant?: "default" | "agentic" }
 export function Wordmark() {
   return (
     <section aria-label="Upmade" className={styles.wordmark}>
-      <svg viewBox="-0.3 -0.3 51.6 10.6" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Upmade" className={styles.wordmarkSvg}>
-        <g fill="none" stroke="#0a0a0a" strokeWidth="1.5" strokeLinecap="square">
+      <svg viewBox="-0.3 -0.3 58.03 10.75" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Upmade" className={styles.wordmarkSvg}>
+        <g fill="none" stroke="#0a0a0a" strokeWidth="1.5" strokeLinejoin="round">
           {WORDMARK_LETTERS.map((letter) => (
             <g key={letter.x} className={styles.wordmarkLetter}>
               <rect x={letter.x} y="0" width={letter.width} height="10" fill="transparent" stroke="none" />
