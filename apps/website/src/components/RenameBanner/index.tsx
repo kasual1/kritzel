@@ -23,7 +23,10 @@ export default function RenameBanner(): ReactNode {
           d={UPMADE_LOGO_PATH}
         />
       </svg>
-      <strong>Upmade</strong>
+      {/* styled like the header lockup (UpmadeBrand): a light italic "up", a semibold "made" */}
+      <strong className={styles.upmade}>
+        <span className={styles.up}>Up</span>made
+      </strong>
     </div>
   );
 }

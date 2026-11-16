@@ -14,6 +14,20 @@
   font-weight: 700;
 }
 
+/* "Upmade" as in the header lockup (UpmadeBrand/styles.module.css): lowercase, "up" regular and italic, "made"
+   semibold, set tight. The HTML keeps "Upmade", like the lockup. One class deeper than `.banner strong`, so it wins
+   over the 700. */
+.banner .upmade {
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  text-transform: lowercase;
+}
+
+.up {
+  font-weight: 400;
+  font-style: italic;
+}
+
 /* The banner is Docusaurus' announcement bar (src/theme/AnnouncementBar). Its one-line height, so the docs sidebar
    (which reserves the bar's height while the page is scrolled to the top) matches it. `html:root` outranks the
    theme's own 30px default. */

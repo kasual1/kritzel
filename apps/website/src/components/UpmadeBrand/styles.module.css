@@ -18,9 +18,11 @@ a.brand:hover {
   text-decoration: none;
 }
 
-/* "up" regular, "made" semibold: the word's weight sits on "made" and "up" feels lighter, like it's rising. */
+/* "up" regular and italic, "made" semibold: the word's weight sits on "made" and "up" feels lighter, leaning forward
+   like it's rising. */
 .up {
   font-weight: 400;
+  font-style: italic;
 }
 
 /* Sized by height: the mark is taller than wide. */
