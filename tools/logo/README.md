@@ -16,9 +16,9 @@ into a p), drawn in the Upmade app, then refined and redrawn with the Upmade pen
 and the body, each a filled outline in the same `M/Q/T` path data the app exports.
 
 To change the logo, replace that file or pass an Upmade workspace export that holds the mark drawn as a single
-stroke. An SVG source must be filled `<path d>` elements in one coordinate space, using absolute `M L Q T C S Z`
-commands: no transforms, nested `<svg>`, other shapes, unfilled or even-odd paths (the tool refuses those with an
-error; flatten such a file first, e.g. in a vector editor). The tool only moves the paths so the mark starts at 0,0;
+stroke (exports from Updraw or Kritzel work too). An SVG source must be filled `<path d>` elements in one coordinate
+space, using absolute `M L Q T C S Z` commands: no transforms, nested `<svg>`, other shapes, unfilled or even-odd paths
+(the tool refuses those with an error; flatten such a file first, e.g. in a vector editor). The tool only moves the paths so the mark starts at 0,0;
 it never scales them out of proportion, redraws or smooths them.
 
 After running it:

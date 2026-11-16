@@ -97,9 +97,10 @@ function readMark(file) {
     } catch {
       throw new Error(`${file}: neither an .svg file nor valid JSON (an Upmade workspace export)`);
     }
-    const paths = (workspace.objects ?? []).filter((o) => o.__class__ === 'KritzelPath');
+    // Exports made before the renames name the class after the library's former names (Updraw, Kritzel).
+    const paths = (workspace.objects ?? []).filter((o) => /^(Upmade|Updraw|Kritzel)Path$/.test(o.__class__));
     if (paths.length !== 1) {
-      throw new Error(`${file}: expected exactly one drawn path (KritzelPath), found ${paths.length}. ` +
+      throw new Error(`${file}: expected exactly one drawn path (UpmadePath), found ${paths.length}. ` +
         'Export a workspace that holds only the logo, drawn as a single stroke, or pass the mark as an SVG.');
     }
     d = paths[0].d;

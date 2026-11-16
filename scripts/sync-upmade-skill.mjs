@@ -29,29 +29,29 @@ async function fingerprint(directory) {
 
 const sourceFingerprint = await fingerprint(source);
 
-// Copies synced before the rename live under the old skill name. Remove them when this script generated them,
-// so agents do not load an outdated skill next to the current one.
-const legacySkill = 'kritzel';
-const legacyMarker = `.${legacySkill}-generated`;
-for (const agent of agents) {
-  const legacyDestination = `${root}${agent}/skills/${legacySkill}`;
-  const generated = await stat(`${legacyDestination}/${legacyMarker}`).then(() => true, error => {
-    if (error.code !== 'ENOENT') throw error;
-    return false;
-  });
-  if (generated) {
-    await rm(legacyDestination, { recursive: true, force: true });
-    console.log(`Removed outdated ${agent}/skills/${legacySkill}`);
+// Copies synced before the renames live under the old skill names (Updraw, and Kritzel before it), each with its
+// own marker. Remove them when this script generated them, so agents do not load an outdated skill next to the
+// current one. Copies without a marker (e.g. installed with `npx skills add`) are only reported.
+const legacySkills = ['updraw', 'kritzel'];
+const exists = path => stat(path).then(() => true, error => {
+  if (error.code !== 'ENOENT') throw error;
+  return false;
+});
+for (const legacySkill of legacySkills) {
+  for (const agent of agents) {
+    const legacyDestination = `${root}${agent}/skills/${legacySkill}`;
+    if (await exists(`${legacyDestination}/.${legacySkill}-generated`)) {
+      await rm(legacyDestination, { recursive: true, force: true });
+      console.log(`Removed outdated ${agent}/skills/${legacySkill}`);
+    } else if (await exists(legacyDestination)) {
+      console.warn(`Left ${agent}/skills/${legacySkill} in place (not generated here); remove it if it is an old copy of this skill.`);
+    }
   }
 }
 
 for (const agent of agents) {
   const destination = `${root}${agent}/skills/upmade`;
-  const exists = await stat(destination).then(() => true, error => {
-    if (error.code !== 'ENOENT') throw error;
-    return false;
-  });
-  if (exists) {
+  if (await exists(destination)) {
     const generated = await readFile(`${destination}/${marker}`, 'utf8').catch(error => {
       if (error.code !== 'ENOENT') throw error;
       return '';
