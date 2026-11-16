@@ -420,7 +420,7 @@ const config: Config = {
           title: 'Community',
           items: [
             {
-              html: '<a href="https://x.com/kritzel_io" target="_blank" rel="noopener noreferrer" class="footer__link-item">X</a>',
+              html: '<a href="https://x.com/upmade_io" target="_blank" rel="noopener noreferrer" class="footer__link-item">X</a>',
             },
             {
               html: '<a href="https://www.linkedin.com/in/upmade-io-26721b40b" target="_blank" rel="noopener noreferrer" class="footer__link-item">LinkedIn</a>',
