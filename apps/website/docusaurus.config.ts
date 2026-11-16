@@ -432,7 +432,7 @@ const config: Config = {
               html: '<a href="https://github.com/kasual1/kritzel" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub</a>',
             },
             {
-              html: '<a href="https://www.npmjs.com/package/@upmade/engine" target="_blank" rel="noopener noreferrer" class="footer__link-item">NPM</a>',
+              html: '<a href="https://www.npmjs.com/package/@upmade/core" target="_blank" rel="noopener noreferrer" class="footer__link-item">NPM</a>',
             },
           ],
         },
