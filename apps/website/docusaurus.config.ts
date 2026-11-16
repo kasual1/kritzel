@@ -426,7 +426,7 @@ const config: Config = {
               html: '<a href="https://www.linkedin.com/in/upmade-io-26721b40b" target="_blank" rel="noopener noreferrer" class="footer__link-item">LinkedIn</a>',
             },
             {
-              html: '<a href="https://bsky.app/profile/kritzelio.bsky.social" target="_blank" rel="noopener noreferrer" class="footer__link-item">Bluesky</a>',
+              html: '<a href="https://bsky.app/profile/upmade.bsky.social" target="_blank" rel="noopener noreferrer" class="footer__link-item">Bluesky</a>',
             },
             {
               html: '<a href="https://github.com/kasual1/kritzel" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub</a>',
