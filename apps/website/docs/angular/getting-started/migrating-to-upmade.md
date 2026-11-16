@@ -195,7 +195,7 @@ server.listen();
 
 Documents are then saved under their new names the next time they change.
 
-`toLegacyDocumentName()`, which servers on `@updraw/core` used to find `kritzel-…` documents, is deprecated. It now returns only the name before the latest rename (`upmade-workspace-1` gives `updraw-workspace-1`) or `null`, so it no longer finds documents that were only ever saved under a `kritzel-…` name. Use `toLegacyDocumentNames()` instead.
+`toLegacyDocumentName()`, which servers on `@updraw/core` used to find `kritzel-…` documents, is deprecated. It now returns only the name before the latest rename (`upmade-workspace-1` gives `updraw-workspace-1`) or `null`, so it no longer finds documents that were only ever saved under a `kritzel-…` name. Use `toLegacyDocumentNames()` instead. The single-value constants of `@updraw/core` (`LEGACY_CLASS_PREFIX`, `LEGACY_NAME_PREFIX`, `LEGACY_CLIPBOARD_PAYLOAD_PREFIX`, `LEGACY_ASSET_DB_NAME`, `LEGACY_IFRAME_GLOBAL`, `LEGACY_IFRAME_STATE_EVENT` and `LEGACY_ELEMENT_ID_ATTRIBUTE`) are deprecated the same way: they now hold only the Updraw-era value. Their lists, with the newest name first, are `LEGACY_CLASS_PREFIXES`, `LEGACY_NAME_PREFIXES`, `LEGACY_CLIPBOARD_PAYLOAD_PREFIXES`, `LEGACY_ASSET_DB_NAMES`, `LEGACY_IFRAME_GLOBALS`, `LEGACY_IFRAME_STATE_EVENTS` and `LEGACY_ELEMENT_ID_ATTRIBUTES`.
 
 ## Upgrading All Collaborators Together
 

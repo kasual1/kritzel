@@ -70,6 +70,30 @@ export const LEGACY_CONTENT_CSS_VARIABLES: Readonly<Record<string, string>> = Ob
   LEGACY_BRANDS.flatMap(brand => CONTENT_CSS_VARIABLES.map(name => [`--${brand.name}-${name}`, `--${BRAND}-${name}`])),
 );
 
+// Single-value names from the time there was one former name (exported by @updraw/core). Each now holds the
+// name before the latest rename, like toLegacyDocumentName().
+
+/** @deprecated Use {@link LEGACY_CLASS_PREFIXES}, which also lists the older `Kritzel`. */
+export const LEGACY_CLASS_PREFIX: string = LEGACY_CLASS_PREFIXES[0];
+
+/** @deprecated Use {@link LEGACY_NAME_PREFIXES}, which also lists the older `kritzel-`. */
+export const LEGACY_NAME_PREFIX: string = LEGACY_NAME_PREFIXES[0];
+
+/** @deprecated Use {@link LEGACY_CLIPBOARD_PAYLOAD_PREFIXES}, which also lists the older Kritzel prefix. */
+export const LEGACY_CLIPBOARD_PAYLOAD_PREFIX: string = LEGACY_CLIPBOARD_PAYLOAD_PREFIXES[0];
+
+/** @deprecated Use {@link LEGACY_ASSET_DB_NAMES}, which also lists the older `kritzel-assets`. */
+export const LEGACY_ASSET_DB_NAME: string = LEGACY_ASSET_DB_NAMES[0];
+
+/** @deprecated Use {@link LEGACY_IFRAME_GLOBALS}, which also lists the older `kritzel`. */
+export const LEGACY_IFRAME_GLOBAL: string = LEGACY_IFRAME_GLOBALS[0];
+
+/** @deprecated Use {@link LEGACY_IFRAME_STATE_EVENTS}, which also lists the older `kritzelstatechange`. */
+export const LEGACY_IFRAME_STATE_EVENT: string = LEGACY_IFRAME_STATE_EVENTS[0];
+
+/** @deprecated Use {@link LEGACY_ELEMENT_ID_ATTRIBUTES}, which also lists the older `data-kritzel-id`. */
+export const LEGACY_ELEMENT_ID_ATTRIBUTE: string = LEGACY_ELEMENT_ID_ATTRIBUTES[0];
+
 /** Returns the legacy class name prefix a `__class__` value starts with, if any. */
 function legacyClassPrefixOf(className: string): string | undefined {
   return LEGACY_CLASS_PREFIXES.find(prefix => className.startsWith(prefix));

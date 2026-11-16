@@ -1,14 +1,21 @@
 import * as Y from 'yjs';
 import {
   isLegacyClassName,
+  LEGACY_ASSET_DB_NAME,
   LEGACY_ASSET_DB_NAMES,
   LEGACY_BRANDS,
+  LEGACY_CLASS_PREFIX,
   LEGACY_CLASS_PREFIXES,
+  LEGACY_CLIPBOARD_PAYLOAD_PREFIX,
   LEGACY_CLIPBOARD_PAYLOAD_PREFIXES,
   LEGACY_CONTENT_CSS_VARIABLES,
+  LEGACY_ELEMENT_ID_ATTRIBUTE,
   LEGACY_ELEMENT_ID_ATTRIBUTES,
+  LEGACY_IFRAME_GLOBAL,
   LEGACY_IFRAME_GLOBALS,
+  LEGACY_IFRAME_STATE_EVENT,
   LEGACY_IFRAME_STATE_EVENTS,
+  LEGACY_NAME_PREFIX,
   LEGACY_NAME_PREFIXES,
   LEGACY_STORAGE_KEYS,
   migrateLegacyStorageKeys,
@@ -80,6 +87,16 @@ describe('legacy brand compatibility', () => {
       expect(LEGACY_IFRAME_GLOBALS).toEqual(['updraw', 'kritzel']);
       expect(LEGACY_IFRAME_STATE_EVENTS).toEqual(['updrawstatechange', 'kritzelstatechange']);
       expect(LEGACY_ELEMENT_ID_ATTRIBUTES).toEqual(['data-updraw-id', 'data-kritzel-id']);
+    });
+
+    it('keeps the single-value names of @updraw/core, holding the name before the latest rename', () => {
+      expect(LEGACY_CLASS_PREFIX).toBe('Updraw');
+      expect(LEGACY_NAME_PREFIX).toBe('updraw-');
+      expect(LEGACY_CLIPBOARD_PAYLOAD_PREFIX).toBe('updraw-clipboard/v1:');
+      expect(LEGACY_ASSET_DB_NAME).toBe('updraw-assets');
+      expect(LEGACY_IFRAME_GLOBAL).toBe('updraw');
+      expect(LEGACY_IFRAME_STATE_EVENT).toBe('updrawstatechange');
+      expect(LEGACY_ELEMENT_ID_ATTRIBUTE).toBe('data-updraw-id');
     });
 
     it('maps the legacy content CSS variables of every former name to the current ones', () => {
