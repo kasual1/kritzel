@@ -14,11 +14,13 @@
   font-weight: 700;
 }
 
-/* "Upmade" as in the header lockup (UpmadeBrand/styles.module.css): "up" regular and italic, "made" semibold, set
-   tight. One class deeper than `.banner strong`, so it wins over the 700. */
+/* "Upmade" as in the header lockup (UpmadeBrand/styles.module.css): lowercase, "up" regular and italic, "made"
+   semibold, set tight. The HTML keeps "Upmade", like the lockup. One class deeper than `.banner strong`, so it wins
+   over the 700. */
 .banner .upmade {
   font-weight: 600;
   letter-spacing: -0.04em;
+  text-transform: lowercase;
 }
 
 .up {
