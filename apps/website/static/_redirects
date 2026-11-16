@@ -1,8 +1,9 @@
 # Cloudflare Pages redirects for routes that no longer exist.
 # Each source is listed with and without a trailing slash so both forms match.
 # Page targets end with a slash because the site is built with trailingSlash: true.
-# Renamed doc paths that still have a client-side redirect live in LEGACY_DOC_PATHS
-# in docusaurus.config.ts; tests/redirects.spec.ts checks that every target exists.
+# Every old route is redirected here, with a 301, never with a client-side redirect page: search engines
+# pass rankings on fully through a 301, and links to the old domains then reach a page in one hop each.
+# tests/redirects.spec.ts checks that every target exists and that no target is redirected again.
 
 # Removed marketing pages
 /demo                               / 301
@@ -63,10 +64,175 @@
 /videos/2026_10_22_Updraw_Open_Source.thumbnail.jpg   /videos/2026_10_22_Upmade_Open_Source.thumbnail.jpg 301
 
 # Markdown exports of the migration guide published as migrating-to-updraw (docusaurus-plugin-llms,
-# listed in llms.txt). Its HTML route has a client-side redirect in LEGACY_DOC_PATHS.
+# listed in llms.txt). Its HTML route is redirected in the section below.
 /docs/angular/getting-started/migrating-to-updraw.md  /docs/angular/getting-started/migrating-to-upmade.md 301
 /docs/react/getting-started/migrating-to-updraw.md    /docs/react/getting-started/migrating-to-upmade.md 301
 /docs/vue/getting-started/migrating-to-updraw.md      /docs/vue/getting-started/migrating-to-upmade.md 301
+
+# Renamed documentation pages: flat pages moved into categories, renamed pages, and the migration guide
+# published as migrating-to-updraw before the Upmade rebrand. Only pages that exist for a framework are listed.
+/docs/angular/quick-start                                   /docs/angular/getting-started/quick-start/ 301
+/docs/angular/quick-start/                                  /docs/angular/getting-started/quick-start/ 301
+/docs/angular/basic-usage                                   /docs/angular/getting-started/basic-usage/ 301
+/docs/angular/basic-usage/                                  /docs/angular/getting-started/basic-usage/ 301
+/docs/angular/concept-tools                                 /docs/angular/fundamentals/tools/ 301
+/docs/angular/concept-tools/                                /docs/angular/fundamentals/tools/ 301
+/docs/angular/concept-objects                               /docs/angular/fundamentals/objects/ 301
+/docs/angular/concept-objects/                              /docs/angular/fundamentals/objects/ 301
+/docs/angular/concept-viewport                              /docs/angular/fundamentals/viewport/ 301
+/docs/angular/concept-viewport/                             /docs/angular/fundamentals/viewport/ 301
+/docs/angular/concept-workspaces                            /docs/angular/fundamentals/workspaces/ 301
+/docs/angular/concept-workspaces/                           /docs/angular/fundamentals/workspaces/ 301
+/docs/angular/concept-persistence                           /docs/angular/fundamentals/persistence/ 301
+/docs/angular/concept-persistence/                          /docs/angular/fundamentals/persistence/ 301
+/docs/angular/advanced/concept-collaboration                /docs/angular/advanced/collaboration/ 301
+/docs/angular/advanced/concept-collaboration/               /docs/angular/advanced/collaboration/ 301
+/docs/angular/advanced/concept-dynamic-objects              /docs/angular/advanced/dynamic-objects/ 301
+/docs/angular/advanced/concept-dynamic-objects/             /docs/angular/advanced/dynamic-objects/ 301
+/docs/angular/advanced/concept-user-management              /docs/angular/advanced/user-management/ 301
+/docs/angular/advanced/concept-user-management/             /docs/angular/advanced/user-management/ 301
+/docs/angular/advanced/agentic-cursors                      /docs/angular/advanced/agents/ 301
+/docs/angular/advanced/agentic-cursors/                     /docs/angular/advanced/agents/ 301
+/docs/angular/advanced/chat-sessions                        /docs/angular/advanced/agents/ 301
+/docs/angular/advanced/chat-sessions/                       /docs/angular/advanced/agents/ 301
+/docs/angular/advanced/customization/concept-theming        /docs/angular/customization/themes/ 301
+/docs/angular/advanced/customization/concept-theming/       /docs/angular/customization/themes/ 301
+/docs/angular/advanced/customization/concept-fonts          /docs/angular/customization/fonts/ 301
+/docs/angular/advanced/customization/concept-fonts/         /docs/angular/customization/fonts/ 301
+/docs/angular/advanced/customization/concept-icons          /docs/angular/customization/icons/ 301
+/docs/angular/advanced/customization/concept-icons/         /docs/angular/customization/icons/ 301
+/docs/angular/advanced/customization/concept-localization   /docs/angular/customization/locales/ 301
+/docs/angular/advanced/customization/concept-localization/  /docs/angular/customization/locales/ 301
+/docs/angular/customization/titlebars                       /docs/angular/fundamentals/controls/ 301
+/docs/angular/customization/titlebars/                      /docs/angular/fundamentals/controls/ 301
+/docs/angular/customization/object-config                   /docs/angular/fundamentals/objects/ 301
+/docs/angular/customization/object-config/                  /docs/angular/fundamentals/objects/ 301
+/docs/angular/example-object-explorer                       /docs/angular/examples/object-explorer/ 301
+/docs/angular/example-object-explorer/                      /docs/angular/examples/object-explorer/ 301
+/docs/angular/example-blueprint-defect-mapper               /docs/angular/examples/blueprint-defect-mapper/ 301
+/docs/angular/example-blueprint-defect-mapper/              /docs/angular/examples/blueprint-defect-mapper/ 301
+/docs/angular/example-slideshow-presentation                /docs/angular/examples/slideshow-presentation/ 301
+/docs/angular/example-slideshow-presentation/               /docs/angular/examples/slideshow-presentation/ 301
+/docs/angular/example-image-annotation-studio               /docs/angular/examples/image-annotation-studio/ 301
+/docs/angular/example-image-annotation-studio/              /docs/angular/examples/image-annotation-studio/ 301
+/docs/angular/api-reference-editor                          /docs/angular/api-reference/editor/ 301
+/docs/angular/api-reference-editor/                         /docs/angular/api-reference/editor/ 301
+/docs/angular/api-reference-engine                          /docs/angular/api-reference/engine/ 301
+/docs/angular/api-reference-engine/                         /docs/angular/api-reference/engine/ 301
+/docs/angular/objects                                       /docs/angular/api-reference/objects/ 301
+/docs/angular/objects/                                      /docs/angular/api-reference/objects/ 301
+/docs/angular/getting-started/migrating-to-updraw           /docs/angular/getting-started/migrating-to-upmade/ 301
+/docs/angular/getting-started/migrating-to-updraw/          /docs/angular/getting-started/migrating-to-upmade/ 301
+/docs/react/quick-start                                     /docs/react/getting-started/quick-start/ 301
+/docs/react/quick-start/                                    /docs/react/getting-started/quick-start/ 301
+/docs/react/basic-usage                                     /docs/react/getting-started/basic-usage/ 301
+/docs/react/basic-usage/                                    /docs/react/getting-started/basic-usage/ 301
+/docs/react/concept-tools                                   /docs/react/fundamentals/tools/ 301
+/docs/react/concept-tools/                                  /docs/react/fundamentals/tools/ 301
+/docs/react/concept-objects                                 /docs/react/fundamentals/objects/ 301
+/docs/react/concept-objects/                                /docs/react/fundamentals/objects/ 301
+/docs/react/concept-viewport                                /docs/react/fundamentals/viewport/ 301
+/docs/react/concept-viewport/                               /docs/react/fundamentals/viewport/ 301
+/docs/react/concept-workspaces                              /docs/react/fundamentals/workspaces/ 301
+/docs/react/concept-workspaces/                             /docs/react/fundamentals/workspaces/ 301
+/docs/react/concept-persistence                             /docs/react/fundamentals/persistence/ 301
+/docs/react/concept-persistence/                            /docs/react/fundamentals/persistence/ 301
+/docs/react/advanced/concept-collaboration                  /docs/react/advanced/collaboration/ 301
+/docs/react/advanced/concept-collaboration/                 /docs/react/advanced/collaboration/ 301
+/docs/react/advanced/concept-dynamic-objects                /docs/react/advanced/dynamic-objects/ 301
+/docs/react/advanced/concept-dynamic-objects/               /docs/react/advanced/dynamic-objects/ 301
+/docs/react/advanced/concept-user-management                /docs/react/advanced/user-management/ 301
+/docs/react/advanced/concept-user-management/               /docs/react/advanced/user-management/ 301
+/docs/react/advanced/agentic-cursors                        /docs/react/advanced/agents/ 301
+/docs/react/advanced/agentic-cursors/                       /docs/react/advanced/agents/ 301
+/docs/react/advanced/chat-sessions                          /docs/react/advanced/agents/ 301
+/docs/react/advanced/chat-sessions/                         /docs/react/advanced/agents/ 301
+/docs/react/advanced/customization/concept-theming          /docs/react/customization/themes/ 301
+/docs/react/advanced/customization/concept-theming/         /docs/react/customization/themes/ 301
+/docs/react/advanced/customization/concept-fonts            /docs/react/customization/fonts/ 301
+/docs/react/advanced/customization/concept-fonts/           /docs/react/customization/fonts/ 301
+/docs/react/advanced/customization/concept-icons            /docs/react/customization/icons/ 301
+/docs/react/advanced/customization/concept-icons/           /docs/react/customization/icons/ 301
+/docs/react/advanced/customization/concept-localization     /docs/react/customization/locales/ 301
+/docs/react/advanced/customization/concept-localization/    /docs/react/customization/locales/ 301
+/docs/react/customization/titlebars                         /docs/react/fundamentals/controls/ 301
+/docs/react/customization/titlebars/                        /docs/react/fundamentals/controls/ 301
+/docs/react/customization/object-config                     /docs/react/fundamentals/objects/ 301
+/docs/react/customization/object-config/                    /docs/react/fundamentals/objects/ 301
+/docs/react/example-object-explorer                         /docs/react/examples/object-explorer/ 301
+/docs/react/example-object-explorer/                        /docs/react/examples/object-explorer/ 301
+/docs/react/example-blueprint-defect-mapper                 /docs/react/examples/blueprint-defect-mapper/ 301
+/docs/react/example-blueprint-defect-mapper/                /docs/react/examples/blueprint-defect-mapper/ 301
+/docs/react/example-slideshow-presentation                  /docs/react/examples/slideshow-presentation/ 301
+/docs/react/example-slideshow-presentation/                 /docs/react/examples/slideshow-presentation/ 301
+/docs/react/example-image-annotation-studio                 /docs/react/examples/image-annotation-studio/ 301
+/docs/react/example-image-annotation-studio/                /docs/react/examples/image-annotation-studio/ 301
+/docs/react/api-reference-editor                            /docs/react/api-reference/editor/ 301
+/docs/react/api-reference-editor/                           /docs/react/api-reference/editor/ 301
+/docs/react/api-reference-engine                            /docs/react/api-reference/engine/ 301
+/docs/react/api-reference-engine/                           /docs/react/api-reference/engine/ 301
+/docs/react/objects                                         /docs/react/api-reference/objects/ 301
+/docs/react/objects/                                        /docs/react/api-reference/objects/ 301
+/docs/react/theming                                         /docs/react/api-reference/theme-tokens/ 301
+/docs/react/theming/                                        /docs/react/api-reference/theme-tokens/ 301
+/docs/react/types                                           /docs/react/api-reference/types/ 301
+/docs/react/types/                                          /docs/react/api-reference/types/ 301
+/docs/react/getting-started/migrating-to-updraw             /docs/react/getting-started/migrating-to-upmade/ 301
+/docs/react/getting-started/migrating-to-updraw/            /docs/react/getting-started/migrating-to-upmade/ 301
+/docs/vue/quick-start                                       /docs/vue/getting-started/quick-start/ 301
+/docs/vue/quick-start/                                      /docs/vue/getting-started/quick-start/ 301
+/docs/vue/basic-usage                                       /docs/vue/getting-started/basic-usage/ 301
+/docs/vue/basic-usage/                                      /docs/vue/getting-started/basic-usage/ 301
+/docs/vue/concept-tools                                     /docs/vue/fundamentals/tools/ 301
+/docs/vue/concept-tools/                                    /docs/vue/fundamentals/tools/ 301
+/docs/vue/concept-objects                                   /docs/vue/fundamentals/objects/ 301
+/docs/vue/concept-objects/                                  /docs/vue/fundamentals/objects/ 301
+/docs/vue/concept-viewport                                  /docs/vue/fundamentals/viewport/ 301
+/docs/vue/concept-viewport/                                 /docs/vue/fundamentals/viewport/ 301
+/docs/vue/concept-workspaces                                /docs/vue/fundamentals/workspaces/ 301
+/docs/vue/concept-workspaces/                               /docs/vue/fundamentals/workspaces/ 301
+/docs/vue/concept-persistence                               /docs/vue/fundamentals/persistence/ 301
+/docs/vue/concept-persistence/                              /docs/vue/fundamentals/persistence/ 301
+/docs/vue/advanced/concept-collaboration                    /docs/vue/advanced/collaboration/ 301
+/docs/vue/advanced/concept-collaboration/                   /docs/vue/advanced/collaboration/ 301
+/docs/vue/advanced/concept-dynamic-objects                  /docs/vue/advanced/dynamic-objects/ 301
+/docs/vue/advanced/concept-dynamic-objects/                 /docs/vue/advanced/dynamic-objects/ 301
+/docs/vue/advanced/concept-user-management                  /docs/vue/advanced/user-management/ 301
+/docs/vue/advanced/concept-user-management/                 /docs/vue/advanced/user-management/ 301
+/docs/vue/advanced/agentic-cursors                          /docs/vue/advanced/agents/ 301
+/docs/vue/advanced/agentic-cursors/                         /docs/vue/advanced/agents/ 301
+/docs/vue/advanced/chat-sessions                            /docs/vue/advanced/agents/ 301
+/docs/vue/advanced/chat-sessions/                           /docs/vue/advanced/agents/ 301
+/docs/vue/advanced/customization/concept-theming            /docs/vue/customization/themes/ 301
+/docs/vue/advanced/customization/concept-theming/           /docs/vue/customization/themes/ 301
+/docs/vue/advanced/customization/concept-fonts              /docs/vue/customization/fonts/ 301
+/docs/vue/advanced/customization/concept-fonts/             /docs/vue/customization/fonts/ 301
+/docs/vue/advanced/customization/concept-icons              /docs/vue/customization/icons/ 301
+/docs/vue/advanced/customization/concept-icons/             /docs/vue/customization/icons/ 301
+/docs/vue/advanced/customization/concept-localization       /docs/vue/customization/locales/ 301
+/docs/vue/advanced/customization/concept-localization/      /docs/vue/customization/locales/ 301
+/docs/vue/customization/titlebars                           /docs/vue/fundamentals/controls/ 301
+/docs/vue/customization/titlebars/                          /docs/vue/fundamentals/controls/ 301
+/docs/vue/customization/object-config                       /docs/vue/fundamentals/objects/ 301
+/docs/vue/customization/object-config/                      /docs/vue/fundamentals/objects/ 301
+/docs/vue/example-object-explorer                           /docs/vue/examples/object-explorer/ 301
+/docs/vue/example-object-explorer/                          /docs/vue/examples/object-explorer/ 301
+/docs/vue/example-blueprint-defect-mapper                   /docs/vue/examples/blueprint-defect-mapper/ 301
+/docs/vue/example-blueprint-defect-mapper/                  /docs/vue/examples/blueprint-defect-mapper/ 301
+/docs/vue/example-slideshow-presentation                    /docs/vue/examples/slideshow-presentation/ 301
+/docs/vue/example-slideshow-presentation/                   /docs/vue/examples/slideshow-presentation/ 301
+/docs/vue/example-image-annotation-studio                   /docs/vue/examples/image-annotation-studio/ 301
+/docs/vue/example-image-annotation-studio/                  /docs/vue/examples/image-annotation-studio/ 301
+/docs/vue/api-reference-editor                              /docs/vue/api-reference/editor/ 301
+/docs/vue/api-reference-editor/                             /docs/vue/api-reference/editor/ 301
+/docs/vue/api-reference-engine                              /docs/vue/api-reference/engine/ 301
+/docs/vue/api-reference-engine/                             /docs/vue/api-reference/engine/ 301
+/docs/vue/objects                                           /docs/vue/api-reference/objects/ 301
+/docs/vue/objects/                                          /docs/vue/api-reference/objects/ 301
+/docs/vue/types                                             /docs/vue/api-reference/types/ 301
+/docs/vue/types/                                            /docs/vue/api-reference/types/ 301
+/docs/vue/getting-started/migrating-to-updraw               /docs/vue/getting-started/migrating-to-upmade/ 301
+/docs/vue/getting-started/migrating-to-updraw/              /docs/vue/getting-started/migrating-to-upmade/ 301
 
 # Removed or restructured documentation pages
 /docs/angular/advanced-concepts/concept-collaboration                /docs/angular/advanced/collaboration/ 301
