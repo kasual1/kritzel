@@ -1,7 +1,7 @@
 import * as Y from 'yjs';
 import { IndexeddbPersistence } from 'y-indexeddb';
 import { ISyncProvider } from '../../../interfaces/sync-provider.interface';
-import { toLegacyDocumentName } from '../../../migrations/legacy-brand';
+import { toLegacyDocumentNames } from '../../../migrations/legacy-brand';
 import { importLegacyIndexedDbDocument } from '../../../migrations/legacy-indexeddb';
 
 /**
@@ -23,13 +23,13 @@ export class IndexedDBSyncProvider implements ISyncProvider {
   private provider: IndexeddbPersistence;
   private isConnected: boolean = false;
   private readonly doc: Y.Doc;
-  /** Name of the database this document had before the rename, if it uses the default name. */
-  private readonly legacyDbName: string | null;
+  /** Names this document's database had under the library's former names, newest first, if it uses the default name. */
+  private readonly legacyDbNames: readonly string[];
 
   constructor(docName: string, doc: Y.Doc, options?: IndexedDBOptions) {
     const dbName = options?.name || docName;
     this.doc = doc;
-    this.legacyDbName = options?.name ? null : toLegacyDocumentName(dbName);
+    this.legacyDbNames = options?.name ? [] : toLegacyDocumentNames(dbName);
     this.provider = new IndexeddbPersistence(dbName, doc);
   }
 
@@ -41,22 +41,22 @@ export class IndexedDBSyncProvider implements ISyncProvider {
     await new Promise<void>(resolve => {
       this.provider.on('synced', () => resolve());
     });
-    await this.importLegacyDocument();
+    await this.importLegacyDocuments();
     this.isConnected = true;
   }
 
   /**
-   * Merges the document saved under its pre-rename database name, if there is one,
-   * before the document is reported as loaded.
+   * Merges the documents saved under the database's former names, where they exist, before the
+   * document is reported as loaded. Each is merged on its own, so one that cannot be read does not
+   * keep the others out; merging both is safe, because Yjs skips content the document already has.
    */
-  private async importLegacyDocument(): Promise<void> {
-    if (!this.legacyDbName) {
-      return;
-    }
-    try {
-      await importLegacyIndexedDbDocument(this.legacyDbName, this.doc);
-    } catch (error) {
-      console.warn(`[IndexedDBSyncProvider] Could not import legacy database "${this.legacyDbName}":`, error);
+  private async importLegacyDocuments(): Promise<void> {
+    for (const legacyDbName of this.legacyDbNames) {
+      try {
+        await importLegacyIndexedDbDocument(legacyDbName, this.doc);
+      } catch (error) {
+        console.warn(`[IndexedDBSyncProvider] Could not import legacy database "${legacyDbName}":`, error);
+      }
     }
   }
 

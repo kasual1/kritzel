@@ -85,6 +85,8 @@ import {
   UpmadeObjectAppearManager,
   UPMADE_OBJECT_APPEAR_MAX_BATCH,
   DEFAULT_TEXT_TOOL_AVAILABLE_FONTS,
+  LEGACY_CONTENT_CSS_VARIABLES,
+  UpmadeReviver,
 } from '@upmade/core';
 
 /** Builds a fake object whose prototype makes `instanceof` checks in the engine pass. */
@@ -2384,10 +2386,10 @@ describe('UpmadeEngine', () => {
     });
   });
 
-  describe('importing exports made before the rename', () => {
+  describe.each(['Updraw', 'Kritzel'])('importing exports made under the %s name', brand => {
     it('accepts a legacy workspace export and restores its assets', async () => {
       const payload = {
-        __class__: 'KritzelWorkspace',
+        __class__: `${brand}Workspace`,
         name: 'Legacy Workspace',
         viewport: { centerWorldX: 0, centerWorldY: 0, scale: 1 },
         objects: [],
@@ -2403,7 +2405,7 @@ describe('UpmadeEngine', () => {
     it('loads objects from a legacy workspace export into the current workspace', async () => {
       core.store.state.activeWorkspace = { id: 'w1' } as UpmadeWorkspace;
 
-      await expect(engine.loadObjectsFromJson(JSON.stringify({ __class__: 'KritzelWorkspace' }))).resolves.toBe(0);
+      await expect(engine.loadObjectsFromJson(JSON.stringify({ __class__: `${brand}Workspace` }))).resolves.toBe(0);
     });
 
     it('embeds the assets of legacy images in portable exports', async () => {
@@ -2411,12 +2413,61 @@ describe('UpmadeEngine', () => {
       jest.spyOn(engine as any, 'blobToDataUrl').mockResolvedValue('data:image/png;base64,AA==');
 
       const assets = await (engine as any).collectPortableAssets([
-        { __class__: 'KritzelImage', assetId: 'legacy-asset' },
+        { __class__: `${brand}Image`, assetId: 'legacy-asset' },
         { __class__: 'UpmadeImage', assetId: 'current-asset' },
-        { __class__: 'KritzelPath', assetId: 'not-an-image' },
+        { __class__: `${brand}Path`, assetId: 'not-an-image' },
       ]);
 
       expect(Object.keys(assets).sort()).toEqual(['current-asset', 'legacy-asset']);
+    });
+  });
+
+  describe('importing a workspace exported by Updraw 0.6.2', () => {
+    // Every object class, an embedded image asset and iframe content that uses the Updraw runtime API.
+    const exported = jest.requireActual<{ objects: { __class__: string; id: string }[]; assets: Record<string, string> }>(
+      '@upmade/core/src/__fixtures__/legacy-updraw-workspace.json',
+    );
+    const [assetId] = Object.keys(exported.assets);
+
+    it('loads every object into the current workspace and restores the embedded asset', async () => {
+      core.store.state.activeWorkspace = { id: 'w1' } as UpmadeWorkspace;
+      jest.spyOn(engine as any, 'dataUrlToBlob').mockResolvedValue(new Blob(['png-bytes'], { type: 'image/png' }));
+      // Reviving the legacy class names is covered in @upmade/core; here the engine only has to accept and hand them over.
+      const revive = jest.spyOn(UpmadeReviver.prototype, 'revive').mockImplementation((data: any) => ({ id: data.id }) as any);
+
+      try {
+        await expect(engine.loadObjectsFromJson(JSON.stringify(exported))).resolves.toBe(exported.objects.length);
+
+        expect(revive.mock.calls.map(([data]: any[]) => data.__class__)).toEqual(exported.objects.map(object => object.__class__));
+        expect(core.addObject).toHaveBeenCalledTimes(exported.objects.length);
+        expect(core.addObject).toHaveBeenCalledWith(expect.objectContaining({ id: exported.objects[0].id, workspaceId: 'w1' }));
+        expect(core.assetResolver.put).toHaveBeenCalledWith(expect.any(Blob), expect.objectContaining({ id: assetId }));
+      } finally {
+        revive.mockRestore();
+      }
+    });
+
+    it('embeds the asset of its image when the workspace is exported again', async () => {
+      core.assetResolver.fetchBlob = jest.fn().mockResolvedValue(new Blob(['png-bytes'], { type: 'image/png' }));
+      jest.spyOn(engine as any, 'blobToDataUrl').mockResolvedValue('data:image/png;base64,AA==');
+
+      const assets = await (engine as any).collectPortableAssets(exported.objects);
+
+      expect(Object.keys(assets)).toEqual([assetId]);
+    });
+  });
+
+  describe('legacy content CSS variables', () => {
+    it('aliases every legacy border radius variable in the stylesheet', () => {
+      const { readFileSync } = jest.requireActual<{ readFileSync(path: string, encoding: 'utf8'): string }>('fs');
+      const css = readFileSync(`${__dirname}/upmade-engine.css`, 'utf8');
+      // The cursor variables only exist inside iframes, where `UpmadeIframeObject` declares their aliases.
+      const borderRadiusAliases = Object.entries(LEGACY_CONTENT_CSS_VARIABLES).filter(([, name]) => name === '--upmade-content-border-radius');
+
+      expect(borderRadiusAliases.map(([legacyName]) => legacyName)).toEqual(['--updraw-content-border-radius', '--kritzel-content-border-radius']);
+      for (const [legacyName, name] of borderRadiusAliases) {
+        expect(css).toContain(`${legacyName}: var(${name});`);
+      }
     });
   });
 

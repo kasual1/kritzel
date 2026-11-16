@@ -16,12 +16,18 @@ import { UpmadeCore } from '../core/core.class';
 import { UpmadeBaseObject } from './base-object.class';
 import { UpmadeIframeElementBridge, UpmadeIframeElementBridgeOwner } from './iframe-element-bridge.class';
 import { createIframeElementBridgeScript, IFRAME_ELEMENT_PICKING_CSS } from './iframe-element-bridge.script';
-import { LEGACY_CONTENT_CSS_VARIABLES, LEGACY_IFRAME_GLOBAL, LEGACY_IFRAME_STATE_EVENT } from '../../migrations/legacy-brand';
+import { LEGACY_CONTENT_CSS_VARIABLES, LEGACY_IFRAME_GLOBALS, LEGACY_IFRAME_STATE_EVENTS } from '../../migrations/legacy-brand';
 
-/** Legacy CSS custom properties that content saved before the rename may use, mapped to the current ones. */
+/** Legacy CSS custom properties that content saved under a former name may use, mapped to the current ones. */
 const LEGACY_IFRAME_CSS_VARIABLES = Object.entries(LEGACY_CONTENT_CSS_VARIABLES)
   .map(([legacyName, name]) => `${legacyName}: var(${name});`)
   .join(' ');
+/** Deprecated globals that content saved under a former name may use, aliasing `globalThis.upmade`. */
+const LEGACY_IFRAME_GLOBAL_ALIASES = LEGACY_IFRAME_GLOBALS.map(name => `globalThis.${name} = upmade;`).join(' ');
+/** Deprecated state events that content saved under a former name may listen to, dispatched with the current one. */
+const LEGACY_IFRAME_STATE_EVENT_DISPATCHES = LEGACY_IFRAME_STATE_EVENTS.map(
+  type => `globalThis.dispatchEvent(new CustomEvent('${type}', { detail: upmade.state }));`,
+).join(' ');
 const IFRAME_STATE_MESSAGE = 'upmade-iframe-state';
 const IFRAME_PARENT_STATE_MESSAGE = 'upmade-iframe-parent-state';
 const IFRAME_POINTER_MESSAGE = 'upmade-iframe-pointer';
@@ -553,13 +559,13 @@ export class UpmadeIframeObject extends UpmadeBaseObject<HTMLIFrameElement> impl
           parent.postMessage({ type: '${IFRAME_STATE_MESSAGE}', state: nextState }, '*');
         },
       };
-      // Deprecated alias for content written before the rename.
-      globalThis.${LEGACY_IFRAME_GLOBAL} = upmade;
+      // Deprecated aliases for content written under a former name.
+      ${LEGACY_IFRAME_GLOBAL_ALIASES}
       globalThis.addEventListener('message', event => {
         if (event.data?.type === '${IFRAME_PARENT_STATE_MESSAGE}' && event.data.state && typeof event.data.state === 'object') {
           upmade.state = event.data.state;
           globalThis.dispatchEvent(new CustomEvent('upmadestatechange', { detail: upmade.state }));
-          globalThis.dispatchEvent(new CustomEvent('${LEGACY_IFRAME_STATE_EVENT}', { detail: upmade.state }));
+          ${LEGACY_IFRAME_STATE_EVENT_DISPATCHES}
         }
       });
       let bridgedPointerId = null;

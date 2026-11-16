@@ -1,4 +1,4 @@
-import { LEGACY_ELEMENT_ID_ATTRIBUTE } from '../../migrations/legacy-brand';
+import { LEGACY_ELEMENT_ID_ATTRIBUTES } from '../../migrations/legacy-brand';
 
 /**
  * Message types of the element bridge between an `UpmadeIframeObject` and its page.
@@ -20,8 +20,8 @@ export const IFRAME_ELEMENT_MESSAGES = {
 /** Tag of the element that holds the highlight layer inside the page. Its shadow root keeps page CSS out. */
 export const IFRAME_ELEMENT_OVERLAY_TAG = 'upmade-element-overlay';
 
-/** Attributes that give elements a stable id for agents, in order of precedence (current, then pre-rename). */
-export const IFRAME_ELEMENT_ID_ATTRIBUTES: readonly string[] = ['data-upmade-id', LEGACY_ELEMENT_ID_ATTRIBUTE];
+/** Attributes that give elements a stable id for agents, in order of precedence (current, then former names, newest first). */
+export const IFRAME_ELEMENT_ID_ATTRIBUTES: readonly string[] = ['data-upmade-id', ...LEGACY_ELEMENT_ID_ATTRIBUTES];
 
 /** Attribute set on the page's root element while picking, used to show the default cursor everywhere. */
 export const IFRAME_ELEMENT_PICKING_ATTRIBUTE = 'data-upmade-picking';
@@ -55,7 +55,7 @@ export function createIframeElementBridgeScript(documentToken: number): string {
   const DOCUMENT = ${Number(documentToken) || 0};
   const OVERLAY_TAG = '${IFRAME_ELEMENT_OVERLAY_TAG}';
   const PICKING_ATTRIBUTE = '${IFRAME_ELEMENT_PICKING_ATTRIBUTE}';
-  // Stable element ids for agents. Content saved before the rename uses the legacy attribute.
+  // Stable element ids for agents. Content saved under a former name uses a legacy attribute.
   const ID_ATTRIBUTES = ${JSON.stringify(IFRAME_ELEMENT_ID_ATTRIBUTES)};
   const idOf = element => {
     for (const attribute of ID_ATTRIBUTES) {

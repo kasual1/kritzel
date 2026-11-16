@@ -1,6 +1,9 @@
+import * as vm from 'vm';
 import { UpmadeIframeObject, UpmadeIframeObjectLifecycleContext } from './iframe.class';
 import { createIframeElementBridgeScript, IFRAME_ELEMENT_MESSAGES } from './iframe-element-bridge.script';
 import { ObjectHelper } from '../../helpers/object.helper';
+import { UpmadeReviver } from '../core/reviver.class';
+import legacyUpdrawWorkspace from '../../__fixtures__/legacy-updraw-workspace.json';
 
 describe('UpmadeIframeObject', () => {
   const createCore = () => ({
@@ -87,20 +90,70 @@ describe('UpmadeIframeObject', () => {
     getComputedStyle.mockRestore();
   });
 
-  it('keeps the runtime API of content saved before the rename working', () => {
-    const object = new UpmadeIframeObject({ html: '<button data-kritzel-id="run">Run</button>' });
+  it.each(['updraw', 'kritzel'])('keeps the runtime API of content saved under the %s name working', brand => {
+    const object = new UpmadeIframeObject({ html: `<button data-${brand}-id="run">Run</button>` });
     const iframe = document.createElement('iframe');
 
     object.mount(iframe);
 
-    // Deprecated aliases: the global, the state event and the cursor variables.
-    expect(iframe.srcdoc).toContain('globalThis.kritzel = upmade;');
+    // Deprecated aliases: the global, the state event and the cursor and border radius variables.
+    expect(iframe.srcdoc).toContain(`globalThis.${brand} = upmade;`);
     expect(iframe.srcdoc).toContain("new CustomEvent('upmadestatechange'");
-    expect(iframe.srcdoc).toContain("new CustomEvent('kritzelstatechange'");
-    expect(iframe.srcdoc).toContain('--kritzel-iframe-default-cursor: var(--upmade-iframe-default-cursor);');
-    expect(iframe.srcdoc).toContain('--kritzel-iframe-pointer-cursor: var(--upmade-iframe-pointer-cursor);');
-    // Stable element ids: the current attribute first, then the legacy one.
-    expect(iframe.srcdoc).toContain('const ID_ATTRIBUTES = ["data-upmade-id","data-kritzel-id"];');
+    expect(iframe.srcdoc).toContain(`new CustomEvent('${brand}statechange'`);
+    expect(iframe.srcdoc).toContain(`--${brand}-iframe-default-cursor: var(--upmade-iframe-default-cursor);`);
+    expect(iframe.srcdoc).toContain(`--${brand}-iframe-pointer-cursor: var(--upmade-iframe-pointer-cursor);`);
+    expect(iframe.srcdoc).toContain(`--${brand}-content-border-radius: var(--upmade-content-border-radius);`);
+    // Stable element ids: the current attribute first, then the legacy ones, newest first.
+    expect(iframe.srcdoc).toContain('const ID_ATTRIBUTES = ["data-upmade-id","data-updraw-id","data-kritzel-id"];');
+  });
+
+  it('runs content saved by Updraw 0.6.2 unchanged', () => {
+    const saved = legacyUpdrawWorkspace.objects.find(object => object.__class__ === 'UpdrawIframeObject');
+    const object = new UpmadeReviver(createCore()).revive<UpmadeIframeObject>(saved);
+    const iframe = document.createElement('iframe');
+    object.mount(iframe);
+
+    // Run the page's runtime script (the last one) against a minimal page holding the saved markup.
+    const scripts = Array.from(iframe.srcdoc.matchAll(/<script>([\s\S]*?)<\/script>/g), match => match[1]);
+    const createEventTarget = () => {
+      const listeners: Record<string, ((event: { type: string }) => void)[]> = {};
+      return {
+        addEventListener: (type: string, listener: (event: { type: string }) => void) => void (listeners[type] ??= []).push(listener),
+        dispatchEvent: (event: { type: string }) => (listeners[event.type] ?? []).forEach(listener => listener(event)),
+      };
+    };
+    const counter = { textContent: '' };
+    const button = createEventTarget();
+    const parent = { postMessage: jest.fn() };
+    const page = vm.createContext({
+      ...createEventTarget(),
+      CustomEvent: class {
+        detail: unknown;
+        constructor(readonly type: string, init?: { detail?: unknown }) {
+          this.detail = init?.detail;
+        }
+      },
+      Element: class {},
+      parent,
+      document: {
+        addEventListener: () => undefined,
+        getElementById: (id: string) => (id === 'n' ? counter : null),
+        querySelector: (selector: string) => (selector === '[data-updraw-id="count"]' ? button : null),
+      },
+    });
+    vm.runInContext(scripts[scripts.length - 1], page);
+
+    expect(page.updraw).toBe(page.upmade);
+    expect(page.kritzel).toBe(page.upmade);
+    expect(counter.textContent).toBe('3');
+
+    // The host pushes new state: content listening to `updrawstatechange` re-renders.
+    page.dispatchEvent({ type: 'message', data: { type: 'upmade-iframe-parent-state', state: { count: 5 } } });
+    expect(counter.textContent).toBe('5');
+
+    // Content writes state through the legacy global: it reaches the host as a current state message.
+    button.dispatchEvent({ type: 'click' });
+    expect(parent.postMessage).toHaveBeenCalledWith({ type: 'upmade-iframe-state', state: { count: 6 } }, '*');
   });
 
   it('reloads srcdoc when content changes', () => {

@@ -108,10 +108,10 @@ describe('UpmadeBaseTool', () => {
       expect(tool.name).toBe('restored');
     });
 
-    it('should keep its own class name instead of the serialized one', () => {
+    it.each(['UpdrawBrushTool', 'KritzelBrushTool'])('should keep its own class name instead of the serialized %s', legacyClass => {
       const ownClass = tool.__class__;
 
-      tool.deserialize({ __class__: 'KritzelBrushTool', name: 'restored' });
+      tool.deserialize({ __class__: legacyClass, name: 'restored' });
 
       expect(tool.__class__).toBe(ownClass);
       expect(tool.name).toBe('restored');

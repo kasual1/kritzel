@@ -631,9 +631,12 @@ describe('UpmadeCore', () => {
 
       core.deleteWorkspace(ws);
 
-      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('upmade-workspace-ws-db');
-      // The database the workspace had before the rename, which is only imported once the workspace is opened.
-      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('kritzel-workspace-ws-db');
+      // Also the databases the workspace had under former names, which are only imported once the workspace is opened.
+      expect((window.indexedDB.deleteDatabase as jest.Mock).mock.calls.map(([name]) => name)).toEqual([
+        'upmade-workspace-ws-db',
+        'updraw-workspace-ws-db',
+        'kritzel-workspace-ws-db',
+      ]);
     });
 
     it('should use editorId-namespaced database name when editorId is set', () => {
@@ -646,6 +649,7 @@ describe('UpmadeCore', () => {
       coreWithId.deleteWorkspace(ws);
 
       expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('upmade-workspace-homepage-ws-db');
+      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('updraw-workspace-homepage-ws-db');
       expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('kritzel-workspace-homepage-ws-db');
     });
   });
@@ -2721,6 +2725,40 @@ describe('UpmadeCore', () => {
       await core.initializeWorkspace();
 
       expect(mockStore.state.activeWorkspace).toBe(wsOld);
+    });
+
+    it.each([
+      // Both former names saved a value: the Updraw one is newer and wins.
+      ['updraw', { 'kritzel-active-workspace-id': 'ws-new', 'updraw-active-workspace-id': 'ws-old' }],
+      ['kritzel', { 'kritzel-active-workspace-id': 'ws-old' }],
+    ])('reopens the workspace last active under the %s name', async (_brand, entries: Record<string, string>) => {
+      const wsOld = createWorkspace('ws-old', 'Old', new Date('2025-01-01'));
+      const wsNew = createWorkspace('ws-new', 'New', new Date('2025-06-01'));
+      mockAppStateMap.allWorkspaces.mockReturnValue([wsOld, wsNew]);
+      // Stencil's mock storage has no `length` or `key()`, which the migration needs to find editor-scoped keys.
+      const items = new Map(Object.entries(entries));
+      const storage = {
+        get length() {
+          return items.size;
+        },
+        key: (index: number) => Array.from(items.keys())[index] ?? null,
+        getItem: (key: string) => items.get(key) ?? null,
+        setItem: (key: string, value: string) => void items.set(key, String(value)),
+        removeItem: (key: string) => void items.delete(key),
+        clear: () => items.clear(),
+      } as Storage;
+      const localStorageGetter = jest.spyOn(globalThis, 'localStorage', 'get').mockReturnValue(storage);
+
+      try {
+        // The constructor copies legacy keys before anything reads them.
+        const migratedCore = new UpmadeCore(mockEngine);
+        (migratedCore as any)._store = mockStore;
+        await migratedCore.initializeWorkspace();
+
+        expect(mockStore.state.activeWorkspace).toBe(wsOld);
+      } finally {
+        localStorageGetter.mockRestore();
+      }
     });
 
     it('should prefer newest createdAt when last-active is absent', async () => {

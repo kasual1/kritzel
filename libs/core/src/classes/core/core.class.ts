@@ -34,7 +34,7 @@ import { UpmadeZOrderHelper, UpmadeZOrderItem, UpmadeZOrderOperation } from '../
 import { IUpmadeUser } from '../../interfaces/user.interface';
 import { UpmadeText } from '../objects/text.class';
 import { UpmadeImage } from '../objects/image.class';
-import { migrateLegacyStorageKeys, toLegacyDocumentName } from '../../migrations/legacy-brand';
+import { migrateLegacyStorageKeys, toLegacyDocumentNames } from '../../migrations/legacy-brand';
 
 interface InitializeWorkspaceOptions {
   /**
@@ -278,7 +278,7 @@ export class UpmadeCore {
    * @param editorId - Optional unique identifier for namespacing storage keys
    */
   constructor(upmadeEngine: UpmadeEngineHost, editorId?: string) {
-    // Before any manager reads settings: copy values saved under the legacy (pre-rename) localStorage keys.
+    // Before any manager reads settings: copy values saved under the localStorage keys of the library's former names.
     migrateLegacyStorageKeys();
     this._upmadeEngine = upmadeEngine;
     this._editorId = editorId;
@@ -927,13 +927,12 @@ export class UpmadeCore {
     this.deleteWorkspaceFromAppState(workspace.id);
     this._store.state.workspaces = this.loadWorkspacesFromAppState();
 
-    // Also delete the workspace's IndexedDB database, and the one it had before the rename.
+    // Also delete the workspace's IndexedDB database, and the ones it had under former names.
     const dbName = this._editorId
       ? `upmade-workspace-${this._editorId}-${workspace.id}`
       : `upmade-workspace-${workspace.id}`;
     window.indexedDB.deleteDatabase(dbName);
-    const legacyDbName = toLegacyDocumentName(dbName);
-    if (legacyDbName) {
+    for (const legacyDbName of toLegacyDocumentNames(dbName)) {
       window.indexedDB.deleteDatabase(legacyDbName);
     }
   }

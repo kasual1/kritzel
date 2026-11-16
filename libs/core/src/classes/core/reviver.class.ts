@@ -56,7 +56,7 @@ export class UpmadeReviver {
     if (obj && typeof obj === 'object') {
       if (obj.__class__) {
         let revivedObj;
-        // Objects saved before the rename carry legacy class names (see migrations/legacy-brand.ts).
+        // Objects saved under a former name carry legacy class names, e.g. `UpdrawPath` (see migrations/legacy-brand.ts).
         // Revive them from a copy with the current name; never mutate the stored object.
         const className = normalizeLegacyClassName(obj.__class__);
         const data = className === obj.__class__ ? obj : { ...obj, __class__: className };

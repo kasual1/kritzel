@@ -259,16 +259,19 @@ describe('UpmadeClipboardManager', () => {
       expect(mockCore.store.state.isSelecting).toBe(false);
     });
 
-    it('pastes payloads copied before the rename', async () => {
+    it.each([
+      ['updraw', 'UpdrawShape'],
+      ['kritzel', 'KritzelShape'],
+    ])('pastes payloads copied under the %s name', async (brand, className) => {
       const revived = makeRevived();
       const revive = jest.spyOn(UpmadeReviver.prototype, 'revive').mockReturnValue(revived);
       (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
-      setClipboardText(`kritzel-clipboard/v1:${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`);
+      setClipboardText(`${brand}-clipboard/v1:${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: className }] })}`);
 
       await manager.paste(undefined, undefined);
 
-      expect(revive).toHaveBeenCalledWith(expect.objectContaining({ id: 'x', __class__: 'KritzelShape' }));
+      expect(revive).toHaveBeenCalledWith(expect.objectContaining({ id: 'x', __class__: className }));
       expect(mockCore.addObject).toHaveBeenCalledWith(revived);
     });
 

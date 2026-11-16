@@ -1,0 +1,360 @@
+{
+  "__class__": "UpdrawWorkspace",
+  "version": "1.3.0",
+  "id": "k3v9q2m7xa1b4c6d",
+  "name": "Updraw Workspace",
+  "createdAt": "2026-11-13T15:02:11.000Z",
+  "updatedAt": "2026-11-14T09:47:36.000Z",
+  "viewport": {
+    "centerWorldX": 412.5,
+    "centerWorldY": 230,
+    "scale": 0.85
+  },
+  "isPublic": false,
+  "exportMode": "portable",
+  "objects": [
+    {
+      "__class__": "UpdrawPath",
+      "id": "p8f2k1w9z0a3b5c7",
+      "workspaceId": "k3v9q2m7xa1b4c6d",
+      "x": -2,
+      "y": -2,
+      "translateX": 120,
+      "translateY": 80,
+      "height": 24.5,
+      "width": 48.5,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 1,
+      "isLoading": false,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          12,
+          4
+        ],
+        [
+          30,
+          18
+        ],
+        [
+          44,
+          20
+        ]
+      ],
+      "d": "M2.42,0.75 Q9.30,3.14 16.07,7.75 T34.61,16.65 46.54,21.03 46.82,21.26 47.02,21.56 47.10,21.91 47.08,22.26 46.93,22.59 46.70,22.86 46.38,23.04 46.03,23.11 45.68,23.06 45.36,22.90 45.10,22.65 44.94,22.33 44.89,21.97 44.96,21.62 45.13,21.31 45.40,21.07 45.73,20.93 46.09,20.90 46.43,20.98 46.74,21.17 46.96,21.45 47.09,21.79 47.10,22.15 46.99,22.49 46.79,22.78 46.49,22.99 46.15,23.10 45.79,23.09 45.62,23.05 33.57,18.68 15.02,9.88 5.04,4.36 1.44,3.18 1.17,3.02 0.95,2.79 0.79,2.51 0.71,2.21 0.69,1.90 0.76,1.59 0.89,1.30 1.09,1.05 1.34,0.86 1.63,0.74 1.95,0.69 2.26,0.72 Z",
+      "stroke": {
+        "light": "none",
+        "dark": "none"
+      },
+      "strokeWidth": 4,
+      "lineSlack": 0.5,
+      "fill": {
+        "light": "#000000",
+        "dark": "#ffffff"
+      },
+      "options": {
+        "points": [
+          [
+            0,
+            0
+          ],
+          [
+            12,
+            4
+          ],
+          [
+            30,
+            18
+          ],
+          [
+            44,
+            20
+          ]
+        ],
+        "strokeWidth": 4,
+        "stroke": {
+          "light": "#1e88e5",
+          "dark": "#90caf9"
+        }
+      },
+      "isDebugInfoVisible": true,
+      "isCompleted": false,
+      "_adjustedPoints": null
+    },
+    {
+      "__class__": "UpdrawShape",
+      "id": "s4d6f8h0j2k4l6m8",
+      "workspaceId": "k3v9q2m7xa1b4c6d",
+      "x": 0,
+      "y": 0,
+      "translateX": 260,
+      "translateY": 60,
+      "height": 90,
+      "width": 160,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 2,
+      "isLoading": false,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": false,
+      "isMounted": false,
+      "isEditable": true,
+      "isInteractive": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "shapeType": "rectangle",
+      "fillColor": {
+        "light": "#fff3e0",
+        "dark": "#4e342e"
+      },
+      "strokeColor": {
+        "light": "#fb8c00",
+        "dark": "#ffb74d"
+      },
+      "strokeWidth": 2,
+      "fontFamily": "Arial",
+      "fontSize": 16,
+      "fontColor": {
+        "light": "#000000",
+        "dark": "#ffffff"
+      },
+      "scaleFactor": 1,
+      "isDebugInfoVisible": true,
+      "isEditing": false,
+      "content": null
+    },
+    {
+      "__class__": "UpdrawText",
+      "id": "t1q3e5t7u9o1a3d5",
+      "workspaceId": "k3v9q2m7xa1b4c6d",
+      "translateX": 280,
+      "translateY": 200,
+      "height": 28.799999999999997,
+      "width": 1,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 3,
+      "isLoading": false,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": false,
+      "isMounted": false,
+      "isEditable": true,
+      "isInteractive": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "fontFamily": "Arial",
+      "fontSize": 24,
+      "fontColor": {
+        "light": "#000000",
+        "dark": "#ffffff"
+      },
+      "initialWidth": 1,
+      "initialHeight": 1,
+      "scaleFactor": 1,
+      "isDebugInfoVisible": true,
+      "isEditing": false,
+      "isNewlyCreated": false,
+      "content": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Hello from Updraw"
+              }
+            ]
+          }
+        ]
+      },
+      "rows": 1
+    },
+    {
+      "__class__": "UpdrawLine",
+      "id": "l2w4r6y8i0p2s4f6",
+      "workspaceId": "k3v9q2m7xa1b4c6d",
+      "x": -1,
+      "y": -1,
+      "translateX": 140,
+      "translateY": 320,
+      "height": 42,
+      "width": 122,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 4,
+      "isLoading": false,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "startX": 0,
+      "startY": 0,
+      "endX": 120,
+      "endY": 40,
+      "stroke": {
+        "light": "#424242",
+        "dark": "#e0e0e0"
+      },
+      "strokeWidth": 2,
+      "options": {
+        "startX": 0,
+        "startY": 0,
+        "endX": 120,
+        "endY": 40,
+        "strokeWidth": 2,
+        "stroke": {
+          "light": "#424242",
+          "dark": "#e0e0e0"
+        }
+      },
+      "isDebugInfoVisible": true,
+      "isCompleted": false
+    },
+    {
+      "__class__": "UpdrawImage",
+      "id": "i5z7x9v1n3m5b7c9",
+      "workspaceId": "k3v9q2m7xa1b4c6d",
+      "x": 0,
+      "y": 0,
+      "translateX": 500,
+      "translateY": 90,
+      "height": 2,
+      "width": 2,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 5,
+      "isLoading": false,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "assetId": "a7c9e1g3i5k7m9o1",
+      "mimeType": "image/png",
+      "src": "",
+      "maxWidth": 300,
+      "maxHeight": 300,
+      "maxCompressionSize": 1200,
+      "maxLoadAttempts": 3,
+      "maxTransientRetryDurationMs": 30000
+    },
+    {
+      "__class__": "UpdrawGroup",
+      "id": "g6h8j0l2n4p6r8t0",
+      "workspaceId": "k3v9q2m7xa1b4c6d",
+      "translateX": 120,
+      "translateY": 80,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 6,
+      "isLoading": false,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": false,
+      "isMounted": false,
+      "isEditable": false,
+      "isInteractive": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "childIds": [
+        "p8f2k1w9z0a3b5c7",
+        "s4d6f8h0j2k4l6m8"
+      ],
+      "snapshotRotation": 0,
+      "snapshotTranslateX": 0,
+      "snapshotTranslateY": 0,
+      "snapshotTotalWidth": 0,
+      "snapshotTotalHeight": 0,
+      "snapshotScale": 1,
+      "unchangedChildSnapshots": {}
+    },
+    {
+      "__class__": "UpdrawIframeObject",
+      "id": "f3s5u7w9y1a3c5e7",
+      "workspaceId": "k3v9q2m7xa1b4c6d",
+      "translateX": 520,
+      "translateY": 260,
+      "height": 120,
+      "width": 240,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 7,
+      "isLoading": false,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "content": {
+        "html": "<button data-updraw-id=\"count\">Clicked <span id=\"n\">0</span> times</button>",
+        "css": "button { border-radius: var(--updraw-content-border-radius); cursor: var(--updraw-iframe-pointer-cursor); }",
+        "script": "const render = () => { document.getElementById('n').textContent = String(updraw.state.count ?? 0); };\naddEventListener('updrawstatechange', render);\ndocument.querySelector('[data-updraw-id=\"count\"]').addEventListener('click', () => updraw.setState({ count: (updraw.state.count ?? 0) + 1 }));\nrender();"
+      },
+      "state": {
+        "count": 3
+      },
+      "title": "Embedded content",
+      "sandbox": [
+        "allow-scripts"
+      ]
+    },
+    {
+      "__class__": "UpdrawDynamicObject",
+      "id": "d9b1d3f5h7j9l1n3",
+      "workspaceId": "k3v9q2m7xa1b4c6d",
+      "translateX": 800,
+      "translateY": 120,
+      "height": 80,
+      "width": 180,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 8,
+      "isLoading": false,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "rendererKey": null,
+      "clipContent": true,
+      "htmlString": "<div style=\"border-radius: var(--updraw-content-border-radius); padding: 8px;\"><p>Notes</p></div>",
+      "serializedWidth": 180,
+      "serializedHeight": 80
+    }
+  ],
+  "assets": {
+    "a7c9e1g3i5k7m9o1": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVR4nGP8z8Dwn4GBgYGJAQoAHxcCAiw7tTYAAAAASUVORK5CYII="
+  }
+}

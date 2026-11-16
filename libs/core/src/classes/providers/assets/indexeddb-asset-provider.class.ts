@@ -1,6 +1,6 @@
 import { UpmadeAsset } from '../../../interfaces/asset.interface';
 import { IAssetStorageProvider, UpmadeAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
-import { LEGACY_ASSET_DB_NAME } from '../../../migrations/legacy-brand';
+import { LEGACY_ASSET_DB_NAMES } from '../../../migrations/legacy-brand';
 import { indexedDbExists, isLegacyDatabaseImported, markLegacyDatabaseImported } from '../../../migrations/legacy-indexeddb';
 
 /** Default database name used by IndexedDBAssetProvider. */
@@ -17,8 +17,8 @@ const DB_VERSION = 1;
  */
 export interface IndexedDBAssetProviderOptions {
   /**
-   * Custom database name. Defaults to `upmade-assets`. With the default name, assets saved before
-   * the rename are copied over on first use.
+   * Custom database name. Defaults to `upmade-assets`. With the default name, assets saved under the
+   * library's former names (`updraw-assets`, `kritzel-assets`) are copied over on first use.
    */
   dbName?: string;
 
@@ -251,24 +251,33 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
   }
 
   /**
-   * Copies assets stored in the default database used before the rename into this database, one
-   * record at a time and only when missing here. The legacy database is left untouched, so older
-   * versions on the same origin keep working; if copying stops part-way (e.g. storage quota), the
-   * next start continues where it stopped.
+   * Copies assets stored in the default databases used under the library's former names into this
+   * database, newest name first, so an asset in both is taken from the newer one.
    */
   private async importLegacyAssets(db: IDBDatabase): Promise<void> {
-    if (isLegacyDatabaseImported(LEGACY_ASSET_DB_NAME)) return;
+    for (const legacyDbName of LEGACY_ASSET_DB_NAMES) {
+      await this.importLegacyAssetDatabase(db, legacyDbName);
+    }
+  }
+
+  /**
+   * Copies the assets of one legacy database into this database, one record at a time and only when
+   * missing here. The legacy database is left untouched, so older versions on the same origin keep
+   * working; if copying stops part-way (e.g. storage quota), the next start continues where it stopped.
+   */
+  private async importLegacyAssetDatabase(db: IDBDatabase, legacyDbName: string): Promise<void> {
+    if (isLegacyDatabaseImported(legacyDbName)) return;
 
     let legacyDb: IDBDatabase | null = null;
     try {
-      if (!(await indexedDbExists(LEGACY_ASSET_DB_NAME))) return;
+      if (!(await indexedDbExists(legacyDbName))) return;
       legacyDb = await new Promise<IDBDatabase>((resolve, reject) => {
-        const req = indexedDB.open(LEGACY_ASSET_DB_NAME);
+        const req = indexedDB.open(legacyDbName);
         req.onsuccess = () => resolve(req.result);
         req.onerror = () => reject(req.error);
       });
       if (!legacyDb.objectStoreNames.contains(BLOB_STORE) || !legacyDb.objectStoreNames.contains(META_STORE)) {
-        markLegacyDatabaseImported(LEGACY_ASSET_DB_NAME);
+        markLegacyDatabaseImported(legacyDbName);
         return;
       }
 
@@ -287,9 +296,9 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
           tx.objectStore(META_STORE).put(record.metadata, id);
         });
       }
-      markLegacyDatabaseImported(LEGACY_ASSET_DB_NAME);
+      markLegacyDatabaseImported(legacyDbName);
     } catch (error) {
-      console.warn(`[IndexedDBAssetProvider] Could not import assets from legacy database "${LEGACY_ASSET_DB_NAME}":`, error);
+      console.warn(`[IndexedDBAssetProvider] Could not import assets from legacy database "${legacyDbName}":`, error);
     } finally {
       legacyDb?.close();
     }

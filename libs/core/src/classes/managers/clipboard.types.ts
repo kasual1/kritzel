@@ -1,17 +1,17 @@
-import { LEGACY_CLIPBOARD_PAYLOAD_PREFIX } from '../../migrations/legacy-brand';
+import { LEGACY_CLIPBOARD_PAYLOAD_PREFIXES } from '../../migrations/legacy-brand';
 
 export const CLIPBOARD_PAYLOAD_PREFIX = 'upmade-clipboard/v1:';
 
 /**
- * Returns the JSON part of a serialized clipboard payload, including payloads copied
- * before the rename (legacy prefix), or `null` when the text is not a clipboard payload.
+ * Returns the JSON part of a serialized clipboard payload, including payloads copied under
+ * a former name of the library (legacy prefixes), or `null` when the text is not a clipboard payload.
  * @param text - The clipboard text
  */
 export function getClipboardPayloadJson(text: string | null | undefined): string | null {
   if (!text) {
     return null;
   }
-  for (const prefix of [CLIPBOARD_PAYLOAD_PREFIX, LEGACY_CLIPBOARD_PAYLOAD_PREFIX]) {
+  for (const prefix of [CLIPBOARD_PAYLOAD_PREFIX, ...LEGACY_CLIPBOARD_PAYLOAD_PREFIXES]) {
     if (text.startsWith(prefix)) {
       return text.slice(prefix.length);
     }

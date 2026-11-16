@@ -1416,7 +1416,7 @@ export class UpmadeEditor {
     this.subscribeChatSession();
     this.registerCustomSvgIcons(this.customSvgIcons);
     this.recomputeMoreMenuItems();
-    // Settings saved before the rename live under legacy localStorage keys.
+    // Settings saved under a former name live under legacy localStorage keys.
     migrateLegacyStorageKeys();
     this.loadSettingsFromStorage();
     this.applyTheme();

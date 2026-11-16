@@ -181,7 +181,7 @@ export class UpmadeAppStateMap {
       throw new Error('[UpmadeAppStateMap] localStorage is unavailable. Cannot persist app-state document identity.');
     }
 
-    // An instance id saved before the rename lives under the legacy key; losing it would orphan the user's workspace list.
+    // An instance id saved under a former name lives under a legacy key; losing it would orphan the user's workspace list.
     migrateLegacyStorageKeys(storage);
     const storageKey = core.getStorageKey(APP_STATE_INSTANCE_ID_STORAGE_KEY);
 

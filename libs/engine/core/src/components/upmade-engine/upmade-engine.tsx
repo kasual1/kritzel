@@ -1853,7 +1853,7 @@ export class UpmadeEngine implements UpmadeEngineHost {
     const data = JSON.parse(json) as WorkspaceJsonExportPayload;
 
     // Validate the import data
-    // Exports made before the rename use the legacy workspace class name.
+    // Exports made under a former name use a legacy workspace class name (`UpdrawWorkspace`, `KritzelWorkspace`).
     if (!data.__class__ || normalizeLegacyClassName(data.__class__) !== 'UpmadeWorkspace') {
       throw new Error('Invalid workspace data: missing or incorrect __class__ identifier');
     }
@@ -1918,7 +1918,7 @@ export class UpmadeEngine implements UpmadeEngineHost {
     const data = JSON.parse(json) as WorkspaceJsonExportPayload;
 
     // Validate the import data
-    // Exports made before the rename use the legacy workspace class name.
+    // Exports made under a former name use a legacy workspace class name (`UpdrawWorkspace`, `KritzelWorkspace`).
     if (!data.__class__ || normalizeLegacyClassName(data.__class__) !== 'UpmadeWorkspace') {
       throw new Error('Invalid workspace data: missing or incorrect __class__ identifier');
     }
@@ -2814,7 +2814,7 @@ export class UpmadeEngine implements UpmadeEngineHost {
   }
 
   componentWillLoad() {
-    // Settings saved before the rename live under legacy localStorage keys.
+    // Settings saved under a former name live under legacy localStorage keys.
     migrateLegacyStorageKeys();
     this.bindChatSession();
     this._toolsRevision++;

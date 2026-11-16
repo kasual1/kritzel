@@ -101,10 +101,14 @@ p, h1, h2, h3, h4, h5, h6, blockquote, pre {
   --upmade-content-border-radius: var(--upmade-image-border-radius, 0);
 }
 
-/* Deprecated alias for content saved before the rename, which may still use the old variable name. */
+/*
+ * Deprecated aliases for content saved under a former name of the library, which may still use the old variable
+ * names. Keep in sync with LEGACY_CONTENT_CSS_VARIABLES in @upmade/core (a spec checks it).
+ */
 .object--iframe,
 .object--dynamic-object,
 .object--image {
+  --updraw-content-border-radius: var(--upmade-content-border-radius);
   --kritzel-content-border-radius: var(--upmade-content-border-radius);
 }
 
