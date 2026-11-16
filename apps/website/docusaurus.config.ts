@@ -32,7 +32,8 @@ const ABSOLUTE_URL = (path: string) =>
 
 const FRAMEWORKS = ["angular", "react", "vue"] as const;
 
-// Legacy flat doc paths -> current category-based paths, applied to every framework instance.
+// Legacy doc paths -> current paths (flat pages moved into categories, renamed pages), applied to every framework
+// instance. tests/redirects.spec.ts checks the redirects they produce.
 const LEGACY_DOC_PATHS: Record<string, string> = {
   "quick-start": "getting-started/quick-start",
   "basic-usage": "getting-started/basic-usage",
@@ -61,6 +62,8 @@ const LEGACY_DOC_PATHS: Record<string, string> = {
   objects: "api-reference/objects",
   theming: "api-reference/theme-tokens",
   types: "api-reference/types",
+  // The migration guide was published as migrating-to-updraw before the Upmade rebrand.
+  "getting-started/migrating-to-updraw": "getting-started/migrating-to-upmade",
 };
 
 const DOC_REDIRECTS = FRAMEWORKS.flatMap((framework) =>

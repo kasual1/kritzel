@@ -159,7 +159,7 @@
   margin: 0;
   font-size: clamp(40px, 5.4vw, 66px);
   line-height: 1.02;
-  /* semibold, like the "draw" of the header wordmark */
+  /* semibold, like the "made" of the header wordmark */
   font-weight: 600;
   letter-spacing: -0.045em;
   color: var(--landing-ink);
@@ -737,7 +737,7 @@
   margin: 0;
   font-size: clamp(32px, 4vw, 48px);
   line-height: 1.1;
-  /* semibold, like the "draw" of the header wordmark */
+  /* semibold, like the "made" of the header wordmark */
   font-weight: 600;
   letter-spacing: -0.035em;
   color: var(--landing-ink);

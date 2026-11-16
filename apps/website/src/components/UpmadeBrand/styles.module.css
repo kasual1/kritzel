@@ -18,7 +18,7 @@ a.brand:hover {
   text-decoration: none;
 }
 
-/* "up" regular, "draw" semibold: the word's weight sits on "draw" and "up" feels lighter, like it's rising. */
+/* "up" regular, "made" semibold: the word's weight sits on "made" and "up" feels lighter, like it's rising. */
 .up {
   font-weight: 400;
 }

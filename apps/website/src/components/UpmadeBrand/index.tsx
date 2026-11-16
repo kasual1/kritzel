@@ -31,9 +31,9 @@ export default function UpmadeBrand({ className }: { className?: string }): Reac
           d={UPMADE_LOGO_PATH}
         />
       </svg>
-      {/* one flex item, so "up" and "draw" stay one word */}
+      {/* one flex item, so "up" and "made" stay one word */}
       <span>
-        <span className={styles.up}>Up</span>draw
+        <span className={styles.up}>Up</span>made
       </span>
     </Link>
   );
