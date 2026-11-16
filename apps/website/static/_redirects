@@ -62,6 +62,12 @@
 /videos/2026_10_22_Updraw_Open_Source.mp4             /videos/2026_10_22_Upmade_Open_Source.mp4 301
 /videos/2026_10_22_Updraw_Open_Source.thumbnail.jpg   /videos/2026_10_22_Upmade_Open_Source.thumbnail.jpg 301
 
+# Markdown exports of the migration guide published as migrating-to-updraw (docusaurus-plugin-llms,
+# listed in llms.txt). Its HTML route has a client-side redirect in LEGACY_DOC_PATHS.
+/docs/angular/getting-started/migrating-to-updraw.md  /docs/angular/getting-started/migrating-to-upmade.md 301
+/docs/react/getting-started/migrating-to-updraw.md    /docs/react/getting-started/migrating-to-upmade.md 301
+/docs/vue/getting-started/migrating-to-updraw.md      /docs/vue/getting-started/migrating-to-upmade.md 301
+
 # Removed or restructured documentation pages
 /docs/angular/advanced-concepts/concept-collaboration                /docs/angular/advanced/collaboration/ 301
 /docs/angular/advanced-concepts/concept-collaboration/               /docs/angular/advanced/collaboration/ 301

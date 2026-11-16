@@ -43,7 +43,10 @@ function routeSource(route: string): string | undefined {
   const trimmed = route.replace(/^\/|\/$/g, '');
   const blogPost = trimmed.match(/^blog\/(\d{4})\/(\d{2})\/(\d{2})\/([^/]+)$/);
   let candidates: string[];
-  if (trimmed.startsWith('docs/')) {
+  if (/^docs\/.+\.md$/.test(trimmed)) {
+    // the Markdown export docusaurus-plugin-llms writes next to each doc page
+    candidates = [trimmed, `${trimmed}x`];
+  } else if (trimmed.startsWith('docs/')) {
     candidates = [`${trimmed}.md`, `${trimmed}.mdx`];
   } else if (blogPost) {
     const [, year, month, day, slug] = blogPost;
@@ -65,6 +68,11 @@ describe('routeSource', () => {
     expect(routeSource('/docs/react/getting-started/quick-start/')).toBe('docs/react/getting-started/quick-start.md');
     expect(routeSource('/license/')).toBe('src/pages/license.md');
     expect(routeSource('/')).toBe('src/pages/index.tsx');
+  });
+
+  test('resolves the Markdown export of a doc to the doc', () => {
+    expect(routeSource('/docs/react/getting-started/quick-start.md')).toBe('docs/react/getting-started/quick-start.md');
+    expect(routeSource('/docs/react/getting-started/no-such-page.md')).toBeUndefined();
   });
 
   test('resolves blog post routes to their markdown file', () => {
@@ -128,7 +136,8 @@ describe('static/_redirects', () => {
 
   // Kritzel was renamed to Updraw and Updraw to Upmade; links to both earlier names are out there.
   test('renamed blog posts and media are redirected from their Kritzel and Updraw names', () => {
-    const renamed = redirects.filter((redirect) => /upmade/i.test(redirect.to));
+    // Docs are left out: the migration guide was first published under the Updraw name.
+    const renamed = redirects.filter((redirect) => /upmade/i.test(redirect.to) && !redirect.to.startsWith('/docs/'));
     expect(renamed.length).toBeGreaterThan(0);
     const missing: string[] = [];
     for (const to of new Set(renamed.map((redirect) => redirect.to))) {
@@ -169,6 +178,12 @@ describe('client-side doc redirects', () => {
       expect(redirects).toContainEqual({
         from: `/docs/${framework}/getting-started/migrating-to-updraw`,
         to: `/docs/${framework}/getting-started/migrating-to-upmade`,
+      });
+      // Its Markdown export is a static file, so it needs a server-side redirect.
+      expect(readRedirects()).toContainEqual({
+        from: `/docs/${framework}/getting-started/migrating-to-updraw.md`,
+        to: `/docs/${framework}/getting-started/migrating-to-upmade.md`,
+        status: '301',
       });
     }
   });
