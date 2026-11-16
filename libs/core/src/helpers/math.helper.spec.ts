@@ -1,25 +1,25 @@
-import { UpdrawMathHelper } from './math.helper';
+import { UpmadeMathHelper } from './math.helper';
 
-describe('UpdrawMathHelper', () => {
+describe('UpmadeMathHelper', () => {
   describe('average', () => {
     it('should return the average of two positive numbers', () => {
-      expect(UpdrawMathHelper.average(2, 4)).toBe(3);
+      expect(UpmadeMathHelper.average(2, 4)).toBe(3);
     });
 
     it('should return the average of two negative numbers', () => {
-      expect(UpdrawMathHelper.average(-2, -4)).toBe(-3);
+      expect(UpmadeMathHelper.average(-2, -4)).toBe(-3);
     });
 
     it('should return the average of a positive and a negative number', () => {
-      expect(UpdrawMathHelper.average(-2, 4)).toBe(1);
+      expect(UpmadeMathHelper.average(-2, 4)).toBe(1);
     });
 
     it('should return the average of a number and zero', () => {
-      expect(UpdrawMathHelper.average(0, 4)).toBe(2);
+      expect(UpmadeMathHelper.average(0, 4)).toBe(2);
     });
 
     it('should return zero when averaging zero and zero', () => {
-      expect(UpdrawMathHelper.average(0, 0)).toBe(0);
+      expect(UpmadeMathHelper.average(0, 0)).toBe(0);
     });
   });
 });

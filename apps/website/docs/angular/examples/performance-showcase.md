@@ -1,7 +1,7 @@
 ---
 sidebar_label: Performance Showcase
 displayed_sidebar: tutorialSidebar
-title: "Performance Showcase Example | Updraw for Angular"
+title: "Performance Showcase Example | Upmade for Angular"
 description: "Fill an infinite canvas with thousands of interactive GitHub Star buttons built as dynamic objects, and pan and zoom across them smoothly."
 ---
 
@@ -9,11 +9,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 # Performance Showcase
 
-This example fills a board with thousands of GitHub "Star" buttons. Every button is a real DOM element mounted as a dynamic object, so it can be selected, moved and resized like any other object, and clicking it opens the Updraw repository. Updraw only mounts the objects inside the viewport, so panning and zooming stay smooth even with 5,000 buttons on the board.
+This example fills a board with thousands of GitHub "Star" buttons. Every button is a real DOM element mounted as a dynamic object, so it can be selected, moved and resized like any other object, and clicking it opens the Upmade repository. Upmade only mounts the objects inside the viewport, so panning and zooming stay smooth even with 5,000 buttons on the board.
 
 ## Prerequisites
 
-Complete the [Quick Start](../getting-started/quick-start.md) guide to have a working `<updraw-editor>` rendered in your application. This example builds on that setup.
+Complete the [Quick Start](../getting-started/quick-start.md) guide to have a working `<upmade-editor>` rendered in your application. This example builds on that setup.
 
 ---
 
@@ -46,7 +46,7 @@ The button is a plain `div`, not a `<button>`, so the engine treats every press 
 The component registers a renderer under a stable key in its constructor and unregisters it in `ngOnDestroy()`. `onMount` builds the button inside the container the engine hands over, and `onUnmount` tears it down again. The engine calls `onUnmount` whenever a button leaves the viewport, so only the visible buttons exist in the DOM at any time.
 
 ```typescript
-UpdrawDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
+UpmadeDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
   onMount: ({ object, container, data }: GithubStarRendererContext) => {
     if (!container) {
       return;
@@ -74,10 +74,10 @@ UpdrawDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
 The object factory places the buttons on a grid with a 10px gap on every side, centered on the world origin, which is the center of the initial viewport. The layout is computed from the count alone, so every load shows the same board. Each object carries only the renderer key and a label in `rendererData`. Dynamic objects are drawn as cards, clipped to the theme's rounded corners and with its shadow, so each object takes the button's own 6px corners and no shadow instead.
 
 ```typescript
-export function createGithubStarObject(x: number, y: number): UpdrawDynamicObject {
+export function createGithubStarObject(x: number, y: number): UpmadeDynamicObject {
   const placeholder = document.createElement('div');
   placeholder.textContent = 'Star';
-  const object = new UpdrawDynamicObject({
+  const object = new UpmadeDynamicObject({
     element: placeholder,
     rendererKey: GITHUB_STAR_RENDERER_KEY,
     rendererData: { label: 'Star' } satisfies GithubStarButtonData,

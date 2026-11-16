@@ -1,10 +1,10 @@
-import { AGENTIC_CURSOR_MAX_DURATION, AGENTIC_CURSOR_MIN_DURATION, UpdrawAgenticCursorManager } from './agentic-cursor.manager';
-import type { UpdrawAgenticCursorOptions } from '../../interfaces/agentic-cursor.interface';
+import { AGENTIC_CURSOR_MAX_DURATION, AGENTIC_CURSOR_MIN_DURATION, UpmadeAgenticCursorManager } from './agentic-cursor.manager';
+import type { UpmadeAgenticCursorOptions } from '../../interfaces/agentic-cursor.interface';
 
 jest.mock('../core/core.class');
 
-describe('UpdrawAgenticCursorManager', () => {
-  let manager: UpdrawAgenticCursorManager;
+describe('UpmadeAgenticCursorManager', () => {
+  let manager: UpmadeAgenticCursorManager;
   let objects: Map<string, any>;
   let state: any;
   let core: any;
@@ -26,7 +26,7 @@ describe('UpdrawAgenticCursorManager', () => {
   });
   let cursorCount = 0;
   /** Adds a cursor with a fresh ID unless one is given, as an agent would. */
-  const addCursor = (options: Partial<UpdrawAgenticCursorOptions> = {}) => manager.add({ id: `cursor-${++cursorCount}`, appearance: appearance(), ...options });
+  const addCursor = (options: Partial<UpmadeAgenticCursorOptions> = {}) => manager.add({ id: `cursor-${++cursorCount}`, appearance: appearance(), ...options });
 
   beforeEach(() => {
     now = 1000;
@@ -41,7 +41,7 @@ describe('UpdrawAgenticCursorManager', () => {
       // No titlebars: the plain screen distance of the rotation handle.
       objectTitlebarManager: { getRotationHandleDistance: () => 15 },
     };
-    manager = new UpdrawAgenticCursorManager(core);
+    manager = new UpmadeAgenticCursorManager(core);
   });
 
   afterEach(() => {

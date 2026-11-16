@@ -1,14 +1,14 @@
-import { UpdrawHandleType } from '../../enums/handle-type.enum';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawBaseHandler } from './base.handler';
+import { UpmadeHandleType } from '../../enums/handle-type.enum';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeBaseHandler } from './base.handler';
 
 /**
  * Handler class responsible for managing resize operations on selected objects.
  * Supports mouse, touch, and pen input types, with rotation-aware resizing
  * and optional aspect ratio locking via Shift key (mouse only).
  */
-export class UpdrawResizeHandler extends UpdrawBaseHandler {
+export class UpmadeResizeHandler extends UpmadeBaseHandler {
   /** Initial mouse/pointer X coordinate when resize started */
   initialMouseX: number = 0;
   /** Initial mouse/pointer Y coordinate when resize started */
@@ -24,10 +24,10 @@ export class UpdrawResizeHandler extends UpdrawBaseHandler {
   hasResized: boolean = false;
 
   /**
-   * Creates a new UpdrawResizeHandler instance.
-   * @param core - The UpdrawCore instance providing access to store, engine, and other core functionalities
+   * Creates a new UpmadeResizeHandler instance.
+   * @param core - The UpmadeCore instance providing access to store, engine, and other core functionalities
    */
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     super(core);
   }
 
@@ -78,7 +78,7 @@ export class UpdrawResizeHandler extends UpdrawBaseHandler {
    */
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      if (UpdrawEventHelper.isLeftClick(event)) {
+      if (UpmadeEventHelper.isLeftClick(event)) {
         const selectionGroup = this._core.store.selectionGroup;
         if (selectionGroup && this._core.store.state.isResizeHandleSelected && this._core.objectConfigManager.isResizable(selectionGroup)) {
           selectionGroup.beginTransform();
@@ -188,19 +188,19 @@ export class UpdrawResizeHandler extends UpdrawBaseHandler {
         const newCenterY = initialCenterY + dy / currentScale / 2;
 
         switch (this._core.store.state.resizeHandleType) {
-          case UpdrawHandleType.TopLeft:
+          case UpmadeHandleType.TopLeft:
             this.newSize.width = this.initialSize.width - localDx * objectScale;
             this.newSize.height = this.initialSize.height - localDy * objectScale;
             break;
-          case UpdrawHandleType.TopRight:
+          case UpmadeHandleType.TopRight:
             this.newSize.width = this.initialSize.width + localDx * objectScale;
             this.newSize.height = this.initialSize.height - localDy * objectScale;
             break;
-          case UpdrawHandleType.BottomLeft:
+          case UpmadeHandleType.BottomLeft:
             this.newSize.width = this.initialSize.width - localDx * objectScale;
             this.newSize.height = this.initialSize.height + localDy * objectScale;
             break;
-          case UpdrawHandleType.BottomRight:
+          case UpmadeHandleType.BottomRight:
             this.newSize.width = this.initialSize.width + localDx * objectScale;
             this.newSize.height = this.initialSize.height + localDy * objectScale;
             break;
@@ -278,19 +278,19 @@ export class UpdrawResizeHandler extends UpdrawBaseHandler {
         const newCenterY = initialCenterY + dy / currentScale / 2;
 
         switch (this._core.store.state.resizeHandleType) {
-          case UpdrawHandleType.TopLeft:
+          case UpmadeHandleType.TopLeft:
             this.newSize.width = this.initialSize.width - localDx * objectScale;
             this.newSize.height = this.initialSize.height - localDy * objectScale;
             break;
-          case UpdrawHandleType.TopRight:
+          case UpmadeHandleType.TopRight:
             this.newSize.width = this.initialSize.width + localDx * objectScale;
             this.newSize.height = this.initialSize.height - localDy * objectScale;
             break;
-          case UpdrawHandleType.BottomLeft:
+          case UpmadeHandleType.BottomLeft:
             this.newSize.width = this.initialSize.width - localDx * objectScale;
             this.newSize.height = this.initialSize.height + localDy * objectScale;
             break;
-          case UpdrawHandleType.BottomRight:
+          case UpmadeHandleType.BottomRight:
             this.newSize.width = this.initialSize.width + localDx * objectScale;
             this.newSize.height = this.initialSize.height + localDy * objectScale;
             break;

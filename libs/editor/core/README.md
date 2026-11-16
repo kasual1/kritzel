@@ -1,14 +1,14 @@
-# Updraw Editor
+# Upmade Editor
 
-This package contains the core editor that powers Updraw's framework-specific variants.
+This package contains the core editor that powers Upmade's framework-specific variants.
 
 It is not intended as the primary entry point for application integration. Instead, use the framework wrapper that matches your stack:
 
-- [@updraw/angular-editor](https://www.npmjs.com/package/@updraw/angular-editor)
-- [@updraw/react-editor](https://www.npmjs.com/package/@updraw/react-editor)
-- [@updraw/vue-editor](https://www.npmjs.com/package/@updraw/vue-editor)
+- [@upmade/angular-editor](https://www.npmjs.com/package/@upmade/angular-editor)
+- [@upmade/react-editor](https://www.npmjs.com/package/@upmade/react-editor)
+- [@upmade/vue-editor](https://www.npmjs.com/package/@upmade/vue-editor)
 
 
-Visit [updraw.io](https://updraw.io) for documentation and examples.
+Visit [upmade.io](https://upmade.io) for documentation and examples.
 
 

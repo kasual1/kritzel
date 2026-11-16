@@ -1,22 +1,22 @@
-import { UpdrawBaseObject } from "../classes/objects/base-object.class";
-import { UpdrawObjectMap } from "../classes/structures/object-map.structure";
-import { UpdrawBaseTool } from "../classes/tools/base-tool.class";
-import { UpdrawWorkspace } from "../classes/core/workspace.class";
-import { UpdrawHandleType } from "../enums/handle-type.enum";
+import { UpmadeBaseObject } from "../classes/objects/base-object.class";
+import { UpmadeObjectMap } from "../classes/structures/object-map.structure";
+import { UpmadeBaseTool } from "../classes/tools/base-tool.class";
+import { UpmadeWorkspace } from "../classes/core/workspace.class";
+import { UpmadeHandleType } from "../enums/handle-type.enum";
 import { ContextMenuItem } from "./context-menu-item.interface";
-import { UpdrawDebugInfo } from "./debug-info.interface";
+import { UpmadeDebugInfo } from "./debug-info.interface";
 import { LineHandleType } from "../classes/handlers/line-handle.handler";
 import { SnapCandidate, SnapPreviewCandidate } from "./anchor.interface";
 
-import { UpdrawIconName } from '../classes/registries/icon-registry.class';
+import { UpmadeIconName } from '../classes/registries/icon-registry.class';
 
-export interface UpdrawEngineState {
-  activeWorkspace: UpdrawWorkspace | null | undefined;
-  activeTool: UpdrawBaseTool | null;
-  objects: UpdrawObjectMap<UpdrawBaseObject<Element>> | null;
+export interface UpmadeEngineState {
+  activeWorkspace: UpmadeWorkspace | null | undefined;
+  activeTool: UpmadeBaseTool | null;
+  objects: UpmadeObjectMap<UpmadeBaseObject<Element>> | null;
   snapCandidate?: SnapCandidate | null;
   snapPreviewCandidate?: SnapPreviewCandidate | null;
-  resizeHandleType: UpdrawHandleType | undefined;
+  resizeHandleType: UpmadeHandleType | undefined;
   lineHandleType: LineHandleType | undefined;
   hasViewportChanged: boolean;
   hasObjectsChanged: boolean;
@@ -46,7 +46,7 @@ export interface UpdrawEngineState {
   contextMenuWorldX: number;
   contextMenuWorldY: number;
   skipContextMenu: boolean;
-  debugInfo: UpdrawDebugInfo;
+  debugInfo: UpmadeDebugInfo;
   host: HTMLElement | null;
   pointerX: number;
   pointerY: number;
@@ -66,10 +66,10 @@ export interface UpdrawEngineState {
   longTouchTimeout: number | null;
   longTouchDelay: number;
   pointers: Map<number, PointerEvent>;
-  workspaces: UpdrawWorkspace[];
+  workspaces: UpmadeWorkspace[];
   cursor: {
-    icon: UpdrawIconName | 'default';
-    iconActive?: UpdrawIconName | 'default';
+    icon: UpmadeIconName | 'default';
+    iconActive?: UpmadeIconName | 'default';
     rotation?: number;
   },
   /** When true, objects are drawn at a fixed visual size regardless of zoom level */

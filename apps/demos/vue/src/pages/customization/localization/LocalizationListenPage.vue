@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { UpdrawEditor, UpdrawWorkspace, type LocaleCode } from '@updraw/vue-editor'
+import { UpmadeEditor, UpmadeWorkspace, type LocaleCode } from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -13,7 +13,7 @@ import { useInfoPanel } from '../../../components/info-panel'
 const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 const activeLocale = ref<LocaleCode>('en')
 const localeHistory = ref<LocaleCode[]>([])
 
@@ -36,7 +36,7 @@ function onLocaleChange(event: CustomEvent<LocaleCode>) {
       <InfoPanelToggle :panel="infoPanel" />
     </Toolbar>
     <div class="content">
-      <UpdrawEditor
+      <UpmadeEditor
         editorId="localization-listen"
         :locale="activeLocale"
         :workspaces="workspaces"

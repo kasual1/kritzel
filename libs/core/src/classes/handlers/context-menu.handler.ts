@@ -1,19 +1,19 @@
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawBaseHandler } from './base.handler';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawSelectionTool } from '../tools/selection-tool.class';
-import { UpdrawSelectionBox } from '../objects/selection-box.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeBaseHandler } from './base.handler';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeSelectionTool } from '../tools/selection-tool.class';
+import { UpmadeSelectionBox } from '../objects/selection-box.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeBaseObject } from '../objects/base-object.class';
 import { ContextMenuItem } from '../../interfaces/context-menu-item.interface';
-import { UpdrawTermKey } from '../../interfaces/localization.interface';
+import { UpmadeTermKey } from '../../interfaces/localization.interface';
 
 /**
- * Handles context menu interactions on the Updraw canvas.
+ * Handles context menu interactions on the Upmade canvas.
  * Manages the display and positioning of context menus, selecting appropriate menu items
  * based on whether an object is targeted or the canvas background is right-clicked.
  */
-export class UpdrawContextMenuHandler extends UpdrawBaseHandler {
+export class UpmadeContextMenuHandler extends UpmadeBaseHandler {
   /**
    * Menu items to display when the context menu is opened on the canvas background
    * (i.e., when no object is selected).
@@ -27,11 +27,11 @@ export class UpdrawContextMenuHandler extends UpdrawBaseHandler {
 
   /**
    * Creates a new instance of the context menu handler.
-   * @param core - The UpdrawCore instance that provides access to canvas state and operations.
+   * @param core - The UpmadeCore instance that provides access to canvas state and operations.
    * @param globalContextMenuItems - Array of menu items to show for canvas-level context menus.
    * @param objectContextMenuItems - Array of menu items to show when right-clicking on objects.
    */
-  constructor(core: UpdrawCore, globalContextMenuItems: any[], objectContextMenuItems: any[]) {
+  constructor(core: UpmadeCore, globalContextMenuItems: any[], objectContextMenuItems: any[]) {
     super(core);
     this.globalContextMenuItems = globalContextMenuItems;
     this.objectContextMenuItems = objectContextMenuItems;
@@ -40,7 +40,7 @@ export class UpdrawContextMenuHandler extends UpdrawBaseHandler {
   /**
    * Resolves the active context menu items for display, translating each item's
    * `label` through the current locale. When the label is a known
-   * {@link UpdrawTermKey} the translation is used; any other string is passed
+   * {@link UpmadeTermKey} the translation is used; any other string is passed
    * through unchanged. Runs at menu-open time so the labels reflect the locale
    * active at that moment.
    * @returns A new array of items with resolved labels.
@@ -48,7 +48,7 @@ export class UpdrawContextMenuHandler extends UpdrawBaseHandler {
   private resolveLabels(items: ContextMenuItem[]): ContextMenuItem[] {
     return items.map(item => ({
       ...item,
-      label: this._core.localizationManager.translate(item.label as UpdrawTermKey),
+      label: this._core.localizationManager.translate(item.label as UpmadeTermKey),
       children: item.children ? this.resolveLabels(item.children) : undefined,
     }));
   }
@@ -67,8 +67,8 @@ export class UpdrawContextMenuHandler extends UpdrawBaseHandler {
    * @param object - The right-clicked object.
    * @returns The parent group, or the object itself when it is not grouped.
    */
-  private resolveSelectableObject(object: UpdrawBaseObject<any>): UpdrawBaseObject<any> {
-    const parentGroup = UpdrawGroup.findParentGroup(this._core, object.id);
+  private resolveSelectableObject(object: UpmadeBaseObject<any>): UpmadeBaseObject<any> {
+    const parentGroup = UpmadeGroup.findParentGroup(this._core, object.id);
     if (!parentGroup) {
       return object;
     }
@@ -102,12 +102,12 @@ export class UpdrawContextMenuHandler extends UpdrawBaseHandler {
       return;
     }
 
-    const selectionTool = this._core.store.state.activeTool as UpdrawSelectionTool;
+    const selectionTool = this._core.store.state.activeTool as UpmadeSelectionTool;
     selectionTool?.moveHandler?.cancelPendingDrag();
     selectionTool?.cancelTitlebarGesture?.();
 
     if (this._core.store.selectionBox) {
-      this._core.store.objects.remove(object => object instanceof UpdrawSelectionBox);
+      this._core.store.objects.remove(object => object instanceof UpmadeSelectionBox);
       this._core.store.setSelectionBox(null);
       this._core.store.state.isSelecting = false;
     }
@@ -117,9 +117,9 @@ export class UpdrawContextMenuHandler extends UpdrawBaseHandler {
     const isTitlebarOwnerSelected = !!titlebarOwner && !!this._core.store.selectionGroup?.objectIds.includes(titlebarOwner.id);
     const hitObject = titlebarOwner ?? this._core.getObjectFromPointerEvent(event, '.object');
 
-    if (hitObject && !isTitlebarOwnerSelected && !(hitObject instanceof UpdrawSelectionGroup) && !(hitObject instanceof UpdrawSelectionBox)) {
+    if (hitObject && !isTitlebarOwnerSelected && !(hitObject instanceof UpmadeSelectionGroup) && !(hitObject instanceof UpmadeSelectionBox)) {
       const selectedObject = this.resolveSelectableObject(hitObject);
-      const selectionGroup = UpdrawSelectionGroup.create(this._core);
+      const selectionGroup = UpmadeSelectionGroup.create(this._core);
       selectionGroup.addOrRemove(selectedObject);
       selectionGroup.isSelected = true;
       selectionGroup.rotation = selectedObject.rotation;
@@ -178,21 +178,21 @@ export class UpdrawContextMenuHandler extends UpdrawBaseHandler {
     const { x, y, objectId } = options;
 
     if (this._core.store.state.activeTool?.toolType === 'selection') {
-      const selectionTool = this._core.store.state.activeTool as UpdrawSelectionTool;
+      const selectionTool = this._core.store.state.activeTool as UpmadeSelectionTool;
       selectionTool?.moveHandler?.cancelPendingDrag();
       selectionTool?.cancelTitlebarGesture?.();
     }
 
     if (this._core.store.selectionBox) {
-      this._core.store.objects.remove(object => object instanceof UpdrawSelectionBox);
+      this._core.store.objects.remove(object => object instanceof UpmadeSelectionBox);
       this._core.store.setSelectionBox(null);
       this._core.store.state.isSelecting = false;
     }
 
     if (objectId) {
       const targetObject = this._core.store.allObjects.find(obj => obj.id === objectId);
-      if (targetObject && !(targetObject instanceof UpdrawSelectionGroup) && !(targetObject instanceof UpdrawSelectionBox)) {
-        const selectionGroup = UpdrawSelectionGroup.create(this._core);
+      if (targetObject && !(targetObject instanceof UpmadeSelectionGroup) && !(targetObject instanceof UpmadeSelectionBox)) {
+        const selectionGroup = UpmadeSelectionGroup.create(this._core);
         selectionGroup.addOrRemove(targetObject);
         selectionGroup.isSelected = true;
         selectionGroup.rotation = targetObject.rotation;

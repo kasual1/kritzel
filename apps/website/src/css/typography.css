@@ -3,7 +3,7 @@
 @import "@fontsource-variable/jetbrains-mono";
 @import "@fontsource-variable/caveat";
 
-*:not(updraw-button) {
+*:not(upmade-button) {
   font-family: "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif !important;
 }
 

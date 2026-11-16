@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
 import {
-  HTMLUpdrawEditorElement,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type UpdrawBaseObject,
-} from "@updraw/react-editor";
+  HTMLUpmadeEditorElement,
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type UpmadeBaseObject,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -14,10 +14,10 @@ import { Toolbar } from "../../../components/Toolbar";
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ObjectsRemovePage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
-  const [seedObjects] = useState<UpdrawBaseObject[]>(createSeedObjects);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
+  const [seedObjects] = useState<UpmadeBaseObject[]>(createSeedObjects);
   const [objects, setObjects] = useState(seedObjects);
-  const [workspaces] = useState(() => [new UpdrawWorkspace({ objects: seedObjects })]);
+  const [workspaces] = useState(() => [new UpmadeWorkspace({ objects: seedObjects })]);
 
   async function removeLastObject() {
     const editor = editorRef.current;
@@ -39,7 +39,7 @@ export function ObjectsRemovePage() {
           Remove Object
         </button>
       </Toolbar>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="objects-remove"
         theme="light"

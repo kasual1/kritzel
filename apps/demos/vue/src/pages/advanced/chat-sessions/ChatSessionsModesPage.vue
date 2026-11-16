@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
-  UpdrawAgent,
-  UpdrawChatSession,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type UpdrawBaseObject,
-  type UpdrawChatBoxChip,
-  type UpdrawChatMessage,
-} from '@updraw/vue-editor'
+  UpmadeAgent,
+  UpmadeChatSession,
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type UpmadeBaseObject,
+  type UpmadeChatBoxChip,
+  type UpmadeChatMessage,
+} from '@upmade/vue-editor'
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -22,20 +22,20 @@ const USER = { id: 'demo-user', name: 'Demo User' }
 const SYSTEM = 'You draw on a whiteboard. Keep answers short.'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 
 // One session per mode, created once per page instance: switching the mode binds the other one.
 // Kept as plain consts so Vue never wraps them in reactive proxies.
 const transport = createDemoTransport()
-const agent = new UpdrawAgent({ id: 'assistant', name: 'Assistant', color: '#7C3AED' })
-const sessions: Record<Mode, UpdrawChatSession> = {
-  user: new UpdrawChatSession({ transport, system: SYSTEM }),
-  agent: new UpdrawChatSession({ transport, system: SYSTEM, agent }),
+const agent = new UpmadeAgent({ id: 'assistant', name: 'Assistant', color: '#7C3AED' })
+const sessions: Record<Mode, UpmadeChatSession> = {
+  user: new UpmadeChatSession({ transport, system: SYSTEM }),
+  agent: new UpmadeChatSession({ transport, system: SYSTEM, agent }),
 }
 
 const mode = ref<Mode>('user')
-const chips = ref<UpdrawChatBoxChip[]>([])
-const messages = shallowRef<readonly UpdrawChatMessage[]>([])
+const chips = ref<UpmadeChatBoxChip[]>([])
+const messages = shallowRef<readonly UpmadeChatMessage[]>([])
 const session = computed(() => sessions[mode.value])
 
 const transcriptStyle = {
@@ -48,7 +48,7 @@ const transcriptStyle = {
 }
 
 /** One line of the transcript: who wrote it and what. */
-function describe(message: UpdrawChatMessage): string {
+function describe(message: UpmadeChatMessage): string {
   return message.parts
     .map(part => {
       if (part.type === 'text') return part.text
@@ -78,16 +78,16 @@ onBeforeUnmount(() => {
   unsubscribe = null
 })
 
-function onSelectionChange(event: CustomEvent<UpdrawBaseObject[]>) {
+function onSelectionChange(event: CustomEvent<UpmadeBaseObject[]>) {
   chips.value = event.detail.map(object => ({
     id: object.id,
     objectId: object.id,
-    label: object.name || object.__class__.replace('Updraw', ''),
+    label: object.name || object.__class__.replace('Upmade', ''),
     icon: 'cursor',
   }))
 }
 
-function onChipRemove(event: CustomEvent<UpdrawChatBoxChip>) {
+function onChipRemove(event: CustomEvent<UpmadeChatBoxChip>) {
   chips.value = chips.value.filter(chip => chip.id !== event.detail.id)
 }
 </script>
@@ -105,7 +105,7 @@ function onChipRemove(event: CustomEvent<UpdrawChatBoxChip>) {
       <span class="label">Try “{{ SLOW_PHRASE }}” to stop a response.</span>
     </Toolbar>
     <div style="display: flex; flex: 1; min-height: 0">
-      <UpdrawEditor
+      <UpmadeEditor
         editorId="chat-sessions-modes"
         theme="light"
         :themes="themes"

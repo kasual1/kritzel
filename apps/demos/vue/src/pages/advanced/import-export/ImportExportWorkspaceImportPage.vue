@@ -2,23 +2,23 @@
 import { ref, shallowRef } from 'vue'
 import {
   getEditorRef,
-  UpdrawEditor,
-  UpdrawLine,
-  UpdrawPath,
-  UpdrawShape,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeLine,
+  UpmadePath,
+  UpmadeShape,
+  UpmadeWorkspace,
   ShapeType,
-  type UpdrawBaseObject,
-} from '@updraw/vue-editor'
+  type UpmadeBaseObject,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import Toolbar from '../../../components/Toolbar.vue'
 import InfoPanel from '../../../components/InfoPanel.vue'
 
-function createImportedWorkspaceObjects(): UpdrawBaseObject[] {
+function createImportedWorkspaceObjects(): UpmadeBaseObject[] {
   return [
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -28,7 +28,7 @@ function createImportedWorkspaceObjects(): UpdrawBaseObject[] {
       strokeColor: { light: '#1565c0', dark: '#1565c0' },
       strokeWidth: 3,
     }),
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -38,7 +38,7 @@ function createImportedWorkspaceObjects(): UpdrawBaseObject[] {
       strokeColor: { light: '#00bcd4', dark: '#00bcd4' },
       strokeWidth: 3,
     }),
-    new UpdrawLine({
+    new UpmadeLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -46,7 +46,7 @@ function createImportedWorkspaceObjects(): UpdrawBaseObject[] {
       stroke: { light: '#00bcd4', dark: '#00bcd4' },
       strokeWidth: 3,
     }),
-    new UpdrawPath({
+    new UpmadePath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -67,7 +67,7 @@ function createImportedWorkspaceObjects(): UpdrawBaseObject[] {
 }
 
 function createImportedWorkspaceJson(): string {
-  const workspace = new UpdrawWorkspace({
+  const workspace = new UpmadeWorkspace({
     name: 'Imported Workspace',
     objects: createImportedWorkspaceObjects(),
   })
@@ -87,7 +87,7 @@ const jsonInput = ref('')
 const activeWorkspaceName = ref('')
 const themes = [vueThemeLight, vueThemeDark]
 const workspaces = shallowRef([
-  new UpdrawWorkspace({
+  new UpmadeWorkspace({
     id: 'workspace-import-initial',
     name: 'Initial Workspace',
     objects: createSeedObjects(),
@@ -119,7 +119,7 @@ async function importJson(): Promise<void> {
     </Toolbar>
     <div class="content">
       <div class="editor-wrap">
-        <UpdrawEditor
+        <UpmadeEditor
           ref="editor"
           editorId="import-export-workspace-import"
           theme="light"

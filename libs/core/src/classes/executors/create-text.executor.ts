@@ -1,13 +1,13 @@
-import type { UpdrawAgenticCreateTextAction } from '../../interfaces/agentic-action.interface';
-import { UpdrawText } from '../objects/text.class';
+import type { UpmadeAgenticCreateTextAction } from '../../interfaces/agentic-action.interface';
+import { UpmadeText } from '../objects/text.class';
 import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES } from '../../constants/agentic-action.constants';
-import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpmadeAgenticActionExecutor } from '../../types/agentic-action.types';
 import { resolveTextStyle } from '../../helpers/agentic-style.helper';
 import { typeInto } from './type-text.executor';
 import { AGENTIC_TEXT_STYLE_KEYS, assertStyle } from '../../helpers/agentic-validation.helper';
 
 /** `createText`: clicks to place a text object and types into it. */
-export const createTextExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticCreateTextAction> = {
+export const createTextExecutor: UpmadeAgenticActionExecutor<UpmadeAgenticCreateTextAction> = {
   mutates: true,
 
   validate(action) {
@@ -37,7 +37,7 @@ export const createTextExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticCreate
     await run.click();
 
     const text = run.mutate(() => {
-      const created = UpdrawText.create(core, style.fontSize, style.fontFamily, scale);
+      const created = UpmadeText.create(core, style.fontSize, style.fontFamily, scale);
       created.fontColor = style.fontColor;
       created.opacity = style.opacity;
       created.translateX = action.x;
@@ -57,11 +57,11 @@ export const createTextExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticCreate
     // instant actions) so its size is right; off-screen texts are measured when they mount.
     if (text.isInViewport()) {
       core.rerender();
-      for (let frame = 0; frame < AGENTIC_ACTION_MOUNT_WAIT_FRAMES && !(map.findById(text.id) as UpdrawText | undefined)?.isMounted; frame++) {
+      for (let frame = 0; frame < AGENTIC_ACTION_MOUNT_WAIT_FRAMES && !(map.findById(text.id) as UpmadeText | undefined)?.isMounted; frame++) {
         await run.nextRenderedFrame();
       }
       run.mutate(() => {
-        const current = map.findById(text.id) as UpdrawText | undefined;
+        const current = map.findById(text.id) as UpmadeText | undefined;
         if (current) {
           current.adjustSizeOnInput();
           map.update(current);

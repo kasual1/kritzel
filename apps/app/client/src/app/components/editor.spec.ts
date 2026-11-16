@@ -2,10 +2,10 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import {
   EditorIsReadyEvent,
-  UpdrawDynamicObject,
-  UpdrawEditor,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeDynamicObject,
+  UpmadeEditor,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { vi } from 'vitest';
 import { AuthService } from '../services/auth.service';
 import { ConfigService } from '../services/config.service';
@@ -15,11 +15,11 @@ import { animateWelcomeObject, createWelcomeObject, getWelcomeBoundsUpdate, getW
 
 describe('Starter workspace', () => {
   const user = { id: 'starter-test-user', displayName: 'Guest', isGuest: true };
-  const key = `updraw_welcome_initialized:${user.id}`;
+  const key = `upmade_welcome_initialized:${user.id}`;
   let component: Editor;
-  let workspace: UpdrawWorkspace;
+  let workspace: UpmadeWorkspace;
   let params: Record<string, string>;
-  let objects: UpdrawDynamicObject[];
+  let objects: UpmadeDynamicObject[];
 
   beforeEach(() => {
     vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true })));
@@ -27,7 +27,7 @@ describe('Starter workspace', () => {
     params = {};
     objects = [];
     TestBed.configureTestingModule({
-      imports: [UpdrawEditor],
+      imports: [UpmadeEditor],
       providers: [
         { provide: ActivatedRoute, useValue: { snapshot: { params } } },
         { provide: AuthService, useValue: {} },
@@ -37,8 +37,8 @@ describe('Starter workspace', () => {
     });
     component = TestBed.runInInjectionContext(() => new Editor());
     component.user = user;
-    workspace = new UpdrawWorkspace();
-    component.editor = TestBed.createComponent(UpdrawEditor).componentInstance;
+    workspace = new UpmadeWorkspace();
+    component.editor = TestBed.createComponent(UpmadeEditor).componentInstance;
     vi.spyOn(component.editor, 'getWorkspaces').mockImplementation(async () => [workspace]);
     vi.spyOn(component.editor, 'getObjectsTotalCount').mockImplementation(async () => objects.length);
     vi.spyOn(component.editor, 'getAllObjects').mockImplementation(async () => objects);
@@ -46,7 +46,7 @@ describe('Starter workspace', () => {
       width: 360, height: 640, scale: 1, translateX: 0, translateY: 0,
     });
     vi.spyOn(component.editor, 'addObject').mockImplementation(async (object) => {
-      if (!(object instanceof UpdrawDynamicObject)) {
+      if (!(object instanceof UpmadeDynamicObject)) {
         throw new Error('Expected a dynamic Welcome object.');
       }
       objects.push(object);
@@ -87,7 +87,7 @@ describe('Starter workspace', () => {
   it('adds and centers a blue SVG path only on first initialization', async () => {
     await ready();
     expect(objects).toHaveLength(1);
-    expect(objects[0]).toBeInstanceOf(UpdrawDynamicObject);
+    expect(objects[0]).toBeInstanceOf(UpmadeDynamicObject);
     expect(component.editor.centerObjectInViewport).toHaveBeenCalledWith(objects[0]);
     const svg = objects[0].element.querySelector('svg');
     expect(svg?.getAttribute('aria-label')).toBe('Welcome');
@@ -142,7 +142,7 @@ describe('Starter workspace', () => {
   it('does not restore Welcome after deletion, reload, or switching to an empty workspace', async () => {
     await ready();
     objects = [];
-    workspace = new UpdrawWorkspace();
+    workspace = new UpmadeWorkspace();
     await ready();
     expect(objects).toHaveLength(0);
     expect(component.editor.addObject).toHaveBeenCalledTimes(1);
@@ -168,7 +168,7 @@ describe('Starter workspace', () => {
   });
 
   it('does not seed when the user already has multiple workspaces', async () => {
-    vi.mocked(component.editor.getWorkspaces).mockResolvedValue([workspace, new UpdrawWorkspace()]);
+    vi.mocked(component.editor.getWorkspaces).mockResolvedValue([workspace, new UpmadeWorkspace()]);
     await ready();
     expect(objects).toHaveLength(0);
   });
@@ -191,7 +191,7 @@ describe('Starter workspace', () => {
   it('serializes the SVG for persistence without requiring a renderer', () => {
     const welcome = createWelcomeObject();
     const serialized = welcome.serialize();
-    const restored = new UpdrawDynamicObject({}).deserialize<UpdrawDynamicObject>(serialized);
+    const restored = new UpmadeDynamicObject({}).deserialize<UpmadeDynamicObject>(serialized);
     expect(restored.element.querySelector('path')?.getAttribute('stroke')).toBe('#4A7DFF');
     expect(restored.width).toBe(480);
     expect(restored.height).toBeCloseTo(480 * 72 / 253);
@@ -217,7 +217,7 @@ describe('Starter workspace', () => {
     expect(welcome.translateX).toBeCloseTo(100 + 18 * 480 / 280);
     expect(welcome.translateY).toBeCloseTo(200 + (206 - 120 * 480 / 280) / 2 + 29 * 480 / 280);
     expect(getWelcomeBoundsUpdate(welcome)).toBeNull();
-    const restored = new UpdrawDynamicObject({}).deserialize<UpdrawDynamicObject>(welcome.serialize());
+    const restored = new UpmadeDynamicObject({}).deserialize<UpmadeDynamicObject>(welcome.serialize());
     expect(restored.width).toBeCloseTo(welcome.width);
     expect(restored.element.querySelector('svg')?.getAttribute('viewBox')).toBe('18 29 253 72');
   });
@@ -226,7 +226,7 @@ describe('Starter workspace', () => {
     await ready();
     expect(objects).toHaveLength(1);
     expect(objects[0].boxShadow).toBe('none');
-    const restored = new UpdrawDynamicObject({}).deserialize<UpdrawDynamicObject>(objects[0].serialize());
+    const restored = new UpmadeDynamicObject({}).deserialize<UpmadeDynamicObject>(objects[0].serialize());
     expect(restored.boxShadow).toBe('none');
   });
 
@@ -249,7 +249,7 @@ describe('Starter workspace', () => {
     other.boxShadow = undefined;
     other.element.querySelector('path')!.setAttribute('d', 'M 0 0 L 100 100');
     expect(getWelcomeStyleUpdate(other)).toBeNull();
-    expect(getWelcomeStyleUpdate(new UpdrawDynamicObject({}))).toBeNull();
+    expect(getWelcomeStyleUpdate(new UpmadeDynamicObject({}))).toBeNull();
   });
 
   it('preserves a scaled and rotated saved drawing when cropping', () => {

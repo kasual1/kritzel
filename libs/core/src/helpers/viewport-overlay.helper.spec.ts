@@ -1,7 +1,7 @@
-import { UpdrawOverlayViewportState, UpdrawViewportOverlayHelper } from './viewport-overlay.helper';
+import { UpmadeOverlayViewportState, UpmadeViewportOverlayHelper } from './viewport-overlay.helper';
 
-describe('UpdrawViewportOverlayHelper', () => {
-  const state: UpdrawOverlayViewportState = {
+describe('UpmadeViewportOverlayHelper', () => {
+  const state: UpmadeOverlayViewportState = {
     scale: 2,
     translateX: 10,
     translateY: 20,
@@ -11,25 +11,25 @@ describe('UpdrawViewportOverlayHelper', () => {
 
   describe('worldToScreen', () => {
     it('should apply scale and translation', () => {
-      expect(UpdrawViewportOverlayHelper.worldToScreen(state, 5, 7)).toEqual({ x: 20, y: 34 });
+      expect(UpmadeViewportOverlayHelper.worldToScreen(state, 5, 7)).toEqual({ x: 20, y: 34 });
     });
   });
 
   describe('isInViewport', () => {
     it('should return true for points inside the viewport', () => {
-      expect(UpdrawViewportOverlayHelper.isInViewport(state, 0, 0)).toBe(true);
-      expect(UpdrawViewportOverlayHelper.isInViewport(state, 800, 600)).toBe(true);
+      expect(UpmadeViewportOverlayHelper.isInViewport(state, 0, 0)).toBe(true);
+      expect(UpmadeViewportOverlayHelper.isInViewport(state, 800, 600)).toBe(true);
     });
 
     it('should return false for points outside the viewport', () => {
-      expect(UpdrawViewportOverlayHelper.isInViewport(state, -1, 10)).toBe(false);
-      expect(UpdrawViewportOverlayHelper.isInViewport(state, 10, 601)).toBe(false);
+      expect(UpmadeViewportOverlayHelper.isInViewport(state, -1, 10)).toBe(false);
+      expect(UpmadeViewportOverlayHelper.isInViewport(state, 10, 601)).toBe(false);
     });
   });
 
   describe('clampToEdge', () => {
     it('should clamp a point left of the viewport to the left edge', () => {
-      const result = UpdrawViewportOverlayHelper.clampToEdge(state, -100, 300, 8);
+      const result = UpmadeViewportOverlayHelper.clampToEdge(state, -100, 300, 8);
       expect(result.x).toBe(8);
       expect(result.y).toBe(300);
       expect(result.edge).toBe('left');
@@ -37,7 +37,7 @@ describe('UpdrawViewportOverlayHelper', () => {
     });
 
     it('should clamp a point below the viewport to the bottom edge', () => {
-      const result = UpdrawViewportOverlayHelper.clampToEdge(state, 400, 1000, 8);
+      const result = UpmadeViewportOverlayHelper.clampToEdge(state, 400, 1000, 8);
       expect(result.x).toBe(400);
       expect(result.y).toBe(592);
       expect(result.edge).toBe('bottom');
@@ -45,7 +45,7 @@ describe('UpdrawViewportOverlayHelper', () => {
     });
 
     it('should clamp a point right of the viewport to the right edge', () => {
-      const result = UpdrawViewportOverlayHelper.clampToEdge(state, 2000, 300, 8);
+      const result = UpmadeViewportOverlayHelper.clampToEdge(state, 2000, 300, 8);
       expect(result.x).toBe(792);
       expect(result.edge).toBe('right');
     });
@@ -53,15 +53,15 @@ describe('UpdrawViewportOverlayHelper', () => {
 
   describe('getInitials', () => {
     it('should return initials for multi-word names', () => {
-      expect(UpdrawViewportOverlayHelper.getInitials('Ada Byron Lovelace')).toBe('AL');
+      expect(UpmadeViewportOverlayHelper.getInitials('Ada Byron Lovelace')).toBe('AL');
     });
 
     it('should return the first letter for single-word names', () => {
-      expect(UpdrawViewportOverlayHelper.getInitials('planner')).toBe('P');
+      expect(UpmadeViewportOverlayHelper.getInitials('planner')).toBe('P');
     });
 
     it('should return single characters unchanged', () => {
-      expect(UpdrawViewportOverlayHelper.getInitials('x')).toBe('x');
+      expect(UpmadeViewportOverlayHelper.getInitials('x')).toBe('x');
     });
   });
 });

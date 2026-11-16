@@ -1,16 +1,16 @@
 import { useMemo, useRef, useState } from "react";
-import { UpdrawEditor, type HTMLUpdrawEditorElement, type IUpdrawUser } from "@updraw/react-editor";
+import { UpmadeEditor, type HTMLUpmadeEditorElement, type IUpmadeUser } from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createAuthenticatedUser, createUserManagementWorkspaces, loginConfig } from "./user-management-shared";
 
 export function UserManagementLoginPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
-  const [user, setUser] = useState<IUpdrawUser>();
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
+  const [user, setUser] = useState<IUpmadeUser>();
   const workspaces = useMemo(() => createUserManagementWorkspaces(), []);
 
   return (
-    <UpdrawEditor
+    <UpmadeEditor
       ref={editorRef}
       editorId="user-management-login"
       loginConfig={loginConfig}

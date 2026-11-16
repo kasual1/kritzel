@@ -6,7 +6,7 @@ export type ThemeName = 'light' | 'dark' | (string & NonNullable<unknown>);
 /**
  * Complete theme definition with all CSS variable values grouped by category
  */
-export interface UpdrawTheme {
+export interface UpmadeTheme {
   /** Theme identifier */
   name: ThemeName;
 
@@ -255,7 +255,7 @@ export interface UpdrawTheme {
     topRightButtonsTop?: string;
   };
 
-  /** Element highlight variables, for highlights and picking inside the content of objects such as `UpdrawIframeObject` */
+  /** Element highlight variables, for highlights and picking inside the content of objects such as `UpmadeIframeObject` */
   elementHighlight?: {
     backgroundColor?: string;
     color?: string;
@@ -671,7 +671,7 @@ export interface UpdrawTheme {
     transition?: string;
   };
 
-  /** Titlebar menu variables, for the menu `updraw-editor` opens from a titlebar `menu` element */
+  /** Titlebar menu variables, for the menu `upmade-editor` opens from a titlebar `menu` element */
   titlebarMenu?: {
     backgroundColor?: string;
     border?: string;

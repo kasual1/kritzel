@@ -1,7 +1,7 @@
 import * as Y from 'yjs';
-import { UpdrawObjectMap } from './object-map.structure';
-import { UpdrawAgentOrigin } from './agent-origin.class';
-import type { UpdrawCore } from '../core/core.class';
+import { UpmadeObjectMap } from './object-map.structure';
+import { UpmadeAgentOrigin } from './agent-origin.class';
+import type { UpmadeCore } from '../core/core.class';
 
 // Real Yjs on purpose: these tests pin the Yjs behaviour per-agent undo relies on.
 
@@ -24,7 +24,7 @@ class FakeObject {
 }
 
 jest.mock('../core/reviver.class', () => ({
-  UpdrawReviver: jest.fn().mockImplementation(() => ({
+  UpmadeReviver: jest.fn().mockImplementation(() => ({
     revive: (data: { id: string; x: number; label: string }) => new FakeObject(data.id, data.x, data.label),
   })),
 }));
@@ -58,22 +58,22 @@ type Core = ReturnType<typeof createCore>;
 
 const createMap = async () => {
   const core = createCore();
-  const map = new UpdrawObjectMap<any>();
-  await map.initialize(core as unknown as UpdrawCore, 'ws', { providers: [] });
+  const map = new UpmadeObjectMap<any>();
+  await map.initialize(core as unknown as UpmadeCore, 'ws', { providers: [] });
   return { map, core };
 };
 
-const ydocOf = (map: UpdrawObjectMap<any>): Y.Doc => (map as unknown as { _ydoc: Y.Doc })._ydoc;
+const ydocOf = (map: UpmadeObjectMap<any>): Y.Doc => (map as unknown as { _ydoc: Y.Doc })._ydoc;
 
 /** Writes the object as an agent, inside one transaction (like an action's mutate). */
-const agentWrite = (map: UpdrawObjectMap<any>, origin: UpdrawAgentOrigin, fn: () => void) => {
+const agentWrite = (map: UpmadeObjectMap<any>, origin: UpmadeAgentOrigin, fn: () => void) => {
   map.withOrigin(origin, () => map.transaction(fn));
 };
 
-const xOf = (map: UpdrawObjectMap<any>, id: string) => (map.findById(id) as FakeObject | undefined)?.x;
+const xOf = (map: UpmadeObjectMap<any>, id: string) => (map.findById(id) as FakeObject | undefined)?.x;
 
-describe('UpdrawObjectMap agent origins (real Yjs)', () => {
-  let map: UpdrawObjectMap<any>;
+describe('UpmadeObjectMap agent origins (real Yjs)', () => {
+  let map: UpmadeObjectMap<any>;
   let core: Core;
 
   beforeEach(async () => {
@@ -395,7 +395,7 @@ describe('UpdrawObjectMap agent origins (real Yjs)', () => {
   describe('moveActorStepToUser', () => {
     const userStack = () => map.undoManager!.undoStack;
 
-    const actorMoveA = (origin: UpdrawAgentOrigin, x: number) =>
+    const actorMoveA = (origin: UpmadeAgentOrigin, x: number) =>
       agentWrite(map, origin, () => {
         const a = map.findById('a');
         a.x = x;

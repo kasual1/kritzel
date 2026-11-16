@@ -1,40 +1,40 @@
-import type { UpdrawEngineHost } from '../../interfaces/engine-host.interface';
+import type { UpmadeEngineHost } from '../../interfaces/engine-host.interface';
 import { DEFAULT_ENGINE_CONFIG } from '../../configs/default-engine-config';
 import { AlignmentHelper } from '../../helpers/alignment.helper';
-import { UpdrawAlignment } from '../../enums/alignment.enum';
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawSelectionBox } from '../objects/selection-box.class';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawLine } from '../objects/line.class';
-import { UpdrawToolRegistry } from '../registries/tool.registry';
-import { UpdrawStore } from './store.class';
-import { UpdrawWorkspace } from './workspace.class';
-import { UpdrawObjectMap } from '../structures/object-map.structure';
-import { UpdrawSyncConfig } from '../../interfaces/sync-config.interface';
-import { UpdrawAssetStorageConfig } from '../../interfaces/asset-storage-config.interface';
-import { UpdrawAssetResolver } from '../providers/assets/asset-resolver.class';
-import { UpdrawAppStateMap } from '../structures/app-state-map.structure';
-import { UpdrawAnchorManager } from '../managers/anchor.manager';
-import { UpdrawCursorManager } from '../managers/cursor.manager';
-import { UpdrawThemeManager } from '../managers/theme.manager';
-import { UpdrawLocalizationManager } from '../managers/localization.manager';
-import { UpdrawBrowserPermissionManager } from '../managers/browser-permission.manager';
-import { UpdrawClipboardManager } from '../managers/clipboard.manager';
-import { UpdrawAgenticCursorManager } from '../managers/agentic-cursor.manager';
-import { UpdrawAgenticActionManager } from '../managers/agentic-action.manager';
-import { UpdrawAgentManager } from '../managers/agent.manager';
-import { UpdrawAgentBroadcaster } from '../managers/agent-broadcast.manager';
-import { UpdrawRemoteAgentManager } from '../managers/remote-agent.manager';
-import { UpdrawObjectTitlebarManager } from '../managers/object-titlebar.manager';
-import { UpdrawObjectAppearManager } from '../managers/object-appear.manager';
-import { UpdrawObjectConfigManager } from '../managers/object-config.manager';
+import { UpmadeAlignment } from '../../enums/alignment.enum';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeSelectionBox } from '../objects/selection-box.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeLine } from '../objects/line.class';
+import { UpmadeToolRegistry } from '../registries/tool.registry';
+import { UpmadeStore } from './store.class';
+import { UpmadeWorkspace } from './workspace.class';
+import { UpmadeObjectMap } from '../structures/object-map.structure';
+import { UpmadeSyncConfig } from '../../interfaces/sync-config.interface';
+import { UpmadeAssetStorageConfig } from '../../interfaces/asset-storage-config.interface';
+import { UpmadeAssetResolver } from '../providers/assets/asset-resolver.class';
+import { UpmadeAppStateMap } from '../structures/app-state-map.structure';
+import { UpmadeAnchorManager } from '../managers/anchor.manager';
+import { UpmadeCursorManager } from '../managers/cursor.manager';
+import { UpmadeThemeManager } from '../managers/theme.manager';
+import { UpmadeLocalizationManager } from '../managers/localization.manager';
+import { UpmadeBrowserPermissionManager } from '../managers/browser-permission.manager';
+import { UpmadeClipboardManager } from '../managers/clipboard.manager';
+import { UpmadeAgenticCursorManager } from '../managers/agentic-cursor.manager';
+import { UpmadeAgenticActionManager } from '../managers/agentic-action.manager';
+import { UpmadeAgentManager } from '../managers/agent.manager';
+import { UpmadeAgentBroadcaster } from '../managers/agent-broadcast.manager';
+import { UpmadeRemoteAgentManager } from '../managers/remote-agent.manager';
+import { UpmadeObjectTitlebarManager } from '../managers/object-titlebar.manager';
+import { UpmadeObjectAppearManager } from '../managers/object-appear.manager';
+import { UpmadeObjectConfigManager } from '../managers/object-config.manager';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { UpdrawZOrderHelper, UpdrawZOrderItem, UpdrawZOrderOperation } from '../../helpers/z-order.helper';
-import { IUpdrawUser } from '../../interfaces/user.interface';
-import { UpdrawText } from '../objects/text.class';
-import { UpdrawImage } from '../objects/image.class';
-import { migrateLegacyStorageKeys, toLegacyDocumentName } from '../../migrations/legacy-brand';
+import { UpmadeZOrderHelper, UpmadeZOrderItem, UpmadeZOrderOperation } from '../../helpers/z-order.helper';
+import { IUpmadeUser } from '../../interfaces/user.interface';
+import { UpmadeText } from '../objects/text.class';
+import { UpmadeImage } from '../objects/image.class';
+import { migrateLegacyStorageKeys, toLegacyDocumentNames } from '../../migrations/legacy-brand';
 
 interface InitializeWorkspaceOptions {
   /**
@@ -45,189 +45,189 @@ interface InitializeWorkspaceOptions {
 }
 
 /** Objects affected by reconciling a workspace's declared object set. */
-export interface UpdrawWorkspaceObjectsDiff {
-  added: UpdrawBaseObject<any>[];
-  updated: UpdrawBaseObject<any>[];
-  removed: UpdrawBaseObject<any>[];
+export interface UpmadeWorkspaceObjectsDiff {
+  added: UpmadeBaseObject<any>[];
+  updated: UpmadeBaseObject<any>[];
+  removed: UpmadeBaseObject<any>[];
 }
 
 /**
- * Central orchestrator class for the Updraw canvas system.
+ * Central orchestrator class for the Upmade canvas system.
  * Manages workspaces, objects, selection, clipboard operations, and coordinates
  * between the engine, store, and various managers.
  */
-export class UpdrawCore {
-  /** The underlying Updraw engine component */
-  private readonly _updrawEngine: UpdrawEngineHost;
+export class UpmadeCore {
+  /** The underlying Upmade engine component */
+  private readonly _upmadeEngine: UpmadeEngineHost;
   /** State management store */
-  private readonly _store: UpdrawStore;
+  private readonly _store: UpmadeStore;
   /** Optional sync configuration for collaborative features */
-  private _syncConfig?: UpdrawSyncConfig;
+  private _syncConfig?: UpmadeSyncConfig;
   /** Optional asset storage configuration for image / binary payloads */
-  private _assetStorageConfig?: UpdrawAssetStorageConfig;
+  private _assetStorageConfig?: UpmadeAssetStorageConfig;
   /** Resolves and stores binary assets referenced by canvas objects */
-  private readonly _assetResolver: UpdrawAssetResolver;
+  private readonly _assetResolver: UpmadeAssetResolver;
   /** App state map for persistent workspace storage */
-  private readonly _appStateMap: UpdrawAppStateMap;
+  private readonly _appStateMap: UpmadeAppStateMap;
   /** Manager for line anchor points and connections */
-  private readonly _anchorManager: UpdrawAnchorManager;
+  private readonly _anchorManager: UpmadeAnchorManager;
   /** Manager for cursor states and appearance */
-  private readonly _cursorManager: UpdrawCursorManager;
+  private readonly _cursorManager: UpmadeCursorManager;
   /** Manager for theme styling */
-  private readonly _themeManager: UpdrawThemeManager;
+  private readonly _themeManager: UpmadeThemeManager;
   /** Manager for localization / translated UI strings */
-  private readonly _localizationManager: UpdrawLocalizationManager;
+  private readonly _localizationManager: UpmadeLocalizationManager;
   /** Manager for browser permission checks and permission prompts */
-  private readonly _permissionManager: UpdrawBrowserPermissionManager;
+  private readonly _permissionManager: UpmadeBrowserPermissionManager;
   /** Manager for clipboard copy/cut/paste orchestration */
-  private readonly _clipboardManager: UpdrawClipboardManager;
+  private readonly _clipboardManager: UpmadeClipboardManager;
   /** Manager for programmatically controlled (agentic) cursors */
-  private readonly _agenticCursorManager: UpdrawAgenticCursorManager;
+  private readonly _agenticCursorManager: UpmadeAgenticCursorManager;
   /** Runs actions performed by agentic cursors */
-  private readonly _agenticActionManager: UpdrawAgenticActionManager;
-  private readonly _agentManager: UpdrawAgentManager;
-  private readonly _agentBroadcaster: UpdrawAgentBroadcaster;
-  private readonly _remoteAgentManager: UpdrawRemoteAgentManager;
+  private readonly _agenticActionManager: UpmadeAgenticActionManager;
+  private readonly _agentManager: UpmadeAgentManager;
+  private readonly _agentBroadcaster: UpmadeAgentBroadcaster;
+  private readonly _remoteAgentManager: UpmadeRemoteAgentManager;
   /** Manager for titlebars rendered above objects */
-  private readonly _objectTitlebarManager: UpdrawObjectTitlebarManager;
-  private readonly _objectAppearManager = new UpdrawObjectAppearManager();
-  private readonly _objectConfigManager: UpdrawObjectConfigManager;
+  private readonly _objectTitlebarManager: UpmadeObjectTitlebarManager;
+  private readonly _objectAppearManager = new UpmadeObjectAppearManager();
+  private readonly _objectConfigManager: UpmadeObjectConfigManager;
   /** Per-core registry of drawing tools (one instance per editor). */
-  private readonly _toolRegistry: UpdrawToolRegistry;
+  private readonly _toolRegistry: UpmadeToolRegistry;
   /** Optional unique identifier for namespacing storage keys across multiple editor instances */
   private _editorId?: string;
   /** Current user for awareness broadcasting */
-  private _user?: IUpdrawUser;
+  private _user?: IUpmadeUser;
 
   /**
-   * Gets the Updraw engine instance.
+   * Gets the Upmade engine instance.
    * @returns The engine component managing rendering and events
    */
-  get engine(): UpdrawEngineHost {
-    return this._updrawEngine;
+  get engine(): UpmadeEngineHost {
+    return this._upmadeEngine;
   }
 
   /**
    * Gets the state store instance.
-   * @returns The UpdrawStore managing application state
+   * @returns The UpmadeStore managing application state
    */
-  get store(): UpdrawStore {
+  get store(): UpmadeStore {
     return this._store;
   }
 
   /**
    * Gets the app state map for workspace persistence.
-   * @returns The UpdrawAppStateMap for storing workspace data
+   * @returns The UpmadeAppStateMap for storing workspace data
    */
-  get appStateMap(): UpdrawAppStateMap {
+  get appStateMap(): UpmadeAppStateMap {
     return this._appStateMap;
   }
 
   /**
    * Gets the anchor manager for line connections.
-   * @returns The UpdrawAnchorManager for managing line anchors
+   * @returns The UpmadeAnchorManager for managing line anchors
    */
-  get anchorManager(): UpdrawAnchorManager {
+  get anchorManager(): UpmadeAnchorManager {
     return this._anchorManager;
   }
 
   /**
    * Gets the cursor manager.
-   * @returns The UpdrawCursorManager for managing cursor states
+   * @returns The UpmadeCursorManager for managing cursor states
    */
-  get cursorManager(): UpdrawCursorManager {
+  get cursorManager(): UpmadeCursorManager {
     return this._cursorManager;
   }
 
   /**
    * Gets the theme manager.
-   * @returns The UpdrawThemeManager for managing visual themes
+   * @returns The UpmadeThemeManager for managing visual themes
    */
-  get themeManager(): UpdrawThemeManager {
+  get themeManager(): UpmadeThemeManager {
     return this._themeManager;
   }
 
   /**
    * Gets the localization manager.
-   * @returns The UpdrawLocalizationManager for resolving translated UI strings
+   * @returns The UpmadeLocalizationManager for resolving translated UI strings
    */
-  get localizationManager(): UpdrawLocalizationManager {
+  get localizationManager(): UpmadeLocalizationManager {
     return this._localizationManager;
   }
 
   /**
    * Gets the object titlebar manager.
-   * @returns The UpdrawObjectTitlebarManager resolving titlebars rendered above objects
+   * @returns The UpmadeObjectTitlebarManager resolving titlebars rendered above objects
    */
-  get objectTitlebarManager(): UpdrawObjectTitlebarManager {
+  get objectTitlebarManager(): UpmadeObjectTitlebarManager {
     return this._objectTitlebarManager;
   }
 
   /** Tracks the objects that play the appear animation (see {@link insertPreparedObject}). */
-  get objectAppearManager(): UpdrawObjectAppearManager {
+  get objectAppearManager(): UpmadeObjectAppearManager {
     return this._objectAppearManager;
   }
 
   /**
    * Gets the object config manager.
-   * @returns The UpdrawObjectConfigManager resolving the engine's `objectConfig` per object
+   * @returns The UpmadeObjectConfigManager resolving the engine's `objectConfig` per object
    */
-  get objectConfigManager(): UpdrawObjectConfigManager {
+  get objectConfigManager(): UpmadeObjectConfigManager {
     return this._objectConfigManager;
   }
 
   /**
    * Gets the browser permission manager.
-   * @returns The UpdrawBrowserPermissionManager for browser permission checks and requests
+   * @returns The UpmadeBrowserPermissionManager for browser permission checks and requests
    */
-  get permissionManager(): UpdrawBrowserPermissionManager {
+  get permissionManager(): UpmadeBrowserPermissionManager {
     return this._permissionManager;
   }
 
   /**
    * Gets the tool registry scoped to this core instance.
-   * @returns The UpdrawToolRegistry owned by this core
+   * @returns The UpmadeToolRegistry owned by this core
    */
-  get toolRegistry(): UpdrawToolRegistry {
+  get toolRegistry(): UpmadeToolRegistry {
     return this._toolRegistry;
   }
 
   /**
    * Gets the clipboard manager scoped to this core instance.
-   * @returns The UpdrawClipboardManager owned by this core
+   * @returns The UpmadeClipboardManager owned by this core
    */
-  get clipboardManager(): UpdrawClipboardManager {
+  get clipboardManager(): UpmadeClipboardManager {
     return this._clipboardManager;
   }
 
   /**
    * Gets the agentic cursor manager.
-   * @returns The UpdrawAgenticCursorManager for programmatically controlled cursors
+   * @returns The UpmadeAgenticCursorManager for programmatically controlled cursors
    */
-  get agenticCursorManager(): UpdrawAgenticCursorManager {
+  get agenticCursorManager(): UpmadeAgenticCursorManager {
     return this._agenticCursorManager;
   }
 
   /**
    * Gets the agentic action manager.
-   * @returns The UpdrawAgenticActionManager that runs `performAgenticAction` calls
+   * @returns The UpmadeAgenticActionManager that runs `performAgenticAction` calls
    */
-  get agenticActionManager(): UpdrawAgenticActionManager {
+  get agenticActionManager(): UpmadeAgenticActionManager {
     return this._agenticActionManager;
   }
 
   /** The agents added to this editor. */
-  get agentManager(): UpdrawAgentManager {
+  get agentManager(): UpmadeAgentManager {
     return this._agentManager;
   }
 
   /** Shares the local agents with collaborators. */
-  get agentBroadcaster(): UpdrawAgentBroadcaster {
+  get agentBroadcaster(): UpmadeAgentBroadcaster {
     return this._agentBroadcaster;
   }
 
   /** The agents of collaborators. */
-  get remoteAgentManager(): UpdrawRemoteAgentManager {
+  get remoteAgentManager(): UpmadeRemoteAgentManager {
     return this._remoteAgentManager;
   }
 
@@ -242,8 +242,8 @@ export class UpdrawCore {
   /**
    * Builds a namespaced storage key.
    * When editorId is set, appends it after the base prefix:
-   * e.g. 'updraw-settings' → 'updraw-settings-homepage'
-   * @param base - The base key name (e.g. 'updraw-settings')
+   * e.g. 'upmade-settings' → 'upmade-settings-homepage'
+   * @param base - The base key name (e.g. 'upmade-settings')
    * @returns The namespaced key
    */
   getStorageKey(base: string): string {
@@ -253,17 +253,17 @@ export class UpdrawCore {
   /**
    * Gets the current user.
    */
-  get user(): IUpdrawUser | undefined {
+  get user(): IUpmadeUser | undefined {
     return this._user;
   }
 
   /**
    * Sets the current user and propagates to the active object map's awareness.
    */
-  setUser(user?: IUpdrawUser): void {
+  setUser(user?: IUpmadeUser): void {
     if (user?.kind === 'agent') {
       // Agents are added with addAgent(); as the local user they would own the human's selection.
-      console.warn('[Updraw] An agent cannot be the current user. Add it with addAgent() instead.');
+      console.warn('[Upmade] An agent cannot be the current user. Add it with addAgent() instead.');
       return;
     }
     this._user = user;
@@ -272,34 +272,34 @@ export class UpdrawCore {
   }
 
   /**
-   * Creates a new UpdrawCore instance.
+   * Creates a new UpmadeCore instance.
    * Initializes the store with default configuration and sets up all managers.
-   * @param updrawEngine - The engine component to orchestrate
+   * @param upmadeEngine - The engine component to orchestrate
    * @param editorId - Optional unique identifier for namespacing storage keys
    */
-  constructor(updrawEngine: UpdrawEngineHost, editorId?: string) {
-    // Before any manager reads settings: copy values saved under the legacy (pre-rename) localStorage keys.
+  constructor(upmadeEngine: UpmadeEngineHost, editorId?: string) {
+    // Before any manager reads settings: copy values saved under the localStorage keys of the library's former names.
     migrateLegacyStorageKeys();
-    this._updrawEngine = updrawEngine;
+    this._upmadeEngine = upmadeEngine;
     this._editorId = editorId;
-    this._store = new UpdrawStore(DEFAULT_ENGINE_CONFIG);
-    this._appStateMap = new UpdrawAppStateMap();
-    this._anchorManager = new UpdrawAnchorManager(this);
-    this._cursorManager = new UpdrawCursorManager(this);
-    this._themeManager = new UpdrawThemeManager(this);
-    this._localizationManager = new UpdrawLocalizationManager(this);
-    this._permissionManager = new UpdrawBrowserPermissionManager(this);
-    this._clipboardManager = new UpdrawClipboardManager(this);
-    this._agenticCursorManager = new UpdrawAgenticCursorManager(this);
-    this._agenticActionManager = new UpdrawAgenticActionManager(this);
-    this._agentManager = new UpdrawAgentManager(this);
-    this._agentBroadcaster = new UpdrawAgentBroadcaster(this);
-    this._remoteAgentManager = new UpdrawRemoteAgentManager(this);
+    this._store = new UpmadeStore(DEFAULT_ENGINE_CONFIG);
+    this._appStateMap = new UpmadeAppStateMap();
+    this._anchorManager = new UpmadeAnchorManager(this);
+    this._cursorManager = new UpmadeCursorManager(this);
+    this._themeManager = new UpmadeThemeManager(this);
+    this._localizationManager = new UpmadeLocalizationManager(this);
+    this._permissionManager = new UpmadeBrowserPermissionManager(this);
+    this._clipboardManager = new UpmadeClipboardManager(this);
+    this._agenticCursorManager = new UpmadeAgenticCursorManager(this);
+    this._agenticActionManager = new UpmadeAgenticActionManager(this);
+    this._agentManager = new UpmadeAgentManager(this);
+    this._agentBroadcaster = new UpmadeAgentBroadcaster(this);
+    this._remoteAgentManager = new UpmadeRemoteAgentManager(this);
     this._agentBroadcaster.start();
-    this._objectTitlebarManager = new UpdrawObjectTitlebarManager(this);
-    this._objectConfigManager = new UpdrawObjectConfigManager(this);
-    this._toolRegistry = new UpdrawToolRegistry(this);
-    this._assetResolver = new UpdrawAssetResolver();
+    this._objectTitlebarManager = new UpmadeObjectTitlebarManager(this);
+    this._objectConfigManager = new UpmadeObjectConfigManager(this);
+    this._toolRegistry = new UpmadeToolRegistry(this);
+    this._assetResolver = new UpmadeAssetResolver();
     this._assetResolver.setShowInfo(this._store.state.debugInfo?.showAssetResolverInfo ?? false);
   }
 
@@ -307,7 +307,7 @@ export class UpdrawCore {
    * Gets the asset resolver responsible for storing and resolving
    * binary payloads (images, etc.) referenced by canvas objects.
    */
-  get assetResolver(): UpdrawAssetResolver {
+  get assetResolver(): UpmadeAssetResolver {
     return this._assetResolver;
   }
 
@@ -315,7 +315,7 @@ export class UpdrawCore {
    * Sets the synchronization configuration for collaborative features.
    * @param config - The sync configuration or undefined to disable sync
    */
-  setSyncConfig(config?: UpdrawSyncConfig): void {
+  setSyncConfig(config?: UpmadeSyncConfig): void {
     this._syncConfig = config;
   }
 
@@ -324,7 +324,7 @@ export class UpdrawCore {
    * Takes effect on the next `initializeYjs` call (or on explicit
    * `initializeAssets` if invoked directly).
    */
-  setAssetStorageConfig(config?: UpdrawAssetStorageConfig): void {
+  setAssetStorageConfig(config?: UpmadeAssetStorageConfig): void {
     this._assetStorageConfig = config;
   }
 
@@ -337,9 +337,9 @@ export class UpdrawCore {
   setEditorId(editorId?: string): void {
     this._editorId = editorId;
     // Re-create theme manager so it picks up the new storage key
-    (this as any)._themeManager = new UpdrawThemeManager(this);
+    (this as any)._themeManager = new UpmadeThemeManager(this);
     // Re-create localization manager so it picks up the new storage key
-    (this as any)._localizationManager = new UpdrawLocalizationManager(this);
+    (this as any)._localizationManager = new UpmadeLocalizationManager(this);
   }
 
   /**
@@ -357,7 +357,7 @@ export class UpdrawCore {
   /**
    * Initializes the asset storage layer with the current asset storage
    * configuration. Safe to call multiple times: subsequent calls are
-   * no-ops because {@link UpdrawAssetResolver.init} is idempotent.
+   * no-ops because {@link UpmadeAssetResolver.init} is idempotent.
    * To apply a new configuration after initialization, destroy the
    * resolver first or use the engine's `reinitSync` method.
    */
@@ -376,7 +376,7 @@ export class UpdrawCore {
     if (!this._appStateMap.hasNetworkSyncProvider) return;
     if (this._assetResolver.hasRemoteProvider) return;
     console.warn(
-      '[Updraw] A network sync provider is configured, but no remote asset storage provider ' +
+      '[Upmade] A network sync provider is configured, but no remote asset storage provider ' +
         'was found. Images added on this device will only be available locally and will appear ' +
         'broken on other devices. Configure a remote asset provider (e.g. HttpAssetProvider) ' +
         'via the `assetStorage` prop to enable cross-device image sync.',
@@ -386,14 +386,14 @@ export class UpdrawCore {
   /**
    * Load all workspaces from app state map
    */
-  private loadWorkspacesFromAppState(): UpdrawWorkspace[] {
+  private loadWorkspacesFromAppState(): UpmadeWorkspace[] {
     return this._appStateMap.allWorkspaces();
   }
 
   /**
    * Save a workspace to app state map
    */
-  private saveWorkspaceToAppState(workspace: UpdrawWorkspace): void {
+  private saveWorkspaceToAppState(workspace: UpmadeWorkspace): void {
     if (this._appStateMap.has(workspace.id)) {
       this._appStateMap.update(workspace);
     } else {
@@ -415,7 +415,7 @@ export class UpdrawCore {
    * @param workspace - Optional workspace to switch to; if not provided, uses last active or most recent
     * @param options - Optional initialization behavior flags
    */
-    async initializeWorkspace(workspace?: UpdrawWorkspace, options?: InitializeWorkspaceOptions): Promise<void> {
+    async initializeWorkspace(workspace?: UpmadeWorkspace, options?: InitializeWorkspaceOptions): Promise<void> {
     // Load all workspaces from app state map
     const workspaces = this.loadWorkspacesFromAppState();
       const shouldCreateEditorScopedFallback = !workspace && !!this._editorId;
@@ -429,10 +429,10 @@ export class UpdrawCore {
       : null;
 
     // Check localStorage for last active workspace
-    const lastActiveWorkspaceId = localStorage.getItem(this.getStorageKey('updraw-active-workspace-id'));
+    const lastActiveWorkspaceId = localStorage.getItem(this.getStorageKey('upmade-active-workspace-id'));
     const lastActiveWorkspace = lastActiveWorkspaceId ? workspaces.find(w => w.id === lastActiveWorkspaceId) : null;
 
-    let activeWorkspace: UpdrawWorkspace;
+    let activeWorkspace: UpmadeWorkspace;
 
     if (workspace) {
       // Use provided workspace
@@ -456,13 +456,13 @@ export class UpdrawCore {
       return;
     } else {
       // Create fallback workspace
-      activeWorkspace = new UpdrawWorkspace({ name: 'New Workspace' });
+      activeWorkspace = new UpmadeWorkspace({ name: 'New Workspace' });
       activeWorkspace._core = this;
       this.saveWorkspaceToAppState(activeWorkspace);
     }
 
     // Save active workspace ID to localStorage
-    localStorage.setItem(this.getStorageKey('updraw-active-workspace-id'), activeWorkspace.id);
+    localStorage.setItem(this.getStorageKey('upmade-active-workspace-id'), activeWorkspace.id);
 
     this._objectAppearManager.clear();
 
@@ -472,7 +472,7 @@ export class UpdrawCore {
     }
 
     // Create new ObjectMap with its own Y.Doc for this workspace
-    const objectsMap = new UpdrawObjectMap();
+    const objectsMap = new UpmadeObjectMap();
     // Assign immediately so the UI shows an empty state while loading,
     // instead of showing the old workspace's objects with the new workspace's viewport
     this._store.state.objects = objectsMap;
@@ -521,7 +521,7 @@ export class UpdrawCore {
     this.rerender();
   }
 
-  private async seedWorkspaceObjects(workspace: UpdrawWorkspace, objectsMap: UpdrawObjectMap<UpdrawBaseObject<any>>): Promise<void> {
+  private async seedWorkspaceObjects(workspace: UpmadeWorkspace, objectsMap: UpmadeObjectMap<UpmadeBaseObject<any>>): Promise<void> {
     if (!workspace.objects?.length) {
       return;
     }
@@ -532,7 +532,7 @@ export class UpdrawCore {
     // happen before the (synchronous) Yjs transaction that inserts the objects.
     for (const object of pendingObjects) {
       object._core = this;
-      if (object instanceof UpdrawImage) {
+      if (object instanceof UpmadeImage) {
         await object.prepareForInsert();
       }
     }
@@ -548,13 +548,13 @@ export class UpdrawCore {
   /**
    * Mirrors engine.addObject() runtime initialization for consumer-constructed objects.
    */
-  private prepareObjectForWorkspace(object: UpdrawBaseObject<any>, workspaceId: string, zIndex: number, scaleFallback: number): void {
+  private prepareObjectForWorkspace(object: UpmadeBaseObject<any>, workspaceId: string, zIndex: number, scaleFallback: number): void {
     object._core = this;
     object.scale = object.scale ?? scaleFallback;
     object.zIndex = zIndex;
 
     // Recreate the text editor now that _core is available for persistence callbacks
-    if (object instanceof UpdrawText) {
+    if (object instanceof UpmadeText) {
       const pendingContent = object.content;
       object.editor = object.createEditor();
       if (pendingContent) {
@@ -562,7 +562,7 @@ export class UpdrawCore {
       }
     }
 
-    if (object instanceof UpdrawGroup) {
+    if (object instanceof UpmadeGroup) {
       object.updateWorkspaceId(workspaceId);
     } else {
       object.workspaceId = workspaceId;
@@ -581,16 +581,16 @@ export class UpdrawCore {
    * @returns The objects that were added, updated and removed
    */
   private async reconcileWorkspaceObjects(
-    objectsMap: UpdrawObjectMap<UpdrawBaseObject<any>>,
+    objectsMap: UpmadeObjectMap<UpmadeBaseObject<any>>,
     workspaceId: string,
-    desiredObjects: UpdrawBaseObject<any>[],
+    desiredObjects: UpmadeBaseObject<any>[],
     nextZIndex: () => number,
     scaleFallback: number,
-  ): Promise<UpdrawWorkspaceObjectsDiff> {
-    const existingObjects = objectsMap.allObjects().filter(o => !(o instanceof UpdrawSelectionGroup) && !(o instanceof UpdrawSelectionBox));
+  ): Promise<UpmadeWorkspaceObjectsDiff> {
+    const existingObjects = objectsMap.allObjects().filter(o => !(o instanceof UpmadeSelectionGroup) && !(o instanceof UpmadeSelectionBox));
     const existingById = new Map(existingObjects.map(object => [object.id, object]));
     const desiredIds = new Set<string>();
-    const diff: UpdrawWorkspaceObjectsDiff = { added: [], updated: [], removed: [] };
+    const diff: UpmadeWorkspaceObjectsDiff = { added: [], updated: [], removed: [] };
 
     // Assign IDs up front so the insert-vs-update lookup below is stable, and so the
     // async image-prepare pass and the (synchronous) transaction agree on identity.
@@ -606,7 +606,7 @@ export class UpdrawCore {
       const existingObject = existingById.get(object.id);
       const isNewOrReplaced = !existingObject || existingObject !== object;
 
-      if (isNewOrReplaced && object instanceof UpdrawImage) {
+      if (isNewOrReplaced && object instanceof UpmadeImage) {
         object._core = this;
         await object.prepareForInsert();
       }
@@ -634,7 +634,7 @@ export class UpdrawCore {
         // Same ID but a different instance: swap the live object for the incoming one. Local element state
         // (highlights, picking, tracked elements) moves along, so cursors pointing at an element stay on it.
         this.detachObject(existingObject);
-        if (ObjectHelper.isUpdrawElementAwareObject(object) && typeof object.adoptElementStateFrom === 'function') {
+        if (ObjectHelper.isUpmadeElementAwareObject(object) && typeof object.adoptElementStateFrom === 'function') {
           object.adoptElementStateFrom(existingObject);
         }
         objectsMap.remove(o => o.id === object.id);
@@ -662,8 +662,8 @@ export class UpdrawCore {
    * Unlike removeObject() this never cascades into group children, so the reconciled
    * object set stays exactly what the caller declared.
    */
-  private detachObject(object: UpdrawBaseObject<any>): void {
-    if (ObjectHelper.isUpdrawEmbeddedObject(object)) {
+  private detachObject(object: UpmadeBaseObject<any>): void {
+    if (ObjectHelper.isUpmadeEmbeddedObject(object)) {
       object.unmount();
     }
     object.isMounted = false;
@@ -672,8 +672,8 @@ export class UpdrawCore {
   /**
    * Returns the next free z-index within an object map.
    */
-  private nextZIndexOf(objectsMap: UpdrawObjectMap<UpdrawBaseObject<any>>): number {
-    const objects = objectsMap.allObjects().filter(o => !(o instanceof UpdrawSelectionGroup) && !(o instanceof UpdrawSelectionBox));
+  private nextZIndexOf(objectsMap: UpmadeObjectMap<UpmadeBaseObject<any>>): number {
+    const objects = objectsMap.allObjects().filter(o => !(o instanceof UpmadeSelectionGroup) && !(o instanceof UpmadeSelectionBox));
     return Math.max(0, ...objects.map(o => o.zIndex)) + 1;
   }
 
@@ -692,7 +692,7 @@ export class UpdrawCore {
 
     if (!workspace) {
       // Create it if it doesn't exist locally
-      workspace = new UpdrawWorkspace({ id: workspaceId, name });
+      workspace = new UpmadeWorkspace({ id: workspaceId, name });
       workspace.isPublic = true;
       this.createWorkspace(workspace);
     } else {
@@ -709,7 +709,7 @@ export class UpdrawCore {
    * Excludes selection-related objects and sorts by z-index.
    * @returns Array of visible objects sorted by z-index ascending
    */
-  getObjectsInViewport(): UpdrawBaseObject<any>[] {
+  getObjectsInViewport(): UpmadeBaseObject<any>[] {
     const viewportBounds = {
       x: -this._store.state.translateX / this._store.state.scale,
       y: -this._store.state.translateY / this._store.state.scale,
@@ -725,8 +725,8 @@ export class UpdrawCore {
 
     return this._store.objects
       .query(viewportBounds)
-      .filter(obj => !(obj instanceof UpdrawSelectionGroup) && !(obj instanceof UpdrawSelectionBox))
-      .sort(UpdrawZOrderHelper.compareStackOrder);
+      .filter(obj => !(obj instanceof UpmadeSelectionGroup) && !(obj instanceof UpmadeSelectionBox))
+      .sort(UpmadeZOrderHelper.compareStackOrder);
   }
 
   /**
@@ -734,8 +734,8 @@ export class UpdrawCore {
    * Increments forceUpdate counter to trigger Stencil's reactivity.
    */
   rerender() {
-    if (this._updrawEngine) {
-      this._updrawEngine.forceUpdate++;
+    if (this._upmadeEngine) {
+      this._upmadeEngine.forceUpdate++;
     }
   }
 
@@ -744,7 +744,7 @@ export class UpdrawCore {
    * @param id - The unique ID of the object to find
    * @returns The found object or null if not found
    */
-  findObjectById(id: string): UpdrawBaseObject<any> | null {
+  findObjectById(id: string): UpmadeBaseObject<any> | null {
     for (const object of this._store.allObjects) {
       if (object.id === id) {
         return object;
@@ -757,7 +757,7 @@ export class UpdrawCore {
    * Gets all workspaces from the app state map.
    * @returns Array of all available workspaces
    */
-  getWorkspaces(): UpdrawWorkspace[] {
+  getWorkspaces(): UpmadeWorkspace[] {
     return this.loadWorkspacesFromAppState();
   }
 
@@ -769,7 +769,7 @@ export class UpdrawCore {
     const workspaces = this.getWorkspaces();
     const target = workspaces.find(w => w.id === workspaceId);
     if (!target) {
-      console.warn(`[UpdrawCore] Cannot set active workspace: No workspace found with ID '${workspaceId}'`);
+      console.warn(`[UpmadeCore] Cannot set active workspace: No workspace found with ID '${workspaceId}'`);
       return;
     }
 
@@ -782,7 +782,7 @@ export class UpdrawCore {
    * @param workspace - The workspace instance to create
    * @returns The created workspace instance
    */
-  async createWorkspace(workspace: UpdrawWorkspace): Promise<UpdrawWorkspace> {
+  async createWorkspace(workspace: UpmadeWorkspace): Promise<UpmadeWorkspace> {
     workspace._core = this;
     workspace.createdAt = new Date();
     workspace.updatedAt = new Date();
@@ -800,7 +800,7 @@ export class UpdrawCore {
    * @param workspace - The workspace describing the desired state
    * @returns The object changes that were applied, or null if objects were not touched
    */
-  async updateWorkspace(workspace: UpdrawWorkspace): Promise<UpdrawWorkspaceObjectsDiff | null> {
+  async updateWorkspace(workspace: UpmadeWorkspace): Promise<UpmadeWorkspaceObjectsDiff | null> {
     const isActive = this._store.state.activeWorkspace?.id === workspace.id;
     const desiredObjects = workspace.objects;
 
@@ -842,7 +842,7 @@ export class UpdrawCore {
    * Compared against the persisted viewport rather than the live one, so a workspace that was
    * read and passed back unchanged (e.g. a rename) never snaps the canvas.
    */
-  private applyWorkspaceViewport(workspace: UpdrawWorkspace): void {
+  private applyWorkspaceViewport(workspace: UpmadeWorkspace): void {
     const viewport = workspace.viewport;
     if (!viewport) {
       return;
@@ -858,7 +858,7 @@ export class UpdrawCore {
     }
 
     // Drop the debounced save of the outgoing viewport so it cannot overwrite the new one
-    this._updrawEngine?.viewport?.cancelPendingUpdates();
+    this._upmadeEngine?.viewport?.cancelPendingUpdates();
 
     this._store.state.translateX = this._store.state.viewportWidth / 2 - centerWorldX * scale;
     this._store.state.translateY = this._store.state.viewportHeight / 2 - centerWorldY * scale;
@@ -870,7 +870,7 @@ export class UpdrawCore {
     }
   }
 
-  private async applyObjectsToActiveWorkspace(workspace: UpdrawWorkspace, desiredObjects: UpdrawBaseObject<any>[]): Promise<UpdrawWorkspaceObjectsDiff | null> {
+  private async applyObjectsToActiveWorkspace(workspace: UpmadeWorkspace, desiredObjects: UpmadeBaseObject<any>[]): Promise<UpmadeWorkspaceObjectsDiff | null> {
     const objectsMap = this._store.objects;
     if (!objectsMap) {
       return null;
@@ -890,16 +890,16 @@ export class UpdrawCore {
    * Applies objects to a workspace that is not currently open by loading its document into a
    * background object map, reconciling, and disposing it again.
    */
-  private async applyObjectsToInactiveWorkspace(workspace: UpdrawWorkspace, desiredObjects: UpdrawBaseObject<any>[]): Promise<UpdrawWorkspaceObjectsDiff | null> {
+  private async applyObjectsToInactiveWorkspace(workspace: UpmadeWorkspace, desiredObjects: UpmadeBaseObject<any>[]): Promise<UpmadeWorkspaceObjectsDiff | null> {
     if (!this._syncConfig?.providers?.length) {
       console.warn(
-        `[UpdrawCore] Cannot update the objects of workspace '${workspace.id}' because it is not active and no sync provider is configured. ` +
+        `[UpmadeCore] Cannot update the objects of workspace '${workspace.id}' because it is not active and no sync provider is configured. ` +
           'Configure a sync provider, or activate the workspace before updating its objects.',
       );
       return null;
     }
 
-    const objectsMap = new UpdrawObjectMap<UpdrawBaseObject<any>>();
+    const objectsMap = new UpmadeObjectMap<UpmadeBaseObject<any>>();
 
     try {
       await objectsMap.initialize(this, workspace.id, this._syncConfig, { headless: true, workspaceName: workspace.name });
@@ -917,7 +917,7 @@ export class UpdrawCore {
    * Also deletes the workspace's IndexedDB database.
    * @param workspace - The workspace to delete
    */
-  deleteWorkspace(workspace: UpdrawWorkspace): void {
+  deleteWorkspace(workspace: UpmadeWorkspace): void {
     // If deleting the active workspace, need to handle ObjectMap cleanup
     if (this._store.state.activeWorkspace?.id === workspace.id) {
       this.engine.viewport?.cancelPendingUpdates();
@@ -927,13 +927,12 @@ export class UpdrawCore {
     this.deleteWorkspaceFromAppState(workspace.id);
     this._store.state.workspaces = this.loadWorkspacesFromAppState();
 
-    // Also delete the workspace's IndexedDB database, and the one it had before the rename.
+    // Also delete the workspace's IndexedDB database, and the ones it had under former names.
     const dbName = this._editorId
-      ? `updraw-workspace-${this._editorId}-${workspace.id}`
-      : `updraw-workspace-${workspace.id}`;
+      ? `upmade-workspace-${this._editorId}-${workspace.id}`
+      : `upmade-workspace-${workspace.id}`;
     window.indexedDB.deleteDatabase(dbName);
-    const legacyDbName = toLegacyDocumentName(dbName);
-    if (legacyDbName) {
+    for (const legacyDbName of toLegacyDocumentNames(dbName)) {
       window.indexedDB.deleteDatabase(legacyDbName);
     }
   }
@@ -985,20 +984,20 @@ export class UpdrawCore {
    * Adds an object to the current workspace's object map.
    * @param object - The object to add to the canvas
    */
-  addObject(object: UpdrawBaseObject<any>): void {
+  addObject(object: UpmadeBaseObject<any>): void {
     this._store.objects.insert(object);
   }
 
   /**
-   * Prepares an object that was built outside the canvas (e.g. `new UpdrawShape(...)`) for the
+   * Prepares an object that was built outside the canvas (e.g. `new UpmadeShape(...)`) for the
    * active workspace: a fresh ID, the core reference, scale, z-index and workspace, a text editor
    * that can persist, and, for a group, its pending children with new IDs and remapped line anchors.
    * Nothing is inserted yet; pass the result to {@link insertPreparedObject}.
-   * Async preparation (`UpdrawImage.prepareForInsert()`) must run before this call.
+   * Async preparation (`UpmadeImage.prepareForInsert()`) must run before this call.
    * @param object - The object to prepare
    * @returns The group's flushed descendants in insertion order; empty for other objects.
    */
-  prepareObjectForInsert(object: UpdrawBaseObject<any>): UpdrawBaseObject<any>[] {
+  prepareObjectForInsert(object: UpmadeBaseObject<any>): UpmadeBaseObject<any>[] {
     const state = this._store.state;
     object.id = object.generateId();
     object._core = this;
@@ -1007,7 +1006,7 @@ export class UpdrawCore {
     object.workspaceId = state.activeWorkspace!.id;
 
     // The editor's dispatchTransaction callback needs _core to persist changes.
-    if (object instanceof UpdrawText) {
+    if (object instanceof UpmadeText) {
       const pendingContent = object.content;
       object.editor = object.createEditor();
       if (pendingContent) {
@@ -1015,18 +1014,18 @@ export class UpdrawCore {
       }
     }
 
-    if (!(object instanceof UpdrawGroup) || object._pendingChildren.length === 0) {
+    if (!(object instanceof UpmadeGroup) || object._pendingChildren.length === 0) {
       return [];
     }
 
     // Old ID -> new ID across all nesting levels, to remap anchors however deep the line is.
     const idRemapping = new Map<string, string>();
-    const descendants: UpdrawBaseObject<any>[] = [];
+    const descendants: UpmadeBaseObject<any>[] = [];
 
     // Children stack bottom to top in the order they were added; the group takes its top child's zIndex.
-    UpdrawZOrderHelper.allocate(object, this._store.currentZIndex, group => group._pendingChildren);
+    UpmadeZOrderHelper.allocate(object, this._store.currentZIndex, group => group._pendingChildren);
 
-    const flushGroup = (group: UpdrawGroup): void => {
+    const flushGroup = (group: UpmadeGroup): void => {
       if (group._pendingChildren.length === 0) {
         return;
       }
@@ -1047,7 +1046,7 @@ export class UpdrawCore {
         descendants.push(child);
 
         // Nested groups get their IDs and childIds before their parent is inserted.
-        if (child instanceof UpdrawGroup) {
+        if (child instanceof UpmadeGroup) {
           flushGroup(child);
         }
       });
@@ -1056,7 +1055,7 @@ export class UpdrawCore {
     flushGroup(object);
 
     descendants.forEach(child => {
-      if (child instanceof UpdrawLine) {
+      if (child instanceof UpmadeLine) {
         if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
           child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
         }
@@ -1079,10 +1078,10 @@ export class UpdrawCore {
    * @param descendants - The descendants returned by prepareObjectForInsert
    * @param appearIndex - Position of the object in its batch, which staggers the appear animation; `null` skips it
    */
-  insertPreparedObject(object: UpdrawBaseObject<any>, descendants: UpdrawBaseObject<any>[], appearIndex: number | null = 0): void {
+  insertPreparedObject(object: UpmadeBaseObject<any>, descendants: UpmadeBaseObject<any>[], appearIndex: number | null = 0): void {
     if (descendants.length > 0) {
       descendants.forEach(child => this.addObject(child));
-      if (object instanceof UpdrawGroup) {
+      if (object instanceof UpmadeGroup) {
         // finalize() recurses into nested groups so all bounding boxes and snapshots align.
         object.finalize();
       }
@@ -1101,9 +1100,9 @@ export class UpdrawCore {
    * @param object - The object to remove
    * @param preserveChildren - If true and object is a group, children are kept; defaults to false
    */
-  removeObject(object: UpdrawBaseObject<any>, preserveChildren: boolean = false): void {
-    // Handle UpdrawGroup: recursively delete all children first (unless preserveChildren is true)
-    if (object instanceof UpdrawGroup && !preserveChildren) {
+  removeObject(object: UpmadeBaseObject<any>, preserveChildren: boolean = false): void {
+    // Handle UpmadeGroup: recursively delete all children first (unless preserveChildren is true)
+    if (object instanceof UpmadeGroup && !preserveChildren) {
       // Get children before removing the group
       const children = [...object.children];
       children.forEach(child => {
@@ -1111,12 +1110,12 @@ export class UpdrawCore {
       });
     }
 
-    if (ObjectHelper.isUpdrawEmbeddedObject(object)) {
+    if (ObjectHelper.isUpmadeEmbeddedObject(object)) {
       object.unmount();
     }
 
     // Handle anchor cleanup
-    if (object instanceof UpdrawLine) {
+    if (object instanceof UpmadeLine) {
       // If removing a line, clean up its anchor index entries
       this._anchorManager.handleLineDeleted(object.id);
     } else {
@@ -1135,7 +1134,7 @@ export class UpdrawCore {
    * @param object - The object to update
    * @param updatedProperties - Partial object containing properties to update
    */
-  updateObject<T extends UpdrawBaseObject<any>>(object: T, updatedProperties: Partial<T>): void {
+  updateObject<T extends UpmadeBaseObject<any>>(object: T, updatedProperties: Partial<T>): void {
     const changedKeys: string[] = [];
 
     for (const key in updatedProperties) {
@@ -1158,26 +1157,26 @@ export class UpdrawCore {
    * Triggers the selection change event.
    * @param selectionGroup - The selection group to add
    */
-  addSelectionGroup(selectionGroup: UpdrawSelectionGroup): void {
+  addSelectionGroup(selectionGroup: UpmadeSelectionGroup): void {
     this.removeLocalSelectionGroups();
     this.removeSelectionBox();
 
     for (const object of selectionGroup.objects ?? []) {
-      if (ObjectHelper.isUpdrawEmbeddedObject(object)) {
+      if (ObjectHelper.isUpmadeEmbeddedObject(object)) {
         object.setIsInteractive(true);
       }
     }
 
     this._store.objects.insert(selectionGroup);
     this._store.setSelectionGroup(selectionGroup);
-    this._updrawEngine.triggerSelectionChange();
+    this._upmadeEngine.triggerSelectionChange();
   }
 
   /**
    * Returns whether the provided selection group belongs to the local user context.
    * Local groups are either explicitly owned by the current user or have no user ID.
    */
-  private isLocalSelectionGroup(selectionGroup: UpdrawSelectionGroup): boolean {
+  private isLocalSelectionGroup(selectionGroup: UpmadeSelectionGroup): boolean {
     const localUserId = this._user?.id;
     return localUserId == null || selectionGroup.userId === localUserId || selectionGroup.userId == null;
   }
@@ -1185,11 +1184,11 @@ export class UpdrawCore {
   /**
    * Applies deselection teardown side effects to a selection group before removal.
    */
-  private teardownSelectionGroup(selectionGroup: UpdrawSelectionGroup): void {
+  private teardownSelectionGroup(selectionGroup: UpmadeSelectionGroup): void {
     selectionGroup.deselectAllChildren?.();
 
     for (const object of selectionGroup.objects ?? []) {
-      if (ObjectHelper.isUpdrawEmbeddedObject(object)) {
+      if (ObjectHelper.isUpmadeEmbeddedObject(object)) {
         object.setIsInteractive(false);
       }
     }
@@ -1203,8 +1202,8 @@ export class UpdrawCore {
   private removeLocalSelectionGroups(): boolean {
     const allSelectionGroupsInStore = this._store.objects
       .allObjects()
-      .filter((object): object is UpdrawSelectionGroup => {
-        return object instanceof UpdrawSelectionGroup || object instanceof UpdrawSelectionGroup;
+      .filter((object): object is UpmadeSelectionGroup => {
+        return object instanceof UpmadeSelectionGroup || object instanceof UpmadeSelectionGroup;
       });
 
     const allLocalSelectionGroups = allSelectionGroupsInStore.filter(selectionGroup => this.isLocalSelectionGroup(selectionGroup));
@@ -1240,7 +1239,7 @@ export class UpdrawCore {
   removeSelectionGroup(): void {
     const removedAnySelectionGroup = this.removeLocalSelectionGroups();
     if (removedAnySelectionGroup) {
-      this._updrawEngine.triggerSelectionChange();
+      this._upmadeEngine.triggerSelectionChange();
     }
   }
 
@@ -1324,8 +1323,8 @@ export class UpdrawCore {
    * Collects every object of the workspace (not limited by viewport boundaries) for z-order planning.
    * @returns The objects by id and their z-order view in store order.
    */
-  private getZOrderItems(): { objects: Map<string, UpdrawBaseObject<any>>; items: UpdrawZOrderItem[] } {
-    return UpdrawZOrderHelper.collect(this._store.objects?.allObjects() ?? []);
+  private getZOrderItems(): { objects: Map<string, UpmadeBaseObject<any>>; items: UpmadeZOrderItem[] } {
+    return UpmadeZOrderHelper.collect(this._store.objects?.allObjects() ?? []);
   }
 
   /**
@@ -1335,8 +1334,8 @@ export class UpdrawCore {
    * @param inTransaction - Optional additional work that belongs to the same undo step
    * @returns The updated objects
    */
-  private applyZIndexUpdates(updates: Map<string, number>, objects: Map<string, UpdrawBaseObject<any>>, inTransaction?: () => void): UpdrawBaseObject<any>[] {
-    const updated: UpdrawBaseObject<any>[] = [];
+  private applyZIndexUpdates(updates: Map<string, number>, objects: Map<string, UpmadeBaseObject<any>>, inTransaction?: () => void): UpmadeBaseObject<any>[] {
+    const updated: UpmadeBaseObject<any>[] = [];
     if (updates.size === 0 && !inTransaction) {
       return updated;
     }
@@ -1367,10 +1366,10 @@ export class UpdrawCore {
    * @param operation - The z-order operation
    * @param object - Optional specific object; defaults to all selected objects
    */
-  private reorder(operation: UpdrawZOrderOperation, object?: UpdrawBaseObject<any>): void {
+  private reorder(operation: UpmadeZOrderOperation, object?: UpmadeBaseObject<any>): void {
     const roots = object ? [object] : this._store.selectionGroup?.objects || [];
     const { objects, items } = this.getZOrderItems();
-    const updates = UpdrawZOrderHelper.reorder(items, roots.map(root => root.id), operation);
+    const updates = UpmadeZOrderHelper.reorder(items, roots.map(root => root.id), operation);
 
     if (this.applyZIndexUpdates(updates, objects).length > 0) {
       this.engine.emitObjectsChange();
@@ -1384,7 +1383,7 @@ export class UpdrawCore {
    * Groups move as one layer together with all of their descendants.
    * @param object - Optional specific object to move; defaults to all selected objects
    */
-  bringForward(object?: UpdrawBaseObject<any>) {
+  bringForward(object?: UpmadeBaseObject<any>) {
     this.reorder('forward', object);
   }
 
@@ -1393,7 +1392,7 @@ export class UpdrawCore {
    * Groups move as one layer together with all of their descendants.
    * @param object - Optional specific object to move; defaults to all selected objects
    */
-  sendBackward(object?: UpdrawBaseObject<any>) {
+  sendBackward(object?: UpmadeBaseObject<any>) {
     this.reorder('backward', object);
   }
 
@@ -1402,7 +1401,7 @@ export class UpdrawCore {
    * Groups move as one layer together with all of their descendants.
    * @param object - Optional specific object to move; defaults to all selected objects
    */
-  bringToFront(object?: UpdrawBaseObject<any>) {
+  bringToFront(object?: UpmadeBaseObject<any>) {
     this.reorder('front', object);
   }
 
@@ -1411,7 +1410,7 @@ export class UpdrawCore {
    * Groups move as one layer together with all of their descendants.
    * @param object - Optional specific object to move; defaults to all selected objects
    */
-  sendToBack(object?: UpdrawBaseObject<any>) {
+  sendToBack(object?: UpmadeBaseObject<any>) {
     this.reorder('back', object);
   }
 
@@ -1420,7 +1419,7 @@ export class UpdrawCore {
    * Requires at least 2 objects to be selected.
    * @param alignment The alignment type to apply
    */
-  alignObjects(alignment: UpdrawAlignment): void {
+  alignObjects(alignment: UpmadeAlignment): void {
     const selectionGroup = this._store.selectionGroup;
     if (!selectionGroup || selectionGroup.objects.length < 2) {
       return;
@@ -1446,7 +1445,7 @@ export class UpdrawCore {
   }
 
   /**
-   * Groups objects into an UpdrawGroup as a single undo step.
+   * Groups objects into an UpmadeGroup as a single undo step.
    * Requires at least 2 objects. The grouped objects become one contiguous layer at the position of the
    * topmost object; objects stacked in between end up below the group.
    * Objects inside a common group are grouped within it; objects from different groups are grouped at the
@@ -1456,23 +1455,23 @@ export class UpdrawCore {
    *   with a warning.
    * @returns The created group, or null when nothing was grouped
    */
-  group(objects: UpdrawBaseObject<any>[]): UpdrawGroup | null {
+  group(objects: UpmadeBaseObject<any>[]): UpmadeGroup | null {
     const { objects: storeObjects, items } = this.getZOrderItems();
     const rootIds = this.resolveObjects(objects ?? [], storeObjects, 'group').map(obj => obj.id);
-    const plan = UpdrawZOrderHelper.planGroup(items, rootIds);
+    const plan = UpmadeZOrderHelper.planGroup(items, rootIds);
     if (!plan) {
-      console.warn('[UpdrawCore] Cannot group: at least two objects that are not nested in each other are required.');
+      console.warn('[UpmadeCore] Cannot group: at least two objects that are not nested in each other are required.');
       return null;
     }
 
     // Create a group from the objects, ordered bottom to top
-    const group = UpdrawGroup.createFromObjects(this, plan.childIds.map(id => storeObjects.get(id)));
+    const group = UpmadeGroup.createFromObjects(this, plan.childIds.map(id => storeObjects.get(id)));
     if (plan.groupZIndex !== null) {
       group.zIndex = plan.groupZIndex;
     }
 
     // A nested group takes its parent's frame, so the parent's bounds and transforms stay unchanged
-    const parent = plan.parentId ? (storeObjects.get(plan.parentId) as UpdrawGroup) : null;
+    const parent = plan.parentId ? (storeObjects.get(plan.parentId) as UpmadeGroup) : null;
     if (parent) {
       group.rotation = parent.rotation;
       group.finalize();
@@ -1496,30 +1495,30 @@ export class UpdrawCore {
   }
 
   /**
-   * Ungroups UpdrawGroup objects as a single undo step.
+   * Ungroups UpmadeGroup objects as a single undo step.
    * Children are extracted and take the group's place, keeping their stacking order. A nested group's
    * children stay in its parent group. Dissolved groups in the selection are replaced by their children.
    * @param groups - The groups to ungroup, resolved by id. Entries that are not groups or not in the workspace
    *   are skipped with a warning.
    * @returns The extracted children
    */
-  ungroup(groups: UpdrawGroup[]): UpdrawBaseObject<any>[] {
+  ungroup(groups: UpmadeGroup[]): UpmadeBaseObject<any>[] {
     const { objects, items } = this.getZOrderItems();
     const toDissolve = this.resolveObjects(groups ?? [], objects, 'ungroup').filter(obj => {
-      const isGroup = obj instanceof UpdrawGroup;
+      const isGroup = obj instanceof UpmadeGroup;
       if (!isGroup) {
-        console.warn(`[UpdrawCore] Cannot ungroup object '${obj.id}': it is not an UpdrawGroup.`);
+        console.warn(`[UpmadeCore] Cannot ungroup object '${obj.id}': it is not an UpmadeGroup.`);
       }
       return isGroup;
-    }) as UpdrawGroup[];
+    }) as UpmadeGroup[];
     if (toDissolve.length === 0) {
       return [];
     }
 
     // Tied children get unique values so they keep their stacking order
-    const updates = UpdrawZOrderHelper.planUngroup(items, toDissolve.map(group => group.id));
+    const updates = UpmadeZOrderHelper.planUngroup(items, toDissolve.map(group => group.id));
 
-    const childrenByGroup = new Map<string, UpdrawBaseObject<any>[]>();
+    const childrenByGroup = new Map<string, UpmadeBaseObject<any>[]>();
     this.applyZIndexUpdates(updates, objects, () => {
       toDissolve.forEach(group => {
         // Get children before removing the group
@@ -1527,7 +1526,7 @@ export class UpdrawCore {
         childrenByGroup.set(group.id, children);
 
         // A nested group's children stay in its parent group
-        const parent = UpdrawGroup.findParentGroup(this, group.id);
+        const parent = UpmadeGroup.findParentGroup(this, group.id);
         if (parent) {
           this.replaceChildIds(parent, [group.id], children.map(child => child.id));
         }
@@ -1543,7 +1542,7 @@ export class UpdrawCore {
     this.engine.emitObjectsChange();
     this.rerender();
 
-    const children = new Map<string, UpdrawBaseObject<any>>();
+    const children = new Map<string, UpmadeBaseObject<any>>();
     childrenByGroup.forEach(groupChildren => groupChildren.forEach(child => !childrenByGroup.has(child.id) && children.set(child.id, child)));
     return [...children.values()];
   }
@@ -1555,12 +1554,12 @@ export class UpdrawCore {
    * @param objects - Store instances by id
    * @param action - Name of the calling action, used in the warning
    */
-  private resolveObjects(candidates: UpdrawBaseObject<any>[], objects: Map<string, UpdrawBaseObject<any>>, action: string): UpdrawBaseObject<any>[] {
-    const resolved = new Map<string, UpdrawBaseObject<any>>();
+  private resolveObjects(candidates: UpmadeBaseObject<any>[], objects: Map<string, UpmadeBaseObject<any>>, action: string): UpmadeBaseObject<any>[] {
+    const resolved = new Map<string, UpmadeBaseObject<any>>();
     for (const candidate of candidates) {
       const object = candidate ? objects.get(candidate.id) : undefined;
       if (!object) {
-        console.warn(`[UpdrawCore] Cannot ${action} object '${candidate?.id}': it is not in the active workspace.`);
+        console.warn(`[UpmadeCore] Cannot ${action} object '${candidate?.id}': it is not in the active workspace.`);
         continue;
       }
       resolved.set(object.id, object);
@@ -1573,7 +1572,7 @@ export class UpdrawCore {
    * @param rootIds - Ids to start from
    * @param objects - Store instances by id
    */
-  private collectSubtreeIds(rootIds: string[], objects: Map<string, UpdrawBaseObject<any>>): Set<string> {
+  private collectSubtreeIds(rootIds: string[], objects: Map<string, UpmadeBaseObject<any>>): Set<string> {
     const ids = new Set<string>();
     const visit = (id: string) => {
       if (ids.has(id)) {
@@ -1581,7 +1580,7 @@ export class UpdrawCore {
       }
       ids.add(id);
       const object = objects.get(id);
-      if (object && object instanceof UpdrawGroup) {
+      if (object && object instanceof UpmadeGroup) {
         object.childIds.forEach(visit);
       }
     };
@@ -1595,10 +1594,10 @@ export class UpdrawCore {
    * @param replace - Returns the objects that take a selected object's place, or null to keep it
    * @param excludedIds - Ids that must not be selected afterwards (e.g. removed objects)
    */
-  private replaceInSelection(replace: (object: UpdrawBaseObject<any>) => UpdrawBaseObject<any>[] | null, excludedIds: Set<string> = new Set()): void {
+  private replaceInSelection(replace: (object: UpmadeBaseObject<any>) => UpmadeBaseObject<any>[] | null, excludedIds: Set<string> = new Set()): void {
     const selected = this._store.selectionGroup?.objects ?? [];
     let changed = false;
-    const selection = new Map<string, UpdrawBaseObject<any>>();
+    const selection = new Map<string, UpmadeBaseObject<any>>();
     for (const object of selected) {
       const replacement = replace(object);
       changed ||= replacement !== null;
@@ -1614,7 +1613,7 @@ export class UpdrawCore {
       return;
     }
 
-    const newSelectionGroup = UpdrawSelectionGroup.create(this);
+    const newSelectionGroup = UpmadeSelectionGroup.create(this);
     selection.forEach(object => newSelectionGroup.addOrRemove(object));
     newSelectionGroup.isSelected = true;
     if (selection.size === 1) {
@@ -1629,7 +1628,7 @@ export class UpdrawCore {
    * @param removedIds - Ids of the children to replace
    * @param addedIds - Ids of the children to insert in their place
    */
-  private replaceChildIds(group: UpdrawGroup, removedIds: string[], addedIds: string[]): void {
+  private replaceChildIds(group: UpmadeGroup, removedIds: string[], addedIds: string[]): void {
     const removed = new Set(removedIds);
     const index = group.childIds.findIndex(id => removed.has(id));
     const childIds = group.childIds.filter(id => !removed.has(id));
@@ -1645,12 +1644,12 @@ export class UpdrawCore {
    * Clears existing selection, creates a selection group, and marks objects as selected.
    * @param objects - Array of objects to select; no-op if empty
    */
-  selectObjects(objects: UpdrawBaseObject<any>[]) {
+  selectObjects(objects: UpmadeBaseObject<any>[]) {
     if (objects.length === 0) {
       return;
     }
 
-    const selectionGroup = UpdrawSelectionGroup.create(this);
+    const selectionGroup = UpmadeSelectionGroup.create(this);
     objects.forEach(obj => {
       obj.isSelected = false;
       selectionGroup.addOrRemove(obj);
@@ -1674,10 +1673,10 @@ export class UpdrawCore {
   selectAllObjects() {
     const allObjects = this._store.objects
       .allObjects()
-      .filter(o => !(o instanceof UpdrawSelectionGroup) && !(o instanceof UpdrawSelectionBox));
+      .filter(o => !(o instanceof UpmadeSelectionGroup) && !(o instanceof UpmadeSelectionBox));
 
     if (allObjects.length > 0) {
-      const selectionGroup = UpdrawSelectionGroup.create(this);
+      const selectionGroup = UpmadeSelectionGroup.create(this);
 
       allObjects.forEach(obj => {
         obj.isSelected = false;
@@ -1716,10 +1715,10 @@ export class UpdrawCore {
     const objectsInViewport = this._store.objects
       .query(viewportBounds)
       .filter(o => o.isInViewport())
-      .filter(o => !(o instanceof UpdrawSelectionGroup) && !(o instanceof UpdrawSelectionBox));
+      .filter(o => !(o instanceof UpmadeSelectionGroup) && !(o instanceof UpmadeSelectionBox));
 
     if (objectsInViewport.length > 0) {
-      const selectionGroup = UpdrawSelectionGroup.create(this);
+      const selectionGroup = UpmadeSelectionGroup.create(this);
 
       objectsInViewport.forEach(obj => {
         obj.isSelected = false;
@@ -1749,8 +1748,8 @@ export class UpdrawCore {
 
     const localUserId = this._user?.id;
     this._store.objects.remove(o =>
-      o instanceof UpdrawSelectionBox ||
-      (o instanceof UpdrawSelectionGroup && (localUserId == null || o.userId === localUserId || o.userId == null)),
+      o instanceof UpmadeSelectionBox ||
+      (o instanceof UpmadeSelectionGroup && (localUserId == null || o.userId === localUserId || o.userId == null)),
     );
     this._store.setSelectionBox(null);
     this._store.setSelectionGroup(null);
@@ -1803,7 +1802,7 @@ export class UpdrawCore {
    * @param selector - CSS selector to match elements; defaults to '.object'
    * @returns The matched object or null if none found or hit test fails
    */
-  getObjectFromPointerEvent(event: PointerEvent, selector = '.object'): UpdrawBaseObject<any> | null {
+  getObjectFromPointerEvent(event: PointerEvent, selector = '.object'): UpmadeBaseObject<any> | null {
     const shadowRoot = this._store.state.host?.shadowRoot;
     if (!shadowRoot) return null;
 
@@ -1834,7 +1833,7 @@ export class UpdrawCore {
    * @param selector - CSS selector to match elements; defaults to '.object'
    * @returns Array of matched objects sorted by z-index descending
    */
-  getObjectsFromPointerEvent(event: PointerEvent, selector = '.object'): UpdrawBaseObject<any>[] {
+  getObjectsFromPointerEvent(event: PointerEvent, selector = '.object'): UpmadeBaseObject<any>[] {
     const shadowRoot = this._store.state.host?.shadowRoot;
     if (!shadowRoot) return [];
 
@@ -1915,7 +1914,7 @@ export class UpdrawCore {
   beforeWorkspaceChange() {
     // Cancel any pending debounced viewport updates to prevent them from
     // saving the old workspace's viewport to the new workspace
-    this._updrawEngine.viewport?.cancelPendingUpdates();
+    this._upmadeEngine.viewport?.cancelPendingUpdates();
 
     // Immediately save the current workspace's viewport before switching
     const currentWorkspace = this._store.state.activeWorkspace;
@@ -1934,29 +1933,29 @@ export class UpdrawCore {
 
   /**
    * Determines whether to display the selection group UI for an object.
-   * Hides UI for single UpdrawLine selections (they have their own UI).
+   * Hides UI for single UpmadeLine selections (they have their own UI).
    * @param object - The object to check
    * @returns True if selection group UI should be displayed
    */
-  displaySelectionGroupUI(object: UpdrawBaseObject<any>): boolean {
+  displaySelectionGroupUI(object: UpmadeBaseObject<any>): boolean {
     if (!object.isSelected) {
       return false;
     }
 
     // Remote selection groups always show group UI (border only, no handles)
-    if (object instanceof UpdrawSelectionGroup && this._user?.id != null && object.userId != null && object.userId !== this._user.id) {
+    if (object instanceof UpmadeSelectionGroup && this._user?.id != null && object.userId != null && object.userId !== this._user.id) {
       return true;
     }
 
     const selectionGroup = this._store.selectionGroup;
     if (!selectionGroup) {
-      // During selection phase (no group yet), hide UI for UpdrawLine objects
-      return !(object instanceof UpdrawLine);
+      // During selection phase (no group yet), hide UI for UpmadeLine objects
+      return !(object instanceof UpmadeLine);
     }
 
     // Once a local selection group exists, only the selection-group object
     // should render group UI (children remain selected but don't render handles).
-    if (!(object instanceof UpdrawSelectionGroup) || object.id !== selectionGroup.id) {
+    if (!(object instanceof UpmadeSelectionGroup) || object.id !== selectionGroup.id) {
       return false;
     }
 
@@ -1965,10 +1964,10 @@ export class UpdrawCore {
       return true;
     }
 
-    // Hide UI if selection contains a single UpdrawLine
+    // Hide UI if selection contains a single UpmadeLine
     if (selectionGroup.objects.length === 1) {
       const selectedObject = selectionGroup.objects[0];
-      return !(selectedObject instanceof UpdrawLine);
+      return !(selectedObject instanceof UpmadeLine);
     }
 
     return true;
@@ -1976,13 +1975,13 @@ export class UpdrawCore {
 
   /**
    * Determines whether to display the line-specific selection UI for an object.
-   * Shows line UI only for single UpdrawLine selections.
+   * Shows line UI only for single UpmadeLine selections.
    * @param object - The object to check
    * @returns True if line selection UI should be displayed
    */
-  displaySelectionLineUI(object: UpdrawBaseObject<any>): boolean {
-    // Only show line UI on UpdrawLine objects, not on selection groups
-    if (!(object instanceof UpdrawLine)) {
+  displaySelectionLineUI(object: UpmadeBaseObject<any>): boolean {
+    // Only show line UI on UpmadeLine objects, not on selection groups
+    if (!(object instanceof UpmadeLine)) {
       return false;
     }
 
@@ -1996,10 +1995,10 @@ export class UpdrawCore {
       return false;
     }
 
-    // Show UI only if selection contains exactly one UpdrawLine and it's this object
+    // Show UI only if selection contains exactly one UpmadeLine and it's this object
     if (selectionGroup.objects.length === 1) {
       const selectedObject = selectionGroup.objects[0];
-      return selectedObject instanceof UpdrawLine && selectedObject.id === object.id;
+      return selectedObject instanceof UpmadeLine && selectedObject.id === object.id;
     }
 
     return false;

@@ -2,7 +2,7 @@ import * as Y from 'yjs';
 import { WORKSPACE_MIGRATIONS } from './workspace.migrations';
 
 describe('WORKSPACE_MIGRATIONS', () => {
-  describe('v2 → v3: UpdrawCustomElement renamed to UpdrawDynamicObject', () => {
+  describe('v2 → v3: UpmadeCustomElement renamed to UpmadeDynamicObject', () => {
     const migration = WORKSPACE_MIGRATIONS.find(m => m.fromVersion === 2 && m.toVersion === 3)!;
 
     let ydoc: Y.Doc;

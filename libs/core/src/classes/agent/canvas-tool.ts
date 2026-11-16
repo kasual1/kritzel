@@ -1,92 +1,92 @@
 import type {
-  UpdrawAgenticAction,
-  UpdrawAgenticActionFailureReason,
-  UpdrawAgenticActionOptions,
-  UpdrawAgenticActionResult,
-  UpdrawAgenticFill,
+  UpmadeAgenticAction,
+  UpmadeAgenticActionFailureReason,
+  UpmadeAgenticActionOptions,
+  UpmadeAgenticActionResult,
+  UpmadeAgenticFill,
 } from '../../interfaces/agentic-action.interface';
 import type {
-  UpdrawAgentTool,
-  UpdrawAgentToolCall,
-  UpdrawAgentToolContext,
-  UpdrawAgentToolResult,
-  UpdrawAgentToolSchema,
-  UpdrawAgentToolsOptions,
-  UpdrawCanvasObject,
-  UpdrawCanvasSnapshot,
-  UpdrawObserveOptions,
+  UpmadeAgentTool,
+  UpmadeAgentToolCall,
+  UpmadeAgentToolContext,
+  UpmadeAgentToolResult,
+  UpmadeAgentToolSchema,
+  UpmadeAgentToolsOptions,
+  UpmadeCanvasObject,
+  UpmadeCanvasSnapshot,
+  UpmadeObserveOptions,
 } from '../../interfaces/agent.interface';
-import { UpdrawAgentActionError } from './agent-action-error.class';
-import { toCanvasElement, type UpdrawInspectElementsOptions } from './agent-elements';
-import type { UpdrawJsonSchemaNode } from './agent-tool-schemas';
-import type { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpmadeAgentActionError } from './agent-action-error.class';
+import { toCanvasElement, type UpmadeInspectElementsOptions } from './agent-elements';
+import type { UpmadeJsonSchemaNode } from './agent-tool-schemas';
+import type { UpmadeBaseObject } from '../objects/base-object.class';
 import { parsePartialJson } from '../../helpers/partial-json.helper';
-import type { UpdrawCore } from '../core/core.class';
+import type { UpmadeCore } from '../core/core.class';
 
 /**
- * The machinery behind every canvas tool: one definition per tool (`UpdrawCanvasToolDefinition`) and one
- * binder (`bindCanvasTool`) that turns a definition into a provider-neutral `UpdrawAgentTool` for an actor.
+ * The machinery behind every canvas tool: one definition per tool (`UpmadeCanvasToolDefinition`) and one
+ * binder (`bindCanvasTool`) that turns a definition into a provider-neutral `UpmadeAgentTool` for an actor.
  * All rules a tool needs live on its definition; everything every tool shares lives here.
  */
 
 /**
- * Whoever the tools act for: an `UpdrawAgent` (kind `'agent'`, with a cursor) or an actor working as the local
+ * Whoever the tools act for: an `UpmadeAgent` (kind `'agent'`, with a cursor) or an actor working as the local
  * user (kind `'user'`). @internal
  */
-export interface UpdrawToolActor {
+export interface UpmadeToolActor {
   readonly kind: 'agent' | 'user';
   readonly isAdded: boolean;
-  perform(action: UpdrawAgenticAction, options?: UpdrawAgenticActionOptions): Promise<UpdrawAgenticActionResult>;
-  observe(options?: UpdrawObserveOptions): Promise<UpdrawCanvasSnapshot>;
+  perform(action: UpmadeAgenticAction, options?: UpmadeAgenticActionOptions): Promise<UpmadeAgenticActionResult>;
+  observe(options?: UpmadeObserveOptions): Promise<UpmadeCanvasSnapshot>;
   _whenIdle(): Promise<void>;
-  _describeObjects(objectIds: string[]): UpdrawCanvasObject[];
+  _describeObjects(objectIds: string[]): UpmadeCanvasObject[];
   /** The core the actor is added to, for tools that act on the editor itself (e.g. the viewport). */
-  readonly _owner?: UpdrawCore | null;
+  readonly _owner?: UpmadeCore | null;
   /** The elements inside an object's content, for `inspect_elements`. Never rejects. */
-  _inspectElements(objectId: string, options: UpdrawInspectElementsOptions): Promise<UpdrawAgentToolResult>;
+  _inspectElements(objectId: string, options: UpmadeInspectElementsOptions): Promise<UpmadeAgentToolResult>;
 }
 
-export type UpdrawToolActorKind = 'agent' | 'user';
+export type UpmadeToolActorKind = 'agent' | 'user';
 
 /** Where a definition is bound: for which kind of actor, with which tool options. */
-export interface UpdrawCanvasToolEnv {
-  readonly kind: UpdrawToolActorKind;
-  readonly options: Readonly<UpdrawAgentToolsOptions>;
+export interface UpmadeCanvasToolEnv {
+  readonly kind: UpmadeToolActorKind;
+  readonly options: Readonly<UpmadeAgentToolsOptions>;
 }
 
 /** A text that may read differently for an agent and for an actor working as the user. */
-export type UpdrawCanvasToolText = string | { agent: string; user: string } | ((env: UpdrawCanvasToolEnv) => string);
+export type UpmadeCanvasToolText = string | { agent: string; user: string } | ((env: UpmadeCanvasToolEnv) => string);
 
 /** What `prepare` gets: the environment, and a way to reject the input. */
-export interface UpdrawCanvasToolInputContext extends UpdrawCanvasToolEnv {
+export interface UpmadeCanvasToolInputContext extends UpmadeCanvasToolEnv {
   /** Rejects the input: the model gets `{ completed: false, reason: 'invalid-input', message }`. */
   invalid(message: string): never;
 }
 
 /** What `execute` gets. */
-export interface UpdrawCanvasToolContext extends UpdrawCanvasToolInputContext {
+export interface UpmadeCanvasToolContext extends UpmadeCanvasToolInputContext {
   /** The tool runner's abort signal, if it gave one. */
   readonly signal: AbortSignal | null | undefined;
   readonly instant: boolean;
   /** Whether the actor is still on the canvas (read live). */
   readonly isAdded: boolean;
   /** The core the actor is added to (read live), or `null`. */
-  readonly core: UpdrawCore | null;
+  readonly core: UpmadeCore | null;
   /**
    * Performs an action and answers like every canvas tool: the removed check, the signal and instant option,
    * refusals thrown inside `agent.task()`, snapshots of the changed objects (unless `describeObjects` is
    * `false`) and the reason hints.
    */
-  perform(action: UpdrawAgenticAction, options?: { describeObjects?: boolean }): Promise<string>;
-  observe(options: UpdrawObserveOptions): Promise<UpdrawCanvasSnapshot>;
+  perform(action: UpmadeAgenticAction, options?: { describeObjects?: boolean }): Promise<string>;
+  observe(options: UpmadeObserveOptions): Promise<UpmadeCanvasSnapshot>;
   /** Lists the elements inside an object's content, as `inspect_elements` answers. */
-  inspectElements(objectId: string, options: UpdrawInspectElementsOptions): Promise<UpdrawAgentToolResult>;
+  inspectElements(objectId: string, options: UpmadeInspectElementsOptions): Promise<UpmadeAgentToolResult>;
   /** Resolves when the actor's queued actions have finished. */
   whenIdle(): Promise<void>;
   /** The answer for a removed actor. */
   removedResult(): string;
   /** The answer for a refusal, with the hint for this kind of actor. */
-  refusalResult(reason: UpdrawAgenticActionFailureReason, objectIds?: string[]): string;
+  refusalResult(reason: UpmadeAgenticActionFailureReason, objectIds?: string[]): string;
   /** The answer for an error: input errors and an unavailable canvas become results, other errors are rethrown. */
   errorResult(error: unknown): string;
 }
@@ -96,15 +96,15 @@ export interface UpdrawCanvasToolContext extends UpdrawCanvasToolInputContext {
  * checked, enums checked), then the `textFields` caps, then `prepare`, then `execute`. Input errors become
  * `invalid-input` results; other errors are rethrown.
  */
-export interface UpdrawCanvasToolDefinition<I = any, P = any> {
+export interface UpmadeCanvasToolDefinition<I = any, P = any> {
   /** Unprefixed snake_case name, unique among all tools. */
   readonly name: string;
-  readonly description: UpdrawCanvasToolText;
-  readonly inputSchema: UpdrawAgentToolSchema | ((env: UpdrawCanvasToolEnv) => UpdrawAgentToolSchema);
+  readonly description: UpmadeCanvasToolText;
+  readonly inputSchema: UpmadeAgentToolSchema | ((env: UpmadeCanvasToolEnv) => UpmadeAgentToolSchema);
   /** The kinds of actor that get the tool. Defaults to both. */
-  readonly actors?: readonly UpdrawToolActorKind[];
+  readonly actors?: readonly UpmadeToolActorKind[];
   /** Whether the tool is offered with these options. Defaults to always. */
-  readonly enabled?: (options: Readonly<UpdrawAgentToolsOptions>) => boolean;
+  readonly enabled?: (options: Readonly<UpmadeAgentToolsOptions>) => boolean;
   /** Top-level string fields capped by `maxTextLength`. */
   readonly textFields?: readonly string[];
   /** A removed actor beats input errors (otherwise the model first learns about its mistake). */
@@ -115,54 +115,54 @@ export interface UpdrawCanvasToolDefinition<I = any, P = any> {
    * Turns the parsed input into what `execute` needs, or rejects it with `ctx.invalid()`. Synchronous, so a
    * tool's action starts in the same tick as its call and parallel calls keep their order.
    */
-  prepare?(input: I, ctx: UpdrawCanvasToolInputContext): P;
+  prepare?(input: I, ctx: UpmadeCanvasToolInputContext): P;
   /** Acts and answers. `ctx.invalid()` still gives an invalid-input answer here. */
-  execute(payload: P, ctx: UpdrawCanvasToolContext): Promise<string>;
+  execute(payload: P, ctx: UpmadeCanvasToolContext): Promise<string>;
   /** Turns any other error of `execute` into an answer; `undefined` rethrows it. */
-  onError?(error: unknown, ctx: UpdrawCanvasToolContext): string | undefined;
+  onError?(error: unknown, ctx: UpmadeCanvasToolContext): string | undefined;
   /**
    * A loading placeholder for the object the tool adds, placed while the model still writes the input (the tool
    * gets `begin`). The object `execute` adds with the addObject action then fills the placeholder in instead.
    */
-  readonly placeholder?: UpdrawCanvasToolPlaceholder<I>;
+  readonly placeholder?: UpmadeCanvasToolPlaceholder<I>;
   /**
    * Shows the object the tool changes as loading while the model still writes the input (the tool gets
    * `begin`). The action `execute` performs then fills in the loading action instead.
    */
-  readonly loading?: UpdrawCanvasToolLoading<I>;
+  readonly loading?: UpmadeCanvasToolLoading<I>;
 }
 
-/** How a tool that changes an object shows it loading while the model writes the change (`UpdrawCanvasToolDefinition.loading`). */
-export interface UpdrawCanvasToolLoading<I = any> {
+/** How a tool that changes an object shows it loading while the model writes the change (`UpmadeCanvasToolDefinition.loading`). */
+export interface UpmadeCanvasToolLoading<I = any> {
   /**
    * The ID of the object the call changes, from the input written so far, or `null` while the input does not
    * name one the tool can change yet. Called as the input streams in, until it returns an ID.
    */
-  target(input: Partial<I>, core: UpdrawCore): string | null;
+  target(input: Partial<I>, core: UpmadeCore): string | null;
   /** The action that shows the object loading until `fill` resolves with the call's own action. */
-  action(objectId: string, fill: () => Promise<UpdrawAgenticAction>): UpdrawAgenticAction;
+  action(objectId: string, fill: () => Promise<UpmadeAgenticAction>): UpmadeAgenticAction;
   /** Whether an action the call performs is the one that fills in the loading action. */
-  fills(action: UpdrawAgenticAction, objectId: string): boolean;
+  fills(action: UpmadeAgenticAction, objectId: string): boolean;
 }
 
-/** How a tool that adds an object shows it while the model writes it (`UpdrawCanvasToolDefinition.placeholder`). */
-export interface UpdrawCanvasToolPlaceholder<I = any> {
+/** How a tool that adds an object shows it while the model writes it (`UpmadeCanvasToolDefinition.placeholder`). */
+export interface UpmadeCanvasToolPlaceholder<I = any> {
   /**
    * Builds the placeholder from the input written so far, or `null` while that is not enough (e.g. its position
    * and size are not known yet). Called as the input streams in, until it returns an object.
    */
-  create(input: Partial<I>, ctx: UpdrawCanvasToolInputContext): UpdrawBaseObject<any> | null;
+  create(input: Partial<I>, ctx: UpmadeCanvasToolInputContext): UpmadeBaseObject<any> | null;
   /** Copies the object `execute` adds onto the placeholder, e.g. a widget's code. Runs inside the action. */
-  fill(placeholder: UpdrawBaseObject<any>, content: UpdrawBaseObject<any>): void;
+  fill(placeholder: UpmadeBaseObject<any>, content: UpmadeBaseObject<any>): void;
 }
 
 /** Freezes a definition. */
-export function defineCanvasTool<I, P = I>(definition: UpdrawCanvasToolDefinition<I, P>): UpdrawCanvasToolDefinition<I, P> {
+export function defineCanvasTool<I, P = I>(definition: UpmadeCanvasToolDefinition<I, P>): UpmadeCanvasToolDefinition<I, P> {
   return Object.freeze({ ...definition });
 }
 
 /** What a model should do about a refusal. */
-export const AGENT_TOOL_REASON_HINTS: Record<UpdrawAgenticActionFailureReason | 'invalid-input', string> = {
+export const AGENT_TOOL_REASON_HINTS: Record<UpmadeAgenticActionFailureReason | 'invalid-input', string> = {
   'invalid-input': 'Fix the input as the message says and try again.',
   aborted: 'The action was stopped on request. Do not retry unless asked.',
   'agent-moved': 'Your cursor was moved by the app while acting. Try again if it still makes sense.',
@@ -185,7 +185,7 @@ export const AGENT_TOOL_REASON_HINTS: Record<UpdrawAgenticActionFailureReason | 
 };
 
 /** Hints that read differently for an actor working as the user. */
-const USER_REASON_HINTS: Partial<Record<UpdrawAgenticActionFailureReason, string>> = {
+const USER_REASON_HINTS: Partial<Record<UpmadeAgenticActionFailureReason, string>> = {
   'agent-removed': 'The chat session ended. Stop working.',
   'user-selected': 'The user is working on these objects right now. Leave them alone or ask the user.',
   'not-allowed': 'This is not possible when working as the user.',
@@ -197,30 +197,30 @@ const MAX_RESULT_OBJECTS = 10;
 const MAX_PLACEHOLDER_INPUT_LENGTH = 4096;
 
 /** Formats a tool result as the JSON string a tool returns. Use it in app-defined tools to answer the same way. */
-export function formatAgentToolResult(result: UpdrawAgentToolResult): string {
+export function formatAgentToolResult(result: UpmadeAgentToolResult): string {
   return JSON.stringify(result);
 }
 
 /** Thrown for input a model got wrong; becomes `reason: 'invalid-input'`. */
-export class UpdrawToolInputError extends Error {}
+export class UpmadeToolInputError extends Error {}
 
-function hintFor(kind: UpdrawToolActorKind, reason: UpdrawAgenticActionFailureReason | 'invalid-input'): string {
+function hintFor(kind: UpmadeToolActorKind, reason: UpmadeAgenticActionFailureReason | 'invalid-input'): string {
   return (kind === 'user' && reason !== 'invalid-input' ? USER_REASON_HINTS[reason] : undefined) ?? AGENT_TOOL_REASON_HINTS[reason];
 }
 
-function kindOf(actor: UpdrawToolActor): UpdrawToolActorKind {
+function kindOf(actor: UpmadeToolActor): UpmadeToolActorKind {
   return actor.kind === 'user' ? 'user' : 'agent';
 }
 
-function removedResult(kind: UpdrawToolActorKind): string {
+function removedResult(kind: UpmadeToolActorKind): string {
   return formatAgentToolResult({ completed: false, reason: 'agent-removed', hint: hintFor(kind, 'agent-removed') });
 }
 
 function refusalResult(
-  kind: UpdrawToolActorKind,
-  reason: UpdrawAgenticActionFailureReason,
+  kind: UpmadeToolActorKind,
+  reason: UpmadeAgenticActionFailureReason,
   objectIds?: string[],
-  details: Pick<UpdrawAgentToolResult, 'message' | 'element'> = {},
+  details: Pick<UpmadeAgentToolResult, 'message' | 'element'> = {},
 ): string {
   return formatAgentToolResult({
     completed: false,
@@ -232,8 +232,8 @@ function refusalResult(
   });
 }
 
-function errorResult(kind: UpdrawToolActorKind, error: unknown): string {
-  if (error instanceof UpdrawToolInputError) {
+function errorResult(kind: UpmadeToolActorKind, error: unknown): string {
+  if (error instanceof UpmadeToolInputError) {
     return formatAgentToolResult({ completed: false, reason: 'invalid-input', message: error.message, hint: hintFor(kind, 'invalid-input') });
   }
   if (error instanceof Error && /not ready/.test(error.message)) {
@@ -243,7 +243,7 @@ function errorResult(kind: UpdrawToolActorKind, error: unknown): string {
 }
 
 /** Resolves a text for an environment. */
-export function canvasToolText(text: UpdrawCanvasToolText, env: UpdrawCanvasToolEnv): string {
+export function canvasToolText(text: UpmadeCanvasToolText, env: UpmadeCanvasToolEnv): string {
   if (typeof text === 'function') {
     return text(env);
   }
@@ -251,12 +251,12 @@ export function canvasToolText(text: UpdrawCanvasToolText, env: UpdrawCanvasTool
 }
 
 /** Resolves a definition's input schema for an environment. */
-export function canvasToolSchema(definition: UpdrawCanvasToolDefinition, env: UpdrawCanvasToolEnv): UpdrawAgentToolSchema {
+export function canvasToolSchema(definition: UpmadeCanvasToolDefinition, env: UpmadeCanvasToolEnv): UpmadeAgentToolSchema {
   return typeof definition.inputSchema === 'function' ? definition.inputSchema(env) : definition.inputSchema;
 }
 
 /** Whether a definition is offered to this actor with these options (before `only`). */
-export function isCanvasToolOffered(definition: UpdrawCanvasToolDefinition, env: UpdrawCanvasToolEnv): boolean {
+export function isCanvasToolOffered(definition: UpmadeCanvasToolDefinition, env: UpmadeCanvasToolEnv): boolean {
   return (!definition.actors || definition.actors.includes(env.kind)) && (definition.enabled?.(env.options) ?? true);
 }
 
@@ -264,17 +264,17 @@ export function isCanvasToolOffered(definition: UpdrawCanvasToolDefinition, env:
  * Turns a definition into a tool of an actor. The tool is a self-contained object (its `run` works when
  * copied, as tool runners do) and never throws for mistakes of the model.
  */
-export function bindCanvasTool(actor: UpdrawToolActor, definition: UpdrawCanvasToolDefinition, options: UpdrawAgentToolsOptions = {}): UpdrawAgentTool {
+export function bindCanvasTool(actor: UpmadeToolActor, definition: UpmadeCanvasToolDefinition, options: UpmadeAgentToolsOptions = {}): UpmadeAgentTool {
   const kind = kindOf(actor);
-  const env: UpdrawCanvasToolEnv = { kind, options };
+  const env: UpmadeCanvasToolEnv = { kind, options };
   const inputSchema = canvasToolSchema(definition, env);
-  const schemaNode = inputSchema as unknown as UpdrawJsonSchemaNode;
+  const schemaNode = inputSchema as unknown as UpmadeJsonSchemaNode;
   const maxTextLength = options.maxTextLength ?? DEFAULT_MAX_TEXT_LENGTH;
   const instant = !!options.instant;
   const invalid = (message: string): never => {
-    throw new UpdrawToolInputError(message);
+    throw new UpmadeToolInputError(message);
   };
-  const inputContext: UpdrawCanvasToolInputContext = { kind, options, invalid };
+  const inputContext: UpmadeCanvasToolInputContext = { kind, options, invalid };
 
   const performDirectly: ToolPerform = (action, performOptions, context) =>
     performAsTool(actor, kind, action, context, instant, performOptions?.describeObjects ?? true);
@@ -298,7 +298,7 @@ export function bindCanvasTool(actor: UpdrawToolActor, definition: UpdrawCanvasT
       return errorResult(kind, error);
     }
 
-    const ctx: UpdrawCanvasToolContext = {
+    const ctx: UpmadeCanvasToolContext = {
       ...inputContext,
       signal: context?.signal,
       instant,
@@ -320,7 +320,7 @@ export function bindCanvasTool(actor: UpdrawToolActor, definition: UpdrawCanvasT
       // Called before the first await, so the tool's action starts in the same tick as the call.
       return await definition.execute(payload, ctx);
     } catch (error) {
-      if (error instanceof UpdrawToolInputError) {
+      if (error instanceof UpmadeToolInputError) {
         return errorResult(kind, error);
       }
       const answer = definition.onError?.(error, ctx);
@@ -331,11 +331,11 @@ export function bindCanvasTool(actor: UpdrawToolActor, definition: UpdrawCanvasT
     }
   };
 
-  const tool: UpdrawAgentTool = {
+  const tool: UpmadeAgentTool = {
     name: `${options.prefix ?? ''}${definition.name}`,
     description: canvasToolText(definition.description, env),
     inputSchema,
-    run: (input: unknown, context?: UpdrawAgentToolContext) => runTool(input, context),
+    run: (input: unknown, context?: UpmadeAgentToolContext) => runTool(input, context),
   };
   const placeholder = definition.placeholder;
   if (placeholder) {
@@ -349,30 +349,30 @@ export function bindCanvasTool(actor: UpdrawToolActor, definition: UpdrawCanvasT
 }
 
 /** Performs an action for a call of a tool, with that call's context. */
-type ToolPerform = (action: UpdrawAgenticAction, options: { describeObjects?: boolean } | undefined, context: UpdrawAgentToolContext | undefined) => Promise<string>;
+type ToolPerform = (action: UpmadeAgenticAction, options: { describeObjects?: boolean } | undefined, context: UpmadeAgentToolContext | undefined) => Promise<string>;
 
 /** Runs one call of a tool; `perform` and `whenIdle` can stand in for the actor's. */
-type ToolRun = (input: unknown, context: UpdrawAgentToolContext | undefined, perform?: ToolPerform, whenIdle?: () => Promise<void>) => Promise<string>;
+type ToolRun = (input: unknown, context: UpmadeAgentToolContext | undefined, perform?: ToolPerform, whenIdle?: () => Promise<void>) => Promise<string>;
 
 /**
  * A call that shows the object it changes as loading once its input names it, and applies the change when it
  * finishes: the action `execute` performs fills in the loading action, so loading and changing are one action.
  */
 function beginWithLoading(
-  loading: UpdrawCanvasToolLoading,
-  context: UpdrawAgentToolContext,
+  loading: UpmadeCanvasToolLoading,
+  context: UpmadeAgentToolContext,
   runTool: ToolRun,
   perform: ToolPerform,
-  core: () => UpdrawCore | null,
-): UpdrawAgentToolCall {
+  core: () => UpmadeCore | null,
+): UpmadeAgentToolCall {
   let ended = false;
   let gaveUp = false;
   let objectId: string | null = null;
   /** The loading action, once started: its answer is the call's answer. */
   let placing: Promise<string> | null = null;
-  let resolveFill!: (action: UpdrawAgenticAction) => void;
+  let resolveFill!: (action: UpmadeAgenticAction) => void;
   let rejectFill!: (reason: unknown) => void;
-  const fill = new Promise<UpdrawAgenticAction>((resolve, reject) => {
+  const fill = new Promise<UpmadeAgenticAction>((resolve, reject) => {
     resolveFill = resolve;
     rejectFill = reject;
   });
@@ -458,20 +458,20 @@ function beginWithLoading(
  * the object `execute` adds becomes the placeholder's fill, so placing and filling are one action.
  */
 function beginWithPlaceholder(
-  placeholder: UpdrawCanvasToolPlaceholder,
-  context: UpdrawAgentToolContext,
+  placeholder: UpmadeCanvasToolPlaceholder,
+  context: UpmadeAgentToolContext,
   runTool: ToolRun,
   perform: ToolPerform,
-  inputContext: UpdrawCanvasToolInputContext,
+  inputContext: UpmadeCanvasToolInputContext,
   isAdded: () => boolean,
-): UpdrawAgentToolCall {
+): UpmadeAgentToolCall {
   let ended = false;
   let gaveUp = false;
   /** The addObject action of the placeholder, once placed: its answer is the call's answer. */
   let placing: Promise<string> | null = null;
-  let resolveFill!: (fill: UpdrawAgenticFill) => void;
+  let resolveFill!: (fill: UpmadeAgenticFill) => void;
   let rejectFill!: (reason: unknown) => void;
-  const fill = new Promise<UpdrawAgenticFill>((resolve, reject) => {
+  const fill = new Promise<UpmadeAgenticFill>((resolve, reject) => {
     resolveFill = resolve;
     rejectFill = reject;
   });
@@ -487,7 +487,7 @@ function beginWithPlaceholder(
       // What a placeholder needs comes first in the input: only its beginning is read, so a call that begins late,
       // with much of its input written, still gets its placeholder.
       const long = inputText.length > MAX_PLACEHOLDER_INPUT_LENGTH;
-      let object: UpdrawBaseObject<any> | null = null;
+      let object: UpmadeBaseObject<any> | null = null;
       try {
         const input = parsePartialJson(long ? inputText.slice(0, MAX_PLACEHOLDER_INPUT_LENGTH) : inputText);
         if (typeof input === 'object' && input !== null && !Array.isArray(input)) {
@@ -544,24 +544,24 @@ function beginWithPlaceholder(
 
 /** Performs a tool's action and reports the result as the tool's JSON answer. */
 async function performAsTool(
-  actor: UpdrawToolActor,
-  kind: UpdrawToolActorKind,
-  action: UpdrawAgenticAction,
-  context: UpdrawAgentToolContext | undefined,
+  actor: UpmadeToolActor,
+  kind: UpmadeToolActorKind,
+  action: UpmadeAgenticAction,
+  context: UpmadeAgentToolContext | undefined,
   instant: boolean,
   describeObjects: boolean,
 ): Promise<string> {
   if (!actor.isAdded) {
     return removedResult(kind);
   }
-  const options: UpdrawAgenticActionOptions = {};
+  const options: UpmadeAgenticActionOptions = {};
   if (context?.signal) options.signal = context.signal;
   if (instant) options.instant = true;
   let result;
   try {
     result = await actor.perform(action, options);
   } catch (error) {
-    if (error instanceof UpdrawAgentActionError) {
+    if (error instanceof UpmadeAgentActionError) {
       // Inside agent.task(), refusals throw; a tool reports them like everywhere else.
       result = error.result;
     } else {
@@ -583,7 +583,7 @@ async function performAsTool(
 }
 
 /** Snapshots of the objects a completed action created or changed, so the model needs no extra observe call. */
-function describeResultObjects(actor: UpdrawToolActor, objectIds: string[]): UpdrawCanvasObject[] {
+function describeResultObjects(actor: UpmadeToolActor, objectIds: string[]): UpmadeCanvasObject[] {
   if (objectIds.length === 0) {
     return [];
   }
@@ -598,20 +598,20 @@ function describeResultObjects(actor: UpdrawToolActor, objectIds: string[]): Upd
 export const toolInput = {
   finite(value: unknown, field: string): number {
     if (typeof value !== 'number' || !Number.isFinite(value)) {
-      throw new UpdrawToolInputError(`"${field}" must be a number.`);
+      throw new UpmadeToolInputError(`"${field}" must be a number.`);
     }
     return value;
   },
   positive(value: unknown, field: string): number {
     const number = toolInput.finite(value, field);
     if (number <= 0) {
-      throw new UpdrawToolInputError(`"${field}" must be greater than 0.`);
+      throw new UpmadeToolInputError(`"${field}" must be greater than 0.`);
     }
     return number;
   },
   string(value: unknown, field: string): string {
     if (typeof value !== 'string') {
-      throw new UpdrawToolInputError(`"${field}" must be a string.`);
+      throw new UpmadeToolInputError(`"${field}" must be a string.`);
     }
     return value;
   },
@@ -622,13 +622,13 @@ export const toolInput = {
  * `null` counts as absent (strict modes send it for optional fields), unknown fields are rejected with their
  * path, and the result is a fresh plain object built from the known fields only.
  */
-function parseInput(input: unknown, schema: UpdrawJsonSchemaNode): Record<string, unknown> {
+function parseInput(input: unknown, schema: UpmadeJsonSchemaNode): Record<string, unknown> {
   let value = input;
   if (typeof value === 'string') {
     try {
       value = value.trim() === '' ? {} : JSON.parse(value);
     } catch {
-      throw new UpdrawToolInputError('Input is not valid JSON.');
+      throw new UpmadeToolInputError('Input is not valid JSON.');
     }
   }
   if (value === undefined || value === null) {
@@ -638,20 +638,20 @@ function parseInput(input: unknown, schema: UpdrawJsonSchemaNode): Record<string
   return (result ?? {}) as Record<string, unknown>;
 }
 
-function pick(value: unknown, schema: UpdrawJsonSchemaNode, path: string): unknown {
+function pick(value: unknown, schema: UpmadeJsonSchemaNode, path: string): unknown {
   if (value === null || value === undefined) {
     return undefined;
   }
   if (schema.type === 'object' && schema.properties) {
     if (typeof value !== 'object' || Array.isArray(value)) {
-      throw new UpdrawToolInputError(path ? `"${path}" must be an object.` : 'Input must be an object.');
+      throw new UpmadeToolInputError(path ? `"${path}" must be an object.` : 'Input must be an object.');
     }
     const result: Record<string, unknown> = {};
     for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
       const childPath = path ? `${path}.${key}` : key;
       const childSchema = Object.prototype.hasOwnProperty.call(schema.properties, key) ? schema.properties[key] : undefined;
       if (!childSchema) {
-        throw new UpdrawToolInputError(`Unknown property "${childPath}". Use ${Object.keys(schema.properties).join(', ') || 'no properties'}.`);
+        throw new UpmadeToolInputError(`Unknown property "${childPath}". Use ${Object.keys(schema.properties).join(', ') || 'no properties'}.`);
       }
       const picked = pick(child, childSchema, childPath);
       if (picked !== undefined) {
@@ -660,19 +660,19 @@ function pick(value: unknown, schema: UpdrawJsonSchemaNode, path: string): unkno
     }
     for (const key of schema.required ?? []) {
       if (result[key] === undefined) {
-        throw new UpdrawToolInputError(`"${path ? `${path}.${key}` : key}" is required.`);
+        throw new UpmadeToolInputError(`"${path ? `${path}.${key}` : key}" is required.`);
       }
     }
     return result;
   }
   if (schema.type === 'array' && schema.items) {
     if (!Array.isArray(value)) {
-      throw new UpdrawToolInputError(`"${path}" must be an array.`);
+      throw new UpmadeToolInputError(`"${path}" must be an array.`);
     }
     return value.map((item, index) => pick(item, schema.items!, `${path}[${index}]`));
   }
   if (schema.enum && !schema.enum.includes(value as string)) {
-    throw new UpdrawToolInputError(`"${path}" must be one of ${schema.enum.join(', ')}.`);
+    throw new UpmadeToolInputError(`"${path}" must be one of ${schema.enum.join(', ')}.`);
   }
   // Scalars: type checks with the right messages happen in the tool's own checks.
   return value;

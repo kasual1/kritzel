@@ -2,10 +2,10 @@
 import {
   HocuspocusSyncProvider,
   IndexedDBSyncProvider,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type UpdrawSyncConfig,
-} from '@updraw/vue-editor'
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type UpmadeSyncConfig,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -13,8 +13,8 @@ import { editorStyle, hostStyle } from '../../shared/demo-shared'
 import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
-const syncConfig: UpdrawSyncConfig = {
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
+const syncConfig: UpmadeSyncConfig = {
   providers: [
     IndexedDBSyncProvider,
     HocuspocusSyncProvider.with({ url: 'wss://your-hocuspocus-server.com' }),
@@ -29,7 +29,7 @@ const syncConfig: UpdrawSyncConfig = {
       <span class="label">Real-time Sync</span>
       <span class="status">Configured for Hocuspocus server</span>
     </Toolbar>
-    <UpdrawEditor
+    <UpmadeEditor
       editorId="collaboration-realtime"
       theme="light"
       :themes="themes"

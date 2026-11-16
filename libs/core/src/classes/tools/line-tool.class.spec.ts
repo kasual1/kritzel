@@ -1,8 +1,8 @@
-import { UpdrawLineTool } from './line-tool.class';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawLine } from '../objects/line.class';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeLineTool } from './line-tool.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeLine } from '../objects/line.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 jest.mock('../core/core.class');
@@ -10,8 +10,8 @@ jest.mock('../objects/line.class');
 jest.mock('../../helpers/event.helper');
 jest.mock('../objects/selection-group.class');
 
-describe('UpdrawLineTool', () => {
-  let tool: UpdrawLineTool;
+describe('UpmadeLineTool', () => {
+  let tool: UpmadeLineTool;
   let mockCore: any;
   let mockObjectsMap: any;
   let mockState: any;
@@ -82,7 +82,7 @@ describe('UpdrawLineTool', () => {
       isSelected: false,
       rotation: 0,
     };
-    (UpdrawSelectionGroup.create as jest.Mock).mockReturnValue(mockSelectionGroup);
+    (UpmadeSelectionGroup.create as jest.Mock).mockReturnValue(mockSelectionGroup);
 
     mockCreatedLine = {
       id: 'line-1',
@@ -92,8 +92,8 @@ describe('UpdrawLineTool', () => {
       rotation: 0,
     };
 
-    (UpdrawLine.create as jest.Mock).mockReturnValue(mockCreatedLine);
-    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpmadeLine.create as jest.Mock).mockReturnValue(mockCreatedLine);
+    (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockCore = {
       store: {
@@ -112,9 +112,9 @@ describe('UpdrawLineTool', () => {
       addSelectionGroup: jest.fn(),
       rerender: jest.fn(),
       toolRegistry: { getTool: jest.fn().mockReturnValue(mockSelectionTool) },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    tool = new UpdrawLineTool(mockCore);
+    tool = new UpmadeLineTool(mockCore);
   });
 
   afterEach(() => {
@@ -173,7 +173,7 @@ describe('UpdrawLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: 150,
         startY: 250,
         endX: 150,
@@ -196,12 +196,12 @@ describe('UpdrawLineTool', () => {
     });
 
     it('should not create a line on non-left click', () => {
-      (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+      (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
       const event = createMouseEvent({ button: 2 });
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawLine.create).not.toHaveBeenCalled();
+      expect(UpmadeLine.create).not.toHaveBeenCalled();
       expect(mockState.isDrawing).toBe(false);
     });
 
@@ -212,7 +212,7 @@ describe('UpdrawLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: 200 - 50,
         startY: 300 - 30,
         endX: 200 - 50,
@@ -229,7 +229,7 @@ describe('UpdrawLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: 200 / 2,
         startY: 300 / 2,
         translateX: -100 / 2,
@@ -247,7 +247,7 @@ describe('UpdrawLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: 200,
         startY: 300,
         translateX: -100,
@@ -263,7 +263,7 @@ describe('UpdrawLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         arrows,
       }));
     });
@@ -280,7 +280,7 @@ describe('UpdrawLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: 120,
         startY: 220,
         endX: 120,
@@ -305,7 +305,7 @@ describe('UpdrawLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawLine.create).toHaveBeenCalled();
+      expect(UpmadeLine.create).toHaveBeenCalled();
       expect(mockState.isDrawing).toBe(true);
     });
 
@@ -333,7 +333,7 @@ describe('UpdrawLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: 121,
         startY: 220,
         endX: 121,
@@ -349,7 +349,7 @@ describe('UpdrawLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: Math.round((200 - 50) / 1),
         startY: Math.round((300 - 30) / 1),
       }));
@@ -365,7 +365,7 @@ describe('UpdrawLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         startX: Math.round(200 / 2),
         startY: Math.round(300 / 2),
         translateX: -100 / 2,
@@ -382,7 +382,7 @@ describe('UpdrawLineTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         arrows,
       }));
     });
@@ -415,12 +415,12 @@ describe('UpdrawLineTool', () => {
 
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
       const updatedLine = { id: 'new-id', workspaceId: 'new-ws', zIndex: 99, isCompleted: true };
-      (UpdrawLine.create as jest.Mock).mockReturnValue(updatedLine);
+      (UpmadeLine.create as jest.Mock).mockReturnValue(updatedLine);
 
       const moveEvent = createMouseEvent({ clientX: 150, clientY: 260 });
       tool.handlePointerMove(moveEvent);
 
-      expect(UpdrawLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         startX: 50,
         startY: 60,
         endX: 150,
@@ -436,7 +436,7 @@ describe('UpdrawLineTool', () => {
       mockObjectsMap.findById.mockReturnValue(currentLine);
 
       const updatedLine = { id: 'new-id', workspaceId: 'new-ws', zIndex: 99, isCompleted: true };
-      (UpdrawLine.create as jest.Mock).mockReturnValue(updatedLine);
+      (UpmadeLine.create as jest.Mock).mockReturnValue(updatedLine);
 
       tool.handlePointerMove(createMouseEvent({ clientX: 150, clientY: 260 }));
 
@@ -467,11 +467,11 @@ describe('UpdrawLineTool', () => {
       tool.handlePointerDown(createMouseEvent({ clientX: 200, clientY: 300 }));
 
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
-      (UpdrawLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
+      (UpmadeLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
 
       tool.handlePointerMove(createMouseEvent({ clientX: 400, clientY: 500 }));
 
-      expect(UpdrawLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         startX: 200 - 50,
         startY: 300 - 30,
         endX: 400 - 50,
@@ -488,11 +488,11 @@ describe('UpdrawLineTool', () => {
       tool.handlePointerDown(createMouseEvent({ clientX: 200, clientY: 300 }));
 
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
-      (UpdrawLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
+      (UpmadeLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
 
       tool.handlePointerMove(createMouseEvent({ clientX: 400, clientY: 500 }));
 
-      expect(UpdrawLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         startX: 200 / 2,
         startY: 300 / 2,
         endX: 400 / 2,
@@ -514,13 +514,13 @@ describe('UpdrawLineTool', () => {
       tool.handlePointerDown(createTouchEvent());
 
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
-      (UpdrawLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
+      (UpmadeLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
 
       mockState.pointers.clear();
       mockState.pointers.set(1, { clientX: 150, clientY: 260 });
       tool.handlePointerMove(createTouchEvent());
 
-      expect(UpdrawLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         startX: 50,
         startY: 60,
         endX: 150,
@@ -545,13 +545,13 @@ describe('UpdrawLineTool', () => {
       tool.handlePointerDown(createTouchEvent());
 
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
-      (UpdrawLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
+      (UpmadeLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
 
       mockState.pointers.clear();
       mockState.pointers.set(1, { clientX: 150.7, clientY: 260.3 });
       tool.handlePointerMove(createTouchEvent());
 
-      expect(UpdrawLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         endX: 151,
         endY: 260,
       }));
@@ -619,7 +619,7 @@ describe('UpdrawLineTool', () => {
 
       tool.handlePointerUp(createMouseEvent());
 
-      expect(UpdrawSelectionGroup.create).toHaveBeenCalledWith(mockCore);
+      expect(UpmadeSelectionGroup.create).toHaveBeenCalledWith(mockCore);
       expect(mockSelectionGroup.addOrRemove).toHaveBeenCalledWith(mockCreatedLine);
       expect(mockSelectionGroup.isSelected).toBe(true);
       expect(mockSelectionGroup.rotation).toBe(mockCreatedLine.rotation);
@@ -634,7 +634,7 @@ describe('UpdrawLineTool', () => {
 
       expect(mockObjectsMap.update).not.toHaveBeenCalled();
       expect(mockCore.engine.emitObjectsChange).not.toHaveBeenCalled();
-      expect(UpdrawSelectionGroup.create).not.toHaveBeenCalled();
+      expect(UpmadeSelectionGroup.create).not.toHaveBeenCalled();
     });
 
     it('should handle case where current line is not found by findById', () => {
@@ -645,7 +645,7 @@ describe('UpdrawLineTool', () => {
 
       expect(mockState.isDrawing).toBe(false);
       expect(mockCore.engine.emitObjectsChange).not.toHaveBeenCalled();
-      expect(UpdrawSelectionGroup.create).not.toHaveBeenCalled();
+      expect(UpmadeSelectionGroup.create).not.toHaveBeenCalled();
     });
   });
 
@@ -695,7 +695,7 @@ describe('UpdrawLineTool', () => {
 
       tool.handlePointerUp(createTouchEvent());
 
-      expect(UpdrawSelectionGroup.create).toHaveBeenCalledWith(mockCore);
+      expect(UpmadeSelectionGroup.create).toHaveBeenCalledWith(mockCore);
       expect(mockSelectionGroup.addOrRemove).toHaveBeenCalledWith(mockCreatedLine);
       expect(mockSelectionGroup.isSelected).toBe(true);
       expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(mockSelectionGroup);
@@ -737,11 +737,11 @@ describe('UpdrawLineTool', () => {
       // 2. Pointer move - extend line end point
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
       const updatedLine = { ...mockCreatedLine };
-      (UpdrawLine.create as jest.Mock).mockReturnValue(updatedLine);
+      (UpmadeLine.create as jest.Mock).mockReturnValue(updatedLine);
 
       const moveEvent = createMouseEvent({ clientX: 300, clientY: 400 });
       tool.handlePointerMove(moveEvent);
-      expect(UpdrawLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeLine.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         startX: 10,
         startY: 20,
         endX: 300,
@@ -754,7 +754,7 @@ describe('UpdrawLineTool', () => {
       expect(mockState.isDrawing).toBe(false);
       expect(mockCreatedLine.isCompleted).toBe(true);
       expect(mockCore.engine.emitObjectsChange).toHaveBeenCalledTimes(1);
-      expect(UpdrawSelectionGroup.create).toHaveBeenCalled();
+      expect(UpmadeSelectionGroup.create).toHaveBeenCalled();
       expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockSelectionTool);
     });
 
@@ -766,7 +766,7 @@ describe('UpdrawLineTool', () => {
 
       // 2. Pointer move
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
-      (UpdrawLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
+      (UpmadeLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
       mockState.pointers.clear();
       mockState.pointers.set(1, { clientX: 300, clientY: 400 });
       tool.handlePointerMove(createTouchEvent());
@@ -776,7 +776,7 @@ describe('UpdrawLineTool', () => {
       tool.handlePointerUp(createTouchEvent());
       expect(mockState.isDrawing).toBe(false);
       expect(mockCreatedLine.isCompleted).toBe(true);
-      expect(UpdrawSelectionGroup.create).toHaveBeenCalled();
+      expect(UpmadeSelectionGroup.create).toHaveBeenCalled();
     });
   });
 });

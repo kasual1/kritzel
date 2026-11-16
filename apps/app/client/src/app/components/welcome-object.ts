@@ -1,8 +1,8 @@
-import { UpdrawDynamicObject } from '@updraw/angular-editor';
+import { UpmadeDynamicObject } from '@upmade/angular-editor';
 
 const WELCOME_BOX_SHADOW = 'none';
 
-export function createWelcomeObject(): UpdrawDynamicObject {
+export function createWelcomeObject(): UpmadeDynamicObject {
   const element = document.createElement('div');
   element.style.width = '100%';
   element.style.height = '100%';
@@ -25,7 +25,7 @@ export function createWelcomeObject(): UpdrawDynamicObject {
     path.parentNode!.appendChild(nextPath);
   }
 
-  return new UpdrawDynamicObject({
+  return new UpmadeDynamicObject({
     element,
     width: 480,
     height: 480 * 72 / 253,
@@ -37,7 +37,7 @@ export function createWelcomeObject(): UpdrawDynamicObject {
 }
 
 /** Whether a dynamic object shows the Welcome lettering (and not another SVG with the same label). */
-function isWelcomeDrawing(object: Pick<UpdrawDynamicObject, 'element'>): boolean {
+function isWelcomeDrawing(object: Pick<UpmadeDynamicObject, 'element'>): boolean {
   if (!(object.element instanceof HTMLElement) || !object.element.querySelector('svg[aria-label="Welcome"]')) {
     return false;
   }
@@ -54,8 +54,8 @@ function pathData(element: HTMLElement): string {
  * @returns The update to apply, or null when the object isn't the Welcome or has no shadow.
  */
 export function getWelcomeStyleUpdate(
-  object: UpdrawDynamicObject,
-): Partial<UpdrawDynamicObject> | null {
+  object: UpmadeDynamicObject,
+): Partial<UpmadeDynamicObject> | null {
   if (object.boxShadow === WELCOME_BOX_SHADOW || !isWelcomeDrawing(object)) {
     return null;
   }
@@ -63,8 +63,8 @@ export function getWelcomeStyleUpdate(
 }
 
 export function getWelcomeBoundsUpdate(
-  object: UpdrawDynamicObject,
-): Partial<UpdrawDynamicObject> | null {
+  object: UpmadeDynamicObject,
+): Partial<UpmadeDynamicObject> | null {
   const svg = object.element.querySelector('svg[aria-label="Welcome"]');
   if (svg?.getAttribute('viewBox') !== '0 0 280 120') {
     return null;
@@ -94,7 +94,7 @@ export function getWelcomeBoundsUpdate(
   };
 }
 
-export function animateWelcomeObject(object: Pick<UpdrawDynamicObject, 'element'>): void {
+export function animateWelcomeObject(object: Pick<UpmadeDynamicObject, 'element'>): void {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return;
   }

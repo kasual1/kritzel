@@ -13,7 +13,7 @@ export type LocaleCode = 'en' | 'de' | 'fr' | (string & NonNullable<unknown>);
  * safety: typos in term keys are caught by the compiler and editors can
  * autocomplete the available keys.
  */
-export interface UpdrawTerms {
+export interface UpmadeTerms {
   // Context menu
   'menu.copy': string;
   'menu.cut': string;
@@ -156,36 +156,36 @@ export interface UpdrawTerms {
 }
 
 /**
- * A localization key. Restricted to the known {@link UpdrawTerms} keys so that
+ * A localization key. Restricted to the known {@link UpmadeTerms} keys so that
  * lookups are validated at compile time.
  */
-export type UpdrawTermKey = keyof UpdrawTerms;
+export type UpmadeTermKey = keyof UpmadeTerms;
 
 /**
  * Definition of a single locale.
  *
- * `terms` is a `Partial<UpdrawTerms>`, so a locale may override only a subset
+ * `terms` is a `Partial<UpmadeTerms>`, so a locale may override only a subset
  * of the available terms. Any missing term is resolved through the fallback
- * chain (see {@link UpdrawLocalizationManager}). This mirrors the theming API,
+ * chain (see {@link UpmadeLocalizationManager}). This mirrors the theming API,
  * allowing consumers to spread a built-in locale and override specific keys:
  *
  * ```ts
- * const myDe: UpdrawLocale = {
+ * const myDe: UpmadeLocale = {
  *   code: 'de',
  *   terms: { ...DE_LOCALE.terms, 'menu.copy': 'Duplizieren' },
  * };
  * ```
  */
-export interface UpdrawLocale {
+export interface UpmadeLocale {
   /** Canonical locale code, e.g. 'en', 'de', 'fr'. */
   code: LocaleCode;
   /** Optional human-readable display name shown in the language selector, e.g. 'Deutsch'. */
   label?: string;
   /** Partial map of term keys to translated strings. Missing keys fall back. */
-  terms: Partial<UpdrawTerms>;
+  terms: Partial<UpmadeTerms>;
 }
 
 /**
  * Values used to interpolate `{placeholder}` tokens inside a translated term.
  */
-export type UpdrawTermVars = Record<string, string | number>;
+export type UpmadeTermVars = Record<string, string | number>;

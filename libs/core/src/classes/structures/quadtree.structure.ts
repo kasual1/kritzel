@@ -1,18 +1,18 @@
-import { UpdrawBoundingBox } from '../../interfaces/bounding-box.interface';
-import { UpdrawBaseObject } from '../objects/base-object.class';
+import { UpmadeBoundingBox } from '../../interfaces/bounding-box.interface';
+import { UpmadeBaseObject } from '../objects/base-object.class';
 
 /**
  * A quadtree data structure for efficient spatial indexing of objects.
  * Quadtrees recursively subdivide 2D space into four quadrants to enable
  * fast spatial queries like finding all objects within a given region.
  *
- * @template T - The type of objects stored in the quadtree, must extend UpdrawBaseObject
+ * @template T - The type of objects stored in the quadtree, must extend UpmadeBaseObject
  */
-export class UpdrawQuadtree<T extends UpdrawBaseObject<any>> {
-  private bounds: UpdrawBoundingBox;
+export class UpmadeQuadtree<T extends UpmadeBaseObject<any>> {
+  private bounds: UpmadeBoundingBox;
   private capacity: number;
   private objects: T[] = [];
-  private children: UpdrawQuadtree<T>[] | null = null;
+  private children: UpmadeQuadtree<T>[] | null = null;
   private _size: number = 0;
 
   /**
@@ -29,7 +29,7 @@ export class UpdrawQuadtree<T extends UpdrawBaseObject<any>> {
    * @param bounds - The bounding box defining the spatial region covered by this quadtree
    * @param capacity - Maximum number of objects a node can hold before subdividing (default: 16)
    */
-  constructor(bounds: UpdrawBoundingBox, capacity: number = 16) {
+  constructor(bounds: UpmadeBoundingBox, capacity: number = 16) {
     this.bounds = bounds;
     this.capacity = capacity;
   }
@@ -150,7 +150,7 @@ export class UpdrawQuadtree<T extends UpdrawBaseObject<any>> {
    * @param range - The bounding box to query against
    * @returns An array of all objects that intersect with the given range
    */
-  query(range: UpdrawBoundingBox): T[] {
+  query(range: UpmadeBoundingBox): T[] {
     const results: T[] = [];
     this._queryInto(range, results);
     return results;
@@ -163,7 +163,7 @@ export class UpdrawQuadtree<T extends UpdrawBaseObject<any>> {
    * @param range - The bounding box to query against
    * @param results - The array to collect matching objects into
    */
-  private _queryInto(range: UpdrawBoundingBox, results: T[]): void {
+  private _queryInto(range: UpmadeBoundingBox, results: T[]): void {
     if (!this.intersects(range, this.bounds)) {
       return;
     }
@@ -255,10 +255,10 @@ export class UpdrawQuadtree<T extends UpdrawBaseObject<any>> {
 
     // Create 4 quadrants: NW, NE, SW, SE
     this.children = [
-      new UpdrawQuadtree<T>({ x, y, z, width: halfWidth, height: halfHeight }, this.capacity), // Northwest
-      new UpdrawQuadtree<T>({ x: x + halfWidth, y, z, width: halfWidth, height: halfHeight }, this.capacity), // Northeast
-      new UpdrawQuadtree<T>({ x, y: y + halfHeight, z, width: halfWidth, height: halfHeight }, this.capacity), // Southwest
-      new UpdrawQuadtree<T>({ x: x + halfWidth, y: y + halfHeight, z, width: halfWidth, height: halfHeight }, this.capacity), // Southeast
+      new UpmadeQuadtree<T>({ x, y, z, width: halfWidth, height: halfHeight }, this.capacity), // Northwest
+      new UpmadeQuadtree<T>({ x: x + halfWidth, y, z, width: halfWidth, height: halfHeight }, this.capacity), // Northeast
+      new UpmadeQuadtree<T>({ x, y: y + halfHeight, z, width: halfWidth, height: halfHeight }, this.capacity), // Southwest
+      new UpmadeQuadtree<T>({ x: x + halfWidth, y: y + halfHeight, z, width: halfWidth, height: halfHeight }, this.capacity), // Southeast
     ];
   }
 
@@ -270,7 +270,7 @@ export class UpdrawQuadtree<T extends UpdrawBaseObject<any>> {
    * @param b - The second bounding box
    * @returns `true` if the bounding boxes overlap, `false` otherwise
    */
-  private intersects(a: UpdrawBoundingBox, b: UpdrawBoundingBox): boolean {
+  private intersects(a: UpmadeBoundingBox, b: UpmadeBoundingBox): boolean {
     return !(
       a.x >= b.x + b.width || // a is completely to the right of b
       a.x + a.width <= b.x || // a is completely to the left of b

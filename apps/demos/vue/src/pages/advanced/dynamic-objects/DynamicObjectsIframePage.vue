@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { UpdrawEditor, UpdrawIframeObject, UpdrawWorkspace } from '@updraw/vue-editor'
+import { UpmadeEditor, UpmadeIframeObject, UpmadeWorkspace } from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { mockChatPrompts, mockComponentDefinitions } from './iframe-calculator-definitions'
 
-function createRuntimeObject(): UpdrawIframeObject {
+function createRuntimeObject(): UpmadeIframeObject {
   const definition = mockComponentDefinitions[0]
-  const object = new UpdrawIframeObject({
+  const object = new UpmadeIframeObject({
     content: definition.content,
     state: definition.initialState,
     title: definition.name,
@@ -24,7 +24,7 @@ function createRuntimeObject(): UpdrawIframeObject {
 
 const runtimeObject = createRuntimeObject()
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: [runtimeObject] })]
+const workspaces = [new UpmadeWorkspace({ objects: [runtimeObject] })]
 const promptIndex = ref(0)
 const promptText = ref(mockChatPrompts[0])
 const queryLabel = computed(() => `${promptIndex.value + 1} of ${mockChatPrompts.length}`)
@@ -60,7 +60,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="page">
-    <UpdrawEditor
+    <UpmadeEditor
       editorId="dynamic-objects-iframe"
       theme="light"
       :themes="themes"

@@ -4,7 +4,7 @@
   overflow: hidden;
 }
 
-/* The UPDRAW wordmark above the footer is desktop only (see Landing/styles.module.css). */
+/* The UPMADE wordmark above the footer is desktop only (see Landing/styles.module.css). */
 @media (max-width: 768px) {
   .blog-footer-wordmark {
     display: none;
@@ -73,11 +73,11 @@
   margin-top: 0;
 }
 
-.updraw-footer-brand {
+.upmade-footer-brand {
   max-width: 280px;
 }
 
-.updraw-footer-brand__logo-badge {
+.upmade-footer-brand__logo-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -89,14 +89,14 @@
 }
 
 /* The mark is taller than wide, so it fits the square box by its height (the SVG keeps its aspect ratio). */
-.updraw-footer-brand__logo {
+.upmade-footer-brand__logo {
   width: 28px;
   height: 28px;
   display: block;
   color: #0a0a0a;
 }
 
-.updraw-footer-brand__description {
+.upmade-footer-brand__description {
   margin: 0;
   color: #0a0a0a;
   opacity: 1;
@@ -105,7 +105,7 @@
 }
 
 @media (max-width: 996px) {
-  .updraw-footer-brand {
+  .upmade-footer-brand {
     max-width: 100%;
     margin-bottom: 0.75rem;
   }

@@ -1,12 +1,12 @@
-import { UpdrawDynamicObject } from './dynamic-object.class';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawDynamicObjectRendererRegistry } from '../registries/dynamic-object-renderer.registry';
+import { UpmadeDynamicObject } from './dynamic-object.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeDynamicObjectRendererRegistry } from '../registries/dynamic-object-renderer.registry';
 
-describe('UpdrawDynamicObject', () => {
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadeDynamicObject', () => {
+  let mockCore: jest.Mocked<UpmadeCore>;
   let mockObjectsUpdate: jest.Mock;
 
-  const createMockCore = (): jest.Mocked<UpdrawCore> => {
+  const createMockCore = (): jest.Mocked<UpmadeCore> => {
     const objectsUpdate = jest.fn();
     mockObjectsUpdate = objectsUpdate;
 
@@ -28,7 +28,7 @@ describe('UpdrawDynamicObject', () => {
         get objects() { return this.state.objects; },
         currentZIndex: 5,
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
   };
 
   const createMockElement = (): HTMLElement => {
@@ -48,16 +48,16 @@ describe('UpdrawDynamicObject', () => {
 
   describe('constructor', () => {
     it('should create with default values when no config provided', () => {
-      const obj = new UpdrawDynamicObject();
+      const obj = new UpmadeDynamicObject();
 
-      expect(obj.__class__).toBe('UpdrawDynamicObject');
+      expect(obj.__class__).toBe('UpmadeDynamicObject');
       expect(obj.isInteractive).toBe(false);
       expect(obj.element).toBeUndefined();
     });
 
     it('should apply config values', () => {
       const element = createMockElement();
-      const obj = new UpdrawDynamicObject({
+      const obj = new UpmadeDynamicObject({
         element,
         translateX: 10,
         translateY: 20,
@@ -76,7 +76,7 @@ describe('UpdrawDynamicObject', () => {
 
     it('should default optional config values to 0 or 1', () => {
       const element = createMockElement();
-      const obj = new UpdrawDynamicObject({ element });
+      const obj = new UpmadeDynamicObject({ element });
 
       expect(obj.element).toBe(element);
       expect(obj.translateX).toBe(0);
@@ -88,7 +88,7 @@ describe('UpdrawDynamicObject', () => {
 
     it('should convert constructor rotation from degrees to radians', () => {
       const element = createMockElement();
-      const obj = new UpdrawDynamicObject({
+      const obj = new UpmadeDynamicObject({
         element,
         rotation: -90,
       });
@@ -100,9 +100,9 @@ describe('UpdrawDynamicObject', () => {
   describe('create', () => {
     it('should create an instance with core reference and generated id', () => {
       const element = createMockElement();
-      const obj = UpdrawDynamicObject.create(mockCore, { element }) as UpdrawDynamicObject;
+      const obj = UpmadeDynamicObject.create(mockCore, { element }) as UpmadeDynamicObject;
 
-      expect(obj).toBeInstanceOf(UpdrawDynamicObject);
+      expect(obj).toBeInstanceOf(UpmadeDynamicObject);
       expect(obj.id).toBeDefined();
       expect(obj.id.length).toBeGreaterThan(0);
       expect(obj.element).toBe(element);
@@ -110,21 +110,21 @@ describe('UpdrawDynamicObject', () => {
 
     it('should set workspaceId from core store', () => {
       const element = createMockElement();
-      const obj = UpdrawDynamicObject.create(mockCore, { element }) as UpdrawDynamicObject;
+      const obj = UpmadeDynamicObject.create(mockCore, { element }) as UpmadeDynamicObject;
 
       expect(obj.workspaceId).toBe('workspace-1');
     });
 
     it('should pass config through to constructor', () => {
       const element = createMockElement();
-      const obj = UpdrawDynamicObject.create(mockCore, {
+      const obj = UpmadeDynamicObject.create(mockCore, {
         element,
         translateX: 50,
         translateY: 60,
         scale: 3,
         width: 200,
         height: 300,
-      }) as UpdrawDynamicObject;
+      }) as UpmadeDynamicObject;
 
       expect(obj.translateX).toBe(50);
       expect(obj.translateY).toBe(60);
@@ -135,22 +135,22 @@ describe('UpdrawDynamicObject', () => {
 
     it('should convert create rotation from degrees to radians', () => {
       const element = createMockElement();
-      const obj = UpdrawDynamicObject.create(mockCore, {
+      const obj = UpmadeDynamicObject.create(mockCore, {
         element,
         rotation: -90,
-      }) as UpdrawDynamicObject;
+      }) as UpmadeDynamicObject;
 
       expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
     });
   });
 
   describe('mount', () => {
-    let obj: UpdrawDynamicObject;
+    let obj: UpmadeDynamicObject;
     let innerElement: HTMLElement;
 
     beforeEach(() => {
       innerElement = createMockElement();
-      obj = UpdrawDynamicObject.create(mockCore, { element: innerElement }) as UpdrawDynamicObject;
+      obj = UpmadeDynamicObject.create(mockCore, { element: innerElement }) as UpmadeDynamicObject;
     });
 
     it('should mount the element into the container', () => {
@@ -215,7 +215,7 @@ describe('UpdrawDynamicObject', () => {
       obj.mount(container);
 
       expect(innerElement.style.pointerEvents).toBe('auto');
-      expect(innerElement.style.cursor).toBe('var(--updraw-global-default-cursor, auto)');
+      expect(innerElement.style.cursor).toBe('var(--upmade-global-default-cursor, auto)');
     });
 
     it('should blur focused descendants when interactivity is disabled', () => {
@@ -240,7 +240,7 @@ describe('UpdrawDynamicObject', () => {
       const input = document.createElement('input');
       shadowRoot.appendChild(input);
 
-      UpdrawDynamicObjectRendererRegistry.register(rendererKey, {
+      UpmadeDynamicObjectRendererRegistry.register(rendererKey, {
         onMount: ({ container }) => {
           if (!container) {
             return;
@@ -251,10 +251,10 @@ describe('UpdrawDynamicObject', () => {
         onUnmount: () => undefined,
       });
 
-      const rendererObj = UpdrawDynamicObject.create(mockCore, {
+      const rendererObj = UpmadeDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey,
-      }) as UpdrawDynamicObject;
+      }) as UpmadeDynamicObject;
 
       const container = document.createElement('div');
       rendererObj.mount(container);
@@ -267,7 +267,7 @@ describe('UpdrawDynamicObject', () => {
 
       expect(blurSpy).toHaveBeenCalledTimes(1);
 
-      UpdrawDynamicObjectRendererRegistry.unregister(rendererKey);
+      UpmadeDynamicObjectRendererRegistry.unregister(rendererKey);
     });
 
     it('should keep renderer container selectable while disabling mounted interactive content', () => {
@@ -275,7 +275,7 @@ describe('UpdrawDynamicObject', () => {
       const mountedHost = document.createElement('div');
       mountedHost.innerHTML = '<button type="button">Click</button>';
 
-      UpdrawDynamicObjectRendererRegistry.register(rendererKey, {
+      UpmadeDynamicObjectRendererRegistry.register(rendererKey, {
         onMount: ({ container }) => {
           if (!container) {
             return;
@@ -286,10 +286,10 @@ describe('UpdrawDynamicObject', () => {
         onUnmount: () => undefined,
       });
 
-      const rendererObj = UpdrawDynamicObject.create(mockCore, {
+      const rendererObj = UpmadeDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey,
-      }) as UpdrawDynamicObject;
+      }) as UpmadeDynamicObject;
 
       const container = document.createElement('div');
 
@@ -303,9 +303,9 @@ describe('UpdrawDynamicObject', () => {
 
       expect(container.style.pointerEvents).toBe('auto');
       expect(mountedHost.style.pointerEvents).toBe('auto');
-      expect(mountedHost.style.cursor).toBe('var(--updraw-global-default-cursor, auto)');
+      expect(mountedHost.style.cursor).toBe('var(--upmade-global-default-cursor, auto)');
 
-      UpdrawDynamicObjectRendererRegistry.unregister(rendererKey);
+      UpmadeDynamicObjectRendererRegistry.unregister(rendererKey);
     });
 
     it('should detect focused input-like descendants when interactive', () => {
@@ -358,16 +358,16 @@ describe('UpdrawDynamicObject', () => {
   });
 
   describe('resize', () => {
-    let obj: UpdrawDynamicObject;
+    let obj: UpmadeDynamicObject;
     let innerElement: HTMLElement;
 
     beforeEach(() => {
       innerElement = createMockElement();
-      obj = UpdrawDynamicObject.create(mockCore, {
+      obj = UpmadeDynamicObject.create(mockCore, {
         element: innerElement,
         width: 100,
         height: 100,
-      }) as UpdrawDynamicObject;
+      }) as UpmadeDynamicObject;
     });
 
     it('should update dimensions and position', () => {
@@ -410,17 +410,17 @@ describe('UpdrawDynamicObject', () => {
   describe('copy', () => {
     it('should return a new instance with a different id', () => {
       const innerElement = createMockElement();
-      const obj = UpdrawDynamicObject.create(mockCore, {
+      const obj = UpmadeDynamicObject.create(mockCore, {
         element: innerElement,
         translateX: 10,
         translateY: 20,
         width: 100,
         height: 200,
-      }) as UpdrawDynamicObject;
+      }) as UpmadeDynamicObject;
 
       const copy = obj.copy();
 
-      expect(copy).toBeInstanceOf(UpdrawDynamicObject);
+      expect(copy).toBeInstanceOf(UpmadeDynamicObject);
       expect(copy.id).not.toBe(obj.id);
       expect(copy.translateX).toBe(10);
       expect(copy.translateY).toBe(20);
@@ -430,7 +430,7 @@ describe('UpdrawDynamicObject', () => {
 
     it('should set isMounted to false on the copy', () => {
       const innerElement = createMockElement();
-      const obj = UpdrawDynamicObject.create(mockCore, { element: innerElement }) as UpdrawDynamicObject;
+      const obj = UpmadeDynamicObject.create(mockCore, { element: innerElement }) as UpmadeDynamicObject;
       const container = document.createElement('div');
       obj.mount(container);
 
@@ -442,7 +442,7 @@ describe('UpdrawDynamicObject', () => {
 
     it('should reset transient interaction state on copied object', () => {
       const innerElement = createMockElement();
-      const obj = UpdrawDynamicObject.create(mockCore, { element: innerElement }) as UpdrawDynamicObject;
+      const obj = UpmadeDynamicObject.create(mockCore, { element: innerElement }) as UpmadeDynamicObject;
       obj.isSelected = true;
       obj.isHovered = true;
       obj.isInteractive = true;
@@ -463,7 +463,7 @@ describe('UpdrawDynamicObject', () => {
     it('should clone the HTML element', () => {
       const innerElement = createMockElement();
       innerElement.textContent = 'hello';
-      const obj = UpdrawDynamicObject.create(mockCore, { element: innerElement }) as UpdrawDynamicObject;
+      const obj = UpmadeDynamicObject.create(mockCore, { element: innerElement }) as UpmadeDynamicObject;
 
       const copy = obj.copy();
 
@@ -476,7 +476,7 @@ describe('UpdrawDynamicObject', () => {
     it('should serialize element as HTML string', () => {
       const el = document.createElement('div');
       el.textContent = 'Hello';
-      const obj = UpdrawDynamicObject.create(mockCore, { element: el, width: 100, height: 50 }) as UpdrawDynamicObject;
+      const obj = UpmadeDynamicObject.create(mockCore, { element: el, width: 100, height: 50 }) as UpmadeDynamicObject;
 
       const serialized = obj.serialize();
 
@@ -486,7 +486,7 @@ describe('UpdrawDynamicObject', () => {
 
     it('should serialize with dimension snapshot', () => {
       const el = document.createElement('div');
-      const obj = UpdrawDynamicObject.create(mockCore, { element: el, width: 150, height: 75 }) as UpdrawDynamicObject;
+      const obj = UpmadeDynamicObject.create(mockCore, { element: el, width: 150, height: 75 }) as UpmadeDynamicObject;
 
       const serialized = obj.serialize();
 
@@ -496,7 +496,7 @@ describe('UpdrawDynamicObject', () => {
 
     it('should exclude _core and _elementRef from serialized output', () => {
       const el = document.createElement('div');
-      const obj = UpdrawDynamicObject.create(mockCore, { element: el }) as UpdrawDynamicObject;
+      const obj = UpmadeDynamicObject.create(mockCore, { element: el }) as UpmadeDynamicObject;
 
       const serialized = obj.serialize();
 
@@ -509,20 +509,20 @@ describe('UpdrawDynamicObject', () => {
       const container = document.createElement('div');
       const onSerialize = jest.fn().mockReturnValue({ count: 7 });
 
-      UpdrawDynamicObjectRendererRegistry.register(rendererKey, {
+      UpmadeDynamicObjectRendererRegistry.register(rendererKey, {
         onMount: () => undefined,
         onSerialize,
         onUnmount: () => undefined,
       });
 
-      const obj = UpdrawDynamicObject.create(mockCore, {
+      const obj = UpmadeDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey,
         rendererData: {
           count: 7,
           update: () => undefined,
         },
-      }) as UpdrawDynamicObject;
+      }) as UpmadeDynamicObject;
 
       obj.mount(container);
 
@@ -535,24 +535,24 @@ describe('UpdrawDynamicObject', () => {
       });
       expect(serialized.rendererData).toEqual({ count: 7 });
 
-      UpdrawDynamicObjectRendererRegistry.unregister(rendererKey);
+      UpmadeDynamicObjectRendererRegistry.unregister(rendererKey);
     });
 
     it('should pass null container to renderer serialization when object is not mounted', () => {
       const rendererKey = 'test-renderer-serialize-unmounted';
       const onSerialize = jest.fn().mockReturnValue({ count: 3 });
 
-      UpdrawDynamicObjectRendererRegistry.register(rendererKey, {
+      UpmadeDynamicObjectRendererRegistry.register(rendererKey, {
         onMount: () => undefined,
         onSerialize,
         onUnmount: () => undefined,
       });
 
-      const obj = UpdrawDynamicObject.create(mockCore, {
+      const obj = UpmadeDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey,
         rendererData: { count: 3 },
-      }) as UpdrawDynamicObject;
+      }) as UpmadeDynamicObject;
 
       obj.serialize();
 
@@ -562,16 +562,16 @@ describe('UpdrawDynamicObject', () => {
         data: obj.rendererData,
       });
 
-      UpdrawDynamicObjectRendererRegistry.unregister(rendererKey);
+      UpmadeDynamicObjectRendererRegistry.unregister(rendererKey);
     });
 
     it('should keep existing renderer data serialization when no renderer hook is registered', () => {
       const rendererData = { count: 2, nested: { label: 'counter' } };
-      const obj = UpdrawDynamicObject.create(mockCore, {
+      const obj = UpmadeDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey: 'missing-renderer-key',
         rendererData,
-      }) as UpdrawDynamicObject;
+      }) as UpmadeDynamicObject;
 
       const serialized = obj.serialize();
 
@@ -583,27 +583,27 @@ describe('UpdrawDynamicObject', () => {
       const rendererKey = 'test-renderer-without-serialize-hook';
       const rendererData = { count: 4 };
 
-      UpdrawDynamicObjectRendererRegistry.register(rendererKey, {
+      UpmadeDynamicObjectRendererRegistry.register(rendererKey, {
         onMount: () => undefined,
         onUnmount: () => undefined,
       });
 
-      const obj = UpdrawDynamicObject.create(mockCore, {
+      const obj = UpmadeDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey,
         rendererData,
-      }) as UpdrawDynamicObject;
+      }) as UpmadeDynamicObject;
 
       const serialized = obj.serialize();
 
       expect(serialized.rendererData).toEqual(rendererData);
       expect(serialized.rendererData).not.toBe(rendererData);
 
-      UpdrawDynamicObjectRendererRegistry.unregister(rendererKey);
+      UpmadeDynamicObjectRendererRegistry.unregister(rendererKey);
     });
 
     it('should handle empty element', () => {
-      const obj = new UpdrawDynamicObject();
+      const obj = new UpmadeDynamicObject();
       obj._core = mockCore;
 
       const serialized = obj.serialize();
@@ -615,10 +615,10 @@ describe('UpdrawDynamicObject', () => {
       const el = document.createElement('button');
       el.id = 'test-button';
       el.textContent = 'Click Me';
-      const obj = UpdrawDynamicObject.create(mockCore, { element: el }) as UpdrawDynamicObject;
+      const obj = UpmadeDynamicObject.create(mockCore, { element: el }) as UpmadeDynamicObject;
 
       const serialized = obj.serialize();
-      const restored = new UpdrawDynamicObject();
+      const restored = new UpmadeDynamicObject();
       restored._core = mockCore;
       restored.deserialize(serialized);
 
@@ -627,7 +627,7 @@ describe('UpdrawDynamicObject', () => {
     });
 
     it('should create placeholder on deserialize if htmlString is missing', () => {
-      const obj = new UpdrawDynamicObject();
+      const obj = new UpmadeDynamicObject();
       obj._core = mockCore;
 
       obj.deserialize({});
@@ -637,7 +637,7 @@ describe('UpdrawDynamicObject', () => {
     });
 
     it('should create placeholder on deserialize if htmlString is invalid', () => {
-      const obj = new UpdrawDynamicObject();
+      const obj = new UpmadeDynamicObject();
       obj._core = mockCore;
 
       // Test with empty htmlString fallback - temp.firstElementChild will be null
@@ -650,10 +650,10 @@ describe('UpdrawDynamicObject', () => {
     it('should survive serialization roundtrip with complex HTML', () => {
       const el = document.createElement('div');
       el.innerHTML = '<p><strong>Bold</strong> and <em>italic</em></p>';
-      const obj = UpdrawDynamicObject.create(mockCore, { element: el }) as UpdrawDynamicObject;
+      const obj = UpmadeDynamicObject.create(mockCore, { element: el }) as UpmadeDynamicObject;
 
       const serialized = obj.serialize();
-      const restored = new UpdrawDynamicObject();
+      const restored = new UpmadeDynamicObject();
       restored._core = mockCore;
       restored.deserialize(serialized);
 
@@ -664,13 +664,13 @@ describe('UpdrawDynamicObject', () => {
 
   describe('interaction semantics', () => {
     it('should have isInteractive property defaulting to false', () => {
-      const obj = new UpdrawDynamicObject();
+      const obj = new UpmadeDynamicObject();
 
       expect(obj.isInteractive).toBe(false);
     });
 
     it('should not persist isInteractive through serialization', () => {
-      const obj = new UpdrawDynamicObject();
+      const obj = new UpmadeDynamicObject();
       obj.isInteractive = true;
 
       const serialized = obj.serialize();
@@ -680,7 +680,7 @@ describe('UpdrawDynamicObject', () => {
     });
 
     it('should ignore legacy allowEmbeddedInteraction on deserialize', () => {
-      const obj = new UpdrawDynamicObject();
+      const obj = new UpmadeDynamicObject();
       obj._core = mockCore;
 
       obj.deserialize({ allowEmbeddedInteraction: true, isInteractive: false });

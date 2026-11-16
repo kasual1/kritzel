@@ -5,23 +5,23 @@
 `libs/core/src/interfaces/localization.interface.ts`
 `libs/core/src/classes/managers/localization.manager.ts`
 `libs/core/src/locales/`
-`libs/engine/core/src/components/core/updraw-engine/`
-`libs/engine/core/src/components/core/updraw-editor/`
+`libs/engine/core/src/components/core/upmade-engine/`
+`libs/engine/core/src/components/core/upmade-editor/`
 `libs/engine/core/src/components/ui/`
 
 ## Purpose
 
-Updraw localization is built around named term keys and a per-editor localization manager. Built-in locales define the default English, German, and French strings; consumers can register custom locales or override subsets of terms.
+Upmade localization is built around named term keys and a per-editor localization manager. Built-in locales define the default English, German, and French strings; consumers can register custom locales or override subsets of terms.
 
 ## Core Model
 
 | Piece | Responsibility |
 |------|-----------------|
-| `UpdrawTerms` | Compile-time contract for all known term keys |
-| `UpdrawLocale` | One locale definition with `code`, optional `label`, and partial `terms` |
-| `UpdrawLocalizationManager` | Locale registration, fallback resolution, interpolation, persistence |
-| `updraw-engine` | Exposes localization APIs to the editor and wrapper consumers |
-| `updraw-editor` | Resolves terms once and passes strings into UI components as props |
+| `UpmadeTerms` | Compile-time contract for all known term keys |
+| `UpmadeLocale` | One locale definition with `code`, optional `label`, and partial `terms` |
+| `UpmadeLocalizationManager` | Locale registration, fallback resolution, interpolation, persistence |
+| `upmade-engine` | Exposes localization APIs to the editor and wrapper consumers |
+| `upmade-editor` | Resolves terms once and passes strings into UI components as props |
 
 ## Resolution Rules
 
@@ -37,22 +37,22 @@ After resolution, `{placeholder}` tokens are interpolated with the provided valu
 
 ## Public API Expectations
 
-- `updraw-engine` exposes `t(key, vars?)` for resolving a single term
-- `updraw-engine` may also expose a bulk helper such as `getResolvedTerms()` when a UI layer needs many strings at once
-- UI components should receive resolved strings via `@Prop()` instead of reaching into `UpdrawCore`
+- `upmade-engine` exposes `t(key, vars?)` for resolving a single term
+- `upmade-engine` may also expose a bulk helper such as `getResolvedTerms()` when a UI layer needs many strings at once
+- UI components should receive resolved strings via `@Prop()` instead of reaching into `UpmadeCore`
 - Core and editor components may use the localization manager directly when they own the orchestration
 
 ## Adding New UI Terms
 
-1. Add the key to `UpdrawTerms` in `interfaces/localization.interface.ts`
+1. Add the key to `UpmadeTerms` in `interfaces/localization.interface.ts`
 2. Add the English fallback value in `locales/en-locale.ts`
 3. Add matching translations to `locales/de-locale.ts` and `locales/fr-locale.ts`
-4. Resolve the new key in `updraw-editor` so UI components receive the translated string through props
+4. Resolve the new key in `upmade-editor` so UI components receive the translated string through props
 5. Prefer namespaced, dotted keys such as `settings.general.theme.label`
 
 ## Component Wiring Rules
 
-- Reusable UI components should be dumb: `@Prop() terms: Partial<Record<UpdrawTermKey, string>> = {}` is the preferred shape for translated labels
+- Reusable UI components should be dumb: `@Prop() terms: Partial<Record<UpmadeTermKey, string>> = {}` is the preferred shape for translated labels
 - Keep the English default inline at the usage site so the UI still renders if a term is missing
 - If a component is actually core-orchestration code, it may call `this.core.localizationManager.translate(...)` directly
 - Do not store translated labels only in module-level constants if they need to react to locale changes

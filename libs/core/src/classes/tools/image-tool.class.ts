@@ -1,9 +1,9 @@
-import { UpdrawImage } from '../objects/image.class';
-import { UpdrawBaseTool } from './base-tool.class';
+import { UpmadeImage } from '../objects/image.class';
+import { UpmadeBaseTool } from './base-tool.class';
 import imageCompression from 'browser-image-compression';
-import { UpdrawCore } from '../core/core.class';
-import { UPDRAW_OBJECT_APPEAR_MAX_BATCH } from '../managers/object-appear.manager';
-import { UpdrawImageFileHelper } from '../../helpers/image-file.helper';
+import { UpmadeCore } from '../core/core.class';
+import { UPMADE_OBJECT_APPEAR_MAX_BATCH } from '../managers/object-appear.manager';
+import { UpmadeImageFileHelper } from '../../helpers/image-file.helper';
 
 /**
  * Image tool for importing and placing images on the canvas.
@@ -15,11 +15,11 @@ import { UpdrawImageFileHelper } from '../../helpers/image-file.helper';
  *   3. Intrinsic dimensions are measured from a temporary object URL.
  *   4. Bytes are uploaded through the asset resolver (write-through:
  *      local IndexedDB immediately, remote providers in the background).
- *   5. An `UpdrawImage` is created carrying only the resulting asset id
+ *   5. An `UpmadeImage` is created carrying only the resulting asset id
  *      and MIME type, then added to the canvas. The renderer resolves
  *      the id to a URL via the asset resolver.
  */
-export class UpdrawImageTool extends UpdrawBaseTool {
+export class UpmadeImageTool extends UpmadeBaseTool {
   override toolType = 'image' as const;
 
   /** Hidden file input element for image selection */
@@ -32,11 +32,11 @@ export class UpdrawImageTool extends UpdrawBaseTool {
   multiImportOffset: number = 20;
 
   /**
-   * Creates a new instance of UpdrawImageTool.
+   * Creates a new instance of UpmadeImageTool.
    * Sets up the hidden file input element for image selection.
-   * @param core - The UpdrawCore instance that provides access to application state and functionality
+   * @param core - The UpmadeCore instance that provides access to application state and functionality
    */
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     super(core);
     this.setupFileInput();
   }
@@ -98,12 +98,12 @@ export class UpdrawImageTool extends UpdrawBaseTool {
 
     const prepared = files.map(async file => {
       const preparedFile = await this.prepareImageFile(file);
-      return UpdrawImage.fromBlob(this._core, preparedFile);
+      return UpmadeImage.fromBlob(this._core, preparedFile);
     });
 
     Promise.allSettled(prepared)
       .then(results => {
-        const images: UpdrawImage[] = [];
+        const images: UpmadeImage[] = [];
         for (const result of results) {
           if (result.status === 'fulfilled') {
             images.push(result.value);
@@ -131,7 +131,7 @@ export class UpdrawImageTool extends UpdrawBaseTool {
    * @returns 
    */
   private async prepareImageFile(file: File): Promise<File> {
-    if (UpdrawImageFileHelper.isGifFile(file)) {
+    if (UpmadeImageFileHelper.isGifFile(file)) {
       return file;
     }
 
@@ -145,9 +145,9 @@ export class UpdrawImageTool extends UpdrawBaseTool {
    * not fully overlap. All images are selected together and a single
    * batch change/added event is emitted.
    *
-   * @param images - The prepared `UpdrawImage` objects to add
+   * @param images - The prepared `UpmadeImage` objects to add
    */
-  private addImagesToStore(images: UpdrawImage[]): void {
+  private addImagesToStore(images: UpmadeImage[]): void {
     const baseZIndex = this._core.store.currentZIndex;
 
     images.forEach((image, index) => {
@@ -164,7 +164,7 @@ export class UpdrawImageTool extends UpdrawBaseTool {
     this._core.selectObjects(images);
     // Picked images play the appear animation, like images that app code adds: all at once, with the selection
     // frame around them, so the frame is never shown around images that haven't appeared yet.
-    if (images.length <= UPDRAW_OBJECT_APPEAR_MAX_BATCH) {
+    if (images.length <= UPMADE_OBJECT_APPEAR_MAX_BATCH) {
       const selectionGroup = this._core.store.selectionGroup;
       this._core.objectAppearManager.mark(selectionGroup ? [...images, selectionGroup] : images, 0);
     }

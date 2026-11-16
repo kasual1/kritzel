@@ -1,34 +1,34 @@
 <script setup lang="ts">
 import {
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawLineTool,
-  UpdrawSelectionTool,
-  UpdrawShapeTool,
-  UpdrawTextTool,
-  UpdrawWorkspace,
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeLineTool,
+  UpmadeSelectionTool,
+  UpmadeShapeTool,
+  UpmadeTextTool,
+  UpmadeWorkspace,
   ShapeType,
-  type UpdrawToolbarItem,
-} from '@updraw/vue-editor'
+  type UpmadeToolbarItem,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 
-const toolbarItems: UpdrawToolbarItem[] = [
+const toolbarItems: UpmadeToolbarItem[] = [
   {
     name: 'selection',
     type: 'tool',
-    tool: UpdrawSelectionTool,
+    tool: UpmadeSelectionTool,
     icon: 'cursor',
   },
   {
     name: 'brush',
     type: 'tool',
-    tool: UpdrawBrushTool,
+    tool: UpmadeBrushTool,
     icon: 'pen',
     isDefault: true,
     config: {
@@ -46,7 +46,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
   {
     name: 'line',
     type: 'tool',
-    tool: UpdrawLineTool,
+    tool: UpmadeLineTool,
     icon: 'arrow',
     config: {
       color: { light: '#0284c7', dark: '#38bdf8', label: 'Sky' },
@@ -66,7 +66,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
   {
     name: 'shape',
     type: 'tool',
-    tool: UpdrawShapeTool,
+    tool: UpmadeShapeTool,
     icon: 'shapeEllipse',
     config: {
       shapeType: ShapeType.Ellipse,
@@ -92,7 +92,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
   {
     name: 'text',
     type: 'tool',
-    tool: UpdrawTextTool,
+    tool: UpmadeTextTool,
     icon: 'type',
     config: {
       color: { light: '#1f2937', dark: '#f3f4f6', label: 'Ink' },
@@ -115,7 +115,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
 
 <template>
   <div :style="hostStyle">
-    <UpdrawEditor
+    <UpmadeEditor
       editorId="tools-config"
       theme="light"
       :themes="themes"

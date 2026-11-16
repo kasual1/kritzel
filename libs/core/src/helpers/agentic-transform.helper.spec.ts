@@ -1,6 +1,6 @@
 import { computeAnchoredResize, fixedCorner, normalizeAngle, rotateVector, targetRotation } from './agentic-transform.helper';
 import { cumulativeLengths, polylinePrefix } from '../classes/executors/draw-path.executor';
-import { UpdrawRichTextHelper } from './rich-text.helper';
+import { UpmadeRichTextHelper } from './rich-text.helper';
 import { EditorState } from 'prosemirror-state';
 import { schema } from 'prosemirror-schema-basic';
 
@@ -69,7 +69,7 @@ describe('drawPath sampling', () => {
   });
 });
 
-describe('UpdrawRichTextHelper', () => {
+describe('UpmadeRichTextHelper', () => {
   const createView = () => {
     const view = {
       state: EditorState.create({ schema }),
@@ -82,8 +82,8 @@ describe('UpdrawRichTextHelper', () => {
 
   it('appends text and starts paragraphs on new lines', () => {
     const view = createView();
-    UpdrawRichTextHelper.appendText(view, 'Hello');
-    UpdrawRichTextHelper.appendText(view, ' world\nSecond');
+    UpmadeRichTextHelper.appendText(view, 'Hello');
+    UpmadeRichTextHelper.appendText(view, ' world\nSecond');
     expect(view.state.doc.childCount).toBe(2);
     expect(view.state.doc.child(0).textContent).toBe('Hello world');
     expect(view.state.doc.child(1).textContent).toBe('Second');
@@ -91,8 +91,8 @@ describe('UpdrawRichTextHelper', () => {
 
   it('clears the document', () => {
     const view = createView();
-    UpdrawRichTextHelper.appendText(view, 'a\nb');
-    UpdrawRichTextHelper.clear(view);
+    UpmadeRichTextHelper.appendText(view, 'a\nb');
+    UpmadeRichTextHelper.clear(view);
     expect(view.state.doc.childCount).toBe(1);
     expect(view.state.doc.textContent).toBe('');
   });

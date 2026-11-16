@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
 import {
-  UpdrawEditor,
-  HTMLUpdrawEditorElement,
-  UpdrawWorkspace,
-  type UpdrawBaseObject,
-} from "@updraw/react-editor";
+  UpmadeEditor,
+  HTMLUpmadeEditorElement,
+  UpmadeWorkspace,
+  type UpmadeBaseObject,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -18,16 +18,16 @@ import { InfoPanel, InfoPanelToggle, useInfoPanel } from "../../../components/In
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ObjectsSelectionPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const infoPanel = useInfoPanel({ hasToolbarToggle: true });
-  const [selectedObjects, setSelectedObjects] = useState<UpdrawBaseObject<HTMLElement | SVGElement>[]>([]);
+  const [selectedObjects, setSelectedObjects] = useState<UpmadeBaseObject<HTMLElement | SVGElement>[]>([]);
   const [workspaces] = useState(() => [
-    new UpdrawWorkspace({ objects: createSeedObjects() }),
+    new UpmadeWorkspace({ objects: createSeedObjects() }),
   ]);
 
   async function refreshSelection() {
     setSelectedObjects(
-      ((await editorRef.current?.getSelectedObjects()) ?? []) as UpdrawBaseObject<HTMLElement | SVGElement>[],
+      ((await editorRef.current?.getSelectedObjects()) ?? []) as UpmadeBaseObject<HTMLElement | SVGElement>[],
     );
   }
 
@@ -58,7 +58,7 @@ export function ObjectsSelectionPage() {
         <InfoPanelToggle panel={infoPanel} />
       </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        <UpdrawEditor
+        <UpmadeEditor
           ref={editorRef}
           editorId="objects-selection"
           theme="light"

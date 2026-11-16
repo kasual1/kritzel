@@ -1,6 +1,6 @@
 /**
- * Type of a Y.Doc managed by Updraw.
+ * Type of a Y.Doc managed by Upmade.
  * - 'workspace': Contains drawable objects for a specific workspace
  * - 'state': Contains application-level state (workspace list, settings)
  */
-export type UpdrawDocumentType = 'workspace' | 'state';
+export type UpmadeDocumentType = 'workspace' | 'state';

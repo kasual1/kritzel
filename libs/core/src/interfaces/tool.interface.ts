@@ -1,15 +1,15 @@
-import { UpdrawBaseTool } from '../classes/tools/base-tool.class';
-import { UpdrawBrushToolConfig, UpdrawLineToolConfig, UpdrawShapeToolConfig, UpdrawTextToolConfig } from './toolbar-item.interface';
+import { UpmadeBaseTool } from '../classes/tools/base-tool.class';
+import { UpmadeBrushToolConfig, UpmadeLineToolConfig, UpmadeShapeToolConfig, UpmadeTextToolConfig } from './toolbar-item.interface';
 
-export type UpdrawToolConstructor = new (...args: any[]) => UpdrawBaseTool;
+export type UpmadeToolConstructor = new (...args: any[]) => UpmadeBaseTool;
 
-export type UpdrawToolConfig = UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig;
+export type UpmadeToolConfig = UpmadeTextToolConfig | UpmadeBrushToolConfig | UpmadeLineToolConfig | UpmadeShapeToolConfig;
 
-export interface UpdrawToolDefinition {
+export interface UpmadeToolDefinition {
   name: string;
-  tool: UpdrawToolConstructor | UpdrawBaseTool;
-  config?: UpdrawToolConfig;
-}export interface UpdrawTool {
+  tool: UpmadeToolConstructor | UpmadeBaseTool;
+  config?: UpmadeToolConfig;
+}export interface UpmadeTool {
   name: string;
   toolType: string;
   handlePointerDown(event: PointerEvent): void;

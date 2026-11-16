@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { UPDRAW_LOGO_PATH, UPDRAW_LOGO_STROKE_WIDTH, UPDRAW_LOGO_VIEWBOX } from "@site/src/components/Landing/paths";
+import { UPMADE_LOGO_PATH, UPMADE_LOGO_STROKE_WIDTH, UPMADE_LOGO_VIEWBOX } from "@site/src/components/Landing/paths";
 import { KRITZEL_LOGO_PATH, KRITZEL_LOGO_VIEWBOX } from "./kritzelLogo";
 import styles from "./styles.module.css";
 
@@ -14,16 +14,16 @@ export default function RenameBanner(): ReactNode {
         <path fill="currentColor" stroke="currentColor" d={KRITZEL_LOGO_PATH} />
       </svg>
       <strong>Kritzel</strong> is now{" "}
-      <svg className={`${styles.logo} ${styles.newLogo}`} viewBox={UPDRAW_LOGO_VIEWBOX} aria-hidden="true">
+      <svg className={`${styles.logo} ${styles.newLogo}`} viewBox={UPMADE_LOGO_VIEWBOX} aria-hidden="true">
         <path
           fill="currentColor"
           stroke="currentColor"
-          strokeWidth={UPDRAW_LOGO_STROKE_WIDTH}
+          strokeWidth={UPMADE_LOGO_STROKE_WIDTH}
           strokeLinejoin="round"
-          d={UPDRAW_LOGO_PATH}
+          d={UPMADE_LOGO_PATH}
         />
       </svg>
-      <strong>Updraw</strong>
+      <strong>Upmade</strong>
     </div>
   );
 }

@@ -1,3 +1,3 @@
-export interface UpdrawClonable<T> {
+export interface UpmadeClonable<T> {
   clone(): T;
 }

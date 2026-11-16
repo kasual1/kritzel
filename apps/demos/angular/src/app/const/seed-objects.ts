@@ -1,14 +1,14 @@
 import {
-  UpdrawBaseObject,
-  UpdrawLine,
-  UpdrawPath,
-  UpdrawShape,
+  UpmadeBaseObject,
+  UpmadeLine,
+  UpmadePath,
+  UpmadeShape,
   ShapeType,
-} from '@updraw/angular-editor';
+} from '@upmade/angular-editor';
 
-export function createSeedObjects(): UpdrawBaseObject[] {
+export function createSeedObjects(): UpmadeBaseObject[] {
   return [
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -18,7 +18,7 @@ export function createSeedObjects(): UpdrawBaseObject[] {
       strokeColor: { light: '#c62828', dark: '#ef9a9a' },
       strokeWidth: 3,
     }),
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -28,7 +28,7 @@ export function createSeedObjects(): UpdrawBaseObject[] {
       strokeColor: { light: '#1565c0', dark: '#90caf9' },
       strokeWidth: 3,
     }),
-    new UpdrawLine({
+    new UpmadeLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -36,7 +36,7 @@ export function createSeedObjects(): UpdrawBaseObject[] {
       stroke: { light: '#4caf50', dark: '#81c784' },
       strokeWidth: 3,
     }),
-    new UpdrawPath({
+    new UpmadePath({
       points: [
         [0, 0, 0.5],
         [15, -20, 0.5],

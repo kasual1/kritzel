@@ -1,12 +1,12 @@
-import { UpdrawMouseButton } from '../enums/event-button.enum';
+import { UpmadeMouseButton } from '../enums/event-button.enum';
 
-export class UpdrawEventHelper {
+export class UpmadeEventHelper {
   public static isRightClick(ev: MouseEvent): boolean {
-    return ev.button === UpdrawMouseButton.Right;
+    return ev.button === UpmadeMouseButton.Right;
   }
 
   public static isLeftClick(ev: MouseEvent): boolean {
-    return ev.button === UpdrawMouseButton.Left;
+    return ev.button === UpmadeMouseButton.Left;
   }
 
   public static isPointerEventOnContextMenu(event: PointerEvent): boolean {
@@ -83,7 +83,7 @@ export class UpdrawEventHelper {
     try {
       listener();
     } catch (error) {
-      console.error(`[Updraw] ${name} failed:`, error);
+      console.error(`[Upmade] ${name} failed:`, error);
     }
   }
 }

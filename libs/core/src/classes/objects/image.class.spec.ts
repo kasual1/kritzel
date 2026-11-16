@@ -1,12 +1,12 @@
-import { UpdrawImage } from './image.class';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeImage } from './image.class';
+import { UpmadeCore } from '../core/core.class';
 
-describe('UpdrawImage', () => {
-  let imageObject: UpdrawImage;
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadeImage', () => {
+  let imageObject: UpmadeImage;
+  let mockCore: jest.Mocked<UpmadeCore>;
   let mockObjectsUpdate: jest.Mock;
 
-  const createMockCore = (): jest.Mocked<UpdrawCore> => {
+  const createMockCore = (): jest.Mocked<UpmadeCore> => {
     const objectsUpdate = jest.fn();
     mockObjectsUpdate = objectsUpdate;
 
@@ -35,12 +35,12 @@ describe('UpdrawImage', () => {
       anchorManager: {
         updateAnchorsForObject: jest.fn(),
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
   };
 
   beforeEach(() => {
     mockCore = createMockCore();
-    imageObject = UpdrawImage.create(mockCore);
+    imageObject = UpmadeImage.create(mockCore);
   });
 
   afterEach(() => {
@@ -50,9 +50,9 @@ describe('UpdrawImage', () => {
 
   describe('constructor', () => {
     it('should create an image with default values when no config provided', () => {
-      const defaultImage = new UpdrawImage();
+      const defaultImage = new UpmadeImage();
 
-      expect(defaultImage.__class__).toBe('UpdrawImage');
+      expect(defaultImage.__class__).toBe('UpmadeImage');
       expect(defaultImage.src).toBe('');
       expect(defaultImage.x).toBe(0);
       expect(defaultImage.y).toBe(0);
@@ -65,7 +65,7 @@ describe('UpdrawImage', () => {
     });
 
     it('should create an image with provided config values', () => {
-      const customImage = new UpdrawImage({
+      const customImage = new UpmadeImage({
         src: 'data:image/png;base64,test',
         x: 10,
         y: 20,
@@ -83,7 +83,7 @@ describe('UpdrawImage', () => {
     });
 
     it('should convert constructor rotation from degrees to radians', () => {
-      const customImage = new UpdrawImage({
+      const customImage = new UpmadeImage({
         rotation: -90,
       });
 
@@ -91,8 +91,8 @@ describe('UpdrawImage', () => {
     });
 
     it('should generate a unique id on instantiation', () => {
-      const img1 = new UpdrawImage();
-      const img2 = new UpdrawImage();
+      const img1 = new UpmadeImage();
+      const img2 = new UpmadeImage();
       expect(img1.id).toBeDefined();
       expect(img2.id).toBeDefined();
       expect(img1.id).not.toBe(img2.id);
@@ -101,40 +101,40 @@ describe('UpdrawImage', () => {
 
   describe('static create', () => {
     it('should create an image with core reference', () => {
-      const image = UpdrawImage.create(mockCore);
+      const image = UpmadeImage.create(mockCore);
       expect(image._core).toBe(mockCore);
     });
 
     it('should set workspaceId from active workspace', () => {
-      const image = UpdrawImage.create(mockCore);
+      const image = UpmadeImage.create(mockCore);
       expect(image.workspaceId).toBe('workspace-1');
     });
 
     it('should generate a unique id', () => {
-      const image = UpdrawImage.create(mockCore);
+      const image = UpmadeImage.create(mockCore);
       expect(image.id).toBeDefined();
       expect(typeof image.id).toBe('string');
       expect(image.id.length).toBeGreaterThan(0);
     });
 
     it('should set scale from core store state', () => {
-      const image = UpdrawImage.create(mockCore);
+      const image = UpmadeImage.create(mockCore);
       expect(image.scale).toBe(1);
     });
 
     it('should set scale correctly when core has different scale', () => {
       mockCore.store.state.scale = 2;
-      const image = UpdrawImage.create(mockCore);
+      const image = UpmadeImage.create(mockCore);
       expect(image.scale).toBe(2);
     });
 
     it('should set zIndex from currentZIndex', () => {
-      const image = UpdrawImage.create(mockCore);
+      const image = UpmadeImage.create(mockCore);
       expect(image.zIndex).toBe(5);
     });
 
     it('should initialize position to 0', () => {
-      const image = UpdrawImage.create(mockCore);
+      const image = UpmadeImage.create(mockCore);
       expect(image.x).toBe(0);
       expect(image.y).toBe(0);
       expect(image.translateX).toBe(0);
@@ -142,13 +142,13 @@ describe('UpdrawImage', () => {
     });
 
     it('should create multiple unique images', () => {
-      const img1 = UpdrawImage.create(mockCore);
-      const img2 = UpdrawImage.create(mockCore);
+      const img1 = UpmadeImage.create(mockCore);
+      const img2 = UpmadeImage.create(mockCore);
       expect(img1.id).not.toBe(img2.id);
     });
 
     it('should convert create rotation from degrees to radians', () => {
-      const image = UpdrawImage.create(mockCore, { rotation: -90 });
+      const image = UpmadeImage.create(mockCore, { rotation: -90 });
 
       expect(image.rotation).toBeCloseTo(-Math.PI / 2);
     });
@@ -422,9 +422,9 @@ describe('UpdrawImage', () => {
     });
   });
 
-  describe('inheritance from UpdrawBaseObject', () => {
-    it('should inherit default property values from UpdrawBaseObject', () => {
-      const image = new UpdrawImage();
+  describe('inheritance from UpmadeBaseObject', () => {
+    it('should inherit default property values from UpmadeBaseObject', () => {
+      const image = new UpmadeImage();
       expect(image.opacity).toBe(1);
       expect(image.padding).toBe(0);
       expect(image.rotation).toBe(0);

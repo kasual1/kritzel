@@ -1,14 +1,14 @@
-import { UpdrawAnchorManager } from './anchor.manager';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawLine } from '../objects/line.class';
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawSelectionBox } from '../objects/selection-box.class';
-import { UpdrawGeometryHelper } from '../../helpers/geometry.helper';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawPath } from '../objects/path.class';
-import { UpdrawShape } from '../objects/shape.class';
+import { UpmadeAnchorManager } from './anchor.manager';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeLine } from '../objects/line.class';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeSelectionBox } from '../objects/selection-box.class';
+import { UpmadeGeometryHelper } from '../../helpers/geometry.helper';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadePath } from '../objects/path.class';
+import { UpmadeShape } from '../objects/shape.class';
 import { SnapCandidate, SnapPreviewCandidate } from '../../interfaces/anchor.interface';
-import { UpdrawPolygon } from '../../interfaces/polygon.interface';
+import { UpmadePolygon } from '../../interfaces/polygon.interface';
 
 jest.mock('../core/core.class');
 jest.mock('../objects/line.class');
@@ -19,16 +19,16 @@ jest.mock('../objects/shape.class');
 jest.mock('../objects/path.class');
 jest.mock('../../helpers/geometry.helper');
 
-describe('UpdrawAnchorManager', () => {
-  let manager: UpdrawAnchorManager;
+describe('UpmadeAnchorManager', () => {
+  let manager: UpmadeAnchorManager;
   let mockCore: any;
   let mockObjectsMap: any;
   let mockState: any;
 
-  const createMockLine = (overrides: Partial<UpdrawLine> = {}): UpdrawLine => {
-    const line = Object.create(UpdrawLine.prototype) as UpdrawLine;
+  const createMockLine = (overrides: Partial<UpmadeLine> = {}): UpmadeLine => {
+    const line = Object.create(UpmadeLine.prototype) as UpmadeLine;
     Object.assign(line, {
-      __class__: 'UpdrawLine',
+      __class__: 'UpmadeLine',
       id: 'line-1',
       startX: 0,
       startY: 0,
@@ -71,7 +71,7 @@ describe('UpdrawAnchorManager', () => {
       hasStartArrow: { get() { return this.arrows?.start?.enabled === true; } },
       hasEndArrow: { get() { return this.arrows?.end?.enabled === true; } },
       rotatedPolygon: {
-        get(): UpdrawPolygon {
+        get(): UpmadePolygon {
           return {
             topLeft: { x: this.translateX, y: this.translateY },
             topRight: { x: this.translateX + this.totalWidth / this.scale, y: this.translateY },
@@ -84,9 +84,9 @@ describe('UpdrawAnchorManager', () => {
     return line;
   };
 
-  const createMockObject = (overrides: Partial<UpdrawBaseObject<Element>> = {}, prototype: object = Object.prototype): UpdrawBaseObject<Element> => {
+  const createMockObject = (overrides: Partial<UpmadeBaseObject<Element>> = {}, prototype: object = Object.prototype): UpmadeBaseObject<Element> => {
     const fields = {
-      __class__: 'UpdrawBaseObject',
+      __class__: 'UpmadeBaseObject',
       id: 'obj-1',
       x: 0,
       y: 0,
@@ -103,7 +103,7 @@ describe('UpdrawAnchorManager', () => {
       get totalHeight() { return this.height + this.padding * 2; },
       get centerX() { return this.translateX + this.totalWidth / 2 / this.scale; },
       get centerY() { return this.translateY + this.totalHeight / 2 / this.scale; },
-      get rotatedPolygon(): UpdrawPolygon {
+      get rotatedPolygon(): UpmadePolygon {
         return {
           topLeft: { x: this.translateX, y: this.translateY },
           topRight: { x: this.translateX + this.totalWidth / this.scale, y: this.translateY },
@@ -114,19 +114,19 @@ describe('UpdrawAnchorManager', () => {
     };
     // Copy property descriptors so the getters stay live on objects with a class prototype
     const obj = Object.create(prototype, Object.getOwnPropertyDescriptors(fields));
-    return Object.assign(obj, overrides) as unknown as UpdrawBaseObject<Element>;
+    return Object.assign(obj, overrides) as unknown as UpmadeBaseObject<Element>;
   };
 
   // Children of mock groups, resolvable through store.objects.findById.
-  const knownObjects = new Map<string, UpdrawBaseObject<Element>>();
+  const knownObjects = new Map<string, UpmadeBaseObject<Element>>();
 
-  const createMockGroup = (id: string, zIndex: number, children: UpdrawBaseObject<Element>[]): UpdrawBaseObject<Element> => {
+  const createMockGroup = (id: string, zIndex: number, children: UpmadeBaseObject<Element>[]): UpmadeBaseObject<Element> => {
     children.forEach(child => knownObjects.set(child.id, child));
-    return createMockObject({ __class__: 'UpdrawGroup', id, zIndex, childIds: children.map(child => child.id) } as Partial<UpdrawBaseObject<Element>>, UpdrawGroup.prototype);
+    return createMockObject({ __class__: 'UpmadeGroup', id, zIndex, childIds: children.map(child => child.id) } as Partial<UpmadeBaseObject<Element>>, UpmadeGroup.prototype);
   };
 
   // Resolves objects by id in the given order.
-  const inOrder = (objects: Record<string, UpdrawBaseObject<Element>>, ids: string[]): UpdrawBaseObject<Element>[] => {
+  const inOrder = (objects: Record<string, UpmadeBaseObject<Element>>, ids: string[]): UpmadeBaseObject<Element>[] => {
     return ids.map(id => objects[id]);
   };
 
@@ -158,9 +158,9 @@ describe('UpdrawAnchorManager', () => {
         get currentZIndex() { return 1; },
       },
       rerender: jest.fn(),
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    manager = new UpdrawAnchorManager(mockCore);
+    manager = new UpmadeAnchorManager(mockCore);
   });
 
   afterEach(() => {
@@ -591,7 +591,7 @@ describe('UpdrawAnchorManager', () => {
       const obj = createMockObject({ id: 'obj-1', zIndex: 1 });
       mockCore.store.allNonSelectionObjects = [obj];
 
-      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpmadeGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapTarget(125, 125, 'line-1');
 
@@ -607,7 +607,7 @@ describe('UpdrawAnchorManager', () => {
       const obj = createMockObject({ id: 'obj-1', zIndex: 1 });
       mockCore.store.allNonSelectionObjects = [lineObj as any, obj];
 
-      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpmadeGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapTarget(125, 125, 'line-1');
 
@@ -620,7 +620,7 @@ describe('UpdrawAnchorManager', () => {
       const obj = createMockObject({ id: 'obj-1', zIndex: 1 });
       mockCore.store.allNonSelectionObjects = [obj];
 
-      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpmadeGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapTarget(125, 125, 'line-1', 'obj-1');
 
@@ -628,7 +628,7 @@ describe('UpdrawAnchorManager', () => {
     });
 
     it('should skip non-anchorable objects (lines, selection boxes)', () => {
-      const selectionBox = Object.create(UpdrawSelectionBox.prototype);
+      const selectionBox = Object.create(UpmadeSelectionBox.prototype);
       selectionBox.id = 'sel-box-1';
       selectionBox.isVisible = true;
       selectionBox.zIndex = 1;
@@ -640,7 +640,7 @@ describe('UpdrawAnchorManager', () => {
       };
       mockCore.store.allNonSelectionObjects = [selectionBox];
 
-      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpmadeGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapTarget(50, 50, 'line-1');
 
@@ -653,7 +653,7 @@ describe('UpdrawAnchorManager', () => {
       const obj3 = createMockObject({ id: 'obj-3', zIndex: 3 });
       mockCore.store.allNonSelectionObjects = [obj1, obj2, obj3];
 
-      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpmadeGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapTarget(125, 125, 'line-1');
 
@@ -664,7 +664,7 @@ describe('UpdrawAnchorManager', () => {
       const obj = createMockObject({ id: 'obj-1', zIndex: 1, isVisible: false });
       mockCore.store.allNonSelectionObjects = [obj];
 
-      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpmadeGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapTarget(125, 125, 'line-1');
 
@@ -675,7 +675,7 @@ describe('UpdrawAnchorManager', () => {
       const obj = createMockObject({ id: 'obj-1', zIndex: 1 });
       mockCore.store.allNonSelectionObjects = [obj];
 
-      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpmadeGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       expect(manager.findSnapTarget(111, 125, 'line-1', undefined, 'mouse')).toBeNull();
       expect(manager.findSnapTarget(111, 125, 'line-1', undefined, 'touch')).toEqual({
@@ -691,7 +691,7 @@ describe('UpdrawAnchorManager', () => {
       // Zoom out so the base radius (min(w,h)/5 = 10 world units) shrinks in screen space.
       mockState.scale = 0.25;
 
-      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpmadeGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       // Distance 40 from center (125,125) exceeds the base radius of 10, but the
       // mouse floor of 12 / 0.25 = 48 world units keeps snapping usable when zoomed out.
@@ -710,7 +710,7 @@ describe('UpdrawAnchorManager', () => {
       const obj = createMockObject({ id: 'obj-1', zIndex: 1 });
       mockCore.store.allNonSelectionObjects = [obj];
 
-      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      (UpmadeGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
 
       const result = manager.findSnapPreviewTarget(101, 101, 'line-1');
 
@@ -723,7 +723,7 @@ describe('UpdrawAnchorManager', () => {
 
     describe('z-order ties', () => {
       beforeEach(() => {
-        (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+        (UpmadeGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
       });
 
       // Group shares its zIndex with its top member (child-b).
@@ -976,7 +976,7 @@ describe('UpdrawAnchorManager', () => {
         return [];
       });
       // Mock geometry helper to return an intersection point
-      (UpdrawGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 100, y: 125 });
+      (UpmadeGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 100, y: 125 });
 
       const result = manager.getAnchorLinesRenderData();
 
@@ -1219,21 +1219,21 @@ describe('UpdrawAnchorManager', () => {
 
   describe('rebuildIndex', () => {
     it('should rebuild the index from all lines in the store', () => {
-      const line1 = new UpdrawLine();
+      const line1 = new UpmadeLine();
       Object.assign(line1, {
-        __class__: 'UpdrawLine',
+        __class__: 'UpmadeLine',
         id: 'line-1',
         startAnchor: { objectId: 'obj-1' },
         endAnchor: { objectId: 'obj-2' },
       });
-      const line2 = new UpdrawLine();
+      const line2 = new UpmadeLine();
       Object.assign(line2, {
-        __class__: 'UpdrawLine',
+        __class__: 'UpmadeLine',
         id: 'line-2',
         startAnchor: { objectId: 'obj-1' },
       });
 
-      // UpdrawLine instances must pass the instanceof check
+      // UpmadeLine instances must pass the instanceof check
       mockCore.store.allObjects = [line1, line2];
 
       manager.rebuildIndex();
@@ -1361,7 +1361,7 @@ describe('UpdrawAnchorManager', () => {
       });
 
       // Mock the geometry helper to return an edge intersection
-      (UpdrawGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 50, y: 25 });
+      (UpmadeGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 50, y: 25 });
 
       const result = manager.computeAnchorVisualization(line, 'start');
 
@@ -1445,7 +1445,7 @@ describe('UpdrawAnchorManager', () => {
         if (fn(targetObject)) return [targetObject];
         return [];
       });
-      (UpdrawGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 50, y: 0 });
+      (UpmadeGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 50, y: 0 });
 
       const result = manager.computeClippedLinePath(line);
 
@@ -1459,7 +1459,7 @@ describe('UpdrawAnchorManager', () => {
       const line = createMockLine({ id: 'line-1' });
       const targetObject = createMockObject({ id: 'obj-1' });
 
-      (UpdrawGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 100, y: 100 });
+      (UpmadeGeometryHelper.getLinePolygonIntersection as jest.Mock).mockReturnValue({ x: 100, y: 100 });
 
       const result = manager.computeAnchorClipInfo(line, 'start', targetObject);
 
@@ -1479,7 +1479,7 @@ describe('UpdrawAnchorManager', () => {
       // For curved lines, the curve exit point detection is used
       // Mock isPointInPolygon for the sampling algorithm
       let callCount = 0;
-      (UpdrawGeometryHelper.isPointInPolygon as jest.Mock).mockImplementation(() => {
+      (UpmadeGeometryHelper.isPointInPolygon as jest.Mock).mockImplementation(() => {
         callCount++;
         // First few calls inside, then outside (simulating curve exiting polygon)
         return callCount <= 3;
@@ -1488,7 +1488,7 @@ describe('UpdrawAnchorManager', () => {
       manager.computeAnchorClipInfo(line, 'start', targetObject);
 
       // The important thing is that the curved path was taken
-      expect(UpdrawGeometryHelper.isPointInPolygon).toHaveBeenCalled();
+      expect(UpmadeGeometryHelper.isPointInPolygon).toHaveBeenCalled();
     });
 
     it('should handle path objects with custom clip detection', () => {
@@ -1497,8 +1497,8 @@ describe('UpdrawAnchorManager', () => {
         controlX: 50,
         controlY: 50,
       });
-      const pathObject = createMockObject({ id: 'path-1' }, UpdrawPath.prototype) as any;
-      pathObject.__class__ = 'UpdrawPath';
+      const pathObject = createMockObject({ id: 'path-1' }, UpmadePath.prototype) as any;
+      pathObject.__class__ = 'UpmadePath';
       pathObject.points = [[0, 0], [50, 50], [100, 0]];
       pathObject.strokeWidth = 4;
       pathObject.scale = 1;
@@ -1514,8 +1514,8 @@ describe('UpdrawAnchorManager', () => {
 
     it('should handle shape objects with custom clip polygon', () => {
       const line = createMockLine({ id: 'line-1' });
-      const shapeObject = createMockObject({ id: 'shape-1' }, UpdrawShape.prototype) as any;
-      shapeObject.__class__ = 'UpdrawShape';
+      const shapeObject = createMockObject({ id: 'shape-1' }, UpmadeShape.prototype) as any;
+      shapeObject.__class__ = 'UpmadeShape';
       shapeObject.getClipPolygon = jest.fn().mockReturnValue([
         { x: 0, y: 50 },
         { x: 50, y: 0 },
@@ -1523,12 +1523,12 @@ describe('UpdrawAnchorManager', () => {
         { x: 50, y: 100 },
       ]);
 
-      (UpdrawGeometryHelper.getLinePointsArrayIntersection as jest.Mock).mockReturnValue({ x: 50, y: 0 });
+      (UpmadeGeometryHelper.getLinePointsArrayIntersection as jest.Mock).mockReturnValue({ x: 50, y: 0 });
 
       const result = manager.computeAnchorClipInfo(line, 'start', shapeObject);
 
       expect(result).not.toBeNull();
-      expect(UpdrawGeometryHelper.getLinePointsArrayIntersection).toHaveBeenCalled();
+      expect(UpmadeGeometryHelper.getLinePointsArrayIntersection).toHaveBeenCalled();
     });
   });
 

@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 import {
-  UPDRAW_DEFAULT_OBJECT_TITLEBAR,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type UpdrawObjectConfig,
-} from "@updraw/react-editor";
+  UPMADE_DEFAULT_OBJECT_TITLEBAR,
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type UpmadeObjectConfig,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -18,15 +18,15 @@ export function ObjectsConfigurationPage() {
   const [areShapesRotatable, setAreShapesRotatable] = useState(false);
   const [areShapesResizable, setAreShapesResizable] = useState(false);
   const [workspaces] = useState(() => [
-    new UpdrawWorkspace({ objects: createSeedObjects() }),
+    new UpmadeWorkspace({ objects: createSeedObjects() }),
   ]);
 
   // A new object on every change, so that the editor rerenders with the new rules.
-  const objectConfig = useMemo<UpdrawObjectConfig>(
+  const objectConfig = useMemo<UpmadeObjectConfig>(
     () => ({
-      hasTitlebar: (object) => object.__class__ === "UpdrawShape",
-      isRotatable: (object) => areShapesRotatable || object.__class__ !== "UpdrawShape",
-      isResizable: (object) => areShapesResizable || object.__class__ !== "UpdrawShape",
+      hasTitlebar: (object) => object.__class__ === "UpmadeShape",
+      isRotatable: (object) => areShapesRotatable || object.__class__ !== "UpmadeShape",
+      isResizable: (object) => areShapesResizable || object.__class__ !== "UpmadeShape",
     }),
     [areShapesRotatable, areShapesResizable],
   );
@@ -51,7 +51,7 @@ export function ObjectsConfigurationPage() {
           <span>Resize shapes</span>
         </label>
       </div>
-      <UpdrawEditor
+      <UpmadeEditor
         editorId="objects-configuration"
         theme="light"
         themes={themes}
@@ -62,7 +62,7 @@ export function ObjectsConfigurationPage() {
         isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
-        objectTitlebar={UPDRAW_DEFAULT_OBJECT_TITLEBAR}
+        objectTitlebar={UPMADE_DEFAULT_OBJECT_TITLEBAR}
         objectConfig={objectConfig}
         style={editorStyle}
       />

@@ -1,10 +1,10 @@
-import { UpdrawFontRegistry } from './font-registry.class';
+import { UpmadeFontRegistry } from './font-registry.class';
 
-describe('UpdrawFontRegistry', () => {
+describe('UpmadeFontRegistry', () => {
   const registeredKeys: string[] = [];
 
   const register = (key: string, registration: string | { family: string; label?: string; cssFontFamily?: string }) => {
-    UpdrawFontRegistry.register(key, registration);
+    UpmadeFontRegistry.register(key, registration);
     if (!registeredKeys.includes(key)) {
       registeredKeys.push(key);
     }
@@ -14,7 +14,7 @@ describe('UpdrawFontRegistry', () => {
     jest.restoreAllMocks();
 
     for (const key of registeredKeys) {
-      UpdrawFontRegistry.unregister(key);
+      UpmadeFontRegistry.unregister(key);
     }
 
     registeredKeys.length = 0;
@@ -27,8 +27,8 @@ describe('UpdrawFontRegistry', () => {
       cssFontFamily: "'Roboto', sans-serif",
     });
 
-    expect(UpdrawFontRegistry.has('editor-roboto')).toBe(true);
-    expect(UpdrawFontRegistry.get('editor-roboto')).toEqual({
+    expect(UpmadeFontRegistry.has('editor-roboto')).toBe(true);
+    expect(UpmadeFontRegistry.get('editor-roboto')).toEqual({
       key: 'editor-roboto',
       family: 'Roboto',
       label: 'Roboto',
@@ -38,7 +38,7 @@ describe('UpdrawFontRegistry', () => {
   });
 
   it('registers multiple fonts', () => {
-    UpdrawFontRegistry.registerFonts({
+    UpmadeFontRegistry.registerFonts({
       'editor-inter': {
         family: 'Inter',
         cssFontFamily: "'Inter', sans-serif",
@@ -50,21 +50,21 @@ describe('UpdrawFontRegistry', () => {
     });
     registeredKeys.push('editor-inter', 'editor-lora');
 
-    expect(UpdrawFontRegistry.has('editor-inter')).toBe(true);
-    expect(UpdrawFontRegistry.has('editor-lora')).toBe(true);
+    expect(UpmadeFontRegistry.has('editor-inter')).toBe(true);
+    expect(UpmadeFontRegistry.has('editor-lora')).toBe(true);
   });
 
   it('warns when overwriting an existing key', () => {
     const spy = jest.spyOn(console, 'warn').mockImplementation();
 
     register('editor-overwrite', 'Arial');
-    UpdrawFontRegistry.register('editor-overwrite', {
+    UpmadeFontRegistry.register('editor-overwrite', {
       family: 'Lora',
       cssFontFamily: "'Lora', serif",
     });
 
     expect(spy).toHaveBeenCalledWith('[FontRegistry] Font "editor-overwrite" is already registered. It will be overwritten.');
-    expect(UpdrawFontRegistry.get('editor-overwrite')?.family).toBe('Lora');
+    expect(UpmadeFontRegistry.get('editor-overwrite')?.family).toBe('Lora');
   });
 
   it('resolves css font-family by family value', () => {
@@ -73,8 +73,8 @@ describe('UpdrawFontRegistry', () => {
       cssFontFamily: "'Space Grotesk', sans-serif",
     });
 
-    expect(UpdrawFontRegistry.resolveCssFontFamily('Space Grotesk')).toBe("'Space Grotesk', sans-serif");
-    expect(UpdrawFontRegistry.resolveCssFontFamily('space grotesk')).toBe("'Space Grotesk', sans-serif");
+    expect(UpmadeFontRegistry.resolveCssFontFamily('Space Grotesk')).toBe("'Space Grotesk', sans-serif");
+    expect(UpmadeFontRegistry.resolveCssFontFamily('space grotesk')).toBe("'Space Grotesk', sans-serif");
   });
 
   it('resolves css font-family by key and falls back for unknown values', () => {
@@ -83,16 +83,16 @@ describe('UpdrawFontRegistry', () => {
       cssFontFamily: "'Manrope', sans-serif",
     });
 
-    expect(UpdrawFontRegistry.resolveCssFontFamily('editor-manrope')).toBe("'Manrope', sans-serif");
-    expect(UpdrawFontRegistry.resolveCssFontFamily('Unknown Font')).toBe('Unknown Font');
+    expect(UpmadeFontRegistry.resolveCssFontFamily('editor-manrope')).toBe("'Manrope', sans-serif");
+    expect(UpmadeFontRegistry.resolveCssFontFamily('Unknown Font')).toBe('Unknown Font');
   });
 
   it('unregisters a font', () => {
     register('editor-remove', 'Arial');
 
-    expect(UpdrawFontRegistry.unregister('editor-remove')).toBe(true);
-    expect(UpdrawFontRegistry.has('editor-remove')).toBe(false);
-    expect(UpdrawFontRegistry.unregister('editor-remove')).toBe(false);
+    expect(UpmadeFontRegistry.unregister('editor-remove')).toBe(true);
+    expect(UpmadeFontRegistry.has('editor-remove')).toBe(false);
+    expect(UpmadeFontRegistry.unregister('editor-remove')).toBe(false);
   });
 
   it('waits for registered font families to load', async () => {
@@ -109,7 +109,7 @@ describe('UpdrawFontRegistry', () => {
     });
 
     try {
-      await UpdrawFontRegistry.waitForFonts({
+      await UpmadeFontRegistry.waitForFonts({
         'editor-racing': {
           family: 'Racing Sans One',
           cssFontFamily: "'Racing Sans One', sans-serif",

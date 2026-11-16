@@ -1,8 +1,8 @@
-import { UpdrawPoint } from "../interfaces/point.interface";
-import { UpdrawPolygon } from "../interfaces/polygon.interface";
+import { UpmadePoint } from "../interfaces/point.interface";
+import { UpmadePolygon } from "../interfaces/polygon.interface";
 
-export class UpdrawGeometryHelper {
-	static doPolygonsIntersect(polygon1: UpdrawPolygon, polygon2: UpdrawPolygon): boolean {
+export class UpmadeGeometryHelper {
+	static doPolygonsIntersect(polygon1: UpmadePolygon, polygon2: UpmadePolygon): boolean {
 		// 1. Convert polygons to array of points for easier processing
 		const points1 = [polygon1.bottomLeft, polygon1.bottomRight, polygon1.topRight, polygon1.topLeft];
 		const points2 = [polygon2.bottomLeft, polygon2.bottomRight, polygon2.topRight, polygon2.topLeft];
@@ -39,7 +39,7 @@ export class UpdrawGeometryHelper {
 		return false; // No intersection found
 	}
 
-	static isPointInPolygon(point: UpdrawPoint, polygon: UpdrawPoint[]): boolean {
+	static isPointInPolygon(point: UpmadePoint, polygon: UpmadePoint[]): boolean {
 		let inside = false;
 		for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
 			const xi = polygon[i].x,
@@ -53,7 +53,7 @@ export class UpdrawGeometryHelper {
 		return inside;
 	}
 
-	static intersectLines(p1a: UpdrawPoint, p1b: UpdrawPoint, p2a: UpdrawPoint, p2b: UpdrawPoint): boolean {
+	static intersectLines(p1a: UpmadePoint, p1b: UpmadePoint, p2a: UpmadePoint, p2b: UpmadePoint): boolean {
 		const det = (p1b.x - p1a.x) * (p2b.y - p2a.y) - (p1b.y - p1a.y) * (p2b.x - p2a.x);
 		if (det === 0) {
 			return false; // Lines are parallel
@@ -69,7 +69,7 @@ export class UpdrawGeometryHelper {
 	 * Finds the intersection point between a line segment and a line segment.
 	 * Returns the intersection point or null if no intersection.
 	 */
-	static getLineIntersectionPoint(p1a: UpdrawPoint, p1b: UpdrawPoint, p2a: UpdrawPoint, p2b: UpdrawPoint): UpdrawPoint | null {
+	static getLineIntersectionPoint(p1a: UpmadePoint, p1b: UpmadePoint, p2a: UpmadePoint, p2b: UpmadePoint): UpmadePoint | null {
 		const det = (p1b.x - p1a.x) * (p2b.y - p2a.y) - (p1b.y - p1a.y) * (p2b.x - p2a.x);
 		if (det === 0) {
 			return null; // Lines are parallel
@@ -91,9 +91,9 @@ export class UpdrawGeometryHelper {
 	 * Finds the closest intersection point between a line segment (from lineStart to lineEnd)
 	 * and a polygon. Returns the intersection point closest to lineStart, or null if no intersection.
 	 */
-	static getLinePolygonIntersection(lineStart: UpdrawPoint, lineEnd: UpdrawPoint, polygon: UpdrawPolygon): UpdrawPoint | null {
+	static getLinePolygonIntersection(lineStart: UpmadePoint, lineEnd: UpmadePoint, polygon: UpmadePolygon): UpmadePoint | null {
 		const points = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
-		let closestIntersection: UpdrawPoint | null = null;
+		let closestIntersection: UpmadePoint | null = null;
 		let closestDistance = Infinity;
 
 		for (let i = 0; i < points.length; i++) {
@@ -132,8 +132,8 @@ export class UpdrawGeometryHelper {
 		ry: number,
 		segments: number = 32,
 		rotation: number = 0
-	): UpdrawPoint[] {
-		const points: UpdrawPoint[] = [];
+	): UpmadePoint[] {
+		const points: UpmadePoint[] = [];
 		const cos = Math.cos(rotation);
 		const sin = Math.sin(rotation);
 
@@ -157,11 +157,11 @@ export class UpdrawGeometryHelper {
 	 * or null if no intersection.
 	 */
 	static getLinePointsArrayIntersection(
-		lineStart: UpdrawPoint,
-		lineEnd: UpdrawPoint,
-		polygonPoints: UpdrawPoint[]
-	): UpdrawPoint | null {
-		let closestIntersection: UpdrawPoint | null = null;
+		lineStart: UpmadePoint,
+		lineEnd: UpmadePoint,
+		polygonPoints: UpmadePoint[]
+	): UpmadePoint | null {
+		let closestIntersection: UpmadePoint | null = null;
 		let closestDistance = Infinity;
 
 		for (let i = 0; i < polygonPoints.length; i++) {
@@ -188,7 +188,7 @@ export class UpdrawGeometryHelper {
 	 * Checks if a point is inside a polygon defined as an array of points.
 	 * This is a convenience wrapper that works with arbitrary polygon point arrays.
 	 */
-	static isPointInPolygonPoints(point: UpdrawPoint, polygonPoints: UpdrawPoint[]): boolean {
+	static isPointInPolygonPoints(point: UpmadePoint, polygonPoints: UpmadePoint[]): boolean {
 		return this.isPointInPolygon(point, polygonPoints);
 	}
 }

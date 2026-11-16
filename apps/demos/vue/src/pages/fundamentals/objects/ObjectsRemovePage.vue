@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type UpdrawBaseObject,
-} from '@updraw/vue-editor'
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type UpmadeBaseObject,
+} from '@upmade/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -14,9 +14,9 @@ import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const seedObjects = createSeedObjects()
-const objects = ref<UpdrawBaseObject[]>(seedObjects)
+const objects = ref<UpmadeBaseObject[]>(seedObjects)
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: seedObjects })]
+const workspaces = [new UpmadeWorkspace({ objects: seedObjects })]
 
 async function removeLastObject() {
   const all = (await editor.value?.getAllObjects()) ?? []
@@ -37,7 +37,7 @@ async function removeLastObject() {
         Remove Object
       </button>
     </Toolbar>
-    <UpdrawEditor
+    <UpmadeEditor
       ref="editor"
       editorId="objects-remove"
       theme="light"

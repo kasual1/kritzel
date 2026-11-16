@@ -1,6 +1,6 @@
-import { darkTheme, UpdrawTheme } from "@updraw/react-editor";
+import { darkTheme, UpmadeTheme } from "@upmade/react-editor";
 
-export const reactThemeDark: UpdrawTheme = {
+export const reactThemeDark: UpmadeTheme = {
   ...darkTheme,
   name: "dark",
   global: {

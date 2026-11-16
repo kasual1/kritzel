@@ -3,11 +3,11 @@ import { ref, shallowRef, type CSSProperties } from 'vue'
 import {
   getEditorRef,
   InMemorySyncProvider,
-  UpdrawEditor,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeWorkspace,
   type ActiveWorkspaceChangeEvent,
-  type UpdrawSyncConfig,
-} from '@updraw/vue-editor'
+  type UpmadeSyncConfig,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -16,14 +16,14 @@ import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const syncConfig: UpdrawSyncConfig = {
+const syncConfig: UpmadeSyncConfig = {
   providers: [InMemorySyncProvider],
 }
-const workspaces = shallowRef<UpdrawWorkspace[]>(
+const workspaces = shallowRef<UpmadeWorkspace[]>(
   Array.from(
     { length: 6 },
     (_, index) =>
-      new UpdrawWorkspace({
+      new UpmadeWorkspace({
         id: `board-${index + 1}`,
         name: `Board ${index + 1}`,
         objects: createSeedObjects(),
@@ -63,11 +63,11 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
   activeWorkspaceId.value = event.detail.id
 }
 
-async function switchTo(workspace: UpdrawWorkspace) {
+async function switchTo(workspace: UpmadeWorkspace) {
   await editor.value?.setActiveWorkspace(workspace.id)
 }
 
-async function deleteWorkspace(workspace: UpdrawWorkspace, event: MouseEvent) {
+async function deleteWorkspace(workspace: UpmadeWorkspace, event: MouseEvent) {
   event.stopPropagation()
   if (workspaces.value.length <= 1) {
     return
@@ -110,7 +110,7 @@ async function deleteWorkspace(workspace: UpdrawWorkspace, event: MouseEvent) {
         </button>
       </div>
     </Toolbar>
-    <UpdrawEditor
+    <UpmadeEditor
       ref="editor"
       editorId="workspaces-delete"
       theme="light"

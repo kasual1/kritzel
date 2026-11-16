@@ -1,4 +1,4 @@
-import { UpdrawEditor } from "@updraw/react-editor";
+import { UpmadeEditor } from "@upmade/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 
 const styles = {
@@ -30,10 +30,10 @@ export function MultiEditorPage() {
   return (
     <div style={styles.multiEditorHost}>
       <div style={{ ...styles.editorContainer, ...styles.editorContainerFirst }}>
-        <UpdrawEditor id="editor-1" editorId="e2e-editor-1" theme="light" themes={[reactThemeLight]} />
+        <UpmadeEditor id="editor-1" editorId="e2e-editor-1" theme="light" themes={[reactThemeLight]} />
       </div>
       <div style={{ ...styles.editorContainer, ...styles.editorContainerSecond }}>
-        <UpdrawEditor id="editor-2" editorId="e2e-editor-2" theme="light" themes={[reactThemeLight]} />
+        <UpmadeEditor id="editor-2" editorId="e2e-editor-2" theme="light" themes={[reactThemeLight]} />
       </div>
     </div>
   );

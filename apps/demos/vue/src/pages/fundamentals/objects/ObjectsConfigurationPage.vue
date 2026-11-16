@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
-  UPDRAW_DEFAULT_OBJECT_TITLEBAR,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type UpdrawObjectConfig,
-} from '@updraw/vue-editor'
+  UPMADE_DEFAULT_OBJECT_TITLEBAR,
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type UpmadeObjectConfig,
+} from '@upmade/vue-editor'
 import { computed, ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -14,17 +14,17 @@ import { editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
 const areShapesRotatable = ref(false)
 const areShapesResizable = ref(false)
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 
 // A new object on every change, so that the editor rerenders with the new rules.
-const objectConfig = computed<UpdrawObjectConfig>(() => {
+const objectConfig = computed<UpmadeObjectConfig>(() => {
   const isRotatable = areShapesRotatable.value
   const isResizable = areShapesResizable.value
 
   return {
-    hasTitlebar: object => object.__class__ === 'UpdrawShape',
-    isRotatable: object => isRotatable || object.__class__ !== 'UpdrawShape',
-    isResizable: object => isResizable || object.__class__ !== 'UpdrawShape',
+    hasTitlebar: object => object.__class__ === 'UpmadeShape',
+    isRotatable: object => isRotatable || object.__class__ !== 'UpmadeShape',
+    isResizable: object => isResizable || object.__class__ !== 'UpmadeShape',
   }
 })
 
@@ -49,7 +49,7 @@ function setShapesResizable(event: Event) {
         <span>Resize shapes</span>
       </label>
     </div>
-    <UpdrawEditor
+    <UpmadeEditor
       editorId="objects-configuration"
       theme="light"
       :themes="themes"
@@ -58,7 +58,7 @@ function setShapesResizable(event: Event) {
       :isZoomingEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
-      :objectTitlebar="UPDRAW_DEFAULT_OBJECT_TITLEBAR"
+      :objectTitlebar="UPMADE_DEFAULT_OBJECT_TITLEBAR"
       :objectConfig="objectConfig"
       :style="editorStyle"
     />

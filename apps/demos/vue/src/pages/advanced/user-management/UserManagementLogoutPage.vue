@@ -2,26 +2,26 @@
 import { ref } from 'vue'
 import {
   getEditorRef,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type IUpdrawUser,
-  type UpdrawLoginConfig,
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type IUpmadeUser,
+  type UpmadeLoginConfig,
   type LoginEvent,
-} from '@updraw/vue-editor'
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
-const user = ref<IUpdrawUser | undefined>({
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
+const user = ref<IUpmadeUser | undefined>({
   id: 'user-google-1',
   displayName: 'Ada Lovelace',
   color: '#42b883',
   isGuest: false,
 })
-const loginConfig: UpdrawLoginConfig = {
+const loginConfig: UpmadeLoginConfig = {
   title: 'Sign in',
   providers: [
     { name: 'google', icon: 'google', label: 'Continue with Google' },
@@ -51,7 +51,7 @@ function onLogout(): void {
 </script>
 
 <template>
-  <UpdrawEditor
+  <UpmadeEditor
     ref="editor"
     editorId="user-management-logout"
     :loginConfig="loginConfig"

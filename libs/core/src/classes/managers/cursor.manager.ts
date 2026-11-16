@@ -1,43 +1,43 @@
-import { UpdrawCursorHelper } from '../../helpers/cursor.helper';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeCursorHelper } from '../../helpers/cursor.helper';
+import { UpmadeCore } from '../core/core.class';
 
 /**
  * Manages cursor state and updates across the application.
  * Handles cursor changes based on handle hovers, tool states, and interactions.
  */
-export class UpdrawCursorManager {
-  private readonly _core: UpdrawCore;
+export class UpmadeCursorManager {
+  private readonly _core: UpmadeCore;
   private _targetElement: HTMLElement | null = null;
   private _shadowRoot: ShadowRoot | null = null;
 
   /**
-   * Creates a new UpdrawCursorManager instance.
-   * @param core - The UpdrawCore instance that provides access to the store and other core functionality.
+   * Creates a new UpmadeCursorManager instance.
+   * @param core - The UpmadeCore instance that provides access to the store and other core functionality.
    */
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     this._core = core;
   }
 
   /**
    * Sets the target element where cursor styles will be applied.
    * Resets any cursor styles on the previous target element before setting the new one.
-   * Also sets the `--updraw-global-pointer-cursor` CSS variable for child components to use.
+   * Also sets the `--upmade-global-pointer-cursor` CSS variable for child components to use.
    * @param element - The HTML element to apply cursor styles to, or null to clear the target.
    */
   setTargetElement(element: HTMLElement | null): void {
     // Reset cursor on old target
     if (this._targetElement) {
       this._targetElement.style.cursor = '';
-      this._targetElement.style.removeProperty('--updraw-global-default-cursor');
-      this._targetElement.style.removeProperty('--updraw-global-pointer-cursor');
+      this._targetElement.style.removeProperty('--upmade-global-default-cursor');
+      this._targetElement.style.removeProperty('--upmade-global-pointer-cursor');
     }
 
     this._targetElement = element;
 
     // Set the pointer cursor CSS variable for child components to use
     if (this._targetElement) {
-      this._targetElement.style.setProperty('--updraw-global-default-cursor', UpdrawCursorHelper.getCursor({ iconName: 'default' }));
-      this._targetElement.style.setProperty('--updraw-global-pointer-cursor', UpdrawCursorHelper.getPointerCursor());
+      this._targetElement.style.setProperty('--upmade-global-default-cursor', UpmadeCursorHelper.getCursor({ iconName: 'default' }));
+      this._targetElement.style.setProperty('--upmade-global-pointer-cursor', UpmadeCursorHelper.getPointerCursor());
     }
   }
 
@@ -120,7 +120,7 @@ export class UpdrawCursorManager {
 
     // Titlebar drag surfaces move their object; their controls keep the pointer cursor from CSS
     const topmost = elementsAtPoint[0];
-    if (topmost.closest?.('[data-updraw-titlebar-surface]') && !topmost.closest?.('[data-updraw-titlebar-control]')) {
+    if (topmost.closest?.('[data-upmade-titlebar-surface]') && !topmost.closest?.('[data-upmade-titlebar-control]')) {
       this._core.store.state.cursor = { icon: 'hand', iconActive: 'handGrab' };
       return;
     }
@@ -131,7 +131,7 @@ export class UpdrawCursorManager {
 
   /**
    * Applies the current cursor state to the target element.
-   * Reads the cursor configuration from the store state and uses UpdrawCursorHelper
+   * Reads the cursor configuration from the store state and uses UpmadeCursorHelper
    * to generate the appropriate cursor value. Uses the active icon when pointer is down,
    * otherwise uses the default icon.
    * Should be called in the render loop to keep the cursor in sync with state.
@@ -144,7 +144,7 @@ export class UpdrawCursorManager {
     const iconActive = state.cursor?.iconActive ?? icon;
     const rotation = state.cursor?.rotation;
 
-    const cursor = UpdrawCursorHelper.getCursor({
+    const cursor = UpmadeCursorHelper.getCursor({
       iconName: isPointerDown ? iconActive : icon,
       rotation: rotation,
     });
@@ -162,8 +162,8 @@ export class UpdrawCursorManager {
   cleanup(): void {
     if (this._targetElement) {
       this._targetElement.style.cursor = '';
-      this._targetElement.style.removeProperty('--updraw-global-default-cursor');
-      this._targetElement.style.removeProperty('--updraw-global-pointer-cursor');
+      this._targetElement.style.removeProperty('--upmade-global-default-cursor');
+      this._targetElement.style.removeProperty('--upmade-global-pointer-cursor');
     }
     this._targetElement = null;
     this._shadowRoot = null;

@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import {
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type IUpdrawUser,
-} from '@updraw/vue-editor'
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type IUpmadeUser,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
-const user: IUpdrawUser = {
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
+const user: IUpmadeUser = {
   id: 'user-current-1',
   displayName: 'Ada Lovelace',
   email: 'ada@example.com',
@@ -18,7 +18,7 @@ const user: IUpdrawUser = {
   color: '#42b883',
   isGuest: false,
 }
-const activeUsers: IUpdrawUser[] = [
+const activeUsers: IUpmadeUser[] = [
   {
     id: 'user-collaborator-1',
     displayName: 'Grace Hopper',
@@ -47,7 +47,7 @@ const activeUsers: IUpdrawUser[] = [
 </script>
 
 <template>
-  <UpdrawEditor
+  <UpmadeEditor
     editorId="user-management-users"
     :user="user"
     :activeUsers="activeUsers"

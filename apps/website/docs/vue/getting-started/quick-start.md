@@ -1,11 +1,11 @@
 ---
 sidebar_label: Quick Start
-title: "Quick Start | Updraw for Vue"
-description: "Install and integrate the Updraw infinite canvas into your Vue application in minutes."
+title: "Quick Start | Upmade for Vue"
+description: "Install and integrate the Upmade infinite canvas into your Vue application in minutes."
 keywords:
   - vue whiteboard
   - vue infinite canvas
-  - updraw
+  - upmade
 toc_max_heading_level: 2
 ---
 
@@ -14,19 +14,19 @@ import SkillInstallation from '@site/src/components/SkillInstallation';
 
 # Quick Start
 
-The following guide gets you a full Updraw editor setup in under five minutes.
+The following guide gets you a full Upmade editor setup in under five minutes.
 
 ## Installation
 
-Run the following command to install the Updraw editor in your project.
+Run the following command to install the Upmade editor in your project.
 
 ```bash
-npm install @updraw/vue-editor
+npm install @upmade/vue-editor
 ```
 
 <SkillInstallation>
 
-Install the related Updraw skill for coding assistance:
+Install the related Upmade skill for coding assistance:
 
 ```bash
 npx skills add kasual1/kritzel
@@ -36,15 +36,15 @@ npx skills add kasual1/kritzel
 
 ## Setup
 
-Render Updraw in your component:
+Render Upmade in your component:
 
 ```html title="Editor.vue"
 <script setup lang="ts">
-import { UpdrawEditor } from '@updraw/vue-editor'
+import { UpmadeEditor } from '@upmade/vue-editor'
 </script>
 
 <template>
-  <UpdrawEditor style="display: block; width: 100%; height: 100vh" />
+  <UpmadeEditor style="display: block; width: 100%; height: 100vh" />
 </template>
 ```
 
@@ -66,21 +66,21 @@ For provider behavior details and persistence guidance, take a look at [Persiste
 
 ```html title="Editor.vue"
 <script setup lang="ts">
-import { IndexedDBSyncProvider, UpdrawEditor, type UpdrawSyncConfig } from '@updraw/vue-editor'
+import { IndexedDBSyncProvider, UpmadeEditor, type UpmadeSyncConfig } from '@upmade/vue-editor'
 
-const syncConfig: UpdrawSyncConfig = {
+const syncConfig: UpmadeSyncConfig = {
   providers: [IndexedDBSyncProvider],
 }
 </script>
 
 <template>
-  <UpdrawEditor :syncConfig="syncConfig" style="display: block; width: 100%; height: 100vh" />
+  <UpmadeEditor :syncConfig="syncConfig" style="display: block; width: 100%; height: 100vh" />
 </template>
 ```
 
 ### Full Viewport Styling
 
-To ensure the Updraw editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet, for example `styles.css`:
+To ensure the Upmade editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet, for example `styles.css`:
 
 ```css
 html,

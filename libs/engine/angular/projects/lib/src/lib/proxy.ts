@@ -4,47 +4,47 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Even
 
 import { ProxyCmp } from './angular-component-lib/utils';
 
-import type { Components } from '@updraw/engine/dist/components';
+import type { Components } from '@upmade/engine/dist/components';
 
-import { defineCustomElement as defineUpdrawEngine } from '@updraw/engine/dist/components/updraw-engine.js';
+import { defineCustomElement as defineUpmadeEngine } from '@upmade/engine/dist/components/upmade-engine.js';
 @ProxyCmp({
-  defineCustomElementFn: defineUpdrawEngine,
+  defineCustomElementFn: defineUpmadeEngine,
   inputs: ['activeWorkspaceId', 'assetStorageConfig', 'chatSession', 'cursorTarget', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isPanningEnabled', 'isWatermarkVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'objectConfig', 'objectContextMenuItems', 'objectTitlebar', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'tools', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
   methods: ['triggerSelectionChange', 'beginSceneBootstrap', 'endSceneBootstrap', 'registerTool', 'setActiveTool', 'disable', 'enable', 'delete', 'copy', 'cut', 'paste', 'bringForward', 'sendBackward', 'bringToFront', 'sendToBack', 'alignObjects', 'group', 'ungroup', 'undo', 'redo', 'hideContextMenu', 'closeObjectTitlebarMenu', 'selectObjectTitlebarMenuItem', 'openContextMenu', 'getObjectById', 'getAllObjects', 'findObjects', 'getObjectsTotalCount', 'addObject', 'addObjects', 'updateObject', 'removeObject', 'removeObjects', 'getSelectedObjects', 'getDisplayableShortcuts', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'panToObject', 'backToContent', 'centerAllObjects', 'centerObjects', 'setViewport', 'panTo', 'zoomTo', 'zoomIn', 'zoomOut', 'getViewport', 'screenToWorld', 'worldToScreen', 'getObjectsInViewport', 'addAgent', 'removeAgent', 'getAgent', 'getAgents', 'getRemoteAgents', 'setObjectElementPicking', 'highlightObjectElements', 'clearObjectElementHighlights', 'queryObjectElements', 'getScreenshot', 'exportViewportAsPng', 'exportViewportAsSvg', 'getSelectedObjectSupportedExportFormats', 'canExportSelectedObjectAs', 'exportSelectedObject', 'exportAsJson', 'importFromJson', 'loadObjectsFromJson', 'downloadAsJson', 'importFromFile', 'cancelImportFromFile', 'setActiveWorkspace', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace', 'getIsPublic', 'loadSharedWorkspace', 'reinitSync', 'saveSettings', 'loadSettings', 'registerLocales', 'configureLocales', 'setLocale', 'getLocale', 'getAvailableLocales', 'getAvailableLocaleOptions', 't', 'getResolvedTerms', 'getTool']
 })
 @Component({
-  selector: 'updraw-engine',
+  selector: 'upmade-engine',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeWorkspaceId', 'assetStorageConfig', 'chatSession', 'cursorTarget', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isPanningEnabled', 'isWatermarkVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'objectConfig', 'objectContextMenuItems', 'objectTitlebar', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'tools', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
   outputs: ['isEngineReady', 'activeToolChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange', 'notificationsChange', 'contextMenuStateChange', 'isLoadingChange', 'agentsChange', 'objectTitlebarAction', 'objectTitlebarMenuStateChange', 'objectElementHover', 'objectElementClick', 'objectElementPick'],
 })
-export class UpdrawEngine {
-  protected el: HTMLUpdrawEngineElement;
-  @Output() isEngineReady = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawEngineState>>();
-  @Output() activeToolChange = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawBaseTool>>();
-  @Output() workspacesChange = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawWorkspace[]>>();
-  @Output() activeWorkspaceChange = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawWorkspace>>();
-  @Output() longpress = new EventEmitter<UpdrawEngineCustomEvent<PointerEvent>>();
-  @Output() objectsChange = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawBaseObject[]>>();
-  @Output() objectsAdded = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineObjectsAddedEvent>>();
-  @Output() objectsRemoved = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineObjectsRemovedEvent>>();
-  @Output() objectsUpdated = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineObjectsUpdatedEvent>>();
-  @Output() objectsSelectionChange = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawBaseObject[]>>();
-  @Output() undoStateChange = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawUndoState>>();
-  @Output() objectsInViewportChange = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineObjectsInViewportChangeEvent>>();
-  @Output() viewportChange = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawViewportState>>();
-  @Output() awarenessChange = new EventEmitter<UpdrawEngineCustomEvent<Map<number, Record<string, any>>>>();
-  @Output() notificationsChange = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawNotification>>();
-  @Output() contextMenuStateChange = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawContextMenuState>>();
-  @Output() isLoadingChange = new EventEmitter<UpdrawEngineCustomEvent<boolean>>();
-  @Output() agentsChange = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawAgentsChangeEvent>>();
-  @Output() objectTitlebarAction = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawObjectTitlebarActionEvent>>();
-  @Output() objectTitlebarMenuStateChange = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawObjectTitlebarMenuState>>();
-  @Output() objectElementHover = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawObjectElementHoverEvent>>();
-  @Output() objectElementClick = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawObjectElementClickEvent>>();
-  @Output() objectElementPick = new EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawObjectElementPickEvent>>();
+export class UpmadeEngine {
+  protected el: HTMLUpmadeEngineElement;
+  @Output() isEngineReady = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeEngineState>>();
+  @Output() activeToolChange = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeBaseTool>>();
+  @Output() workspacesChange = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeWorkspace[]>>();
+  @Output() activeWorkspaceChange = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeWorkspace>>();
+  @Output() longpress = new EventEmitter<UpmadeEngineCustomEvent<PointerEvent>>();
+  @Output() objectsChange = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeBaseObject[]>>();
+  @Output() objectsAdded = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineObjectsAddedEvent>>();
+  @Output() objectsRemoved = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineObjectsRemovedEvent>>();
+  @Output() objectsUpdated = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineObjectsUpdatedEvent>>();
+  @Output() objectsSelectionChange = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeBaseObject[]>>();
+  @Output() undoStateChange = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeUndoState>>();
+  @Output() objectsInViewportChange = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineObjectsInViewportChangeEvent>>();
+  @Output() viewportChange = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeViewportState>>();
+  @Output() awarenessChange = new EventEmitter<UpmadeEngineCustomEvent<Map<number, Record<string, any>>>>();
+  @Output() notificationsChange = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeNotification>>();
+  @Output() contextMenuStateChange = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeContextMenuState>>();
+  @Output() isLoadingChange = new EventEmitter<UpmadeEngineCustomEvent<boolean>>();
+  @Output() agentsChange = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeAgentsChangeEvent>>();
+  @Output() objectTitlebarAction = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeObjectTitlebarActionEvent>>();
+  @Output() objectTitlebarMenuStateChange = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeObjectTitlebarMenuState>>();
+  @Output() objectElementHover = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeObjectElementHoverEvent>>();
+  @Output() objectElementClick = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeObjectElementClickEvent>>();
+  @Output() objectElementPick = new EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeObjectElementPickEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -52,123 +52,123 @@ export class UpdrawEngine {
 }
 
 
-import type { UpdrawEngineCustomEvent } from '@updraw/engine/dist/components';
-import type { UpdrawEngineState as IUpdrawEngineUpdrawEngineState } from '@updraw/engine/dist/components';
-import type { UpdrawBaseTool as IUpdrawEngineUpdrawBaseTool } from '@updraw/engine/dist/components';
-import type { UpdrawWorkspace as IUpdrawEngineUpdrawWorkspace } from '@updraw/engine/dist/components';
-import type { UpdrawBaseObject as IUpdrawEngineUpdrawBaseObject } from '@updraw/engine/dist/components';
-import type { ObjectsAddedEvent as IUpdrawEngineObjectsAddedEvent } from '@updraw/engine/dist/components';
-import type { ObjectsRemovedEvent as IUpdrawEngineObjectsRemovedEvent } from '@updraw/engine/dist/components';
-import type { ObjectsUpdatedEvent as IUpdrawEngineObjectsUpdatedEvent } from '@updraw/engine/dist/components';
-import type { UpdrawUndoState as IUpdrawEngineUpdrawUndoState } from '@updraw/engine/dist/components';
-import type { ObjectsInViewportChangeEvent as IUpdrawEngineObjectsInViewportChangeEvent } from '@updraw/engine/dist/components';
-import type { UpdrawViewportState as IUpdrawEngineUpdrawViewportState } from '@updraw/engine/dist/components';
-import type { UpdrawNotification as IUpdrawEngineUpdrawNotification } from '@updraw/engine/dist/components';
-import type { UpdrawContextMenuState as IUpdrawEngineUpdrawContextMenuState } from '@updraw/engine/dist/components';
-import type { UpdrawAgentsChangeEvent as IUpdrawEngineUpdrawAgentsChangeEvent } from '@updraw/engine/dist/components';
-import type { UpdrawObjectTitlebarActionEvent as IUpdrawEngineUpdrawObjectTitlebarActionEvent } from '@updraw/engine/dist/components';
-import type { UpdrawObjectTitlebarMenuState as IUpdrawEngineUpdrawObjectTitlebarMenuState } from '@updraw/engine/dist/components';
-import type { UpdrawObjectElementHoverEvent as IUpdrawEngineUpdrawObjectElementHoverEvent } from '@updraw/engine/dist/components';
-import type { UpdrawObjectElementClickEvent as IUpdrawEngineUpdrawObjectElementClickEvent } from '@updraw/engine/dist/components';
-import type { UpdrawObjectElementPickEvent as IUpdrawEngineUpdrawObjectElementPickEvent } from '@updraw/engine/dist/components';
+import type { UpmadeEngineCustomEvent } from '@upmade/engine/dist/components';
+import type { UpmadeEngineState as IUpmadeEngineUpmadeEngineState } from '@upmade/engine/dist/components';
+import type { UpmadeBaseTool as IUpmadeEngineUpmadeBaseTool } from '@upmade/engine/dist/components';
+import type { UpmadeWorkspace as IUpmadeEngineUpmadeWorkspace } from '@upmade/engine/dist/components';
+import type { UpmadeBaseObject as IUpmadeEngineUpmadeBaseObject } from '@upmade/engine/dist/components';
+import type { ObjectsAddedEvent as IUpmadeEngineObjectsAddedEvent } from '@upmade/engine/dist/components';
+import type { ObjectsRemovedEvent as IUpmadeEngineObjectsRemovedEvent } from '@upmade/engine/dist/components';
+import type { ObjectsUpdatedEvent as IUpmadeEngineObjectsUpdatedEvent } from '@upmade/engine/dist/components';
+import type { UpmadeUndoState as IUpmadeEngineUpmadeUndoState } from '@upmade/engine/dist/components';
+import type { ObjectsInViewportChangeEvent as IUpmadeEngineObjectsInViewportChangeEvent } from '@upmade/engine/dist/components';
+import type { UpmadeViewportState as IUpmadeEngineUpmadeViewportState } from '@upmade/engine/dist/components';
+import type { UpmadeNotification as IUpmadeEngineUpmadeNotification } from '@upmade/engine/dist/components';
+import type { UpmadeContextMenuState as IUpmadeEngineUpmadeContextMenuState } from '@upmade/engine/dist/components';
+import type { UpmadeAgentsChangeEvent as IUpmadeEngineUpmadeAgentsChangeEvent } from '@upmade/engine/dist/components';
+import type { UpmadeObjectTitlebarActionEvent as IUpmadeEngineUpmadeObjectTitlebarActionEvent } from '@upmade/engine/dist/components';
+import type { UpmadeObjectTitlebarMenuState as IUpmadeEngineUpmadeObjectTitlebarMenuState } from '@upmade/engine/dist/components';
+import type { UpmadeObjectElementHoverEvent as IUpmadeEngineUpmadeObjectElementHoverEvent } from '@upmade/engine/dist/components';
+import type { UpmadeObjectElementClickEvent as IUpmadeEngineUpmadeObjectElementClickEvent } from '@upmade/engine/dist/components';
+import type { UpmadeObjectElementPickEvent as IUpmadeEngineUpmadeObjectElementPickEvent } from '@upmade/engine/dist/components';
 
-export declare interface UpdrawEngine extends Components.UpdrawEngine {
+export declare interface UpmadeEngine extends Components.UpmadeEngine {
   /**
    * Emitted when the engine has fully initialized and is ready for interaction.
    */
-  isEngineReady: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawEngineState>>;
+  isEngineReady: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeEngineState>>;
   /**
    * Emitted when the active drawing tool changes.
    */
-  activeToolChange: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawBaseTool>>;
+  activeToolChange: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeBaseTool>>;
   /**
    * Emitted when workspaces are created, updated, or deleted.
    */
-  workspacesChange: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawWorkspace[]>>;
+  workspacesChange: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeWorkspace[]>>;
   /**
    * Emitted when the active workspace changes (e.g., after import).
    */
-  activeWorkspaceChange: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawWorkspace>>;
+  activeWorkspaceChange: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeWorkspace>>;
   /**
    * Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.
    */
-  longpress: EventEmitter<UpdrawEngineCustomEvent<PointerEvent>>;
+  longpress: EventEmitter<UpmadeEngineCustomEvent<PointerEvent>>;
   /**
    * Emitted when objects on the canvas are added, removed, or modified.
    */
-  objectsChange: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawBaseObject[]>>;
+  objectsChange: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeBaseObject[]>>;
   /**
    * Emitted when one or more objects are added to the canvas. `source` is set when an agent made the change.
    */
-  objectsAdded: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineObjectsAddedEvent>>;
+  objectsAdded: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineObjectsAddedEvent>>;
   /**
    * Emitted when one or more objects are removed from the canvas. `source` is set when an agent made the change.
    */
-  objectsRemoved: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineObjectsRemovedEvent>>;
+  objectsRemoved: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineObjectsRemovedEvent>>;
   /**
    * Emitted when one or more objects are updated on the canvas. `source` is set when an agent made the change.
    */
-  objectsUpdated: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineObjectsUpdatedEvent>>;
+  objectsUpdated: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineObjectsUpdatedEvent>>;
   /**
    * Emitted when the set of selected objects changes.
    */
-  objectsSelectionChange: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawBaseObject[]>>;
+  objectsSelectionChange: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeBaseObject[]>>;
   /**
    * Emitted when the undo/redo state changes, providing current undo availability.
    */
-  undoStateChange: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawUndoState>>;
+  undoStateChange: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeUndoState>>;
   /**
    * Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).
    */
-  objectsInViewportChange: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineObjectsInViewportChangeEvent>>;
+  objectsInViewportChange: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineObjectsInViewportChangeEvent>>;
   /**
    * Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize).
    */
-  viewportChange: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawViewportState>>;
+  viewportChange: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeViewportState>>;
   /**
    * Emitted when the awareness state changes (remote user cursors, presence).
    */
-  awarenessChange: EventEmitter<UpdrawEngineCustomEvent<Map<number, Record<string, any>>>>;
+  awarenessChange: EventEmitter<UpmadeEngineCustomEvent<Map<number, Record<string, any>>>>;
   /**
    * Emitted when notifications change.
    */
-  notificationsChange: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawNotification>>;
+  notificationsChange: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeNotification>>;
   /**
    * Emitted when context-menu visibility, items, or position changes.
    */
-  contextMenuStateChange: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawContextMenuState>>;
+  contextMenuStateChange: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeContextMenuState>>;
   /**
    * Emitted while the selected workspace's objects are being initialized and synchronized.
    */
-  isLoadingChange: EventEmitter<UpdrawEngineCustomEvent<boolean>>;
+  isLoadingChange: EventEmitter<UpmadeEngineCustomEvent<boolean>>;
   /**
    * Emitted when agents are added or removed, or when what the avatar stack shows of them changes
 (name, color, avatar, status, visibility, activity). Lists the local agents first, then the agents of
 collaborators (`isRemote: true`). Never emitted for plain cursor motion.
    */
-  agentsChange: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawAgentsChangeEvent>>;
+  agentsChange: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeAgentsChangeEvent>>;
   /**
    * Emitted when a button or a menu item in an object titlebar is clicked.
    */
-  objectTitlebarAction: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawObjectTitlebarActionEvent>>;
+  objectTitlebarAction: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeObjectTitlebarActionEvent>>;
   /**
    * Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render
 `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`.
    */
-  objectTitlebarMenuStateChange: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawObjectTitlebarMenuState>>;
+  objectTitlebarMenuStateChange: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeObjectTitlebarMenuState>>;
   /**
    * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object,
 such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
    */
-  objectElementHover: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawObjectElementHoverEvent>>;
+  objectElementHover: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeObjectElementHoverEvent>>;
   /**
    * Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual.
    */
-  objectElementClick: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawObjectElementClickEvent>>;
+  objectElementClick: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeObjectElementClickEvent>>;
   /**
    * Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`.
    */
-  objectElementPick: EventEmitter<UpdrawEngineCustomEvent<IUpdrawEngineUpdrawObjectElementPickEvent>>;
+  objectElementPick: EventEmitter<UpmadeEngineCustomEvent<IUpmadeEngineUpmadeObjectElementPickEvent>>;
 }
 
 

@@ -1,0 +1,255 @@
+:host {
+  display: block;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: var(--upmade-engine-background-color, #ffffff);
+}
+
+:host,
+:host * {
+  touch-action: none;
+  user-select: none;
+}
+
+.ProseMirror {
+  outline: none;
+}
+
+.ProseMirror::selection,
+.ProseMirror ::selection {
+  background-color: var(--upmade-text-selection-background-color, #007AFF);
+  color: var(--upmade-text-selection-color, #ffffff);
+}
+
+p, h1, h2, h3, h4, h5, h6, blockquote, pre {
+  margin: 0;
+  padding: 0;
+}
+
+.debug-panel {
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  right: 0;
+}
+
+.origin {
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 0;
+  width: 0;
+  pointer-events: none;
+  -webkit-transform-origin: top left;
+  -moz-transform-origin: top left;
+  transform-origin: top left;
+  overflow: visible;
+}
+
+.object {
+  overflow: visible;
+}
+
+/*
+ * Appear animation of objects that app code or agents insert, from the theme (`objectAppear`): they fade in while
+ * they rise into place, objects of one batch one after another (`--upmade-object-appear-index`, set inline). Their
+ * titlebars (rendered in their own layer) appear with them. The engine adds the classes for one play only, so objects
+ * that scroll back into view don't appear again.
+ *
+ * Animates `translate` rather than `transform`, which holds the object's position (set inline). The distance is in
+ * canvas units, like the object's size. `opacity` multiplies with the object's own, which is set on its content.
+ */
+.object--appearing,
+.object-titlebar-anchor--appearing {
+  animation: upmade-object-appear var(--upmade-object-appear-animation-duration, 600ms)
+    var(--upmade-object-appear-animation-easing, cubic-bezier(0.33, 1, 0.68, 1)) backwards;
+  animation-delay: calc(var(--upmade-object-appear-stagger, 110ms) * var(--upmade-object-appear-index, 0));
+}
+
+@keyframes upmade-object-appear {
+  from {
+    opacity: 0;
+    translate: 0 var(--upmade-object-appear-distance, 14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .object--appearing,
+  .object-titlebar-anchor--appearing {
+    animation: none;
+  }
+}
+
+/*
+ * Corner radius of the objects that are cards and of images, from the theme (`object`, `iframe`, `dynamicObject`,
+ * `image`), as a variable on the object's container: its wrapper, its loading placeholder and its content all read
+ * it. An object's own `borderRadius` sets the variable inline and wins. Content can match it with `var(--upmade-content-border-radius)`.
+ */
+.object--iframe {
+  --upmade-content-border-radius: var(--upmade-iframe-border-radius, var(--upmade-object-border-radius, 12px));
+}
+
+.object--dynamic-object {
+  --upmade-content-border-radius: var(--upmade-dynamic-object-border-radius, var(--upmade-object-border-radius, 12px));
+}
+
+/* Images are not cards: they keep square corners unless the theme (`image.borderRadius`) or the image rounds them. */
+.object--image {
+  --upmade-content-border-radius: var(--upmade-image-border-radius, 0);
+}
+
+/*
+ * Deprecated aliases for content saved under a former name of the library, which may still use the old variable
+ * names. Keep in sync with LEGACY_CONTENT_CSS_VARIABLES in @upmade/core (a spec checks it).
+ */
+.object--iframe,
+.object--dynamic-object,
+.object--image {
+  --updraw-content-border-radius: var(--upmade-content-border-radius);
+  --kritzel-content-border-radius: var(--upmade-content-border-radius);
+}
+
+.upmade-iframe-object,
+.upmade-dynamic-object,
+.upmade-image-object,
+.upmade-image-placeholder {
+  border-radius: var(--upmade-content-border-radius);
+}
+
+/* The iframe and the overlay that catches pointers while it is not interactive. */
+.upmade-iframe-object > * {
+  border-radius: inherit;
+}
+
+/* Content is clipped to the rounded box; `clip` (unlike `hidden`) never scrolls, e.g. to a focused input. */
+.upmade-dynamic-object {
+  overflow: clip;
+}
+
+/*
+ * Shadows of the objects that are cards, from the theme (`object`, `iframe`, `dynamicObject`, `image`). An object's
+ * own `boxShadow` (images: `dropShadow`) is set inline and wins. Images use a `drop-shadow()` filter, which follows
+ * transparent images (SVGs, icons) instead of their box.
+ */
+.upmade-iframe-object {
+  box-shadow: var(--upmade-iframe-box-shadow, var(--upmade-object-box-shadow, 0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)));
+}
+
+.upmade-dynamic-object {
+  box-shadow: var(--upmade-dynamic-object-box-shadow, var(--upmade-object-box-shadow, 0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)));
+}
+
+.upmade-image-object {
+  filter: var(--upmade-image-drop-shadow, drop-shadow(0 1px 1px rgba(20, 18, 31, 0.06)) drop-shadow(0 8px 12px rgba(20, 18, 31, 0.14)));
+}
+
+/* Fades `opacity` (to the object's own) rather than `filter`, which holds the image's shadow. */
+.upmade-image-object--first-reveal {
+  animation: upmade-image-first-reveal 180ms ease-out backwards;
+  will-change: opacity;
+}
+
+@keyframes upmade-image-first-reveal {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .upmade-image-object--first-reveal {
+    animation: none;
+  }
+}
+
+.upmade-iframe-object--revealed {
+  animation: upmade-iframe-reveal 280ms ease-out backwards;
+}
+
+@keyframes upmade-iframe-reveal {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .upmade-iframe-object--revealed {
+    animation: none;
+  }
+}
+
+/*
+ * Loading placeholder drawn over an object while `object.isLoading` is set: a grey surface with a glare sweeping
+ * across it. Covers the whole object; its content stays mounted underneath.
+ */
+.upmade-loading-placeholder {
+  position: absolute;
+  left: 0;
+  top: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: var(--upmade-loading-placeholder-background-color, #e5e7eb);
+  border-radius: var(--upmade-loading-placeholder-border-radius, var(--upmade-content-border-radius, var(--upmade-object-border-radius, 12px)));
+  box-shadow: var(--upmade-loading-placeholder-box-shadow, var(--upmade-object-box-shadow, 0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)));
+  animation: upmade-loading-placeholder-reveal 200ms ease-out backwards;
+}
+
+.upmade-loading-placeholder::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    var(--upmade-loading-placeholder-glare-color, rgba(255, 255, 255, 0.6)) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  animation: upmade-loading-placeholder-glare var(--upmade-loading-placeholder-animation-duration, 1.6s) ease-in-out infinite;
+  will-change: transform;
+}
+
+/*
+ * The object's content is rendered before the placeholder, its UI (selection handles, debug info) after it. Hide the
+ * content so it can't show past the placeholder's rounded corners; it stays mounted, so it keeps loading.
+ */
+.object > :has(~ .upmade-loading-placeholder) {
+  visibility: hidden;
+}
+
+@keyframes upmade-loading-placeholder-glare {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes upmade-loading-placeholder-reveal {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .upmade-loading-placeholder,
+  .upmade-loading-placeholder::after {
+    animation: none;
+  }
+
+  .upmade-loading-placeholder::after {
+    display: none;
+  }
+}
+
+.PlaygroundEditorTheme__quote {
+  margin: 0;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: rgb(101, 103, 107);
+  border-left-color: rgb(206, 208, 212);
+  border-left-width: 4px;
+  border-left-style: solid;
+  padding-left: 16px;
+}

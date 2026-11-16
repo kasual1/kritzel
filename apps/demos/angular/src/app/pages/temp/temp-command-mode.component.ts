@@ -1,6 +1,6 @@
-// TEMP: demo of UpdrawChatSession in command mode against a mocked server answered by a real model; delete with pages/temp/.
+// TEMP: demo of UpmadeChatSession in command mode against a mocked server answered by a real model; delete with pages/temp/.
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { UPDRAW_DEFAULT_OBJECT_TITLEBAR, UpdrawChatSession, UpdrawEditor, UpdrawIframeObject, UpdrawObjectConfig, UpdrawWorkspace } from '@updraw/angular-editor';
+import { UPMADE_DEFAULT_OBJECT_TITLEBAR, UpmadeChatSession, UpmadeEditor, UpmadeIframeObject, UpmadeObjectConfig, UpmadeWorkspace } from '@upmade/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { llmTransport } from './mock-llm-chat-server';
@@ -8,11 +8,11 @@ import { llmTransport } from './mock-llm-chat-server';
 const SYSTEM = `You draw on a whiteboard. Look at the canvas before you change it.`;
 @Component({
   selector: 'app-temp-command-mode',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="editor">
-      <updraw-editor
+      <upmade-editor
         editorId="temp-command-mode"
         [theme]="'light'"
         [themes]="themes"
@@ -23,7 +23,7 @@ const SYSTEM = `You draw on a whiteboard. Look at the canvas before you change i
         [isChatBoxVisible]="true"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-      ></updraw-editor>
+      ></upmade-editor>
     </div>
   `,
   styles: [
@@ -44,12 +44,12 @@ const SYSTEM = `You draw on a whiteboard. Look at the canvas before you change i
 })
 export class TempCommandModeComponent {
   themes = [angularThemeLight, angularThemeDark];
-  workspaces = [new UpdrawWorkspace({ viewport: { centerWorldX: 200, centerWorldY: 280, scale: 0.7 } })];
-  objectConfig: UpdrawObjectConfig = {
-    hasTitlebar: (object) => object instanceof UpdrawIframeObject,
-    isRotatable: (object) => object instanceof UpdrawIframeObject === false
+  workspaces = [new UpmadeWorkspace({ viewport: { centerWorldX: 200, centerWorldY: 280, scale: 0.7 } })];
+  objectConfig: UpmadeObjectConfig = {
+    hasTitlebar: (object) => object instanceof UpmadeIframeObject,
+    isRotatable: (object) => object instanceof UpmadeIframeObject === false
   };
-  readonly objectTitlebar = UPDRAW_DEFAULT_OBJECT_TITLEBAR;
+  readonly objectTitlebar = UPMADE_DEFAULT_OBJECT_TITLEBAR;
 
-  readonly session = new UpdrawChatSession({ transport: llmTransport, system: SYSTEM, canvasTools: { iframes: true } });
+  readonly session = new UpmadeChatSession({ transport: llmTransport, system: SYSTEM, canvasTools: { iframes: true } });
 }

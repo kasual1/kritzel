@@ -1,22 +1,22 @@
-import { UpdrawStore } from './store.class';
-import { UpdrawEngineState } from '../../interfaces/engine-state.interface';
-import { UpdrawSelectionBox } from '../objects/selection-box.class';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawText } from '../objects/text.class';
-import { UpdrawShape } from '../objects/shape.class';
-import { UpdrawPath } from '../objects/path.class';
-import { UpdrawLine } from '../objects/line.class';
-import { UpdrawDynamicObject } from '../objects/dynamic-object.class';
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawGroup } from '../objects/group.class';
+import { UpmadeStore } from './store.class';
+import { UpmadeEngineState } from '../../interfaces/engine-state.interface';
+import { UpmadeSelectionBox } from '../objects/selection-box.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeText } from '../objects/text.class';
+import { UpmadeShape } from '../objects/shape.class';
+import { UpmadePath } from '../objects/path.class';
+import { UpmadeLine } from '../objects/line.class';
+import { UpmadeDynamicObject } from '../objects/dynamic-object.class';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeGroup } from '../objects/group.class';
 
-type TestState = Omit<UpdrawEngineState, 'objects'> & { objects: NonNullable<UpdrawEngineState['objects']> };
+type TestState = Omit<UpmadeEngineState, 'objects'> & { objects: NonNullable<UpmadeEngineState['objects']> };
 
-describe('UpdrawStore', () => {
-  let store: UpdrawStore;
+describe('UpmadeStore', () => {
+  let store: UpmadeStore;
   let mockState: TestState;
 
-  const createMockState = (): UpdrawEngineState => {
+  const createMockState = (): UpmadeEngineState => {
     return {
       scale: 1,
       translateX: 0,
@@ -35,12 +35,12 @@ describe('UpdrawStore', () => {
       workspaces: [],
       debugInfo: {} as any,
       cursor: { icon: '' } as any,
-    } as unknown as UpdrawEngineState;
+    } as unknown as UpmadeEngineState;
   };
 
   beforeEach(() => {
     const state = createMockState();
-    store = new UpdrawStore(state);
+    store = new UpmadeStore(state);
     mockState = store.state as TestState;
   });
 
@@ -53,7 +53,7 @@ describe('UpdrawStore', () => {
       expect(store.state).toBe(mockState);
     });
 
-    it('should initialize state.objects as an UpdrawObjectMap', () => {
+    it('should initialize state.objects as an UpmadeObjectMap', () => {
       expect(mockState.objects).toBeDefined();
       expect(mockState.objects.totalCount).toBe(0);
     });
@@ -71,9 +71,9 @@ describe('UpdrawStore', () => {
     });
 
     it('should return max zIndex + 1 from non-selection objects', () => {
-      const obj1 = new UpdrawBaseObject<Element>();
+      const obj1 = new UpmadeBaseObject<Element>();
       obj1.zIndex = 5;
-      const obj2 = new UpdrawBaseObject<Element>();
+      const obj2 = new UpmadeBaseObject<Element>();
       obj2.zIndex = 10;
 
       mockState.objects.insert(obj1);
@@ -83,10 +83,10 @@ describe('UpdrawStore', () => {
     });
 
     it('should ignore SelectionGroup objects when calculating zIndex', () => {
-      const obj = new UpdrawBaseObject<Element>();
+      const obj = new UpmadeBaseObject<Element>();
       obj.zIndex = 5;
 
-      const selGroup = new UpdrawSelectionGroup();
+      const selGroup = new UpmadeSelectionGroup();
       selGroup.zIndex = 99999;
 
       mockState.objects.insert(obj);
@@ -96,10 +96,10 @@ describe('UpdrawStore', () => {
     });
 
     it('should ignore SelectionBox objects when calculating zIndex', () => {
-      const obj = new UpdrawBaseObject<Element>();
+      const obj = new UpmadeBaseObject<Element>();
       obj.zIndex = 3;
 
-      const selBox = new UpdrawSelectionBox();
+      const selBox = new UpmadeSelectionBox();
       selBox.zIndex = 99999;
 
       mockState.objects.insert(obj);
@@ -115,8 +115,8 @@ describe('UpdrawStore', () => {
     });
 
     it('should return the total count of all objects', () => {
-      const obj1 = new UpdrawBaseObject<Element>();
-      const obj2 = new UpdrawBaseObject<Element>();
+      const obj1 = new UpmadeBaseObject<Element>();
+      const obj2 = new UpmadeBaseObject<Element>();
       mockState.objects.insert(obj1);
       mockState.objects.insert(obj2);
 
@@ -130,8 +130,8 @@ describe('UpdrawStore', () => {
     });
 
     it('should return all objects', () => {
-      const obj1 = new UpdrawBaseObject<Element>();
-      const obj2 = new UpdrawBaseObject<Element>();
+      const obj1 = new UpmadeBaseObject<Element>();
+      const obj2 = new UpmadeBaseObject<Element>();
       mockState.objects.insert(obj1);
       mockState.objects.insert(obj2);
 
@@ -148,14 +148,14 @@ describe('UpdrawStore', () => {
     });
 
     it('should include SelectionGroup objects in viewport', () => {
-      const obj = new UpdrawBaseObject<Element>();
+      const obj = new UpmadeBaseObject<Element>();
       obj.translateX = 50;
       obj.translateY = 50;
       obj.width = 100;
       obj.height = 100;
       obj.zIndex = 1;
 
-      const selGroup = new UpdrawSelectionGroup();
+      const selGroup = new UpmadeSelectionGroup();
       selGroup.translateX = 50;
       selGroup.translateY = 50;
       selGroup.width = 100;
@@ -171,14 +171,14 @@ describe('UpdrawStore', () => {
     });
 
     it('should include SelectionBox objects in viewport', () => {
-      const obj = new UpdrawBaseObject<Element>();
+      const obj = new UpmadeBaseObject<Element>();
       obj.translateX = 50;
       obj.translateY = 50;
       obj.width = 100;
       obj.height = 100;
       obj.zIndex = 1;
 
-      const selBox = new UpdrawSelectionBox();
+      const selBox = new UpmadeSelectionBox();
       selBox.translateX = 50;
       selBox.translateY = 50;
       selBox.width = 100;
@@ -194,14 +194,14 @@ describe('UpdrawStore', () => {
     });
 
     it('should sort objects by zIndex', () => {
-      const objA = new UpdrawBaseObject<Element>();
+      const objA = new UpmadeBaseObject<Element>();
       objA.translateX = 10;
       objA.translateY = 10;
       objA.width = 50;
       objA.height = 50;
       objA.zIndex = 10;
 
-      const objB = new UpdrawBaseObject<Element>();
+      const objB = new UpmadeBaseObject<Element>();
       objB.translateX = 20;
       objB.translateY = 20;
       objB.width = 50;
@@ -216,8 +216,8 @@ describe('UpdrawStore', () => {
     });
 
     describe('group tied with its top member', () => {
-      const createObject = (zIndex: number): UpdrawBaseObject<Element> => {
-        const object = new UpdrawBaseObject<Element>();
+      const createObject = (zIndex: number): UpmadeBaseObject<Element> => {
+        const object = new UpmadeBaseObject<Element>();
         object.zIndex = zIndex;
         return object;
       };
@@ -227,7 +227,7 @@ describe('UpdrawStore', () => {
         const bottom = createObject(1);
         const top = createObject(2);
         const above = createObject(3);
-        const group = new UpdrawGroup();
+        const group = new UpmadeGroup();
         group.childIds = [bottom.id, top.id];
         group.zIndex = 2;
         return { bottom, top, group, above };
@@ -261,7 +261,7 @@ describe('UpdrawStore', () => {
 
   describe('objectsToRender', () => {
     it('should include objectsInViewport', () => {
-      const obj = new UpdrawBaseObject<Element>();
+      const obj = new UpmadeBaseObject<Element>();
       obj.translateX = 50;
       obj.translateY = 50;
       obj.width = 100;
@@ -275,7 +275,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should include selection group when present', () => {
-      const selGroup = new UpdrawSelectionGroup();
+      const selGroup = new UpmadeSelectionGroup();
       selGroup.translateX = 50;
       selGroup.translateY = 50;
       selGroup.width = 100;
@@ -290,7 +290,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should include selection box when present', () => {
-      const selBox = new UpdrawSelectionBox();
+      const selBox = new UpmadeSelectionBox();
       selBox.translateX = 50;
       selBox.translateY = 50;
       selBox.width = 100;
@@ -305,14 +305,14 @@ describe('UpdrawStore', () => {
     });
 
     it('should sort all rendered objects by zIndex', () => {
-      const obj1 = new UpdrawBaseObject<Element>();
+      const obj1 = new UpmadeBaseObject<Element>();
       obj1.translateX = 50;
       obj1.translateY = 50;
       obj1.width = 100;
       obj1.height = 100;
       obj1.zIndex = 5;
 
-      const obj2 = new UpdrawBaseObject<Element>();
+      const obj2 = new UpmadeBaseObject<Element>();
       obj2.translateX = 50;
       obj2.translateY = 50;
       obj2.width = 100;
@@ -331,9 +331,9 @@ describe('UpdrawStore', () => {
 
   describe('allNonSelectionObjects', () => {
     it('should return objects excluding SelectionGroup and SelectionBox', () => {
-      const obj = new UpdrawBaseObject<Element>();
-      const selGroup = new UpdrawSelectionGroup();
-      const selBox = new UpdrawSelectionBox();
+      const obj = new UpmadeBaseObject<Element>();
+      const selGroup = new UpmadeSelectionGroup();
+      const selBox = new UpmadeSelectionBox();
 
       mockState.objects.insert(obj);
       mockState.objects.insert(selGroup);
@@ -346,7 +346,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should return an empty array when only selection objects exist', () => {
-      const selGroup = new UpdrawSelectionGroup();
+      const selGroup = new UpmadeSelectionGroup();
       mockState.objects.insert(selGroup);
 
       expect(store.allNonSelectionObjects).toEqual([]);
@@ -355,10 +355,10 @@ describe('UpdrawStore', () => {
 
   describe('selectedObjects', () => {
     it('should return only objects where isSelected is true', () => {
-      const selected = new UpdrawBaseObject<Element>();
+      const selected = new UpmadeBaseObject<Element>();
       selected.isSelected = true;
 
-      const unselected = new UpdrawBaseObject<Element>();
+      const unselected = new UpmadeBaseObject<Element>();
       unselected.isSelected = false;
 
       mockState.objects.insert(selected);
@@ -370,7 +370,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should exclude SelectionGroup even if it is selected', () => {
-      const selGroup = new UpdrawSelectionGroup();
+      const selGroup = new UpmadeSelectionGroup();
       selGroup.isSelected = true;
 
       mockState.objects.insert(selGroup);
@@ -379,7 +379,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should return empty array when no objects are selected', () => {
-      const obj = new UpdrawBaseObject<Element>();
+      const obj = new UpmadeBaseObject<Element>();
       obj.isSelected = false;
       mockState.objects.insert(obj);
 
@@ -393,14 +393,14 @@ describe('UpdrawStore', () => {
     });
 
     it('should return the SelectionBox when one exists', () => {
-      const selBox = new UpdrawSelectionBox();
+      const selBox = new UpmadeSelectionBox();
       mockState.objects.insert(selBox);
 
       expect(store.selectionBox).toBe(selBox);
     });
 
     it('should cache the result for subsequent calls', () => {
-      const selBox = new UpdrawSelectionBox();
+      const selBox = new UpmadeSelectionBox();
       mockState.objects.insert(selBox);
 
       const filterSpy = jest.spyOn(mockState.objects, 'filter');
@@ -417,7 +417,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should refresh cache after invalidation', () => {
-      const selBox = new UpdrawSelectionBox();
+      const selBox = new UpmadeSelectionBox();
       mockState.objects.insert(selBox);
 
       const filterSpy = jest.spyOn(mockState.objects, 'filter');
@@ -438,14 +438,14 @@ describe('UpdrawStore', () => {
     });
 
     it('should return the SelectionGroup when one exists', () => {
-      const selGroup = new UpdrawSelectionGroup();
+      const selGroup = new UpmadeSelectionGroup();
       mockState.objects.insert(selGroup);
 
       expect(store.selectionGroup).toBe(selGroup);
     });
 
     it('should cache the result for subsequent calls', () => {
-      const selGroup = new UpdrawSelectionGroup();
+      const selGroup = new UpmadeSelectionGroup();
       mockState.objects.insert(selGroup);
 
       const filterSpy = jest.spyOn(mockState.objects, 'filter');
@@ -461,7 +461,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should refresh cache after invalidation', () => {
-      const selGroup = new UpdrawSelectionGroup();
+      const selGroup = new UpmadeSelectionGroup();
       mockState.objects.insert(selGroup);
 
       const filterSpy = jest.spyOn(mockState.objects, 'filter');
@@ -476,10 +476,10 @@ describe('UpdrawStore', () => {
     });
 
     it('should return only the local user\'s selection group when localUserId is set', () => {
-      const localGroup = new UpdrawSelectionGroup();
+      const localGroup = new UpmadeSelectionGroup();
       (localGroup as any).userId = 'user-a';
 
-      const remoteGroup = new UpdrawSelectionGroup();
+      const remoteGroup = new UpmadeSelectionGroup();
       (remoteGroup as any).userId = 'user-b';
 
       mockState.objects.insert(localGroup);
@@ -491,7 +491,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should return null when no selection group matches localUserId', () => {
-      const remoteGroup = new UpdrawSelectionGroup();
+      const remoteGroup = new UpmadeSelectionGroup();
       (remoteGroup as any).userId = 'user-b';
 
       mockState.objects.insert(remoteGroup);
@@ -502,10 +502,10 @@ describe('UpdrawStore', () => {
     });
 
     it('should fall back to first group when localUserId is null', () => {
-      const groupA = new UpdrawSelectionGroup();
+      const groupA = new UpmadeSelectionGroup();
       (groupA as any).userId = 'user-a';
 
-      const groupB = new UpdrawSelectionGroup();
+      const groupB = new UpmadeSelectionGroup();
       (groupB as any).userId = 'user-b';
 
       mockState.objects.insert(groupA);
@@ -523,9 +523,9 @@ describe('UpdrawStore', () => {
     });
 
     it('should return only the groups of the selection', () => {
-      const group = Object.assign(Object.create(UpdrawGroup.prototype), { id: 'group', __class__: 'UpdrawGroup' });
-      const path = Object.assign(Object.create(UpdrawPath.prototype), { id: 'path', __class__: 'UpdrawPath' });
-      const selGroup = new UpdrawSelectionGroup();
+      const group = Object.assign(Object.create(UpmadeGroup.prototype), { id: 'group', __class__: 'UpmadeGroup' });
+      const path = Object.assign(Object.create(UpmadePath.prototype), { id: 'path', __class__: 'UpmadePath' });
+      const selGroup = new UpmadeSelectionGroup();
       Object.defineProperty(selGroup, 'objects', { get: () => [group, path] });
       mockState.objects.insert(selGroup);
 
@@ -535,7 +535,7 @@ describe('UpdrawStore', () => {
 
   describe('setLocalUserId', () => {
     it('should invalidate selection cache when called', () => {
-      const selGroup = new UpdrawSelectionGroup();
+      const selGroup = new UpmadeSelectionGroup();
       (selGroup as any).userId = 'user-a';
       mockState.objects.insert(selGroup);
 
@@ -552,14 +552,14 @@ describe('UpdrawStore', () => {
 
   describe('setSelectionBox', () => {
     it('should directly set the cached selection box', () => {
-      const selBox = new UpdrawSelectionBox();
+      const selBox = new UpmadeSelectionBox();
       store.setSelectionBox(selBox);
 
       expect(store.selectionBox).toBe(selBox);
     });
 
     it('should set cached selection box to null', () => {
-      const selBox = new UpdrawSelectionBox();
+      const selBox = new UpmadeSelectionBox();
       store.setSelectionBox(selBox);
       store.setSelectionBox(null);
 
@@ -567,7 +567,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should bypass filter lookup on subsequent access', () => {
-      const selBox = new UpdrawSelectionBox();
+      const selBox = new UpmadeSelectionBox();
       const filterSpy = jest.spyOn(mockState.objects, 'filter');
 
       store.setSelectionBox(selBox);
@@ -581,14 +581,14 @@ describe('UpdrawStore', () => {
 
   describe('setSelectionGroup', () => {
     it('should directly set the cached selection group', () => {
-      const selGroup = new UpdrawSelectionGroup();
+      const selGroup = new UpmadeSelectionGroup();
       store.setSelectionGroup(selGroup);
 
       expect(store.selectionGroup).toBe(selGroup);
     });
 
     it('should set cached selection group to null', () => {
-      const selGroup = new UpdrawSelectionGroup();
+      const selGroup = new UpmadeSelectionGroup();
       store.setSelectionGroup(selGroup);
       store.setSelectionGroup(null);
 
@@ -596,7 +596,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should bypass filter lookup on subsequent access', () => {
-      const selGroup = new UpdrawSelectionGroup();
+      const selGroup = new UpmadeSelectionGroup();
       const filterSpy = jest.spyOn(mockState.objects, 'filter');
 
       store.setSelectionGroup(selGroup);
@@ -610,8 +610,8 @@ describe('UpdrawStore', () => {
 
   describe('invalidateSelectionCache', () => {
     it('should invalidate both selection caches', () => {
-      const selBox = new UpdrawSelectionBox();
-      const selGroup = new UpdrawSelectionGroup();
+      const selBox = new UpmadeSelectionBox();
+      const selGroup = new UpmadeSelectionGroup();
       store.setSelectionBox(selBox);
       store.setSelectionGroup(selGroup);
 
@@ -635,7 +635,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should return the text object that is being edited', () => {
-      const text = new UpdrawText();
+      const text = new UpmadeText();
       text.isEditing = true;
       mockState.objects.insert(text);
 
@@ -643,7 +643,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should not return a text object that is not being edited', () => {
-      const text = new UpdrawText();
+      const text = new UpmadeText();
       text.isEditing = false;
       mockState.objects.insert(text);
 
@@ -657,7 +657,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should return the shape object that is being edited', () => {
-      const shape = new UpdrawShape();
+      const shape = new UpmadeShape();
       shape.isEditing = true;
       mockState.objects.insert(shape);
 
@@ -665,7 +665,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should not return a shape object that is not being edited', () => {
-      const shape = new UpdrawShape();
+      const shape = new UpmadeShape();
       shape.isEditing = false;
       mockState.objects.insert(shape);
 
@@ -675,7 +675,7 @@ describe('UpdrawStore', () => {
 
   describe('activeInteractiveDynamicObject', () => {
     it('should return null when no selected dynamic object has focused input-like content', () => {
-      const dynamicObject = new UpdrawDynamicObject();
+      const dynamicObject = new UpmadeDynamicObject();
       dynamicObject.isSelected = true;
       dynamicObject.isInteractive = true;
       jest.spyOn(dynamicObject, 'hasFocusedInputElement').mockReturnValue(false);
@@ -685,7 +685,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should return the selected dynamic object with focused input-like content', () => {
-      const dynamicObject = new UpdrawDynamicObject();
+      const dynamicObject = new UpmadeDynamicObject();
       dynamicObject.isSelected = true;
       dynamicObject.isInteractive = true;
       jest.spyOn(dynamicObject, 'hasFocusedInputElement').mockReturnValue(true);
@@ -695,7 +695,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should ignore dynamic objects that are not selected even when input-like content is focused', () => {
-      const dynamicObject = new UpdrawDynamicObject();
+      const dynamicObject = new UpmadeDynamicObject();
       dynamicObject.isSelected = false;
       dynamicObject.isInteractive = true;
       jest.spyOn(dynamicObject, 'hasFocusedInputElement').mockReturnValue(true);
@@ -711,7 +711,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should return the path that is not yet completed', () => {
-      const path = new UpdrawPath();
+      const path = new UpmadePath();
       path.isCompleted = false;
       mockState.objects.insert(path);
 
@@ -719,7 +719,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should not return a completed path', () => {
-      const path = new UpdrawPath();
+      const path = new UpmadePath();
       path.isCompleted = true;
       mockState.objects.insert(path);
 
@@ -733,7 +733,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should return the line that is not yet completed', () => {
-      const line = new UpdrawLine();
+      const line = new UpmadeLine();
       line.isCompleted = false;
       mockState.objects.insert(line);
 
@@ -741,7 +741,7 @@ describe('UpdrawStore', () => {
     });
 
     it('should not return a completed line', () => {
-      const line = new UpdrawLine();
+      const line = new UpmadeLine();
       line.isCompleted = true;
       mockState.objects.insert(line);
 

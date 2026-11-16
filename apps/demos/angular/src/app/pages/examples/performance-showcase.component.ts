@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, signal, ViewChild } from '@angular/core';
 
 import {
-  UpdrawDynamicObject,
-  UpdrawDynamicObjectRendererRegistry,
-  UpdrawEditor,
-  UpdrawSyncConfig,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeDynamicObject,
+  UpmadeDynamicObjectRendererRegistry,
+  UpmadeEditor,
+  UpmadeSyncConfig,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import {
@@ -20,17 +20,17 @@ import {
 } from './github-star-button';
 
 interface GithubStarRendererContext {
-  object: UpdrawDynamicObject;
+  object: UpmadeDynamicObject;
   container: HTMLElement | null;
   data?: unknown;
 }
 
 @Component({
   selector: 'app-performance-showcase',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       editorId="examples-performance-showcase"
       [theme]="'light'"
       [themes]="themes"
@@ -41,7 +41,7 @@ interface GithubStarRendererContext {
       [isZoomingEnabled]="true"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></updraw-editor>
+    ></upmade-editor>
 
     <div class="count-switcher" role="group" aria-label="Number of star buttons">
       <span>Buttons</span>
@@ -60,14 +60,14 @@ interface GithubStarRendererContext {
   `,
   styles: [`
     :host { position: relative; display: block; height: 100%; font-family: Roboto, sans-serif; }
-    updraw-editor { display: block; width: 100%; height: 100%; }
+    upmade-editor { display: block; width: 100%; height: 100%; }
     .count-switcher { position: absolute; top: 12px; right: 12px; z-index: 10; display: flex; align-items: center; gap: 6px; padding: 6px 8px; border: 1px solid #ebebeb; border-radius: 8px; background: #ffffff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); color: #333333; font-size: 13px; }
     .count-switcher button { padding: 4px 10px; border: 1px solid #d9d9d9; border-radius: 6px; background: #ffffff; color: #333333; font-size: 13px; font-family: inherit; cursor: pointer; }
     .count-switcher button.active { border-color: #dd0031; background: #dd0031; color: #ffffff; }
   `],
 })
 export class PerformanceShowcaseComponent implements OnDestroy {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
   private readonly mountedButtons = new Map<string, GithubStarButtonInstance>();
 
   readonly starCounts = STAR_COUNTS;
@@ -75,13 +75,13 @@ export class PerformanceShowcaseComponent implements OnDestroy {
   readonly isBusy = signal(false);
 
   themes = [angularThemeLight, angularThemeDark];
-  syncConfig: UpdrawSyncConfig = { providers: [] };
+  syncConfig: UpmadeSyncConfig = { providers: [] };
   workspaces = signal([
-    new UpdrawWorkspace({ objects: createGithubStarObjects(DEFAULT_STAR_COUNT) }),
+    new UpmadeWorkspace({ objects: createGithubStarObjects(DEFAULT_STAR_COUNT) }),
   ]);
 
   constructor() {
-    UpdrawDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
+    UpmadeDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
       onMount: ({ object, container, data }: GithubStarRendererContext) => {
         if (!container) {
           return;
@@ -132,6 +132,6 @@ export class PerformanceShowcaseComponent implements OnDestroy {
     this.mountedButtons.forEach((button) => button.destroy());
     this.mountedButtons.clear();
 
-    UpdrawDynamicObjectRendererRegistry.unregister(GITHUB_STAR_RENDERER_KEY);
+    UpmadeDynamicObjectRendererRegistry.unregister(GITHUB_STAR_RENDERER_KEY);
   }
 }

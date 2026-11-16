@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  UpdrawEditor,
-  UpdrawText,
-  UpdrawWorkspace,
-  type UpdrawFontMap,
-  type UpdrawTheme,
-} from '@updraw/vue-editor'
+  UpmadeEditor,
+  UpmadeText,
+  UpmadeWorkspace,
+  type UpmadeFontMap,
+  type UpmadeTheme,
+} from '@upmade/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
 import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
-const fonts: UpdrawFontMap = {
+const fonts: UpmadeFontMap = {
   pacifico: {
     family: 'Pacifico',
     label: 'Pacifico Cursive',
@@ -20,7 +20,7 @@ const fonts: UpdrawFontMap = {
     source: 'https://fonts.googleapis.com/css2?family=Pacifico&display=swap',
   },
 }
-const themes: UpdrawTheme[] = [{
+const themes: UpmadeTheme[] = [{
   ...vueThemeLight,
   name: 'custom',
   global: {
@@ -28,10 +28,10 @@ const themes: UpdrawTheme[] = [{
     fontFamily: 'Pacifico',
   },
 }]
-const workspaces = [new UpdrawWorkspace({
+const workspaces = [new UpmadeWorkspace({
   id: 'fonts-register',
   name: 'Custom Fonts',
-  objects: [new UpdrawText({
+  objects: [new UpmadeText({
     text: 'Handwritten Pacifico Font',
     translateX: -180,
     translateY: -50,
@@ -50,7 +50,7 @@ async function addPacificoText() {
   const visibleLeft = -viewport.translateX / viewport.scale
   const visibleTop = -viewport.translateY / viewport.scale
 
-  await editor.value.addObject(new UpdrawText({
+  await editor.value.addObject(new UpmadeText({
     text: 'Handwritten Pacifico Font',
     translateX: visibleLeft + visibleWidth * (0.2 + Math.random() * 0.6),
     translateY: visibleTop + visibleHeight * (0.2 + Math.random() * 0.6),
@@ -66,7 +66,7 @@ async function addPacificoText() {
     <Toolbar>
       <button @click="addPacificoText">Add Pacifico Text</button>
     </Toolbar>
-    <UpdrawEditor
+    <UpmadeEditor
       ref="editor"
       editorId="fonts-register"
       :customFonts="fonts"

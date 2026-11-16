@@ -1,6 +1,6 @@
-import type { UpdrawTheme } from "@updraw/vue-editor";
+import type { UpmadeTheme } from "@upmade/vue-editor";
 
-export const vueThemeLight: UpdrawTheme = {
+export const vueThemeLight: UpmadeTheme = {
   name: 'light',
   global: {
     primaryColor: '#42b883',

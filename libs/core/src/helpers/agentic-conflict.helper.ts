@@ -1,19 +1,19 @@
-import type { UpdrawCore } from '../classes/core/core.class';
-import type { UpdrawObjectMap } from '../classes/structures/object-map.structure';
-import type { UpdrawBaseObject } from '../classes/objects/base-object.class';
-import { UpdrawGroup } from '../classes/objects/group.class';
-import { UpdrawSelectionGroup } from '../classes/objects/selection-group.class';
-import { UpdrawSelectionBox } from '../classes/objects/selection-box.class';
-import type { UpdrawAgenticActionFailureReason } from '../interfaces/agentic-action.interface';
+import type { UpmadeCore } from '../classes/core/core.class';
+import type { UpmadeObjectMap } from '../classes/structures/object-map.structure';
+import type { UpmadeBaseObject } from '../classes/objects/base-object.class';
+import { UpmadeGroup } from '../classes/objects/group.class';
+import { UpmadeSelectionGroup } from '../classes/objects/selection-group.class';
+import { UpmadeSelectionBox } from '../classes/objects/selection-box.class';
+import type { UpmadeAgenticActionFailureReason } from '../interfaces/agentic-action.interface';
 
-type AnyObject = UpdrawBaseObject<any>;
-type ObjectMap = UpdrawObjectMap<AnyObject>;
+type AnyObject = UpmadeBaseObject<any>;
+type ObjectMap = UpmadeObjectMap<AnyObject>;
 
 /** Who owns a stored selection group. `'stale'` groups (left behind by a closed tab) are ignored. */
-export type UpdrawSelectionGroupOwner = 'human' | 'collaborator' | 'stale';
+export type UpmadeSelectionGroupOwner = 'human' | 'collaborator' | 'stale';
 
 /** Selection and interaction state of the user and collaborators, computed once per frame. */
-export interface UpdrawAgenticFrameCache {
+export interface UpmadeAgenticFrameCache {
   /** Objects (with relatives) in the local user's selection. */
   humanSelectedIds: Set<string>;
   /** Whether the local user is dragging, resizing, rotating or pressing a handle right now. */
@@ -26,16 +26,16 @@ export interface UpdrawAgenticFrameCache {
 
 /** Whether an object is a selection group or the marquee box. */
 export function isSelectionObject(object: unknown): boolean {
-  return object instanceof UpdrawSelectionGroup || object instanceof UpdrawSelectionBox;
+  return object instanceof UpmadeSelectionGroup || object instanceof UpmadeSelectionBox;
 }
 
 /** Child ID -> the group directly containing it. */
-export type UpdrawParentIndex = Map<string, UpdrawGroup>;
+export type UpmadeParentIndex = Map<string, UpmadeGroup>;
 
 /** Builds the child-to-parent index of all groups with one scan of the map. */
-export function buildParentIndex(map: ObjectMap): UpdrawParentIndex {
-  const index: UpdrawParentIndex = new Map();
-  const groups = map.filter(o => o instanceof UpdrawGroup) as unknown as UpdrawGroup[];
+export function buildParentIndex(map: ObjectMap): UpmadeParentIndex {
+  const index: UpmadeParentIndex = new Map();
+  const groups = map.filter(o => o instanceof UpmadeGroup) as unknown as UpmadeGroup[];
   for (const group of groups) {
     for (const childId of group.childIds) {
       // First group wins, like a linear search.
@@ -48,11 +48,11 @@ export function buildParentIndex(map: ObjectMap): UpdrawParentIndex {
 }
 
 /** The group directly containing an object, if any. */
-export function findParentGroup(map: ObjectMap, objectId: string, parents?: UpdrawParentIndex): UpdrawGroup | null {
+export function findParentGroup(map: ObjectMap, objectId: string, parents?: UpmadeParentIndex): UpmadeGroup | null {
   if (parents) {
     return parents.get(objectId) ?? null;
   }
-  const groups = map.filter(o => o instanceof UpdrawGroup) as unknown as UpdrawGroup[];
+  const groups = map.filter(o => o instanceof UpmadeGroup) as unknown as UpmadeGroup[];
   for (const group of groups) {
     if (group.childIds.includes(objectId)) {
       return group;
@@ -67,13 +67,13 @@ export function isTopLevel(map: ObjectMap, objectId: string): boolean {
 }
 
 /** The IDs plus all group descendants and ancestors. */
-export function expandWithRelatives(map: ObjectMap, ids: Iterable<string>, parents: UpdrawParentIndex = buildParentIndex(map)): Set<string> {
+export function expandWithRelatives(map: ObjectMap, ids: Iterable<string>, parents: UpmadeParentIndex = buildParentIndex(map)): Set<string> {
   const result = new Set<string>();
   for (const id of ids) {
     result.add(id);
     const object = map.findById(id);
-    if (object instanceof UpdrawGroup) {
-      UpdrawGroup.collectDescendantIds(object, result);
+    if (object instanceof UpmadeGroup) {
+      UpmadeGroup.collectDescendantIds(object, result);
     }
     let parent = parents.get(id) ?? null;
     const seen = new Set<string>();
@@ -92,15 +92,15 @@ export function collectWithDescendants(map: ObjectMap, ids: Iterable<string>): S
   for (const id of ids) {
     result.add(id);
     const object = map.findById(id);
-    if (object instanceof UpdrawGroup) {
-      UpdrawGroup.collectDescendantIds(object, result);
+    if (object instanceof UpmadeGroup) {
+      UpmadeGroup.collectDescendantIds(object, result);
     }
   }
   return result;
 }
 
 /** IDs of lines anchored to any of the objects. */
-export function collectAnchoredLines(core: UpdrawCore, ids: Iterable<string>): Set<string> {
+export function collectAnchoredLines(core: UpmadeCore, ids: Iterable<string>): Set<string> {
   const lines = new Set<string>();
   for (const id of ids) {
     for (const entry of core.anchorManager.getLinesAnchoredTo(id)) {
@@ -114,7 +114,7 @@ export function collectAnchoredLines(core: UpdrawCore, ids: Iterable<string>): S
  * Decides who owns a stored selection group. Groups carry the doc client ID of the tab that created
  * them; `store.selectionGroup` is not used because without a user it can return another tab's group.
  */
-export function classifySelectionGroup(map: ObjectMap, core: UpdrawCore, group: UpdrawSelectionGroup): UpdrawSelectionGroupOwner {
+export function classifySelectionGroup(map: ObjectMap, core: UpmadeCore, group: UpmadeSelectionGroup): UpmadeSelectionGroupOwner {
   if (group.clientId != null) {
     if (group.clientId === map.docClientId) {
       return 'human';
@@ -142,24 +142,24 @@ export function classifySelectionGroup(map: ObjectMap, core: UpdrawCore, group: 
 }
 
 /** Top-level IDs in the local user's selection, by the same rule as the conflict checks. */
-export function collectHumanSelection(core: UpdrawCore, map: ObjectMap): string[] {
-  const groups = map.filter(o => o instanceof UpdrawSelectionGroup) as unknown as UpdrawSelectionGroup[];
+export function collectHumanSelection(core: UpmadeCore, map: ObjectMap): string[] {
+  const groups = map.filter(o => o instanceof UpmadeSelectionGroup) as unknown as UpmadeSelectionGroup[];
   return Array.from(new Set(groups.filter(group => classifySelectionGroup(map, core, group) === 'human').flatMap(group => group.objectIds)));
 }
 
 /** IDs of the selection groups that belong to the local user. */
-export function collectHumanSelectionGroupIds(core: UpdrawCore, map: ObjectMap): string[] {
-  const groups = map.filter(o => o instanceof UpdrawSelectionGroup) as unknown as UpdrawSelectionGroup[];
+export function collectHumanSelectionGroupIds(core: UpmadeCore, map: ObjectMap): string[] {
+  const groups = map.filter(o => o instanceof UpmadeSelectionGroup) as unknown as UpmadeSelectionGroup[];
   return groups.filter(group => classifySelectionGroup(map, core, group) === 'human').map(group => group.id);
 }
 
 /** Computes the selection and interaction state of the user and collaborators. */
-export function buildFrameCache(core: UpdrawCore, map: ObjectMap): UpdrawAgenticFrameCache {
+export function buildFrameCache(core: UpmadeCore, map: ObjectMap): UpmadeAgenticFrameCache {
   const state = core.store.state;
   const humanSelected: string[] = [];
   const collaborator: string[] = [];
 
-  const groups = map.filter(o => o instanceof UpdrawSelectionGroup) as unknown as UpdrawSelectionGroup[];
+  const groups = map.filter(o => o instanceof UpmadeSelectionGroup) as unknown as UpmadeSelectionGroup[];
   for (const group of groups) {
     const owner = classifySelectionGroup(map, core, group);
     if (owner === 'human') {
@@ -208,7 +208,7 @@ interface EditableObject {
 }
 
 /** Whether the local user is interacting with the object outside of selection gestures. */
-function isLocalEdit(core: UpdrawCore, map: ObjectMap, object: AnyObject): boolean {
+function isLocalEdit(core: UpmadeCore, map: ObjectMap, object: AnyObject): boolean {
   const state = core.store.state;
   const editable = object as unknown as EditableObject;
   if (editable.isEditing && editable.uneditedObject) {
@@ -234,14 +234,14 @@ function isLocalEdit(core: UpdrawCore, map: ObjectMap, object: AnyObject): boole
  *   counts while a gesture runs.
  */
 export function detectObjectConflict(
-  core: UpdrawCore,
+  core: UpmadeCore,
   map: ObjectMap,
-  cache: UpdrawAgenticFrameCache,
+  cache: UpmadeAgenticFrameCache,
   id: string,
   knownInstance: AnyObject | undefined,
   isClaimedByOtherAgent: boolean,
   options: { ownSelection?: boolean } = {},
-): UpdrawAgenticActionFailureReason | null {
+): UpmadeAgenticActionFailureReason | null {
   const object = map.findById(id);
   if (!object) {
     return 'object-removed';

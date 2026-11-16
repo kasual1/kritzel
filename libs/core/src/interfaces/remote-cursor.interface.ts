@@ -1,8 +1,8 @@
-import { IUpdrawUser } from './user.interface';
+import { IUpmadeUser } from './user.interface';
 
-export interface UpdrawRemoteCursorState {
+export interface UpmadeRemoteCursorState {
   clientId: number;
-  user: IUpdrawUser;
+  user: IUpmadeUser;
   cursor: { x: number; y: number } | null;
   activeObjectId: string | null;
   selectionBox: { x: number; y: number; width: number; height: number } | null;

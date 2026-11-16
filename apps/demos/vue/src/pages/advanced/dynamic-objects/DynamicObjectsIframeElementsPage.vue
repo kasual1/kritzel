@@ -2,15 +2,15 @@
 import { ref } from 'vue'
 import {
   getEditorRef,
-  UpdrawAgent,
-  UpdrawEditor,
-  UpdrawIframeObject,
-  UpdrawWorkspace,
-  type UpdrawObjectElementClickEvent,
-  type UpdrawObjectElementHoverEvent,
-  type UpdrawObjectElementInfo,
-  type UpdrawObjectElementPickEvent,
-} from '@updraw/vue-editor'
+  UpmadeAgent,
+  UpmadeEditor,
+  UpmadeIframeObject,
+  UpmadeWorkspace,
+  type UpmadeObjectElementClickEvent,
+  type UpmadeObjectElementHoverEvent,
+  type UpmadeObjectElementInfo,
+  type UpmadeObjectElementPickEvent,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { iframeElementsContent } from './iframe-elements-content'
@@ -22,8 +22,8 @@ const EMPTY = '—'
 const CARD_TOP = -250
 const AGENT_START = { x: 170, y: CARD_TOP + 10 }
 
-function createPlanObject(): UpdrawIframeObject {
-  const object = new UpdrawIframeObject({
+function createPlanObject(): UpmadeIframeObject {
+  const object = new UpmadeIframeObject({
     name: 'Team plan',
     title: 'Team plan',
     content: iframeElementsContent,
@@ -38,8 +38,8 @@ function createPlanObject(): UpdrawIframeObject {
   return object
 }
 
-function describe(element: UpdrawObjectElementInfo): string {
-  const name = element.updrawId ?? element.tagName
+function describe(element: UpmadeObjectElementInfo): string {
+  const name = element.upmadeId ?? element.tagName
   if (!element.text) {
     return name
   }
@@ -48,9 +48,9 @@ function describe(element: UpdrawObjectElementInfo): string {
 }
 
 const planObject = createPlanObject()
-const agent = new UpdrawAgent({ id: AGENT, name: 'Agent', status: 'Pick an element', position: AGENT_START })
+const agent = new UpmadeAgent({ id: AGENT, name: 'Agent', status: 'Pick an element', position: AGENT_START })
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: [planObject] })]
+const workspaces = [new UpmadeWorkspace({ objects: [planObject] })]
 const editor = getEditorRef('editor')
 const hovered = ref(EMPTY)
 const clicked = ref(EMPTY)
@@ -69,16 +69,16 @@ async function onReady() {
   }
 }
 
-function onHover(event: CustomEvent<UpdrawObjectElementHoverEvent>) {
+function onHover(event: CustomEvent<UpmadeObjectElementHoverEvent>) {
   const { element } = event.detail
   hovered.value = element ? describe(element) : EMPTY
 }
 
-function onClick(event: CustomEvent<UpdrawObjectElementClickEvent>) {
+function onClick(event: CustomEvent<UpmadeObjectElementClickEvent>) {
   clicked.value = describe(event.detail.element)
 }
 
-async function onPick(event: CustomEvent<UpdrawObjectElementPickEvent>) {
+async function onPick(event: CustomEvent<UpmadeObjectElementPickEvent>) {
   const { objectId, element } = event.detail
   picked.value = describe(element)
   isPicking.value = false
@@ -87,7 +87,7 @@ async function onPick(event: CustomEvent<UpdrawObjectElementPickEvent>) {
   try {
     await current.setObjectElementPicking(objectId, false)
     await current.highlightObjectElements(objectId, [{ selector: element.selector, label: 'Picked' }])
-    agent.setStatus(`Looking at ${element.updrawId ?? element.tagName}`)
+    agent.setStatus(`Looking at ${element.upmadeId ?? element.tagName}`)
     // An element target: the agent's cursor moves to the element inside the iframe and follows it from then on.
     await agent.moveTo({ objectId, selector: element.selector })
   } catch (error) {
@@ -126,7 +126,7 @@ async function clearHighlights() {
 
 <template>
   <div class="page">
-    <UpdrawEditor
+    <UpmadeEditor
       ref="editor"
       editorId="dynamic-objects-iframe-elements"
       theme="light"

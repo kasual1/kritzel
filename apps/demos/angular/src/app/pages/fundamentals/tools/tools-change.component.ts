@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { UpdrawEditor, UpdrawSyncConfig, UpdrawWorkspace } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeSyncConfig, UpmadeWorkspace } from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -9,7 +9,7 @@ type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text';
 
 @Component({
   selector: 'app-tools-change',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -22,7 +22,7 @@ type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text';
         </button>
       }
     </app-toolbar>
-    <updraw-editor
+    <upmade-editor
       editorId="tools-change"
       [theme]="'light'"
       [themes]="themes"
@@ -32,20 +32,20 @@ type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       [isToolbarVisible]="false"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    updraw-editor { flex: 1; }
+    upmade-editor { flex: 1; }
     .status-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-top: 1px solid #ebebeb; font-size: 13px; }
   `],
 })
 export class ToolsChangeComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
   activeTool = signal<ToolName>('select');
 

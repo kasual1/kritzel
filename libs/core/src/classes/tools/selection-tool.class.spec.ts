@@ -1,20 +1,20 @@
-import { UpdrawSelectionTool } from './selection-tool.class';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawMoveHandler } from '../handlers/move.handler';
-import { UpdrawResizeHandler } from '../handlers/resize.handler';
-import { UpdrawRotationHandler } from '../handlers/rotation.handler';
-import { UpdrawSelectionHandler } from '../handlers/selection.handler';
-import { UpdrawHoverHandler } from '../handlers/hover.handler';
-import { UpdrawLineHandleHandler } from '../handlers/line-handle.handler';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
-import { UpdrawColorHelper } from '../../helpers/color.helper';
-import { UpdrawPath } from '../objects/path.class';
-import { UpdrawLine } from '../objects/line.class';
-import { UpdrawText } from '../objects/text.class';
-import { UpdrawShape } from '../objects/shape.class';
-import { UpdrawImage } from '../objects/image.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawDynamicObject } from '../objects/dynamic-object.class';
+import { UpmadeSelectionTool } from './selection-tool.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeMoveHandler } from '../handlers/move.handler';
+import { UpmadeResizeHandler } from '../handlers/resize.handler';
+import { UpmadeRotationHandler } from '../handlers/rotation.handler';
+import { UpmadeSelectionHandler } from '../handlers/selection.handler';
+import { UpmadeHoverHandler } from '../handlers/hover.handler';
+import { UpmadeLineHandleHandler } from '../handlers/line-handle.handler';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
+import { UpmadeColorHelper } from '../../helpers/color.helper';
+import { UpmadePath } from '../objects/path.class';
+import { UpmadeLine } from '../objects/line.class';
+import { UpmadeText } from '../objects/text.class';
+import { UpmadeShape } from '../objects/shape.class';
+import { UpmadeImage } from '../objects/image.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeDynamicObject } from '../objects/dynamic-object.class';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 jest.mock('../core/core.class');
@@ -28,13 +28,13 @@ jest.mock('../../helpers/event.helper');
 jest.mock('../../helpers/color.helper');
 jest.mock('../objects/selection-group.class');
 
-describe('UpdrawSelectionTool', () => {
-  let tool: UpdrawSelectionTool;
+describe('UpmadeSelectionTool', () => {
+  let tool: UpmadeSelectionTool;
   let mockCore: any;
   let mockState: any;
 
   const createMockPath = (props: any = {}) => {
-    const obj = Object.create(UpdrawPath.prototype);
+    const obj = Object.create(UpmadePath.prototype);
     return Object.assign(obj, {
       fill: DEFAULT_COLOR_PALETTE[0],
       strokeWidth: 6,
@@ -44,9 +44,9 @@ describe('UpdrawSelectionTool', () => {
   };
 
   const createMockLine = (props: any = {}) => {
-    const obj = Object.create(UpdrawLine.prototype);
+    const obj = Object.create(UpmadeLine.prototype);
     return Object.assign(obj, {
-      __class__: 'UpdrawLine',
+      __class__: 'UpmadeLine',
       stroke: DEFAULT_COLOR_PALETTE[1],
       strokeWidth: 4,
       opacity: 1,
@@ -56,7 +56,7 @@ describe('UpdrawSelectionTool', () => {
   };
 
   const createMockText = (props: any = {}) => {
-    const obj = Object.create(UpdrawText.prototype);
+    const obj = Object.create(UpmadeText.prototype);
     return Object.assign(obj, {
       fontColor: DEFAULT_COLOR_PALETTE[2],
       fontSize: 16,
@@ -67,7 +67,7 @@ describe('UpdrawSelectionTool', () => {
   };
 
   const createMockShape = (props: any = {}) => {
-    const obj = Object.create(UpdrawShape.prototype);
+    const obj = Object.create(UpmadeShape.prototype);
     return Object.assign(obj, {
       strokeColor: DEFAULT_COLOR_PALETTE[0],
       strokeWidth: 2,
@@ -79,7 +79,7 @@ describe('UpdrawSelectionTool', () => {
   };
 
   const createMockImage = (props: any = {}) => {
-    const obj = Object.create(UpdrawImage.prototype);
+    const obj = Object.create(UpmadeImage.prototype);
     return Object.assign(obj, {
       opacity: 1,
       ...props,
@@ -87,8 +87,8 @@ describe('UpdrawSelectionTool', () => {
   };
 
   const createMockGroup = (children: any[]) => {
-    const obj = Object.create(UpdrawGroup.prototype);
-    obj.__class__ = 'UpdrawGroup';
+    const obj = Object.create(UpmadeGroup.prototype);
+    obj.__class__ = 'UpmadeGroup';
     Object.defineProperty(obj, 'children', { value: children, configurable: true });
     return obj;
   };
@@ -190,12 +190,12 @@ describe('UpdrawSelectionTool', () => {
       removeSelectionGroup: jest.fn(),
       addSelectionGroup: jest.fn(),
       getCanvasPoint: jest.fn().mockReturnValue({ x: 100, y: 200 }),
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
-    (UpdrawColorHelper.determineTextColor as jest.Mock).mockReturnValue({ light: '#ffffff', dark: '#000000' });
+    (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpmadeColorHelper.determineTextColor as jest.Mock).mockReturnValue({ light: '#ffffff', dark: '#000000' });
 
-    tool = new UpdrawSelectionTool(mockCore);
+    tool = new UpmadeSelectionTool(mockCore);
   });
 
   afterEach(() => {
@@ -208,12 +208,12 @@ describe('UpdrawSelectionTool', () => {
 
   describe('constructor', () => {
     it('should initialize all handlers', () => {
-      expect(UpdrawSelectionHandler).toHaveBeenCalledWith(mockCore);
-      expect(UpdrawMoveHandler).toHaveBeenCalledWith(mockCore);
-      expect(UpdrawHoverHandler).toHaveBeenCalledWith(mockCore);
-      expect(UpdrawResizeHandler).toHaveBeenCalledWith(mockCore);
-      expect(UpdrawRotationHandler).toHaveBeenCalledWith(mockCore);
-      expect(UpdrawLineHandleHandler).toHaveBeenCalledWith(mockCore);
+      expect(UpmadeSelectionHandler).toHaveBeenCalledWith(mockCore);
+      expect(UpmadeMoveHandler).toHaveBeenCalledWith(mockCore);
+      expect(UpmadeHoverHandler).toHaveBeenCalledWith(mockCore);
+      expect(UpmadeResizeHandler).toHaveBeenCalledWith(mockCore);
+      expect(UpmadeRotationHandler).toHaveBeenCalledWith(mockCore);
+      expect(UpmadeLineHandleHandler).toHaveBeenCalledWith(mockCore);
     });
 
     it('should have default palette matching DEFAULT_COLOR_PALETTE', () => {
@@ -296,28 +296,28 @@ describe('UpdrawSelectionTool', () => {
       expect(tool.color).toEqual(DEFAULT_COLOR_PALETTE[0]);
     });
 
-    it('should return fill from UpdrawPath', () => {
+    it('should return fill from UpmadePath', () => {
       const fill = { light: '#ff0000', dark: '#ff0000' };
       setSelectionGroupObjects([createMockPath({ fill })]);
 
       expect(tool.color).toEqual(fill);
     });
 
-    it('should return stroke from UpdrawLine', () => {
+    it('should return stroke from UpmadeLine', () => {
       const stroke = { light: '#00ff00', dark: '#00ff00' };
       setSelectionGroupObjects([createMockLine({ stroke })]);
 
       expect(tool.color).toEqual(stroke);
     });
 
-    it('should return fontColor from UpdrawText', () => {
+    it('should return fontColor from UpmadeText', () => {
       const fontColor = { light: '#0000ff', dark: '#0000ff' };
       setSelectionGroupObjects([createMockText({ fontColor })]);
 
       expect(tool.color).toEqual(fontColor);
     });
 
-    it('should return strokeColor from UpdrawShape', () => {
+    it('should return strokeColor from UpmadeShape', () => {
       const strokeColor = { light: '#ff00ff', dark: '#ff00ff' };
       setSelectionGroupObjects([createMockShape({ strokeColor })]);
 
@@ -351,7 +351,7 @@ describe('UpdrawSelectionTool', () => {
   // ============================================
 
   describe('color setter', () => {
-    it('should update fill on UpdrawPath', () => {
+    it('should update fill on UpmadePath', () => {
       const path = createMockPath();
       setSelectionGroupObjects([path]);
       const newColor = { light: '#ff0000', dark: '#ff0000' };
@@ -362,7 +362,7 @@ describe('UpdrawSelectionTool', () => {
       expect(mockCore.rerender).toHaveBeenCalled();
     });
 
-    it('should update stroke on UpdrawLine', () => {
+    it('should update stroke on UpmadeLine', () => {
       const line = createMockLine();
       setSelectionGroupObjects([line]);
       const newColor = { light: '#00ff00', dark: '#00ff00' };
@@ -372,7 +372,7 @@ describe('UpdrawSelectionTool', () => {
       expect(mockCore.updateObject).toHaveBeenCalledWith(line, { stroke: newColor });
     });
 
-    it('should update fontColor on UpdrawText', () => {
+    it('should update fontColor on UpmadeText', () => {
       const text = createMockText();
       setSelectionGroupObjects([text]);
       const newColor = { light: '#0000ff', dark: '#0000ff' };
@@ -382,7 +382,7 @@ describe('UpdrawSelectionTool', () => {
       expect(mockCore.updateObject).toHaveBeenCalledWith(text, { fontColor: newColor });
     });
 
-    it('should update strokeColor on UpdrawShape', () => {
+    it('should update strokeColor on UpmadeShape', () => {
       const shape = createMockShape();
       setSelectionGroupObjects([shape]);
       const newColor = { light: '#ff00ff', dark: '#ff00ff' };
@@ -459,25 +459,25 @@ describe('UpdrawSelectionTool', () => {
       expect(tool.size).toBe(1);
     });
 
-    it('should return strokeWidth from UpdrawPath', () => {
+    it('should return strokeWidth from UpmadePath', () => {
       setSelectionGroupObjects([createMockPath({ strokeWidth: 8 })]);
 
       expect(tool.size).toBe(8);
     });
 
-    it('should return strokeWidth from UpdrawLine', () => {
+    it('should return strokeWidth from UpmadeLine', () => {
       setSelectionGroupObjects([createMockLine({ strokeWidth: 3 })]);
 
       expect(tool.size).toBe(3);
     });
 
-    it('should return fontSize from UpdrawText', () => {
+    it('should return fontSize from UpmadeText', () => {
       setSelectionGroupObjects([createMockText({ fontSize: 24 })]);
 
       expect(tool.size).toBe(24);
     });
 
-    it('should return strokeWidth from UpdrawShape', () => {
+    it('should return strokeWidth from UpmadeShape', () => {
       setSelectionGroupObjects([createMockShape({ strokeWidth: 5 })]);
 
       expect(tool.size).toBe(5);
@@ -491,7 +491,7 @@ describe('UpdrawSelectionTool', () => {
   });
 
   describe('size setter', () => {
-    it('should update strokeWidth on UpdrawPath', () => {
+    it('should update strokeWidth on UpmadePath', () => {
       const path = createMockPath();
       setSelectionGroupObjects([path]);
 
@@ -501,7 +501,7 @@ describe('UpdrawSelectionTool', () => {
       expect(mockCore.rerender).toHaveBeenCalled();
     });
 
-    it('should update strokeWidth on UpdrawLine', () => {
+    it('should update strokeWidth on UpmadeLine', () => {
       const line = createMockLine();
       setSelectionGroupObjects([line]);
 
@@ -510,7 +510,7 @@ describe('UpdrawSelectionTool', () => {
       expect(mockCore.updateObject).toHaveBeenCalledWith(line, { strokeWidth: 5 });
     });
 
-    it('should update fontSize on UpdrawText', () => {
+    it('should update fontSize on UpmadeText', () => {
       const text = createMockText();
       setSelectionGroupObjects([text]);
 
@@ -519,7 +519,7 @@ describe('UpdrawSelectionTool', () => {
       expect(mockCore.updateObject).toHaveBeenCalledWith(text, { fontSize: 20 });
     });
 
-    it('should update strokeWidth on UpdrawShape', () => {
+    it('should update strokeWidth on UpmadeShape', () => {
       const shape = createMockShape();
       setSelectionGroupObjects([shape]);
 
@@ -546,7 +546,7 @@ describe('UpdrawSelectionTool', () => {
       expect(tool.fillColor).toEqual({ light: 'transparent', dark: 'transparent' });
     });
 
-    it('should return fillColor from UpdrawShape', () => {
+    it('should return fillColor from UpmadeShape', () => {
       const fillColor = { light: '#ff0000', dark: '#ff0000' };
       setSelectionGroupObjects([createMockShape({ fillColor })]);
 
@@ -555,7 +555,7 @@ describe('UpdrawSelectionTool', () => {
   });
 
   describe('fillColor setter', () => {
-    it('should update fillColor and fontColor on UpdrawShape', () => {
+    it('should update fillColor and fontColor on UpmadeShape', () => {
       const shape = createMockShape();
       setSelectionGroupObjects([shape]);
       const newFill = { light: '#00ff00', dark: '#00ff00' };
@@ -563,7 +563,7 @@ describe('UpdrawSelectionTool', () => {
 
       tool.fillColor = newFill;
 
-      expect(UpdrawColorHelper.determineTextColor).toHaveBeenCalledWith(newFill);
+      expect(UpmadeColorHelper.determineTextColor).toHaveBeenCalledWith(newFill);
       expect(mockCore.updateObject).toHaveBeenCalledWith(shape, { fillColor: newFill, fontColor: expectedTextColor });
     });
 
@@ -609,13 +609,13 @@ describe('UpdrawSelectionTool', () => {
       expect(tool.fontFamily).toBe('Arial');
     });
 
-    it('should return fontFamily from UpdrawText', () => {
+    it('should return fontFamily from UpmadeText', () => {
       setSelectionGroupObjects([createMockText({ fontFamily: 'Courier' })]);
 
       expect(tool.fontFamily).toBe('Courier');
     });
 
-    it('should return fontFamily from UpdrawShape', () => {
+    it('should return fontFamily from UpmadeShape', () => {
       setSelectionGroupObjects([createMockShape({ fontFamily: 'Georgia' })]);
 
       expect(tool.fontFamily).toBe('Georgia');
@@ -629,7 +629,7 @@ describe('UpdrawSelectionTool', () => {
   });
 
   describe('fontFamily setter', () => {
-    it('should update fontFamily on UpdrawText', () => {
+    it('should update fontFamily on UpmadeText', () => {
       const text = createMockText();
       setSelectionGroupObjects([text]);
 
@@ -639,7 +639,7 @@ describe('UpdrawSelectionTool', () => {
       expect(mockCore.rerender).toHaveBeenCalled();
     });
 
-    it('should update fontFamily on UpdrawShape', () => {
+    it('should update fontFamily on UpmadeShape', () => {
       const shape = createMockShape();
       setSelectionGroupObjects([shape]);
 
@@ -660,7 +660,7 @@ describe('UpdrawSelectionTool', () => {
       expect(tool.arrows).toEqual({ start: { enabled: false }, end: { enabled: false } });
     });
 
-    it('should return arrows from UpdrawLine', () => {
+    it('should return arrows from UpmadeLine', () => {
       const arrows = { start: { enabled: true }, end: { enabled: false } };
       setSelectionGroupObjects([createMockLine({ arrows })]);
 
@@ -669,7 +669,7 @@ describe('UpdrawSelectionTool', () => {
   });
 
   describe('arrows setter', () => {
-    it('should update arrows on UpdrawLine', () => {
+    it('should update arrows on UpmadeLine', () => {
       const line = createMockLine();
       setSelectionGroupObjects([line]);
       const newArrows = { start: { enabled: false }, end: { enabled: true } };
@@ -854,7 +854,7 @@ describe('UpdrawSelectionTool', () => {
     });
 
     it('should not process left-click logic for non-left click', () => {
-      (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+      (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
       setSelectionGroupObjects([createMockPath()]);
 
       tool.handlePointerDown(createMouseEvent({ button: 2 }));
@@ -865,8 +865,8 @@ describe('UpdrawSelectionTool', () => {
     });
 
     it('should keep current selection group when clicking an already selected dynamic object', () => {
-      const customEl = Object.create(UpdrawDynamicObject.prototype);
-      customEl.__class__ = 'UpdrawDynamicObject';
+      const customEl = Object.create(UpmadeDynamicObject.prototype);
+      customEl.__class__ = 'UpmadeDynamicObject';
       customEl.id = 'custom-1';
       customEl.hitTest = jest.fn().mockReturnValue(true);
 
@@ -1099,10 +1099,10 @@ describe('UpdrawSelectionTool', () => {
     });
   });
 
-  describe('UpdrawDynamicObject interaction semantics', () => {
+  describe('UpmadeDynamicObject interaction semantics', () => {
     it('should allow normal selection/move handlers for unselected dynamic objects', () => {
-      const customEl = Object.create(UpdrawDynamicObject.prototype);
-      customEl.__class__ = 'UpdrawDynamicObject';
+      const customEl = Object.create(UpmadeDynamicObject.prototype);
+      customEl.__class__ = 'UpmadeDynamicObject';
       customEl.id = 'custom-1';
       customEl.isSelected = false;
       customEl.isInteractive = false;
@@ -1122,8 +1122,8 @@ describe('UpdrawSelectionTool', () => {
     });
 
     it('should skip normal handlers for selected single dynamic objects', () => {
-      const customEl = Object.create(UpdrawDynamicObject.prototype);
-      customEl.__class__ = 'UpdrawDynamicObject';
+      const customEl = Object.create(UpmadeDynamicObject.prototype);
+      customEl.__class__ = 'UpmadeDynamicObject';
       customEl.id = 'custom-1';
       customEl.isSelected = true;
       customEl.isInteractive = false;
@@ -1149,8 +1149,8 @@ describe('UpdrawSelectionTool', () => {
     });
 
     it('should keep handlers active for dynamic objects during multi-selection', () => {
-      const customEl = Object.create(UpdrawDynamicObject.prototype);
-      customEl.__class__ = 'UpdrawDynamicObject';
+      const customEl = Object.create(UpmadeDynamicObject.prototype);
+      customEl.__class__ = 'UpmadeDynamicObject';
       customEl.id = 'custom-1';
       customEl.isSelected = true;
       customEl.isInteractive = false;
@@ -1174,9 +1174,9 @@ describe('UpdrawSelectionTool', () => {
       expect(tool.selectionHandler.handlePointerDown).toHaveBeenCalled();
     });
 
-    it('should not affect UpdrawText isInteractive behavior', () => {
-      const text = Object.create(UpdrawText.prototype);
-      text.__class__ = 'UpdrawText';
+    it('should not affect UpmadeText isInteractive behavior', () => {
+      const text = Object.create(UpmadeText.prototype);
+      text.__class__ = 'UpmadeText';
       text.isInteractive = true;
 
       const selectionGroup = Object.create(Object.prototype);

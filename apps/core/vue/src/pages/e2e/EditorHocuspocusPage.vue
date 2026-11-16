@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HocuspocusSyncProvider, UpdrawEditor } from '@updraw/vue-editor'
+import { HocuspocusSyncProvider, UpmadeEditor } from '@upmade/vue-editor'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import { vueThemeDark } from '../../const/vue-theme-dark'
 
@@ -10,7 +10,7 @@ const syncConfig = {
 
 <template>
   <main>
-    <UpdrawEditor
+    <UpmadeEditor
       theme="light"
       :themes="[vueThemeLight, vueThemeDark]"
       :syncConfig="syncConfig"

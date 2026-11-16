@@ -1,15 +1,15 @@
-// TEMP: demo of UpdrawChatSession with a streaming server answered by a real model; delete with pages/temp/.
+// TEMP: demo of UpmadeChatSession with a streaming server answered by a real model; delete with pages/temp/.
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   IndexedDBSyncProvider,
-  UPDRAW_DEFAULT_OBJECT_TITLEBAR,
-  UpdrawChatSession,
-  UpdrawEditor,
-  UpdrawIframeObject,
-  UpdrawObjectConfig,
-  UpdrawSyncConfig,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UPMADE_DEFAULT_OBJECT_TITLEBAR,
+  UpmadeChatSession,
+  UpmadeEditor,
+  UpmadeIframeObject,
+  UpmadeObjectConfig,
+  UpmadeSyncConfig,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { llmStreamTransport } from './mock-llm-stream-chat-server';
@@ -24,11 +24,11 @@ data-like, such as a weather card, a timer or a chart, as a widget with create_i
  */
 @Component({
   selector: 'app-temp-streaming',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="editor">
-      <updraw-editor
+      <upmade-editor
         editorId="temp-streaming"
         [theme]="'light'"
         [themes]="themes"
@@ -40,7 +40,7 @@ data-like, such as a weather card, a timer or a chart, as a widget with create_i
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         [isZoomPanelVisible]="false"
-      ></updraw-editor>
+      ></upmade-editor>
     </div>
   `,
   styles: [
@@ -61,16 +61,16 @@ data-like, such as a weather card, a timer or a chart, as a widget with create_i
 })
 export class TempStreamingComponent {
   themes = [angularThemeLight, angularThemeDark];
-  syncConfig: UpdrawSyncConfig = {
+  syncConfig: UpmadeSyncConfig = {
     providers: [IndexedDBSyncProvider],
   };
-  objectConfig: UpdrawObjectConfig = {
-    hasTitlebar: (object) => object instanceof UpdrawIframeObject,
-    isRotatable: (object) => object instanceof UpdrawIframeObject === false,
+  objectConfig: UpmadeObjectConfig = {
+    hasTitlebar: (object) => object instanceof UpmadeIframeObject,
+    isRotatable: (object) => object instanceof UpmadeIframeObject === false,
   };
-  readonly objectTitlebar = UPDRAW_DEFAULT_OBJECT_TITLEBAR;
+  readonly objectTitlebar = UPMADE_DEFAULT_OBJECT_TITLEBAR;
 
-  readonly session = new UpdrawChatSession({
+  readonly session = new UpmadeChatSession({
     transport: llmStreamTransport,
     system: SYSTEM,
     canvasTools: { iframes: true },

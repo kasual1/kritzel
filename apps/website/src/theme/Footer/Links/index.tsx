@@ -3,7 +3,7 @@ import Links from '@theme-original/Footer/Links';
 import type LinksType from '@theme/Footer/Links';
 import type {WrapperProps} from '@docusaurus/types';
 import useBaseUrl from '@docusaurus/useBaseUrl';
-import { UPDRAW_LOGO_PATH, UPDRAW_LOGO_STROKE_WIDTH, UPDRAW_LOGO_VIEWBOX } from '@site/src/components/Landing/paths';
+import { UPMADE_LOGO_PATH, UPMADE_LOGO_STROKE_WIDTH, UPMADE_LOGO_VIEWBOX } from '@site/src/components/Landing/paths';
 import {
   getPreferredFramework,
   subscribeToPreferredFramework,
@@ -22,8 +22,8 @@ export default function LinksWrapper(props: Props): ReactNode {
   // The mark is drawn inline from the same path data as the header logo (written by `npm run logo:generate`), so
   // the footer can't show an older mark than the header: a separate /img/logo.svg request could be served stale.
   const logoSvg =
-    `<svg class="updraw-footer-brand__logo" viewBox="${UPDRAW_LOGO_VIEWBOX}" aria-hidden="true">` +
-    `<path fill="currentColor" stroke="currentColor" stroke-width="${UPDRAW_LOGO_STROKE_WIDTH}" stroke-linejoin="round" d="${UPDRAW_LOGO_PATH}"/></svg>`;
+    `<svg class="upmade-footer-brand__logo" viewBox="${UPMADE_LOGO_VIEWBOX}" aria-hidden="true">` +
+    `<path fill="currentColor" stroke="currentColor" stroke-width="${UPMADE_LOGO_STROKE_WIDTH}" stroke-linejoin="round" d="${UPMADE_LOGO_PATH}"/></svg>`;
 
   useEffect(() => {
     return subscribeToPreferredFramework(setFramework);
@@ -33,7 +33,7 @@ export default function LinksWrapper(props: Props): ReactNode {
     title: '',
     items: [
       {
-        html: `<div class="updraw-footer-brand"><a href="${homeUrl}" class="updraw-footer-brand__logo-badge" aria-label="Go to Updraw home page">${logoSvg}</a><p class="updraw-footer-brand__description">Build infinite canvas experiences in minutes.</p></div>`,
+        html: `<div class="upmade-footer-brand"><a href="${homeUrl}" class="upmade-footer-brand__logo-badge" aria-label="Go to Upmade home page">${logoSvg}</a><p class="upmade-footer-brand__description">Build infinite canvas experiences in minutes.</p></div>`,
       },
     ],
   };

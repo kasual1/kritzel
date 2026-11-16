@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { UpdrawEditor, UpdrawWorkspace } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeWorkspace } from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
-import { UpdrawSvgIconMap } from '@updraw/editor';
+import { UpmadeSvgIconMap } from '@upmade/editor';
 
 @Component({
   selector: 'app-icons-register',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       editorId="icons-register"
       [customSvgIcons]="customSvgIcons"
       [workspaces]="workspaces()"
@@ -18,7 +18,7 @@ import { UpdrawSvgIconMap } from '@updraw/editor';
       [themes]="themes"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [
     `
@@ -44,7 +44,7 @@ import { UpdrawSvgIconMap } from '@updraw/editor';
       .toolbar-note span {
         color: #555;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
         min-height: 0;
       }
@@ -54,9 +54,9 @@ import { UpdrawSvgIconMap } from '@updraw/editor';
 export class IconsRegisterComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
-  customSvgIcons: UpdrawSvgIconMap = {
+  customSvgIcons: UpmadeSvgIconMap = {
     cursor:
       '<svg fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 -960 960 960\"><path d=\"M516-120 402-402 120-516v-56l720-268-268 720zm26-148 162-436-436 162 196 78zm-78-196\"/></svg>',
     pen: '<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960"><path d="m490-527 37 37 217-217-37-37zM200-200h37l233-233-37-37-233 233zm355-205L405-555l167-167-29-29-219 219-56-56 218-219q24-24 56.5-24t56.5 24l29 29 50-50q12-12 28.5-12t28.5 12l93 93q12 12 12 28.5T828-678zM270-120H120v-150l285-285 150 150z"/></svg>',

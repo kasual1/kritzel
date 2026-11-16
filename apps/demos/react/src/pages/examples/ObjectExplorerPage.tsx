@@ -9,21 +9,21 @@ import {
   type MouseEvent as ReactMouseEvent,
 } from "react";
 import {
-  UpdrawEditor,
+  UpmadeEditor,
   ShapeType,
-  type HTMLUpdrawEditorElement,
-  type UpdrawBaseObject,
-  type UpdrawSyncConfig,
+  type HTMLUpmadeEditorElement,
+  type UpmadeBaseObject,
+  type UpmadeSyncConfig,
   type ObjectsAddedEvent,
   type ObjectsRemovedEvent,
   type ObjectsUpdatedEvent,
-} from "@updraw/react-editor";
+} from "@upmade/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 import { reactThemeDark } from "../../const/react-theme-dark";
 import { createSeedObjects } from "../getting-started/seed-objects";
 import { InfoPanel, useInfoPanel } from "../../components/InfoPanel";
 
-type AnyObject = UpdrawBaseObject<HTMLElement | SVGElement> & {
+type AnyObject = UpmadeBaseObject<HTMLElement | SVGElement> & {
   childIds?: string[];
   fill?: unknown;
   fillColor?: unknown;
@@ -32,7 +32,7 @@ type AnyObject = UpdrawBaseObject<HTMLElement | SVGElement> & {
   text?: string;
 };
 
-const AVAILABLE_TYPES = ["UpdrawShape", "UpdrawText", "UpdrawLine", "UpdrawPath"];
+const AVAILABLE_TYPES = ["UpmadeShape", "UpmadeText", "UpmadeLine", "UpmadePath"];
 const themes = [reactThemeLight, reactThemeDark];
 
 const hostStyle: CSSProperties = {
@@ -166,25 +166,25 @@ function resolveThemeColor(raw: unknown, fallback: string): string {
 }
 
 export function ObjectExplorerPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const infoPanel = useInfoPanel({ showOnMobile: true });
-  const selectionEditorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const selectionEditorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const selectionHandlerRef = useRef<(() => void) | null>(null);
 
-  const syncConfig = useMemo<UpdrawSyncConfig>(() => ({ providers: [] }), []);
+  const syncConfig = useMemo<UpmadeSyncConfig>(() => ({ providers: [] }), []);
 
   const [allObjects, setAllObjects] = useState<AnyObject[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [selectedObject, setSelectedObject] = useState<AnyObject | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(
-    new Set([...AVAILABLE_TYPES, "UpdrawGroup"]),
+    new Set([...AVAILABLE_TYPES, "UpmadeGroup"]),
   );
 
   const childIds = useMemo(() => {
     const ids = new Set<string>();
     allObjects.forEach((obj) => {
-      if (obj.__class__ === "UpdrawGroup" && obj.childIds) {
+      if (obj.__class__ === "UpmadeGroup" && obj.childIds) {
         obj.childIds.forEach((id: string) => ids.add(id));
       }
     });
@@ -224,13 +224,13 @@ export function ObjectExplorerPage() {
       if (obj.__class__.toLowerCase().includes(query)) {
         return true;
       }
-      if (obj.__class__ === "UpdrawText") {
+      if (obj.__class__ === "UpmadeText") {
         const txt = (obj.text as string) || "";
         if (txt.toLowerCase().includes(query)) {
           return true;
         }
       }
-      if (obj.__class__ === "UpdrawShape") {
+      if (obj.__class__ === "UpmadeShape") {
         const shapeType = (obj.shapeType as string) || "";
         if (shapeType.toLowerCase().includes(query)) {
           return true;
@@ -248,7 +248,7 @@ export function ObjectExplorerPage() {
           if (matchesFilter(child)) {
             return true;
           }
-          if (child.__class__ === "UpdrawGroup" && visit(child)) {
+          if (child.__class__ === "UpmadeGroup" && visit(child)) {
             return true;
           }
         }
@@ -263,7 +263,7 @@ export function ObjectExplorerPage() {
   const isNodeVisible = useCallback(
     (obj: AnyObject): boolean =>
       matchesFilter(obj) ||
-      (obj.__class__ === "UpdrawGroup" && hasMatchingDescendant(obj)),
+      (obj.__class__ === "UpmadeGroup" && hasMatchingDescendant(obj)),
     [matchesFilter, hasMatchingDescendant],
   );
 
@@ -367,7 +367,7 @@ export function ObjectExplorerPage() {
 
   function toggleExpand(event: ReactMouseEvent, obj: AnyObject) {
     event.stopPropagation();
-    if (obj.__class__ !== "UpdrawGroup") {
+    if (obj.__class__ !== "UpmadeGroup") {
       return;
     }
     setExpandedGroups((groups) => {
@@ -383,22 +383,22 @@ export function ObjectExplorerPage() {
 
   function getDisplayName(obj: AnyObject): string {
     switch (obj.__class__) {
-      case "UpdrawGroup": {
+      case "UpmadeGroup": {
         const count = obj.childIds?.length ?? 0;
         return `Group (${count} items)`;
       }
-      case "UpdrawShape":
+      case "UpmadeShape":
         return obj.shapeType === ShapeType.Ellipse ? "Ellipse" : "Rectangle";
-      case "UpdrawText": {
+      case "UpmadeText": {
         const txt = (obj.text as string) || "Blank Text";
         return `Text "${txt.length > 15 ? `${txt.slice(0, 15)}...` : txt}"`;
       }
-      case "UpdrawLine":
+      case "UpmadeLine":
         return "Line";
-      case "UpdrawPath":
+      case "UpmadePath":
         return "Brush Path";
       default:
-        return obj.__class__.replace("Updraw", "");
+        return obj.__class__.replace("Upmade", "");
     }
   }
 
@@ -441,7 +441,7 @@ export function ObjectExplorerPage() {
       return null;
     }
 
-    const isGroup = obj.__class__ === "UpdrawGroup";
+    const isGroup = obj.__class__ === "UpmadeGroup";
     const expanded = isExpanded(obj.id);
     const isSelected = selectedObject?.id === obj.id;
 
@@ -529,7 +529,7 @@ export function ObjectExplorerPage() {
     <div style={hostStyle}>
       <div style={contentShellStyle}>
         <div style={editorContainerStyle}>
-          <UpdrawEditor
+          <UpmadeEditor
             ref={editorRef}
             editorId="object-explorer"
             theme="light"
@@ -585,7 +585,7 @@ export function ObjectExplorerPage() {
                   style={filterChipStyle(selectedTypes.has(type))}
                   onClick={() => void toggleTypeFilter(type)}
                 >
-                  {type.replace("Updraw", "")}
+                  {type.replace("Upmade", "")}
                 </button>
               ))}
             </div>
@@ -607,7 +607,7 @@ export function ObjectExplorerPage() {
           {selectedObject && (
             <section style={inspectorStyle}>
               <h4 style={sectionHeadingStyle}>
-                Inspector: {selectedObject.__class__.replace("Updraw", "")}
+                Inspector: {selectedObject.__class__.replace("Upmade", "")}
               </h4>
 
               <div style={inspectorFieldStyle}>
@@ -638,7 +638,7 @@ export function ObjectExplorerPage() {
                 </div>
               </div>
 
-              {selectedObject.__class__ === "UpdrawText" && (
+              {selectedObject.__class__ === "UpmadeText" && (
                 <div style={inspectorFieldStyle}>
                   <label style={inspectorLabelStyle}>Text Content</label>
                   <input
@@ -650,7 +650,7 @@ export function ObjectExplorerPage() {
                 </div>
               )}
 
-              {selectedObject.__class__ === "UpdrawShape" && (
+              {selectedObject.__class__ === "UpmadeShape" && (
                 <>
                   <div style={inspectorFieldStyle}>
                     <label style={inspectorLabelStyle}>Size W / H</label>
@@ -682,7 +682,7 @@ export function ObjectExplorerPage() {
                 </>
               )}
 
-              {selectedObject.__class__ === "UpdrawPath" && (
+              {selectedObject.__class__ === "UpmadePath" && (
                 <>
                   <div style={inspectorFieldStyle}>
                     <label style={inspectorLabelStyle}>Fill Color</label>

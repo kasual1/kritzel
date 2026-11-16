@@ -1,4 +1,4 @@
-// Generates every Updraw logo variant from the mark: by default tools/logo/source/updraw-mark.svg, or an Updraw
+// Generates every Upmade logo variant from the mark: by default tools/logo/source/upmade-mark.svg, or an Upmade
 // workspace export that holds the mark drawn as a single stroke. See README.md for what it writes and why.
 //
 //   npm run logo:generate -- [<mark.svg | workspace-export.json>] [--out <dir>] [--weight <units>] [--size <factor>]
@@ -8,7 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
-const SOURCE = 'tools/logo/source/updraw-mark.svg';
+const SOURCE = 'tools/logo/source/upmade-mark.svg';
 
 // The mark's larger side (its height, for the current mark) as a fraction of the tile. The light and dark tiles hold
 // the mark at the same size; the app's tab icon is a bit bigger so it reads in a browser tab.
@@ -72,7 +72,7 @@ const fmt = (n) => {
 
 // The mark's path data. An SVG contributes every <path d> as filled (nonzero) outlines in one coordinate space; the
 // tool refuses what it can't reproduce faithfully (transforms, nested <svg>, other shapes, unfilled or even-odd
-// paths) instead of silently drawing a different mark. An Updraw workspace export must hold exactly one drawn path.
+// paths) instead of silently drawing a different mark. An Upmade workspace export must hold exactly one drawn path.
 function readMark(file) {
   const text = fs.readFileSync(file, 'utf8');
   let d;
@@ -95,11 +95,12 @@ function readMark(file) {
     try {
       workspace = JSON.parse(text);
     } catch {
-      throw new Error(`${file}: neither an .svg file nor valid JSON (an Updraw workspace export)`);
+      throw new Error(`${file}: neither an .svg file nor valid JSON (an Upmade workspace export)`);
     }
-    const paths = (workspace.objects ?? []).filter((o) => o.__class__ === 'KritzelPath');
+    // Exports made before the renames name the class after the library's former names (Updraw, Kritzel).
+    const paths = (workspace.objects ?? []).filter((o) => /^(Upmade|Updraw|Kritzel)Path$/.test(o.__class__));
     if (paths.length !== 1) {
-      throw new Error(`${file}: expected exactly one drawn path (KritzelPath), found ${paths.length}. ` +
+      throw new Error(`${file}: expected exactly one drawn path (UpmadePath), found ${paths.length}. ` +
         'Export a workspace that holds only the logo, drawn as a single stroke, or pass the mark as an SVG.');
     }
     d = paths[0].d;
@@ -112,7 +113,7 @@ function readMark(file) {
   return d;
 }
 
-// Moves every coordinate of an absolute path by (dx, dy). Updraw exports filled outlines as M/Q/T/Z.
+// Moves every coordinate of an absolute path by (dx, dy). Upmade exports filled outlines as M/Q/T/Z.
 function translatePath(d, dx, dy) {
   const tokens = d.match(/[A-Za-z]|-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/g);
   const parts = [];
@@ -254,15 +255,15 @@ function encodeIco(frames) {
 // the mark from.
 function updatePathsTs(file, { d, w, h }) {
   const source = fs.readFileSync(file, 'utf8');
-  const names = ['UPDRAW_LOGO_PATH', 'UPDRAW_LOGO_VIEWBOX', 'UPDRAW_LOGO_STROKE_WIDTH'];
+  const names = ['UPMADE_LOGO_PATH', 'UPMADE_LOGO_VIEWBOX', 'UPMADE_LOGO_STROKE_WIDTH'];
   const missing = names.filter((n) => !new RegExp(`export const ${n} =`).test(source));
   if (missing.length) throw new Error(`${file}: ${missing.join(', ')} not found`);
   fs.writeFileSync(
     file,
     source
-      .replace(/(export const UPDRAW_LOGO_PATH =\s*)"[^"]*";/, `$1"${d}";`)
-      .replace(/(export const UPDRAW_LOGO_VIEWBOX = )"[^"]*";/, `$1"0 0 ${w} ${h}";`)
-      .replace(/(export const UPDRAW_LOGO_STROKE_WIDTH = )[\d.]+;/, `$1${fmt(weight)};`),
+      .replace(/(export const UPMADE_LOGO_PATH =\s*)"[^"]*";/, `$1"${d}";`)
+      .replace(/(export const UPMADE_LOGO_VIEWBOX = )"[^"]*";/, `$1"0 0 ${w} ${h}";`)
+      .replace(/(export const UPMADE_LOGO_STROKE_WIDTH = )[\d.]+;/, `$1${fmt(weight)};`),
   );
 }
 

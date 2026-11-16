@@ -1,15 +1,15 @@
-import type { UpdrawAgenticOrderObjectsAction } from '../../interfaces/agentic-action.interface';
-import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
-import type { UpdrawAgenticActionRun } from '../managers/agentic-action-run.class';
+import type { UpmadeAgenticOrderObjectsAction } from '../../interfaces/agentic-action.interface';
+import type { UpmadeAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpmadeAgenticActionRun } from '../managers/agentic-action-run.class';
 import { flyToObjects, prepareTopLevelTargets } from './select.executor';
 import { AGENTIC_ORDERS, assertObjectIds, uniqueIds } from '../../helpers/agentic-validation.helper';
-import { UpdrawZOrderHelper } from '../../helpers/z-order.helper';
+import { UpmadeZOrderHelper } from '../../helpers/z-order.helper';
 
 /**
  * Writes planned z-indices under the run's agent origin and records them for `objectsUpdated`. Objects that are
  * gone (e.g. a group the action just dissolved) are skipped. Call it inside `run.mutate()`.
  */
-export function applyZIndexUpdates(run: UpdrawAgenticActionRun, updates: Map<string, number>): void {
+export function applyZIndexUpdates(run: UpmadeAgenticActionRun, updates: Map<string, number>): void {
   const map = run.map!;
   updates.forEach((zIndex, id) => {
     const object = map.findById(id);
@@ -23,7 +23,7 @@ export function applyZIndexUpdates(run: UpdrawAgenticActionRun, updates: Map<str
 }
 
 /** `orderObjects`: clicks the objects and moves them in the stacking order, like "Bring to front". */
-export const orderObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticOrderObjectsAction> = {
+export const orderObjectsExecutor: UpmadeAgenticActionExecutor<UpmadeAgenticOrderObjectsAction> = {
   mutates: true,
 
   validate(action) {
@@ -43,8 +43,8 @@ export const orderObjectsExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticOrde
     await run.click();
 
     // Planned on the state right before the change; objects already in place change nothing.
-    const { items } = UpdrawZOrderHelper.collect(run.map!.allObjects());
-    const updates = UpdrawZOrderHelper.reorder(items, ids, action.order);
+    const { items } = UpmadeZOrderHelper.collect(run.map!.allObjects());
+    const updates = UpmadeZOrderHelper.reorder(items, ids, action.order);
     if (updates.size > 0) {
       run.mutate(() => applyZIndexUpdates(run, updates));
     }

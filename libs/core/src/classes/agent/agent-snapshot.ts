@@ -1,18 +1,18 @@
-import type { UpdrawCore } from '../core/core.class';
-import type { UpdrawBaseObject } from '../objects/base-object.class';
-import type { UpdrawObjectMap } from '../structures/object-map.structure';
+import type { UpmadeCore } from '../core/core.class';
+import type { UpmadeBaseObject } from '../objects/base-object.class';
+import type { UpmadeObjectMap } from '../structures/object-map.structure';
 import type { ThemeAwareColor } from '../../constants/color-palette.constants';
-import type { UpdrawCanvasObject, UpdrawCanvasSnapshot, UpdrawObserveOptions } from '../../interfaces/agent.interface';
-import { UpdrawShape } from '../objects/shape.class';
-import { UpdrawText } from '../objects/text.class';
-import { UpdrawPath } from '../objects/path.class';
-import { UpdrawLine } from '../objects/line.class';
-import { UpdrawImage } from '../objects/image.class';
-import { UpdrawIframeObject } from '../objects/iframe.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawDynamicObject } from '../objects/dynamic-object.class';
-import { UpdrawRichTextHelper } from '../../helpers/rich-text.helper';
-import { UpdrawZOrderHelper } from '../../helpers/z-order.helper';
+import type { UpmadeCanvasObject, UpmadeCanvasSnapshot, UpmadeObserveOptions } from '../../interfaces/agent.interface';
+import { UpmadeShape } from '../objects/shape.class';
+import { UpmadeText } from '../objects/text.class';
+import { UpmadePath } from '../objects/path.class';
+import { UpmadeLine } from '../objects/line.class';
+import { UpmadeImage } from '../objects/image.class';
+import { UpmadeIframeObject } from '../objects/iframe.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeDynamicObject } from '../objects/dynamic-object.class';
+import { UpmadeRichTextHelper } from '../../helpers/rich-text.helper';
+import { UpmadeZOrderHelper } from '../../helpers/z-order.helper';
 import {
   buildFrameCache,
   buildParentIndex,
@@ -21,13 +21,13 @@ import {
   isSelectionObject,
 } from '../../helpers/agentic-conflict.helper';
 
-type AnyObject = UpdrawBaseObject<any>;
+type AnyObject = UpmadeBaseObject<any>;
 
 const DEFAULT_MAX_OBJECTS = 100;
 const DEFAULT_MAX_TEXT_LENGTH = 300;
 
 /** The visible area of the user's viewport in world units, with the zoom level (`scale`, 1 = 100%). */
-export function describeViewport(core: UpdrawCore): UpdrawCanvasSnapshot['viewport'] {
+export function describeViewport(core: UpmadeCore): UpmadeCanvasSnapshot['viewport'] {
   const state = core.store.state;
   const scale = state.scale || 1;
   return {
@@ -44,14 +44,14 @@ export function describeViewport(core: UpdrawCore): UpdrawCanvasSnapshot['viewpo
  * objects with their geometry, text, connections and style. Never includes image data, iframe code or
  * path points. Throws when no workspace is ready.
  */
-export function buildCanvasSnapshot(core: UpdrawCore, agentId: string, options?: UpdrawObserveOptions): UpdrawCanvasSnapshot;
+export function buildCanvasSnapshot(core: UpmadeCore, agentId: string, options?: UpmadeObserveOptions): UpmadeCanvasSnapshot;
 /**
  * For an actor working as the local user: `agent` describes the actor (no position, the user's selection as its
  * selection) and the user's selection never marks objects as busy.
  * @internal
  */
-export function buildCanvasSnapshot(core: UpdrawCore, actor: { kind: 'user'; id: string }, options?: UpdrawObserveOptions): UpdrawCanvasSnapshot;
-export function buildCanvasSnapshot(core: UpdrawCore, actor: string | { kind: 'user'; id: string }, options: UpdrawObserveOptions = {}): UpdrawCanvasSnapshot {
+export function buildCanvasSnapshot(core: UpmadeCore, actor: { kind: 'user'; id: string }, options?: UpmadeObserveOptions): UpmadeCanvasSnapshot;
+export function buildCanvasSnapshot(core: UpmadeCore, actor: string | { kind: 'user'; id: string }, options: UpmadeObserveOptions = {}): UpmadeCanvasSnapshot {
   const asUser = typeof actor !== 'string';
   const agentId = typeof actor === 'string' ? actor : actor.id;
   const map = getMap(core);
@@ -85,7 +85,7 @@ export function buildCanvasSnapshot(core: UpdrawCore, actor: string | { kind: 'u
     objects = keepMostRelevant(objects, maxObjects, new Set([...userSelection, ...agentSelection]), viewport, parents);
     truncated = true;
   }
-  objects = [...objects].sort(UpdrawZOrderHelper.compareStackOrder);
+  objects = [...objects].sort(UpmadeZOrderHelper.compareStackOrder);
 
   const maxTextLength = Math.max(1, options.maxTextLength ?? DEFAULT_MAX_TEXT_LENGTH);
   const described = objects.map(object => {
@@ -94,7 +94,7 @@ export function buildCanvasSnapshot(core: UpdrawCore, actor: string | { kind: 'u
     if (parent) {
       entry.parentId = parent.id;
     }
-    if ((!asUser && frame.humanSelectedIds.has(object.id)) || (object instanceof UpdrawText && object.isEditing)) {
+    if ((!asUser && frame.humanSelectedIds.has(object.id)) || (object instanceof UpmadeText && object.isEditing)) {
       entry.busy = 'user';
     } else if (frame.collaboratorIds.has(object.id)) {
       entry.busy = 'collaborator';
@@ -116,9 +116,9 @@ export function buildCanvasSnapshot(core: UpdrawCore, actor: string | { kind: 'u
 }
 
 /** Describes one object for a snapshot (without `parentId` and `busy`). */
-export function describeObject(object: AnyObject, theme: string, maxTextLength: number = DEFAULT_MAX_TEXT_LENGTH): UpdrawCanvasObject {
+export function describeObject(object: AnyObject, theme: string, maxTextLength: number = DEFAULT_MAX_TEXT_LENGTH): UpmadeCanvasObject {
   const box = object.boundingBox;
-  const entry: UpdrawCanvasObject = {
+  const entry: UpmadeCanvasObject = {
     id: object.id,
     type: typeOf(object),
     x: round(box.x),
@@ -126,10 +126,10 @@ export function describeObject(object: AnyObject, theme: string, maxTextLength: 
     width: round(box.width),
     height: round(box.height),
   };
-  if (object instanceof UpdrawShape) {
+  if (object instanceof UpmadeShape) {
     entry.shapeType = object.shapeType;
   }
-  const name = object instanceof UpdrawIframeObject ? object.name || object.title : object.name;
+  const name = object instanceof UpmadeIframeObject ? object.name || object.title : object.name;
   if (name) {
     entry.name = name;
   }
@@ -137,16 +137,16 @@ export function describeObject(object: AnyObject, theme: string, maxTextLength: 
   if (rotation !== 0) {
     entry.rotation = rotation;
   }
-  if (object instanceof UpdrawShape || object instanceof UpdrawText) {
-    const text = object.editor ? UpdrawRichTextHelper.getPlainText(object.editor) : UpdrawRichTextHelper.toPlainText(object.content);
+  if (object instanceof UpmadeShape || object instanceof UpmadeText) {
+    const text = object.editor ? UpmadeRichTextHelper.getPlainText(object.editor) : UpmadeRichTextHelper.toPlainText(object.content);
     if (text) {
       entry.text = text.length > maxTextLength ? `${text.slice(0, maxTextLength)}…` : text;
     }
   }
-  if (object instanceof UpdrawGroup) {
+  if (object instanceof UpmadeGroup) {
     entry.childIds = [...object.childIds];
   }
-  if (object instanceof UpdrawLine) {
+  if (object instanceof UpmadeLine) {
     if (object.startAnchor?.objectId) entry.from = object.startAnchor.objectId;
     if (object.endAnchor?.objectId) entry.to = object.endAnchor.objectId;
   }
@@ -160,23 +160,23 @@ export function describeObject(object: AnyObject, theme: string, maxTextLength: 
   return entry;
 }
 
-function describeStyle(object: AnyObject, theme: string): UpdrawCanvasObject['style'] | undefined {
-  const style: NonNullable<UpdrawCanvasObject['style']> = {};
-  if (object instanceof UpdrawShape) {
+function describeStyle(object: AnyObject, theme: string): UpmadeCanvasObject['style'] | undefined {
+  const style: NonNullable<UpmadeCanvasObject['style']> = {};
+  if (object instanceof UpmadeShape) {
     style.fillColor = colorOf(object.fillColor, theme);
     style.strokeColor = colorOf(object.strokeColor, theme);
     style.strokeWidth = object.strokeWidth;
     style.fontSize = object.fontSize;
     style.fontFamily = object.fontFamily;
     style.fontColor = colorOf(object.fontColor, theme);
-  } else if (object instanceof UpdrawText) {
+  } else if (object instanceof UpmadeText) {
     style.fontSize = object.fontSize;
     style.fontFamily = object.fontFamily;
     style.fontColor = colorOf(object.fontColor, theme);
-  } else if (object instanceof UpdrawPath) {
+  } else if (object instanceof UpmadePath) {
     style.strokeColor = colorOf(object.fill, theme);
     style.strokeWidth = object.strokeWidth;
-  } else if (object instanceof UpdrawLine) {
+  } else if (object instanceof UpmadeLine) {
     style.strokeColor = colorOf(object.stroke, theme);
     style.strokeWidth = object.strokeWidth;
     const start = object.arrows?.start?.enabled ? object.arrows.start.style ?? 'triangle' : undefined;
@@ -189,18 +189,18 @@ function describeStyle(object: AnyObject, theme: string): UpdrawCanvasObject['st
     style.opacity = object.opacity;
   }
   const entries = Object.entries(style).filter(([, value]) => value !== undefined && value !== '');
-  return entries.length > 0 ? (Object.fromEntries(entries) as UpdrawCanvasObject['style']) : undefined;
+  return entries.length > 0 ? (Object.fromEntries(entries) as UpmadeCanvasObject['style']) : undefined;
 }
 
-function typeOf(object: AnyObject): UpdrawCanvasObject['type'] {
-  if (object instanceof UpdrawShape) return 'shape';
-  if (object instanceof UpdrawText) return 'text';
-  if (object instanceof UpdrawPath) return 'path';
-  if (object instanceof UpdrawLine) return 'line';
-  if (object instanceof UpdrawImage) return 'image';
-  if (object instanceof UpdrawIframeObject) return 'iframe';
-  if (object instanceof UpdrawGroup) return 'group';
-  if (object instanceof UpdrawDynamicObject) return 'custom';
+function typeOf(object: AnyObject): UpmadeCanvasObject['type'] {
+  if (object instanceof UpmadeShape) return 'shape';
+  if (object instanceof UpmadeText) return 'text';
+  if (object instanceof UpmadePath) return 'path';
+  if (object instanceof UpmadeLine) return 'line';
+  if (object instanceof UpmadeImage) return 'image';
+  if (object instanceof UpmadeIframeObject) return 'iframe';
+  if (object instanceof UpmadeGroup) return 'group';
+  if (object instanceof UpmadeDynamicObject) return 'custom';
   return 'object';
 }
 
@@ -225,7 +225,7 @@ function keepMostRelevant(
   max: number,
   selected: Set<string>,
   viewport: { x: number; y: number; width: number; height: number },
-  parents: Map<string, UpdrawGroup>,
+  parents: Map<string, UpmadeGroup>,
 ): AnyObject[] {
   const cx = viewport.x + viewport.width / 2;
   const cy = viewport.y + viewport.height / 2;
@@ -306,9 +306,9 @@ function keepMostRelevant(
   return result;
 }
 
-function getMap(core: UpdrawCore): UpdrawObjectMap<AnyObject> | null {
+function getMap(core: UpmadeCore): UpmadeObjectMap<AnyObject> | null {
   try {
-    const map = core.store.objects as UpdrawObjectMap<AnyObject> | undefined;
+    const map = core.store.objects as UpmadeObjectMap<AnyObject> | undefined;
     return map && map.isReady && !map.isHeadless ? map : null;
   } catch {
     return null;

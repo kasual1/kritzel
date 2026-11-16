@@ -1,40 +1,40 @@
-import type { UpdrawAgenticObjectStyle, UpdrawAgenticSetStyleAction } from '../../interfaces/agentic-action.interface';
-import type { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawShape } from '../objects/shape.class';
-import { UpdrawText } from '../objects/text.class';
-import { UpdrawPath } from '../objects/path.class';
-import { UpdrawLine } from '../objects/line.class';
-import { UpdrawGroup } from '../objects/group.class';
+import type { UpmadeAgenticObjectStyle, UpmadeAgenticSetStyleAction } from '../../interfaces/agentic-action.interface';
+import type { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeShape } from '../objects/shape.class';
+import { UpmadeText } from '../objects/text.class';
+import { UpmadePath } from '../objects/path.class';
+import { UpmadeLine } from '../objects/line.class';
+import { UpmadeGroup } from '../objects/group.class';
 import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES } from '../../constants/agentic-action.constants';
-import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpmadeAgenticActionExecutor } from '../../types/agentic-action.types';
 import { collectWithDescendants } from '../../helpers/agentic-conflict.helper';
 import { toThemeColor } from '../../helpers/agentic-style.helper';
 import { flyToObjects, prepareTopLevelTargets } from './select.executor';
 import { AGENTIC_OBJECT_STYLE_KEYS, assertObjectIds, assertStyle, uniqueIds } from '../../helpers/agentic-validation.helper';
 
-type AnyObject = UpdrawBaseObject<any>;
+type AnyObject = UpmadeBaseObject<any>;
 
 /** The object properties a style sets on one object; fields that don't apply to its type are left out. */
-export function stylePatchFor(object: AnyObject, style: UpdrawAgenticObjectStyle): Record<string, unknown> {
+export function stylePatchFor(object: AnyObject, style: UpmadeAgenticObjectStyle): Record<string, unknown> {
   const patch: Record<string, unknown> = {};
   if (style.opacity !== undefined) {
     patch.opacity = style.opacity;
   }
-  if (object instanceof UpdrawShape) {
+  if (object instanceof UpmadeShape) {
     if (style.fillColor !== undefined) patch.fillColor = toThemeColor(style.fillColor);
     if (style.strokeColor !== undefined) patch.strokeColor = toThemeColor(style.strokeColor);
     if (style.strokeWidth !== undefined) patch.strokeWidth = style.strokeWidth;
     if (style.fontSize !== undefined) patch.fontSize = style.fontSize;
     if (style.fontFamily !== undefined) patch.fontFamily = style.fontFamily;
     if (style.fontColor !== undefined) patch.fontColor = toThemeColor(style.fontColor);
-  } else if (object instanceof UpdrawText) {
+  } else if (object instanceof UpmadeText) {
     if (style.fontSize !== undefined) patch.fontSize = style.fontSize;
     if (style.fontFamily !== undefined) patch.fontFamily = style.fontFamily;
     if (style.fontColor !== undefined) patch.fontColor = toThemeColor(style.fontColor);
-  } else if (object instanceof UpdrawPath) {
+  } else if (object instanceof UpmadePath) {
     if (style.strokeColor !== undefined) patch.fill = toThemeColor(style.strokeColor);
     if (style.strokeWidth !== undefined) patch.strokeWidth = style.strokeWidth;
-  } else if (object instanceof UpdrawLine) {
+  } else if (object instanceof UpmadeLine) {
     if (style.strokeColor !== undefined) patch.stroke = toThemeColor(style.strokeColor);
     if (style.strokeWidth !== undefined) patch.strokeWidth = style.strokeWidth;
     if (style.arrows !== undefined) {
@@ -64,7 +64,7 @@ function applyPatch(object: AnyObject, patch: Record<string, unknown>): void {
 }
 
 /** `setStyle`: clicks the objects and restyles them; groups style their children. */
-export const setStyleExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticSetStyleAction> = {
+export const setStyleExecutor: UpmadeAgenticActionExecutor<UpmadeAgenticSetStyleAction> = {
   mutates: true,
 
   validate(action) {
@@ -80,7 +80,7 @@ export const setStyleExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticSetStyle
     const map = run.map!;
     const applies = Array.from(collectWithDescendants(map, preparation.targetIds)).some(id => {
       const object = map.findById(id);
-      return !!object && !(object instanceof UpdrawGroup) && Object.keys(stylePatchFor(object, action.style)).length > 0;
+      return !!object && !(object instanceof UpmadeGroup) && Object.keys(stylePatchFor(object, action.style)).length > 0;
     });
     return applies ? preparation : { reason: 'invalid-target', objectIds: preparation.targetIds };
   },
@@ -96,7 +96,7 @@ export const setStyleExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticSetStyle
     run.mutate(() => {
       for (const id of collectWithDescendants(map, ids)) {
         const object = map.findById(id);
-        if (!object || object instanceof UpdrawGroup) {
+        if (!object || object instanceof UpmadeGroup) {
           continue;
         }
         const patch = stylePatchFor(object, action.style);
@@ -107,7 +107,7 @@ export const setStyleExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticSetStyle
         applyPatch(object, patch);
         map.update(object);
         run.changedProperties.set(id, keys);
-        if (object instanceof UpdrawText && (patch.fontSize !== undefined || patch.fontFamily !== undefined)) {
+        if (object instanceof UpmadeText && (patch.fontSize !== undefined || patch.fontFamily !== undefined)) {
           remeasure.push(id);
         }
       }
@@ -115,18 +115,18 @@ export const setStyleExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticSetStyle
     run.assertActive();
 
     // Text sizes come from the DOM: measure on-screen texts again once they rendered the new font.
-    const visible = remeasure.filter(id => (map.findById(id) as UpdrawText | undefined)?.isInViewport());
+    const visible = remeasure.filter(id => (map.findById(id) as UpmadeText | undefined)?.isInViewport());
     if (visible.length > 0) {
       core.rerender();
       for (let frame = 0; frame < AGENTIC_ACTION_MOUNT_WAIT_FRAMES; frame++) {
         await run.nextRenderedFrame();
-        if (visible.every(id => (map.findById(id) as UpdrawText | undefined)?.isMounted)) {
+        if (visible.every(id => (map.findById(id) as UpmadeText | undefined)?.isMounted)) {
           break;
         }
       }
       run.mutate(() => {
         for (const id of visible) {
-          const text = map.findById(id) as UpdrawText | undefined;
+          const text = map.findById(id) as UpmadeText | undefined;
           if (text) {
             text.adjustSizeOnInput();
             map.update(text);

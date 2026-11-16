@@ -1,6 +1,6 @@
 ---
 title: License
-description: Updraw is open source software released under the MIT License.
+description: Upmade is open source software released under the MIT License.
 ---
 
 # MIT License

@@ -1,34 +1,34 @@
-import { UpdrawCore } from "../core/core.class";
-import { UpdrawBaseTool } from "../tools/base-tool.class";
+import { UpmadeCore } from "../core/core.class";
+import { UpmadeBaseTool } from "../tools/base-tool.class";
 
 /**
- * A per-engine registry for managing drawing tools in the Updraw library.
- * Each `UpdrawCore` owns its own `UpdrawToolRegistry` instance so that
+ * A per-engine registry for managing drawing tools in the Upmade library.
+ * Each `UpmadeCore` owns its own `UpmadeToolRegistry` instance so that
  * multiple editors on the same page do not share tool instances or configs.
  *
  * Tools are instantiated and stored by name, allowing retrieval by name or index.
  */
-export class UpdrawToolRegistry {
+export class UpmadeToolRegistry {
   /** Internal storage for registered tools, mapping tool names to their instances. */
-  private registry: Record<string, UpdrawBaseTool> = {};
+  private registry: Record<string, UpmadeBaseTool> = {};
 
   /**
-   * Creates a new tool registry bound to a specific `UpdrawCore` instance.
+   * Creates a new tool registry bound to a specific `UpmadeCore` instance.
    * The bound core is used as the constructor argument when registering new tools.
    *
-   * @param core - The `UpdrawCore` instance this registry is bound to.
+   * @param core - The `UpmadeCore` instance this registry is bound to.
    */
-  constructor(private readonly core: UpdrawCore) {}
+  constructor(private readonly core: UpmadeCore) {}
 
   /**
    * Registers a new tool by instantiating it with the registry's bound core.
    * The tool is stored in the registry under the specified name.
    *
    * @param toolName - The unique identifier for the tool.
-   * @param constructor - The tool class constructor that extends `UpdrawBaseTool`.
+   * @param constructor - The tool class constructor that extends `UpmadeBaseTool`.
    * @returns The newly created and registered tool instance.
    */
-  registerTool(toolName: string, constructor: new (core: UpdrawCore) => UpdrawBaseTool): UpdrawBaseTool {
+  registerTool(toolName: string, constructor: new (core: UpmadeCore) => UpmadeBaseTool): UpmadeBaseTool {
     const toolInstance = new constructor(this.core);
     toolInstance.name = toolName;
     this.registry[toolName] = toolInstance;
@@ -52,7 +52,7 @@ export class UpdrawToolRegistry {
    * @param toolName - The unique identifier of the tool to retrieve.
    * @returns The tool instance if found, or `null` if not registered.
    */
-  getTool(toolName: string): UpdrawBaseTool | null {
+  getTool(toolName: string): UpmadeBaseTool | null {
     const toolInstance = this.registry[toolName];
 
     if (!toolInstance) {
@@ -70,7 +70,7 @@ export class UpdrawToolRegistry {
    * @param index - The zero-based index of the tool in the registry.
    * @returns The tool instance at the specified index, or `null` if the index is out of bounds.
    */
-  getToolByIndex(index: number): UpdrawBaseTool | null {
+  getToolByIndex(index: number): UpmadeBaseTool | null {
     return Object.values(this.registry)[index] ?? null;
   }
 }

@@ -35,38 +35,38 @@ async function prepareBrowserEntry(context, appDirectory) {
     if (errors.length) throw new Error(formatDiagnostics(errors));
     entry = `import '@angular/compiler';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideUpdraw } from '@updraw/angular-${component}';
-import { UpdrawCanvasComponent } from './compiled/updraw-canvas.component.js';
-bootstrapApplication(UpdrawCanvasComponent, { providers: [provideUpdraw()] }).catch(error => { console.error(error); });
+import { provideUpmade } from '@upmade/angular-${component}';
+import { UpmadeCanvasComponent } from './compiled/upmade-canvas.component.js';
+bootstrapApplication(UpmadeCanvasComponent, { providers: [provideUpmade()] }).catch(error => { console.error(error); });
 `;
   } else if (framework === 'react') {
     entry = `import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { UpdrawCanvas } from './src/components/updraw-canvas/UpdrawCanvas';
-createRoot(document.getElementById('app')).render(React.createElement(UpdrawCanvas));
+import { UpmadeCanvas } from './src/components/upmade-canvas/UpmadeCanvas';
+createRoot(document.getElementById('app')).render(React.createElement(UpmadeCanvas));
 `;
   } else {
     entry = `import { createApp } from 'vue';
-import UpdrawCanvas from './src/components/updraw-canvas/UpdrawCanvas.vue';
-createApp(UpdrawCanvas).mount('#app');
+import UpmadeCanvas from './src/components/upmade-canvas/UpmadeCanvas.vue';
+createApp(UpmadeCanvas).mount('#app');
 `;
   }
   await writeFile(path.join(appDirectory, 'main.tsx'), entry);
   await writeFile(path.join(appDirectory, 'index.html'), `<!doctype html>
-<html><head><meta charset="UTF-8"><title>Updraw generated starter</title></head>
-<body>${framework === 'angular' ? '<updraw-canvas></updraw-canvas>' : '<div id="app"></div>'}
+<html><head><meta charset="UTF-8"><title>Upmade generated starter</title></head>
+<body>${framework === 'angular' ? '<upmade-canvas></upmade-canvas>' : '<div id="app"></div>'}
 <script>
 if (new URLSearchParams(location.search).has('fail-registration')) {
   const define = customElements.define.bind(customElements);
   customElements.define = (name, constructor, options) => {
-    if (name === 'updraw-engine') {
+    if (name === 'upmade-engine') {
       constructor.prototype.registerTool = async () => null;
     }
     return define(name, constructor, options);
   };
 }
 document.addEventListener('${component === 'engine' ? 'isEngineReady' : 'isReady'}', () => {
-  document.documentElement.dataset.updrawReady = '${component}';
+  document.documentElement.dataset.upmadeReady = '${component}';
 }, true);
 document.addEventListener('activeToolChange', event => {
   document.documentElement.dataset.activeTool = event.detail.toolType;

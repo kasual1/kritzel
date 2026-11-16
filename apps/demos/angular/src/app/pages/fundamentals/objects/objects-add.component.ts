@@ -5,14 +5,14 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  UpdrawEditor,
+  UpmadeEditor,
   EditorIsReadyEvent,
-  UpdrawBaseObject,
-  UpdrawShape,
-  UpdrawPath,
-  UpdrawWorkspace,
+  UpmadeBaseObject,
+  UpmadeShape,
+  UpmadePath,
+  UpmadeWorkspace,
   ShapeType,
-} from '@updraw/angular-editor';
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -20,7 +20,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-objects-add',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -28,7 +28,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       <button (click)="addEllipse()">Add Ellipse</button>
       <button (click)="addPath()">Add Path</button>
     </app-toolbar>
-    <updraw-editor
+    <upmade-editor
       editorId="objects-add"
       [theme]="'light'"
       [themes]="themes"
@@ -38,7 +38,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady($event)"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [
     `
@@ -48,27 +48,27 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         height: 100%;
         font-family: Roboto, sans-serif;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
       }
     `,
   ],
 })
 export class ObjectsAddComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
-  objects = signal<UpdrawBaseObject[]>([]);
+  objects = signal<UpmadeBaseObject[]>([]);
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
     this.objects.set(await this.editor.getAllObjects());
   }
 
   async addRectangle() {
-    const shape = new UpdrawShape({
+    const shape = new UpmadeShape({
       translateX: this.randomOffset(),
       translateY: this.randomOffset(),
       width: 120,
@@ -83,7 +83,7 @@ export class ObjectsAddComponent {
   }
 
   async addEllipse() {
-    const shape = new UpdrawShape({
+    const shape = new UpmadeShape({
       translateX: this.randomOffset(),
       translateY: this.randomOffset(),
       width: 100,
@@ -98,7 +98,7 @@ export class ObjectsAddComponent {
   }
 
   async addPath() {
-    const path = new UpdrawPath({
+    const path = new UpmadePath({
       points: [
         [0, 0, 0.5],
         [20, -15, 0.5],

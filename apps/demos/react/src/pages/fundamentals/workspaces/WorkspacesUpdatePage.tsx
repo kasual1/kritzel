@@ -1,16 +1,16 @@
 import { useRef, useState, type CSSProperties } from "react";
 import {
   InMemorySyncProvider,
-  UpdrawEditor,
-  UpdrawLine,
-  UpdrawPath,
-  UpdrawShape,
+  UpmadeEditor,
+  UpmadeLine,
+  UpmadePath,
+  UpmadeShape,
   ShapeType,
-  type HTMLUpdrawEditorElement,
-  type UpdrawBaseObject,
-  type UpdrawSyncConfig,
-  type UpdrawWorkspace,
-} from "@updraw/react-editor";
+  type HTMLUpmadeEditorElement,
+  type UpmadeBaseObject,
+  type UpmadeSyncConfig,
+  type UpmadeWorkspace,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
@@ -30,7 +30,7 @@ interface WorkspaceVariant {
 }
 
 const themes = [reactThemeLight, reactThemeDark];
-const syncConfig: UpdrawSyncConfig = {
+const syncConfig: UpmadeSyncConfig = {
   providers: [InMemorySyncProvider],
 };
 const workspaceVariants: WorkspaceVariant[] = [
@@ -59,9 +59,9 @@ const jsonStyle: CSSProperties = {
   lineHeight: 1.45,
 };
 
-function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
+function createVariantObjects(variant: WorkspaceVariant): UpmadeBaseObject[] {
   return [
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -71,7 +71,7 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
       strokeColor: variant.stroke,
       strokeWidth: 3,
     }),
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -82,7 +82,7 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
       strokeWidth: 3,
       rotation: variant.rotation,
     }),
-    new UpdrawLine({
+    new UpmadeLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -90,7 +90,7 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
       stroke: variant.accent,
       strokeWidth: 3,
     }),
-    new UpdrawPath({
+    new UpmadePath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -112,9 +112,9 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
 }
 
 export function WorkspacesUpdatePage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const variantIndexRef = useRef(0);
-  const [activeWorkspace, setActiveWorkspace] = useState<UpdrawWorkspace | null>(
+  const [activeWorkspace, setActiveWorkspace] = useState<UpmadeWorkspace | null>(
     null,
   );
 
@@ -156,7 +156,7 @@ export function WorkspacesUpdatePage() {
         </span>
       </Toolbar>
       <div style={contentStyle}>
-        <UpdrawEditor
+        <UpmadeEditor
           ref={editorRef}
           editorId="workspaces-update"
           theme="light"

@@ -1,8 +1,8 @@
-import { UpdrawBrushToolConfig } from '../interfaces/toolbar-item.interface';
+import { UpmadeBrushToolConfig } from '../interfaces/toolbar-item.interface';
 import { DEFAULT_COLOR_PALETTE } from '../constants/color-palette.constants';
 import { DEFAULT_STROKE_SIZES } from '../constants/stroke-size.constants';
 
-export const DEFAULT_BRUSH_CONFIG: UpdrawBrushToolConfig = {
+export const DEFAULT_BRUSH_CONFIG: UpmadeBrushToolConfig = {
   color: DEFAULT_COLOR_PALETTE[0],
   size: 16,
   opacity: 1,

@@ -1,5 +1,5 @@
 import * as Y from 'yjs';
-import { UpdrawMigration } from '../interfaces/migration.interface';
+import { UpmadeMigration } from '../interfaces/migration.interface';
 
 /**
  * Ordered list of schema migrations for the app-state Y.Doc.
@@ -10,7 +10,7 @@ import { UpdrawMigration } from '../interfaces/migration.interface';
  * 2. Append a new entry with fromVersion = old version, toVersion = new version
  * 3. Implement the migrate() function — it must be idempotent
  */
-export const APP_STATE_MIGRATIONS: UpdrawMigration[] = [
+export const APP_STATE_MIGRATIONS: UpmadeMigration[] = [
   {
     fromVersion: 1,
     toVersion: 2,

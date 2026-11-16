@@ -1,19 +1,19 @@
-import { UpdrawPasteIntentProviderRegistry } from './paste-intent-provider.registry';
-import { UpdrawPasteIntentProvider } from '../../interfaces/paste-intent-provider.interface';
+import { UpmadePasteIntentProviderRegistry } from './paste-intent-provider.registry';
+import { UpmadePasteIntentProvider } from '../../interfaces/paste-intent-provider.interface';
 
-describe('UpdrawPasteIntentProviderRegistry', () => {
+describe('UpmadePasteIntentProviderRegistry', () => {
   const mockCore = {} as any;
 
   const createProvider = (
     canHandle: boolean,
-    intent: ReturnType<UpdrawPasteIntentProvider['getPasteIntent']>,
-  ): UpdrawPasteIntentProvider => ({
+    intent: ReturnType<UpmadePasteIntentProvider['getPasteIntent']>,
+  ): UpmadePasteIntentProvider => ({
     canHandle: jest.fn().mockReturnValue(canHandle),
     getPasteIntent: jest.fn().mockImplementation(() => intent),
   });
 
   it('returns the first non-unknown intent in registration order', async () => {
-    const registry = new UpdrawPasteIntentProviderRegistry(mockCore);
+    const registry = new UpmadePasteIntentProviderRegistry(mockCore);
 
     const first = createProvider(true, Promise.resolve({ type: 'unknown' }));
     const second = createProvider(true, Promise.resolve({ type: 'plain_text', text: 'hello' }));
@@ -32,7 +32,7 @@ describe('UpdrawPasteIntentProviderRegistry', () => {
   });
 
   it('skips providers that cannot handle the current context', async () => {
-    const registry = new UpdrawPasteIntentProviderRegistry(mockCore);
+    const registry = new UpmadePasteIntentProviderRegistry(mockCore);
 
     const skipped = createProvider(false, Promise.resolve({ type: 'plain_text', text: 'ignored' }));
     const used = createProvider(true, Promise.resolve({ type: 'unknown' }));

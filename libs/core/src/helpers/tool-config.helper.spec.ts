@@ -1,6 +1,6 @@
-import { UpdrawToolConfigHelper } from './tool-config.helper';
+import { UpmadeToolConfigHelper } from './tool-config.helper';
 
-describe('UpdrawToolConfigHelper', () => {
+describe('UpmadeToolConfigHelper', () => {
   describe('getToolConfig - SelectionTool', () => {
     it('should delegate to tool.getToolConfig() for SelectionTool', () => {
       const mockConfig = {
@@ -16,7 +16,7 @@ describe('UpdrawToolConfigHelper', () => {
         getToolConfig: jest.fn().mockReturnValue(mockConfig),
       } as any;
 
-      const result = UpdrawToolConfigHelper.getToolConfig(tool);
+      const result = UpmadeToolConfigHelper.getToolConfig(tool);
 
       expect(tool.getToolConfig).toHaveBeenCalled();
       expect(result).toBe(mockConfig);
@@ -28,7 +28,7 @@ describe('UpdrawToolConfigHelper', () => {
         getToolConfig: jest.fn().mockReturnValue(null),
       } as any;
 
-      const result = UpdrawToolConfigHelper.getToolConfig(tool);
+      const result = UpmadeToolConfigHelper.getToolConfig(tool);
 
       expect(result).toBeNull();
     });
@@ -38,7 +38,7 @@ describe('UpdrawToolConfigHelper', () => {
     it('should return brush config', () => {
       const tool = { toolType: 'brush' } as any;
 
-      const result = UpdrawToolConfigHelper.getToolConfig(tool);
+      const result = UpmadeToolConfigHelper.getToolConfig(tool);
 
       expect(result).toEqual({
         type: 'brush',
@@ -56,7 +56,7 @@ describe('UpdrawToolConfigHelper', () => {
     it('should return brush config for a tool from another bundle instance', () => {
       const tool = { toolType: 'brush' } as any;
 
-      const result = UpdrawToolConfigHelper.getToolConfig(tool);
+      const result = UpmadeToolConfigHelper.getToolConfig(tool);
 
       expect(result).toEqual({
         type: 'brush',
@@ -76,7 +76,7 @@ describe('UpdrawToolConfigHelper', () => {
     it('should return line config with stroke-size and line-endings controls', () => {
       const tool = { toolType: 'line' } as any;
 
-      const result = UpdrawToolConfigHelper.getToolConfig(tool);
+      const result = UpmadeToolConfigHelper.getToolConfig(tool);
 
       expect(result).toEqual({
         type: 'line',
@@ -97,7 +97,7 @@ describe('UpdrawToolConfigHelper', () => {
     it('should return shape config with stroke-size and shape-fill controls', () => {
       const tool = { toolType: 'shape' } as any;
 
-      const result = UpdrawToolConfigHelper.getToolConfig(tool);
+      const result = UpmadeToolConfigHelper.getToolConfig(tool);
 
       expect(result).toEqual({
         type: 'shape',
@@ -118,7 +118,7 @@ describe('UpdrawToolConfigHelper', () => {
     it('should return text config with font-size and font-family controls', () => {
       const tool = { toolType: 'text' } as any;
 
-      const result = UpdrawToolConfigHelper.getToolConfig(tool);
+      const result = UpmadeToolConfigHelper.getToolConfig(tool);
 
       expect(result).toEqual({
         type: 'text',
@@ -139,7 +139,7 @@ describe('UpdrawToolConfigHelper', () => {
     it('should return null for an unrecognized tool', () => {
       const unknownTool = {} as any;
 
-      const result = UpdrawToolConfigHelper.getToolConfig(unknownTool);
+      const result = UpmadeToolConfigHelper.getToolConfig(unknownTool);
 
       expect(result).toBeNull();
     });
@@ -147,7 +147,7 @@ describe('UpdrawToolConfigHelper', () => {
     it('should return null for eraser tool', () => {
       const tool = { toolType: 'eraser' } as any;
 
-      const result = UpdrawToolConfigHelper.getToolConfig(tool);
+      const result = UpmadeToolConfigHelper.getToolConfig(tool);
 
       expect(result).toBeNull();
     });
@@ -155,7 +155,7 @@ describe('UpdrawToolConfigHelper', () => {
     it('should return null for image tool', () => {
       const tool = { toolType: 'image' } as any;
 
-      const result = UpdrawToolConfigHelper.getToolConfig(tool);
+      const result = UpmadeToolConfigHelper.getToolConfig(tool);
 
       expect(result).toBeNull();
     });

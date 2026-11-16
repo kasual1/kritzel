@@ -1,10 +1,10 @@
 // Injected into every page of the recording context. Playwright's screencast does
-// not capture the OS cursor, so we draw the Updraw cursor and a click ripple in the DOM.
+// not capture the OS cursor, so we draw the Upmade cursor and a click ripple in the DOM.
 function installRecorderCursor({ svg, hotspot }) {
-	if (window.__updrawRecorderCursor) {
+	if (window.__upmadeRecorderCursor) {
 		return;
 	}
-	window.__updrawRecorderCursor = true;
+	window.__upmadeRecorderCursor = true;
 
 	const STYLE = `
 		html, html * { cursor: none !important; }

@@ -1,5 +1,5 @@
-import type { UpdrawAgenticAction, UpdrawAgenticActionType } from '../../interfaces/agentic-action.interface';
-import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpmadeAgenticAction, UpmadeAgenticActionType } from '../../interfaces/agentic-action.interface';
+import type { UpmadeAgenticActionExecutor } from '../../types/agentic-action.types';
 import { clickExecutor } from '../executors/click.executor';
 import { interactWithElementExecutor } from '../executors/interact-with-element.executor';
 import { clearSelectionExecutor, selectExecutor } from '../executors/select.executor';
@@ -27,7 +27,7 @@ import { updateIframeExecutor } from '../executors/update-iframe.executor';
  * is added to the union without an executor.
  */
 export const AGENTIC_ACTION_EXECUTORS: {
-  [K in UpdrawAgenticActionType]: UpdrawAgenticActionExecutor<Extract<UpdrawAgenticAction, { type: K }>>;
+  [K in UpmadeAgenticActionType]: UpmadeAgenticActionExecutor<Extract<UpmadeAgenticAction, { type: K }>>;
 } = {
   click: clickExecutor,
   interactWithElement: interactWithElementExecutor,
@@ -56,9 +56,9 @@ export const AGENTIC_ACTION_EXECUTORS: {
 };
 
 /** The executor for an action type, or `null` for unknown types. */
-export function getAgenticActionExecutor(type: unknown): UpdrawAgenticActionExecutor | null {
+export function getAgenticActionExecutor(type: unknown): UpmadeAgenticActionExecutor | null {
   if (typeof type !== 'string' || !Object.prototype.hasOwnProperty.call(AGENTIC_ACTION_EXECUTORS, type)) {
     return null;
   }
-  return AGENTIC_ACTION_EXECUTORS[type as UpdrawAgenticActionType] as unknown as UpdrawAgenticActionExecutor;
+  return AGENTIC_ACTION_EXECUTORS[type as UpmadeAgenticActionType] as unknown as UpmadeAgenticActionExecutor;
 }

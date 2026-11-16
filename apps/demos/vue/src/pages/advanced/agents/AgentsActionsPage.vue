@@ -2,20 +2,20 @@
 import {
   BroadcastSyncProvider,
   getEditorRef,
-  UpdrawAgent,
-  UpdrawAgentActionError,
-  UpdrawEditor,
-  UpdrawShape,
-  UpdrawWorkspace,
+  UpmadeAgent,
+  UpmadeAgentActionError,
+  UpmadeEditor,
+  UpmadeShape,
+  UpmadeWorkspace,
   ShapeType,
-  type IUpdrawUser,
-  type UpdrawAgentState,
-  type UpdrawObjectChangeSource,
-  type UpdrawSyncConfig,
+  type IUpmadeUser,
+  type UpmadeAgentState,
+  type UpmadeObjectChangeSource,
+  type UpmadeSyncConfig,
   type ObjectsAddedEvent,
   type ObjectsRemovedEvent,
   type ObjectsUpdatedEvent,
-} from '@updraw/vue-editor'
+} from '@upmade/vue-editor'
 import { onBeforeUnmount, ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -28,7 +28,7 @@ const ELLIPSE_ID = 'agentic-actions-ellipse'
 
 /** Seeds with fixed IDs, so every tab of this page works on the same objects. */
 function createActionSeeds() {
-  const rectangle = new UpdrawShape({
+  const rectangle = new UpmadeShape({
     translateX: -260,
     translateY: -120,
     width: 140,
@@ -39,7 +39,7 @@ function createActionSeeds() {
     strokeWidth: 3,
   })
   rectangle.id = RECTANGLE_ID
-  const ellipse = new UpdrawShape({
+  const ellipse = new UpmadeShape({
     translateX: -260,
     translateY: 80,
     width: 120,
@@ -56,13 +56,13 @@ function createActionSeeds() {
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
 // Awareness shares presence between the tabs: each tab sees the other tab's agent and cursor.
-const syncConfig: UpdrawSyncConfig = { providers: [BroadcastSyncProvider.with({ awareness: true })] }
+const syncConfig: UpmadeSyncConfig = { providers: [BroadcastSyncProvider.with({ awareness: true })] }
 // One user per tab, so selections in other tabs count as collaborators.
 const tabId = Math.random().toString(36).slice(2, 8)
-const user: IUpdrawUser = { id: `tab-${tabId}`, displayName: `Tab ${tabId}` }
-const workspaces = [new UpdrawWorkspace({ id: 'agentic-actions-demo', name: 'Agentic Actions', objects: createActionSeeds() })]
+const user: IUpmadeUser = { id: `tab-${tabId}`, displayName: `Tab ${tabId}` }
+const workspaces = [new UpmadeWorkspace({ id: 'agentic-actions-demo', name: 'Agentic Actions', objects: createActionSeeds() })]
 
-const agent = new UpdrawAgent({ id: AGENT, name: 'Agent', color: '#7C3AED', position: { x: -400, y: -200 } })
+const agent = new UpmadeAgent({ id: AGENT, name: 'Agent', color: '#7C3AED', position: { x: -400, y: -200 } })
 
 const isRunning = ref(false)
 const canUndo = ref(false)
@@ -70,7 +70,7 @@ const canRedo = ref(false)
 const message = ref('')
 const lastChange = ref('')
 
-function syncHistory(state: UpdrawAgentState) {
+function syncHistory(state: UpmadeAgentState) {
   canUndo.value = state.canUndo
   canRedo.value = state.canRedo
 }
@@ -118,7 +118,7 @@ async function runScript() {
     })
     message.value = "Script finished. Undo the agent's steps one by one, or open a second tab to watch the changes sync."
   } catch (error) {
-    if (error instanceof UpdrawAgentActionError) {
+    if (error instanceof UpmadeAgentActionError) {
       message.value = `${error.action.type} stopped: ${error.reason}`
     } else {
       message.value = error instanceof Error ? error.message : String(error)
@@ -139,7 +139,7 @@ function abort() {
   agent.cancel()
 }
 
-function onChange(source: UpdrawObjectChangeSource | undefined, kind: string) {
+function onChange(source: UpmadeObjectChangeSource | undefined, kind: string) {
   if (source) {
     lastChange.value = `${kind} by ${source.agentId} (${source.actionType})`
   }
@@ -161,7 +161,7 @@ const onRemoved = (event: CustomEvent<ObjectsRemovedEvent>) => onChange(event.de
       <span v-if="message" class="label">{{ message }}</span>
       <span v-if="lastChange" class="status">{{ lastChange }}</span>
     </Toolbar>
-    <UpdrawEditor
+    <UpmadeEditor
       ref="editor"
       editorId="agents-actions"
       :syncConfig="syncConfig"

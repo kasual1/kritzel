@@ -8,15 +8,15 @@ import {
 import {
   EditorIsReadyEvent,
   InMemorySyncProvider,
-  UpdrawBaseObject,
-  UpdrawEditor,
-  UpdrawLine,
-  UpdrawPath,
-  UpdrawShape,
-  UpdrawSyncConfig,
-  UpdrawWorkspace,
+  UpmadeBaseObject,
+  UpmadeEditor,
+  UpmadeLine,
+  UpmadePath,
+  UpmadeShape,
+  UpmadeSyncConfig,
+  UpmadeWorkspace,
   ShapeType,
-} from '@updraw/angular-editor';
+} from '@upmade/angular-editor';
 import { InfoPanelComponent } from '../../../components/info-panel.component';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -114,9 +114,9 @@ const WORKSPACE_VARIANTS: WorkspaceVariant[] = [
   },
 ];
 
-function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
+function createVariantObjects(variant: WorkspaceVariant): UpmadeBaseObject[] {
   return [
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -126,7 +126,7 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
       strokeColor: variant.stroke,
       strokeWidth: 3,
     }),
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -137,7 +137,7 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
       strokeWidth: 3,
       rotation: variant.rotation,
     }),
-    new UpdrawLine({
+    new UpmadeLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -145,7 +145,7 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
       stroke: variant.accent,
       strokeWidth: 3,
     }),
-    new UpdrawPath({
+    new UpmadePath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -168,7 +168,7 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
 
 @Component({
   selector: 'app-workspaces-update',
-  imports: [UpdrawEditor, InfoPanelComponent, ToolbarComponent],
+  imports: [UpmadeEditor, InfoPanelComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -176,7 +176,7 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
       <span class="status">Current: {{ activeWorkspace()?.name }}</span>
     </app-toolbar>
     <div class="content">
-      <updraw-editor
+      <upmade-editor
         editorId="workspaces-update"
         [theme]="'light'"
         [themes]="themes"
@@ -187,7 +187,7 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady($event)"
         (workspacesChange)="refreshActiveWorkspace()"
-      ></updraw-editor>
+      ></upmade-editor>
       <app-info-panel>
         <h3>Active Workspace</h3>
         <pre>{{ activeWorkspaceJson() }}</pre>
@@ -208,7 +208,7 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
         min-height: 0;
         position: relative;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
       }
       app-info-panel {
@@ -226,13 +226,13 @@ function createVariantObjects(variant: WorkspaceVariant): UpdrawBaseObject[] {
   ],
 })
 export class WorkspacesUpdateComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-  syncConfig: UpdrawSyncConfig = {
+  syncConfig: UpmadeSyncConfig = {
     providers: [InMemorySyncProvider],
   };
-  activeWorkspace = signal<UpdrawWorkspace | null>(null);
+  activeWorkspace = signal<UpmadeWorkspace | null>(null);
   activeWorkspaceJson = computed(() => {
     const workspace = this.activeWorkspace();
     return workspace

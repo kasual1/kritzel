@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
-  UpdrawEditor,
-  UpdrawBaseObject,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeEditor,
+  UpmadeBaseObject,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -11,7 +11,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-viewport-center',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -21,7 +21,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       <button (click)="centerOn(3)" [disabled]="objects().length < 4">Center on Path</button>
       <button (click)="backToContent()">Back to Content</button>
     </app-toolbar>
-    <updraw-editor
+    <upmade-editor
       editorId="viewport-center"
       [theme]="'light'"
       [themes]="themes"
@@ -30,23 +30,23 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    updraw-editor { flex: 1; }
+    upmade-editor { flex: 1; }
   `],
 })
 export class ViewportCenterComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
   private readonly seedObjects = createSeedObjects();
 
-  workspaces = signal([new UpdrawWorkspace({ objects: this.seedObjects })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: this.seedObjects })]);
 
-  objects = signal<UpdrawBaseObject[]>(this.seedObjects);
+  objects = signal<UpmadeBaseObject[]>(this.seedObjects);
 
   async centerOn(index: number) {
     const all = this.objects();

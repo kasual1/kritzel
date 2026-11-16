@@ -1,6 +1,6 @@
-import { darkTheme, type UpdrawTheme } from "@updraw/vue-editor";
+import { darkTheme, type UpmadeTheme } from "@upmade/vue-editor";
 
-export const vueThemeDark: UpdrawTheme = {
+export const vueThemeDark: UpmadeTheme = {
   ...darkTheme,
   name: 'dark',
   global: {

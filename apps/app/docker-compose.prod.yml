@@ -1,4 +1,4 @@
-name: updraw-app
+name: upmade-app
 
 services:
   postgres:

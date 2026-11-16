@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  UpdrawEditor,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeWorkspace,
   type ContextMenuItem,
-} from '@updraw/vue-editor'
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -12,7 +12,7 @@ import { editorStyle, hostStyle } from '../../shared/demo-shared'
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 const objectItems: ContextMenuItem[] = []
 
 const globalItems: ContextMenuItem[] = [
@@ -39,7 +39,7 @@ async function onReady() {
 
 <template>
   <div :style="hostStyle">
-    <UpdrawEditor
+    <UpmadeEditor
       ref="editor"
       editorId="custom-context-menu-canvas-quick-actions"
       theme="light"

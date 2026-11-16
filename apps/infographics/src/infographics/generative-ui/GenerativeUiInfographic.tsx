@@ -1,16 +1,16 @@
 import { useRef, useState, type CSSProperties } from 'react';
 import {
-  UpdrawAgent,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type HTMLUpdrawEditorElement,
-  type UpdrawBaseObject,
-  type UpdrawChatBoxChip,
-  type UpdrawObjectConfig,
-  type UpdrawObjectElementInfo,
-  type UpdrawObjectElementPickEvent,
-  type UpdrawObjectTitlebarConfig,
-} from '@updraw/react-editor';
+  UpmadeAgent,
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type HTMLUpmadeEditorElement,
+  type UpmadeBaseObject,
+  type UpmadeChatBoxChip,
+  type UpmadeObjectConfig,
+  type UpmadeObjectElementInfo,
+  type UpmadeObjectElementPickEvent,
+  type UpmadeObjectTitlebarConfig,
+} from '@upmade/react-editor';
 import { GenerativeUiAgent, isIframe, revealPage, type PageReference } from './generative-ui-agent';
 import { createMusicPlayer } from './music-player';
 
@@ -32,17 +32,17 @@ const hostStyle = {
   display: 'block',
   height: '100%',
   // Pages resize from their corners like frames in a design tool, without the white corner squares.
-  '--updraw-selection-resize-handle-visibility': 'hidden',
+  '--upmade-selection-resize-handle-visibility': 'hidden',
 } as CSSProperties;
 
 /** The pages Claude adds get a titlebar and keep their orientation. */
-const objectConfig: UpdrawObjectConfig = {
+const objectConfig: UpmadeObjectConfig = {
   hasTitlebar: isIframe,
   isRotatable: false,
 };
 
 /** The titlebar shows the page's name, which users can rename by clicking it while the page is selected. */
-const objectTitlebar: UpdrawObjectTitlebarConfig = {
+const objectTitlebar: UpmadeObjectTitlebarConfig = {
   left: [{ id: 'title', type: 'title', isEditable: true }],
 };
 
@@ -50,8 +50,8 @@ const objectTitlebar: UpdrawObjectTitlebarConfig = {
 const ELEMENT_CHIP_PREFIX = 'element:';
 
 /** Name of a picked element for the chat box chip and its highlight, e.g. `play-button`. Its text is left out. */
-function getElementName(element: UpdrawObjectElementInfo): string {
-  return element.updrawId ?? element.tagName;
+function getElementName(element: UpmadeObjectElementInfo): string {
+  return element.upmadeId ?? element.tagName;
 }
 
 function warn(message: string) {
@@ -63,7 +63,7 @@ function warn(message: string) {
  * hovering over it and clicking. The next prompt then changes the selected page, or just the picked element.
  */
 export function GenerativeUiInfographic() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const agentRef = useRef<GenerativeUiAgent | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   // Mirrors `reference` for the event handlers, which can run before React renders again.
@@ -72,9 +72,9 @@ export function GenerativeUiInfographic() {
   const [isWorking, setIsWorking] = useState(false);
   const [musicPlayer] = useState(createMusicPlayer);
   // Claude works on the canvas as an agent: its own cursor, status and undo history.
-  const [claude] = useState(() => new UpdrawAgent({ id: 'claude', name: 'Claude', color: '#D97757' }));
+  const [claude] = useState(() => new UpmadeAgent({ id: 'claude', name: 'Claude', color: '#D97757' }));
   const [workspaces] = useState(() => [
-    new UpdrawWorkspace({ id: WORKSPACE_ID, name: 'Generative UI', objects: [musicPlayer] }),
+    new UpmadeWorkspace({ id: WORKSPACE_ID, name: 'Generative UI', objects: [musicPlayer] }),
   ]);
 
   function setReference(next: Reference | null) {
@@ -93,7 +93,7 @@ export function GenerativeUiInfographic() {
   }
 
   /** Highlights every picked element; each call replaces the page's previous highlights. */
-  async function highlightElements(objectId: string, elements: UpdrawObjectElementInfo[]) {
+  async function highlightElements(objectId: string, elements: UpmadeObjectElementInfo[]) {
     const editor = editorRef.current;
     if (!elements.length) {
       await editor?.clearObjectElementHighlights(objectId).catch(() => undefined);
@@ -105,7 +105,7 @@ export function GenerativeUiInfographic() {
   }
 
   /** A selected page becomes the reference, and hovering over it highlights the element a click would pick. */
-  async function onSelectionChange(objects: UpdrawBaseObject[]) {
+  async function onSelectionChange(objects: UpmadeBaseObject[]) {
     const page = objects.length === 1 && isIframe(objects[0]) ? objects[0] : null;
     const previous = referenceRef.current;
     if (page?.id === previous?.objectId) {
@@ -127,7 +127,7 @@ export function GenerativeUiInfographic() {
   }
 
   /** A plain pick replaces the picked elements; with Cmd, Ctrl or Shift held, it adds the element or removes it again. */
-  async function onElementPick({ objectId, element, metaKey, ctrlKey, shiftKey }: UpdrawObjectElementPickEvent) {
+  async function onElementPick({ objectId, element, metaKey, ctrlKey, shiftKey }: UpmadeObjectElementPickEvent) {
     const current = referenceRef.current;
     if (current?.objectId !== objectId) {
       return;
@@ -144,7 +144,7 @@ export function GenerativeUiInfographic() {
   }
 
   /** An element chip's remove button drops that element; the page chip's deselects the page. */
-  async function onChipRemove(chip: UpdrawChatBoxChip) {
+  async function onChipRemove(chip: UpmadeChatBoxChip) {
     const current = referenceRef.current;
     const editor = editorRef.current;
     if (!current || !editor) {
@@ -161,7 +161,7 @@ export function GenerativeUiInfographic() {
   }
 
   /** Looks the picked elements up again after an edit, so the user can keep refining them, and drops those that are gone. */
-  async function refreshElements(objectId: string, picked: UpdrawObjectElementInfo[]) {
+  async function refreshElements(objectId: string, picked: UpmadeObjectElementInfo[]) {
     const current = referenceRef.current;
     if (current?.objectId !== objectId || current.elements !== picked) {
       return;
@@ -175,7 +175,7 @@ export function GenerativeUiInfographic() {
     if (referenceRef.current !== current) {
       return;
     }
-    const elements = found.filter((element): element is UpdrawObjectElementInfo => !!element);
+    const elements = found.filter((element): element is UpmadeObjectElementInfo => !!element);
     setReference({ ...current, elements });
     await highlightElements(objectId, elements);
   }
@@ -216,7 +216,7 @@ export function GenerativeUiInfographic() {
   }
 
   /** The chips above the chat box name what the next prompt changes: the selected page, or each element picked in it. */
-  let chatBoxChips: UpdrawChatBoxChip[] = [];
+  let chatBoxChips: UpmadeChatBoxChip[] = [];
   if (reference && reference.elements.length) {
     chatBoxChips = reference.elements.map(element => ({
       id: ELEMENT_CHIP_PREFIX + element.selector,
@@ -237,7 +237,7 @@ export function GenerativeUiInfographic() {
 
   return (
     <div style={hostStyle}>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="infographic-generative-ui"
         workspaces={workspaces}

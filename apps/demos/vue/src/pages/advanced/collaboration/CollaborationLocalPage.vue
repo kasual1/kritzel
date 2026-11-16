@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   BroadcastSyncProvider,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type UpdrawSyncConfig,
-} from '@updraw/vue-editor'
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type UpmadeSyncConfig,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -12,8 +12,8 @@ import { editorStyle, hostStyle } from '../../shared/demo-shared'
 import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
-const syncConfig: UpdrawSyncConfig = {
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
+const syncConfig: UpmadeSyncConfig = {
   providers: [BroadcastSyncProvider],
 }
 </script>
@@ -24,7 +24,7 @@ const syncConfig: UpdrawSyncConfig = {
       <span class="label">Cross-tab Sync</span>
       <span class="status">BroadcastChannel enabled</span>
     </Toolbar>
-    <UpdrawEditor
+    <UpmadeEditor
       editorId="collaboration-local"
       theme="light"
       :themes="themes"

@@ -1,8 +1,8 @@
 {
-  "name": "@updraw/vue-engine",
+  "name": "@upmade/vue-engine",
   "version": "0.6.2",
-  "homepage": "https://updraw.io/",
-  "description": "Updraw engine wrapper for Vue.",
+  "homepage": "https://upmade.io/",
+  "description": "Upmade engine wrapper for Vue.",
   "keywords": [
     "infinite canvas",
     "collaboration",
@@ -38,6 +38,6 @@
     "@stencil/vue-output-target": "0.11.8"
   },
   "peerDependencies": {
-    "@updraw/engine": "^0.6.2"
+    "@upmade/engine": "^0.6.2"
   }
 }

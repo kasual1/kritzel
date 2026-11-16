@@ -3,12 +3,12 @@ import { computed, ref } from 'vue'
 import {
   getEditorRef,
   InMemorySyncProvider,
-  UpdrawBaseObject,
-  UpdrawEditor,
-  type UpdrawSyncConfig,
-  UpdrawText,
-  UpdrawWorkspace,
-} from '@updraw/vue-editor'
+  UpmadeBaseObject,
+  UpmadeEditor,
+  type UpmadeSyncConfig,
+  UpmadeText,
+  UpmadeWorkspace,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../const/vue-theme-dark'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import { createSeedObjects } from './seed-objects'
@@ -20,11 +20,11 @@ const isReady = ref(false)
 const activeTool = ref<ToolName>('selection')
 const objectsCount = ref(0)
 
-const syncConfig: UpdrawSyncConfig = {
+const syncConfig: UpmadeSyncConfig = {
   providers: [InMemorySyncProvider],
 }
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 
 const statusLine = computed(() => {
   if (!isReady.value) {
@@ -39,7 +39,7 @@ function onReady() {
 }
 
 function onObjectsChange(event: Event) {
-  const objects = (event as CustomEvent<UpdrawBaseObject<HTMLElement | SVGElement>[]>).detail
+  const objects = (event as CustomEvent<UpmadeBaseObject<HTMLElement | SVGElement>[]>).detail
   objectsCount.value = objects.length
 }
 
@@ -66,7 +66,7 @@ async function addText() {
     return
   }
 
-  const text = new UpdrawText({
+  const text = new UpmadeText({
     text: 'Programmatic text!',
     translateX: 0,
     translateY: 0,
@@ -108,7 +108,7 @@ async function zoomOut() {
       <span class="status">{{ statusLine }}</span>
     </header>
 
-    <UpdrawEditor
+    <UpmadeEditor
       ref="editor"
       editorId="basic-usage"
       theme="light"
@@ -178,7 +178,7 @@ button.active {
   white-space: nowrap;
 }
 
-updraw-editor {
+upmade-editor {
   flex: 1;
   min-height: 0;
   display: block;

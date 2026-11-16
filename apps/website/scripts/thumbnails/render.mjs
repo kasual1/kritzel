@@ -69,8 +69,8 @@ function encodePng(w, h, rgba) {
   ]);
 }
 
-const SEED_KEY = 'updraw-thumbnail-seed';
-const LOGO_KEY = 'updraw-thumbnail-logo';
+const SEED_KEY = 'upmade-thumbnail-seed';
+const LOGO_KEY = 'upmade-thumbnail-logo';
 
 // Inserts tEXt chunks for the seed and the logo fingerprint right before IEND (tEXt is Latin-1, so values are
 // stored URI-encoded).
@@ -117,7 +117,7 @@ export function renderThumbnail(seed, outFile, { scale = 1 } = {}) {
   return outFile;
 }
 
-// Experiment: the artwork only shines through the shape of the Updraw logo (no label, no seed).
+// Experiment: the artwork only shines through the shape of the Upmade logo (no label, no seed).
 // `background` is a CSS color, 'transparent', or 'dim' (the artwork itself, darkened, around the logo).
 export const LOGO_MASK_BACKGROUNDS = { white: '#ffffff', dark: '#141a2b', dim: 'dim', transparent: 'transparent' };
 

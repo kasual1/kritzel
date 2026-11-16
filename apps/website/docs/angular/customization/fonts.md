@@ -1,8 +1,8 @@
 ---
 sidebar_label: Fonts
 displayed_sidebar: tutorialSidebar
-title: "Custom Fonts Concept | Updraw for Angular"
-description: "Understand the core concept of Custom Fonts in Updraw."
+title: "Custom Fonts Concept | Upmade for Angular"
+description: "Understand the core concept of Custom Fonts in Upmade."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,11 +11,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Updraw comes with a dedicated system for managing custom fonts, allowing you to easily integrate web fonts as part of text based objects in the canvas or in the editor's UI.
+Upmade comes with a dedicated system for managing custom fonts, allowing you to easily integrate web fonts as part of text based objects in the canvas or in the editor's UI.
 
 ## Registering Custom Fonts
 
-You can register fonts declaratively via the `[customFonts]` binding on `<updraw-editor>` or programmatically using `registerFonts()`. Registered fonts come immediately available as options in the text tool and can be applied to the editor's UI.
+You can register fonts declaratively via the `[customFonts]` binding on `<upmade-editor>` or programmatically using `registerFonts()`. Registered fonts come immediately available as options in the text tool and can be applied to the editor's UI.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"

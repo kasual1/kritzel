@@ -17,7 +17,7 @@ export default function SkillInstallation({children}: {children: React.ReactNode
             setIsVisible((visible) => !visible);
           }}
         >
-          Updraw skill
+          Upmade skill
         </a>
       </p>
       <div id={guideId} hidden={!isVisible}>

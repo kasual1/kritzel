@@ -18,9 +18,9 @@ import {
   subscribeToPreferredFramework,
 } from "@site/src/utils/frameworkPreference";
 
-const TITLE = "Updraw - Agentic Canvas Library for React, Vue & Angular";
+const TITLE = "Upmade - Agentic Canvas Library for React, Vue & Angular";
 const DESCRIPTION =
-  "Updraw helps you build agentic canvas experiences featuring dynamic component rendering to power generative UI. Fully open-source and easy to integrate into React, Vue & Angular.";
+  "Upmade helps you build agentic canvas experiences featuring dynamic component rendering to power generative UI. Fully open-source and easy to integrate into React, Vue & Angular.";
 
 function usePreferredDocsPath() {
   const [docsPath, setDocsPath] = useState(frameworkPaths.react);

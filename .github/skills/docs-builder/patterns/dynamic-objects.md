@@ -2,13 +2,13 @@
 
 ## Purpose
 
-Use this pattern when documenting `UpdrawDynamicObject` behavior, authoring dynamic object concept demos, or porting dynamic object demos across Angular, React, and Vue.
+Use this pattern when documenting `UpmadeDynamicObject` behavior, authoring dynamic object concept demos, or porting dynamic object demos across Angular, React, and Vue.
 
 This pattern is derived from `libs/core/src/classes/objects/dynamic-object.class.ts` and reflects the runtime contract maintainers must preserve.
 
 ## Core Runtime Contract
 
-`UpdrawDynamicObject` is a normal canvas object that embeds arbitrary HTML content while still participating in selection, movement, resize, ordering, serialization, and workspace persistence.
+`UpmadeDynamicObject` is a normal canvas object that embeds arbitrary HTML content while still participating in selection, movement, resize, ordering, serialization, and workspace persistence.
 
 Hosting modes:
 - Pure HTML mode: provide `element` only and let the object mount native DOM directly.
@@ -52,7 +52,7 @@ When writing docs or demos about dynamic objects:
 
 ## Interactivity and Selection Rules
 
-`UpdrawDynamicObject` intentionally keeps the mount container clickable so an unselected object can still be selected while embedded content can be toggled between interactive and non-interactive.
+`UpmadeDynamicObject` intentionally keeps the mount container clickable so an unselected object can still be selected while embedded content can be toggled between interactive and non-interactive.
 
 Document this behavior explicitly when relevant:
 - Container remains pointer-active for selection

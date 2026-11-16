@@ -4,33 +4,33 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Even
 
 import { ProxyCmp } from './angular-component-lib/utils';
 
-import type { Components } from '@updraw/editor/dist/components';
+import type { Components } from '@upmade/editor/dist/components';
 
-import { defineCustomElement as defineUpdrawChatBox } from '@updraw/editor/dist/components/updraw-chat-box.js';
-import { defineCustomElement as defineUpdrawEditor } from '@updraw/editor/dist/components/updraw-editor.js';
-import { defineCustomElement as defineUpdrawSettings } from '@updraw/editor/dist/components/updraw-settings.js';
-import { defineCustomElement as defineUpdrawShapeFill } from '@updraw/editor/dist/components/updraw-shape-fill.js';
-import { defineCustomElement as defineUpdrawShareDialog } from '@updraw/editor/dist/components/updraw-share-dialog.js';
-import { defineCustomElement as defineUpdrawSplitButton } from '@updraw/editor/dist/components/updraw-split-button.js';
-import { defineCustomElement as defineUpdrawStrokeSize } from '@updraw/editor/dist/components/updraw-stroke-size.js';
+import { defineCustomElement as defineUpmadeChatBox } from '@upmade/editor/dist/components/upmade-chat-box.js';
+import { defineCustomElement as defineUpmadeEditor } from '@upmade/editor/dist/components/upmade-editor.js';
+import { defineCustomElement as defineUpmadeSettings } from '@upmade/editor/dist/components/upmade-settings.js';
+import { defineCustomElement as defineUpmadeShapeFill } from '@upmade/editor/dist/components/upmade-shape-fill.js';
+import { defineCustomElement as defineUpmadeShareDialog } from '@upmade/editor/dist/components/upmade-share-dialog.js';
+import { defineCustomElement as defineUpmadeSplitButton } from '@upmade/editor/dist/components/upmade-split-button.js';
+import { defineCustomElement as defineUpmadeStrokeSize } from '@upmade/editor/dist/components/upmade-stroke-size.js';
 @ProxyCmp({
-  defineCustomElementFn: defineUpdrawChatBox,
+  defineCustomElementFn: defineUpmadeChatBox,
   inputs: ['chips', 'disabled', 'loading', 'mode', 'placeholder', 'terms', 'value']
 })
 @Component({
-  selector: 'updraw-chat-box',
+  selector: 'upmade-chat-box',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['chips', 'disabled', 'loading', 'mode', 'placeholder', 'terms', 'value'],
   outputs: ['chatSubmit', 'chatStop', 'modeChange', 'chatChipRemove'],
 })
-export class UpdrawChatBox {
-  protected el: HTMLUpdrawChatBoxElement;
-  @Output() chatSubmit = new EventEmitter<UpdrawChatBoxCustomEvent<string>>();
-  @Output() chatStop = new EventEmitter<UpdrawChatBoxCustomEvent<void>>();
-  @Output() modeChange = new EventEmitter<UpdrawChatBoxCustomEvent<IUpdrawChatBoxUpdrawChatBoxMode>>();
-  @Output() chatChipRemove = new EventEmitter<UpdrawChatBoxCustomEvent<IUpdrawChatBoxUpdrawChatBoxChip>>();
+export class UpmadeChatBox {
+  protected el: HTMLUpmadeChatBoxElement;
+  @Output() chatSubmit = new EventEmitter<UpmadeChatBoxCustomEvent<string>>();
+  @Output() chatStop = new EventEmitter<UpmadeChatBoxCustomEvent<void>>();
+  @Output() modeChange = new EventEmitter<UpmadeChatBoxCustomEvent<IUpmadeChatBoxUpmadeChatBoxMode>>();
+  @Output() chatChipRemove = new EventEmitter<UpmadeChatBoxCustomEvent<IUpmadeChatBoxUpmadeChatBoxChip>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -38,68 +38,68 @@ export class UpdrawChatBox {
 }
 
 
-import type { UpdrawChatBoxCustomEvent } from '@updraw/editor/dist/components';
-import type { UpdrawChatBoxMode as IUpdrawChatBoxUpdrawChatBoxMode } from '@updraw/editor/dist/components';
-import type { UpdrawChatBoxChip as IUpdrawChatBoxUpdrawChatBoxChip } from '@updraw/editor/dist/components';
+import type { UpmadeChatBoxCustomEvent } from '@upmade/editor/dist/components';
+import type { UpmadeChatBoxMode as IUpmadeChatBoxUpmadeChatBoxMode } from '@upmade/editor/dist/components';
+import type { UpmadeChatBoxChip as IUpmadeChatBoxUpmadeChatBoxChip } from '@upmade/editor/dist/components';
 
-export declare interface UpdrawChatBox extends Components.UpdrawChatBox {
+export declare interface UpmadeChatBox extends Components.UpmadeChatBox {
   /**
    * Emitted with the current text when the user submits the chat box.
    */
-  chatSubmit: EventEmitter<UpdrawChatBoxCustomEvent<string>>;
+  chatSubmit: EventEmitter<UpmadeChatBoxCustomEvent<string>>;
   /**
    * Emitted when the user stops the current response.
    */
-  chatStop: EventEmitter<UpdrawChatBoxCustomEvent<void>>;
+  chatStop: EventEmitter<UpmadeChatBoxCustomEvent<void>>;
   /**
    * Emitted when the mode changes, including automatic expansion.
    */
-  modeChange: EventEmitter<UpdrawChatBoxCustomEvent<IUpdrawChatBoxUpdrawChatBoxMode>>;
+  modeChange: EventEmitter<UpmadeChatBoxCustomEvent<IUpmadeChatBoxUpmadeChatBoxMode>>;
   /**
    * Emitted with the chip whose remove button the user activated. The chip stays until `chips` no longer contains it.
    */
-  chatChipRemove: EventEmitter<UpdrawChatBoxCustomEvent<IUpdrawChatBoxUpdrawChatBoxChip>>;
+  chatChipRemove: EventEmitter<UpmadeChatBoxCustomEvent<IUpmadeChatBoxUpmadeChatBoxChip>>;
 }
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineUpdrawEditor,
+  defineCustomElementFn: defineUpmadeEditor,
   inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxChips', 'chatBoxMode', 'chatSession', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isAgentAvatarsVisible', 'isChatBoxLoading', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWatermarkVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectConfig', 'objectContextMenuItems', 'objectTitlebar', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
   methods: ['getObjectById', 'addObject', 'addObjects', 'updateObject', 'removeObject', 'removeObjects', 'getSelectedObjects', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'panToObject', 'backToContent', 'centerAllObjects', 'centerObjects', 'setViewport', 'panTo', 'zoomTo', 'zoomIn', 'zoomOut', 'getViewport', 'screenToWorld', 'worldToScreen', 'setActiveWorkspace', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace', 'loadSharedWorkspace', 'reinitSync', 'registerTool', 'setActiveTool', 'disable', 'enable', 'copy', 'cut', 'paste', 'delete', 'bringForward', 'sendBackward', 'bringToFront', 'sendToBack', 'alignObjects', 'group', 'ungroup', 'undo', 'redo', 'getScreenshot', 'exportViewportAsPng', 'exportViewportAsSvg', 'getSelectedObjectSupportedExportFormats', 'canExportSelectedObjectAs', 'exportSelectedObject', 'exportAsJson', 'importFromJson', 'downloadAsJson', 'importFromFile', 'loadObjectsFromJson', 'getObjectsTotalCount', 'getAllObjects', 'findObjects', 'getObjectsInViewport', 'addAgent', 'removeAgent', 'getAgent', 'getAgents', 'getRemoteAgents', 'setObjectElementPicking', 'highlightObjectElements', 'clearObjectElementHighlights', 'queryObjectElements', 'hideContextMenu', 'openContextMenu', 'openWorkspaceManagerMenu', 'closeWorkspaceManagerMenu', 'openMoreMenu', 'closeMoreMenu', 'openUserDialog', 'closeUserDialog', 'openExportDialog', 'closeExportDialog', 'openImportDialog', 'closeImportDialog', 'openSettingsDialog', 'closeSettingsDialog', 'openShareDialog', 'closeShareDialog', 'triggerSelectionChange', 'beginSceneBootstrap', 'endSceneBootstrap', 'getDisplayableShortcuts', 'openLoginDialog', 'closeLoginDialog', 'setLoginLoading', 'setLocale', 'getLocale', 'getAvailableLocales', 'registerLocales', 'registerFonts', 't', 'triggerNotification']
 })
 @Component({
-  selector: 'updraw-editor',
+  selector: 'upmade-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxChips', 'chatBoxMode', 'chatSession', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isAgentAvatarsVisible', 'isChatBoxLoading', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWatermarkVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectConfig', 'objectContextMenuItems', 'objectTitlebar', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
   outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange', 'chatSubmit', 'chatStop', 'chatChipRemove', 'agentsChange', 'objectTitlebarAction', 'objectElementHover', 'objectElementClick', 'objectElementPick'],
 })
-export class UpdrawEditor {
-  protected el: HTMLUpdrawEditorElement;
-  @Output() isReady = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorEditorIsReadyEvent>>();
-  @Output() activeWorkspaceChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorActiveWorkspaceChangeEvent>>();
-  @Output() objectsChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawBaseObject[]>>();
-  @Output() objectsAdded = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorObjectsAddedEvent>>();
-  @Output() objectsRemoved = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorObjectsRemovedEvent>>();
-  @Output() objectsUpdated = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorObjectsUpdatedEvent>>();
-  @Output() objectsSelectionChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawBaseObject[]>>();
-  @Output() undoStateChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawUndoState>>();
-  @Output() themeChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorThemeName>>();
-  @Output() localeChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorLocaleCode>>();
-  @Output() viewportChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawViewportState>>();
-  @Output() logout = new EventEmitter<UpdrawEditorCustomEvent<void>>();
-  @Output() login = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorLoginEvent>>();
-  @Output() isPublicChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorIUpdrawIsPublicChangeEvent>>();
-  @Output() awarenessChange = new EventEmitter<UpdrawEditorCustomEvent<Map<number, Record<string, any>>>>();
-  @Output() chatSubmit = new EventEmitter<UpdrawEditorCustomEvent<string>>();
-  @Output() chatStop = new EventEmitter<UpdrawEditorCustomEvent<void>>();
-  @Output() chatChipRemove = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawChatBoxChip>>();
-  @Output() agentsChange = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawAgentsChangeEvent>>();
-  @Output() objectTitlebarAction = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectTitlebarActionEvent>>();
-  @Output() objectElementHover = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectElementHoverEvent>>();
-  @Output() objectElementClick = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectElementClickEvent>>();
-  @Output() objectElementPick = new EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectElementPickEvent>>();
+export class UpmadeEditor {
+  protected el: HTMLUpmadeEditorElement;
+  @Output() isReady = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorEditorIsReadyEvent>>();
+  @Output() activeWorkspaceChange = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorActiveWorkspaceChangeEvent>>();
+  @Output() objectsChange = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeBaseObject[]>>();
+  @Output() objectsAdded = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorObjectsAddedEvent>>();
+  @Output() objectsRemoved = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorObjectsRemovedEvent>>();
+  @Output() objectsUpdated = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorObjectsUpdatedEvent>>();
+  @Output() objectsSelectionChange = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeBaseObject[]>>();
+  @Output() undoStateChange = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeUndoState>>();
+  @Output() themeChange = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorThemeName>>();
+  @Output() localeChange = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorLocaleCode>>();
+  @Output() viewportChange = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeViewportState>>();
+  @Output() logout = new EventEmitter<UpmadeEditorCustomEvent<void>>();
+  @Output() login = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorLoginEvent>>();
+  @Output() isPublicChange = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorIUpmadeIsPublicChangeEvent>>();
+  @Output() awarenessChange = new EventEmitter<UpmadeEditorCustomEvent<Map<number, Record<string, any>>>>();
+  @Output() chatSubmit = new EventEmitter<UpmadeEditorCustomEvent<string>>();
+  @Output() chatStop = new EventEmitter<UpmadeEditorCustomEvent<void>>();
+  @Output() chatChipRemove = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeChatBoxChip>>();
+  @Output() agentsChange = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeAgentsChangeEvent>>();
+  @Output() objectTitlebarAction = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeObjectTitlebarActionEvent>>();
+  @Output() objectElementHover = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeObjectElementHoverEvent>>();
+  @Output() objectElementClick = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeObjectElementClickEvent>>();
+  @Output() objectElementPick = new EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeObjectElementPickEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -107,117 +107,117 @@ export class UpdrawEditor {
 }
 
 
-import type { UpdrawEditorCustomEvent } from '@updraw/editor/dist/components';
-import type { EditorIsReadyEvent as IUpdrawEditorEditorIsReadyEvent } from '@updraw/editor/dist/components';
-import type { ActiveWorkspaceChangeEvent as IUpdrawEditorActiveWorkspaceChangeEvent } from '@updraw/editor/dist/components';
-import type { UpdrawBaseObject as IUpdrawEditorUpdrawBaseObject } from '@updraw/editor/dist/components';
-import type { ObjectsAddedEvent as IUpdrawEditorObjectsAddedEvent } from '@updraw/editor/dist/components';
-import type { ObjectsRemovedEvent as IUpdrawEditorObjectsRemovedEvent } from '@updraw/editor/dist/components';
-import type { ObjectsUpdatedEvent as IUpdrawEditorObjectsUpdatedEvent } from '@updraw/editor/dist/components';
-import type { UpdrawUndoState as IUpdrawEditorUpdrawUndoState } from '@updraw/editor/dist/components';
-import type { ThemeName as IUpdrawEditorThemeName } from '@updraw/editor/dist/components';
-import type { LocaleCode as IUpdrawEditorLocaleCode } from '@updraw/editor/dist/components';
-import type { UpdrawViewportState as IUpdrawEditorUpdrawViewportState } from '@updraw/editor/dist/components';
-import type { LoginEvent as IUpdrawEditorLoginEvent } from '@updraw/editor/dist/components';
-import type { IUpdrawIsPublicChangeEvent as IUpdrawEditorIUpdrawIsPublicChangeEvent } from '@updraw/editor/dist/components';
-import type { UpdrawChatBoxChip as IUpdrawEditorUpdrawChatBoxChip } from '@updraw/editor/dist/components';
-import type { UpdrawAgentsChangeEvent as IUpdrawEditorUpdrawAgentsChangeEvent } from '@updraw/editor/dist/components';
-import type { UpdrawObjectTitlebarActionEvent as IUpdrawEditorUpdrawObjectTitlebarActionEvent } from '@updraw/editor/dist/components';
-import type { UpdrawObjectElementHoverEvent as IUpdrawEditorUpdrawObjectElementHoverEvent } from '@updraw/editor/dist/components';
-import type { UpdrawObjectElementClickEvent as IUpdrawEditorUpdrawObjectElementClickEvent } from '@updraw/editor/dist/components';
-import type { UpdrawObjectElementPickEvent as IUpdrawEditorUpdrawObjectElementPickEvent } from '@updraw/editor/dist/components';
+import type { UpmadeEditorCustomEvent } from '@upmade/editor/dist/components';
+import type { EditorIsReadyEvent as IUpmadeEditorEditorIsReadyEvent } from '@upmade/editor/dist/components';
+import type { ActiveWorkspaceChangeEvent as IUpmadeEditorActiveWorkspaceChangeEvent } from '@upmade/editor/dist/components';
+import type { UpmadeBaseObject as IUpmadeEditorUpmadeBaseObject } from '@upmade/editor/dist/components';
+import type { ObjectsAddedEvent as IUpmadeEditorObjectsAddedEvent } from '@upmade/editor/dist/components';
+import type { ObjectsRemovedEvent as IUpmadeEditorObjectsRemovedEvent } from '@upmade/editor/dist/components';
+import type { ObjectsUpdatedEvent as IUpmadeEditorObjectsUpdatedEvent } from '@upmade/editor/dist/components';
+import type { UpmadeUndoState as IUpmadeEditorUpmadeUndoState } from '@upmade/editor/dist/components';
+import type { ThemeName as IUpmadeEditorThemeName } from '@upmade/editor/dist/components';
+import type { LocaleCode as IUpmadeEditorLocaleCode } from '@upmade/editor/dist/components';
+import type { UpmadeViewportState as IUpmadeEditorUpmadeViewportState } from '@upmade/editor/dist/components';
+import type { LoginEvent as IUpmadeEditorLoginEvent } from '@upmade/editor/dist/components';
+import type { IUpmadeIsPublicChangeEvent as IUpmadeEditorIUpmadeIsPublicChangeEvent } from '@upmade/editor/dist/components';
+import type { UpmadeChatBoxChip as IUpmadeEditorUpmadeChatBoxChip } from '@upmade/editor/dist/components';
+import type { UpmadeAgentsChangeEvent as IUpmadeEditorUpmadeAgentsChangeEvent } from '@upmade/editor/dist/components';
+import type { UpmadeObjectTitlebarActionEvent as IUpmadeEditorUpmadeObjectTitlebarActionEvent } from '@upmade/editor/dist/components';
+import type { UpmadeObjectElementHoverEvent as IUpmadeEditorUpmadeObjectElementHoverEvent } from '@upmade/editor/dist/components';
+import type { UpmadeObjectElementClickEvent as IUpmadeEditorUpmadeObjectElementClickEvent } from '@upmade/editor/dist/components';
+import type { UpmadeObjectElementPickEvent as IUpmadeEditorUpmadeObjectElementPickEvent } from '@upmade/editor/dist/components';
 
-export declare interface UpdrawEditor extends Components.UpdrawEditor {
+export declare interface UpmadeEditor extends Components.UpmadeEditor {
 
-  isReady: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorEditorIsReadyEvent>>;
+  isReady: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorEditorIsReadyEvent>>;
 
-  activeWorkspaceChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorActiveWorkspaceChangeEvent>>;
+  activeWorkspaceChange: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorActiveWorkspaceChangeEvent>>;
 
-  objectsChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawBaseObject[]>>;
+  objectsChange: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeBaseObject[]>>;
   /**
    * Emitted when objects are added. `source` is set when an agent made the change.
    */
-  objectsAdded: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorObjectsAddedEvent>>;
+  objectsAdded: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorObjectsAddedEvent>>;
   /**
    * Emitted when objects are removed. `source` is set when an agent made the change.
    */
-  objectsRemoved: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorObjectsRemovedEvent>>;
+  objectsRemoved: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorObjectsRemovedEvent>>;
   /**
    * Emitted when objects are updated. `source` is set when an agent made the change.
    */
-  objectsUpdated: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorObjectsUpdatedEvent>>;
+  objectsUpdated: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorObjectsUpdatedEvent>>;
 
-  objectsSelectionChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawBaseObject[]>>;
+  objectsSelectionChange: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeBaseObject[]>>;
 
-  undoStateChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawUndoState>>;
+  undoStateChange: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeUndoState>>;
 
-  themeChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorThemeName>>;
+  themeChange: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorThemeName>>;
 
-  localeChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorLocaleCode>>;
+  localeChange: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorLocaleCode>>;
 
-  viewportChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawViewportState>>;
+  viewportChange: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeViewportState>>;
 
-  logout: EventEmitter<UpdrawEditorCustomEvent<void>>;
+  logout: EventEmitter<UpmadeEditorCustomEvent<void>>;
 
-  login: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorLoginEvent>>;
+  login: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorLoginEvent>>;
 
-  isPublicChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorIUpdrawIsPublicChangeEvent>>;
+  isPublicChange: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorIUpmadeIsPublicChangeEvent>>;
 
-  awarenessChange: EventEmitter<UpdrawEditorCustomEvent<Map<number, Record<string, any>>>>;
+  awarenessChange: EventEmitter<UpmadeEditorCustomEvent<Map<number, Record<string, any>>>>;
   /**
    * Emitted with the chat box text when the user submits it. With a `chatSession`, the prompt is sent to it
 unless a listener calls `preventDefault()`.
    */
-  chatSubmit: EventEmitter<UpdrawEditorCustomEvent<string>>;
+  chatSubmit: EventEmitter<UpmadeEditorCustomEvent<string>>;
   /**
    * Emitted when the user stops the current chat response. A `chatSession` is stopped too.
    */
-  chatStop: EventEmitter<UpdrawEditorCustomEvent<void>>;
+  chatStop: EventEmitter<UpmadeEditorCustomEvent<void>>;
   /**
    * Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it.
    */
-  chatChipRemove: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawChatBoxChip>>;
+  chatChipRemove: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeChatBoxChip>>;
   /**
    * Emitted when agents are added or removed, or when what the avatar stack shows of them changes
 (name, color, avatar, status, visibility, activity). Never emitted for plain cursor motion.
    */
-  agentsChange: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawAgentsChangeEvent>>;
+  agentsChange: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeAgentsChangeEvent>>;
   /**
    * Emitted when a button or a menu item in an object titlebar is clicked.
    */
-  objectTitlebarAction: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectTitlebarActionEvent>>;
+  objectTitlebarAction: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeObjectTitlebarActionEvent>>;
   /**
    * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object,
 such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
    */
-  objectElementHover: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectElementHoverEvent>>;
+  objectElementHover: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeObjectElementHoverEvent>>;
   /**
    * Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual.
    */
-  objectElementClick: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectElementClickEvent>>;
+  objectElementClick: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeObjectElementClickEvent>>;
   /**
    * Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`.
    */
-  objectElementPick: EventEmitter<UpdrawEditorCustomEvent<IUpdrawEditorUpdrawObjectElementPickEvent>>;
+  objectElementPick: EventEmitter<UpmadeEditorCustomEvent<IUpmadeEditorUpmadeObjectElementPickEvent>>;
 }
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineUpdrawSettings,
+  defineCustomElementFn: defineUpmadeSettings,
   inputs: ['availableLocales', 'availableThemes', 'settings', 'shortcuts', 'terms'],
   methods: ['open', 'close']
 })
 @Component({
-  selector: 'updraw-settings',
+  selector: 'upmade-settings',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['availableLocales', 'availableThemes', 'settings', 'shortcuts', 'terms'],
   outputs: ['settingsChange'],
 })
-export class UpdrawSettings {
-  protected el: HTMLUpdrawSettingsElement;
-  @Output() settingsChange = new EventEmitter<UpdrawSettingsCustomEvent<IUpdrawSettingsUpdrawSettingsConfig>>();
+export class UpmadeSettings {
+  protected el: HTMLUpmadeSettingsElement;
+  @Output() settingsChange = new EventEmitter<UpmadeSettingsCustomEvent<IUpmadeSettingsUpmadeSettingsConfig>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -225,32 +225,32 @@ export class UpdrawSettings {
 }
 
 
-import type { UpdrawSettingsCustomEvent } from '@updraw/editor/dist/components';
-import type { UpdrawSettingsConfig as IUpdrawSettingsUpdrawSettingsConfig } from '@updraw/editor/dist/components';
+import type { UpmadeSettingsCustomEvent } from '@upmade/editor/dist/components';
+import type { UpmadeSettingsConfig as IUpmadeSettingsUpmadeSettingsConfig } from '@upmade/editor/dist/components';
 
-export declare interface UpdrawSettings extends Components.UpdrawSettings {
+export declare interface UpmadeSettings extends Components.UpmadeSettings {
   /**
    * Emitted when settings change
    */
-  settingsChange: EventEmitter<UpdrawSettingsCustomEvent<IUpdrawSettingsUpdrawSettingsConfig>>;
+  settingsChange: EventEmitter<UpmadeSettingsCustomEvent<IUpmadeSettingsUpmadeSettingsConfig>>;
 }
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineUpdrawShapeFill,
+  defineCustomElementFn: defineUpmadeShapeFill,
   inputs: ['value']
 })
 @Component({
-  selector: 'updraw-shape-fill',
+  selector: 'upmade-shape-fill',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['value'],
   outputs: ['valueChange'],
 })
-export class UpdrawShapeFill {
-  protected el: HTMLUpdrawShapeFillElement;
-  @Output() valueChange = new EventEmitter<UpdrawShapeFillCustomEvent<IUpdrawShapeFillShapeFillType>>();
+export class UpmadeShapeFill {
+  protected el: HTMLUpmadeShapeFillElement;
+  @Output() valueChange = new EventEmitter<UpmadeShapeFillCustomEvent<IUpmadeShapeFillShapeFillType>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -258,32 +258,32 @@ export class UpdrawShapeFill {
 }
 
 
-import type { UpdrawShapeFillCustomEvent } from '@updraw/editor/dist/components';
-import type { ShapeFillType as IUpdrawShapeFillShapeFillType } from '@updraw/editor/dist/components';
+import type { UpmadeShapeFillCustomEvent } from '@upmade/editor/dist/components';
+import type { ShapeFillType as IUpmadeShapeFillShapeFillType } from '@upmade/editor/dist/components';
 
-export declare interface UpdrawShapeFill extends Components.UpdrawShapeFill {
+export declare interface UpmadeShapeFill extends Components.UpmadeShapeFill {
 
-  valueChange: EventEmitter<UpdrawShapeFillCustomEvent<IUpdrawShapeFillShapeFillType>>;
+  valueChange: EventEmitter<UpmadeShapeFillCustomEvent<IUpmadeShapeFillShapeFillType>>;
 }
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineUpdrawShareDialog,
+  defineCustomElementFn: defineUpmadeShareDialog,
   inputs: ['isPublic', 'terms', 'workspaceId'],
   methods: ['open', 'close']
 })
 @Component({
-  selector: 'updraw-share-dialog',
+  selector: 'upmade-share-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['isPublic', 'terms', 'workspaceId'],
   outputs: ['toggleIsPublic', 'dialogClosed'],
 })
-export class UpdrawShareDialog {
-  protected el: HTMLUpdrawShareDialogElement;
-  @Output() toggleIsPublic = new EventEmitter<UpdrawShareDialogCustomEvent<boolean>>();
-  @Output() dialogClosed = new EventEmitter<UpdrawShareDialogCustomEvent<void>>();
+export class UpmadeShareDialog {
+  protected el: HTMLUpmadeShareDialogElement;
+  @Output() toggleIsPublic = new EventEmitter<UpmadeShareDialogCustomEvent<boolean>>();
+  @Output() dialogClosed = new EventEmitter<UpmadeShareDialogCustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -291,43 +291,43 @@ export class UpdrawShareDialog {
 }
 
 
-import type { UpdrawShareDialogCustomEvent } from '@updraw/editor/dist/components';
+import type { UpmadeShareDialogCustomEvent } from '@upmade/editor/dist/components';
 
-export declare interface UpdrawShareDialog extends Components.UpdrawShareDialog {
+export declare interface UpmadeShareDialog extends Components.UpmadeShareDialog {
   /**
    * Emitted when the user toggles the public sharing state.
    */
-  toggleIsPublic: EventEmitter<UpdrawShareDialogCustomEvent<boolean>>;
+  toggleIsPublic: EventEmitter<UpmadeShareDialogCustomEvent<boolean>>;
   /**
    * Emitted when the dialog is closed.
    */
-  dialogClosed: EventEmitter<UpdrawShareDialogCustomEvent<void>>;
+  dialogClosed: EventEmitter<UpmadeShareDialogCustomEvent<void>>;
 }
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineUpdrawSplitButton,
+  defineCustomElementFn: defineUpmadeSplitButton,
   inputs: ['buttonIcon', 'dropdownIcon', 'items', 'mainButtonDisabled', 'menuButtonDisabled'],
   methods: ['open', 'close', 'focusMenu']
 })
 @Component({
-  selector: 'updraw-split-button',
+  selector: 'upmade-split-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['buttonIcon', 'dropdownIcon', 'items', 'mainButtonDisabled', 'menuButtonDisabled'],
   outputs: ['mainButtonClick', 'itemSelect', 'itemSave', 'itemCancel', 'itemToggleChildMenu', 'itemCloseChildMenu', 'menuOpen', 'menuClose'],
 })
-export class UpdrawSplitButton {
-  protected el: HTMLUpdrawSplitButtonElement;
-  @Output() mainButtonClick = new EventEmitter<UpdrawSplitButtonCustomEvent<void>>();
-  @Output() itemSelect = new EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItemSelectEvent>>();
-  @Output() itemSave = new EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItem>>();
-  @Output() itemCancel = new EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItem>>();
-  @Output() itemToggleChildMenu = new EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItemToggleChildMenuEvent>>();
-  @Output() itemCloseChildMenu = new EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItem>>();
-  @Output() menuOpen = new EventEmitter<UpdrawSplitButtonCustomEvent<void>>();
-  @Output() menuClose = new EventEmitter<UpdrawSplitButtonCustomEvent<void>>();
+export class UpmadeSplitButton {
+  protected el: HTMLUpmadeSplitButtonElement;
+  @Output() mainButtonClick = new EventEmitter<UpmadeSplitButtonCustomEvent<void>>();
+  @Output() itemSelect = new EventEmitter<UpmadeSplitButtonCustomEvent<IUpmadeSplitButtonIUpmadeMenuItemSelectEvent>>();
+  @Output() itemSave = new EventEmitter<UpmadeSplitButtonCustomEvent<IUpmadeSplitButtonIUpmadeMenuItem>>();
+  @Output() itemCancel = new EventEmitter<UpmadeSplitButtonCustomEvent<IUpmadeSplitButtonIUpmadeMenuItem>>();
+  @Output() itemToggleChildMenu = new EventEmitter<UpmadeSplitButtonCustomEvent<IUpmadeSplitButtonIUpmadeMenuItemToggleChildMenuEvent>>();
+  @Output() itemCloseChildMenu = new EventEmitter<UpmadeSplitButtonCustomEvent<IUpmadeSplitButtonIUpmadeMenuItem>>();
+  @Output() menuOpen = new EventEmitter<UpmadeSplitButtonCustomEvent<void>>();
+  @Output() menuClose = new EventEmitter<UpmadeSplitButtonCustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -335,46 +335,46 @@ export class UpdrawSplitButton {
 }
 
 
-import type { UpdrawSplitButtonCustomEvent } from '@updraw/editor/dist/components';
-import type { IUpdrawMenuItemSelectEvent as IUpdrawSplitButtonIUpdrawMenuItemSelectEvent } from '@updraw/editor/dist/components';
-import type { IUpdrawMenuItem as IUpdrawSplitButtonIUpdrawMenuItem } from '@updraw/editor/dist/components';
-import type { IUpdrawMenuItemToggleChildMenuEvent as IUpdrawSplitButtonIUpdrawMenuItemToggleChildMenuEvent } from '@updraw/editor/dist/components';
+import type { UpmadeSplitButtonCustomEvent } from '@upmade/editor/dist/components';
+import type { IUpmadeMenuItemSelectEvent as IUpmadeSplitButtonIUpmadeMenuItemSelectEvent } from '@upmade/editor/dist/components';
+import type { IUpmadeMenuItem as IUpmadeSplitButtonIUpmadeMenuItem } from '@upmade/editor/dist/components';
+import type { IUpmadeMenuItemToggleChildMenuEvent as IUpmadeSplitButtonIUpmadeMenuItemToggleChildMenuEvent } from '@upmade/editor/dist/components';
 
-export declare interface UpdrawSplitButton extends Components.UpdrawSplitButton {
+export declare interface UpmadeSplitButton extends Components.UpmadeSplitButton {
 
-  mainButtonClick: EventEmitter<UpdrawSplitButtonCustomEvent<void>>;
+  mainButtonClick: EventEmitter<UpmadeSplitButtonCustomEvent<void>>;
 
-  itemSelect: EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItemSelectEvent>>;
+  itemSelect: EventEmitter<UpmadeSplitButtonCustomEvent<IUpmadeSplitButtonIUpmadeMenuItemSelectEvent>>;
 
-  itemSave: EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItem>>;
+  itemSave: EventEmitter<UpmadeSplitButtonCustomEvent<IUpmadeSplitButtonIUpmadeMenuItem>>;
 
-  itemCancel: EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItem>>;
+  itemCancel: EventEmitter<UpmadeSplitButtonCustomEvent<IUpmadeSplitButtonIUpmadeMenuItem>>;
 
-  itemToggleChildMenu: EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItemToggleChildMenuEvent>>;
+  itemToggleChildMenu: EventEmitter<UpmadeSplitButtonCustomEvent<IUpmadeSplitButtonIUpmadeMenuItemToggleChildMenuEvent>>;
 
-  itemCloseChildMenu: EventEmitter<UpdrawSplitButtonCustomEvent<IUpdrawSplitButtonIUpdrawMenuItem>>;
+  itemCloseChildMenu: EventEmitter<UpmadeSplitButtonCustomEvent<IUpmadeSplitButtonIUpmadeMenuItem>>;
 
-  menuOpen: EventEmitter<UpdrawSplitButtonCustomEvent<void>>;
+  menuOpen: EventEmitter<UpmadeSplitButtonCustomEvent<void>>;
 
-  menuClose: EventEmitter<UpdrawSplitButtonCustomEvent<void>>;
+  menuClose: EventEmitter<UpmadeSplitButtonCustomEvent<void>>;
 }
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineUpdrawStrokeSize,
+  defineCustomElementFn: defineUpmadeStrokeSize,
   inputs: ['selectedSize', 'sizes']
 })
 @Component({
-  selector: 'updraw-stroke-size',
+  selector: 'upmade-stroke-size',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['selectedSize', 'sizes'],
   outputs: ['sizeChange'],
 })
-export class UpdrawStrokeSize {
-  protected el: HTMLUpdrawStrokeSizeElement;
-  @Output() sizeChange = new EventEmitter<UpdrawStrokeSizeCustomEvent<number>>();
+export class UpmadeStrokeSize {
+  protected el: HTMLUpmadeStrokeSizeElement;
+  @Output() sizeChange = new EventEmitter<UpmadeStrokeSizeCustomEvent<number>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -382,11 +382,11 @@ export class UpdrawStrokeSize {
 }
 
 
-import type { UpdrawStrokeSizeCustomEvent } from '@updraw/editor/dist/components';
+import type { UpmadeStrokeSizeCustomEvent } from '@upmade/editor/dist/components';
 
-export declare interface UpdrawStrokeSize extends Components.UpdrawStrokeSize {
+export declare interface UpmadeStrokeSize extends Components.UpmadeStrokeSize {
 
-  sizeChange: EventEmitter<UpdrawStrokeSizeCustomEvent<number>>;
+  sizeChange: EventEmitter<UpmadeStrokeSizeCustomEvent<number>>;
 }
 
 

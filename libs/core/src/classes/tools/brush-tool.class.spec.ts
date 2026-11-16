@@ -1,15 +1,15 @@
-import { UpdrawBrushTool } from './brush-tool.class';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawPath } from '../objects/path.class';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpmadeBrushTool } from './brush-tool.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadePath } from '../objects/path.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 jest.mock('../core/core.class');
 jest.mock('../objects/path.class');
 jest.mock('../../helpers/event.helper');
 
-describe('UpdrawBrushTool', () => {
-  let tool: UpdrawBrushTool;
+describe('UpmadeBrushTool', () => {
+  let tool: UpmadeBrushTool;
   let mockCore: any;
   let mockObjectsMap: any;
   let mockState: any;
@@ -84,7 +84,7 @@ describe('UpdrawBrushTool', () => {
         emitObjectsRemoved: jest.fn(),
         emitObjectsUpdated: jest.fn(),
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
     mockCreatedPath = {
       id: 'path-1',
@@ -94,10 +94,10 @@ describe('UpdrawBrushTool', () => {
       isCompleted: false,
     };
 
-    (UpdrawPath.create as jest.Mock).mockReturnValue(mockCreatedPath);
-    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpmadePath.create as jest.Mock).mockReturnValue(mockCreatedPath);
+    (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
-    tool = new UpdrawBrushTool(mockCore);
+    tool = new UpmadeBrushTool(mockCore);
   });
 
   afterEach(() => {
@@ -152,7 +152,7 @@ describe('UpdrawBrushTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawPath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadePath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         points: [[150, 250]],
         fill: tool.color,
         strokeWidth: tool.size,
@@ -172,12 +172,12 @@ describe('UpdrawBrushTool', () => {
     });
 
     it('should not create a path on non-left click', () => {
-      (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+      (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
       const event = createMouseEvent({ button: 2 });
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawPath.create).not.toHaveBeenCalled();
+      expect(UpmadePath.create).not.toHaveBeenCalled();
       expect(mockState.isDrawing).toBe(false);
     });
 
@@ -188,7 +188,7 @@ describe('UpdrawBrushTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawPath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadePath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         points: [[200 - 50, 300 - 30]],
       }));
     });
@@ -202,7 +202,7 @@ describe('UpdrawBrushTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawPath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadePath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         points: [[200 / 2, 300 / 2]],
         translateX: -100 / 2,
         translateY: -50 / 2,
@@ -219,7 +219,7 @@ describe('UpdrawBrushTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawPath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadePath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         points: [[200, 300]],
         translateX: -100,
         translateY: -50,
@@ -239,7 +239,7 @@ describe('UpdrawBrushTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawPath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadePath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         points: [[120, 220]],
       }));
       expect(mockObjectsMap.insert).toHaveBeenCalled();
@@ -261,7 +261,7 @@ describe('UpdrawBrushTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawPath.create).toHaveBeenCalled();
+      expect(UpmadePath.create).toHaveBeenCalled();
       expect(mockState.isDrawing).toBe(true);
     });
 
@@ -290,7 +290,7 @@ describe('UpdrawBrushTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawPath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadePath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         points: [[121, 220]],
       }));
     });
@@ -303,7 +303,7 @@ describe('UpdrawBrushTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawPath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadePath.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         points: [[Math.round(200 / 2), Math.round(300 / 2)]],
         scale: 1,
       }));
@@ -333,7 +333,7 @@ describe('UpdrawBrushTool', () => {
       const moveEvent = createMouseEvent({ clientX: 150, clientY: 260 });
       tool.handlePointerMove(moveEvent);
 
-      expect(UpdrawPath.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadePath.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         points: [[50, 60], [150, 260]],
       }));
       expect(mockObjectsMap.update).toHaveBeenCalled();
@@ -346,7 +346,7 @@ describe('UpdrawBrushTool', () => {
       mockObjectsMap.findById.mockReturnValue(existingPath);
 
       const newPath = { id: 'new-id', workspaceId: 'new-ws', zIndex: 99, isCompleted: true };
-      (UpdrawPath.create as jest.Mock).mockReturnValue(newPath);
+      (UpmadePath.create as jest.Mock).mockReturnValue(newPath);
 
       tool.handlePointerMove(createMouseEvent({ clientX: 150, clientY: 260 }));
 
@@ -381,12 +381,12 @@ describe('UpdrawBrushTool', () => {
 
         const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
         mockObjectsMap.findById.mockReturnValue(existingPath);
-        (UpdrawPath.create as jest.Mock).mockClear();
+        (UpmadePath.create as jest.Mock).mockClear();
 
         // Sub-threshold delta (2 px) — should be filtered out.
         tool.handlePointerMove(createMouseEvent({ clientX: 52, clientY: 60 }));
 
-        expect(UpdrawPath.create).not.toHaveBeenCalled();
+        expect(UpmadePath.create).not.toHaveBeenCalled();
         expect(mockObjectsMap.update).not.toHaveBeenCalled();
       });
 
@@ -395,12 +395,12 @@ describe('UpdrawBrushTool', () => {
 
         const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
         mockObjectsMap.findById.mockReturnValue(existingPath);
-        (UpdrawPath.create as jest.Mock).mockClear();
+        (UpmadePath.create as jest.Mock).mockClear();
 
         // Exactly 3 px delta — should pass.
         tool.handlePointerMove(createMouseEvent({ clientX: 53, clientY: 60 }));
 
-        expect(UpdrawPath.create).toHaveBeenCalledTimes(1);
+        expect(UpmadePath.create).toHaveBeenCalledTimes(1);
         expect(mockObjectsMap.update).toHaveBeenCalledTimes(1);
       });
 
@@ -409,7 +409,7 @@ describe('UpdrawBrushTool', () => {
 
         const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
         mockObjectsMap.findById.mockReturnValue(existingPath);
-        (UpdrawPath.create as jest.Mock).mockClear();
+        (UpmadePath.create as jest.Mock).mockClear();
 
         // Sub-threshold jitters (each < 3 px from origin).
         tool.handlePointerMove(createMouseEvent({ clientX: 51, clientY: 60 }));
@@ -433,7 +433,7 @@ describe('UpdrawBrushTool', () => {
 
         const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
         mockObjectsMap.findById.mockReturnValue(existingPath);
-        (UpdrawPath.create as jest.Mock).mockClear();
+        (UpmadePath.create as jest.Mock).mockClear();
 
         // Move by 4 screen pixels: clientX 204 -> world 51 (delta 1 world unit > 0.75 threshold).
         tool.handlePointerMove(createMouseEvent({ clientX: 204, clientY: 240 }));
@@ -450,7 +450,7 @@ describe('UpdrawBrushTool', () => {
 
         const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
         mockObjectsMap.findById.mockReturnValue(existingPath);
-        (UpdrawPath.create as jest.Mock).mockClear();
+        (UpmadePath.create as jest.Mock).mockClear();
 
         // 2 screen px = 0.5 world units, which is < 0.75 threshold -> should be dropped.
         tool.handlePointerMove(createMouseEvent({ clientX: 202, clientY: 240 }));
@@ -477,7 +477,7 @@ describe('UpdrawBrushTool', () => {
       mockState.pointers.set(1, { clientX: 150, clientY: 260 });
       tool.handlePointerMove(createTouchEvent());
 
-      expect(UpdrawPath.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadePath.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         points: [[50, 60], [150, 260]],
       }));
       expect(mockObjectsMap.update).toHaveBeenCalled();
@@ -505,7 +505,7 @@ describe('UpdrawBrushTool', () => {
       mockState.pointers.set(1, { clientX: 150.7, clientY: 260.3 });
       tool.handlePointerMove(createTouchEvent());
 
-      expect(UpdrawPath.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadePath.create).toHaveBeenLastCalledWith(mockCore, expect.objectContaining({
         points: [[50, 60], [151, 260]],
       }));
     });

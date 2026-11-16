@@ -1,19 +1,19 @@
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawImage } from '../objects/image.class';
-import { UpdrawText } from '../objects/text.class';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawLine } from '../objects/line.class';
-import { UpdrawZOrderHelper } from '../../helpers/z-order.helper';
-import { UpdrawReviver } from '../core/reviver.class';
-import { UpdrawPasteIntentProviderRegistry } from '../registries/paste-intent-provider.registry';
-import { UpdrawEventPasteIntentProvider } from '../providers/paste-intent/event-paste-intent.provider';
-import { UpdrawNavigatorPasteIntentProvider } from '../providers/paste-intent/navigator-paste-intent.provider';
-import { UpdrawIosPasteIntentProvider } from '../providers/paste-intent/ios-paste-intent.provider';
-import { UpdrawClipboardPayload, PasteIntent, SerializedClipboardObject, CLIPBOARD_PAYLOAD_PREFIX } from './clipboard.types';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeImage } from '../objects/image.class';
+import { UpmadeText } from '../objects/text.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeLine } from '../objects/line.class';
+import { UpmadeZOrderHelper } from '../../helpers/z-order.helper';
+import { UpmadeReviver } from '../core/reviver.class';
+import { UpmadePasteIntentProviderRegistry } from '../registries/paste-intent-provider.registry';
+import { UpmadeEventPasteIntentProvider } from '../providers/paste-intent/event-paste-intent.provider';
+import { UpmadeNavigatorPasteIntentProvider } from '../providers/paste-intent/navigator-paste-intent.provider';
+import { UpmadeIosPasteIntentProvider } from '../providers/paste-intent/ios-paste-intent.provider';
+import { UpmadeClipboardPayload, PasteIntent, SerializedClipboardObject, CLIPBOARD_PAYLOAD_PREFIX } from './clipboard.types';
 import imageCompression from 'browser-image-compression';
-import { UpdrawImageFileHelper } from '../../helpers/image-file.helper';
+import { UpmadeImageFileHelper } from '../../helpers/image-file.helper';
 
 export type { PasteIntent } from './clipboard.types';
 
@@ -21,23 +21,23 @@ export type { PasteIntent } from './clipboard.types';
  * Manages clipboard operations (copy/cut/paste) for a core instance.
  *
  * The system clipboard is the preferred source of truth: copy serializes the current
- * selection into an Updraw payload, paste reads + revives it.
+ * selection into an Upmade payload, paste reads + revives it.
  *
  * A copy also mirrors the payload into an in-memory session buffer. On platforms where
  * eventless programmatic clipboard access is unavailable (notably iOS Safari, where the
  * context menu triggers copy/paste without a native ClipboardEvent), the session buffer
  * is used as the fallback source so internal object copy/paste keeps working.
  */
-export class UpdrawClipboardManager {
-  private readonly _core: UpdrawCore;
-  private readonly _pasteIntentRegistry: UpdrawPasteIntentProviderRegistry;
+export class UpmadeClipboardManager {
+  private readonly _core: UpmadeCore;
+  private readonly _pasteIntentRegistry: UpmadePasteIntentProviderRegistry;
 
   /**
    * In-memory mirror of the most recent copy payload. Acts as the fallback clipboard
    * source when the system clipboard cannot be read programmatically (e.g. iOS Safari
    * context-menu paste). Reset is not required; a new copy overwrites it.
    */
-  private _sessionClipboardPayload: UpdrawClipboardPayload | null = null;
+  private _sessionClipboardPayload: UpmadeClipboardPayload | null = null;
 
   /**
    * In-memory cascade offset (world units) applied to successive pastes of the same
@@ -45,22 +45,22 @@ export class UpdrawClipboardManager {
    */
   private _pasteOffset = 0;
 
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     this._core = core;
-    this._pasteIntentRegistry = new UpdrawPasteIntentProviderRegistry(this._core);
+    this._pasteIntentRegistry = new UpmadePasteIntentProviderRegistry(this._core);
 
     // Provider order is intentional: iOS eventless path should short-circuit,
     // native paste events remain preferred, and async navigator APIs are fallback.
-    this._pasteIntentRegistry.register(new UpdrawIosPasteIntentProvider());
-    this._pasteIntentRegistry.register(new UpdrawEventPasteIntentProvider());
-    this._pasteIntentRegistry.register(new UpdrawNavigatorPasteIntentProvider());
+    this._pasteIntentRegistry.register(new UpmadeIosPasteIntentProvider());
+    this._pasteIntentRegistry.register(new UpmadeEventPasteIntentProvider());
+    this._pasteIntentRegistry.register(new UpmadeNavigatorPasteIntentProvider());
   }
 
   /**
    * The most recent copy payload mirrored in memory, used as a fallback clipboard
    * source when the system clipboard cannot be read programmatically.
    */
-  get sessionClipboardPayload(): UpdrawClipboardPayload | null {
+  get sessionClipboardPayload(): UpmadeClipboardPayload | null {
     return this._sessionClipboardPayload;
   }
 
@@ -68,21 +68,21 @@ export class UpdrawClipboardManager {
    * Serializes an object for the clipboard payload. Groups additionally embed their
    * (recursively serialized) children under `__children__` so the payload is self-contained.
    */
-  private serializeForClipboard(object: UpdrawBaseObject<any>): SerializedClipboardObject {
+  private serializeForClipboard(object: UpmadeBaseObject<any>): SerializedClipboardObject {
     const serialized = (typeof object.serialize === 'function' ? object.serialize() : object) as SerializedClipboardObject;
 
-    if (object instanceof UpdrawGroup) {
+    if (object instanceof UpmadeGroup) {
       serialized.__children__ = object.children.map(child => this.serializeForClipboard(child));
     }
 
     return serialized;
   }
 
-  private serializeClipboardPayload(payload: UpdrawClipboardPayload): string {
+  private serializeClipboardPayload(payload: UpmadeClipboardPayload): string {
     return `${CLIPBOARD_PAYLOAD_PREFIX}${JSON.stringify(payload)}`;
   }
 
-  private async writeBrowserClipboardPayload(payload: UpdrawClipboardPayload, event?: ClipboardEvent): Promise<void> {
+  private async writeBrowserClipboardPayload(payload: UpmadeClipboardPayload, event?: ClipboardEvent): Promise<void> {
     const serialized = this.serializeClipboardPayload(payload);
 
     if (event?.clipboardData) {
@@ -105,17 +105,17 @@ export class UpdrawClipboardManager {
    * Revives a single serialized clipboard object (and its embedded group children).
    * IDs are NOT regenerated here; see regenerateIdsAndRemapAnchors.
    */
-  private reviveClipboardObject(serialized: SerializedClipboardObject): UpdrawBaseObject<any> | null {
-    const reviver = new UpdrawReviver(this._core);
+  private reviveClipboardObject(serialized: SerializedClipboardObject): UpmadeBaseObject<any> | null {
+    const reviver = new UpmadeReviver(this._core);
     const { __children__, ...objectData } = serialized;
-    const revived = reviver.revive<UpdrawBaseObject<any>>(objectData);
+    const revived = reviver.revive<UpmadeBaseObject<any>>(objectData);
 
     if (!revived) {
       return null;
     }
 
-    if (__children__ && revived instanceof UpdrawGroup) {
-      const children = __children__.map(child => this.reviveClipboardObject(child)).filter((child): child is UpdrawBaseObject<any> => child != null);
+    if (__children__ && revived instanceof UpmadeGroup) {
+      const children = __children__.map(child => this.reviveClipboardObject(child)).filter((child): child is UpmadeBaseObject<any> => child != null);
 
       revived._pendingChildren = children;
       revived.childIds = children.map(child => child.id);
@@ -130,14 +130,14 @@ export class UpdrawClipboardManager {
    * siblings to their new IDs. Anchors pointing at objects outside the pasted set are
    * left untouched so they stay connected to the existing object.
    */
-  private regenerateIdsAndRemapAnchors(topLevel: UpdrawBaseObject<any>[]): void {
-    const all: UpdrawBaseObject<any>[] = [];
-    const hasOnlyTopLevelLines = topLevel.length > 0 && topLevel.every(object => object instanceof UpdrawLine);
+  private regenerateIdsAndRemapAnchors(topLevel: UpmadeBaseObject<any>[]): void {
+    const all: UpmadeBaseObject<any>[] = [];
+    const hasOnlyTopLevelLines = topLevel.length > 0 && topLevel.every(object => object instanceof UpmadeLine);
 
-    const collect = (objects: UpdrawBaseObject<any>[]): void => {
+    const collect = (objects: UpmadeBaseObject<any>[]): void => {
       for (const object of objects) {
         all.push(object);
-        if (object instanceof UpdrawGroup) {
+        if (object instanceof UpmadeGroup) {
           collect(object._pendingChildren);
         }
       }
@@ -153,11 +153,11 @@ export class UpdrawClipboardManager {
     }
 
     for (const object of all) {
-      if (object instanceof UpdrawGroup) {
+      if (object instanceof UpmadeGroup) {
         object.childIds = object.childIds.map(id => idMap.get(id) ?? id);
       }
 
-      if (object instanceof UpdrawLine) {
+      if (object instanceof UpmadeLine) {
         if (object.startAnchor && idMap.has(object.startAnchor.objectId)) {
           object.startAnchor = { objectId: idMap.get(object.startAnchor.objectId)! };
         } else if (hasOnlyTopLevelLines) {
@@ -181,7 +181,7 @@ export class UpdrawClipboardManager {
       return;
     }
 
-    const payload: UpdrawClipboardPayload = {
+    const payload: UpmadeClipboardPayload = {
       version: 1,
       sourceWorkspaceId: this._core.store.state.activeWorkspace?.id,
       objects: selectionGroup.objects.sort((a, b) => a.zIndex - b.zIndex).map(obj => this.serializeForClipboard(obj)),
@@ -210,7 +210,7 @@ export class UpdrawClipboardManager {
     this._core.delete();
   }
 
-  private materializeUpdrawObjects(intent: Extract<PasteIntent, { type: 'updraw_objects' }>): UpdrawBaseObject<any>[] {
+  private materializeUpmadeObjects(intent: Extract<PasteIntent, { type: 'upmade_objects' }>): UpmadeBaseObject<any>[] {
     return this.reviveCopies(intent.payload.objects);
   }
 
@@ -218,12 +218,12 @@ export class UpdrawClipboardManager {
    * Copies of objects, not inserted yet: fresh IDs at every nesting level, group children pending, and lines
    * anchored to copied objects anchored to the copies instead. Insert them with {@link insertCopies}.
    */
-  createCopies(objects: UpdrawBaseObject<any>[]): UpdrawBaseObject<any>[] {
+  createCopies(objects: UpmadeBaseObject<any>[]): UpmadeBaseObject<any>[] {
     return this.reviveCopies(objects.map(object => this.serializeForClipboard(object)));
   }
 
-  private reviveCopies(serialized: SerializedClipboardObject[]): UpdrawBaseObject<any>[] {
-    const objects = serialized.map(object => this.reviveClipboardObject(object)).filter((object): object is UpdrawBaseObject<any> => object != null);
+  private reviveCopies(serialized: SerializedClipboardObject[]): UpmadeBaseObject<any>[] {
+    const objects = serialized.map(object => this.reviveClipboardObject(object)).filter((object): object is UpmadeBaseObject<any> => object != null);
     this.regenerateIdsAndRemapAnchors(objects);
     return objects;
   }
@@ -234,34 +234,34 @@ export class UpdrawClipboardManager {
    * selection alone; call it inside the caller's transaction.
    * @returns Every inserted object, group children before their group.
    */
-  insertCopies(copies: UpdrawBaseObject<any>[], offsetX: number, offsetY: number): UpdrawBaseObject<any>[] {
+  insertCopies(copies: UpmadeBaseObject<any>[], offsetX: number, offsetY: number): UpmadeBaseObject<any>[] {
     const workspaceId = this._core.store.state.activeWorkspace!.id;
 
     // Stack the copies above everything in their original order; each group becomes one contiguous layer.
-    const getPendingChildren = (group: UpdrawGroup) => group._pendingChildren;
-    const sortByStackOrder = (objects: UpdrawBaseObject<any>[]) =>
+    const getPendingChildren = (group: UpmadeGroup) => group._pendingChildren;
+    const sortByStackOrder = (objects: UpmadeBaseObject<any>[]) =>
       objects
-        .map(object => ({ object, anchor: UpdrawZOrderHelper.stackAnchor(object, getPendingChildren) }))
+        .map(object => ({ object, anchor: UpmadeZOrderHelper.stackAnchor(object, getPendingChildren) }))
         .sort((a, b) => a.anchor - b.anchor)
         .map(({ object }) => object);
-    const sortPendingChildren = (object: UpdrawBaseObject<any>): void => {
-      if (object instanceof UpdrawGroup) {
+    const sortPendingChildren = (object: UpmadeBaseObject<any>): void => {
+      if (object instanceof UpmadeGroup) {
         object._pendingChildren.forEach(sortPendingChildren);
         object._pendingChildren = sortByStackOrder(object._pendingChildren);
       }
     };
     copies.forEach(sortPendingChildren);
     let nextZIndex = this._core.store.currentZIndex;
-    sortByStackOrder(copies).forEach(obj => (nextZIndex = UpdrawZOrderHelper.allocate(obj, nextZIndex, getPendingChildren)));
+    sortByStackOrder(copies).forEach(obj => (nextZIndex = UpmadeZOrderHelper.allocate(obj, nextZIndex, getPendingChildren)));
 
-    const inserted: UpdrawBaseObject<any>[] = [];
-    const insert = (object: UpdrawBaseObject<any>): void => {
+    const inserted: UpmadeBaseObject<any>[] = [];
+    const insert = (object: UpmadeBaseObject<any>): void => {
       if (object.workspaceId !== workspaceId) {
         object.workspaceId = workspaceId;
       }
       object.updatePosition(object.translateX + offsetX, object.translateY + offsetY);
 
-      if (object instanceof UpdrawGroup && object._pendingChildren.length > 0) {
+      if (object instanceof UpmadeGroup && object._pendingChildren.length > 0) {
         const pendingChildren = object._pendingChildren;
         object._pendingChildren = [];
         pendingChildren.forEach(insert);
@@ -277,13 +277,13 @@ export class UpdrawClipboardManager {
     return inserted;
   }
 
-  private async materializeImageFiles(intent: Extract<PasteIntent, { type: 'image_files' }>): Promise<UpdrawBaseObject<any>[] | null> {
+  private async materializeImageFiles(intent: Extract<PasteIntent, { type: 'image_files' }>): Promise<UpmadeBaseObject<any>[] | null> {
     try {
       const scale = this._core.store.state.scale;
       const offset = 25 / scale;
       const preparePromises = intent.files.map(async (file, index) => {
         const preparedFile = await this.prepareImageFile(file);
-        return UpdrawImage.fromBlob(this._core, preparedFile, {
+        return UpmadeImage.fromBlob(this._core, preparedFile, {
           translateX: index * offset,
           translateY: index * offset,
         });
@@ -297,15 +297,15 @@ export class UpdrawClipboardManager {
   }
 
   private async prepareImageFile(file: File): Promise<File> {
-    if (UpdrawImageFileHelper.isGifFile(file)) {
+    if (UpmadeImageFileHelper.isGifFile(file)) {
       return file;
     }
 
     return imageCompression(file, { maxWidthOrHeight: 1200 });
   }
 
-  private async materializePlainText(intent: Extract<PasteIntent, { type: 'plain_text' }>): Promise<UpdrawBaseObject<any>[] | null> {
-    const textObject = UpdrawText.create(this._core);
+  private async materializePlainText(intent: Extract<PasteIntent, { type: 'plain_text' }>): Promise<UpmadeBaseObject<any>[] | null> {
+    const textObject = UpmadeText.create(this._core);
 
     const paragraphs = intent.text.split('\n').map(line => {
       if (line.length === 0) {
@@ -331,10 +331,10 @@ export class UpdrawClipboardManager {
   async paste(x?: number, y?: number, event?: ClipboardEvent): Promise<void> {
     const pasteIntent = await this._pasteIntentRegistry.resolve(event);
 
-    let objects: UpdrawBaseObject<any>[] | null = null;
+    let objects: UpmadeBaseObject<any>[] | null = null;
 
-    if (pasteIntent.type === 'updraw_objects') {
-      objects = this.materializeUpdrawObjects(pasteIntent);
+    if (pasteIntent.type === 'upmade_objects') {
+      objects = this.materializeUpmadeObjects(pasteIntent);
     } else if (pasteIntent.type === 'image_files') {
       objects = await this.materializeImageFiles(pasteIntent);
     } else if (pasteIntent.type === 'plain_text') {
@@ -348,7 +348,7 @@ export class UpdrawClipboardManager {
     await this.insertMaterializedObjects(objects, pasteIntent, x, y);
   }
 
-  private async insertMaterializedObjects(copiedObjects: UpdrawBaseObject<any>[], pasteIntent: PasteIntent, x?: number, y?: number): Promise<void> {
+  private async insertMaterializedObjects(copiedObjects: UpmadeBaseObject<any>[], pasteIntent: PasteIntent, x?: number, y?: number): Promise<void> {
     const activeWorkspace = this._core.store.state.activeWorkspace;
     if (!activeWorkspace) {
       return;
@@ -358,7 +358,7 @@ export class UpdrawClipboardManager {
     // This happens if the user specifically pasted from a different workspace,
     // OR if we're inserting brand new external items (like images or text).
     const isDifferentWorkspace = copiedObjects.some(obj => obj.workspaceId !== activeWorkspace.id);
-    const isNewExternalContent = pasteIntent.type !== 'updraw_objects';
+    const isNewExternalContent = pasteIntent.type !== 'upmade_objects';
     const shouldCenterInViewport = isDifferentWorkspace || isNewExternalContent;
     const hasExplicitPastePosition = x !== undefined && y !== undefined;
 
@@ -389,7 +389,7 @@ export class UpdrawClipboardManager {
     this._core.removeSelectionGroup();
     this._core.removeSelectionBox();
 
-    const selectionGroup = UpdrawSelectionGroup.create(this._core);
+    const selectionGroup = UpmadeSelectionGroup.create(this._core);
 
     this._core.store.objects.transaction(() => {
       this.insertCopies(copiedObjects, offsetX, offsetY);
@@ -414,7 +414,7 @@ export class UpdrawClipboardManager {
     this._core.store.state.isSelecting = false;
 
     // Use a double requestAnimationFrame to ensure the browser has fully rendered the DOM,
-    // and objects like UpdrawText have executed their own internal size-adjustment rAF calls.
+    // and objects like UpmadeText have executed their own internal size-adjustment rAF calls.
     await new Promise<void>(resolve => {
       requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
     });

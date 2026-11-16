@@ -1,11 +1,11 @@
-import { UpdrawKeyHandler } from './key.handler';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawBaseTool } from '../tools/base-tool.class';
+import { UpmadeKeyHandler } from './key.handler';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeBaseTool } from '../tools/base-tool.class';
 
-describe('UpdrawKeyHandler', () => {
-  let keyHandler: UpdrawKeyHandler;
-  let mockCore: jest.Mocked<UpdrawCore>;
-  let mockTool: jest.Mocked<UpdrawBaseTool>;
+describe('UpmadeKeyHandler', () => {
+  let keyHandler: UpmadeKeyHandler;
+  let mockCore: jest.Mocked<UpmadeCore>;
+  let mockTool: jest.Mocked<UpmadeBaseTool>;
   let mockSelectionGroup: { objects: unknown[] } | null;
   let mockActiveText: unknown | null;
   let mockActiveInteractiveDynamicObject: unknown | null;
@@ -17,7 +17,7 @@ describe('UpdrawKeyHandler', () => {
     mockTool = {
       onActivate: jest.fn(),
       name: 'mockTool',
-    } as unknown as jest.Mocked<UpdrawBaseTool>;
+    } as unknown as jest.Mocked<UpmadeBaseTool>;
 
     mockSelectionGroup = null;
     mockActiveText = null;
@@ -35,7 +35,7 @@ describe('UpdrawKeyHandler', () => {
           return mockSelectionGroup;
         },
         get selectedGroups() {
-          return (mockSelectionGroup?.objects ?? []).filter((obj: any) => obj.__class__ === 'UpdrawGroup');
+          return (mockSelectionGroup?.objects ?? []).filter((obj: any) => obj.__class__ === 'UpmadeGroup');
         },
         get activeText() {
           return mockActiveText;
@@ -66,9 +66,9 @@ describe('UpdrawKeyHandler', () => {
         getTool: jest.fn().mockReturnValue(mockTool),
         getToolByIndex: jest.fn(),
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    keyHandler = new UpdrawKeyHandler(mockCore);
+    keyHandler = new UpmadeKeyHandler(mockCore);
   });
 
   afterEach(() => {
@@ -300,8 +300,8 @@ describe('UpdrawKeyHandler', () => {
       });
 
       it('should ungroup the selected groups when Ctrl+Shift+G is pressed with selection', () => {
-        const group = { __class__: 'UpdrawGroup' };
-        mockSelectionGroup = { objects: [group, { __class__: 'UpdrawPath' }] };
+        const group = { __class__: 'UpmadeGroup' };
+        mockSelectionGroup = { objects: [group, { __class__: 'UpmadePath' }] };
         const event = new KeyboardEvent('keydown', { key: 'G', ctrlKey: true, shiftKey: true });
         const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 
@@ -393,7 +393,7 @@ describe('UpdrawKeyHandler', () => {
 
     describe('Interactive dynamic object selection', () => {
       it('should not execute Select All shortcut when focused input-like content exists in a selected dynamic object', () => {
-        mockActiveInteractiveDynamicObject = { __class__: 'UpdrawDynamicObject', isInteractive: true };
+        mockActiveInteractiveDynamicObject = { __class__: 'UpmadeDynamicObject', isInteractive: true };
         const event = new KeyboardEvent('keydown', { key: 'a', ctrlKey: true });
         const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 
@@ -405,7 +405,7 @@ describe('UpdrawKeyHandler', () => {
 
       it('should still execute Escape shortcut when focused input-like content exists in a selected dynamic object', () => {
         mockSelectionGroup = { objects: [] };
-        mockActiveInteractiveDynamicObject = { __class__: 'UpdrawDynamicObject', isInteractive: true };
+        mockActiveInteractiveDynamicObject = { __class__: 'UpmadeDynamicObject', isInteractive: true };
         const event = new KeyboardEvent('keydown', { key: 'Escape' });
         const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 

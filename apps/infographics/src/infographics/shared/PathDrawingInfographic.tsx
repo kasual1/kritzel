@@ -1,10 +1,10 @@
 import { useRef, useState, type CSSProperties } from "react";
 import {
-  UpdrawDynamicObject,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type HTMLUpdrawEditorElement,
-} from "@updraw/react-editor";
+  UpmadeDynamicObject,
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type HTMLUpmadeEditorElement,
+} from "@upmade/react-editor";
 import { animatePathDrawing } from "./animate-path-drawing";
 
 const hostStyle: CSSProperties = {
@@ -16,7 +16,7 @@ interface PathDrawingInfographicProps {
   id: string;
   name: string;
   /** Creates the drawing; its SVG must carry `aria-label={name}` so it can be found again. */
-  createDrawing: () => UpdrawDynamicObject;
+  createDrawing: () => UpmadeDynamicObject;
   /** Total drawing time in milliseconds. */
   duration?: number;
   /** Wait before the drawing starts, in milliseconds. */
@@ -25,7 +25,7 @@ interface PathDrawingInfographicProps {
 
 /** An editor whose only object is an SVG drawing that is centered and animated on load. */
 export function PathDrawingInfographic({ id, name, createDrawing, duration, delay }: PathDrawingInfographicProps) {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const [workspaces] = useState(() => {
     const drawing = createDrawing();
     // An object occupies width / scale world units, so a larger scale makes it smaller on screen.
@@ -34,7 +34,7 @@ export function PathDrawingInfographic({ id, name, createDrawing, duration, dela
       drawing.width / Math.max(window.innerWidth - 48, 1),
       drawing.height / Math.max(window.innerHeight - 48, 1),
     );
-    return [new UpdrawWorkspace({ id, name, objects: [drawing] })];
+    return [new UpmadeWorkspace({ id, name, objects: [drawing] })];
   });
 
   async function onReady() {
@@ -45,8 +45,8 @@ export function PathDrawingInfographic({ id, name, createDrawing, duration, dela
 
     const objects = await editor.getAllObjects();
     const drawing = objects.find(
-      (object): object is UpdrawDynamicObject =>
-        object instanceof UpdrawDynamicObject &&
+      (object): object is UpmadeDynamicObject =>
+        object instanceof UpmadeDynamicObject &&
         !!object.element?.querySelector(`svg[aria-label="${name}"]`),
     );
     if (!drawing) {
@@ -59,7 +59,7 @@ export function PathDrawingInfographic({ id, name, createDrawing, duration, dela
 
   return (
     <div style={hostStyle}>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId={`infographic-${id}`}
         workspaces={workspaces}

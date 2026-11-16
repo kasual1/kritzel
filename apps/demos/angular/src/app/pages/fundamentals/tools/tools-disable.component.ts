@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import {
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawEraserTool,
-  UpdrawSelectionTool,
-  UpdrawToolbarItem,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeEraserTool,
+  UpmadeSelectionTool,
+  UpmadeToolbarItem,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -14,7 +14,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-tools-disable',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -22,7 +22,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         {{ isEraserDisabled() ? 'Enable eraser tool' : 'Disable eraser tool' }}
       </button>
     </app-toolbar>
-    <updraw-editor
+    <upmade-editor
       editorId="tools-disable"
       [theme]="'light'"
       [themes]="themes"
@@ -32,21 +32,21 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    updraw-editor { flex: 1; }
+    upmade-editor { flex: 1; }
   `],
 })
 export class ToolsDisableComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
   isEraserDisabled = signal(true);
 
-  toolbarItems = computed<UpdrawToolbarItem[]>(() => {
+  toolbarItems = computed<UpmadeToolbarItem[]>(() => {
     const isEraserDisabled = this.isEraserDisabled();
 
     return [
@@ -54,19 +54,19 @@ export class ToolsDisableComponent {
         name: 'selection',
         type: 'tool',
         isDefault: true,
-        tool: UpdrawSelectionTool,
+        tool: UpmadeSelectionTool,
         icon: 'cursor',
       },
       {
         name: 'brush',
         type: 'tool',
-        tool: UpdrawBrushTool,
+        tool: UpmadeBrushTool,
         icon: 'pen',
       },
       {
         name: 'eraser',
         type: 'tool',
-        tool: UpdrawEraserTool,
+        tool: UpmadeEraserTool,
         icon: 'eraser',
         // Demonstrates the function form of `isDisabled` for dynamic, state-driven control.
         isDisabled: () => isEraserDisabled,

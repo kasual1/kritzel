@@ -1,1 +1,1 @@
-CREATE DATABASE updraw;
+CREATE DATABASE upmade;

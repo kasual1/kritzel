@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
-  UpdrawEditor,
-  UpdrawShape,
-  UpdrawText,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeShape,
+  UpmadeText,
+  UpmadeWorkspace,
   ShapeType,
-} from '@updraw/angular-editor';
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 
@@ -17,7 +17,7 @@ interface Slide {
 
 @Component({
   selector: 'app-slideshow-presentation',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <header class="presentation-header">
@@ -50,7 +50,7 @@ interface Slide {
     </header>
 
     <div class="editor-container">
-      <updraw-editor
+      <upmade-editor
         editorId="slideshow-presentation"
         [theme]="'light'"
         [themes]="themes"
@@ -61,7 +61,7 @@ interface Slide {
         [isWorkspaceManagerVisible]="false"
         [workspaces]="workspaces()"
         (isReady)="onReady()"
-      ></updraw-editor>
+      ></upmade-editor>
     </div>
   `,
   styles: `
@@ -162,7 +162,7 @@ interface Slide {
       position: relative;
     }
 
-    updraw-editor {
+    upmade-editor {
       display: block;
       width: 100%;
       height: 100%;
@@ -170,15 +170,15 @@ interface Slide {
   `,
 })
 export class SlideshowPresentationComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
   workspaces = signal([
-    new UpdrawWorkspace({ objects: this.createSeedSlides() }),
+    new UpmadeWorkspace({ objects: this.createSeedSlides() }),
   ]);
 
   slides: Slide[] = [
-    { title: '1. Welcome to Updraw', centerX: 0, centerY: 0 },
+    { title: '1. Welcome to Upmade', centerX: 0, centerY: 0 },
     { title: '2. Core Frontend Capabilities', centerX: 1200, centerY: 0 },
     { title: '3. Seamless Presentation Layout', centerX: 2400, centerY: 0 },
   ];
@@ -189,9 +189,9 @@ export class SlideshowPresentationComponent {
     await this.navigateToSlide(0);
   }
 
-  private createSeedSlides(): Array<UpdrawShape | UpdrawText> {
+  private createSeedSlides(): Array<UpmadeShape | UpmadeText> {
     return [
-      new UpdrawShape({
+      new UpmadeShape({
         translateX: -400,
         translateY: -225,
         width: 800,
@@ -201,21 +201,21 @@ export class SlideshowPresentationComponent {
         strokeColor: { light: '#dd0031', dark: '#b30027' },
         strokeWidth: 4,
       }),
-      new UpdrawText({
-        text: 'Welcome to Updraw',
+      new UpmadeText({
+        text: 'Welcome to Upmade',
         translateX: -350,
         translateY: -150,
         fontSize: 36,
         fontColor: { light: '#dd0031', dark: '#ff4d6d' },
       }),
-      new UpdrawText({
+      new UpmadeText({
         text: 'A modern vector drawing component for web builders. This workspace demonstrates Slideshow Mode, spacing slide sheets on a virtual horizontal track.\n\nUse the presentation controls above to glide smoothly between slides!',
         translateX: -350,
         translateY: -50,
         fontSize: 20,
         fontColor: { light: '#333333', dark: '#eeeeee' },
       }),
-      new UpdrawShape({
+      new UpmadeShape({
         translateX: 200,
         translateY: 50,
         width: 120,
@@ -225,7 +225,7 @@ export class SlideshowPresentationComponent {
         strokeColor: { light: '#1565c0', dark: '#90caf9' },
         strokeWidth: 2,
       }),
-      new UpdrawShape({
+      new UpmadeShape({
         translateX: 800,
         translateY: -225,
         width: 800,
@@ -235,21 +235,21 @@ export class SlideshowPresentationComponent {
         strokeColor: { light: '#dd0031', dark: '#b30027' },
         strokeWidth: 4,
       }),
-      new UpdrawText({
+      new UpmadeText({
         text: 'Core Frontend Power',
         translateX: 850,
         translateY: -150,
         fontSize: 36,
         fontColor: { light: '#dd0031', dark: '#ff4d6d' },
       }),
-      new UpdrawText({
+      new UpmadeText({
         text: 'â€¢ Offline-First Canvas Persistence\nâ€¢ Dynamic Viewport & Navigation Helpers\nâ€¢ Tailored Custom Color Tool Palettes\nâ€¢ Entirely Interactive Drawing Tools',
         translateX: 850,
         translateY: -50,
         fontSize: 20,
         fontColor: { light: '#333333', dark: '#eeeeee' },
       }),
-      new UpdrawShape({
+      new UpmadeShape({
         translateX: 1400,
         translateY: 50,
         width: 120,
@@ -259,7 +259,7 @@ export class SlideshowPresentationComponent {
         strokeColor: { light: '#c62828', dark: '#ef9a9a' },
         strokeWidth: 2,
       }),
-      new UpdrawShape({
+      new UpmadeShape({
         translateX: 2000,
         translateY: -225,
         width: 800,
@@ -269,21 +269,21 @@ export class SlideshowPresentationComponent {
         strokeColor: { light: '#dd0031', dark: '#b30027' },
         strokeWidth: 4,
       }),
-      new UpdrawText({
+      new UpmadeText({
         text: 'Seamless Bounded Layouts',
         translateX: 2050,
         translateY: -150,
         fontSize: 36,
         fontColor: { light: '#dd0031', dark: '#ff4d6d' },
       }),
-      new UpdrawText({
+      new UpmadeText({
         text: 'By setting finite limits on the viewport bounds, the user can draw and interact inside the slide card, but cannot pan away to empty space.\n\nCombined with pan animation flows, this makes a wonderful presentation experience.',
         translateX: 2050,
         translateY: -50,
         fontSize: 20,
         fontColor: { light: '#333333', dark: '#eeeeee' },
       }),
-      new UpdrawShape({
+      new UpmadeShape({
         translateX: 2600,
         translateY: 50,
         width: 100,

@@ -58,7 +58,7 @@
   overflow: hidden;
 }
 
-/* Positions the logo + name (UpdrawBrand, which styles it). */
+/* Positions the logo + name (UpmadeBrand, which styles it). */
 .brand {
   position: absolute;
   top: 20px;
@@ -290,7 +290,7 @@
   margin: 0;
   font-size: clamp(40px, 5.4vw, 66px);
   line-height: 1.02;
-  /* semibold, like the "draw" of the header wordmark */
+  /* semibold, like the "made" of the header wordmark */
   font-weight: 600;
   letter-spacing: -0.045em;
   color: var(--landing-ink);
@@ -325,11 +325,11 @@
   pointer-events: auto;
   touch-action: none;
   user-select: none;
-  cursor: var(--updraw-site-hand-cursor) !important;
+  cursor: var(--upmade-site-hand-cursor) !important;
 }
 
 .canvasLayer .draggableItem[data-dragging] {
-  cursor: var(--updraw-site-grab-cursor) !important;
+  cursor: var(--upmade-site-grab-cursor) !important;
 }
 
 .draggableItem:focus-visible {
@@ -593,7 +593,7 @@
   color: #ffffff;
   border: 0;
   padding: 0;
-  cursor: var(--updraw-site-pointer-cursor);
+  cursor: var(--upmade-site-pointer-cursor);
   pointer-events: auto;
 }
 
@@ -802,7 +802,7 @@
   margin: 0;
   font-size: clamp(32px, 4vw, 48px);
   line-height: 1.1;
-  /* semibold, like the "draw" of the header wordmark */
+  /* semibold, like the "made" of the header wordmark */
   font-weight: 600;
   letter-spacing: -0.035em;
   color: var(--landing-ink);
@@ -1080,7 +1080,7 @@
   position: relative;
   z-index: 1;
   box-sizing: border-box;
-  width: min(var(--updraw-nav-max-width), calc(100% - 1.75rem));
+  width: min(var(--upmade-nav-max-width), calc(100% - 1.75rem));
   min-height: 346px;
   margin: 0 auto;
   padding: 52px 32px 28px;

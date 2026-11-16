@@ -1,6 +1,6 @@
-import type { UpdrawCore } from '../core/core.class';
-import type { UpdrawAgentToolResult, UpdrawCanvasElement } from '../../interfaces/agent.interface';
-import type { UpdrawObjectElementInfo } from '../../interfaces/object-element.interface';
+import type { UpmadeCore } from '../core/core.class';
+import type { UpmadeAgentToolResult, UpmadeCanvasElement } from '../../interfaces/agent.interface';
+import type { UpmadeObjectElementInfo } from '../../interfaces/object-element.interface';
 import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { isValidElementSelector } from '../objects/iframe-element-bridge.class';
@@ -10,7 +10,7 @@ export const INSPECT_ELEMENTS_DEFAULT_LIMIT = 50;
 export const INSPECT_ELEMENTS_MAX_LIMIT = 200;
 
 /** What `inspect_elements` looks for. */
-export interface UpdrawInspectElementsOptions {
+export interface UpmadeInspectElementsOptions {
   /** CSS selector; without one, the elements a user can interact with are listed. */
   selector?: string;
   /** Maximum number of elements. */
@@ -18,8 +18,8 @@ export interface UpdrawInspectElementsOptions {
 }
 
 /** An element as tools describe it to models: what it is, says and is like, without its geometry. */
-export function toCanvasElement(info: UpdrawObjectElementInfo): UpdrawCanvasElement {
-  const element: UpdrawCanvasElement = { selector: info.selector, tagName: info.tagName, visible: !!info.visibleRect };
+export function toCanvasElement(info: UpmadeObjectElementInfo): UpmadeCanvasElement {
+  const element: UpmadeCanvasElement = { selector: info.selector, tagName: info.tagName, visible: !!info.visibleRect };
   if (info.text) element.text = info.text;
   if (info.classList.length > 0) element.classList = info.classList;
   if (Object.keys(info.attributes).length > 0) element.attributes = info.attributes;
@@ -32,7 +32,7 @@ export function toCanvasElement(info: UpdrawObjectElementInfo): UpdrawCanvasElem
  * Lists the elements inside an object's content for `inspect_elements`: the interactive ones, or those that
  * match a selector, with the values of form fields. Never throws: failures are tool results.
  */
-export async function inspectObjectElements(core: UpdrawCore, objectId: string, options: UpdrawInspectElementsOptions = {}): Promise<UpdrawAgentToolResult> {
+export async function inspectObjectElements(core: UpmadeCore, objectId: string, options: UpmadeInspectElementsOptions = {}): Promise<UpmadeAgentToolResult> {
   const object = core.store.objects?.findById(objectId);
   if (!object || isSelectionObject(object)) {
     return {
@@ -42,7 +42,7 @@ export async function inspectObjectElements(core: UpdrawCore, objectId: string, 
       hint: 'Unknown ID. Call observe_canvas and use the ID of a widget (type iframe).',
     };
   }
-  if (!ObjectHelper.isUpdrawElementAwareObject(object)) {
+  if (!ObjectHelper.isUpmadeElementAwareObject(object)) {
     return {
       completed: false,
       reason: 'invalid-target',
@@ -54,7 +54,7 @@ export async function inspectObjectElements(core: UpdrawCore, objectId: string, 
     return { completed: false, reason: 'invalid-input', message: `"selector" is not a valid CSS selector: ${options.selector}`, hint: 'Fix the input as the message says and try again.' };
   }
   const limit = Math.max(1, Math.min(INSPECT_ELEMENTS_MAX_LIMIT, Math.floor(options.limit ?? INSPECT_ELEMENTS_DEFAULT_LIMIT) || INSPECT_ELEMENTS_DEFAULT_LIMIT));
-  let infos: UpdrawObjectElementInfo[];
+  let infos: UpmadeObjectElementInfo[];
   try {
     // One more than the limit, to tell whether there are more.
     infos = await object.queryElements(options.selector ?? '*', {
@@ -73,7 +73,7 @@ export async function inspectObjectElements(core: UpdrawCore, objectId: string, 
         : 'The content of the widget cannot be read right now. Try again, or tell the user if it stays like that.',
     };
   }
-  const result: UpdrawAgentToolResult = { completed: true, objectIds: [objectId], elements: infos.slice(0, limit).map(toCanvasElement) };
+  const result: UpmadeAgentToolResult = { completed: true, objectIds: [objectId], elements: infos.slice(0, limit).map(toCanvasElement) };
   if (infos.length > limit) {
     result.truncated = true;
   }

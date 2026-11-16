@@ -1,15 +1,15 @@
 import type {
-  UpdrawChatMessage,
-  UpdrawChatPart,
-  UpdrawChatRequest,
-  UpdrawChatStopReason,
-  UpdrawChatStreamEvent,
-  UpdrawChatTransport,
-} from "@updraw/react-editor";
+  UpmadeChatMessage,
+  UpmadeChatPart,
+  UpmadeChatRequest,
+  UpmadeChatStopReason,
+  UpmadeChatStreamEvent,
+  UpmadeChatTransport,
+} from "@upmade/react-editor";
 
 /**
  * A chat transport that calls the model provider straight from the browser, with the API key the user typed in. It
- * translates Updraw's chat protocol to the provider's API and streams the answer back, so tool calls run while the
+ * translates Upmade's chat protocol to the provider's API and streams the answer back, so tool calls run while the
  * model still writes. A real app sends the requests through its own backend instead, with `createHttpTransport()`, so
  * that no key ever reaches the browser.
  */
@@ -73,7 +73,7 @@ export function detectProvider(apiKey: string): ProviderId | undefined {
 
 /** A transport, and the key it sends to the provider. */
 export interface BrowserTransport {
-  transport: UpdrawChatTransport;
+  transport: UpmadeChatTransport;
   /** Connects a key, or disconnects with `null`. The next request uses it. */
   setCredentials(credentials: Credentials | null): void;
 }
@@ -131,7 +131,7 @@ interface AnthropicEvent {
   error?: { message?: string };
 }
 
-async function* streamAnthropic(provider: Provider, apiKey: string, request: UpdrawChatRequest, signal: AbortSignal): AsyncGenerator<UpdrawChatStreamEvent> {
+async function* streamAnthropic(provider: Provider, apiKey: string, request: UpmadeChatRequest, signal: AbortSignal): AsyncGenerator<UpmadeChatStreamEvent> {
   const response = await post(provider, "https://api.anthropic.com/v1/messages", signal, {
     headers: {
       "x-api-key": apiKey,
@@ -163,7 +163,7 @@ async function* streamAnthropic(provider: Provider, apiKey: string, request: Upd
   const closed = new Set<number>();
   const inputs = new Map<number, string>();
   // A call whose input is not valid JSON waits for the stop reason: a refusal can cut it off, and then it must not run.
-  let held: UpdrawChatStreamEvent | undefined;
+  let held: UpmadeChatStreamEvent | undefined;
   let stopReason: string | undefined;
   let explanation: string | null | undefined;
   let ended = false;
@@ -202,7 +202,7 @@ async function* streamAnthropic(provider: Provider, apiKey: string, request: Upd
         const input = parseToolInput(inputs.get(index) ?? "");
         // Claude needs an object back; input that was cut off is answered by the tool with an error anyway.
         block.input = toInputObject(input);
-        const part: UpdrawChatStreamEvent = { type: "part", part: { type: "tool-call", id: String(block.id), name: String(block.name), input } };
+        const part: UpmadeChatStreamEvent = { type: "part", part: { type: "tool-call", id: String(block.id), name: String(block.name), input } };
         if (typeof input === "string") {
           held = part;
         } else {
@@ -237,7 +237,7 @@ async function* streamAnthropic(provider: Provider, apiKey: string, request: Upd
 }
 
 /** Anthropic has no tool role: tool results are sent as user content. */
-function toAnthropicMessages(messages: UpdrawChatMessage[]): unknown[] {
+function toAnthropicMessages(messages: UpmadeChatMessage[]): unknown[] {
   return messages.flatMap((message) => {
     const original = (message.providerData?.["anthropic"] as { content?: unknown[] } | undefined)?.content;
     if (message.role === "assistant" && original?.length) {
@@ -248,7 +248,7 @@ function toAnthropicMessages(messages: UpdrawChatMessage[]): unknown[] {
   });
 }
 
-function toAnthropicBlock(part: UpdrawChatPart): unknown[] {
+function toAnthropicBlock(part: UpmadeChatPart): unknown[] {
   switch (part.type) {
     case "text":
       return part.text ? [{ type: "text", text: part.text }] : [];
@@ -282,7 +282,7 @@ interface OpenAiCall {
   done: boolean;
 }
 
-async function* streamOpenAi(provider: Provider, apiKey: string, request: UpdrawChatRequest, signal: AbortSignal): AsyncGenerator<UpdrawChatStreamEvent> {
+async function* streamOpenAi(provider: Provider, apiKey: string, request: UpmadeChatRequest, signal: AbortSignal): AsyncGenerator<UpmadeChatStreamEvent> {
   const response = await post(provider, "https://api.openai.com/v1/chat/completions", signal, {
     headers: { authorization: `Bearer ${apiKey}` },
     body: {
@@ -347,7 +347,7 @@ async function* streamOpenAi(provider: Provider, apiKey: string, request: Updraw
   yield { type: "finish", stopReason: calls.length ? "tool-calls" : toStopReason(finishReason === "length") };
 }
 
-function* finishOpenAiCalls(calls: OpenAiCall[]): Generator<UpdrawChatStreamEvent> {
+function* finishOpenAiCalls(calls: OpenAiCall[]): Generator<UpmadeChatStreamEvent> {
   for (const call of calls) {
     if (call && !call.done) {
       call.done = true;
@@ -357,7 +357,7 @@ function* finishOpenAiCalls(calls: OpenAiCall[]): Generator<UpdrawChatStreamEven
 }
 
 /** OpenAI has a message per tool result, and takes the input of a tool call as JSON text. */
-function toOpenAiMessages(messages: UpdrawChatMessage[]): unknown[] {
+function toOpenAiMessages(messages: UpmadeChatMessage[]): unknown[] {
   return messages.flatMap((message): unknown[] => {
     if (message.role === "tool") {
       return message.parts.flatMap((part) => (part.type === "tool-result" ? [{ role: "tool", tool_call_id: part.toolCallId, content: part.output }] : []));
@@ -393,7 +393,7 @@ interface GeminiChunk {
 }
 
 /** Gemini doesn't always name its calls, so the transport does. The prefix tells these IDs apart from Gemini's own. */
-const GEMINI_CALL_ID_PREFIX = "updraw-call-";
+const GEMINI_CALL_ID_PREFIX = "upmade-call-";
 
 /**
  * Gemini wants a thought signature on the first call of every model turn. A turn that Gemini didn't write in one piece,
@@ -401,7 +401,7 @@ const GEMINI_CALL_ID_PREFIX = "updraw-call-";
  */
 const GEMINI_SKIP_SIGNATURE = "skip_thought_signature_validator";
 
-async function* streamGemini(provider: Provider, apiKey: string, request: UpdrawChatRequest, signal: AbortSignal): AsyncGenerator<UpdrawChatStreamEvent> {
+async function* streamGemini(provider: Provider, apiKey: string, request: UpmadeChatRequest, signal: AbortSignal): AsyncGenerator<UpmadeChatStreamEvent> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${provider.model}:streamGenerateContent?alt=sse`;
   const response = await post(provider, url, signal, {
     headers: { "x-goog-api-key": apiKey },
@@ -455,7 +455,7 @@ async function* streamGemini(provider: Provider, apiKey: string, request: Updraw
 }
 
 /** Gemini calls the assistant "model" and takes tool results as user content. */
-function toGeminiContents(messages: UpdrawChatMessage[]): { role: string; parts: unknown[] }[] {
+function toGeminiContents(messages: UpmadeChatMessage[]): { role: string; parts: unknown[] }[] {
   const contents: { role: string; parts: unknown[] }[] = [];
   for (const message of messages) {
     const original = (message.providerData?.["gemini"] as { parts?: unknown[] } | undefined)?.parts;
@@ -476,7 +476,7 @@ function toGeminiContents(messages: UpdrawChatMessage[]): { role: string; parts:
 }
 
 /** The parts of a message that Gemini didn't send in one piece. */
-function toGeminiParts(message: UpdrawChatMessage): GeminiPart[] {
+function toGeminiParts(message: UpmadeChatMessage): GeminiPart[] {
   const parts = message.parts.flatMap((part) => toGeminiPart(part));
   const firstCall = parts.find((part) => part.functionCall);
   if (message.role === "assistant" && firstCall && !firstCall.thoughtSignature) {
@@ -485,7 +485,7 @@ function toGeminiParts(message: UpdrawChatMessage): GeminiPart[] {
   return parts;
 }
 
-function toGeminiPart(part: UpdrawChatPart): GeminiPart[] {
+function toGeminiPart(part: UpmadeChatPart): GeminiPart[] {
   switch (part.type) {
     case "text":
       return part.text ? [{ text: part.text }] : [];
@@ -651,6 +651,6 @@ function toInputObject(input: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
 }
 
-function toStopReason(cutOff: boolean): UpdrawChatStopReason {
+function toStopReason(cutOff: boolean): UpmadeChatStopReason {
   return cutOff ? "max-tokens" : "end";
 }

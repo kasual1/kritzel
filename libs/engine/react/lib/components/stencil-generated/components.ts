@@ -9,40 +9,40 @@
 
 import React from 'react';
 import { createComponent } from '@stencil/react-output-target/runtime';
-import type { Components } from '@updraw/engine/dist/components';
-import { UpdrawEngine as UpdrawEngineElement, defineCustomElement as defineUpdrawEngine } from '@updraw/engine/dist/components/updraw-engine.js';
-import type { UpdrawEngineState, UpdrawBaseTool, UpdrawWorkspace, UpdrawBaseObject, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, UpdrawUndoState, ObjectsInViewportChangeEvent, UpdrawViewportState, UpdrawNotification, UpdrawContextMenuState, UpdrawAgentsChangeEvent, UpdrawObjectTitlebarActionEvent, UpdrawObjectTitlebarMenuState, UpdrawObjectElementHoverEvent, UpdrawObjectElementClickEvent, UpdrawObjectElementPickEvent, UpdrawEngineCustomEvent } from '@updraw/engine';
+import type { Components } from '@upmade/engine/dist/components';
+import { UpmadeEngine as UpmadeEngineElement, defineCustomElement as defineUpmadeEngine } from '@upmade/engine/dist/components/upmade-engine.js';
+import type { UpmadeEngineState, UpmadeBaseTool, UpmadeWorkspace, UpmadeBaseObject, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, UpmadeUndoState, ObjectsInViewportChangeEvent, UpmadeViewportState, UpmadeNotification, UpmadeContextMenuState, UpmadeAgentsChangeEvent, UpmadeObjectTitlebarActionEvent, UpmadeObjectTitlebarMenuState, UpmadeObjectElementHoverEvent, UpmadeObjectElementClickEvent, UpmadeObjectElementPickEvent, UpmadeEngineCustomEvent } from '@upmade/engine';
 import type { StencilReactComponent, EventName } from '@stencil/react-output-target/runtime';
 
-export type UpdrawEngineEvents = {
-  onIsEngineReady: EventName<UpdrawEngineCustomEvent<UpdrawEngineState>>,
-  onActiveToolChange: EventName<UpdrawEngineCustomEvent<UpdrawBaseTool>>,
-  onWorkspacesChange: EventName<UpdrawEngineCustomEvent<UpdrawWorkspace[]>>,
-  onActiveWorkspaceChange: EventName<UpdrawEngineCustomEvent<UpdrawWorkspace>>,
-  onLongpress: EventName<UpdrawEngineCustomEvent<PointerEvent>>,
-  onObjectsChange: EventName<UpdrawEngineCustomEvent<UpdrawBaseObject[]>>,
-  onObjectsAdded: EventName<UpdrawEngineCustomEvent<ObjectsAddedEvent>>,
-  onObjectsRemoved: EventName<UpdrawEngineCustomEvent<ObjectsRemovedEvent>>,
-  onObjectsUpdated: EventName<UpdrawEngineCustomEvent<ObjectsUpdatedEvent>>,
-  onObjectsSelectionChange: EventName<UpdrawEngineCustomEvent<UpdrawBaseObject[]>>,
-  onUndoStateChange: EventName<UpdrawEngineCustomEvent<UpdrawUndoState>>,
-  onObjectsInViewportChange: EventName<UpdrawEngineCustomEvent<ObjectsInViewportChangeEvent>>,
-  onViewportChange: EventName<UpdrawEngineCustomEvent<UpdrawViewportState>>,
-  onAwarenessChange: EventName<UpdrawEngineCustomEvent<Map<number, Record<string, any>>>>,
-  onNotificationsChange: EventName<UpdrawEngineCustomEvent<UpdrawNotification>>,
-  onContextMenuStateChange: EventName<UpdrawEngineCustomEvent<UpdrawContextMenuState>>,
-  onIsLoadingChange: EventName<UpdrawEngineCustomEvent<boolean>>,
-  onAgentsChange: EventName<UpdrawEngineCustomEvent<UpdrawAgentsChangeEvent>>,
-  onObjectTitlebarAction: EventName<UpdrawEngineCustomEvent<UpdrawObjectTitlebarActionEvent>>,
-  onObjectTitlebarMenuStateChange: EventName<UpdrawEngineCustomEvent<UpdrawObjectTitlebarMenuState>>,
-  onObjectElementHover: EventName<UpdrawEngineCustomEvent<UpdrawObjectElementHoverEvent>>,
-  onObjectElementClick: EventName<UpdrawEngineCustomEvent<UpdrawObjectElementClickEvent>>,
-  onObjectElementPick: EventName<UpdrawEngineCustomEvent<UpdrawObjectElementPickEvent>>
+export type UpmadeEngineEvents = {
+  onIsEngineReady: EventName<UpmadeEngineCustomEvent<UpmadeEngineState>>,
+  onActiveToolChange: EventName<UpmadeEngineCustomEvent<UpmadeBaseTool>>,
+  onWorkspacesChange: EventName<UpmadeEngineCustomEvent<UpmadeWorkspace[]>>,
+  onActiveWorkspaceChange: EventName<UpmadeEngineCustomEvent<UpmadeWorkspace>>,
+  onLongpress: EventName<UpmadeEngineCustomEvent<PointerEvent>>,
+  onObjectsChange: EventName<UpmadeEngineCustomEvent<UpmadeBaseObject[]>>,
+  onObjectsAdded: EventName<UpmadeEngineCustomEvent<ObjectsAddedEvent>>,
+  onObjectsRemoved: EventName<UpmadeEngineCustomEvent<ObjectsRemovedEvent>>,
+  onObjectsUpdated: EventName<UpmadeEngineCustomEvent<ObjectsUpdatedEvent>>,
+  onObjectsSelectionChange: EventName<UpmadeEngineCustomEvent<UpmadeBaseObject[]>>,
+  onUndoStateChange: EventName<UpmadeEngineCustomEvent<UpmadeUndoState>>,
+  onObjectsInViewportChange: EventName<UpmadeEngineCustomEvent<ObjectsInViewportChangeEvent>>,
+  onViewportChange: EventName<UpmadeEngineCustomEvent<UpmadeViewportState>>,
+  onAwarenessChange: EventName<UpmadeEngineCustomEvent<Map<number, Record<string, any>>>>,
+  onNotificationsChange: EventName<UpmadeEngineCustomEvent<UpmadeNotification>>,
+  onContextMenuStateChange: EventName<UpmadeEngineCustomEvent<UpmadeContextMenuState>>,
+  onIsLoadingChange: EventName<UpmadeEngineCustomEvent<boolean>>,
+  onAgentsChange: EventName<UpmadeEngineCustomEvent<UpmadeAgentsChangeEvent>>,
+  onObjectTitlebarAction: EventName<UpmadeEngineCustomEvent<UpmadeObjectTitlebarActionEvent>>,
+  onObjectTitlebarMenuStateChange: EventName<UpmadeEngineCustomEvent<UpmadeObjectTitlebarMenuState>>,
+  onObjectElementHover: EventName<UpmadeEngineCustomEvent<UpmadeObjectElementHoverEvent>>,
+  onObjectElementClick: EventName<UpmadeEngineCustomEvent<UpmadeObjectElementClickEvent>>,
+  onObjectElementPick: EventName<UpmadeEngineCustomEvent<UpmadeObjectElementPickEvent>>
 };
 
-export const UpdrawEngine: StencilReactComponent<UpdrawEngineElement, UpdrawEngineEvents, Components.UpdrawEngine> = /*@__PURE__*/ createComponent<UpdrawEngineElement, UpdrawEngineEvents, Components.UpdrawEngine>({
-    tagName: 'updraw-engine',
-    elementClass: UpdrawEngineElement,
+export const UpmadeEngine: StencilReactComponent<UpmadeEngineElement, UpmadeEngineEvents, Components.UpmadeEngine> = /*@__PURE__*/ createComponent<UpmadeEngineElement, UpmadeEngineEvents, Components.UpmadeEngine>({
+    tagName: 'upmade-engine',
+    elementClass: UpmadeEngineElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
@@ -69,6 +69,6 @@ export const UpdrawEngine: StencilReactComponent<UpdrawEngineElement, UpdrawEngi
       onObjectElementHover: 'objectElementHover',
       onObjectElementClick: 'objectElementClick',
       onObjectElementPick: 'objectElementPick'
-    } as UpdrawEngineEvents,
-    defineCustomElement: defineUpdrawEngine,
+    } as UpmadeEngineEvents,
+    defineCustomElement: defineUpmadeEngine,
 });

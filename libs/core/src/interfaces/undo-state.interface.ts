@@ -1,4 +1,4 @@
-export interface UpdrawUndoState {
+export interface UpmadeUndoState {
   canUndo: boolean;
   canRedo: boolean;
   undoStackSize: number;

@@ -1,26 +1,26 @@
-import { UpdrawObjectMap } from '../structures/object-map.structure';
-import { UpdrawAgenticCursorManager } from '../managers/agentic-cursor.manager';
-import { UpdrawAgenticActionManager } from '../managers/agentic-action.manager';
-import { UpdrawAgentManager } from '../managers/agent.manager';
-import { UpdrawAnchorManager } from '../managers/anchor.manager';
-import { UpdrawClipboardManager } from '../managers/clipboard.manager';
-import { UpdrawObjectAppearManager } from '../managers/object-appear.manager';
-import { UpdrawAgent } from '../agent/agent.class';
-import { UpdrawChatSession, isUpdrawChatSession } from './chat-session.class';
+import { UpmadeObjectMap } from '../structures/object-map.structure';
+import { UpmadeAgenticCursorManager } from '../managers/agentic-cursor.manager';
+import { UpmadeAgenticActionManager } from '../managers/agentic-action.manager';
+import { UpmadeAgentManager } from '../managers/agent.manager';
+import { UpmadeAnchorManager } from '../managers/anchor.manager';
+import { UpmadeClipboardManager } from '../managers/clipboard.manager';
+import { UpmadeObjectAppearManager } from '../managers/object-appear.manager';
+import { UpmadeAgent } from '../agent/agent.class';
+import { UpmadeChatSession, isUpmadeChatSession } from './chat-session.class';
 import { createScriptedTransport } from './scripted-transport';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawShape } from '../objects/shape.class';
-import { UpdrawIframeObject } from '../objects/iframe.class';
-import { UpdrawImage } from '../objects/image.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeShape } from '../objects/shape.class';
+import { UpmadeIframeObject } from '../objects/iframe.class';
+import { UpmadeImage } from '../objects/image.class';
 import { formatAgentToolResult } from '../agent/agent-tools';
 import type {
-  UpdrawChatMessage,
-  UpdrawChatTool,
-  UpdrawChatRequest,
-  UpdrawChatSessionOptions,
-  UpdrawChatStreamEvent,
-  UpdrawChatToolCallUpdate,
-  UpdrawChatToolResultPart,
+  UpmadeChatMessage,
+  UpmadeChatTool,
+  UpmadeChatRequest,
+  UpmadeChatSessionOptions,
+  UpmadeChatStreamEvent,
+  UpmadeChatToolCallUpdate,
+  UpmadeChatToolResultPart,
 } from '../../interfaces/chat-session.interface';
 
 // Chat sessions on a real Yjs object map with real object classes and the real agentic managers.
@@ -56,12 +56,12 @@ const flushMicrotasks = async () => {
   }
 };
 
-const resultsOf = (message: UpdrawChatMessage) => message.parts.filter((part): part is UpdrawChatToolResultPart => part.type === 'tool-result');
+const resultsOf = (message: UpmadeChatMessage) => message.parts.filter((part): part is UpmadeChatToolResultPart => part.type === 'tool-result');
 
-describe('UpdrawChatSession', () => {
+describe('UpmadeChatSession', () => {
   let now: number;
   let core: any;
-  let map: UpdrawObjectMap<any>;
+  let map: UpmadeObjectMap<any>;
 
   const createCore = async () => {
     const state = {
@@ -84,7 +84,7 @@ describe('UpdrawChatSession', () => {
       isRotationHandleSelected: false,
       isLineHandleSelected: false,
     };
-    const objects = new UpdrawObjectMap<any>();
+    const objects = new UpmadeObjectMap<any>();
     const fakeCore: any = {
       user: { id: 'human' },
       editorId: undefined,
@@ -119,15 +119,15 @@ describe('UpdrawChatSession', () => {
     };
     // The real insert preparation, as the addObject action uses it.
     fakeCore._store = fakeCore.store;
-    fakeCore.prepareObjectForInsert = UpdrawCore.prototype.prepareObjectForInsert;
-    fakeCore.insertPreparedObject = UpdrawCore.prototype.insertPreparedObject;
-    fakeCore.objectAppearManager = new UpdrawObjectAppearManager();
-    fakeCore.anchorManager = new UpdrawAnchorManager(fakeCore);
-    fakeCore.clipboardManager = new UpdrawClipboardManager(fakeCore);
-    await objects.initialize(fakeCore as unknown as UpdrawCore, 'ws', { providers: [] });
-    fakeCore.agenticCursorManager = new UpdrawAgenticCursorManager(fakeCore);
-    fakeCore.agenticActionManager = new UpdrawAgenticActionManager(fakeCore);
-    fakeCore.agentManager = new UpdrawAgentManager(fakeCore);
+    fakeCore.prepareObjectForInsert = UpmadeCore.prototype.prepareObjectForInsert;
+    fakeCore.insertPreparedObject = UpmadeCore.prototype.insertPreparedObject;
+    fakeCore.objectAppearManager = new UpmadeObjectAppearManager();
+    fakeCore.anchorManager = new UpmadeAnchorManager(fakeCore);
+    fakeCore.clipboardManager = new UpmadeClipboardManager(fakeCore);
+    await objects.initialize(fakeCore as unknown as UpmadeCore, 'ws', { providers: [] });
+    fakeCore.agenticCursorManager = new UpmadeAgenticCursorManager(fakeCore);
+    fakeCore.agenticActionManager = new UpmadeAgenticActionManager(fakeCore);
+    fakeCore.agentManager = new UpmadeAgentManager(fakeCore);
     return { fakeCore, objects };
   };
 
@@ -151,14 +151,14 @@ describe('UpdrawChatSession', () => {
   };
 
   /** An app tool that places a pre-built shape through the session's actor and records what it got. */
-  const placeBoxTool = (seen: { kind?: string; signal?: AbortSignal }): UpdrawChatTool => ({
+  const placeBoxTool = (seen: { kind?: string; signal?: AbortSignal }): UpmadeChatTool => ({
     name: 'place_box',
     description: 'Places a box built by the app.',
     inputSchema: { type: 'object', properties: {} },
     run: async (_input, { actor, signal }) => {
       seen.kind = actor.kind;
       seen.signal = signal;
-      const box = new UpdrawShape({ translateX: 400, translateY: 0, width: 100, height: 50 });
+      const box = new UpmadeShape({ translateX: 400, translateY: 0, width: 100, height: 50 });
       return formatAgentToolResult(await actor.perform({ type: 'addObject', object: box }));
     },
   });
@@ -172,7 +172,7 @@ describe('UpdrawChatSession', () => {
   });
 
   afterEach(() => {
-    core.agentManager.getAll().forEach((agent: UpdrawAgent) => core.agentManager.remove(agent));
+    core.agentManager.getAll().forEach((agent: UpmadeAgent) => core.agentManager.remove(agent));
     core.agenticActionManager.cleanup();
     core.agenticCursorManager.cleanup();
     map.destroy();
@@ -180,25 +180,25 @@ describe('UpdrawChatSession', () => {
   });
 
   it('validates its options and brands itself', () => {
-    expect(() => new UpdrawChatSession({} as any)).toThrow(TypeError);
-    expect(() => new UpdrawChatSession({ transport: createScriptedTransport(['x']), maxSteps: 0 })).toThrow(TypeError);
-    const session = new UpdrawChatSession({ transport: createScriptedTransport(['x']) });
-    expect(isUpdrawChatSession(session)).toBe(true);
-    expect(isUpdrawChatSession({})).toBe(false);
+    expect(() => new UpmadeChatSession({} as any)).toThrow(TypeError);
+    expect(() => new UpmadeChatSession({ transport: createScriptedTransport(['x']), maxSteps: 0 })).toThrow(TypeError);
+    const session = new UpmadeChatSession({ transport: createScriptedTransport(['x']) });
+    expect(isUpmadeChatSession(session)).toBe(true);
+    expect(isUpmadeChatSession({})).toBe(false);
     expect(session.mode).toBe('user');
   });
 
   it('answers detached until it is bound to an editor', async () => {
-    const session = new UpdrawChatSession({ transport: createScriptedTransport(['Hi']) });
+    const session = new UpmadeChatSession({ transport: createScriptedTransport(['Hi']) });
     await expect(session.send('Hello')).resolves.toEqual({ status: 'detached' });
     expect(session.messages).toEqual([]);
   });
 
   describe('working as the user', () => {
     it('runs the tool loop and puts the whole prompt into one step of the user history', async () => {
-      const requests: UpdrawChatRequest[] = [];
+      const requests: UpmadeChatRequest[] = [];
       const script = createScriptedTransport([{ text: 'Drawing two boxes.', toolCalls: [shapeCall(0, 'A'), shapeCall(300, 'B')] }, 'Done.']);
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         system: 'Be brief.',
         context: () => ({ board: 'test' }),
         transport: (request, options) => {
@@ -230,8 +230,8 @@ describe('UpdrawChatSession', () => {
     });
 
     it('keeps prompts apart in the user history', async () => {
-      const session = new UpdrawChatSession({
-        transport: createScriptedTransport((request: UpdrawChatRequest) =>
+      const session = new UpmadeChatSession({
+        transport: createScriptedTransport((request: UpmadeChatRequest) =>
           request.messages[request.messages.length - 1].role === 'user' ? { toolCalls: [shapeCall(request.messages.length * 200)] } : 'ok',
         ),
       });
@@ -244,8 +244,8 @@ describe('UpdrawChatSession', () => {
 
     it('lets one session of an editor run at a time and refuses a second prompt while running', async () => {
       const slow = createScriptedTransport(['slow'], { delayMs: 50 });
-      const first = new UpdrawChatSession({ transport: slow });
-      const second = new UpdrawChatSession({ transport: slow });
+      const first = new UpmadeChatSession({ transport: slow });
+      const second = new UpmadeChatSession({ transport: slow });
       first._attach(core);
       second._attach(core);
 
@@ -264,7 +264,7 @@ describe('UpdrawChatSession', () => {
     });
 
     it('describes chips and images in the user message', async () => {
-      const session = new UpdrawChatSession({ transport: createScriptedTransport(['ok']) });
+      const session = new UpmadeChatSession({ transport: createScriptedTransport(['ok']) });
       session._attach(core);
       await settle(
         session.send({
@@ -281,7 +281,7 @@ describe('UpdrawChatSession', () => {
     });
 
     it('detaches its actor and ends a running prompt when unbound', async () => {
-      const session = new UpdrawChatSession({ transport: createScriptedTransport(['slow'], { delayMs: 30 }) });
+      const session = new UpmadeChatSession({ transport: createScriptedTransport(['slow'], { delayMs: 30 }) });
       session._attach(core);
       expect(core.agenticActionManager.getActor((session as any)._userActor.id)).toMatchObject({ kind: 'user' });
       const running = session.send('hi');
@@ -291,7 +291,7 @@ describe('UpdrawChatSession', () => {
     });
 
     it('detaches only once idle with _detachWhenIdle', async () => {
-      const session = new UpdrawChatSession({ transport: createScriptedTransport(['slow'], { delayMs: 20 }) });
+      const session = new UpmadeChatSession({ transport: createScriptedTransport(['slow'], { delayMs: 20 }) });
       session._attach(core);
       const running = session.send('hi');
       session._detachWhenIdle();
@@ -301,7 +301,7 @@ describe('UpdrawChatSession', () => {
     });
 
     it('ends with detached when the workspace is destroyed while it runs', async () => {
-      const session = new UpdrawChatSession({ transport: createScriptedTransport(['slow'], { delayMs: 30 }) });
+      const session = new UpmadeChatSession({ transport: createScriptedTransport(['slow'], { delayMs: 30 }) });
       session._attach(core);
       const running = session.send('hi');
       await flushMicrotasks();
@@ -312,7 +312,7 @@ describe('UpdrawChatSession', () => {
 
   describe('tool calls', () => {
     it('answers every tool call: unknown tools, throwing tools and the rest after a stop', async () => {
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         tools: [
           {
             name: 'explode',
@@ -352,14 +352,14 @@ describe('UpdrawChatSession', () => {
     });
 
     it('stops at the step limit with every call answered', async () => {
-      const session = new UpdrawChatSession({ maxSteps: 2, transport: createScriptedTransport([{ toolCalls: [{ tool: 'observe_canvas' }] }]) });
+      const session = new UpmadeChatSession({ maxSteps: 2, transport: createScriptedTransport([{ toolCalls: [{ tool: 'observe_canvas' }] }]) });
       session._attach(core);
       await expect(settle(session.send('loop'))).resolves.toEqual({ status: 'step-limit' });
       expect(session.messages.map(message => message.role)).toEqual(['user', 'assistant', 'tool', 'assistant', 'tool']);
     });
 
     it('rejects app tools that clash with canvas tools', async () => {
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         tools: [{ name: 'create_shape', description: '', inputSchema: { type: 'object', properties: {} }, run: async () => '' }],
         transport: createScriptedTransport(['x']),
       });
@@ -370,17 +370,17 @@ describe('UpdrawChatSession', () => {
 
     it('names the clash: with a canvas tool, or an app tool defined twice', () => {
       const appTool = (name: string) => ({ name, description: '', inputSchema: { type: 'object' as const, properties: {} }, run: async () => '' });
-      const clash = new UpdrawChatSession({ tools: [appTool('create_shape')], transport: createScriptedTransport(['x']) });
+      const clash = new UpmadeChatSession({ tools: [appTool('create_shape')], transport: createScriptedTransport(['x']) });
       expect(() => clash.tools).toThrow('The chat tool "create_shape" clashes with a canvas tool.');
-      const twice = new UpdrawChatSession({ tools: [appTool('lookup'), appTool('lookup')], transport: createScriptedTransport(['x']) });
+      const twice = new UpmadeChatSession({ tools: [appTool('lookup'), appTool('lookup')], transport: createScriptedTransport(['x']) });
       expect(() => twice.tools).toThrow('The chat tool "lookup" is defined twice.');
       // A canvas tool that is off (create_iframe by default) leaves its name free.
-      expect(() => new UpdrawChatSession({ tools: [appTool('create_iframe')], transport: createScriptedTransport(['x']) }).tools).not.toThrow();
+      expect(() => new UpmadeChatSession({ tools: [appTool('create_iframe')], transport: createScriptedTransport(['x']) }).tools).not.toThrow();
     });
 
     it('lets app tools act as the user: their objects undo with the rest of the prompt', async () => {
       const seen: { kind?: string; signal?: AbortSignal } = {};
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         tools: [placeBoxTool(seen)],
         transport: createScriptedTransport([{ toolCalls: [shapeCall(0), { tool: 'place_box' }] }, 'Done.']),
       });
@@ -407,35 +407,35 @@ describe('UpdrawChatSession', () => {
     });
 
     it('offers the optional canvas tools chosen with canvasTools, as the user and as an agent', () => {
-      const names = (session: UpdrawChatSession) => session.tools.map(tool => tool.name);
-      const plain = new UpdrawChatSession({ transport: createScriptedTransport(['x']) });
+      const names = (session: UpmadeChatSession) => session.tools.map(tool => tool.name);
+      const plain = new UpmadeChatSession({ transport: createScriptedTransport(['x']) });
       expect(names(plain)).toContain('create_image');
       expect(names(plain)).not.toContain('create_iframe');
 
-      const user = new UpdrawChatSession({ transport: createScriptedTransport(['x']), canvasTools: { images: false, iframes: true } });
+      const user = new UpmadeChatSession({ transport: createScriptedTransport(['x']), canvasTools: { images: false, iframes: true } });
       user._attach(core);
       expect(names(user)).toContain('create_iframe');
       expect(names(user)).not.toContain('create_image');
 
-      const agent = core.agentManager.add(new UpdrawAgent({ id: 'claude', name: 'Claude' }));
-      const agentSession = new UpdrawChatSession({ agent, transport: createScriptedTransport(['x']), canvasTools: { iframes: true } });
+      const agent = core.agentManager.add(new UpmadeAgent({ id: 'claude', name: 'Claude' }));
+      const agentSession = new UpmadeChatSession({ agent, transport: createScriptedTransport(['x']), canvasTools: { iframes: true } });
       expect(names(agentSession)).toEqual(expect.arrayContaining(['create_image', 'create_iframe']));
 
       expect(names(plain)).toEqual(expect.arrayContaining(['set_viewport', 'fit_viewport']));
       expect(names(agentSession)).toEqual(expect.arrayContaining(['set_viewport', 'fit_viewport']));
-      const noViewport = new UpdrawChatSession({ agent, transport: createScriptedTransport(['x']), canvasTools: { viewport: false } });
+      const noViewport = new UpmadeChatSession({ agent, transport: createScriptedTransport(['x']), canvasTools: { viewport: false } });
       expect(names(noViewport)).not.toContain('set_viewport');
       expect(names(noViewport)).not.toContain('fit_viewport');
     });
 
     it('fails app tools that act while the session is not bound to an editor', async () => {
-      const session = new UpdrawChatSession({ tools: [placeBoxTool({})], transport: createScriptedTransport(['x']) });
+      const session = new UpmadeChatSession({ tools: [placeBoxTool({})], transport: createScriptedTransport(['x']) });
       const tool = session.tools.find(candidate => candidate.name === 'place_box')!;
       await expect(tool.run({})).rejects.toThrow('not bound to an editor');
     });
 
     it('closes open tool calls of a restored conversation', () => {
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         transport: createScriptedTransport(['x']),
         messages: [
           { role: 'user', parts: [{ type: 'text', text: 'go' }] },
@@ -461,12 +461,12 @@ describe('UpdrawChatSession', () => {
 
   describe('transport', () => {
     it('buffers streamed answers', async () => {
-      async function* stream(): AsyncIterable<UpdrawChatStreamEvent> {
+      async function* stream(): AsyncIterable<UpmadeChatStreamEvent> {
         yield { type: 'text-delta', text: 'Hel' };
         yield { type: 'text-delta', text: 'lo' };
         yield { type: 'finish', stopReason: 'end', providerData: { id: 'msg-1' } };
       }
-      const session = new UpdrawChatSession({ transport: () => stream() });
+      const session = new UpmadeChatSession({ transport: () => stream() });
       session._attach(core);
       await expect(settle(session.send('hi'))).resolves.toEqual({ status: 'completed' });
       expect(session.messages[1]).toEqual({ role: 'assistant', parts: [{ type: 'text', text: 'Hello' }], providerData: { id: 'msg-1' } });
@@ -474,10 +474,10 @@ describe('UpdrawChatSession', () => {
 
     it('accepts a promise of a stream and tool-call parts from it', async () => {
       let calls = 0;
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         transport: async () => {
           calls++;
-          async function* stream(): AsyncIterable<UpdrawChatStreamEvent> {
+          async function* stream(): AsyncIterable<UpmadeChatStreamEvent> {
             if (calls === 1) {
               yield { type: 'part', part: { type: 'tool-call', id: '', name: 'observe_canvas', input: '{}' } };
             } else {
@@ -495,12 +495,12 @@ describe('UpdrawChatSession', () => {
     });
 
     it('ends the prompt with an error event of a stream', async () => {
-      async function* stream(): AsyncIterable<UpdrawChatStreamEvent> {
+      async function* stream(): AsyncIterable<UpmadeChatStreamEvent> {
         yield { type: 'text-delta', text: 'Partial' };
         yield { type: 'error', message: 'The model is overloaded.' };
         yield { type: 'finish', stopReason: 'end' };
       }
-      const session = new UpdrawChatSession({ transport: () => stream() });
+      const session = new UpmadeChatSession({ transport: () => stream() });
       session._attach(core);
       const result = await settle(session.send('hi'));
       expect(result.status).toBe('error');
@@ -509,7 +509,7 @@ describe('UpdrawChatSession', () => {
     });
 
     it('reports transport errors and stops pending requests', async () => {
-      const failing = new UpdrawChatSession({ transport: async () => Promise.reject(new Error('offline')) });
+      const failing = new UpmadeChatSession({ transport: async () => Promise.reject(new Error('offline')) });
       failing._attach(core);
       const result = await settle(failing.send('hi'));
       expect(result.status).toBe('error');
@@ -517,7 +517,7 @@ describe('UpdrawChatSession', () => {
       failing._detach();
 
       let seenSignal: AbortSignal | null = null;
-      const waiting = new UpdrawChatSession({
+      const waiting = new UpmadeChatSession({
         transport: (_request, { signal }) => {
           seenSignal = signal;
           return new Promise((_resolve, reject) => signal.addEventListener('abort', () => reject(new Error('aborted'))));
@@ -553,7 +553,7 @@ describe('UpdrawChatSession', () => {
       });
 
     /** A tool call as a model streams it: start, its input's JSON in pieces, then the complete part. */
-    function* callEvents(id: string, name: string, input: Record<string, unknown>, chunk = 10): Generator<UpdrawChatStreamEvent> {
+    function* callEvents(id: string, name: string, input: Record<string, unknown>, chunk = 10): Generator<UpmadeChatStreamEvent> {
       yield { type: 'tool-call-start', id, name };
       const json = JSON.stringify(input);
       for (let i = 0; i < json.length; i += chunk) {
@@ -562,29 +562,29 @@ describe('UpdrawChatSession', () => {
       yield { type: 'part', part: { type: 'tool-call', id, name, input } };
     }
 
-    async function* textStream(text: string): AsyncGenerator<UpdrawChatStreamEvent> {
+    async function* textStream(text: string): AsyncGenerator<UpmadeChatStreamEvent> {
       yield { type: 'text-delta', text };
       yield { type: 'finish', stopReason: 'end' };
     }
 
     /** A transport answering each model step with the next stream, then with "Done.". */
     const streams =
-      (...answers: ((signal: AbortSignal) => AsyncIterable<UpdrawChatStreamEvent>)[]): UpdrawChatSessionOptions['transport'] =>
+      (...answers: ((signal: AbortSignal) => AsyncIterable<UpmadeChatStreamEvent>)[]): UpmadeChatSessionOptions['transport'] =>
       (_request, { signal }) => {
         const answer = answers.shift();
         return answer ? answer(signal) : textStream('Done.');
       };
 
-    const record = (session: UpdrawChatSession) => {
-      const updates: UpdrawChatToolCallUpdate[] = [];
+    const record = (session: UpmadeChatSession) => {
+      const updates: UpmadeChatToolCallUpdate[] = [];
       session.on('tool-call', update => updates.push(update));
       return updates;
     };
-    const statesOf = (updates: UpdrawChatToolCallUpdate[], id: string) => updates.filter(update => update.id === id).map(update => update.state);
-    const lastOf = (updates: UpdrawChatToolCallUpdate[], id: string) => updates.filter(update => update.id === id).pop()!;
+    const statesOf = (updates: UpmadeChatToolCallUpdate[], id: string) => updates.filter(update => update.id === id).map(update => update.state);
+    const lastOf = (updates: UpmadeChatToolCallUpdate[], id: string) => updates.filter(update => update.id === id).pop()!;
 
     /** Each reported call ends exactly once, and nothing is reported after its end. */
-    const expectEachEndsOnce = (updates: UpdrawChatToolCallUpdate[]) => {
+    const expectEachEndsOnce = (updates: UpmadeChatToolCallUpdate[]) => {
       for (const id of new Set(updates.map(update => update.id))) {
         const states = statesOf(updates, id);
         const ends = states.filter(state => state === 'done' || state === 'discarded');
@@ -599,11 +599,11 @@ describe('UpdrawChatSession', () => {
       expect(condition()).toBe(true);
     };
 
-    const roles = (session: UpdrawChatSession) => session.messages.map(message => message.role);
+    const roles = (session: UpmadeChatSession) => session.messages.map(message => message.role);
     const shape = (x: number) => ({ x, y: 0, width: 100, height: 50 });
 
     /** An app tool that runs until `release` resolves or the prompt is stopped. */
-    const holdTool = (release: Promise<void>, log: string[]): UpdrawChatTool => ({
+    const holdTool = (release: Promise<void>, log: string[]): UpmadeChatTool => ({
       name: 'hold',
       description: 'Waits.',
       inputSchema: { type: 'object', properties: {} },
@@ -617,7 +617,7 @@ describe('UpdrawChatSession', () => {
 
     it('runs a call as soon as its part arrives, while the answer still streams', async () => {
       const rest = gate();
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         transport: streams(async function* () {
           yield { type: 'text-delta', text: 'Drawing.' };
           yield* callEvents('c1', 'create_shape', shape(0));
@@ -663,7 +663,7 @@ describe('UpdrawChatSession', () => {
     it('runs the calls one at a time in the order their parts arrive', async () => {
       const release = gate();
       const log: string[] = [];
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         tools: [holdTool(release.promise, log)],
         transport: streams(async function* () {
           yield { type: 'part', part: { type: 'tool-call', id: 'a', name: 'hold', input: {} } };
@@ -690,7 +690,7 @@ describe('UpdrawChatSession', () => {
 
     it('runs the calls once the answer has ended with eagerToolCalls: false', async () => {
       const rest = gate();
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         eagerToolCalls: false,
         transport: streams(async function* () {
           yield* callEvents('c1', 'create_shape', shape(0));
@@ -716,7 +716,7 @@ describe('UpdrawChatSession', () => {
     });
 
     it('keeps the answer read so far when stopped after a call ran', async () => {
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         transport: streams(async function* (signal) {
           yield { type: 'text-delta', text: 'Two boxes.' };
           yield* callEvents('c1', 'create_shape', shape(0));
@@ -746,7 +746,7 @@ describe('UpdrawChatSession', () => {
 
     it('stops the running call and gives the queued ones a stopped result', async () => {
       const log: string[] = [];
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         tools: [holdTool(new Promise(() => undefined), log)],
         transport: streams(async function* (signal) {
           yield { type: 'part', part: { type: 'tool-call', id: 'a', name: 'hold', input: {} } };
@@ -779,7 +779,7 @@ describe('UpdrawChatSession', () => {
     });
 
     it('drops the answer when it ends before any call ran', async () => {
-      const stopped = new UpdrawChatSession({
+      const stopped = new UpmadeChatSession({
         transport: streams(async function* (signal) {
           yield { type: 'text-delta', text: 'Thinking about it' };
           yield { type: 'tool-call-start', id: 'c1', name: 'create_shape' };
@@ -797,7 +797,7 @@ describe('UpdrawChatSession', () => {
       expect(statesOf(stoppedUpdates, 'c1')).toEqual(['started', 'input', 'discarded']);
       stopped._detach();
 
-      const failing = new UpdrawChatSession({
+      const failing = new UpmadeChatSession({
         eagerToolCalls: false,
         transport: streams(async function* () {
           yield* callEvents('c1', 'create_shape', shape(0));
@@ -817,7 +817,7 @@ describe('UpdrawChatSession', () => {
     it('lets the running call finish and interrupts the queued ones when the stream fails', async () => {
       const release = gate();
       const log: string[] = [];
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         tools: [holdTool(release.promise, log)],
         transport: streams(async function* () {
           yield { type: 'part', part: { type: 'tool-call', id: 'a', name: 'hold', input: {} } };
@@ -852,7 +852,7 @@ describe('UpdrawChatSession', () => {
       const streamed = gate();
       const log: string[] = [];
       const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         tools: [holdTool(release.promise, log)],
         transport: streams(async function* () {
           yield { type: 'part', part: { type: 'tool-call', id: 'a', name: 'hold', input: {} } };
@@ -906,7 +906,7 @@ describe('UpdrawChatSession', () => {
     it('never runs a call twice when a message event repeats it', async () => {
       const ran = gate();
       const inputs: unknown[] = [];
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         tools: [
           {
             name: 'count',
@@ -941,7 +941,7 @@ describe('UpdrawChatSession', () => {
 
     it('ignores events it cannot place and drops calls left open', async () => {
       const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         transport: streams(async function* () {
           yield { type: 'tool-call-start' } as any;
           yield { type: 'tool-call-start', id: '', name: 'observe_canvas' };
@@ -973,7 +973,7 @@ describe('UpdrawChatSession', () => {
     });
 
     it('reports nothing for answers that are not streamed', async () => {
-      const session = new UpdrawChatSession({ transport: createScriptedTransport([{ toolCalls: [shapeCall(0)] }, 'Done.']) });
+      const session = new UpmadeChatSession({ transport: createScriptedTransport([{ toolCalls: [shapeCall(0)] }, 'Done.']) });
       session._attach(core);
       const updates = record(session);
       await expect(settle(session.send('Draw'))).resolves.toEqual({ status: 'completed' });
@@ -983,7 +983,7 @@ describe('UpdrawChatSession', () => {
 
     it('passes the tool call ID to tools', async () => {
       const ids: (string | undefined)[] = [];
-      const idTool: UpdrawChatTool = {
+      const idTool: UpmadeChatTool = {
         name: 'which',
         description: 'Records its call ID.',
         inputSchema: { type: 'object', properties: {} },
@@ -993,7 +993,7 @@ describe('UpdrawChatSession', () => {
         },
       };
       for (const stream of [false, true]) {
-        const session = new UpdrawChatSession({ tools: [idTool], transport: createScriptedTransport([{ toolCalls: [{ tool: 'which' }] }, 'ok'], { stream }) });
+        const session = new UpmadeChatSession({ tools: [idTool], transport: createScriptedTransport([{ toolCalls: [{ tool: 'which' }] }, 'ok'], { stream }) });
         session._attach(core);
         await expect(settle(session.send('which'))).resolves.toEqual({ status: 'completed' });
         session._detach();
@@ -1003,19 +1003,19 @@ describe('UpdrawChatSession', () => {
 
     it('streams scripted answers into the same messages', async () => {
       const script = () => [{ text: 'Drawing two boxes.', toolCalls: [shapeCall(0, 'A'), shapeCall(300, 'B')], parts: [{ type: 'text' as const, text: 'More.' }] }, 'Done.'];
-      const shapeOf = (session: UpdrawChatSession) =>
+      const shapeOf = (session: UpmadeChatSession) =>
         session.messages.map(message => (message.role === 'tool' ? resultsOf(message).map(result => [result.toolCallId, !!result.isError]) : message.parts));
 
-      const plain = new UpdrawChatSession({ transport: createScriptedTransport(script()) });
+      const plain = new UpmadeChatSession({ transport: createScriptedTransport(script()) });
       plain._attach(core);
       await expect(settle(plain.send('Draw'))).resolves.toEqual({ status: 'completed' });
       plain._detach();
 
       const events: string[] = [];
       const transport = createScriptedTransport(script(), { stream: { chunkSize: 8 } });
-      const streamed = new UpdrawChatSession({
+      const streamed = new UpmadeChatSession({
         transport: async (request, options) => {
-          const answer = (await transport(request, options)) as AsyncIterable<UpdrawChatStreamEvent>;
+          const answer = (await transport(request, options)) as AsyncIterable<UpmadeChatStreamEvent>;
           return (async function* () {
             for await (const event of answer) {
               events.push(event.type);
@@ -1039,7 +1039,7 @@ describe('UpdrawChatSession', () => {
     });
 
     it('stops scripted streams between chunks', async () => {
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         transport: createScriptedTransport([{ text: 'A long answer that streams slowly.', toolCalls: [shapeCall(0)] }], { stream: { chunkSize: 4, chunkDelayMs: 20 } }),
       });
       session._attach(core);
@@ -1060,10 +1060,10 @@ describe('UpdrawChatSession', () => {
 
     describe('placeholders', () => {
       const widget = (x = 0) => ({ name: 'Counter', x, y: 0, width: 200, height: 120, html: '<button>+</button>', script: 'let n = 0;' });
-      const iframes = () => map.allObjects().filter((object: any) => object instanceof UpdrawIframeObject) as UpdrawIframeObject[];
+      const iframes = () => map.allObjects().filter((object: any) => object instanceof UpmadeIframeObject) as UpmadeIframeObject[];
 
       /** The input up to and including its size, then a gate, then the rest: like a model writing its code. */
-      async function* writeWidget(id: string, input: Record<string, unknown>, rest: Promise<void>, part = true): AsyncGenerator<UpdrawChatStreamEvent> {
+      async function* writeWidget(id: string, input: Record<string, unknown>, rest: Promise<void>, part = true): AsyncGenerator<UpmadeChatStreamEvent> {
         const json = JSON.stringify(input);
         const cut = json.indexOf('"html"');
         yield { type: 'tool-call-start', id, name: 'create_iframe' };
@@ -1077,7 +1077,7 @@ describe('UpdrawChatSession', () => {
 
       it('shows a loading placeholder once position and size are written, and fills it in', async () => {
         const rest = gate();
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           canvasTools: { iframes: true },
           transport: streams(async function* () {
             yield* writeWidget('w1', widget(), rest.promise);
@@ -1107,7 +1107,7 @@ describe('UpdrawChatSession', () => {
 
       it('takes the placeholder away when the call does not run', async () => {
         jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-        const scenarios: { name: string; stream: (signal: AbortSignal, rest: Promise<void>) => AsyncIterable<UpdrawChatStreamEvent>; stop?: boolean; status: string }[] = [
+        const scenarios: { name: string; stream: (signal: AbortSignal, rest: Promise<void>) => AsyncIterable<UpmadeChatStreamEvent>; stop?: boolean; status: string }[] = [
           {
             name: 'invalid input',
             stream: async function* (_signal, rest) {
@@ -1136,7 +1136,7 @@ describe('UpdrawChatSession', () => {
         ];
         for (const scenario of scenarios) {
           const rest = gate();
-          const session = new UpdrawChatSession({ canvasTools: { iframes: true }, transport: streams(signal => scenario.stream(signal, rest.promise)) });
+          const session = new UpmadeChatSession({ canvasTools: { iframes: true }, transport: streams(signal => scenario.stream(signal, rest.promise)) });
           session._attach(core);
           const running = session.send('A counter');
           await until(() => iframes().length === 1);
@@ -1154,7 +1154,7 @@ describe('UpdrawChatSession', () => {
       it("places a call's placeholder only once the calls before it have ended", async () => {
         const first = gate();
         const second = gate();
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           canvasTools: { iframes: true },
           transport: streams(async function* () {
             yield* writeWidget('w1', widget(0), first.promise);
@@ -1184,8 +1184,8 @@ describe('UpdrawChatSession', () => {
       it('shows images with a size as placeholders', async () => {
         const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/></svg>';
         const rest = gate();
-        const images = () => map.allObjects().filter((object: any) => object instanceof UpdrawImage) as UpdrawImage[];
-        const session = new UpdrawChatSession({
+        const images = () => map.allObjects().filter((object: any) => object instanceof UpmadeImage) as UpmadeImage[];
+        const session = new UpmadeChatSession({
           transport: streams(
             async function* () {
               const input = { x: 0, y: 0, width: 50, height: 50, svg };
@@ -1218,7 +1218,7 @@ describe('UpdrawChatSession', () => {
 
       it('lets app tools begin their calls', async () => {
         const log: string[] = [];
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           tools: [
             {
               name: 'note',
@@ -1268,7 +1268,7 @@ describe('UpdrawChatSession', () => {
       });
 
       it('runs the calls of a message event in the order they started, so a begun call never waits for a later one', async () => {
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           canvasTools: { iframes: true },
           transport: streams(async function* () {
             yield* writeWidget('w1', widget(), Promise.resolve(), false);
@@ -1297,7 +1297,7 @@ describe('UpdrawChatSession', () => {
       it('runs a call plainly when its begun call fails or its part names another tool', async () => {
         const errors = jest.spyOn(console, 'error').mockImplementation(() => undefined);
         const runs: string[] = [];
-        const tool = (name: string, update?: () => void): UpdrawChatTool => ({
+        const tool = (name: string, update?: () => void): UpmadeChatTool => ({
           name,
           description: name,
           inputSchema: { type: 'object', properties: {} },
@@ -1314,7 +1314,7 @@ describe('UpdrawChatSession', () => {
             cancel: () => undefined,
           }),
         });
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           eagerToolCalls: false,
           tools: [
             tool('broken', () => {
@@ -1342,7 +1342,7 @@ describe('UpdrawChatSession', () => {
       it('begins no call once the stream has ended', async () => {
         jest.spyOn(console, 'warn').mockImplementation(() => undefined);
         const begun: string[] = [];
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           tools: [
             {
               name: 'note',
@@ -1372,7 +1372,7 @@ describe('UpdrawChatSession', () => {
         const done = gate();
         const log: string[] = [];
         const input = { ...widget(), html: `<p>${'x'.repeat(6000)}</p>` };
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           canvasTools: { iframes: true },
           tools: [holdTool(release.promise, log)],
           transport: streams(async function* () {
@@ -1400,9 +1400,9 @@ describe('UpdrawChatSession', () => {
       });
 
       it('places the placeholder as the agent and fills it in as one step of its history', async () => {
-        const agent = core.agentManager.add(new UpdrawAgent({ id: 'claude', name: 'Claude' }));
+        const agent = core.agentManager.add(new UpmadeAgent({ id: 'claude', name: 'Claude' }));
         const rest = gate();
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           agent,
           canvasTools: { iframes: true },
           transport: streams(async function* () {
@@ -1424,7 +1424,7 @@ describe('UpdrawChatSession', () => {
 
     describe('edge cases', () => {
       it('drops a call when a listener stops the prompt as the call completes', async () => {
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           transport: streams(async function* (signal) {
             yield* callEvents('c1', 'create_shape', shape(0));
             await abortion(signal);
@@ -1444,18 +1444,18 @@ describe('UpdrawChatSession', () => {
         const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
         // Already-resolved events, like a parser that holds a whole chunk: the next event arrives while the
         // unknown tool's call is being answered.
-        const events: UpdrawChatStreamEvent[] = [
+        const events: UpmadeChatStreamEvent[] = [
           { type: 'part', part: { type: 'tool-call', id: 'u', name: 'nope', input: {} } },
           { type: 'message', message: { role: 'assistant', parts: [{ type: 'text', text: 'Never mind.' }] } },
           { type: 'finish' },
         ];
-        const buffered: AsyncIterable<UpdrawChatStreamEvent> = {
+        const buffered: AsyncIterable<UpmadeChatStreamEvent> = {
           [Symbol.asyncIterator]: () => {
             let index = 0;
             return { next: () => Promise.resolve(index < events.length ? { value: events[index++], done: false } : { value: undefined, done: true }) };
           },
         };
-        const session = new UpdrawChatSession({ transport: streams(() => buffered) });
+        const session = new UpmadeChatSession({ transport: streams(() => buffered) });
         session._attach(core);
         const updates = record(session);
 
@@ -1469,7 +1469,7 @@ describe('UpdrawChatSession', () => {
       it('ignores parts that are not objects, also while a call runs', async () => {
         const release = gate();
         const log: string[] = [];
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           tools: [holdTool(release.promise, log)],
           transport: streams(async function* () {
             yield { type: 'part', part: { type: 'tool-call', id: 'a', name: 'hold', input: {} } };
@@ -1492,7 +1492,7 @@ describe('UpdrawChatSession', () => {
 
       it('runs each call of a message event with its own input, also when IDs repeat', async () => {
         const inputs: unknown[] = [];
-        const countTool: UpdrawChatTool = {
+        const countTool: UpmadeChatTool = {
           name: 'count',
           description: 'Counts.',
           inputSchema: { type: 'object', properties: {} },
@@ -1503,7 +1503,7 @@ describe('UpdrawChatSession', () => {
         };
         for (const eagerToolCalls of [false, true]) {
           inputs.length = 0;
-          const session = new UpdrawChatSession({
+          const session = new UpmadeChatSession({
             eagerToolCalls,
             tools: [countTool],
             transport: streams(async function* () {
@@ -1528,7 +1528,7 @@ describe('UpdrawChatSession', () => {
       });
 
       it('lets a call still being written survive a message event that does not hold it yet', async () => {
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           transport: streams(async function* () {
             yield { type: 'tool-call-start', id: 'c1', name: 'create_shape' };
             yield { type: 'tool-call-delta', id: 'c1', inputDelta: '{"x":0,' };
@@ -1549,7 +1549,7 @@ describe('UpdrawChatSession', () => {
       });
 
       it('never reports an ID again once it ended', async () => {
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           transport: streams(async function* () {
             yield { type: 'part', part: { type: 'tool-call', id: 'x', name: 'observe_canvas', input: {} } };
             yield { type: 'message', message: { role: 'assistant', parts: [{ type: 'text', text: 'Let me look.' }] } };
@@ -1568,9 +1568,9 @@ describe('UpdrawChatSession', () => {
 
     describe('with an agent', () => {
       it('runs streamed calls as the agent while the model still writes', async () => {
-        const agent = core.agentManager.add(new UpdrawAgent({ id: 'claude', name: 'Claude' }));
+        const agent = core.agentManager.add(new UpmadeAgent({ id: 'claude', name: 'Claude' }));
         const rest = gate();
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           agent,
           instant: true,
           transport: streams(async function* () {
@@ -1597,10 +1597,10 @@ describe('UpdrawChatSession', () => {
       });
 
       it('puts the status back when a streamed call runs a task past the end of the stream', async () => {
-        const agent = core.agentManager.add(new UpdrawAgent({ id: 'claude', name: 'Claude' }));
+        const agent = core.agentManager.add(new UpmadeAgent({ id: 'claude', name: 'Claude' }));
         const release = gate();
         const statuses: (string | null)[] = [];
-        const session = new UpdrawChatSession({
+        const session = new UpmadeChatSession({
           agent,
           instant: true,
           tools: [
@@ -1631,8 +1631,8 @@ describe('UpdrawChatSession', () => {
       });
 
       it('rolls back the action of a streamed call that is stopped while it animates', async () => {
-        const agent = core.agentManager.add(new UpdrawAgent({ id: 'claude', name: 'Claude' }));
-        const session = new UpdrawChatSession({
+        const agent = core.agentManager.add(new UpmadeAgent({ id: 'claude', name: 'Claude' }));
+        const session = new UpmadeChatSession({
           agent,
           transport: streams(async function* (signal) {
             yield* callEvents('c1', 'create_shape', shape(800));
@@ -1659,10 +1659,10 @@ describe('UpdrawChatSession', () => {
 
   describe('with an agent', () => {
     it('acts as the agent, shows the thinking status and keeps agent history', async () => {
-      const agent = core.agentManager.add(new UpdrawAgent({ id: 'claude', name: 'Claude' }));
+      const agent = core.agentManager.add(new UpmadeAgent({ id: 'claude', name: 'Claude' }));
       const statuses: (string | null)[] = [];
       const script = createScriptedTransport([{ toolCalls: [shapeCall(0)] }, 'Done.']);
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         agent,
         instant: true,
         transport: (request, options) => {
@@ -1670,7 +1670,7 @@ describe('UpdrawChatSession', () => {
           return script(request, options);
         },
       });
-      const second = new UpdrawChatSession({ agent, transport: createScriptedTransport(['x']) });
+      const second = new UpmadeChatSession({ agent, transport: createScriptedTransport(['x']) });
       session._attach(core);
       second._attach(core);
       expect(session.mode).toBe('agent');
@@ -1689,9 +1689,9 @@ describe('UpdrawChatSession', () => {
     });
 
     it('lets app tools act as the agent', async () => {
-      const agent = core.agentManager.add(new UpdrawAgent({ id: 'claude', name: 'Claude' }));
+      const agent = core.agentManager.add(new UpmadeAgent({ id: 'claude', name: 'Claude' }));
       const seen: { kind?: string } = {};
-      const session = new UpdrawChatSession({
+      const session = new UpmadeChatSession({
         agent,
         instant: true,
         tools: [placeBoxTool(seen)],
@@ -1711,8 +1711,8 @@ describe('UpdrawChatSession', () => {
     });
 
     it('ends with detached when the agent is removed', async () => {
-      const agent = core.agentManager.add(new UpdrawAgent({ id: 'claude', name: 'Claude' }));
-      const session = new UpdrawChatSession({ agent, transport: createScriptedTransport(['slow'], { delayMs: 30 }) });
+      const agent = core.agentManager.add(new UpmadeAgent({ id: 'claude', name: 'Claude' }));
+      const session = new UpmadeChatSession({ agent, transport: createScriptedTransport(['slow'], { delayMs: 30 }) });
       session._attach(core);
       const running = session.send('hi');
       await flushMicrotasks();

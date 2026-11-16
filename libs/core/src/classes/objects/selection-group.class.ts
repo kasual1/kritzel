@@ -1,15 +1,15 @@
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawGeometryHelper } from '../../helpers/geometry.helper';
-import { UpdrawBaseObject } from './base-object.class';
-import { UpdrawGroup } from './group.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeGeometryHelper } from '../../helpers/geometry.helper';
+import { UpmadeBaseObject } from './base-object.class';
+import { UpmadeGroup } from './group.class';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
-import { UpdrawMathHelper } from '../../helpers/math.helper';
-import { UpdrawLine } from './line.class';
+import { UpmadeMathHelper } from '../../helpers/math.helper';
+import { UpmadeLine } from './line.class';
 
 /**
- * Configuration options for creating an UpdrawSelectionGroup instance.
+ * Configuration options for creating an UpmadeSelectionGroup instance.
  */
-export interface UpdrawSelectionGroupConfig {
+export interface UpmadeSelectionGroupConfig {
   rotation?: number;
 }
 
@@ -44,19 +44,19 @@ interface UnchangedObjectSnapshot {
  * The selection group allows batch operations like move, resize, and rotate on multiple objects simultaneously.
  * It maintains its own bounding box that encompasses all selected objects.
  */
-export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
-  override __class__: string = 'UpdrawSelectionGroup';
+export class UpmadeSelectionGroup extends UpmadeBaseObject<HTMLElement> {
+  override __class__: string = 'UpmadeSelectionGroup';
 
-  constructor(config?: UpdrawSelectionGroupConfig) {
+  constructor(config?: UpmadeSelectionGroupConfig) {
     super();
-    this.rotation = UpdrawMathHelper.degreesToRadians(config?.rotation ?? 0);
+    this.rotation = UpmadeMathHelper.degreesToRadians(config?.rotation ?? 0);
   }
 
   // Store only object IDs instead of full objects
   private _objectIds: string[] = [];
 
   // Cached objects array - invalidated when objectIds changes
-  private _cachedObjects: UpdrawBaseObject<any>[] | null = null;
+  private _cachedObjects: UpmadeBaseObject<any>[] | null = null;
   private _cachedObjectIdsHash: string = '';
 
   // Store snapshots of object state for transformations (rotation, resize)
@@ -117,9 +117,9 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
    * Retrieves the actual object instances from the store by their IDs.
    * Uses caching to avoid redundant lookups - only recomputes when objectIds changes.
    * Preserves the original insertion order of objects.
-   * @returns Array of UpdrawBaseObject instances corresponding to the stored IDs
+   * @returns Array of UpmadeBaseObject instances corresponding to the stored IDs
    */
-  get objects(): UpdrawBaseObject<any>[] {
+  get objects(): UpmadeBaseObject<any>[] {
     const currentHash = this._objectIds.join(',');
     if (this._cachedObjects !== null && this._cachedObjectIdsHash === currentHash) {
       return this._cachedObjects;
@@ -131,12 +131,12 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
     const objectMap = new Map(foundObjects.map(obj => [obj.id, obj]));
     this._cachedObjects = this._objectIds
       .map(id => objectMap.get(id))
-      .filter((obj): obj is UpdrawBaseObject<any> => obj !== undefined);
+      .filter((obj): obj is UpmadeBaseObject<any> => obj !== undefined);
     this._cachedObjectIdsHash = currentHash;
     return this._cachedObjects;
   }
 
-  private syncChildSelectionState(children: UpdrawBaseObject<any>[]): void {
+  private syncChildSelectionState(children: UpmadeBaseObject<any>[]): void {
     const shouldBeSelected = this.isSelected === true;
     for (const child of children) {
       child.isSelected = shouldBeSelected;
@@ -166,14 +166,14 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
   }
 
   /**
-   * Factory method to create a new UpdrawSelectionGroup instance.
+   * Factory method to create a new UpmadeSelectionGroup instance.
    * Initializes the selection group with default properties and associates it with the core instance.
    * Default styling uses values from the theme system (selection section).
-   * @param core - The UpdrawCore instance to associate with this selection group
-   * @returns A new UpdrawSelectionGroup instance configured with default settings
+   * @param core - The UpmadeCore instance to associate with this selection group
+   * @returns A new UpmadeSelectionGroup instance configured with default settings
    */
-  static override create(core: UpdrawCore, config?: { rotation?: number }): UpdrawSelectionGroup {
-    const object = new UpdrawSelectionGroup(config);
+  static override create(core: UpmadeCore, config?: { rotation?: number }): UpmadeSelectionGroup {
+    const object = new UpmadeSelectionGroup(config);
 
     object._core = core;
     object.id = object.generateId();
@@ -201,9 +201,9 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
    * - Single object: inherits the object's rotation
    * - Multiple objects: resets rotation to 0
    * Refreshes bounding box dimensions after adding objects.
-   * @param objects - Array of UpdrawBaseObject instances to add to the selection
+   * @param objects - Array of UpmadeBaseObject instances to add to the selection
    */
-  addObjects(objects: UpdrawBaseObject<any>[]) {
+  addObjects(objects: UpmadeBaseObject<any>[]) {
     let changed = false;
     for (const object of objects) {
       if (!this._objectIds.includes(object.id)) {
@@ -231,9 +231,9 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
    * If the object is already selected, it will be removed.
    * If the object is not selected, it will be added.
    * Updates group rotation and refreshes bounding box dimensions after the change.
-   * @param object - The UpdrawBaseObject instance to toggle in the selection
+   * @param object - The UpmadeBaseObject instance to toggle in the selection
    */
-  addOrRemove(object: UpdrawBaseObject<any>) {
+  addOrRemove(object: UpmadeBaseObject<any>) {
     const index = this._objectIds.findIndex(id => id === object.id);
     if (index === -1) {
       this._objectIds.push(object.id);
@@ -267,7 +267,7 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
 
     // Groups need their own child snapshots aligned with the current transform.
     for (const obj of children) {
-      if (obj instanceof UpdrawGroup) {
+      if (obj instanceof UpmadeGroup) {
         obj.finalize();
       }
     }
@@ -277,7 +277,7 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
    * Sets the isSelected flag to false for all objects in the selection group.
    * Used when clearing or changing the selection state.
    *
-   * For UpdrawGroup members, also clears the isSelected flag on all nested
+   * For UpmadeGroup members, also clears the isSelected flag on all nested
    * descendants. A descendant can retain a lingering isSelected from the marquee
    * preview before it was resolved to its parent group during selection, which
    * would otherwise leave that object selected after the group is deselected and
@@ -288,8 +288,8 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
     const descendantIds = new Set<string>();
     for (const obj of children) {
       obj.isSelected = false;
-      if (obj instanceof UpdrawGroup) {
-        UpdrawGroup.collectDescendantIds(obj as UpdrawGroup, descendantIds);
+      if (obj instanceof UpmadeGroup) {
+        UpmadeGroup.collectDescendantIds(obj as UpmadeGroup, descendantIds);
       }
     }
 
@@ -359,7 +359,7 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
    * Capture snapshots of current object states for undo/redo operations
    * @param cachedObjects Optional pre-fetched objects array to avoid redundant getter calls
    */
-  captureUnchangedSnapshots(cachedObjects?: UpdrawBaseObject<any>[]): void {
+  captureUnchangedSnapshots(cachedObjects?: UpmadeBaseObject<any>[]): void {
     this.unchangedObjectSnapshots.clear();
     this.snapshotRotation = this.rotation;
     this.snapshotWidth = this.width;
@@ -408,7 +408,7 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
   }
 
   /**
-   * Deserializes a plain object back into an UpdrawSelectionGroup instance.
+   * Deserializes a plain object back into an UpmadeSelectionGroup instance.
    * Restores objectIds through the setter and reconstructs the unchangedObjectSnapshots Map.
    * @template T - The return type for the deserialized object
    * @param object - The serialized object containing the selection group data
@@ -472,7 +472,7 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
     this.translateY += deltaY;
 
     const now = Date.now();
-    const shouldPersistChildren = now - this._lastChildPersistTime >= UpdrawSelectionGroup.CHILD_PERSIST_THROTTLE_MS;
+    const shouldPersistChildren = now - this._lastChildPersistTime >= UpmadeSelectionGroup.CHILD_PERSIST_THROTTLE_MS;
 
     if (shouldPersistChildren) {
       // Periodically persist children to Yjs so remote peers see movement in real-time
@@ -525,7 +525,7 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
    * Returns true when the selection contains a line anchored to an object
    * that is not part of this selection group.
    */
-  hasExternalAnchoredLineConnections(cachedObjects?: UpdrawBaseObject<any>[]): boolean {
+  hasExternalAnchoredLineConnections(cachedObjects?: UpmadeBaseObject<any>[]): boolean {
     const children = cachedObjects ?? this.objects;
     if (children.length === 0) {
       return false;
@@ -534,11 +534,11 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
     const selectedIds = new Set(children.map(child => child.id));
 
     for (const child of children) {
-      if (!(child instanceof UpdrawLine)) {
+      if (!(child instanceof UpmadeLine)) {
         continue;
       }
 
-      const line = child as UpdrawLine;
+      const line = child as UpmadeLine;
       if (line.startAnchor && !selectedIds.has(line.startAnchor.objectId)) {
         return true;
       }
@@ -709,8 +709,8 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
       const anchorTargetIds = new Set<string>();
       for (const child of children) {
         anchorTargetIds.add(child.id);
-        if (child instanceof UpdrawLine) {
-          const line = child as UpdrawLine;
+        if (child instanceof UpmadeLine) {
+          const line = child as UpmadeLine;
           if (line.startAnchor) anchorTargetIds.add(line.startAnchor.objectId);
           if (line.endAnchor) anchorTargetIds.add(line.endAnchor.objectId);
         }
@@ -734,16 +734,16 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
    * Creates a deep copy of the selection group including copies of all contained objects.
    * Preserves z-index ordering by sorting children before copying.
    * Copies maintain their relative positions within the new selection group.
-   * @returns A new UpdrawSelectionGroup with copies of all contained objects
+   * @returns A new UpmadeSelectionGroup with copies of all contained objects
    */
-  override copy(): UpdrawBaseObject<HTMLElement> {
-    const selectionGroup = UpdrawSelectionGroup.create(this._core);
+  override copy(): UpmadeBaseObject<HTMLElement> {
+    const selectionGroup = UpmadeSelectionGroup.create(this._core);
     const children = this.objects;
 
     // Sort children by zIndex and copy them
     const sortedChildren = [...children].sort((a, b) => a.zIndex - b.zIndex);
     for (const obj of sortedChildren) {
-      const copiedObject = obj.copy() as UpdrawBaseObject<any>;
+      const copiedObject = obj.copy() as UpmadeBaseObject<any>;
       selectionGroup.addOrRemove(copiedObject);
     }
 
@@ -761,7 +761,7 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
    * @param cachedObjects Optional pre-fetched objects array to avoid redundant getter calls
    * @param skipPersist If true, only updates local state without persisting to Yjs (used during undo/redo)
    */
-  refreshObjectDimensions(cachedObjects?: UpdrawBaseObject<any>[], skipPersist: boolean = false): boolean {
+  refreshObjectDimensions(cachedObjects?: UpmadeBaseObject<any>[], skipPersist: boolean = false): boolean {
     const previous = {
       minX: this.minX,
       minY: this.minY,
@@ -835,14 +835,14 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
     }
 
     const hasChanged =
-      Math.abs(this.minX - previous.minX) > UpdrawSelectionGroup.DIMENSION_EPSILON ||
-      Math.abs(this.minY - previous.minY) > UpdrawSelectionGroup.DIMENSION_EPSILON ||
-      Math.abs(this.maxX - previous.maxX) > UpdrawSelectionGroup.DIMENSION_EPSILON ||
-      Math.abs(this.maxY - previous.maxY) > UpdrawSelectionGroup.DIMENSION_EPSILON ||
-      Math.abs(this.width - previous.width) > UpdrawSelectionGroup.DIMENSION_EPSILON ||
-      Math.abs(this.height - previous.height) > UpdrawSelectionGroup.DIMENSION_EPSILON ||
-      Math.abs(this.translateX - previous.translateX) > UpdrawSelectionGroup.DIMENSION_EPSILON ||
-      Math.abs(this.translateY - previous.translateY) > UpdrawSelectionGroup.DIMENSION_EPSILON;
+      Math.abs(this.minX - previous.minX) > UpmadeSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.minY - previous.minY) > UpmadeSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.maxX - previous.maxX) > UpmadeSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.maxY - previous.maxY) > UpmadeSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.width - previous.width) > UpmadeSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.height - previous.height) > UpmadeSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.translateX - previous.translateX) > UpmadeSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.translateY - previous.translateY) > UpmadeSelectionGroup.DIMENSION_EPSILON;
 
     if (!skipPersist && hasChanged) {
       this._core.store.objects.update(this);
@@ -885,14 +885,14 @@ export class UpdrawSelectionGroup extends UpdrawBaseObject<HTMLElement> {
    */
   override hitTest(x: number, y: number): boolean {
     const children = this.objects;
-    const isSingleLine = children.length === 1 && children[0].__class__ === 'UpdrawLine';
+    const isSingleLine = children.length === 1 && children[0].__class__ === 'UpmadeLine';
     if (isSingleLine) {
       return children[0].hitTest(x, y);
     }
 
     const polygon = this.rotatedPolygon;
     const polyPoints = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
-    if (UpdrawGeometryHelper.isPointInPolygon({ x, y }, polyPoints)) {
+    if (UpmadeGeometryHelper.isPointInPolygon({ x, y }, polyPoints)) {
       return true;
     }
 

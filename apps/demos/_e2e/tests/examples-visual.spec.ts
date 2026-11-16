@@ -4,17 +4,17 @@ async function waitForExamplePage(editorPage: { page: import('@playwright/test')
   const { page } = editorPage;
 
   await page.waitForFunction(
-    () => !!document.querySelector('updraw-editor') || !!document.querySelector('updraw-engine'),
+    () => !!document.querySelector('upmade-editor') || !!document.querySelector('upmade-engine'),
     undefined,
     { timeout: 15_000 },
   );
 
-  if ((await page.locator('updraw-editor').count()) > 0) {
+  if ((await page.locator('upmade-editor').count()) > 0) {
     await editorPage.waitForReady();
     return;
   }
 
-  await page.locator('updraw-engine').first().waitFor({ state: 'visible', timeout: 15_000 });
+  await page.locator('upmade-engine').first().waitFor({ state: 'visible', timeout: 15_000 });
   await page.evaluate(
     () =>
       new Promise<void>((resolve) => {
@@ -27,7 +27,7 @@ async function waitForImagesToSettle(page: import('@playwright/test').Page) {
   await page.waitForFunction(
     () => {
       const roots: (Document | ShadowRoot)[] = [document];
-      const engine = document.querySelector('updraw-engine');
+      const engine = document.querySelector('upmade-engine');
       if (engine?.shadowRoot) {
         roots.push(engine.shadowRoot);
       }
@@ -68,7 +68,7 @@ async function waitForVisualSettle(page: import('@playwright/test').Page) {
 }
 
 // Shared body for each example's screenshot test, invoked individually below so every page has its own, independently runnable test.
-// Captures the whole viewport (not just the updraw-editor/engine element) because these example pages
+// Captures the whole viewport (not just the upmade-editor/engine element) because these example pages
 // pair the canvas with a sidebar/info panel, and the full layout is what should be regression-tested.
 async function expectExampleScreenshot(
   editorPage: Parameters<typeof waitForExamplePage>[0],

@@ -1,7 +1,7 @@
-import { UpdrawShapeTool } from './shape-tool.class';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawShape } from '../objects/shape.class';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpmadeShapeTool } from './shape-tool.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeShape } from '../objects/shape.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
 import { ShapeType } from '../../enums/shape-type.enum';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
@@ -9,8 +9,8 @@ jest.mock('../core/core.class');
 jest.mock('../objects/shape.class');
 jest.mock('../../helpers/event.helper');
 
-describe('UpdrawShapeTool', () => {
-  let tool: UpdrawShapeTool;
+describe('UpmadeShapeTool', () => {
+  let tool: UpmadeShapeTool;
   let mockCore: any;
   let mockObjectsMap: any;
   let mockState: any;
@@ -97,8 +97,8 @@ describe('UpdrawShapeTool', () => {
       updateDimensions: jest.fn(),
     };
 
-    (UpdrawShape.create as jest.Mock).mockReturnValue(mockCreatedShape);
-    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpmadeShape.create as jest.Mock).mockReturnValue(mockCreatedShape);
+    (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockCore = {
       objectTitlebarManager: {
@@ -127,9 +127,9 @@ describe('UpdrawShapeTool', () => {
       selectObjects: jest.fn(),
       resetActiveShape: jest.fn(),
       toolRegistry: { getTool: jest.fn().mockReturnValue(mockSelectionTool) },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    tool = new UpdrawShapeTool(mockCore);
+    tool = new UpmadeShapeTool(mockCore);
   });
 
   afterEach(() => {
@@ -204,7 +204,7 @@ describe('UpdrawShapeTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         x: 150,
         y: 250,
         width: 1,
@@ -230,12 +230,12 @@ describe('UpdrawShapeTool', () => {
     });
 
     it('should not create a shape on non-left click', () => {
-      (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+      (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
       const event = createMouseEvent({ button: 2 });
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawShape.create).not.toHaveBeenCalled();
+      expect(UpmadeShape.create).not.toHaveBeenCalled();
     });
 
     it('should apply viewport offset to coordinates', () => {
@@ -245,7 +245,7 @@ describe('UpdrawShapeTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         x: 200 - 50,
         y: 300 - 30,
       }));
@@ -260,7 +260,7 @@ describe('UpdrawShapeTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         x: 200 / 2,
         y: 300 / 2,
         translateX: -100 / 2,
@@ -278,7 +278,7 @@ describe('UpdrawShapeTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         x: 200,
         y: 300,
         translateX: -100,
@@ -293,13 +293,13 @@ describe('UpdrawShapeTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         shapeType: ShapeType.Ellipse,
       }));
     });
 
     it('should edit existing shape when clicking on it with no active shape', () => {
-      const existingShape = Object.create(UpdrawShape.prototype);
+      const existingShape = Object.create(UpmadeShape.prototype);
       existingShape.edit = jest.fn();
       existingShape.id = 'existing-shape';
 
@@ -313,15 +313,15 @@ describe('UpdrawShapeTool', () => {
       tool.handlePointerDown(event);
 
       expect(existingShape.edit).toHaveBeenCalledWith(event);
-      expect(UpdrawShape.create).not.toHaveBeenCalled();
+      expect(UpmadeShape.create).not.toHaveBeenCalled();
     });
 
     it('should save active shape and edit new one when clicking on different shape', () => {
-      const activeShape = Object.create(UpdrawShape.prototype);
+      const activeShape = Object.create(UpmadeShape.prototype);
       activeShape.save = jest.fn();
       mockCore.store.activeShape = activeShape;
 
-      const clickedShape = Object.create(UpdrawShape.prototype);
+      const clickedShape = Object.create(UpmadeShape.prototype);
       clickedShape.edit = jest.fn();
       clickedShape.id = 'clicked-shape';
 
@@ -335,11 +335,11 @@ describe('UpdrawShapeTool', () => {
 
       expect(activeShape.save).toHaveBeenCalled();
       expect(clickedShape.edit).toHaveBeenCalledWith(event);
-      expect(UpdrawShape.create).not.toHaveBeenCalled();
+      expect(UpmadeShape.create).not.toHaveBeenCalled();
     });
 
     it('should reset active shape and switch to selection when clicking on non-shape', () => {
-      const activeShape = Object.create(UpdrawShape.prototype);
+      const activeShape = Object.create(UpmadeShape.prototype);
       activeShape.save = jest.fn();
       mockCore.store.activeShape = activeShape;
 
@@ -347,7 +347,7 @@ describe('UpdrawShapeTool', () => {
 
       expect(mockCore.resetActiveShape).toHaveBeenCalled();
       expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockSelectionTool);
-      expect(UpdrawShape.create).not.toHaveBeenCalled();
+      expect(UpmadeShape.create).not.toHaveBeenCalled();
     });
   });
 
@@ -362,7 +362,7 @@ describe('UpdrawShapeTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         x: 120,
         y: 220,
         width: 1,
@@ -386,7 +386,7 @@ describe('UpdrawShapeTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawShape.create).toHaveBeenCalled();
+      expect(UpmadeShape.create).toHaveBeenCalled();
     });
 
     it('should not create a shape when multiple pointers are active', () => {
@@ -396,7 +396,7 @@ describe('UpdrawShapeTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawShape.create).not.toHaveBeenCalled();
+      expect(UpmadeShape.create).not.toHaveBeenCalled();
     });
 
     it('should round coordinates for touch input', () => {
@@ -405,7 +405,7 @@ describe('UpdrawShapeTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         x: 121,
         y: 220,
       }));
@@ -421,7 +421,7 @@ describe('UpdrawShapeTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
+      expect(UpmadeShape.create).toHaveBeenCalledWith(mockCore, expect.objectContaining({
         x: Math.round(200 / 2),
         y: Math.round(300 / 2),
         translateX: -100 / 2,
@@ -431,7 +431,7 @@ describe('UpdrawShapeTool', () => {
     });
 
     it('should edit existing shape on touch (no active shape)', () => {
-      const existingShape = Object.create(UpdrawShape.prototype);
+      const existingShape = Object.create(UpmadeShape.prototype);
       existingShape.edit = jest.fn();
       existingShape.id = 'existing-shape';
 
@@ -446,11 +446,11 @@ describe('UpdrawShapeTool', () => {
       tool.handlePointerDown(event);
 
       expect(existingShape.edit).toHaveBeenCalledWith(event);
-      expect(UpdrawShape.create).not.toHaveBeenCalled();
+      expect(UpmadeShape.create).not.toHaveBeenCalled();
     });
 
     it('should reset active shape and switch to selection on touch when clicking non-shape', () => {
-      const activeShape = Object.create(UpdrawShape.prototype);
+      const activeShape = Object.create(UpmadeShape.prototype);
       activeShape.save = jest.fn();
       mockCore.store.activeShape = activeShape;
       mockState.pointers.set(1, { clientX: 100, clientY: 200 });
@@ -798,7 +798,7 @@ describe('UpdrawShapeTool', () => {
     it('should complete a full mouse shape drawing cycle', () => {
       // 1. Pointer down - start drawing
       tool.handlePointerDown(createMouseEvent({ clientX: 50, clientY: 60 }));
-      expect(UpdrawShape.create).toHaveBeenCalledTimes(1);
+      expect(UpmadeShape.create).toHaveBeenCalledTimes(1);
       expect(mockObjectsMap.insert).toHaveBeenCalledTimes(1);
 
       // 2. Pointer move - resize shape
@@ -819,7 +819,7 @@ describe('UpdrawShapeTool', () => {
       // 1. Pointer down
       mockState.pointers.set(1, { clientX: 50, clientY: 60 });
       tool.handlePointerDown(createTouchEvent());
-      expect(UpdrawShape.create).toHaveBeenCalledTimes(1);
+      expect(UpmadeShape.create).toHaveBeenCalledTimes(1);
 
       // 2. Pointer move
       mockState.pointers.clear();
@@ -853,7 +853,7 @@ describe('UpdrawShapeTool', () => {
 
   describe('object titlebar', () => {
     const startEditing = () => {
-      const activeShape = Object.create(UpdrawShape.prototype);
+      const activeShape = Object.create(UpmadeShape.prototype);
       activeShape.save = jest.fn();
       mockCore.store.activeShape = activeShape;
       // setState is mocked, so install the selection tool the way the real store would

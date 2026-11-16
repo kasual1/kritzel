@@ -2,11 +2,11 @@
 import * as d from './proxy';
 
 export const DIRECTIVES = [
-  d.UpdrawChatBox,
-  d.UpdrawEditor,
-  d.UpdrawSettings,
-  d.UpdrawShapeFill,
-  d.UpdrawShareDialog,
-  d.UpdrawSplitButton,
-  d.UpdrawStrokeSize
+  d.UpmadeChatBox,
+  d.UpmadeEditor,
+  d.UpmadeSettings,
+  d.UpmadeShapeFill,
+  d.UpmadeShareDialog,
+  d.UpmadeSplitButton,
+  d.UpmadeStrokeSize
 ];

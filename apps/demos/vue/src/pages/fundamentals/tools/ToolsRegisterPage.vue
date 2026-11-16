@@ -1,32 +1,32 @@
 <script setup lang="ts">
 import {
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawSelectionTool,
-  UpdrawTextTool,
-  UpdrawWorkspace,
-  type UpdrawToolbarItem,
-} from '@updraw/vue-editor'
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeSelectionTool,
+  UpmadeTextTool,
+  UpmadeWorkspace,
+  type UpmadeToolbarItem,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 
-const toolbarItems: UpdrawToolbarItem[] = [
+const toolbarItems: UpmadeToolbarItem[] = [
   {
     name: 'select',
     type: 'tool',
-    tool: UpdrawSelectionTool,
+    tool: UpmadeSelectionTool,
     icon: 'cursor',
     isDefault: true,
   },
   {
     name: 'brush',
     type: 'tool',
-    tool: UpdrawBrushTool,
+    tool: UpmadeBrushTool,
     icon: 'pen',
     config: {
       color: { light: '#1f2937', dark: '#f3f4f6' },
@@ -40,7 +40,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
   {
     name: 'highlighter',
     type: 'tool',
-    tool: UpdrawBrushTool,
+    tool: UpmadeBrushTool,
     icon: 'highlighter',
     config: {
       color: { light: '#ffeb3b', dark: '#fff176' },
@@ -55,7 +55,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
   {
     name: 'text',
     type: 'tool',
-    tool: UpdrawTextTool,
+    tool: UpmadeTextTool,
     icon: 'type',
     config: {
       color: { light: '#1f2937', dark: '#f3f4f6' },
@@ -76,7 +76,7 @@ const toolbarItems: UpdrawToolbarItem[] = [
 
 <template>
   <div :style="hostStyle">
-    <UpdrawEditor
+    <UpmadeEditor
       editorId="tools-register"
       theme="light"
       :themes="themes"

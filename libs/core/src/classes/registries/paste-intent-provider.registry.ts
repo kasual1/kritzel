@@ -1,18 +1,18 @@
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeCore } from '../core/core.class';
 import { PasteIntent } from '../managers/clipboard.types';
-import { UpdrawPasteIntentProvider, UpdrawPasteIntentProviderContext } from '../../interfaces/paste-intent-provider.interface';
+import { UpmadePasteIntentProvider, UpmadePasteIntentProviderContext } from '../../interfaces/paste-intent-provider.interface';
 
-export class UpdrawPasteIntentProviderRegistry {
-  private readonly _providers: UpdrawPasteIntentProvider[] = [];
+export class UpmadePasteIntentProviderRegistry {
+  private readonly _providers: UpmadePasteIntentProvider[] = [];
 
-  constructor(private readonly _core: UpdrawCore) {}
+  constructor(private readonly _core: UpmadeCore) {}
 
-  register(provider: UpdrawPasteIntentProvider): void {
+  register(provider: UpmadePasteIntentProvider): void {
     this._providers.push(provider);
   }
 
   async resolve(event?: ClipboardEvent): Promise<PasteIntent> {
-    const context: UpdrawPasteIntentProviderContext = {
+    const context: UpmadePasteIntentProviderContext = {
       core: this._core,
       event,
     };

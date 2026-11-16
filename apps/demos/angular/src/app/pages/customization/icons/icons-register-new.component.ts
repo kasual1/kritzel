@@ -1,22 +1,22 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
   ContextMenuItem,
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawSelectionTool,
-  UpdrawToolbarItem,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeSelectionTool,
+  UpmadeToolbarItem,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-icons-register-new',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       editorId="icons-register-new"
       [customSvgIcons]="customSvgIcons"
       [toolbarItems]="toolbarItems"
@@ -29,7 +29,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady()"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [
     `
@@ -37,7 +37,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         display: block;
         height: 100%;
       }
-      updraw-editor {
+      upmade-editor {
         display: block;
         height: 100%;
       }
@@ -45,11 +45,11 @@ import { createSeedObjects } from '../../../const/seed-objects';
   ],
 })
 export class IconsRegisterNewComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
   
   customSvgIcons = {
     alien:
@@ -60,18 +60,18 @@ export class IconsRegisterNewComponent {
     { label: 'Alien icon', icon: 'alien', action: () => undefined },
   ];
 
-  toolbarItems: UpdrawToolbarItem[] = [
+  toolbarItems: UpmadeToolbarItem[] = [
     {
       name: 'select',
       type: 'tool',
-      tool: UpdrawSelectionTool,
+      tool: UpmadeSelectionTool,
       icon: 'cursor',
       isDefault: true,
     },
     {
       name: 'brush',
       type: 'tool',
-      tool: UpdrawBrushTool,
+      tool: UpmadeBrushTool,
       icon: 'pen',
       config: {
         color: { light: '#dd0031', dark: '#ff5b79', label: 'Angular Red' },

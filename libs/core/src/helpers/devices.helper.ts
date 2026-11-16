@@ -1,4 +1,4 @@
-export class UpdrawDevicesHelper {
+export class UpmadeDevicesHelper {
   static isTouchDevice(): boolean {
     return window.matchMedia('(any-pointer: coarse)').matches;
   }

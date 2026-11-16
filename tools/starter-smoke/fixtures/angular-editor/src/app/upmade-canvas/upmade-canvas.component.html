@@ -1,0 +1,6 @@
+<upmade-editor
+  [editorId]="editorId"
+  (isReady)="onReady()"
+  aria-label="Upmade canvas"
+></upmade-editor>
+<p role="status">{{ isReady ? 'Upmade is ready.' : 'Loading Upmade…' }}</p>

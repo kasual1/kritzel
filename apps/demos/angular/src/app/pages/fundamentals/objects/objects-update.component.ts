@@ -6,11 +6,11 @@ import {
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import {
-  UpdrawEditor,
+  UpmadeEditor,
   EditorIsReadyEvent,
-  UpdrawBaseObject,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeBaseObject,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -22,7 +22,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-objects-update',
-  imports: [UpdrawEditor, DecimalPipe, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
+  imports: [UpmadeEditor, DecimalPipe, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -34,7 +34,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       <app-info-panel-toggle [panel]="infoPanel"></app-info-panel-toggle>
     </app-toolbar>
     <div class="content">
-      <updraw-editor
+      <upmade-editor
         editorId="objects-update"
         [theme]="'light'"
         [themes]="themes"
@@ -45,7 +45,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady($event)"
         (objectsSelectionChange)="onSelectionChange()"
-      ></updraw-editor>
+      ></upmade-editor>
       <app-info-panel #infoPanel [hasToolbarToggle]="true">
         <h3>Object</h3>
         @if (selected(); as obj) {
@@ -75,7 +75,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         min-height: 0;
         position: relative;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
       }
       app-info-panel {
@@ -109,13 +109,13 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   ],
 })
 export class ObjectsUpdateComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
-  selected = signal<UpdrawBaseObject | null>(null);
+  selected = signal<UpmadeBaseObject | null>(null);
   selectionCount = signal(0);
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {

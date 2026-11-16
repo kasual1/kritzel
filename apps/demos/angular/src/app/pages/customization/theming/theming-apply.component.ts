@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
-import { UpdrawEditor, UpdrawTheme, UpdrawWorkspace } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeTheme, UpmadeWorkspace } from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -7,7 +7,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-theming-apply',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -25,7 +25,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       </button>
     </app-toolbar>
     <div class="editor-wrap">
-      <updraw-editor
+      <upmade-editor
         editorId="theming-apply"
         [theme]="activeName"
         [themes]="themes"
@@ -34,7 +34,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="true"
         [isWorkspaceManagerVisible]="true"
-      ></updraw-editor>
+      ></upmade-editor>
     </div>
   `,
   styles: [
@@ -52,9 +52,9 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   ],
 })
 export class ThemingApplyComponent {
-  themes: UpdrawTheme[] = [angularThemeLight, angularThemeDark];
+  themes: UpmadeTheme[] = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
   activeName: string = 'light';
 

@@ -6,20 +6,20 @@
 
 ## Purpose
 
-`UpdrawCore` is the central orchestrator — the service locator that wires together all subsystems. It owns the store, managers, registries, and coordinates workspace lifecycle, object management, selection, clipboard, and z-ordering.
+`UpmadeCore` is the central orchestrator — the service locator that wires together all subsystems. It owns the store, managers, registries, and coordinates workspace lifecycle, object management, selection, clipboard, and z-ordering.
 
 ## Structure
 
 ```typescript
-export class UpdrawCore {
-  private readonly _updrawEngine: UpdrawEngine;
-  private readonly _store: UpdrawStore;
-  private readonly _appStateMap: UpdrawAppStateMap;
-  private readonly _anchorManager: UpdrawAnchorManager;
-  private readonly _cursorManager: UpdrawCursorManager;
-  private readonly _themeManager: UpdrawThemeManager;
-  private readonly _toolRegistry: UpdrawToolRegistry;
-  private readonly _assetResolver: UpdrawAssetResolver;
+export class UpmadeCore {
+  private readonly _upmadeEngine: UpmadeEngine;
+  private readonly _store: UpmadeStore;
+  private readonly _appStateMap: UpmadeAppStateMap;
+  private readonly _anchorManager: UpmadeAnchorManager;
+  private readonly _cursorManager: UpmadeCursorManager;
+  private readonly _themeManager: UpmadeThemeManager;
+  private readonly _toolRegistry: UpmadeToolRegistry;
+  private readonly _assetResolver: UpmadeAssetResolver;
 }
 ```
 
@@ -80,7 +80,7 @@ const { x, y } = this.getCanvasPoint(event);
 ```typescript
 this.removeSelectionGroup();
 this.removeSelectionBox();
-const selectionGroup = UpdrawSelectionGroup.create(this);
+const selectionGroup = UpmadeSelectionGroup.create(this);
 selectionGroup.addOrRemove(object);
 selectionGroup.isSelected = true;
 this.addSelectionGroup(selectionGroup);
@@ -116,7 +116,7 @@ this._core.editorId       // storage key namespace
 
 ## Conventions
 
-- Core is instantiated once per editor by `UpdrawEngine`
+- Core is instantiated once per editor by `UpmadeEngine`
 - Never instantiate core directly in tests — mock or use a test harness
 - Methods that modify objects should emit change events: `this.engine.emitObjectsChange()`
 - Methods that affect viewport should emit: `this.engine.emitObjectsInViewportChange()`

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { UpdrawEditor, UpdrawViewportState, UpdrawWorkspace } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeViewportState, UpmadeWorkspace } from '@upmade/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -8,7 +8,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-viewport-events',
-  imports: [UpdrawEditor, DecimalPipe, ToolbarComponent],
+  imports: [UpmadeEditor, DecimalPipe, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -23,7 +23,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       <span class="status">Scale: {{ viewport()?.scale ?? 1 | number:'1.0-2' }}</span>
     </app-toolbar>
 
-    <updraw-editor
+    <upmade-editor
       editorId="viewport-events"
       [theme]="'light'"
       [themes]="themes"
@@ -33,22 +33,22 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (viewportChange)="onViewportChange($event)"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    updraw-editor { flex: 1; }
+    upmade-editor { flex: 1; }
   `],
 })
 export class ViewportEventsComponent {
   private readonly panStep = 100;
   private readonly zoomFactor = 1.1;
 
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
-  viewport = signal<UpdrawViewportState | null>(null);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
+  viewport = signal<UpmadeViewportState | null>(null);
 
   async panUp() {
     await this.panBy(0, -this.panStep);
@@ -85,7 +85,7 @@ export class ViewportEventsComponent {
     );
   }
 
-  onViewportChange(event: CustomEvent<UpdrawViewportState>) {
+  onViewportChange(event: CustomEvent<UpmadeViewportState>) {
     this.viewport.set(event.detail);
   }
 

@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import {
-  UpdrawEditor,
-  type HTMLUpdrawEditorElement,
-} from "@updraw/react-editor";
+  UpmadeEditor,
+  type HTMLUpmadeEditorElement,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
@@ -26,7 +26,7 @@ const tools: Array<{ name: ToolName; label: string }> = [
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ToolsChangePage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const [activeTool, setActiveTool] = useState<ToolName>("select");
 
   async function setTool(name: ToolName) {
@@ -43,7 +43,7 @@ export function ToolsChangePage() {
           </button>
         ))}
       </Toolbar>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="tools-change"
         theme="light"

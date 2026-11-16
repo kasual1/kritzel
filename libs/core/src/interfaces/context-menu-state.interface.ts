@@ -1,11 +1,11 @@
-import { UpdrawBaseObject } from '../classes/objects/base-object.class';
+import { UpmadeBaseObject } from '../classes/objects/base-object.class';
 import { ContextMenuItem } from './context-menu-item.interface';
 
-export interface UpdrawContextMenuState {
+export interface UpmadeContextMenuState {
   isVisible: boolean;
   isObjectMenu: boolean;
   items: ContextMenuItem[];
-  objects: UpdrawBaseObject[];
+  objects: UpmadeBaseObject[];
   position: {
     x: number;
     y: number;

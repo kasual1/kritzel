@@ -1,4 +1,4 @@
-export interface UpdrawPoint {
+export interface UpmadePoint {
 	x: number;
 	y: number;
   }

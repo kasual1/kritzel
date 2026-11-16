@@ -1,8 +1,8 @@
 {
-  "name": "@updraw/vue-editor",
+  "name": "@upmade/vue-editor",
   "version": "0.6.2",
-  "homepage": "https://updraw.io/",
-  "description": "Updraw helps you build infinite canvas experiences with Vue.",
+  "homepage": "https://upmade.io/",
+  "description": "Upmade helps you build infinite canvas experiences with Vue.",
   "keywords": [
     "infinite canvas",
     "collaboration",
@@ -35,8 +35,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@updraw/editor": "^0.6.2",
-    "@updraw/engine": "^0.6.2",
+    "@upmade/editor": "^0.6.2",
+    "@upmade/engine": "^0.6.2",
     "@stencil/vue-output-target": "0.11.8"
   }
 }

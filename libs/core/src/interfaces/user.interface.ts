@@ -1,4 +1,4 @@
-export interface IUpdrawUser {
+export interface IUpmadeUser {
   /** Unique user identifier */
   id: string;
 
@@ -29,6 +29,6 @@ export interface IUpdrawUser {
   /** Whether the user is a guest (not authenticated) */
   isGuest?: boolean;
 
-  /** `'agent'` for an `UpdrawAgent`; people leave it unset. */
+  /** `'agent'` for an `UpmadeAgent`; people leave it unset. */
   kind?: 'user' | 'agent';
 }

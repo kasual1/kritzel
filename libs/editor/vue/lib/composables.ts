@@ -5,9 +5,9 @@ import {
 } from "vue";
 
 /**
- * Resolves the native Updraw editor element from a specific Vue template ref.
+ * Resolves the native Upmade editor element from a specific Vue template ref.
  *
- * Because `<UpdrawEditor>` is a Vue component (not a raw custom element),
+ * Because `<UpmadeEditor>` is a Vue component (not a raw custom element),
  * a template ref points to the component instance rather than the DOM element.
  * Pass the same ref that is bound in your template to make sure the resolved
  * editor always belongs to that exact component instance.
@@ -15,7 +15,7 @@ import {
  * @example
  * ```vue
  * <script setup lang="ts">
- * import { UpdrawEditor, getEditorRef } from '@updraw/vue-editor'
+ * import { UpmadeEditor, getEditorRef } from '@upmade/vue-editor'
  * import { ref, type ComponentPublicInstance } from 'vue'
  *
  * const editorComponent = ref<ComponentPublicInstance | null>(null)
@@ -27,7 +27,7 @@ import {
  * </script>
  *
  * <template>
- *   <UpdrawEditor ref="editor" @isReady="onReady" />
+ *   <UpmadeEditor ref="editor" @isReady="onReady" />
  * </template>
  * ```
  */
@@ -40,15 +40,15 @@ export function getEditorRef(componentRef: string) {
     }
 
     return "$el" in value
-      ? ((value.$el as HTMLUpdrawEditorElement | undefined) ?? null)
+      ? ((value.$el as HTMLUpmadeEditorElement | undefined) ?? null)
       : value;
   });
 }
 
 /**
- * Resolves the native Updraw engine element from a specific Vue template ref.
+ * Resolves the native Upmade engine element from a specific Vue template ref.
  *
- * Because `<UpdrawEngine>` is a Vue component (not a raw custom element),
+ * Because `<UpmadeEngine>` is a Vue component (not a raw custom element),
  * a template ref points to the component instance rather than the DOM element.
  * Pass the same ref that is bound in your template to make sure the resolved
  * engine always belongs to that exact component instance.
@@ -62,7 +62,7 @@ export function getEngineRef(componentRef: string) {
     }
 
     return "$el" in value
-      ? ((value.$el as HTMLUpdrawEngineElement | undefined) ?? null)
+      ? ((value.$el as HTMLUpmadeEngineElement | undefined) ?? null)
       : value;
   });
 }

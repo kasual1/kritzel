@@ -1,78 +1,78 @@
-import type { UpdrawCore } from '../core/core.class';
-import type { IUpdrawUser } from '../../interfaces/user.interface';
-import type { UpdrawPoint } from '../../interfaces/point.interface';
+import type { UpmadeCore } from '../core/core.class';
+import type { IUpmadeUser } from '../../interfaces/user.interface';
+import type { UpmadePoint } from '../../interfaces/point.interface';
 import type {
-  UpdrawAgenticAnchor,
-  UpdrawAgenticElementTarget,
-  UpdrawAgenticMoveOptions,
-  UpdrawAgenticMoveResult,
-  UpdrawAgenticObjectTarget,
-  UpdrawAgenticPointTarget,
-  UpdrawAgenticTarget,
+  UpmadeAgenticAnchor,
+  UpmadeAgenticElementTarget,
+  UpmadeAgenticMoveOptions,
+  UpmadeAgenticMoveResult,
+  UpmadeAgenticObjectTarget,
+  UpmadeAgenticPointTarget,
+  UpmadeAgenticTarget,
 } from '../../interfaces/agentic-cursor.interface';
 import type {
-  UpdrawAgenticAction,
-  UpdrawAgenticActionFailureReason,
-  UpdrawAgenticActionOptions,
-  UpdrawAgenticActionResult,
-  UpdrawAgenticCreateShapeAction,
-  UpdrawAgenticOrder,
-  UpdrawAgenticCreateTextAction,
-  UpdrawAgenticDrawLineAction,
-  UpdrawAgenticEditLineAction,
-  UpdrawAgenticUpdateIframeAction,
-  UpdrawAgenticLineStyle,
-  UpdrawAgenticObjectStyle,
-  UpdrawAgenticResizeObjectAction,
-  UpdrawAgenticStrokeStyle,
+  UpmadeAgenticAction,
+  UpmadeAgenticActionFailureReason,
+  UpmadeAgenticActionOptions,
+  UpmadeAgenticActionResult,
+  UpmadeAgenticCreateShapeAction,
+  UpmadeAgenticOrder,
+  UpmadeAgenticCreateTextAction,
+  UpmadeAgenticDrawLineAction,
+  UpmadeAgenticEditLineAction,
+  UpmadeAgenticUpdateIframeAction,
+  UpmadeAgenticLineStyle,
+  UpmadeAgenticObjectStyle,
+  UpmadeAgenticResizeObjectAction,
+  UpmadeAgenticStrokeStyle,
 } from '../../interfaces/agentic-action.interface';
-import type { UpdrawBaseObject } from '../objects/base-object.class';
+import type { UpmadeBaseObject } from '../objects/base-object.class';
 import type {
-  UpdrawAgentEventMap,
-  UpdrawAgentOptions,
-  UpdrawAgentPresence,
-  UpdrawAgentState,
-  UpdrawAgentTool,
-  UpdrawAgentToolResult,
-  UpdrawAgentToolsOptions,
-  UpdrawCanvasObject,
-  UpdrawCanvasSnapshot,
-  UpdrawObserveOptions,
+  UpmadeAgentEventMap,
+  UpmadeAgentOptions,
+  UpmadeAgentPresence,
+  UpmadeAgentState,
+  UpmadeAgentTool,
+  UpmadeAgentToolResult,
+  UpmadeAgentToolsOptions,
+  UpmadeCanvasObject,
+  UpmadeCanvasSnapshot,
+  UpmadeObserveOptions,
 } from '../../interfaces/agent.interface';
-import type { UpdrawObjectElementInteraction } from '../../interfaces/object-element.interface';
-import { UpdrawUserColorHelper } from '../../helpers/user-color.helper';
+import type { UpmadeObjectElementInteraction } from '../../interfaces/object-element.interface';
+import { UpmadeUserColorHelper } from '../../helpers/user-color.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { UpdrawAgentActionError } from './agent-action-error.class';
+import { UpmadeAgentActionError } from './agent-action-error.class';
 import { createAgentTools } from './agent-tools';
 import { buildCanvasSnapshot, describeObject } from './agent-snapshot';
-import { inspectObjectElements, type UpdrawInspectElementsOptions } from './agent-elements';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { inspectObjectElements, type UpmadeInspectElementsOptions } from './agent-elements';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
 import { isElementTarget } from '../../helpers/agentic-geometry.helper';
 
-/** Brand that identifies agents across copies of `@updraw/core`. */
-export const UPDRAW_AGENT_BRAND = Symbol.for('updraw.agent');
+/** Brand that identifies agents across copies of `@upmade/core`. */
+export const UPMADE_AGENT_BRAND = Symbol.for('upmade.agent');
 
 /** Reasons that mean someone else took over the objects of a running action. */
-const INTERRUPTING_REASONS: ReadonlySet<UpdrawAgenticActionFailureReason> = new Set([
+const INTERRUPTING_REASONS: ReadonlySet<UpmadeAgenticActionFailureReason> = new Set([
   'user-selected',
   'user-interaction',
   'collaborator-editing',
   'conflict',
 ]);
 
-type AgentListener<K extends keyof UpdrawAgentEventMap> = (payload: UpdrawAgentEventMap[K]) => void;
+type AgentListener<K extends keyof UpmadeAgentEventMap> = (payload: UpmadeAgentEventMap[K]) => void;
 
 /** Whether the cursor can start at a position: any point or object target, or an element target the object can resolve. */
-function canStartAt(core: UpdrawCore, target: UpdrawAgenticTarget): boolean {
+function canStartAt(core: UpmadeCore, target: UpmadeAgenticTarget): boolean {
   if (!isElementTarget(target)) {
     return true;
   }
-  return target.selector.trim() !== '' && ObjectHelper.isUpdrawElementAwareObject(core.store.objects?.findById(target.objectId));
+  return target.selector.trim() !== '' && ObjectHelper.isUpmadeElementAwareObject(core.store.objects?.findById(target.objectId));
 }
 
-/** Whether a value is an `UpdrawAgent`, also when it comes from another copy of `@updraw/core`. */
-export function isUpdrawAgent(value: unknown): value is UpdrawAgent {
-  return !!value && typeof value === 'object' && (value as Record<symbol, unknown>)[UPDRAW_AGENT_BRAND] === true;
+/** Whether a value is an `UpmadeAgent`, also when it comes from another copy of `@upmade/core`. */
+export function isUpmadeAgent(value: unknown): value is UpmadeAgent {
+  return !!value && typeof value === 'object' && (value as Record<symbol, unknown>)[UPMADE_AGENT_BRAND] === true;
 }
 
 /**
@@ -83,7 +83,7 @@ export function isUpdrawAgent(value: unknown): value is UpdrawAgent {
  * `editor.addAgent(agent)`, then let it act:
  *
  * ```ts
- * const agent = new UpdrawAgent({ name: 'Planner', color: '#7C3AED' });
+ * const agent = new UpmadeAgent({ name: 'Planner', color: '#7C3AED' });
  * await editor.addAgent(agent);
  * await agent.createShape({ x: 0, y: 0, width: 160, height: 80, text: 'Idea' });
  * ```
@@ -91,9 +91,9 @@ export function isUpdrawAgent(value: unknown): value is UpdrawAgent {
  * Agents never take objects away from people: an action whose objects the user has selected or is
  * editing is refused or stopped, and the reason is reported in its result.
  */
-export class UpdrawAgent implements IUpdrawUser {
+export class UpmadeAgent implements IUpmadeUser {
   /** @internal */
-  readonly [UPDRAW_AGENT_BRAND] = true;
+  readonly [UPMADE_AGENT_BRAND] = true;
   /** Keeps Vue from wrapping the agent in a reactive proxy. @internal */
   readonly __v_skip = true;
   /** Always `'agent'`. */
@@ -108,20 +108,20 @@ export class UpdrawAgent implements IUpdrawUser {
   private _broadcast: boolean;
   private _status: string | null;
   private _visible: boolean;
-  private _initialPosition?: UpdrawAgenticTarget;
-  private _core: UpdrawCore | null = null;
+  private _initialPosition?: UpmadeAgenticTarget;
+  private _core: UpmadeCore | null = null;
   private _subscriptions: (() => void)[] = [];
-  private readonly _listeners = new Map<keyof UpdrawAgentEventMap, Set<(payload: unknown) => void>>();
+  private readonly _listeners = new Map<keyof UpmadeAgentEventMap, Set<(payload: unknown) => void>>();
   private _task: { cancelled: boolean } | null = null;
   private _lastStateKey: string | null = null;
 
-  constructor(options: UpdrawAgentOptions) {
+  constructor(options: UpmadeAgentOptions) {
     if (!options || typeof options.name !== 'string' || options.name.trim() === '') {
-      throw new TypeError('An UpdrawAgent needs a non-empty "name".');
+      throw new TypeError('An UpmadeAgent needs a non-empty "name".');
     }
     this.id = options.id ?? `agent-${ObjectHelper.generateUUID(12)}`;
     this._name = options.name;
-    this._color = options.color || UpdrawUserColorHelper.generateColorFromName(options.name);
+    this._color = options.color || UpmadeUserColorHelper.generateColorFromName(options.name);
     this._avatarUrl = options.avatarUrl;
     this._speed = options.speed;
     this._broadcast = options.broadcast ?? true;
@@ -143,7 +143,7 @@ export class UpdrawAgent implements IUpdrawUser {
     this.notifyChange();
   }
 
-  /** Same as `name` (`IUpdrawUser`). */
+  /** Same as `name` (`IUpmadeUser`). */
   get displayName(): string {
     return this._name;
   }
@@ -169,7 +169,7 @@ export class UpdrawAgent implements IUpdrawUser {
     this.notifyChange();
   }
 
-  /** Same as `avatarUrl` (`IUpdrawUser`). */
+  /** Same as `avatarUrl` (`IUpmadeUser`). */
   get profileImageUrl(): string | undefined {
     return this._avatarUrl;
   }
@@ -199,7 +199,7 @@ export class UpdrawAgent implements IUpdrawUser {
   }
 
   /** A snapshot of the agent's state. */
-  get state(): UpdrawAgentState {
+  get state(): UpmadeAgentState {
     const core = this._core;
     const cursor = core?.agenticCursorManager.get(this.id);
     if (!core || !cursor) {
@@ -253,7 +253,7 @@ export class UpdrawAgent implements IUpdrawUser {
 
   /**
    * Moves the cursor to a world point, to an anchor on an object, or to an element inside an object
-   * (`{ objectId, selector }`, e.g. a button in the page of an `UpdrawIframeObject`), where it sticks by default.
+   * (`{ objectId, selector }`, e.g. a button in the page of an `UpmadeIframeObject`), where it sticks by default.
    * Resolves when it arrives; `completed: false` when another move, an action or the agent's removal interrupted it.
    * A running action of the agent stops with `'agent-moved'`.
    *
@@ -261,7 +261,7 @@ export class UpdrawAgent implements IUpdrawUser {
    * elements, isn't mounted or has no visible element that matches the selector, and until then the cursor keeps
    * its current move and attachment. While stuck to the element, the cursor follows it inside the content.
    */
-  async moveTo(target: UpdrawAgenticTarget, options: UpdrawAgenticMoveOptions = {}): Promise<UpdrawAgenticMoveResult> {
+  async moveTo(target: UpmadeAgenticTarget, options: UpmadeAgenticMoveOptions = {}): Promise<UpmadeAgenticMoveResult> {
     const core = this.requireCore();
     return core.agenticCursorManager.move(this.id, target, { ...options, speed: options.speed ?? this._speed });
   }
@@ -279,10 +279,10 @@ export class UpdrawAgent implements IUpdrawUser {
    * Performs an action: the cursor flies to the target, presses and animates the change. Actions of one
    * agent run one after another, in call order. Resolves when the action ends; `completed: false` with a
    * `reason` when it was refused or stopped. An action started while a `task()` runs belongs to that task:
-   * such a result throws `UpdrawAgentActionError` if the task is still running when the action ends.
+   * such a result throws `UpmadeAgentActionError` if the task is still running when the action ends.
    * Rejects for invalid actions and when the agent is not added to an editor.
    */
-  async perform(action: UpdrawAgenticAction, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  async perform(action: UpmadeAgenticAction, options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     const core = this.requireCore();
     // Decided when the action starts: an action started before a task, or by a task that has ended, never throws.
     const task = this._task;
@@ -299,9 +299,9 @@ export class UpdrawAgent implements IUpdrawUser {
    * `interactWithElement(target, { type: 'click' })`.
    */
   click(
-    target: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget | UpdrawAgenticElementTarget,
-    options: { count?: 1 | 2 } & UpdrawAgenticActionOptions = {},
-  ): Promise<UpdrawAgenticActionResult> {
+    target: UpmadeAgenticPointTarget | UpmadeAgenticObjectTarget | UpmadeAgenticElementTarget,
+    options: { count?: 1 | 2 } & UpmadeAgenticActionOptions = {},
+  ): Promise<UpmadeAgenticActionResult> {
     const { count, ...actionOptions } = options;
     return this.perform({ type: 'click', target, ...(count ? { count } : {}) }, actionOptions);
   }
@@ -309,34 +309,34 @@ export class UpdrawAgent implements IUpdrawUser {
   /**
    * Interacts with an element inside an object's content, e.g. clicks a button or fills a field of an iframe
    * widget: the cursor flies to the element and the interaction is performed as a user would (see
-   * `UpdrawObjectElementInteraction`). `element` holds the element afterwards; when the element refuses, the
+   * `UpmadeObjectElementInteraction`). `element` holds the element afterwards; when the element refuses, the
    * result has `reason: 'element-interaction-failed'` with `elementReason` and `message`.
    */
   interactWithElement(
-    target: UpdrawAgenticElementTarget,
-    interaction: UpdrawObjectElementInteraction,
-    options: UpdrawAgenticActionOptions = {},
-  ): Promise<UpdrawAgenticActionResult> {
+    target: UpmadeAgenticElementTarget,
+    interaction: UpmadeObjectElementInteraction,
+    options: UpmadeAgenticActionOptions = {},
+  ): Promise<UpmadeAgenticActionResult> {
     return this.perform({ type: 'interactWithElement', target, interaction }, options);
   }
 
   /** Selects top-level objects for the agent. Never changes the user's selection. */
-  select(objectIds: string[], options: { additive?: boolean } & UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  select(objectIds: string[], options: { additive?: boolean } & UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     const { additive, ...actionOptions } = options;
     return this.perform({ type: 'select', objectIds, ...(additive !== undefined ? { additive } : {}) }, actionOptions);
   }
 
   /** Clears the agent's selection. */
-  clearSelection(options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  clearSelection(options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     return this.perform({ type: 'clearSelection' }, options);
   }
 
   /** Drags an object so that its `align` point (default `'center'`) lands on `to`. */
   moveObject(
     objectId: string,
-    to: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget,
-    options: { align?: UpdrawAgenticAnchor } & UpdrawAgenticActionOptions = {},
-  ): Promise<UpdrawAgenticActionResult> {
+    to: UpmadeAgenticPointTarget | UpmadeAgenticObjectTarget,
+    options: { align?: UpmadeAgenticAnchor } & UpmadeAgenticActionOptions = {},
+  ): Promise<UpmadeAgenticActionResult> {
     const { align, ...actionOptions } = options;
     return this.perform({ type: 'moveObject', objectId, to, ...(align ? { align } : {}) }, actionOptions);
   }
@@ -344,14 +344,14 @@ export class UpdrawAgent implements IUpdrawUser {
   /** Resizes an object by dragging a corner handle. */
   resizeObject(
     objectId: string,
-    size: Omit<UpdrawAgenticResizeObjectAction, 'type' | 'objectId'>,
-    options: UpdrawAgenticActionOptions = {},
-  ): Promise<UpdrawAgenticActionResult> {
+    size: Omit<UpmadeAgenticResizeObjectAction, 'type' | 'objectId'>,
+    options: UpmadeAgenticActionOptions = {},
+  ): Promise<UpmadeAgenticActionResult> {
     return this.perform({ ...size, type: 'resizeObject', objectId }, options);
   }
 
   /** Rotates an object to `angle` degrees clockwise, or by `angle` with `relative: true`. */
-  rotateObject(objectId: string, angle: number, options: { relative?: boolean } & UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  rotateObject(objectId: string, angle: number, options: { relative?: boolean } & UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     const { relative, ...actionOptions } = options;
     return this.perform({ type: 'rotateObject', objectId, angle, ...(relative !== undefined ? { relative } : {}) }, actionOptions);
   }
@@ -362,34 +362,34 @@ export class UpdrawAgent implements IUpdrawUser {
    */
   copyObjects(
     objectIds: string[],
-    options: { to?: UpdrawAgenticPointTarget | UpdrawAgenticObjectTarget } & UpdrawAgenticActionOptions = {},
-  ): Promise<UpdrawAgenticActionResult> {
+    options: { to?: UpmadeAgenticPointTarget | UpmadeAgenticObjectTarget } & UpmadeAgenticActionOptions = {},
+  ): Promise<UpmadeAgenticActionResult> {
     const { to, ...actionOptions } = options;
     return this.perform({ type: 'copyObjects', objectIds, ...(to ? { to } : {}) }, actionOptions);
   }
 
   /** Groups at least two objects. `objectIds` holds the group's ID. */
-  groupObjects(objectIds: string[], options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  groupObjects(objectIds: string[], options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     return this.perform({ type: 'groupObjects', objectIds }, options);
   }
 
   /** Dissolves groups. `objectIds` holds their children's IDs. */
-  ungroupObjects(objectIds: string[], options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  ungroupObjects(objectIds: string[], options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     return this.perform({ type: 'ungroupObjects', objectIds }, options);
   }
 
   /** Moves objects to the front or back of the stacking order, or one layer forward or backward. */
-  orderObjects(objectIds: string[], order: UpdrawAgenticOrder, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  orderObjects(objectIds: string[], order: UpmadeAgenticOrder, options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     return this.perform({ type: 'orderObjects', objectIds, order }, options);
   }
 
   /** Drags out a new shape. `objectIds` holds its ID. */
-  createShape(shape: Omit<UpdrawAgenticCreateShapeAction, 'type'>, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  createShape(shape: Omit<UpmadeAgenticCreateShapeAction, 'type'>, options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     return this.perform({ ...shape, type: 'createShape' }, options);
   }
 
   /** Creates a text object and types into it. `objectIds` holds its ID. */
-  createText(text: Omit<UpdrawAgenticCreateTextAction, 'type'>, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  createText(text: Omit<UpmadeAgenticCreateTextAction, 'type'>, options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     return this.perform({ ...text, type: 'createText' }, options);
   }
 
@@ -397,20 +397,20 @@ export class UpdrawAgent implements IUpdrawUser {
   typeText(
     objectId: string,
     text: string,
-    options: { mode?: 'append' | 'replace' } & UpdrawAgenticActionOptions = {},
-  ): Promise<UpdrawAgenticActionResult> {
+    options: { mode?: 'append' | 'replace' } & UpmadeAgenticActionOptions = {},
+  ): Promise<UpmadeAgenticActionResult> {
     const { mode, ...actionOptions } = options;
     return this.perform({ type: 'typeText', objectId, text, ...(mode ? { mode } : {}) }, actionOptions);
   }
 
   /** Draws a freehand stroke through the world points. */
-  drawPath(points: UpdrawPoint[], options: { style?: UpdrawAgenticStrokeStyle } & UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  drawPath(points: UpmadePoint[], options: { style?: UpmadeAgenticStrokeStyle } & UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     const { style, ...actionOptions } = options;
     return this.perform({ type: 'drawPath', points, ...(style ? { style } : {}) }, actionOptions);
   }
 
   /** Draws a line from one object to another and anchors both ends, so it follows them. */
-  connect(from: string, to: string, options: { style?: UpdrawAgenticLineStyle } & UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  connect(from: string, to: string, options: { style?: UpmadeAgenticLineStyle } & UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     const { style, ...actionOptions } = options;
     return this.perform({ type: 'connect', from, to, ...(style ? { style } : {}) }, actionOptions);
   }
@@ -419,12 +419,12 @@ export class UpdrawAgent implements IUpdrawUser {
    * Draws a line like the line tool: each end is a free point or an object (the end then follows it), and
    * `through` curves the line through a point halfway along it.
    */
-  drawLine(line: Omit<UpdrawAgenticDrawLineAction, 'type'>, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  drawLine(line: Omit<UpmadeAgenticDrawLineAction, 'type'>, options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     return this.perform({ type: 'drawLine', ...line }, options);
   }
 
   /** Changes a line with its handles: moves or attaches its ends, and curves or straightens it. */
-  editLine(lineId: string, changes: Omit<UpdrawAgenticEditLineAction, 'type' | 'lineId'>, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  editLine(lineId: string, changes: Omit<UpmadeAgenticEditLineAction, 'type' | 'lineId'>, options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     return this.perform({ type: 'editLine', lineId, ...changes }, options);
   }
 
@@ -434,38 +434,38 @@ export class UpdrawAgent implements IUpdrawUser {
    */
   updateIframe(
     objectId: string,
-    changes: Omit<UpdrawAgenticUpdateIframeAction, 'type' | 'objectId'>,
-    options: UpdrawAgenticActionOptions = {},
-  ): Promise<UpdrawAgenticActionResult> {
+    changes: Omit<UpmadeAgenticUpdateIframeAction, 'type' | 'objectId'>,
+    options: UpmadeAgenticActionOptions = {},
+  ): Promise<UpmadeAgenticActionResult> {
     return this.perform({ type: 'updateIframe', objectId, ...changes }, options);
   }
 
   /** Restyles top-level objects; groups style their children. Fields that don't apply to an object are ignored. */
-  setStyle(objectIds: string[], style: UpdrawAgenticObjectStyle, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  setStyle(objectIds: string[], style: UpmadeAgenticObjectStyle, options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     return this.perform({ type: 'setStyle', objectIds, style }, options);
   }
 
   /**
-   * Places an object the app built, e.g. `new UpdrawIframeObject({ ... })`, as the agent's change: the
+   * Places an object the app built, e.g. `new UpmadeIframeObject({ ... })`, as the agent's change: the
    * cursor hops there and the object appears. The object gets a fresh ID (also in `objectIds`).
    * Unlike `editor.addObject()`, the user's selection and undo history stay untouched.
    */
-  addObject(object: UpdrawBaseObject<any>, options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  addObject(object: UpmadeBaseObject<any>, options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     return this.perform({ type: 'addObject', object }, options);
   }
 
   /** Deletes top-level objects. */
-  deleteObjects(objectIds: string[], options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  deleteObjects(objectIds: string[], options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     return this.perform({ type: 'deleteObjects', objectIds }, options);
   }
 
   /** Undoes the agent's last action. Never touches the user's or other agents' history. */
-  undo(options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  undo(options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     return this.perform({ type: 'undo' }, options);
   }
 
   /** Redoes the agent's last undone action. */
-  redo(options: UpdrawAgenticActionOptions = {}): Promise<UpdrawAgenticActionResult> {
+  redo(options: UpmadeAgenticActionOptions = {}): Promise<UpmadeAgenticActionResult> {
     return this.perform({ type: 'redo' }, options);
   }
 
@@ -483,7 +483,7 @@ export class UpdrawAgent implements IUpdrawUser {
 
   /**
    * Runs a script of actions as one task: `label` is shown as the status while it runs, and the first
-   * action that does not complete throws an `UpdrawAgentActionError` out of `fn`. `cancel()` stops the
+   * action that does not complete throws an `UpmadeAgentActionError` out of `fn`. `cancel()` stops the
    * task. Every action of the agent started while the task runs belongs to it, also one started outside `fn`.
    * An agent runs one task at a time.
    */
@@ -514,7 +514,7 @@ export class UpdrawAgent implements IUpdrawUser {
    * call `run(input, { signal })` with its input; the result is JSON for the model. `only` limits what the
    * model may do.
    */
-  tools(options: UpdrawAgentToolsOptions = {}): UpdrawAgentTool[] {
+  tools(options: UpmadeAgentToolsOptions = {}): UpmadeAgentTool[] {
     return createAgentTools(this, options);
   }
 
@@ -522,7 +522,7 @@ export class UpdrawAgent implements IUpdrawUser {
    * What the agent sees of the canvas: the viewport, the user's selection, its own cursor and selection, and
    * the objects with their geometry, text, connections and style. Rejects while the agent is not added.
    */
-  async observe(options: UpdrawObserveOptions = {}): Promise<UpdrawCanvasSnapshot> {
+  async observe(options: UpmadeObserveOptions = {}): Promise<UpmadeCanvasSnapshot> {
     return buildCanvasSnapshot(this.requireCore(), this.id, options);
   }
 
@@ -532,7 +532,7 @@ export class UpdrawAgent implements IUpdrawUser {
   }
 
   /** The elements inside an object's content, for `inspect_elements`. @internal */
-  _inspectElements(objectId: string, options: UpdrawInspectElementsOptions = {}): Promise<UpdrawAgentToolResult> {
+  _inspectElements(objectId: string, options: UpmadeInspectElementsOptions = {}): Promise<UpmadeAgentToolResult> {
     if (!this._core) {
       return Promise.resolve({ completed: false, reason: 'agent-removed' });
     }
@@ -540,7 +540,7 @@ export class UpdrawAgent implements IUpdrawUser {
   }
 
   /** Snapshot entries of objects, for tool results. @internal */
-  _describeObjects(objectIds: string[]): UpdrawCanvasObject[] {
+  _describeObjects(objectIds: string[]): UpmadeCanvasObject[] {
     const core = this.requireCore();
     const theme = core.themeManager?.currentTheme ?? 'light';
     return objectIds
@@ -552,7 +552,7 @@ export class UpdrawAgent implements IUpdrawUser {
   // ─── Events ─────────────────────────────────────────────────────────────────
 
   /** Subscribes to an event; returns a function that unsubscribes. */
-  on<K extends keyof UpdrawAgentEventMap>(event: K, listener: AgentListener<K>): () => void {
+  on<K extends keyof UpmadeAgentEventMap>(event: K, listener: AgentListener<K>): () => void {
     let listeners = this._listeners.get(event);
     if (!listeners) {
       listeners = new Set();
@@ -563,7 +563,7 @@ export class UpdrawAgent implements IUpdrawUser {
   }
 
   /** How the agent is shown in avatar stacks and `agentsChange`. */
-  toPresence(): UpdrawAgentPresence {
+  toPresence(): UpmadeAgentPresence {
     const state = this.state;
     return {
       id: this.id,
@@ -583,12 +583,12 @@ export class UpdrawAgent implements IUpdrawUser {
   // ─── Lifecycle (called by the editor's agent manager) ───────────────────────
 
   /** The core the agent is added to. @internal */
-  get _owner(): UpdrawCore | null {
+  get _owner(): UpmadeCore | null {
     return this._core;
   }
 
   /** Creates the cursor in `core` and starts listening. Throws if the cursor can't be created. @internal */
-  _attach(core: UpdrawCore): void {
+  _attach(core: UpmadeCore): void {
     // The start position may name an object that is gone, that this editor's document never had (an agent added
     // again, or moved from a removed editor), that has no position, or that can't point at elements for an element
     // target: the cursor then starts at the viewport center.
@@ -680,7 +680,7 @@ export class UpdrawAgent implements IUpdrawUser {
     this.notifyChange();
   }
 
-  private requireCore(): UpdrawCore {
+  private requireCore(): UpmadeCore {
     if (!this._core) {
       throw new Error(`Agent "${this.id}" is not added to an editor. Call editor.addAgent(agent) first.`);
     }
@@ -688,12 +688,12 @@ export class UpdrawAgent implements IUpdrawUser {
   }
 
   private settle(
-    action: UpdrawAgenticAction,
-    result: UpdrawAgenticActionResult,
+    action: UpmadeAgenticAction,
+    result: UpmadeAgenticActionResult,
     task: { cancelled: boolean } | null,
-  ): UpdrawAgenticActionResult {
+  ): UpmadeAgenticActionResult {
     if (task && task === this._task && !result.completed) {
-      throw new UpdrawAgentActionError(action, result);
+      throw new UpmadeAgentActionError(action, result);
     }
     return result;
   }
@@ -714,7 +714,7 @@ export class UpdrawAgent implements IUpdrawUser {
     this.emit('change', state);
   }
 
-  private emit<K extends keyof UpdrawAgentEventMap>(event: K, payload: UpdrawAgentEventMap[K]): void {
-    this._listeners.get(event)?.forEach(listener => UpdrawEventHelper.callListener(() => listener(payload), `Agent "${event}" listener`));
+  private emit<K extends keyof UpmadeAgentEventMap>(event: K, payload: UpmadeAgentEventMap[K]): void {
+    this._listeners.get(event)?.forEach(listener => UpmadeEventHelper.callListener(() => listener(payload), `Agent "${event}" listener`));
   }
 }

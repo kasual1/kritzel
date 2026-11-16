@@ -1,17 +1,17 @@
 import { defineCustomElement, type DefineComponent } from 'vue';
 import {
-  UpdrawDynamicObjectRendererRegistry,
-  type UpdrawDynamicObjectRenderContext,
-  type UpdrawDynamicObjectRenderer,
-} from '@updraw/engine';
+  UpmadeDynamicObjectRendererRegistry,
+  type UpmadeDynamicObjectRenderContext,
+  type UpmadeDynamicObjectRenderer,
+} from '@upmade/engine';
 
 export interface VueDynamicObjectRendererOptions<TState = unknown> {
   tagName: string;
   component: DefineComponent<any, any, any, any, any, any, any, any>;
   createInitialState?: () => TState;
-  getInitialState?: (data: unknown, context: UpdrawDynamicObjectRenderContext) => TState;
-  mapProps?: (state: TState | undefined, context: UpdrawDynamicObjectRenderContext) => Record<string, unknown>;
-  normalizeState?: (state: unknown, context: UpdrawDynamicObjectRenderContext) => TState;
+  getInitialState?: (data: unknown, context: UpmadeDynamicObjectRenderContext) => TState;
+  mapProps?: (state: TState | undefined, context: UpmadeDynamicObjectRenderContext) => Record<string, unknown>;
+  normalizeState?: (state: unknown, context: UpmadeDynamicObjectRenderContext) => TState;
   onStateChangeProp?: string | null;
   styles?: string;
 }
@@ -29,7 +29,7 @@ function setHostProps(host: HTMLElement, props: Record<string, unknown>): void {
 
 export function createVueDynamicObjectRenderer<TState = unknown>(
   options: VueDynamicObjectRendererOptions<TState>,
-): UpdrawDynamicObjectRenderer {
+): UpmadeDynamicObjectRenderer {
   const mountedElements = new Map<string, MountedVueCustomElement<TState>>();
 
   const ensureCustomElementDefined = () => {
@@ -112,9 +112,9 @@ export function registerVueDynamicObjectRenderer<TState = unknown>(
   options: VueDynamicObjectRendererOptions<TState>,
 ): () => void {
   const renderer = createVueDynamicObjectRenderer(options);
-  UpdrawDynamicObjectRendererRegistry.register(rendererKey, renderer);
+  UpmadeDynamicObjectRendererRegistry.register(rendererKey, renderer);
 
   return () => {
-    UpdrawDynamicObjectRendererRegistry.unregister(rendererKey);
+    UpmadeDynamicObjectRendererRegistry.unregister(rendererKey);
   };
 }

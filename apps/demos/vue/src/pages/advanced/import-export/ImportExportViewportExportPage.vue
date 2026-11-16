@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getEditorRef, UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
+import { getEditorRef, UpmadeEditor, UpmadeWorkspace } from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -7,7 +7,7 @@ import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 
 async function exportAsPng(): Promise<void> {
   await editor.value?.exportViewportAsPng()
@@ -25,7 +25,7 @@ async function exportAsSvg(): Promise<void> {
       <button type="button" @click="exportAsSvg">Export as SVG</button>
     </Toolbar>
     <div class="editor-wrap">
-      <UpdrawEditor
+      <UpmadeEditor
         ref="editor"
         editorId="import-export-viewport-export"
         theme="light"
