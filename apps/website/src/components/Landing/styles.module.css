@@ -2153,7 +2153,9 @@
 .wordmark {
   position: relative;
   z-index: 0;
-  margin-bottom: -36px;
+  /* Sink the word into the footer (the page clips it): 10% of its width, i.e. the whole "p" descender and the bottom
+     ~30% of the x-height. The SVG is min(880px, 100vw - 64px) wide. */
+  margin-bottom: max(-88px, calc((64px - 100vw) * 0.1));
   padding: 72px 32px 0;
   background: #ffffff;
 }
