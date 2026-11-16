@@ -145,7 +145,8 @@ Before the window, check that the move can't fail halfway:
 
 ```bash
 test ! -e ~/upmade-app && echo ok                # must not exist, or mv would nest the directory
-docker volume ls | grep pgdata_prod              # updraw-app_pgdata_prod (and kritzel-app_pgdata_prod, if the first cutover's copy is still kept)
+docker volume inspect upmade-app_pgdata_prod > /dev/null 2>&1 && echo 'exists: set it aside first, see Rollback' || echo ok
+docker volume ls | grep pgdata_prod              # updraw-app_pgdata_prod (and kritzel-app_pgdata_prod, if the first cutover's copy is still kept), no upmade-app_pgdata_prod yet
 docker system df -v | grep pgdata_prod           # size of the volume that is copied
 df -h /var/lib/docker ~                          # room for a second copy of it and a dump
 ```
@@ -163,7 +164,7 @@ docker compose -f docker-compose.prod.yml down          # no -v
 cd ~ && test ! -e ~/upmade-app && mv ~/updraw-app ~/upmade-app && cd ~/upmade-app
 docker compose -p upmade-app -f docker-compose.prod.yml create postgres
 docker volume inspect updraw-app_pgdata_prod > /dev/null   # fails if the old volume has another name
-docker run --rm -v updraw-app_pgdata_prod:/from:ro -v upmade-app_pgdata_prod:/to alpine sh -c 'cp -a /from/. /to/'
+docker run --rm -v updraw-app_pgdata_prod:/from:ro -v upmade-app_pgdata_prod:/to alpine sh -c 'if [ -n "$(ls -A /to)" ]; then echo "upmade-app_pgdata_prod is not empty: stop, see Rollback" >&2; exit 1; fi; cp -a /from/. /to/'
 docker compose -p upmade-app -f docker-compose.prod.yml up -d postgres
 docker compose -p upmade-app -f docker-compose.prod.yml exec -T postgres psql -U postgres -d postgres -c 'ALTER DATABASE updraw RENAME TO upmade'
 ```
@@ -173,7 +174,7 @@ docker compose -p upmade-app -f docker-compose.prod.yml exec -T postgres psql -U
 - Until step 4 copies the new files, `~/upmade-app` still holds the Updraw compose file, which sets `name: updraw-app`. `-p upmade-app` overrides it, so the new volume is `upmade-app_pgdata_prod`; without it, compose would start the old project on the old volume again.
 - Never use `down -v`: it deletes the database volume.
 - If `test ! -e ~/upmade-app` fails, someone created the directory: move it aside (`mv ~/upmade-app ~/upmade-app.early`) and continue. If `docker volume inspect` fails, look up the real volume name with `docker volume ls` and use it in the copy; `docker run -v` would otherwise create an empty volume and copy nothing.
-- `create postgres` creates the empty `upmade-app_pgdata_prod` volume without starting Postgres, so `init.sql` never runs on it. The old `updraw-app_pgdata_prod` volume is only read, and stays as the rollback copy.
+- `create postgres` creates the empty `upmade-app_pgdata_prod` volume without starting Postgres, so `init.sql` never runs on it. If the volume already exists (an earlier attempt), compose silently reuses it, and copying into it would mix two database clusters; the copy therefore refuses a volume that is not empty. Set the earlier attempt's volume aside as described under [Rollback](#rollback) and start step 3 again. The old `updraw-app_pgdata_prod` volume is only read, and stays as the rollback copy.
 
 Check the result:
 
@@ -302,7 +303,7 @@ for pkg in core engine editor angular-engine angular-editor react-engine react-e
 done
 ```
 
-- **Keep the old data until the cutover is verified** (e.g. two weeks): the `updraw-app_pgdata_prod` volume, `~/pre-upmade.sql` and `~/upmade-app/.env.pre-upmade`. Then remove them, together with the first cutover's leftovers if they are still there (`kritzel-app_pgdata_prod`, `~/pre-updraw.sql`, `~/upmade-app/.env.pre-updraw`), and the old app hosts' entries in Google OAuth and R2 CORS:
+- **Keep the old data until the cutover is verified** (e.g. two weeks): the `updraw-app_pgdata_prod` volume, `~/pre-upmade.sql` and `~/upmade-app/.env.pre-upmade`. Then remove them, together with the first cutover's leftovers if they are still there (`kritzel-app_pgdata_prod`, `~/pre-updraw.sql`, `~/upmade-app/.env.pre-updraw`), a volume set aside after a failed attempt (`upmade-app_pgdata_prod_attempt1`), and the old app hosts' entries in Google OAuth and R2 CORS:
 
 ```bash
 docker volume rm updraw-app_pgdata_prod
@@ -342,6 +343,13 @@ gh workflow run deploy-app.yml --ref pre-upmade
 ```
 
 If the `app-prod` environment only allows deployments from `main`, allow the `pre-upmade` tag in its deployment branch and tag rules first (repository settings, Environments). The new migration's `down()` only renames `upmade-*` ids back to `updraw-*`; objects edited after the cutover are saved as `Upmade*`, which the Updraw app cannot read, so roll back from the old volume as above, never with `migration:revert`.
+
+**Before trying the cutover again**, set the failed attempt's volume aside: it holds the only copy of what users wrote after the cutover, and step 3 needs a new, empty `upmade-app_pgdata_prod`. Keep it under another name (this needs room for one more copy) and remove it only once nothing in it is needed:
+
+```bash
+docker run --rm -v upmade-app_pgdata_prod:/from:ro -v upmade-app_pgdata_prod_attempt1:/to alpine sh -c 'cp -a /from/. /to/'
+docker volume rm upmade-app_pgdata_prod
+```
 
 Finally, revert the redirect rules and the `ngsw.json` Workers from step 5 (back to the first cutover's targets). Browser-local data the Upmade client wrote (guest work, settings) stays under the Upmade names, which the Updraw client does not read. Last resort if a volume is damaged: restore `~/pre-upmade.sql` into a fresh volume with `psql -U postgres -d postgres < ~/pre-upmade.sql`.
 

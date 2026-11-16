@@ -216,7 +216,11 @@ The dev compose project is now `upmade-app`, so `app:dev` starts with a fresh `u
 
 Copy the newest one you used: `updraw-app_pgdata_dev`, or `kritzel-app_pgdata_dev` if you never ran the Updraw setup.
 
+First stop the old stack. `npm run app:stop` and the commands in this file only reach `upmade-app` now, so a running `updraw-app` or `kritzel-app` stack would keep writing to the volume you copy and keep ports 5432 and 8080, and `up -d postgres` below would fail with `port is already allocated`:
+
 ```bash
+docker compose -p updraw-app down    # no -v: the old volume is what you copy
+docker compose -p kritzel-app down   # Kritzel-era setups; does nothing if there is no such stack
 docker volume ls | grep pgdata_dev
 ```
 
