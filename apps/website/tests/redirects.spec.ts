@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, test } from 'vitest';
-import config from '../docusaurus.config';
 
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -22,18 +21,6 @@ function readRedirects(): Redirect[] {
       const [from, to, status] = line.split(/\s+/);
       return { from, to, status };
     });
-}
-
-type ClientRedirect = Pick<Redirect, 'from' | 'to'>;
-
-// The client-side redirects that @docusaurus/plugin-client-redirects builds from LEGACY_DOC_PATHS.
-function readClientRedirects(): ClientRedirect[] {
-  const plugin = config.plugins?.find(
-    (entry): entry is [string, { redirects: ClientRedirect[] }] =>
-      Array.isArray(entry) && entry[0] === '@docusaurus/plugin-client-redirects',
-  );
-  if (!plugin) throw new Error('@docusaurus/plugin-client-redirects is not configured');
-  return plugin[1].redirects;
 }
 
 // Resolves a site route to the file it is built or served from, if any: a doc, a blog post
@@ -127,7 +114,7 @@ describe('static/_redirects', () => {
 
   test('no target is redirected again', () => {
     const withoutSlash = (route: string) => route.replace(/\/$/, '');
-    const sources = new Set([...redirects, ...readClientRedirects()].map((redirect) => withoutSlash(redirect.from)));
+    const sources = new Set(redirects.map((redirect) => withoutSlash(redirect.from)));
     const chained = redirects
       .filter((redirect) => sources.has(withoutSlash(redirect.to)))
       .map((redirect) => `${redirect.from} -> ${redirect.to}`);
@@ -154,37 +141,36 @@ describe('static/_redirects', () => {
   });
 });
 
-describe('client-side doc redirects', () => {
-  const redirects = readClientRedirects();
+describe('renamed documentation pages', () => {
+  const redirects = readRedirects();
 
-  test('every target is an existing doc', () => {
-    expect(redirects.length).toBeGreaterThan(0);
+  // Pages are matched with and without a trailing slash, so links in either form get the 301.
+  test('every page source is listed with and without a trailing slash', () => {
+    const sources = new Set(redirects.map((redirect) => redirect.from));
     const missing = redirects
-      .filter((redirect) => !routeSource(redirect.to)?.startsWith('docs/'))
-      .map((redirect) => `${redirect.from} -> ${redirect.to}`);
+      .filter((redirect) => !/\.\w+$/.test(redirect.from))
+      .map((redirect) => (redirect.from.endsWith('/') ? redirect.from.slice(0, -1) : `${redirect.from}/`))
+      .filter((variant) => !sources.has(variant));
     expect(missing).toEqual([]);
-  });
-
-  test('no source shadows an existing doc or is also in static/_redirects', () => {
-    const serverSources = new Set(readRedirects().map((redirect) => redirect.from.replace(/\/$/, '')));
-    const conflicting = redirects
-      .filter((redirect) => routeSource(redirect.from) || serverSources.has(redirect.from))
-      .map((redirect) => redirect.from);
-    expect(conflicting).toEqual([]);
   });
 
   test('the migration guide keeps its Updraw-era URL', () => {
     for (const framework of ['angular', 'react', 'vue']) {
-      expect(redirects).toContainEqual({
-        from: `/docs/${framework}/getting-started/migrating-to-updraw`,
-        to: `/docs/${framework}/getting-started/migrating-to-upmade`,
-      });
-      // Its Markdown export is a static file, so it needs a server-side redirect.
-      expect(readRedirects()).toContainEqual({
-        from: `/docs/${framework}/getting-started/migrating-to-updraw.md`,
-        to: `/docs/${framework}/getting-started/migrating-to-upmade.md`,
-        status: '301',
-      });
+      const from = `/docs/${framework}/getting-started/migrating-to-updraw`;
+      const to = `/docs/${framework}/getting-started/migrating-to-upmade`;
+      for (const source of [from, `${from}/`]) {
+        expect(redirects).toContainEqual({ from: source, to: `${to}/`, status: '301' });
+      }
+      // Its Markdown export, which llms.txt listed
+      expect(redirects).toContainEqual({ from: `${from}.md`, to: `${to}.md`, status: '301' });
     }
+  });
+
+  test('the quick start keeps its flat URL', () => {
+    expect(redirects).toContainEqual({
+      from: '/docs/react/quick-start',
+      to: '/docs/react/getting-started/quick-start/',
+      status: '301',
+    });
   });
 });

@@ -24,7 +24,6 @@
   "dependencies": {
     "@docusaurus/core": "^3.10.0",
     "@docusaurus/faster": "^3.10.0",
-    "@docusaurus/plugin-client-redirects": "^3.10.2",
     "@docusaurus/preset-classic": "^3.10.0",
     "@docusaurus/theme-mermaid": "^3.10.0",
     "@fontsource-variable/caveat": "^5.3.0",

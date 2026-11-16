@@ -32,50 +32,6 @@ const ABSOLUTE_URL = (path: string) =>
 
 const FRAMEWORKS = ["angular", "react", "vue"] as const;
 
-// Legacy doc paths -> current paths (flat pages moved into categories, renamed pages), applied to every framework
-// instance. tests/redirects.spec.ts checks the redirects they produce.
-const LEGACY_DOC_PATHS: Record<string, string> = {
-  "quick-start": "getting-started/quick-start",
-  "basic-usage": "getting-started/basic-usage",
-  "concept-tools": "fundamentals/tools",
-  "concept-objects": "fundamentals/objects",
-  "concept-viewport": "fundamentals/viewport",
-  "concept-workspaces": "fundamentals/workspaces",
-  "concept-persistence": "fundamentals/persistence",
-  "advanced/concept-collaboration": "advanced/collaboration",
-  "advanced/concept-dynamic-objects": "advanced/dynamic-objects",
-  "advanced/concept-user-management": "advanced/user-management",
-  "advanced/agentic-cursors": "advanced/agents",
-  "advanced/chat-sessions": "advanced/agents",
-  "advanced/customization/concept-theming": "customization/themes",
-  "advanced/customization/concept-fonts": "customization/fonts",
-  "advanced/customization/concept-icons": "customization/icons",
-  "advanced/customization/concept-localization": "customization/locales",
-  "customization/titlebars": "fundamentals/controls",
-  "customization/object-config": "fundamentals/objects",
-  "example-object-explorer": "examples/object-explorer",
-  "example-blueprint-defect-mapper": "examples/blueprint-defect-mapper",
-  "example-slideshow-presentation": "examples/slideshow-presentation",
-  "example-image-annotation-studio": "examples/image-annotation-studio",
-  "api-reference-editor": "api-reference/editor",
-  "api-reference-engine": "api-reference/engine",
-  objects: "api-reference/objects",
-  theming: "api-reference/theme-tokens",
-  types: "api-reference/types",
-  // The migration guide was published as migrating-to-updraw before the Upmade rebrand.
-  "getting-started/migrating-to-updraw": "getting-started/migrating-to-upmade",
-};
-
-const DOC_REDIRECTS = FRAMEWORKS.flatMap((framework) =>
-  Object.entries(LEGACY_DOC_PATHS)
-    // not every page exists for every framework
-    .filter(([, to]) => fs.existsSync(nodePath.join(__dirname, "docs", framework, `${to}.md`)))
-    .map(([from, to]) => ({
-      from: `/docs/${framework}/${from}`,
-      to: `/docs/${framework}/${to}`,
-    })),
-);
-
 const config: Config = {
   title: "Upmade",
   tagline: "Upmade helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools. Fully open-source and easy to integrate into React, Vue & Angular.",
@@ -264,12 +220,6 @@ const config: Config = {
         },
       };
     },
-    [
-      "@docusaurus/plugin-client-redirects",
-      {
-        redirects: DOC_REDIRECTS,
-      },
-    ],
     [
       "@docusaurus/plugin-content-docs",
       {
