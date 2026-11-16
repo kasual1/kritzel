@@ -23,14 +23,15 @@ jobs:
 
       # Locally the client uses the upmade libs from this repo (a file: dep on @upmade/angular-editor,
       # plus overrides pointing its @upmade/editor, @upmade/engine and @upmade/core deps at libs/). Production uses
-      # the published npm packages matching the version currently declared in libs/.
+      # the published npm packages matching the version currently declared in libs/ (step 2 of
+      # apps/app/docs/rebrand-cutover.md publishes the first @upmade/* release).
       - name: Switch client to published upmade packages
         run: |
           set -eu
           VERSION=$(jq -r .version libs/editor/core/package.json)
           for pkg in angular-editor editor engine core; do
             if [ -z "$(npm view "@upmade/$pkg@$VERSION" version 2>/dev/null)" ]; then
-              echo "::error::@upmade/$pkg@$VERSION is not published on npm. Publish the libraries first."
+              echo "::error::@upmade/$pkg@$VERSION is not published on npm. Publish the libraries first (deploy-libs, step 2 of apps/app/docs/rebrand-cutover.md)."
               exit 1
             fi
           done
@@ -89,13 +90,18 @@ jobs:
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: |
             set -eu
-            # The one-time move from the pre-rename directory must have happened (it carries .env and the data).
+            # The one-time move from ~/updraw-app (step 3 of apps/app/docs/rebrand-cutover.md) must have happened:
+            # it brings .env along and stops the updraw-app stack, which would keep the host ports and take writes.
             test -f ~/upmade-app/.env || { echo "~/upmade-app/.env is missing: run step 3 of apps/app/docs/rebrand-cutover.md first."; exit 1; }
+            if [ -n "$(docker ps -q --filter label=com.docker.compose.project=updraw-app)" ]; then
+              echo "The updraw-app stack is still running: stop it as in step 3 of apps/app/docs/rebrand-cutover.md first."
+              exit 1
+            fi
             rm -rf ~/upmade-app/client/dist
 
       # strip_components drops the "apps/app" prefix so the files land directly in ~/upmade-app, next to the
       # server's .env. The compose project (and its pgdata volume) is named by docker-compose.prod.yml.
-      # ~/upmade-app must already exist: apps/app/docs/rebrand-cutover.md moves it once from ~/kritzel-app.
+      # ~/upmade-app must already exist: apps/app/docs/rebrand-cutover.md moves it once from ~/updraw-app.
       - name: Copy files to Lightsail
         uses: appleboy/scp-action@v0.1.7
         with:

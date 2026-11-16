@@ -209,17 +209,26 @@ docker compose --env-file .env.dev -f docker-compose.dev.yml restart api
 
 ## Local setup from before the rename
 
-The dev compose project is now `upmade-app` (it was `kritzel-app`), so `app:dev` starts with a fresh `upmade-app_pgdata_dev` volume and the database `upmade`.
+The dev compose project is now `upmade-app`, so `app:dev` starts with a fresh `upmade-app_pgdata_dev` volume and the database `upmade`. Earlier setups used `updraw-app` (volume `updraw-app_pgdata_dev`, database `updraw`) or, before that, `kritzel-app` (volume `kritzel-app_pgdata_dev`, database `kritzel`).
 
 - In `.env.dev`, change the database name at the end of `DATABASE_URL` to `upmade`. Otherwise the api cannot connect, never becomes healthy, and websocket does not start.
-- To keep your old local data, copy the old volume before the first start, then rename the database (as in step 3 of [docs/rebrand-cutover.md](docs/rebrand-cutover.md)):
+- To keep your old local data, copy the old volume before the first start, then rename the database (as in step 3 of [docs/rebrand-cutover.md](docs/rebrand-cutover.md)). On its first start the api moves the documents to the `upmade-…` names; a Kritzel-era database gets both rebrand migrations.
+
+Copy the newest one you used: `updraw-app_pgdata_dev`, or `kritzel-app_pgdata_dev` if you never ran the Updraw setup.
+
+```bash
+docker volume ls | grep pgdata_dev
+```
+
+If `upmade-app_pgdata_dev` is already listed, `app:dev` ran before the copy. Unless you need its data, remove it first: `docker compose --env-file .env.dev -f docker-compose.dev.yml down -v` (this deletes `upmade-app_pgdata_dev` only).
 
 ```bash
 docker compose --env-file .env.dev -f docker-compose.dev.yml create postgres
 ```
 
 ```bash
-docker run --rm -v kritzel-app_pgdata_dev:/from:ro -v upmade-app_pgdata_dev:/to alpine sh -c 'cp -a /from/. /to/'
+OLD_VOLUME=updraw-app_pgdata_dev   # or kritzel-app_pgdata_dev
+docker run --rm -v "$OLD_VOLUME":/from:ro -v upmade-app_pgdata_dev:/to alpine sh -c 'cp -a /from/. /to/'
 ```
 
 ```bash
@@ -227,8 +236,14 @@ docker compose --env-file .env.dev -f docker-compose.dev.yml up -d postgres
 ```
 
 ```bash
-docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d postgres -c 'ALTER DATABASE kritzel RENAME TO upmade'
+docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -l   # updraw or kritzel
 ```
+
+```bash
+docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d postgres -c 'ALTER DATABASE updraw RENAME TO upmade'   # or kritzel
+```
+
+The old volumes stay as they were; remove them with `docker volume rm` once you no longer need them.
 
 ## Clean restart flow (good for DB init issues)
 
