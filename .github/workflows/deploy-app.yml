@@ -90,8 +90,8 @@ jobs:
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: |
             set -eu
-            # The one-time move from ~/updraw-app (step 3 of apps/app/docs/rebrand-cutover.md) must have happened:
-            # it brings .env along and stops the updraw-app stack, which would keep the host ports and take writes.
+            # The one-time switch from ~/updraw-app (step 3 of apps/app/docs/rebrand-cutover.md) must have happened:
+            # it creates ~/upmade-app/.env and stops the updraw-app stack, which would otherwise keep the host ports.
             test -f ~/upmade-app/.env || { echo "~/upmade-app/.env is missing: run step 3 of apps/app/docs/rebrand-cutover.md first."; exit 1; }
             if [ -n "$(docker ps -q --filter label=com.docker.compose.project=updraw-app)" ]; then
               echo "The updraw-app stack is still running: stop it as in step 3 of apps/app/docs/rebrand-cutover.md first."
@@ -101,7 +101,7 @@ jobs:
 
       # strip_components drops the "apps/app" prefix so the files land directly in ~/upmade-app, next to the
       # server's .env. The compose project (and its pgdata volume) is named by docker-compose.prod.yml.
-      # ~/upmade-app must already exist: apps/app/docs/rebrand-cutover.md moves it once from ~/updraw-app.
+      # ~/upmade-app must already exist: step 3 of apps/app/docs/rebrand-cutover.md creates it once, with its .env.
       - name: Copy files to Lightsail
         uses: appleboy/scp-action@v0.1.7
         with:

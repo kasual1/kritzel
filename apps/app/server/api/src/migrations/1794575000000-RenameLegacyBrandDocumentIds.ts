@@ -32,7 +32,7 @@ export class RenameLegacyBrandDocumentIds1794575000000 implements MigrationInter
   /**
    * Reverses the id rename only. Renamed `__class__` values, merged documents and rows set aside after a
    * conflict are kept, so clients from before the rename cannot read the documents again: to roll back,
-   * restore the database backup taken before the move (see apps/app/docs/rebrand-cutover.md).
+   * restore the database backup taken before the move.
    */
   public async down(queryRunner: QueryRunner): Promise<void> {
     await revertDocumentIdMove(

@@ -212,7 +212,7 @@ docker compose --env-file .env.dev -f docker-compose.dev.yml restart api
 The dev compose project is now `upmade-app`, so `app:dev` starts with a fresh `upmade-app_pgdata_dev` volume and the database `upmade`. Earlier setups used `updraw-app` (volume `updraw-app_pgdata_dev`, database `updraw`) or, before that, `kritzel-app` (volume `kritzel-app_pgdata_dev`, database `kritzel`).
 
 - In `.env.dev`, change the database name at the end of `DATABASE_URL` to `upmade`. Otherwise the api cannot connect, never becomes healthy, and websocket does not start.
-- To keep your old local data, copy the old volume before the first start, then rename the database (as in step 3 of [docs/rebrand-cutover.md](docs/rebrand-cutover.md)). On its first start the api moves the documents to the `upmade-…` names; a Kritzel-era database gets both rebrand migrations.
+- To keep your old local data, copy the old volume before the first start, then rename the database, as shown below. If you don't need it, skip all this: the fresh volume is ready to use. On its first start the api moves the documents to the `upmade-…` names; a Kritzel-era database gets both rebrand migrations.
 
 Copy the newest one you used: `updraw-app_pgdata_dev`, or `kritzel-app_pgdata_dev` if you never ran the Updraw setup.
 

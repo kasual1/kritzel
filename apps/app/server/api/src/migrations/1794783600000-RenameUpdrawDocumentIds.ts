@@ -34,7 +34,7 @@ export class RenameUpdrawDocumentIds1794783600000 implements MigrationInterface 
   /**
    * Reverses the id rename only, and only to `updraw-…`: rows this migration moved from `kritzel-…` come back as
    * `updraw-…` too. Merged documents, rows set aside after a conflict and objects the Upmade app wrote (as
-   * `Upmade*`, which the Updraw app cannot read) are kept: to roll back, restore the database backup taken before
+   * `Upmade*`, which the Updraw app cannot read) are kept: to roll back, go back to the database as it was before
    * the move (see apps/app/docs/rebrand-cutover.md).
    */
   public async down(queryRunner: QueryRunner): Promise<void> {
