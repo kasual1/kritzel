@@ -216,7 +216,7 @@ What happens on the server:
   - every `updraw-*` document id becomes `upmade-*`, and so does any `kritzel-*` row the first migration left behind because it could not merge it;
   - if both ids exist and belong to the same user, the Yjs states are merged into one row that keeps the original (legacy) row's owner, visibility and type;
   - if both ids exist but the `upmade-*` row belongs to someone else (document ids appear in share links), that row is set aside as `rename-conflict-upmade-*` and the original document takes the id;
-  - `Kritzel*` and `Updraw*` class names inside the documents are renamed to `Upmade*`. Rows set aside as `rename-conflict-updraw-*` by the first cutover keep their ids.
+  - the documents' content is not rewritten: `Kritzel*` and `Updraw*` class names stay as they are, the libraries read them and save objects as `Upmade*` once they change. Rewriting them on the server would conflict with edits browsers made offline during the window. Rows set aside as `rename-conflict-updraw-*` by the first cutover keep their ids.
 - The websocket service waits until the api's healthcheck passes, so no client connects while the migration runs. If the migration fails, the api never gets healthy and the deploy fails before websocket starts.
 - The websocket server rejects `updraw-*` and `kritzel-*` document names from stale clients (Updraw bundles cached by the service worker), so they can't create rows under the old names. Those tabs get the new version once their service worker updates.
 
@@ -236,7 +236,6 @@ TypeORM's migration logging is off, so the api log only shows the migration's wa
 
 - `"upmade-…" belongs to another user; moved it to "rename-conflict-upmade-…"`: a document set aside after a conflict. Its owner is in `user_id`.
 - `Could not merge "…" into "…", leaving both in place`: the legacy row could not be decoded; it keeps its id and its data.
-- `Could not decode "…", leaving its class names unchanged`: the same row (or another corrupt one) in the class rename.
 
 `legacy` must be 0, except for rows a "Could not merge" line names.
 
@@ -342,7 +341,7 @@ Then redeploy the old ref, which deploys to `~/updraw-app` with the `updraw-app`
 gh workflow run deploy-app.yml --ref pre-upmade
 ```
 
-If the `app-prod` environment only allows deployments from `main`, allow the `pre-upmade` tag in its deployment branch and tag rules first (repository settings, Environments). The new migration's `down()` only renames `upmade-*` ids back to `updraw-*`; the class names stay `Upmade*`, which the Updraw app cannot read, so roll back from the old volume as above, never with `migration:revert`.
+If the `app-prod` environment only allows deployments from `main`, allow the `pre-upmade` tag in its deployment branch and tag rules first (repository settings, Environments). The new migration's `down()` only renames `upmade-*` ids back to `updraw-*`; objects edited after the cutover are saved as `Upmade*`, which the Updraw app cannot read, so roll back from the old volume as above, never with `migration:revert`.
 
 Finally, revert the redirect rules and the `ngsw.json` Workers from step 5 (back to the first cutover's targets). Browser-local data the Upmade client wrote (guest work, settings) stays under the Upmade names, which the Updraw client does not read. Last resort if a volume is damaged: restore `~/pre-upmade.sql` into a fresh volume with `psql -U postgres -d postgres < ~/pre-upmade.sql`.
 

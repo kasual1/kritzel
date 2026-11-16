@@ -477,7 +477,7 @@ describe('RenameLegacyBrandDocumentIds migration (Kritzel → Updraw)', () => {
 describe('RenameUpdrawDocumentIds migration (Updraw → Upmade)', () => {
   const migration = new RenameUpdrawDocumentIds1794783600000();
 
-  it('renames Updraw documents and their classes', async () => {
+  it('moves Updraw documents without rewriting their content', async () => {
     const { queryRunner, documents } = createQueryRunner([
       row(
         UPDRAW_WORKSPACE_ID,
@@ -505,16 +505,17 @@ describe('RenameUpdrawDocumentIds migration (Updraw → Upmade)', () => {
       public: true,
       user_id: 'owner',
     });
+    // The libraries read Updraw* classes; the stored Yjs items stay untouched.
     expect(workspaceObjects(documents, WORKSPACE_ID)).toEqual({
       'group-1': {
-        __class__: 'UpmadeGroup',
+        __class__: UPDRAW_GROUP,
         id: 'group-1',
-        children: [{ __class__: 'UpmadeDynamicObject', id: 'child-1' }],
+        children: [{ __class__: UPDRAW_DYNAMIC_OBJECT, id: 'child-1' }],
       },
     });
   });
 
-  it('moves Kritzel documents left over by the first migration and renames their classes', async () => {
+  it('moves Kritzel documents left over by the first migration', async () => {
     const { queryRunner, documents } = createQueryRunner([
       row(
         LEGACY_WORKSPACE_ID,
@@ -530,8 +531,42 @@ describe('RenameUpdrawDocumentIds migration (Updraw → Upmade)', () => {
     expect([...documents.keys()]).toEqual([WORKSPACE_ID]);
     expect(documents.get(WORKSPACE_ID)).toMatchObject({ user_id: 'owner' });
     expect(workspaceObjects(documents, WORKSPACE_ID)).toEqual({
-      'element-1': { __class__: 'UpmadeDynamicObject', id: 'element-1' },
+      'element-1': { __class__: LEGACY_CUSTOM_ELEMENT, id: 'element-1' },
     });
+  });
+
+  it('keeps edits that a browser made offline while the app was down', async () => {
+    const stored = createWorkspaceDocument({
+      'path-1': { __class__: UPDRAW_PATH, id: 'path-1', points: [] },
+      'path-2': { __class__: UPDRAW_PATH, id: 'path-2', points: [] },
+    });
+    // A browser replica of the stored document, edited during the maintenance window.
+    const replica = new Y.Doc();
+    Y.applyUpdate(replica, stored);
+    replica.getMap('objects').delete('path-1');
+    replica.getMap('objects').set('path-2', {
+      __class__: UPDRAW_PATH,
+      id: 'path-2',
+      points: [[1, 2]],
+    });
+    const { queryRunner, documents } = createQueryRunner([
+      row(UPDRAW_WORKSPACE_ID, stored),
+    ]);
+
+    await migration.up(queryRunner);
+
+    // The browser reconnects and syncs with the moved document: both sides keep the offline edits.
+    const server = new Y.Doc();
+    Y.applyUpdate(server, documents.get(WORKSPACE_ID)!.data!);
+    Y.applyUpdate(server, Y.encodeStateAsUpdate(replica));
+    Y.applyUpdate(replica, Y.encodeStateAsUpdate(server));
+    for (const doc of [server, replica]) {
+      expect(doc.getMap('objects').toJSON()).toEqual({
+        'path-2': { __class__: UPDRAW_PATH, id: 'path-2', points: [[1, 2]] },
+      });
+    }
+    server.destroy();
+    replica.destroy();
   });
 
   it('merges both legacy rows and an Upmade row of the same owner, keeping the oldest row', async () => {
@@ -568,8 +603,8 @@ describe('RenameUpdrawDocumentIds migration (Updraw → Upmade)', () => {
       type: 'workspace',
     });
     expect(workspaceObjects(documents, WORKSPACE_ID)).toEqual({
-      'path-1': { __class__: 'UpmadePath', id: 'path-1' },
-      'path-2': { __class__: 'UpmadePath', id: 'path-2' },
+      'path-1': { __class__: LEGACY_PATH, id: 'path-1' },
+      'path-2': { __class__: UPDRAW_PATH, id: 'path-2' },
       'path-3': { __class__: 'UpmadePath', id: 'path-3' },
     });
   });
@@ -606,18 +641,18 @@ describe('RenameUpdrawDocumentIds migration (Updraw → Upmade)', () => {
       public: true,
     });
     expect(workspaceObjects(documents, WORKSPACE_ID)).toEqual({
-      'path-1': { __class__: 'UpmadePath', id: 'path-1' },
+      'path-1': { __class__: LEGACY_PATH, id: 'path-1' },
     });
     expect(documents.get('rename-conflict-upmade-workspace-1')).toMatchObject({
       user_id: 'upmade-owner',
       data: upmadeRow,
     });
-    expect(documents.get('rename-conflict-2-upmade-workspace-1')!.user_id).toBe(
-      'updraw-owner',
+    expect(documents.get('rename-conflict-2-upmade-workspace-1')).toMatchObject(
+      {
+        user_id: 'updraw-owner',
+        data: updrawRow,
+      },
     );
-    expect(
-      workspaceObjects(documents, 'rename-conflict-2-upmade-workspace-1'),
-    ).toEqual({ 'path-2': { __class__: 'UpmadePath', id: 'path-2' } });
     expect(warn).toHaveBeenCalledTimes(2);
     warn.mockRestore();
   });
@@ -640,10 +675,10 @@ describe('RenameUpdrawDocumentIds migration (Updraw → Upmade)', () => {
     expect([...documents.keys()]).toEqual([LEGACY_WORKSPACE_ID, WORKSPACE_ID]);
     expect(documents.get(LEGACY_WORKSPACE_ID)!.data).toBe(corrupt);
     expect(workspaceObjects(documents, WORKSPACE_ID)).toEqual({
-      'path-2': { __class__: 'UpmadePath', id: 'path-2' },
+      'path-2': { __class__: UPDRAW_PATH, id: 'path-2' },
     });
-    // One failed merge and one undecodable document in the class pass.
-    expect(warn).toHaveBeenCalledTimes(2);
+    // The failed merge; nothing else decodes the documents.
+    expect(warn).toHaveBeenCalledTimes(1);
     warn.mockRestore();
   });
 
@@ -749,9 +784,10 @@ describe('both rebrand migrations in sequence', () => {
         user_id: 'kritzel-owner',
         public: true,
       });
-      expect(workspaceObjects(documents, WORKSPACE_ID)).toEqual({
-        'path-1': { __class__: 'UpmadePath', id: 'path-1' },
-      });
+      // Only the first migration renames classes, so compare the objects, not their class names.
+      expect(
+        Object.keys(workspaceObjects(documents, WORKSPACE_ID) as object),
+      ).toEqual(['path-1']);
       const owners = [...documents.values()].map((entry) => entry.user_id);
       expect(owners.sort()).toEqual([
         'kritzel-owner',
@@ -786,9 +822,9 @@ describe('both rebrand migrations in sequence', () => {
       WORKSPACE_ID,
     ]);
     expect(workspaceObjects(documents, WORKSPACE_ID)).toEqual({
-      'path-1': { __class__: 'UpmadePath', id: 'path-1' },
+      'path-1': { __class__: UPDRAW_PATH, id: 'path-1' },
     });
-    expect(dataUpdates()).toBe(1);
+    expect(dataUpdates()).toBe(0);
   });
 
   it('reverts both id renames in reverse order', async () => {
