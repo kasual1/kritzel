@@ -1,10 +1,10 @@
-# Posts a message to X, Bluesky, Mastodon, LinkedIn (via the @humanwhocodes/crosspost CLI) and as a GitHub
-# Discussion in this repository. Manual only; dry run is the default.
+# Posts a message to X, Bluesky, Mastodon (via the @humanwhocodes/crosspost CLI) and as a GitHub Discussion in
+# this repository. Manual only; dry run is the default.
 #
 # Setup: create a "social" environment (Settings > Environments, optionally with required reviewers) holding:
 #   Secrets:   TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET, TWITTER_API_CONSUMER_KEY,
 #              TWITTER_API_CONSUMER_SECRET, BLUESKY_APP_PASSWORD (an app password, not the account password),
-#              MASTODON_ACCESS_TOKEN, LINKEDIN_ACCESS_TOKEN (w_member_social: posts as the token's member, expires)
+#              MASTODON_ACCESS_TOKEN
 #   Variables: BLUESKY_IDENTIFIER (e.g. upmade.bsky.social), MASTODON_HOST (e.g. mastodon.social),
 #              DISCUSSION_CATEGORY (optional, default "Announcements"; Discussions must be enabled on the repo)
 # How to create each token: https://github.com/humanwhocodes/crosspost#setting-up-strategies
@@ -41,10 +41,6 @@ on:
         description: "Post to Mastodon"
         type: boolean
         default: true
-      linkedin:
-        description: "Post to LinkedIn"
-        type: boolean
-        default: true
       github:
         description: "Post as a GitHub Discussion"
         type: boolean
@@ -78,7 +74,6 @@ jobs:
       USE_X: ${{ inputs.x }}
       USE_BLUESKY: ${{ inputs.bluesky }}
       USE_MASTODON: ${{ inputs.mastodon }}
-      USE_LINKEDIN: ${{ inputs.linkedin }}
       USE_GITHUB: ${{ inputs.github }}
     steps:
       - name: Checkout repository
@@ -87,15 +82,28 @@ jobs:
 
       - name: Validate and preview
         id: validate
+        env:
+          # Only whether each network's credentials are set, never their values. Checked here so a missing secret
+          # stops the run before anything is posted anywhere.
+          HAS_X: ${{ secrets.TWITTER_API_CONSUMER_KEY != '' && secrets.TWITTER_API_CONSUMER_SECRET != '' && secrets.TWITTER_ACCESS_TOKEN_KEY != '' && secrets.TWITTER_ACCESS_TOKEN_SECRET != '' }}
+          HAS_BLUESKY: ${{ vars.BLUESKY_IDENTIFIER != '' && secrets.BLUESKY_APP_PASSWORD != '' }}
+          HAS_MASTODON: ${{ vars.MASTODON_HOST != '' && secrets.MASTODON_ACCESS_TOKEN != '' }}
         run: |
           set -euo pipefail
           networks=()
+          missing=()
           [ "$USE_X" = true ] && networks+=(--twitter)
           [ "$USE_BLUESKY" = true ] && networks+=(--bluesky)
           [ "$USE_MASTODON" = true ] && networks+=(--mastodon)
-          [ "$USE_LINKEDIN" = true ] && networks+=(--linkedin)
           if [ ${#networks[@]} -eq 0 ] && [ "$USE_GITHUB" != true ]; then
             echo "::error::Select at least one network."; exit 1
+          fi
+          [ "$USE_X" = true ] && [ "$HAS_X" != true ] && missing+=("X: secrets TWITTER_API_CONSUMER_KEY, TWITTER_API_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET")
+          [ "$USE_BLUESKY" = true ] && [ "$HAS_BLUESKY" != true ] && missing+=("Bluesky: variable BLUESKY_IDENTIFIER, secret BLUESKY_APP_PASSWORD")
+          [ "$USE_MASTODON" = true ] && [ "$HAS_MASTODON" != true ] && missing+=("Mastodon: variable MASTODON_HOST, secret MASTODON_ACCESS_TOKEN")
+          if [ ${#missing[@]} -gt 0 ]; then
+            for m in "${missing[@]}"; do echo "::error::Missing credentials in the \"social\" environment for $m"; done
+            exit 1
           fi
           if [ -n "$IMAGE" ]; then
             test -f "$IMAGE" || { echo "::error::Image $IMAGE not found in the repository."; exit 1; }
@@ -129,7 +137,7 @@ jobs:
         with:
           node-version: "24.18.0"
 
-      - name: Post to X, Bluesky, Mastodon and LinkedIn
+      - name: Post to X, Bluesky and Mastodon
         if: ${{ !inputs.dry-run && steps.validate.outputs.networks != '' }}
         env:
           NETWORKS: ${{ steps.validate.outputs.networks }}
@@ -142,7 +150,6 @@ jobs:
           BLUESKY_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
           MASTODON_HOST: ${{ vars.MASTODON_HOST }}
           MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
-          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
         run: |
           set -euo pipefail
           read -ra args <<< "$NETWORKS"
