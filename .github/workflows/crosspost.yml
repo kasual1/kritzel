@@ -87,15 +87,31 @@ jobs:
 
       - name: Validate and preview
         id: validate
+        env:
+          # Only whether each network's credentials are set, never their values. Checked here so a missing secret
+          # stops the run before anything is posted anywhere.
+          HAS_X: ${{ secrets.TWITTER_API_CONSUMER_KEY != '' && secrets.TWITTER_API_CONSUMER_SECRET != '' && secrets.TWITTER_ACCESS_TOKEN_KEY != '' && secrets.TWITTER_ACCESS_TOKEN_SECRET != '' }}
+          HAS_BLUESKY: ${{ vars.BLUESKY_IDENTIFIER != '' && secrets.BLUESKY_APP_PASSWORD != '' }}
+          HAS_MASTODON: ${{ vars.MASTODON_HOST != '' && secrets.MASTODON_ACCESS_TOKEN != '' }}
+          HAS_LINKEDIN: ${{ secrets.LINKEDIN_ACCESS_TOKEN != '' }}
         run: |
           set -euo pipefail
           networks=()
+          missing=()
           [ "$USE_X" = true ] && networks+=(--twitter)
           [ "$USE_BLUESKY" = true ] && networks+=(--bluesky)
           [ "$USE_MASTODON" = true ] && networks+=(--mastodon)
           [ "$USE_LINKEDIN" = true ] && networks+=(--linkedin)
           if [ ${#networks[@]} -eq 0 ] && [ "$USE_GITHUB" != true ]; then
             echo "::error::Select at least one network."; exit 1
+          fi
+          [ "$USE_X" = true ] && [ "$HAS_X" != true ] && missing+=("X: secrets TWITTER_API_CONSUMER_KEY, TWITTER_API_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET")
+          [ "$USE_BLUESKY" = true ] && [ "$HAS_BLUESKY" != true ] && missing+=("Bluesky: variable BLUESKY_IDENTIFIER, secret BLUESKY_APP_PASSWORD")
+          [ "$USE_MASTODON" = true ] && [ "$HAS_MASTODON" != true ] && missing+=("Mastodon: variable MASTODON_HOST, secret MASTODON_ACCESS_TOKEN")
+          [ "$USE_LINKEDIN" = true ] && [ "$HAS_LINKEDIN" != true ] && missing+=("LinkedIn: secret LINKEDIN_ACCESS_TOKEN")
+          if [ ${#missing[@]} -gt 0 ]; then
+            for m in "${missing[@]}"; do echo "::error::Missing credentials in the \"social\" environment for $m"; done
+            exit 1
           fi
           if [ -n "$IMAGE" ]; then
             test -f "$IMAGE" || { echo "::error::Image $IMAGE not found in the repository."; exit 1; }
