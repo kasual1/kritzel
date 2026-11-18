@@ -8,7 +8,8 @@
 
 .watermark-link {
   pointer-events: auto;
-  display: inline-flex;
+  /* flex, not inline-flex: keeps the badge out of the line box, whose height comes from the host page's font */
+  display: flex;
   align-items: center;
   gap: 4px;
   padding: 4px 8px;
@@ -37,8 +38,17 @@
   flex: none;
   height: var(--upmade-watermark-logo-size, 12px);
   width: auto;
-  fill: var(--upmade-watermark-logo-color, #000000);
-  stroke: var(--upmade-watermark-logo-color, #000000);
+  /* Themes without a logoColor get a mark in the badge's text colour, so it stays visible on any background */
+  fill: var(--upmade-watermark-logo-color, currentColor);
+  stroke: var(--upmade-watermark-logo-color, currentColor);
+}
+
+/* High contrast modes recolour the text and background but not SVG fills: let the mark follow the text */
+@media (forced-colors: active) {
+  .watermark-logo {
+    fill: currentColor;
+    stroke: currentColor;
+  }
 }
 
 /* Hide on mobile viewports (portrait phones and landscape phones), where space is too narrow */

@@ -598,6 +598,8 @@ Applies to the menu that the editor opens from a titlebar `menu` element, see [O
 | color | #52525b | #d4d4d8 |
 | logoColor | #000000 | #ffffff |
 
+`logoColor` is the colour of the Upmade mark in the badge. A theme that leaves it out gets a mark in the badge's `color`.
+
 ## Zoom Panel
 
 | Property | Light default | Dark default |

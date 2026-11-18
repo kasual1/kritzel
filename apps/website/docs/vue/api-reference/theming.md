@@ -302,6 +302,8 @@ Applies to the menu that the editor opens from a titlebar `menu` element, see [O
 
 `background`, `boxShadow`, `color`, `logoColor`.
 
+`logoColor` is the colour of the Upmade mark in the badge. A theme that leaves it out gets a mark in the badge's `color`.
+
 ## Zoom Panel
 
 `backgroundColor`, `border`, `borderRadius`, `boxShadow`, `buttonActiveBackgroundColor`, `buttonBorderRadius`, `buttonHoverBackgroundColor`, `buttonSize`, `gap`, `iconColor`, `padding`.
