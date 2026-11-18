@@ -19,7 +19,7 @@ Upmade lets an LLM work on the canvas next to people. Two classes make this work
 The model works either **as the user**, with instant changes that the user can undo, or **as an agent**, whose cursor the user watches while it works.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/vue"
   demoPath="/advanced/chat-sessions/modes"
   repoFiles={['src/pages/advanced/chat-sessions/ChatSessionsModesPage.vue', 'src/pages/advanced/chat-sessions/chat-session-script.ts']}
 />
@@ -184,7 +184,7 @@ async function onReady() {
 `setStatus()` shows a message below the cursor, and `cancel()` stops the agent and rolls back its running action. See [Agent](../api-reference/agent.md) for all methods and options.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/vue"
   demoPath="/advanced/agents/actions"
   repoFiles={['src/pages/advanced/agents/AgentsActionsPage.vue']}
 />

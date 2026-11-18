@@ -38,7 +38,7 @@ Upmade is officially available, but we are still in our early stages. We are act
 
 Because of this, we are looking for early adopters who want to build right alongside us.
 
-[Let us know on GitHub](https://github.com/kasual1/kritzel) what you're building, so we can shape the future of this library together.
+[Let us know on GitHub](https://github.com/kasual1/upmade) what you're building, so we can shape the future of this library together.
 
 <QuickStartLink />
 

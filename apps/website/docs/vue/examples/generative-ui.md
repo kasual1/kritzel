@@ -34,7 +34,7 @@ Choose whether to use your own API key or mocked requests, then type into the ch
 **Keep API keys off the client in production.** With your own key, the demo calls the provider straight from the browser, and the key only lives in the component's memory. That is fine for trying things out, but anyone can read a key in a web page. A real app sends the requests through [its own server](../advanced/agents.md#your-server) with `createHttpTransport()` instead, and only the transport changes.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/vue"
   demoPath="/examples/generative-ui"
   repoFiles={[
     'src/pages/examples/generative-ui/GenerativeUiPage.vue',

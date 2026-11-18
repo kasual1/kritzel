@@ -52,8 +52,8 @@ The examples on a Fundamentals page are **smaller** and **less detailed** than t
 Just like in the Examples pattern, embed previews with:
 ```jsx
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
-  iframeUrl="https://kasual1.github.io/kritzel/angular/#/fundamentals/<concept>-<focus>"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/angular"
+  iframeUrl="https://kasual1.github.io/upmade/angular/#/fundamentals/<concept>-<focus>"
   repoFiles={['src/app/fundamentals/<concept>/<concept>-<focus>.component.ts']}
 />
 ```

@@ -1,7 +1,7 @@
 import { UpmadeDynamicObject } from '@upmade/vue-editor'
 
 export const GITHUB_STAR_RENDERER_KEY = 'vue-examples-github-star-button'
-export const GITHUB_REPO_URL = 'https://github.com/kasual1/kritzel'
+export const GITHUB_REPO_URL = 'https://github.com/kasual1/upmade'
 
 export const STAR_COUNTS = [100, 1000, 5000] as const
 export const DEFAULT_STAR_COUNT = 1000
@@ -76,7 +76,7 @@ export function mountGithubStarButton(container: HTMLElement, data: GithubStarBu
   const button = document.createElement('div')
   button.className = 'github-star-button'
   button.setAttribute('role', 'link')
-  button.setAttribute('aria-label', `${data.label} kasual1/kritzel on GitHub`)
+  button.setAttribute('aria-label', `${data.label} kasual1/upmade on GitHub`)
   const icon = document.createElementNS(SVG_NS, 'svg')
   icon.setAttribute('viewBox', '0 0 24 24')
   icon.setAttribute('aria-hidden', 'true')

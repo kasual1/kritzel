@@ -9,7 +9,7 @@ const BOARD_SCALE = 1.2;
 const OBJECT_WIDTH = 19 / BOARD_SCALE;
 const OBJECT_HEIGHT = 8.4 / BOARD_SCALE;
 
-const REPO_URL = "https://github.com/kasual1/kritzel";
+const REPO_URL = "https://github.com/kasual1/upmade";
 
 /** The frame's height as a share of its width (the 16:11 .showcaseMedia), to turn widths into heights. */
 const FRAME_ASPECT = 11 / 16;

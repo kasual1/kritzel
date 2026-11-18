@@ -2,7 +2,7 @@
 
 One-time runbook for moving production from Updraw (`~/updraw-app`, compose project `updraw-app`, volume `updraw-app_pgdata_prod`, database `updraw`, `@updraw/*` on npm, documents `updraw-*`) to Upmade (`~/upmade-app`, `upmade-app`, `upmade-app_pgdata_prod`, database `upmade`, `@upmade/*`, upmade.io and app.upmade.io).
 
-The Kritzel → Updraw cutover was done on 2026-11-13; its runbook is in the [git history of this file](https://github.com/kasual1/kritzel/blob/10209754c827c34517fcd20f234d5f3d0cf3ec5d/apps/app/docs/rebrand-cutover.md).
+The Kritzel → Updraw cutover was done on 2026-11-13; its runbook is in the [git history of this file](https://github.com/kasual1/upmade/blob/10209754c827c34517fcd20f234d5f3d0cf3ec5d/apps/app/docs/rebrand-cutover.md).
 
 Do the steps in order. `gh` commands run from a clone of the repository; `docker` commands run on the Lightsail instance.
 

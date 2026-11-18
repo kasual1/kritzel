@@ -86,7 +86,7 @@ export default function DropdownNavbarItemDesktop({
       {isFramework && (
         <a
           className="navbar-framework-github-link"
-          href="https://github.com/kasual1/kritzel"
+          href="https://github.com/kasual1/upmade"
           target="_blank"
           rel="noreferrer"
           aria-label="Upmade on GitHub"

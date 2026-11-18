@@ -311,7 +311,7 @@ const UPMADE_ASCII =`██╗   ██╗██████╗ ███╗   �
  ╚═════╝ ╚═╝     ╚═╝     ╚═╝╚═╝  ╚═╝╚═════╝ ╚══════╝`;
 
 const SKILL_SESSION = {
-  command: "npx skills add kasual1/kritzel",
+  command: "npx skills add kasual1/upmade",
   question: "Install the upmade skill for your agent?",
 } as const;
 

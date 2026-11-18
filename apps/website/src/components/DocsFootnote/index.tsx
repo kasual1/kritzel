@@ -1,7 +1,7 @@
 import React from "react";
 
 const SPONSORS_URL = "https://github.com/sponsors/kasual1";
-const REPO_URL = "https://github.com/kasual1/kritzel";
+const REPO_URL = "https://github.com/kasual1/upmade";
 
 // Same destinations as the "Social" column of the main footer (docusaurus.config.ts).
 const SOCIAL_LINKS = [

@@ -26,7 +26,7 @@ Use `BroadcastSyncProvider` to synchronize document updates across browser tabs 
 By default, the tabs share only the document. To share presence between the tabs as well, that is the cursors and selections of users and the [agents](./agents.md#collaboration) of each tab, use `BroadcastSyncProvider.with({ awareness: true })`. See [Broadcast Provider](../api-reference/providers.md#broadcast-provider).
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/angular"
   demoPath="/advanced/collaboration/local"
   repoFiles={['src/app/pages/advanced/collaboration/collaboration-local.component.ts']}
 />
@@ -38,7 +38,7 @@ To collaborate across devices or users, combine local persistence with a network
 Network providers share presence: collaborators see each other's cursors and selections, and the [agents](./agents.md#collaboration) of each editor.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/angular"
   demoPath="/advanced/collaboration/realtime"
   repoFiles={['src/app/pages/advanced/collaboration/collaboration-realtime.component.ts']}
 />

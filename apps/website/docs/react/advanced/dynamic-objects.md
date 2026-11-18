@@ -23,7 +23,7 @@ The simplest way to use a dynamic object is to build a plain DOM subtree and pas
 If the native HTML owns runtime behavior, such as event listeners or calculator state, use a registered renderer even when the content is plain DOM rather than a React component. Clipboard copy serializes the object while it is still mounted, so a renderer can return the latest serializable state from `onSerialize` and recreate fresh DOM listeners from `rendererData` after paste.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/advanced/dynamic-objects/html"
   repoFiles={[
     'src/pages/advanced/dynamic-objects/DynamicObjectsHtmlPage.tsx',
@@ -44,7 +44,7 @@ State flows through `rendererData`:
 Always unregister the renderer, and unmount any mounted React roots, when the hosting page unmounts.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/advanced/dynamic-objects/component"
   repoFiles={[
     'src/pages/advanced/dynamic-objects/DynamicObjectsComponentPage.tsx',
@@ -60,7 +60,7 @@ For user-authored or LLM-authored content, `UpmadeIframeObject` provides a sandb
 This example uses predefined prompts rather than a live LLM. Each prompt replaces the calculator shown in the iframe, with the [loading placeholder](../api-reference/theming.md#loading-placeholder) drawn over it during the change. Scripts run inside the iframe's sandbox rather than the main React application.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/advanced/dynamic-objects/iframe"
   repoFiles={[
     'src/pages/advanced/dynamic-objects/DynamicObjectsIframePage.tsx',
@@ -75,7 +75,7 @@ Every `UpmadeIframeObject` runs a small bridge inside its page. Through it, your
 In this example, the panel shows the element under the pointer and the last clicked and picked element of the card. **Pick element** turns on picking: the picked element is highlighted and the cursor of an [agent](./agents.md) moves to it. **Highlight buttons** outlines every button in the card.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/advanced/dynamic-objects/iframe-elements"
   repoFiles={[
     'src/pages/advanced/dynamic-objects/DynamicObjectsIframeElementsPage.tsx',

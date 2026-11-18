@@ -19,7 +19,7 @@ Upmade lets an LLM work on the canvas next to people. Two classes make this work
 The model works either **as the user**, with instant changes that the user can undo, or **as an agent**, whose cursor the user watches while it works.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/advanced/chat-sessions/modes"
   repoFiles={['src/pages/advanced/chat-sessions/ChatSessionsModesPage.tsx', 'src/pages/advanced/chat-sessions/chat-session-script.ts']}
 />
@@ -185,7 +185,7 @@ export function GuidedBoard() {
 `setStatus()` shows a message below the cursor, and `cancel()` stops the agent and rolls back its running action. See [Agent](../api-reference/agent.md) for all methods and options.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/advanced/agents/actions"
   repoFiles={['src/pages/advanced/agents/AgentsActionsPage.tsx']}
 />

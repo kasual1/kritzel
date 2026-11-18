@@ -459,7 +459,7 @@ function HeroScene({
           <Link to={docsPath} className={styles.topNavLink}>
             Documentation
           </Link>
-          <Link href="https://github.com/kasual1/kritzel" aria-label="GitHub" className={styles.topNavIcon}>
+          <Link href="https://github.com/kasual1/upmade" aria-label="GitHub" className={styles.topNavIcon}>
             <GitHubIcon />
           </Link>
           <MenuButton />

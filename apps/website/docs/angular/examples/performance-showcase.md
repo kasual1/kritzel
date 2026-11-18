@@ -36,7 +36,7 @@ The button is a plain `div`, not a `<button>`, so the engine treats every press 
 :::
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/angular"
   demoPath="/examples/performance-showcase"
   repoFiles={['src/app/pages/examples/performance-showcase.component.ts', 'src/app/pages/examples/github-star-button.ts']}
 />

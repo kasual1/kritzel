@@ -32,7 +32,7 @@ Take a look at [Tools](tools.md) for more information on how to create and manip
 You can manually inject objects into the canvas programmatically, bypassing the need for a user to draw them. Create the appropriate object class, then await `addObject()` through a typed editor ref after `onIsReady` fires.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/fundamentals/objects/add"
   repoFiles={['src/pages/fundamentals/objects/ObjectsAddPage.tsx']}
 />
@@ -42,7 +42,7 @@ You can manually inject objects into the canvas programmatically, bypassing the 
 You can remove objects from the canvas programmatically when they are no longer needed. Await `removeObject()` so dependent UI state is refreshed only after the mutation completes.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/fundamentals/objects/remove"
   repoFiles={['src/pages/fundamentals/objects/ObjectsRemovePage.tsx']}
 />
@@ -52,7 +52,7 @@ You can remove objects from the canvas programmatically when they are no longer 
 Object properties should never be mutated directly. Instead, changes go through `updateObject()`, which takes the object and a partial set of properties to apply. This ensures the change is properly persisted, synced, and reflected on the canvas. Since `updateObject()` returns the replacement object, reselect that returned instance when the selection should remain active.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/fundamentals/objects/update"
   repoFiles={['src/pages/fundamentals/objects/ObjectsUpdatePage.tsx']}
 />
@@ -62,7 +62,7 @@ Object properties should never be mutated directly. Instead, changes go through 
 You can programmatically retrieve the currently selected objects, select specific objects, or clear the selection.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/fundamentals/objects/selection"
   repoFiles={['src/pages/fundamentals/objects/ObjectsSelectionPage.tsx']}
 />
@@ -72,7 +72,7 @@ You can programmatically retrieve the currently selected objects, select specifi
 Use `getAllObjects()` to retrieve the current canvas objects, or `findObjects()` to return only the objects that match a predicate. `findObjects()` excludes Upmade's internal selection-related objects.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/fundamentals/objects/filter"
   repoFiles={['src/pages/fundamentals/objects/ObjectsFilterPage.tsx']}
 />
@@ -82,7 +82,7 @@ Use `getAllObjects()` to retrieve the current canvas objects, or `findObjects()`
 Objects can be grouped together so they can be moved and transformed as a single unit.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/fundamentals/objects/grouping"
   repoFiles={['src/pages/fundamentals/objects/ObjectsGroupingPage.tsx']}
 />
@@ -92,7 +92,7 @@ Objects can be grouped together so they can be moved and transformed as a single
 Objects' z-index can be changed to control their visual stacking order, for example by bringing them to the front or sending them backward. A group counts as one layer: reordering it moves all of its children together, while a grouped object is reordered within its group.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/fundamentals/objects/ordering"
   repoFiles={['src/pages/fundamentals/objects/ObjectsOrderingPage.tsx']}
 />
@@ -116,7 +116,7 @@ const objectConfig: UpmadeObjectConfig = {
 The configuration is local to your app and neither persisted nor synced. Set the flags on an object instead to apply a restriction on every client.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/fundamentals/objects/configuration"
   repoFiles={['src/pages/fundamentals/objects/ObjectsConfigurationPage.tsx']}
 />

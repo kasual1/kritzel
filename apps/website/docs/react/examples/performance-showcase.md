@@ -36,7 +36,7 @@ The button is a plain `div`, not a `<button>`, so the engine treats every press 
 :::
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/upmade/tree/main/apps/demos/react"
   demoPath="/examples/performance-showcase"
   repoFiles={['src/pages/examples/PerformanceShowcasePage.tsx', 'src/pages/examples/github-star-button.ts']}
 />

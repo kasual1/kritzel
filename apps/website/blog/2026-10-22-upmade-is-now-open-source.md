@@ -25,7 +25,7 @@ Certainly this project holds everything I know about creating good software and 
 
 I know for sure that there are still a couple of rough edges left and it will take time to get the API right. But from now on, let's do this together and enable everyone to build infinite canvas apps.
 
-Find the source code at [https://github.com/kasual1/kritzel](https://github.com/kasual1/kritzel)
+Find the source code at [https://github.com/kasual1/upmade](https://github.com/kasual1/upmade)
 
 Cheers,
 
