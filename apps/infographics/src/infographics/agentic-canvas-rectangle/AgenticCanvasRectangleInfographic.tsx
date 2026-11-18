@@ -44,6 +44,7 @@ export function AgenticCanvasRectangleInfographic() {
         editorId="infographic-agentic-canvas-rectangle"
         workspaces={workspaces}
         activeWorkspaceId={WORKSPACE_ID}
+        isWatermarkVisible={false}
         isChatBoxVisible={true}
         isChatBoxLoading={isWorking}
         isWorkspaceManagerVisible={false}

@@ -1,5 +1,5 @@
 ---
-title: "Introducing Upmade: The Infinite Canvas Library for React, Vue, and Angular"
+title: "Introducing Upmade: The Infinite Canvas Library for React, Vue and Angular"
 description: "After 2.5 years of development, we are thrilled to announce Upmade—a framework-agnostic infinite canvas library designed for spatial UI."
 date: 2026-08-02
 image: /img/blog/introducing-upmade-flowers.png

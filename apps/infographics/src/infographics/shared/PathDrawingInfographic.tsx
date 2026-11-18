@@ -1,4 +1,4 @@
-import { useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   UpmadeDynamicObject,
   UpmadeEditor,
@@ -23,9 +23,22 @@ interface PathDrawingInfographicProps {
   delay?: number;
 }
 
-/** An editor whose only object is an SVG drawing that is centered and animated on load. */
+/** How long the finished drawing stays before it is removed again, in milliseconds. */
+const CLEAR_DELAY = 1500;
+
+/**
+ * An editor whose only object is an SVG drawing that is centered and animated on load, then removed 1.5 seconds
+ * after it is drawn. Reload to play it again.
+ */
 export function PathDrawingInfographic({ id, name, createDrawing, duration, delay }: PathDrawingInfographicProps) {
   const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
+  const isUnmountedRef = useRef(false);
+  useEffect(() => {
+    isUnmountedRef.current = false;
+    return () => {
+      isUnmountedRef.current = true;
+    };
+  }, []);
   const [workspaces] = useState(() => {
     const drawing = createDrawing();
     // An object occupies width / scale world units, so a larger scale makes it smaller on screen.
@@ -54,7 +67,13 @@ export function PathDrawingInfographic({ id, name, createDrawing, duration, dela
     }
 
     await editor.centerObjectInViewport(drawing);
-    animatePathDrawing(drawing.element, duration, delay);
+    await animatePathDrawing(drawing.element, duration, delay);
+
+    await new Promise(resolve => setTimeout(resolve, CLEAR_DELAY));
+    if (isUnmountedRef.current) {
+      return;
+    }
+    await editor.removeObjects([drawing]);
   }
 
   return (
@@ -64,6 +83,7 @@ export function PathDrawingInfographic({ id, name, createDrawing, duration, dela
         editorId={`infographic-${id}`}
         workspaces={workspaces}
         activeWorkspaceId={id}
+        isWatermarkVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => void onReady()}
       />

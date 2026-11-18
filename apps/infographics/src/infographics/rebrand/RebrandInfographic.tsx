@@ -43,6 +43,7 @@ export function RebrandInfographic() {
         editorId="infographic-rebrand"
         workspaces={workspaces}
         activeWorkspaceId={WORKSPACE_ID}
+        isWatermarkVisible={false}
         isWorkspaceManagerVisible={false}
         isMoreMenuVisible={false}
         isZoomPanelVisible={false}

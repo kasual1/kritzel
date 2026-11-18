@@ -29,5 +29,7 @@ export function createWelcomeObject(): UpmadeDynamicObject {
     height: 480 * 72 / 253,
     translateX: 0,
     translateY: 0,
+    // 'none' overrides the theme's object shadow, so the drawing sits flat on the canvas.
+    boxShadow: 'none',
   });
 }

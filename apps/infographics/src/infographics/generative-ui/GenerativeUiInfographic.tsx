@@ -242,6 +242,7 @@ export function GenerativeUiInfographic() {
         editorId="infographic-generative-ui"
         workspaces={workspaces}
         activeWorkspaceId={WORKSPACE_ID}
+        isWatermarkVisible={false}
         objectConfig={objectConfig}
         objectTitlebar={objectTitlebar}
         isChatBoxVisible

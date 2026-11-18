@@ -46,6 +46,7 @@ export function AgenticCanvasCursorsInfographic() {
         editorId="infographic-agentic-canvas-cursors"
         workspaces={workspaces}
         activeWorkspaceId={WORKSPACE_ID}
+        isWatermarkVisible={false}
         isChatBoxVisible
         isChatBoxLoading={isWorking}
         isWorkspaceManagerVisible={false}
