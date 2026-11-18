@@ -13,7 +13,9 @@ const PROFILE_DIR = path.join(__dirname, '.profile');
 const ICON_REGISTRY = path.join(__dirname, '../../libs/core/src/classes/registries/icon-registry.class.ts');
 // Same hotspot UpmadeCursorHelper.getCursor() uses for the default cursor.
 const CURSOR_HOTSPOT = { x: 4, y: 4 };
-const WATERMARK_TEXT = 'Powered by upmade.io';
+const WATERMARK_TEXT = 'upmade.io';
+// The dark (black) Upmade mark; logo_dark.svg next to it is the white one for dark backgrounds.
+const WATERMARK_LOGO = path.join(__dirname, '../../apps/website/static/img/logo.svg');
 
 function getArgValue(name) {
 	const prefix = `--${name}=`;
@@ -62,6 +64,19 @@ function loadEngineCursorSvg() {
 	return match[1].replace(/currentColor/g, 'black');
 }
 
+/** Reads the viewBox, fill colour and path data of the Upmade mark for the watermark. */
+function loadWatermarkLogo() {
+	const source = fs.readFileSync(WATERMARK_LOGO, 'utf8');
+	const viewBox = source.match(/viewBox="([^"]+)"/)?.[1];
+	const paths = [...source.matchAll(/<path\b[^>]*\bd="([^"]+)"/g)].map((match) => match[1]);
+	const color = source.match(/<path\b[^>]*\bfill="([^"]+)"/)?.[1] ?? '#000000';
+	if (!viewBox || !paths.length) {
+		throw new Error(`Could not read the Upmade mark from ${WATERMARK_LOGO}.`);
+	}
+
+	return { viewBox, paths, color };
+}
+
 function defaultName() {
 	return new Date().toISOString().replace(/[:.]/g, '-');
 }
@@ -102,7 +117,7 @@ function defaultName() {
 		}
 
 		if (withWatermark) {
-			await context.addInitScript(installRecorderWatermark, { text: WATERMARK_TEXT });
+			await context.addInitScript(installRecorderWatermark, { text: WATERMARK_TEXT, logo: loadWatermarkLogo() });
 		}
 
 		const page = context.pages()[0] || (await context.newPage());
