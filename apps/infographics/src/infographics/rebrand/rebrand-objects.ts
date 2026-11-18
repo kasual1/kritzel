@@ -2,10 +2,10 @@ import { UpmadeDynamicObject, UpmadeLine, type UpmadeBaseObject } from '@upmade/
 import type { Box } from '../agentic-canvas/hero-scene';
 import { KRITZEL_LOGO_PATH, KRITZEL_LOGO_VIEWBOX, UPMADE_LOGO_PATH, UPMADE_LOGO_VIEWBOX } from './logos';
 
-const LOGO_HEIGHT = 200;
-const GAP = 60;
-const ARROW_WIDTH = 160;
-const ARROW_STROKE_WIDTH = 8;
+const LOGO_HEIGHT = 120;
+const GAP = 36;
+const ARROW_WIDTH = 96;
+const ARROW_STROKE_WIDTH = 5;
 const COLOR = '#000000';
 
 function aspectRatio(viewBox: string): number {

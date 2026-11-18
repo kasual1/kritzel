@@ -56,10 +56,10 @@
   "/videos/2026_11_17_Rebrand.mp4": {
     "poster": "/videos/2026_11_17_Rebrand.jpg",
     "thumbnail": "/videos/2026_11_17_Rebrand.thumbnail.jpg",
-    "thumbnailTime": 2.7,
+    "thumbnailTime": 2.95,
     "width": 1280,
     "height": 720,
-    "duration": 5,
-    "sha256": "c32a5f74aedf8ffb1bf85a48227de02453e45d87d457b66f34324432174d4491"
+    "duration": 4.73,
+    "sha256": "cb9c513da49edac82148df1dea77575b088482980c9c986a5de62317e955a030"
   }
 }
