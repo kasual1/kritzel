@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@updraw/core": ["../../core/src/index.ts"]
+      "@upmade/core": ["../../core/src/index.ts"]
     }
   }
 }

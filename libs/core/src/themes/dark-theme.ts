@@ -1,9 +1,9 @@
-import { UpdrawTheme } from '../interfaces/theme.interface';
+import { UpmadeTheme } from '../interfaces/theme.interface';
 
 /**
  * Dark theme preset
  */
-export const darkTheme: UpdrawTheme = {
+export const darkTheme: UpmadeTheme = {
   name: 'dark',
 
   global: {
@@ -443,7 +443,7 @@ export const darkTheme: UpdrawTheme = {
     buttonPressedBackgroundColor: 'rgba(255, 255, 255, 0.14)',
     buttonSize: '22px',
     focusRing: '2px solid #4da3ff',
-    fontFamily: 'var(--updraw-global-font-family, sans-serif)',
+    fontFamily: 'var(--upmade-global-font-family, sans-serif)',
     fontSize: '12px',
     fontWeight: '400',
     gap: '4px',

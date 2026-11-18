@@ -1,40 +1,40 @@
-import { UpdrawTheme, ThemeName } from '../../interfaces/theme.interface';
+import { UpmadeTheme, ThemeName } from '../../interfaces/theme.interface';
 import { lightTheme } from '../../themes/light-theme';
 import { darkTheme } from '../../themes/dark-theme';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeCore } from '../core/core.class';
 import { ThemeHelper } from '../../helpers/theme.helper';
 import { migrateLegacyStorageKeys } from '../../migrations/legacy-brand';
 
 /** Key used to store the settings object in localStorage. */
-const SETTINGS_STORAGE_KEY = 'updraw-settings';
+const SETTINGS_STORAGE_KEY = 'upmade-settings';
 
 /** Default theme used when no stored preference exists. */
 const DEFAULT_THEME: ThemeName = 'light';
 
 /**
- * Manages theme state and application across the Updraw editor.
+ * Manages theme state and application across the Upmade editor.
  * Reads the persisted theme from the settings object in localStorage but does not write to it.
- * Persistence is handled exclusively by the UpdrawSettings component.
+ * Persistence is handled exclusively by the UpmadeSettings component.
  *
  * The theme manager is responsible for:
  * - Reading the stored theme preference from the settings object
  * - Applying CSS custom properties to target elements
  * - Switching between light and dark themes at runtime
  */
-export class UpdrawThemeManager {
-  private readonly _core: UpdrawCore;
+export class UpmadeThemeManager {
+  private readonly _core: UpmadeCore;
   private _currentTheme: ThemeName = DEFAULT_THEME;
   private _targetElement: HTMLElement | null = null;
   private readonly _storageKey: string;
-  private _themeRegistry = new Map<string, UpdrawTheme>();
+  private _themeRegistry = new Map<string, UpmadeTheme>();
 
   /**
-   * Creates a new UpdrawThemeManager instance.
+   * Creates a new UpmadeThemeManager instance.
    * Initializes the current theme from the settings object in localStorage or uses the default theme.
    *
-   * @param core - The UpdrawCore instance this manager belongs to
+   * @param core - The UpmadeCore instance this manager belongs to
    */
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     this._core = core;
     this._storageKey = core.editorId ? `${SETTINGS_STORAGE_KEY}-${core.editorId}` : SETTINGS_STORAGE_KEY;
     
@@ -82,9 +82,9 @@ export class UpdrawThemeManager {
    * Falls back to the first registered theme if the requested name is not found.
    *
    * @param themeName - The name of the theme to retrieve
-   * @returns The UpdrawTheme object containing all theme CSS variable values
+   * @returns The UpmadeTheme object containing all theme CSS variable values
    */
-  getThemeByName(themeName: ThemeName): UpdrawTheme {
+  getThemeByName(themeName: ThemeName): UpmadeTheme {
     return this._themeRegistry.get(themeName) ?? this._themeRegistry.values().next().value!;
   }
 
@@ -93,9 +93,9 @@ export class UpdrawThemeManager {
    *
    * @param themes - The complete list of themes to make available
    */
-  registerThemes(themes: UpdrawTheme[]): void {
+  registerThemes(themes: UpmadeTheme[]): void {
     if (themes.length === 0) {
-      console.warn('[UpdrawThemeManager] registerThemes called with an empty array. The theme registry will be empty.');
+      console.warn('[UpmadeThemeManager] registerThemes called with an empty array. The theme registry will be empty.');
     }
     this._themeRegistry.clear();
     for (const theme of themes) {
@@ -126,7 +126,7 @@ export class UpdrawThemeManager {
    *
    * @returns An array of all registered theme objects
    */
-  getAllThemes(): UpdrawTheme[] {
+  getAllThemes(): UpmadeTheme[] {
     return Array.from(this._themeRegistry.values());
   }
 
@@ -182,7 +182,7 @@ export class UpdrawThemeManager {
 
   /**
    * Sets the current theme and applies it to the target element.
-   * Does not persist the theme — persistence is handled by the UpdrawSettings component.
+   * Does not persist the theme — persistence is handled by the UpmadeSettings component.
    *
    * @param themeName - The theme name to set ('light' or 'dark')
    */

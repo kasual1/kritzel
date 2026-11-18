@@ -1,9 +1,9 @@
-import { UpdrawQuadtree } from './quadtree.structure';
-import { UpdrawBoundingBox } from '../../interfaces/bounding-box.interface';
+import { UpmadeQuadtree } from './quadtree.structure';
+import { UpmadeBoundingBox } from '../../interfaces/bounding-box.interface';
 
 interface MockObject {
   id: string;
-  rotatedBoundingBox: UpdrawBoundingBox;
+  rotatedBoundingBox: UpmadeBoundingBox;
 }
 
 const createObject = (id: string, x: number, y: number, width: number, height: number): MockObject => ({
@@ -11,13 +11,13 @@ const createObject = (id: string, x: number, y: number, width: number, height: n
   rotatedBoundingBox: { x, y, z: 0, width, height },
 });
 
-const WORLD_BOUNDS: UpdrawBoundingBox = { x: 0, y: 0, z: 0, width: 100, height: 100 };
+const WORLD_BOUNDS: UpmadeBoundingBox = { x: 0, y: 0, z: 0, width: 100, height: 100 };
 
-describe('UpdrawQuadtree', () => {
-  let tree: UpdrawQuadtree<any>;
+describe('UpmadeQuadtree', () => {
+  let tree: UpmadeQuadtree<any>;
 
   beforeEach(() => {
-    tree = new UpdrawQuadtree(WORLD_BOUNDS);
+    tree = new UpmadeQuadtree(WORLD_BOUNDS);
   });
 
   describe('constructor', () => {
@@ -26,7 +26,7 @@ describe('UpdrawQuadtree', () => {
     });
 
     it('should accept a custom capacity', () => {
-      const smallTree = new UpdrawQuadtree(WORLD_BOUNDS, 2);
+      const smallTree = new UpmadeQuadtree(WORLD_BOUNDS, 2);
       expect(smallTree.size).toBe(0);
     });
   });
@@ -59,7 +59,7 @@ describe('UpdrawQuadtree', () => {
     });
 
     it('should subdivide when capacity is exceeded', () => {
-      const smallTree = new UpdrawQuadtree<any>(WORLD_BOUNDS, 2);
+      const smallTree = new UpmadeQuadtree<any>(WORLD_BOUNDS, 2);
 
       smallTree.insert(createObject('a', 10, 10, 5, 5));
       smallTree.insert(createObject('b', 60, 10, 5, 5));
@@ -70,7 +70,7 @@ describe('UpdrawQuadtree', () => {
     });
 
     it('should reject object that does not intersect any child after subdivision', () => {
-      const smallTree = new UpdrawQuadtree<any>(WORLD_BOUNDS, 1);
+      const smallTree = new UpmadeQuadtree<any>(WORLD_BOUNDS, 1);
 
       smallTree.insert(createObject('a', 10, 10, 5, 5));
       // Forces subdivision, then tries to insert in children - object outside bounds
@@ -117,7 +117,7 @@ describe('UpdrawQuadtree', () => {
     });
 
     it('should return objects from children after subdivision', () => {
-      const smallTree = new UpdrawQuadtree<any>(WORLD_BOUNDS, 2);
+      const smallTree = new UpmadeQuadtree<any>(WORLD_BOUNDS, 2);
 
       smallTree.insert(createObject('a', 10, 10, 5, 5));
       smallTree.insert(createObject('b', 60, 10, 5, 5));
@@ -158,7 +158,7 @@ describe('UpdrawQuadtree', () => {
     });
 
     it('should remove objects from child nodes after subdivision', () => {
-      const smallTree = new UpdrawQuadtree<any>(WORLD_BOUNDS, 2);
+      const smallTree = new UpmadeQuadtree<any>(WORLD_BOUNDS, 2);
 
       smallTree.insert(createObject('a', 10, 10, 5, 5));
       smallTree.insert(createObject('b', 60, 10, 5, 5));
@@ -200,7 +200,7 @@ describe('UpdrawQuadtree', () => {
     });
 
     it('should update an object in child nodes after subdivision', () => {
-      const smallTree = new UpdrawQuadtree<any>(WORLD_BOUNDS, 2);
+      const smallTree = new UpmadeQuadtree<any>(WORLD_BOUNDS, 2);
 
       smallTree.insert(createObject('a', 10, 10, 5, 5));
       smallTree.insert(createObject('b', 60, 10, 5, 5));
@@ -215,7 +215,7 @@ describe('UpdrawQuadtree', () => {
 
   describe('reindex', () => {
     it('should reindex an object into a different query region after a large move', () => {
-      const smallTree = new UpdrawQuadtree<any>(WORLD_BOUNDS, 2);
+      const smallTree = new UpmadeQuadtree<any>(WORLD_BOUNDS, 2);
       smallTree.insert(createObject('a', 10, 10, 5, 5));
       smallTree.insert(createObject('b', 60, 10, 5, 5));
       smallTree.insert(createObject('c', 10, 60, 5, 5));
@@ -271,7 +271,7 @@ describe('UpdrawQuadtree', () => {
     });
 
     it('should filter across child nodes after subdivision', () => {
-      const smallTree = new UpdrawQuadtree<any>(WORLD_BOUNDS, 2);
+      const smallTree = new UpmadeQuadtree<any>(WORLD_BOUNDS, 2);
 
       smallTree.insert(createObject('a', 10, 10, 5, 5));
       smallTree.insert(createObject('b', 60, 10, 5, 5));
@@ -301,7 +301,7 @@ describe('UpdrawQuadtree', () => {
     });
 
     it('should collect objects from child nodes after subdivision', () => {
-      const smallTree = new UpdrawQuadtree<any>(WORLD_BOUNDS, 2);
+      const smallTree = new UpmadeQuadtree<any>(WORLD_BOUNDS, 2);
 
       smallTree.insert(createObject('a', 10, 10, 5, 5));
       smallTree.insert(createObject('b', 60, 10, 5, 5));

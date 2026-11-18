@@ -1,12 +1,12 @@
-import type { UpdrawAgenticRedoAction, UpdrawAgenticUndoAction } from '../../interfaces/agentic-action.interface';
-import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
-import type { UpdrawAgenticActionRun } from '../managers/agentic-action-run.class';
-import type { UpdrawAgentHistoryResult } from '../structures/object-map.structure';
+import type { UpmadeAgenticRedoAction, UpmadeAgenticUndoAction } from '../../interfaces/agentic-action.interface';
+import type { UpmadeAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpmadeAgenticActionRun } from '../managers/agentic-action-run.class';
+import type { UpmadeAgentHistoryResult } from '../structures/object-map.structure';
 import { flyToObjects } from './select.executor';
 
-type HistoryAction = UpdrawAgenticUndoAction | UpdrawAgenticRedoAction;
+type HistoryAction = UpmadeAgenticUndoAction | UpmadeAgenticRedoAction;
 
-function createHistoryExecutor(direction: 'undo' | 'redo'): UpdrawAgenticActionExecutor<HistoryAction> {
+function createHistoryExecutor(direction: 'undo' | 'redo'): UpmadeAgenticActionExecutor<HistoryAction> {
   const emptyReason = direction === 'undo' ? 'nothing-to-undo' : 'nothing-to-redo';
 
   return {
@@ -17,7 +17,7 @@ function createHistoryExecutor(direction: 'undo' | 'redo'): UpdrawAgenticActionE
       // Nothing to validate.
     },
 
-    prepare(run: UpdrawAgenticActionRun) {
+    prepare(run: UpmadeAgenticActionRun) {
       // Actors working as the user share the user's history; they never undo or redo on their own.
       if (run.actorKind === 'user') {
         return { reason: 'not-allowed' as const };
@@ -33,7 +33,7 @@ function createHistoryExecutor(direction: 'undo' | 'redo'): UpdrawAgenticActionE
       return { targetIds: ids, referenceIds: [] };
     },
 
-    async execute(run: UpdrawAgenticActionRun) {
+    async execute(run: UpmadeAgenticActionRun) {
       const map = run.map!;
       if (run.displayIds.length > 0) {
         await flyToObjects(run, run.displayIds);
@@ -44,7 +44,7 @@ function createHistoryExecutor(direction: 'undo' | 'redo'): UpdrawAgenticActionE
       // The step replaces the instances of its objects; stop checking them as "changed elsewhere".
       run.untrack([...run.targetIds]);
       run.applyingHistory = true;
-      let result: UpdrawAgentHistoryResult;
+      let result: UpmadeAgentHistoryResult;
       try {
         result = direction === 'undo' ? map.undoAgent(run.cursorId) : map.redoAgent(run.cursorId);
       } finally {

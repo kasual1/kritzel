@@ -5,33 +5,33 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IUpdrawDialogCloseEvent, IUpdrawIsPublicChangeEvent, IUpdrawMasterDetailItem, IUpdrawMasterDetailSelectEvent, IUpdrawMenuItem, IUpdrawMenuItemSelectEvent, IUpdrawMenuItemToggleChildMenuEvent, IUpdrawUser, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues, UpdrawAgent, UpdrawAgentPresence, UpdrawAgentsChangeEvent, UpdrawAlignment, UpdrawAssetStorageConfig, UpdrawBaseObject, UpdrawBaseTool, UpdrawBrushToolConfig, UpdrawChatBoxChip, UpdrawChatSession, UpdrawDebugInfo, UpdrawDialogCloseReason, UpdrawFontMap, UpdrawGroup, UpdrawLineToolConfig, UpdrawLocale, UpdrawLoginConfig, UpdrawLoginProvider, UpdrawNotification, UpdrawObjectConfig, UpdrawObjectElementClickEvent, UpdrawObjectElementHighlight, UpdrawObjectElementHoverEvent, UpdrawObjectElementInfo, UpdrawObjectElementPickEvent, UpdrawObjectElementPickingOptions, UpdrawObjectExportFormat, UpdrawObjectTitlebarActionEvent, UpdrawObjectTitlebarConfig, UpdrawRemoteAgentPresence, UpdrawSettingsConfig, UpdrawShapeToolConfig, UpdrawShortcut, UpdrawSvgIconMap, UpdrawSyncConfig, UpdrawTermKey, UpdrawTermVars, UpdrawTextToolConfig, UpdrawTheme, UpdrawTitlebarMenuItem, UpdrawToolbarItem, UpdrawUndoState, UpdrawViewportState, UpdrawWorkspace } from "@updraw/core";
-import { BrushStyleOption } from "./components/updraw-brush-style/updraw-brush-style";
-import { UpdrawChatBoxMode } from "./components/updraw-chat-box/updraw-chat-box";
-import { DropdownOption } from "./components/updraw-dropdown/updraw-dropdown";
-import { UpdrawChatBoxMode as UpdrawChatBoxMode1 } from "./components/updraw-chat-box/updraw-chat-box";
+import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IUpmadeDialogCloseEvent, IUpmadeIsPublicChangeEvent, IUpmadeMasterDetailItem, IUpmadeMasterDetailSelectEvent, IUpmadeMenuItem, IUpmadeMenuItemSelectEvent, IUpmadeMenuItemToggleChildMenuEvent, IUpmadeUser, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues, UpmadeAgent, UpmadeAgentPresence, UpmadeAgentsChangeEvent, UpmadeAlignment, UpmadeAssetStorageConfig, UpmadeBaseObject, UpmadeBaseTool, UpmadeBrushToolConfig, UpmadeChatBoxChip, UpmadeChatSession, UpmadeDebugInfo, UpmadeDialogCloseReason, UpmadeFontMap, UpmadeGroup, UpmadeLineToolConfig, UpmadeLocale, UpmadeLoginConfig, UpmadeLoginProvider, UpmadeNotification, UpmadeObjectConfig, UpmadeObjectElementClickEvent, UpmadeObjectElementHighlight, UpmadeObjectElementHoverEvent, UpmadeObjectElementInfo, UpmadeObjectElementPickEvent, UpmadeObjectElementPickingOptions, UpmadeObjectExportFormat, UpmadeObjectTitlebarActionEvent, UpmadeObjectTitlebarConfig, UpmadeRemoteAgentPresence, UpmadeSettingsConfig, UpmadeShapeToolConfig, UpmadeShortcut, UpmadeSvgIconMap, UpmadeSyncConfig, UpmadeTermKey, UpmadeTermVars, UpmadeTextToolConfig, UpmadeTheme, UpmadeTitlebarMenuItem, UpmadeToolbarItem, UpmadeUndoState, UpmadeViewportState, UpmadeWorkspace } from "@upmade/core";
+import { BrushStyleOption } from "./components/upmade-brush-style/upmade-brush-style";
+import { UpmadeChatBoxMode } from "./components/upmade-chat-box/upmade-chat-box";
+import { DropdownOption } from "./components/upmade-dropdown/upmade-dropdown";
+import { UpmadeChatBoxMode as UpmadeChatBoxMode1 } from "./components/upmade-chat-box/upmade-chat-box";
 import { Element } from "@stencil/core";
-import { FontOption } from "./components/updraw-font-family/updraw-font-family";
-import { LineEndingType } from "./components/updraw-line-endings/updraw-line-endings";
-import { UpdrawPillTab } from "./components/updraw-pill-tabs/updraw-pill-tabs";
-import { ShapeFillType } from "./components/updraw-shape-fill/updraw-shape-fill";
-export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IUpdrawDialogCloseEvent, IUpdrawIsPublicChangeEvent, IUpdrawMasterDetailItem, IUpdrawMasterDetailSelectEvent, IUpdrawMenuItem, IUpdrawMenuItemSelectEvent, IUpdrawMenuItemToggleChildMenuEvent, IUpdrawUser, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues, UpdrawAgent, UpdrawAgentPresence, UpdrawAgentsChangeEvent, UpdrawAlignment, UpdrawAssetStorageConfig, UpdrawBaseObject, UpdrawBaseTool, UpdrawBrushToolConfig, UpdrawChatBoxChip, UpdrawChatSession, UpdrawDebugInfo, UpdrawDialogCloseReason, UpdrawFontMap, UpdrawGroup, UpdrawLineToolConfig, UpdrawLocale, UpdrawLoginConfig, UpdrawLoginProvider, UpdrawNotification, UpdrawObjectConfig, UpdrawObjectElementClickEvent, UpdrawObjectElementHighlight, UpdrawObjectElementHoverEvent, UpdrawObjectElementInfo, UpdrawObjectElementPickEvent, UpdrawObjectElementPickingOptions, UpdrawObjectExportFormat, UpdrawObjectTitlebarActionEvent, UpdrawObjectTitlebarConfig, UpdrawRemoteAgentPresence, UpdrawSettingsConfig, UpdrawShapeToolConfig, UpdrawShortcut, UpdrawSvgIconMap, UpdrawSyncConfig, UpdrawTermKey, UpdrawTermVars, UpdrawTextToolConfig, UpdrawTheme, UpdrawTitlebarMenuItem, UpdrawToolbarItem, UpdrawUndoState, UpdrawViewportState, UpdrawWorkspace } from "@updraw/core";
-export { BrushStyleOption } from "./components/updraw-brush-style/updraw-brush-style";
-export { UpdrawChatBoxMode } from "./components/updraw-chat-box/updraw-chat-box";
-export { DropdownOption } from "./components/updraw-dropdown/updraw-dropdown";
-export { UpdrawChatBoxMode as UpdrawChatBoxMode1 } from "./components/updraw-chat-box/updraw-chat-box";
+import { FontOption } from "./components/upmade-font-family/upmade-font-family";
+import { LineEndingType } from "./components/upmade-line-endings/upmade-line-endings";
+import { UpmadePillTab } from "./components/upmade-pill-tabs/upmade-pill-tabs";
+import { ShapeFillType } from "./components/upmade-shape-fill/upmade-shape-fill";
+export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IUpmadeDialogCloseEvent, IUpmadeIsPublicChangeEvent, IUpmadeMasterDetailItem, IUpmadeMasterDetailSelectEvent, IUpmadeMenuItem, IUpmadeMenuItemSelectEvent, IUpmadeMenuItemToggleChildMenuEvent, IUpmadeUser, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues, UpmadeAgent, UpmadeAgentPresence, UpmadeAgentsChangeEvent, UpmadeAlignment, UpmadeAssetStorageConfig, UpmadeBaseObject, UpmadeBaseTool, UpmadeBrushToolConfig, UpmadeChatBoxChip, UpmadeChatSession, UpmadeDebugInfo, UpmadeDialogCloseReason, UpmadeFontMap, UpmadeGroup, UpmadeLineToolConfig, UpmadeLocale, UpmadeLoginConfig, UpmadeLoginProvider, UpmadeNotification, UpmadeObjectConfig, UpmadeObjectElementClickEvent, UpmadeObjectElementHighlight, UpmadeObjectElementHoverEvent, UpmadeObjectElementInfo, UpmadeObjectElementPickEvent, UpmadeObjectElementPickingOptions, UpmadeObjectExportFormat, UpmadeObjectTitlebarActionEvent, UpmadeObjectTitlebarConfig, UpmadeRemoteAgentPresence, UpmadeSettingsConfig, UpmadeShapeToolConfig, UpmadeShortcut, UpmadeSvgIconMap, UpmadeSyncConfig, UpmadeTermKey, UpmadeTermVars, UpmadeTextToolConfig, UpmadeTheme, UpmadeTitlebarMenuItem, UpmadeToolbarItem, UpmadeUndoState, UpmadeViewportState, UpmadeWorkspace } from "@upmade/core";
+export { BrushStyleOption } from "./components/upmade-brush-style/upmade-brush-style";
+export { UpmadeChatBoxMode } from "./components/upmade-chat-box/upmade-chat-box";
+export { DropdownOption } from "./components/upmade-dropdown/upmade-dropdown";
+export { UpmadeChatBoxMode as UpmadeChatBoxMode1 } from "./components/upmade-chat-box/upmade-chat-box";
 export { Element } from "@stencil/core";
-export { FontOption } from "./components/updraw-font-family/updraw-font-family";
-export { LineEndingType } from "./components/updraw-line-endings/updraw-line-endings";
-export { UpdrawPillTab } from "./components/updraw-pill-tabs/updraw-pill-tabs";
-export { ShapeFillType } from "./components/updraw-shape-fill/updraw-shape-fill";
+export { FontOption } from "./components/upmade-font-family/upmade-font-family";
+export { LineEndingType } from "./components/upmade-line-endings/upmade-line-endings";
+export { UpmadePillTab } from "./components/upmade-pill-tabs/upmade-pill-tabs";
+export { ShapeFillType } from "./components/upmade-shape-fill/upmade-shape-fill";
 export namespace Components {
-    interface UpdrawActiveUsers {
+    interface UpmadeActiveUsers {
         /**
           * Agents to display after the users: local agents and agents of collaborators. Shown with a bot badge, a ring while they work and their status in the tooltip.
           * @default []
          */
-        "agents": (UpdrawAgentPresence | UpdrawRemoteAgentPresence)[];
+        "agents": (UpmadeAgentPresence | UpmadeRemoteAgentPresence)[];
         /**
           * Avatar size in pixels
           * @default 40
@@ -51,9 +51,9 @@ export namespace Components {
           * Array of active users to display
           * @default []
          */
-        "users": IUpdrawUser[];
+        "users": IUpmadeUser[];
     }
-    interface UpdrawAvatar {
+    interface UpmadeAvatar {
         /**
           * Background color for initials fallback
          */
@@ -70,9 +70,9 @@ export namespace Components {
         /**
           * Full user object. If provided, individual props are ignored.
          */
-        "user"?: IUpdrawUser;
+        "user"?: IUpmadeUser;
     }
-    interface UpdrawBackToContent {
+    interface UpmadeBackToContent {
         /**
           * The text to display on the button
           * @default 'Back to content'
@@ -84,7 +84,7 @@ export namespace Components {
          */
         "visible": boolean;
     }
-    interface UpdrawBrushStyle {
+    interface UpmadeBrushStyle {
         /**
           * @default [     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]
          */
@@ -94,7 +94,7 @@ export namespace Components {
          */
         "type": 'pen' | 'highlighter';
     }
-    interface UpdrawButton {
+    interface UpmadeButton {
         /**
           * Whether the button is disabled
           * @default false
@@ -111,12 +111,12 @@ export namespace Components {
          */
         "variant": 'primary' | 'secondary' | 'text';
     }
-    interface UpdrawChatBox {
+    interface UpmadeChatBox {
         /**
           * Chips shown above the box, e.g. the object or element the next prompt refers to. The first three share one row as wide as the box; the rest are summarized as "+N more". The box never changes this array: pass a new array to add, change or remove chips. Each chip's remove button emits `chatChipRemove`.
           * @default []
          */
-        "chips": UpdrawChatBoxChip[];
+        "chips": UpmadeChatBoxChip[];
         /**
           * Whether the chat box is disabled.
           * @default false
@@ -131,7 +131,7 @@ export namespace Components {
           * Display mode. `collapsed` shows a single row and switches to `expanded` automatically while focused once the text no longer fits on one line, collapsing again when focus is lost.
           * @default 'collapsed'
          */
-        "mode": UpdrawChatBoxMode;
+        "mode": UpmadeChatBoxMode;
         /**
           * Placeholder text shown when the chat box is empty. Falls back to the localized term.
          */
@@ -140,14 +140,14 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<UpdrawTermKey, string>>;
+        "terms": Partial<Record<UpmadeTermKey, string>>;
         /**
           * Current text value of the chat box.
           * @default ''
          */
         "value": string;
     }
-    interface UpdrawColor {
+    interface UpmadeColor {
         /**
           * @default 24
          */
@@ -155,7 +155,7 @@ export namespace Components {
         "theme": ThemeName;
         "value": string | ThemeAwareColor;
     }
-    interface UpdrawColorPalette {
+    interface UpmadeColorPalette {
         /**
           * @default []
          */
@@ -178,11 +178,11 @@ export namespace Components {
         "selectedColor": ThemeAwareColor | null;
         "theme": ThemeName;
     }
-    interface UpdrawContextMenu {
+    interface UpmadeContextMenu {
         "items": ContextMenuItem[];
-        "objects": UpdrawBaseObject[];
+        "objects": UpmadeBaseObject[];
     }
-    interface UpdrawCurrentUser {
+    interface UpmadeCurrentUser {
         /**
           * Avatar size in pixels
           * @default 40
@@ -192,23 +192,23 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<UpdrawTermKey, string>>;
+        "terms": Partial<Record<UpmadeTermKey, string>>;
         /**
           * The current user to display
          */
-        "user"?: IUpdrawUser;
+        "user"?: IUpmadeUser;
     }
-    interface UpdrawCurrentUserDialog {
+    interface UpmadeCurrentUserDialog {
         "close": () => Promise<void>;
         "open": () => Promise<void>;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<UpdrawTermKey, string>>;
-        "user"?: IUpdrawUser;
+        "terms": Partial<Record<UpmadeTermKey, string>>;
+        "user"?: IUpmadeUser;
     }
-    interface UpdrawDialog {
+    interface UpmadeDialog {
         /**
           * Whether to auto-focus the first focusable element when opened
           * @default true
@@ -219,7 +219,7 @@ export namespace Components {
           * @default true
          */
         "closable": boolean;
-        "close": (reason?: UpdrawDialogCloseReason) => Promise<void>;
+        "close": (reason?: UpmadeDialogCloseReason) => Promise<void>;
         /**
           * Whether clicking the backdrop closes the dialog
           * @default true
@@ -262,7 +262,7 @@ export namespace Components {
          */
         "trapFocus": boolean;
     }
-    interface UpdrawDropdown {
+    interface UpmadeDropdown {
         /**
           * Force the dropdown to open in a specific direction instead of auto-detecting
          */
@@ -278,47 +278,47 @@ export namespace Components {
         "value": string;
         "width"?: string;
     }
-    interface UpdrawEditor {
-        "activeUsers"?: IUpdrawUser[];
+    interface UpmadeEditor {
+        "activeUsers"?: IUpmadeUser[];
         /**
           * Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID.
          */
         "activeWorkspaceId"?: string;
         /**
           * Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to one editor at a time; an agent of an editor that was removed from the page moves here. Call it after the editor emitted `isReady`.
-          * @param agent - A `new UpdrawAgent({ name })`.
+          * @param agent - A `new UpmadeAgent({ name })`.
           * @returns The same agent.
          */
-        "addAgent": (agent: UpdrawAgent) => Promise<UpdrawAgent>;
-        "addObject": <T extends UpdrawBaseObject>(object: T) => Promise<T | null>;
-        "addObjects": <T extends UpdrawBaseObject>(objects: T[]) => Promise<T[]>;
-        "alignObjects": (alignment: UpdrawAlignment) => Promise<void>;
+        "addAgent": (agent: UpmadeAgent) => Promise<UpmadeAgent>;
+        "addObject": <T extends UpmadeBaseObject>(object: T) => Promise<T | null>;
+        "addObjects": <T extends UpmadeBaseObject>(objects: T[]) => Promise<T[]>;
+        "alignObjects": (alignment: UpmadeAlignment) => Promise<void>;
         /**
           * @default DEFAULT_ASSET_STORAGE_CONFIG
          */
-        "assetStorageConfig"?: UpdrawAssetStorageConfig;
+        "assetStorageConfig"?: UpmadeAssetStorageConfig;
         "backToContent": () => Promise<boolean>;
         "beginSceneBootstrap": () => Promise<void>;
-        "bringForward": (object?: UpdrawBaseObject<any>) => Promise<void>;
-        "bringToFront": (object?: UpdrawBaseObject<any>) => Promise<void>;
-        "canExportSelectedObjectAs": (format: UpdrawObjectExportFormat) => Promise<boolean>;
+        "bringForward": (object?: UpmadeBaseObject<any>) => Promise<void>;
+        "bringToFront": (object?: UpmadeBaseObject<any>) => Promise<void>;
+        "canExportSelectedObjectAs": (format: UpmadeObjectExportFormat) => Promise<boolean>;
         "centerAllObjects": (animate?: boolean) => Promise<boolean>;
-        "centerObjectInViewport": (object: UpdrawBaseObject) => Promise<UpdrawBaseObject<HTMLElement | SVGElement>>;
-        "centerObjects": (objects: UpdrawBaseObject[], animate?: boolean) => Promise<boolean>;
+        "centerObjectInViewport": (object: UpmadeBaseObject) => Promise<UpmadeBaseObject<HTMLElement | SVGElement>>;
+        "centerObjects": (objects: UpmadeBaseObject[], animate?: boolean) => Promise<boolean>;
         /**
           * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Up to three share one row as wide as the box; the rest are summarized as "+N more". Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
           * @default []
          */
-        "chatBoxChips": UpdrawChatBoxChip[];
+        "chatBoxChips": UpmadeChatBoxChip[];
         /**
           * Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row.
           * @default "collapsed"
          */
-        "chatBoxMode": UpdrawChatBoxMode1;
+        "chatBoxMode": UpmadeChatBoxMode1;
         /**
           * A chat session the chat box sends its prompts to, with `chatBoxChips` as what they refer to. While it runs, the chat box shows its progress and the stop button stops it. Call `preventDefault()` on `chatSubmit` to send a prompt yourself.
          */
-        "chatSession"?: UpdrawChatSession | null;
+        "chatSession"?: UpmadeChatSession | null;
         /**
           * Removes element highlights.
           * @param objectId - The object whose highlights are removed. Removes the highlights of all objects when omitted.
@@ -334,7 +334,7 @@ export namespace Components {
         "closeUserDialog": () => Promise<void>;
         "closeWorkspaceManagerMenu": () => Promise<void>;
         "copy": () => Promise<void>;
-        "createWorkspace": (workspace: UpdrawWorkspace) => Promise<UpdrawWorkspace | null>;
+        "createWorkspace": (workspace: UpmadeWorkspace) => Promise<UpmadeWorkspace | null>;
         /**
           * The element to use as the target for the cursor. Defaults to the editor container if not set.
          */
@@ -343,18 +343,18 @@ export namespace Components {
           * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts.
           * @default {}
          */
-        "customFonts": UpdrawFontMap;
+        "customFonts": UpmadeFontMap;
         /**
           * @default {}
          */
-        "customSvgIcons": UpdrawSvgIconMap;
+        "customSvgIcons": UpmadeSvgIconMap;
         "cut": () => Promise<void>;
         /**
           * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,     showAssetResolverInfo: false,   }
          */
-        "debugInfo": UpdrawDebugInfo;
+        "debugInfo": UpmadeDebugInfo;
         "delete": () => Promise<void>;
-        "deleteWorkspace": (workspace: UpdrawWorkspace) => Promise<void>;
+        "deleteWorkspace": (workspace: UpmadeWorkspace) => Promise<void>;
         "disable": () => Promise<void>;
         "downloadAsJson": (filename?: string) => Promise<void>;
         /**
@@ -364,7 +364,7 @@ export namespace Components {
         "enable": () => Promise<void>;
         "endSceneBootstrap": () => Promise<void>;
         "exportAsJson": () => Promise<string>;
-        "exportSelectedObject": (format: UpdrawObjectExportFormat) => Promise<void>;
+        "exportSelectedObject": (format: UpmadeObjectExportFormat) => Promise<void>;
         "exportViewportAsPng": () => Promise<void>;
         "exportViewportAsSvg": () => Promise<void>;
         /**
@@ -372,51 +372,51 @@ export namespace Components {
           * @default "en"
          */
         "fallbackLocale": LocaleCode;
-        "findObjects": <T extends UpdrawBaseObject>(predicate: (obj: UpdrawBaseObject<Element>) => boolean) => Promise<T[]>;
-        "getActiveWorkspace": () => Promise<UpdrawWorkspace>;
+        "findObjects": <T extends UpmadeBaseObject>(predicate: (obj: UpmadeBaseObject<Element>) => boolean) => Promise<T[]>;
+        "getActiveWorkspace": () => Promise<UpmadeWorkspace>;
         /**
           * Returns an added agent by its ID.
           * @param id - The agent's ID.
          */
-        "getAgent": (id: string) => Promise<UpdrawAgent | null>;
+        "getAgent": (id: string) => Promise<UpmadeAgent | null>;
         /**
           * Returns the added agents.
          */
-        "getAgents": () => Promise<UpdrawAgent[]>;
-        "getAllObjects": <T extends UpdrawBaseObject>() => Promise<T[]>;
+        "getAgents": () => Promise<UpmadeAgent[]>;
+        "getAllObjects": <T extends UpmadeBaseObject>() => Promise<T[]>;
         /**
           * Gets the list of available locale codes (built-in and registered).
          */
         "getAvailableLocales": () => Promise<LocaleCode[]>;
-        "getDisplayableShortcuts": () => Promise<Omit<UpdrawShortcut, "action" | "condition">[]>;
+        "getDisplayableShortcuts": () => Promise<Omit<UpmadeShortcut, "action" | "condition">[]>;
         /**
           * Gets the currently active locale code.
          */
         "getLocale": () => Promise<LocaleCode>;
-        "getObjectById": <T extends UpdrawBaseObject>(id: string) => Promise<T | null>;
-        "getObjectsInViewport": () => Promise<UpdrawBaseObject[]>;
+        "getObjectById": <T extends UpmadeBaseObject>(id: string) => Promise<T | null>;
+        "getObjectsInViewport": () => Promise<UpmadeBaseObject[]>;
         "getObjectsTotalCount": () => Promise<number>;
         /**
           * Returns the agents of collaborators, as shared through presence.
          */
-        "getRemoteAgents": () => Promise<UpdrawRemoteAgentPresence[]>;
+        "getRemoteAgents": () => Promise<UpmadeRemoteAgentPresence[]>;
         "getScreenshot": (format?: "png" | "svg") => Promise<string | null>;
-        "getSelectedObjectSupportedExportFormats": () => Promise<UpdrawObjectExportFormat[]>;
-        "getSelectedObjects": () => Promise<UpdrawBaseObject[]>;
-        "getViewport": () => Promise<UpdrawViewportState>;
-        "getWorkspaces": () => Promise<UpdrawWorkspace[]>;
+        "getSelectedObjectSupportedExportFormats": () => Promise<UpmadeObjectExportFormat[]>;
+        "getSelectedObjects": () => Promise<UpmadeBaseObject[]>;
+        "getViewport": () => Promise<UpmadeViewportState>;
+        "getWorkspaces": () => Promise<UpmadeWorkspace[]>;
         /**
           * @default [     {       label: "menu.paste",       icon: "paste",       action: (menu) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.selectAll",       icon: "selectAll",       action: () => this.selectAllObjectsInViewport(),     },   ]
          */
         "globalContextMenuItems": ContextMenuItem[];
-        "group": (objects: UpdrawBaseObject<any>[]) => Promise<UpdrawGroup | null>;
+        "group": (objects: UpmadeBaseObject<any>[]) => Promise<UpmadeGroup | null>;
         "hideContextMenu": () => Promise<void>;
         /**
           * Highlights elements inside an object's content, replacing its previous highlights. Highlights are local: they are neither saved nor shown to collaborators.
           * @param objectId - The object ID.
           * @param highlights - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted.
          */
-        "highlightObjectElements": (objectId: string, highlights: UpdrawObjectElementHighlight[]) => Promise<void>;
+        "highlightObjectElements": (objectId: string, highlights: UpmadeObjectElementHighlight[]) => Promise<void>;
         "importFromFile": () => Promise<void>;
         "importFromJson": (json: string) => Promise<void>;
         /**
@@ -450,7 +450,7 @@ export namespace Components {
          */
         "isUtilityPanelVisible": boolean;
         /**
-          * Whether the "Powered by Updraw" watermark is shown. Keeping it visible helps support the project.
+          * Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project.
           * @default true
          */
         "isWatermarkVisible": boolean;
@@ -476,7 +476,7 @@ export namespace Components {
         /**
           * An array of available locale definitions (with optional partial term overrides).
          */
-        "locales"?: UpdrawLocale[];
+        "locales"?: UpmadeLocale[];
         /**
           * @default true
          */
@@ -484,23 +484,23 @@ export namespace Components {
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
          */
-        "loginConfig"?: UpdrawLoginConfig;
+        "loginConfig"?: UpmadeLoginConfig;
         /**
           * @default [     {       id: "share",       label: "menu.share",       icon: "share",       isVisible: async () => hasRemoteSyncProvider(this.syncConfig),       action: () => {         if (!this.isLoggedIn && this.loginConfig) {           this.openLoginDialog();           return;         }         this.shareDialogRef.open();       },     },     {       id: "export",       label: "menu.export",       icon: "upload",       action: async () => {         const preview = await this.engineRef.getScreenshot("png");         this.exportRef.open(preview ?? undefined);       },     },     {       id: "import",       label: "menu.import",       icon: "download",       action: () => this.engineRef.importFromFile(),     },     {       id: "settings",       label: "menu.settings",       icon: "settings",       action: () => this.settingsRef.open(),     },   ]
          */
-        "moreMenuItems"?: IUpdrawMenuItem[];
+        "moreMenuItems"?: IUpmadeMenuItem[];
         /**
           * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
          */
-        "objectConfig"?: UpdrawObjectConfig;
+        "objectConfig"?: UpmadeObjectConfig;
         /**
-          * @default [     {       label: "menu.copy",       icon: "copy",       group: "clipboard",       action: () => this.engineRef.copy(),     },     {       label: "menu.cut",       icon: "cut",       group: "clipboard",       action: () => this.engineRef.cut(),     },     {       label: "menu.paste",       icon: "paste",       group: "clipboard",       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.export",       icon: "upload",       group: "clipboard",       isVisible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: "menu.order",       icon: "ordering",       group: "other",       children: [         {           label: "menu.bringToFront",           icon: "bringToFront",           action: () => this.engineRef.bringToFront(),         },         {           label: "menu.sendToBack",           icon: "sendToBack",           action: () => this.engineRef.sendToBack(),         },         {           label: "menu.moveUp",           icon: "arrowUpFromDot",           action: () => this.engineRef.bringForward(),         },         {           label: "menu.moveDown",           icon: "arrowDownFromDot",           action: () => this.engineRef.sendBackward(),         },       ],     },     {       label: "menu.align",       icon: "align",       group: "other",       children: [         {           label: "menu.alignLeft",           icon: "alignStartVertical",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.StartHorizontal),         },         {           label: "menu.alignCenterHorizontal",           icon: "alignCenterHorizontal",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.CenterHorizontal),         },         {           label: "menu.alignRight",           icon: "alignEndVertical",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.EndHorizontal),         },         {           label: "menu.alignTop",           icon: "alignStartHorizontal",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.StartVertical),         },         {           label: "menu.alignCenterVertical",           icon: "alignCenterVertical",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.CenterVertical),         },         {           label: "menu.alignBottom",           icon: "alignEndHorizontal",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.EndVertical),         },       ],     },     {       label: "menu.group",       icon: "group",       group: "other",       children: [         {           label: "menu.group",           icon: "group",           action: (_, objects) => this.engineRef.group(objects),         },         {           label: "menu.ungroup",           icon: "ungroup",           action: (_, objects) => {             const groups = objects.filter(               (object): object is UpdrawGroup =>                 object.__class__ === "UpdrawGroup",             );             this.engineRef.ungroup(groups);           },         },       ],     },     {       label: "menu.delete",       icon: "delete",       group: "edit",       action: () => this.engineRef.delete(),     },   ]
+          * @default [     {       label: "menu.copy",       icon: "copy",       group: "clipboard",       action: () => this.engineRef.copy(),     },     {       label: "menu.cut",       icon: "cut",       group: "clipboard",       action: () => this.engineRef.cut(),     },     {       label: "menu.paste",       icon: "paste",       group: "clipboard",       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.export",       icon: "upload",       group: "clipboard",       isVisible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: "menu.order",       icon: "ordering",       group: "other",       children: [         {           label: "menu.bringToFront",           icon: "bringToFront",           action: () => this.engineRef.bringToFront(),         },         {           label: "menu.sendToBack",           icon: "sendToBack",           action: () => this.engineRef.sendToBack(),         },         {           label: "menu.moveUp",           icon: "arrowUpFromDot",           action: () => this.engineRef.bringForward(),         },         {           label: "menu.moveDown",           icon: "arrowDownFromDot",           action: () => this.engineRef.sendBackward(),         },       ],     },     {       label: "menu.align",       icon: "align",       group: "other",       children: [         {           label: "menu.alignLeft",           icon: "alignStartVertical",           action: () =>             this.engineRef.alignObjects(UpmadeAlignment.StartHorizontal),         },         {           label: "menu.alignCenterHorizontal",           icon: "alignCenterHorizontal",           action: () =>             this.engineRef.alignObjects(UpmadeAlignment.CenterHorizontal),         },         {           label: "menu.alignRight",           icon: "alignEndVertical",           action: () =>             this.engineRef.alignObjects(UpmadeAlignment.EndHorizontal),         },         {           label: "menu.alignTop",           icon: "alignStartHorizontal",           action: () =>             this.engineRef.alignObjects(UpmadeAlignment.StartVertical),         },         {           label: "menu.alignCenterVertical",           icon: "alignCenterVertical",           action: () =>             this.engineRef.alignObjects(UpmadeAlignment.CenterVertical),         },         {           label: "menu.alignBottom",           icon: "alignEndHorizontal",           action: () =>             this.engineRef.alignObjects(UpmadeAlignment.EndVertical),         },       ],     },     {       label: "menu.group",       icon: "group",       group: "other",       children: [         {           label: "menu.group",           icon: "group",           action: (_, objects) => this.engineRef.group(objects),         },         {           label: "menu.ungroup",           icon: "ungroup",           action: (_, objects) => {             const groups = objects.filter(               (object): object is UpmadeGroup =>                 object.__class__ === "UpmadeGroup",             );             this.engineRef.ungroup(groups);           },         },       ],     },     {       label: "menu.delete",       icon: "delete",       group: "edit",       action: () => this.engineRef.delete(),     },   ]
          */
         "objectContextMenuItems": ContextMenuItem[];
         /**
           * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
          */
-        "objectTitlebar"?: UpdrawObjectTitlebarConfig;
+        "objectTitlebar"?: UpmadeObjectTitlebarConfig;
         "openContextMenu": (options: { x: number; y: number; objectId?: string; }) => Promise<void>;
         "openExportDialog": () => Promise<void>;
         "openImportDialog": () => Promise<void>;
@@ -511,38 +511,38 @@ export namespace Components {
         "openUserDialog": () => Promise<void>;
         "openWorkspaceManagerMenu": () => Promise<void>;
         "panTo": (x: number, y: number) => Promise<void>;
-        "panToObject": (object: UpdrawBaseObject) => Promise<void>;
+        "panToObject": (object: UpmadeBaseObject) => Promise<void>;
         "paste": (x: number, y: number) => Promise<void>;
         /**
           * Describes the elements inside an object's content that match a CSS selector, in document order. The object must be mounted, which it is while it is in or near the viewport.
           * @param objectId - The object ID.
-          * @param selector - A CSS selector, e.g. `'button'` or `'[data-updraw-id]'`.
+          * @param selector - A CSS selector, e.g. `'button'` or `'[data-upmade-id]'`.
           * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
           * @returns The matching elements, each with a `selector` that can be used to highlight it or point an agent's cursor at it with `agent.moveTo({ objectId, selector })`.
          */
-        "queryObjectElements": (objectId: string, selector: string, limit?: number) => Promise<UpdrawObjectElementInfo[]>;
+        "queryObjectElements": (objectId: string, selector: string, limit?: number) => Promise<UpmadeObjectElementInfo[]>;
         "redo": () => Promise<void>;
         /**
           * Registers custom fonts for the editor runtime.
           * @param fonts - Mapping from font keys to family names or font definitions.
           * @remarks This no longer controls the text-tool config tooltip font options. Configure tooltip fonts via toolbarItems[].config.availableFonts.
          */
-        "registerFonts": (fonts: UpdrawFontMap) => Promise<void>;
+        "registerFonts": (fonts: UpmadeFontMap) => Promise<void>;
         /**
           * Registers additional locale definitions (with optional partial term overrides).
           * @param locales - The locale definitions to register.
          */
-        "registerLocales": (locales: UpdrawLocale[]) => Promise<void>;
-        "registerTool": (toolName: string, toolClass: any, toolConfig?: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig) => Promise<UpdrawBaseTool | null>;
+        "registerLocales": (locales: UpmadeLocale[]) => Promise<void>;
+        "registerTool": (toolName: string, toolClass: any, toolConfig?: UpmadeTextToolConfig | UpmadeBrushToolConfig | UpmadeLineToolConfig | UpmadeShapeToolConfig) => Promise<UpmadeBaseTool | null>;
         "reinitSync": () => Promise<void>;
         /**
           * Removes an agent: its running action is rolled back, its queued actions resolve with `'agent-removed'`, and its cursor and history are dropped. The agent can be added again.
           * @param agent - The agent or its ID.
           * @returns `false` if the agent was not added.
          */
-        "removeAgent": (agent: UpdrawAgent | string) => Promise<boolean>;
-        "removeObject": <T extends UpdrawBaseObject>(object: T) => Promise<T | null>;
-        "removeObjects": <T extends UpdrawBaseObject>(objects: T[]) => Promise<T[]>;
+        "removeAgent": (agent: UpmadeAgent | string) => Promise<boolean>;
+        "removeObject": <T extends UpmadeBaseObject>(object: T) => Promise<T | null>;
+        "removeObjects": <T extends UpmadeBaseObject>(objects: T[]) => Promise<T[]>;
         /**
           * @default 1000
          */
@@ -553,9 +553,9 @@ export namespace Components {
         "scaleMin": number;
         "screenToWorld": (x: number, y: number) => Promise<{ x: number; y: number; }>;
         "selectAllObjectsInViewport": () => Promise<void>;
-        "selectObjects": (objects: UpdrawBaseObject[]) => Promise<void>;
-        "sendBackward": (object?: UpdrawBaseObject<any>) => Promise<void>;
-        "sendToBack": (object?: UpdrawBaseObject<any>) => Promise<void>;
+        "selectObjects": (objects: UpmadeBaseObject[]) => Promise<void>;
+        "sendBackward": (object?: UpmadeBaseObject<any>) => Promise<void>;
+        "sendToBack": (object?: UpmadeBaseObject<any>) => Promise<void>;
         "setActiveTool": (toolName: string) => Promise<void>;
         "setActiveWorkspace": (id: string) => Promise<void>;
         /**
@@ -570,38 +570,38 @@ export namespace Components {
           * @param enabled - Whether the object picks elements.
           * @param options - `selector` limits picking to matching elements, `color` sets the highlight color.
          */
-        "setObjectElementPicking": (objectId: string, enabled: boolean, options?: UpdrawObjectElementPickingOptions) => Promise<void>;
+        "setObjectElementPicking": (objectId: string, enabled: boolean, options?: UpmadeObjectElementPickingOptions) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
           * @default DEFAULT_SYNC_CONFIG
          */
-        "syncConfig"?: UpdrawSyncConfig;
+        "syncConfig"?: UpmadeSyncConfig;
         /**
           * Resolves a term key to its translated string for the active locale.
           * @param key - The term key to resolve.
           * @param vars - Optional values for `{placeholder}` interpolation.
          */
-        "t": (key: UpdrawTermKey, vars?: UpdrawTermVars) => Promise<string>;
+        "t": (key: UpmadeTermKey, vars?: UpmadeTermVars) => Promise<string>;
         /**
           * @default "light"
          */
         "theme": ThemeName;
-        "themes"?: UpdrawTheme[];
+        "themes"?: UpmadeTheme[];
         /**
-          * @default [     {       name: "selection",       type: "tool",       isDefault: true,       tool: UpdrawSelectionTool,       icon: "cursor",     },     {       name: "brush",       type: "tool",       tool: UpdrawBrushTool,       icon: "pen",       config: DEFAULT_BRUSH_CONFIG,     },     {       name: "eraser",       type: "tool",       tool: UpdrawEraserTool,       icon: "eraser",     },     {       name: "line",       type: "tool",       tool: UpdrawLineTool,       icon: "arrow",       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: "shape",       type: "tool",       tool: UpdrawShapeTool,       icon: "shapeRectangle",       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         {           id: "rectangle",           icon: "shapeRectangle",           label: "Rectangle",           value: ShapeType.Rectangle,           toolProperty: "shapeType",         },         {           id: "ellipse",           icon: "shapeEllipse",           label: "Ellipse",           value: ShapeType.Ellipse,           toolProperty: "shapeType",         },         {           id: "triangle",           icon: "shapeTriangle",           label: "Triangle",           value: ShapeType.Triangle,           toolProperty: "shapeType",         },       ],     },     {       name: "text",       type: "tool",       tool: UpdrawTextTool,       icon: "type",       config: DEFAULT_TEXT_CONFIG,     },     {       name: "image",       type: "tool",       tool: UpdrawImageTool,       icon: "image",     },     {       name: "config",       type: "config",     },   ]
+          * @default [     {       name: "selection",       type: "tool",       isDefault: true,       tool: UpmadeSelectionTool,       icon: "cursor",     },     {       name: "brush",       type: "tool",       tool: UpmadeBrushTool,       icon: "pen",       config: DEFAULT_BRUSH_CONFIG,     },     {       name: "eraser",       type: "tool",       tool: UpmadeEraserTool,       icon: "eraser",     },     {       name: "line",       type: "tool",       tool: UpmadeLineTool,       icon: "arrow",       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: "shape",       type: "tool",       tool: UpmadeShapeTool,       icon: "shapeRectangle",       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         {           id: "rectangle",           icon: "shapeRectangle",           label: "Rectangle",           value: ShapeType.Rectangle,           toolProperty: "shapeType",         },         {           id: "ellipse",           icon: "shapeEllipse",           label: "Ellipse",           value: ShapeType.Ellipse,           toolProperty: "shapeType",         },         {           id: "triangle",           icon: "shapeTriangle",           label: "Triangle",           value: ShapeType.Triangle,           toolProperty: "shapeType",         },       ],     },     {       name: "text",       type: "tool",       tool: UpmadeTextTool,       icon: "type",       config: DEFAULT_TEXT_CONFIG,     },     {       name: "image",       type: "tool",       tool: UpmadeImageTool,       icon: "image",     },     {       name: "config",       type: "config",     },   ]
          */
-        "toolbarItems": UpdrawToolbarItem[];
+        "toolbarItems": UpmadeToolbarItem[];
         /**
           * Triggers a UI notification programmatically.
           * @param notification - Notification payload. `id` and `timestamp` are optional.
          */
-        "triggerNotification": (notification: Omit<UpdrawNotification, "id"> & Partial<Pick<UpdrawNotification, "id" | "timestamp">>) => Promise<void>;
+        "triggerNotification": (notification: Omit<UpmadeNotification, "id"> & Partial<Pick<UpmadeNotification, "id" | "timestamp">>) => Promise<void>;
         "triggerSelectionChange": () => Promise<void>;
         "undo": () => Promise<void>;
-        "ungroup": (groups: UpdrawGroup[]) => Promise<UpdrawBaseObject<any>[]>;
-        "updateObject": <T extends UpdrawBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
-        "updateWorkspace": (workspace: UpdrawWorkspace) => Promise<void>;
-        "user"?: IUpdrawUser;
+        "ungroup": (groups: UpmadeGroup[]) => Promise<UpmadeBaseObject<any>[]>;
+        "updateObject": <T extends UpmadeBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
+        "updateWorkspace": (workspace: UpmadeWorkspace) => Promise<void>;
+        "user"?: IUpmadeUser;
         /**
           * @default Infinity
          */
@@ -621,27 +621,27 @@ export namespace Components {
         /**
           * Authoritative workspace catalog for this editor instance. When provided, provider-only workspaces are hidden but not deleted.
          */
-        "workspaces"?: UpdrawWorkspace[];
+        "workspaces"?: UpmadeWorkspace[];
         "worldToScreen": (x: number, y: number) => Promise<{ x: number; y: number; }>;
         "zoomIn": (factor?: number, duration?: number) => Promise<void>;
         "zoomOut": (factor?: number, duration?: number) => Promise<void>;
         "zoomTo": (scale: number, worldX?: number, worldY?: number) => Promise<void>;
     }
-    interface UpdrawExport {
+    interface UpmadeExport {
         "close": () => Promise<void>;
         "open": (previewUrl?: string) => Promise<void>;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<UpdrawTermKey, string>>;
+        "terms": Partial<Record<UpmadeTermKey, string>>;
         /**
           * The name of the current workspace, used as default filename
           * @default 'workspace'
          */
         "workspaceName": string;
     }
-    interface UpdrawFont {
+    interface UpmadeFont {
         /**
           * @default '#000000'
          */
@@ -655,14 +655,14 @@ export namespace Components {
          */
         "size": number;
     }
-    interface UpdrawFontFamily {
+    interface UpmadeFontFamily {
         /**
           * @default []
          */
         "fontOptions": FontOption[];
         "selectedFontFamily": string;
     }
-    interface UpdrawFontSize {
+    interface UpmadeFontSize {
         /**
           * @default 'Arial'
          */
@@ -676,7 +676,7 @@ export namespace Components {
          */
         "sizes": number[];
     }
-    interface UpdrawInput {
+    interface UpmadeInput {
         /**
           * Whether the input is disabled
           * @default false
@@ -708,7 +708,7 @@ export namespace Components {
          */
         "value": string;
     }
-    interface UpdrawLineEndings {
+    interface UpmadeLineEndings {
         /**
           * Available ending styles
           * @default ['none', 'triangle']
@@ -722,9 +722,9 @@ export namespace Components {
     /**
      * Login dialog component for displaying authentication provider buttons.
      * This is a presentational component that emits events for all actions.
-     * The parent component (updraw-editor) handles the actual authentication flow.
+     * The parent component (upmade-editor) handles the actual authentication flow.
      */
-    interface UpdrawLoginDialog {
+    interface UpmadeLoginDialog {
         /**
           * Closes the login dialog
          */
@@ -742,7 +742,7 @@ export namespace Components {
           * Array of authentication provider buttons to render
           * @default []
          */
-        "providers": UpdrawLoginProvider[];
+        "providers": UpmadeLoginProvider[];
         /**
           * Sets or clears the loading state on a provider button
          */
@@ -752,34 +752,34 @@ export namespace Components {
          */
         "subtitle"?: string;
     }
-    interface UpdrawMasterDetail {
+    interface UpmadeMasterDetail {
         /**
           * Array of menu items to display in the master (left) panel
           * @default []
          */
-        "items": IUpdrawMasterDetailItem[];
+        "items": IUpmadeMasterDetailItem[];
         /**
           * ID of the currently selected item
          */
         "selectedItemId": string;
     }
-    interface UpdrawMenu {
-        "items": IUpdrawMenuItem[];
+    interface UpmadeMenu {
+        "items": IUpmadeMenuItem[];
         /**
           * @default null
          */
-        "parent": IUpdrawMenuItem;
+        "parent": IUpmadeMenuItem;
         "setFocus": () => Promise<void>;
         "setScrollTop": (scrollTop: number) => Promise<void>;
     }
-    interface UpdrawMenuItem {
-        "item": IUpdrawMenuItem;
+    interface UpmadeMenuItem {
+        "item": IUpmadeMenuItem;
         /**
           * @default null
          */
-        "parent": IUpdrawMenuItem;
+        "parent": IUpmadeMenuItem;
     }
-    interface UpdrawMoreMenu {
+    interface UpmadeMoreMenu {
         "close": () => Promise<void>;
         /**
           * The icon to display on the button
@@ -795,7 +795,7 @@ export namespace Components {
           * The menu items to display in the dropdown. Items with `isVisible` set to `false` will be filtered out. Items with an `action` will have that action invoked on selection.
           * @default []
          */
-        "items": IUpdrawMenuItem[];
+        "items": IUpmadeMenuItem[];
         /**
           * Offset Y for the portal positioning
           * @default 4
@@ -806,14 +806,14 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<UpdrawTermKey, string>>;
+        "terms": Partial<Record<UpmadeTermKey, string>>;
         /**
           * Whether the menu button is visible
           * @default false
          */
         "visible": boolean;
     }
-    interface UpdrawNotificationCard {
+    interface UpmadeNotificationCard {
         /**
           * Locale used for formatting the timestamp.
          */
@@ -821,14 +821,14 @@ export namespace Components {
         /**
           * Notification data rendered by this card.
          */
-        "notification"?: UpdrawNotification;
+        "notification"?: UpmadeNotification;
         /**
           * Whether a formatted timestamp should be displayed when available.
           * @default true
          */
         "showTimestamp": boolean;
     }
-    interface UpdrawNumericInput {
+    interface UpmadeNumericInput {
         /**
           * Label text displayed above the input
           * @default ''
@@ -859,7 +859,7 @@ export namespace Components {
          */
         "value"?: number;
     }
-    interface UpdrawOpacitySlider {
+    interface UpmadeOpacitySlider {
         /**
           * Maximum opacity value
           * @default 1
@@ -886,18 +886,18 @@ export namespace Components {
          */
         "value": number;
     }
-    interface UpdrawPillTabs {
+    interface UpmadePillTabs {
         /**
           * Array of tab definitions to render
           * @default []
          */
-        "tabs": UpdrawPillTab[];
+        "tabs": UpmadePillTab[];
         /**
           * Currently selected tab ID
          */
         "value": string;
     }
-    interface UpdrawPortal {
+    interface UpmadePortal {
         "anchor": HTMLElement;
         /**
           * @default true
@@ -906,7 +906,7 @@ export namespace Components {
         "offsetX": number;
         "offsetY": number;
     }
-    interface UpdrawSettings {
+    interface UpmadeSettings {
         /**
           * Available locales as `{ code, label }` options for the language selector.
           * @default []
@@ -922,18 +922,18 @@ export namespace Components {
         /**
           * Current settings values. Used to initialize and sync the component's internal state.
          */
-        "settings"?: Partial<UpdrawSettingsConfig>;
+        "settings"?: Partial<UpmadeSettingsConfig>;
         /**
           * @default []
          */
-        "shortcuts": Omit<UpdrawShortcut, 'action' | 'condition'>[];
+        "shortcuts": Omit<UpmadeShortcut, 'action' | 'condition'>[];
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<UpdrawTermKey, string>>;
+        "terms": Partial<Record<UpmadeTermKey, string>>;
     }
-    interface UpdrawShapeFill {
+    interface UpmadeShapeFill {
         /**
           * Current fill type
           * @default 'transparent'
@@ -943,9 +943,9 @@ export namespace Components {
     /**
      * Share dialog component for managing workspace link sharing.
      * This is a presentational component that emits events for all actions.
-     * The parent component (updraw-editor) handles the business logic.
+     * The parent component (upmade-editor) handles the business logic.
      */
-    interface UpdrawShareDialog {
+    interface UpmadeShareDialog {
         /**
           * Closes the share dialog.
          */
@@ -963,14 +963,14 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<UpdrawTermKey, string>>;
+        "terms": Partial<Record<UpmadeTermKey, string>>;
         /**
           * The ID of the workspace being shared. Used to build the share URL.
           * @default undefined
          */
         "workspaceId": string | undefined;
     }
-    interface UpdrawSlideToggle {
+    interface UpmadeSlideToggle {
         /**
           * Whether the toggle is checked/on
           * @default false
@@ -986,7 +986,7 @@ export namespace Components {
          */
         "label"?: string;
     }
-    interface UpdrawSplitButton {
+    interface UpmadeSplitButton {
         /**
           * @default 'plus'
          */
@@ -1000,7 +1000,7 @@ export namespace Components {
         /**
           * @default []
          */
-        "items": IUpdrawMenuItem[];
+        "items": IUpmadeMenuItem[];
         /**
           * @default false
          */
@@ -1011,7 +1011,7 @@ export namespace Components {
         "menuButtonDisabled": boolean;
         "open": () => Promise<void>;
     }
-    interface UpdrawStrokeSize {
+    interface UpmadeStrokeSize {
         /**
           * @default null
          */
@@ -1022,17 +1022,17 @@ export namespace Components {
         "sizes": number[];
     }
     /**
-     * The menu opened from a titlebar `menu` element: a compact `updraw-menu` styled like the
-     * context menu through the `--updraw-titlebar-menu-*` theme variables.
+     * The menu opened from a titlebar `menu` element: a compact `upmade-menu` styled like the
+     * context menu through the `--upmade-titlebar-menu-*` theme variables.
      */
-    interface UpdrawTitlebarMenu {
+    interface UpmadeTitlebarMenu {
         /**
           * Menu items of the open titlebar menu, as resolved by the engine.
           * @default []
          */
-        "items": UpdrawTitlebarMenuItem[];
+        "items": UpmadeTitlebarMenuItem[];
     }
-    interface UpdrawToolConfig {
+    interface UpmadeToolConfig {
         "engine": HTMLElement;
         /**
           * @default false
@@ -1042,15 +1042,15 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<UpdrawTermKey, string>>;
+        "terms": Partial<Record<UpmadeTermKey, string>>;
         "theme": ThemeName;
         "tool": ConfigurableTool;
     }
-    interface UpdrawToolbar {
+    interface UpmadeToolbar {
         /**
           * @default null
          */
-        "activeControl": UpdrawToolbarItem | null;
+        "activeControl": UpmadeToolbarItem | null;
         "closeTooltip": () => Promise<void>;
         /**
           * @default true
@@ -1060,7 +1060,7 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<UpdrawTermKey, string>>;
+        "terms": Partial<Record<UpmadeTermKey, string>>;
         /**
           * @default 'light'
          */
@@ -1068,17 +1068,17 @@ export namespace Components {
         /**
           * @default []
          */
-        "toolbarItems": UpdrawToolbarItem[];
+        "toolbarItems": UpmadeToolbarItem[];
         /**
           * @default null
          */
-        "undoState": UpdrawUndoState;
+        "undoState": UpmadeUndoState;
         /**
           * @default true
          */
         "visible": boolean;
     }
-    interface UpdrawTooltip {
+    interface UpmadeTooltip {
         "anchorElement": HTMLElement;
         "close": () => Promise<void>;
         "focusContent": () => Promise<void>;
@@ -1094,26 +1094,26 @@ export namespace Components {
         "toggle": () => Promise<void>;
         "triggerElement": HTMLElement;
     }
-    interface UpdrawUtilityPanel {
+    interface UpmadeUtilityPanel {
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<UpdrawTermKey, string>>;
+        "terms": Partial<Record<UpmadeTermKey, string>>;
         /**
           * @default null
          */
-        "undoState": UpdrawUndoState;
+        "undoState": UpmadeUndoState;
     }
-    interface UpdrawWorkspaceManager {
-        "activeWorkspace": UpdrawWorkspace;
+    interface UpmadeWorkspaceManager {
+        "activeWorkspace": UpmadeWorkspace;
         "close": () => Promise<void>;
         "open": () => Promise<void>;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<UpdrawTermKey, string>>;
+        "terms": Partial<Record<UpmadeTermKey, string>>;
         /**
           * Whether the workspace manager is visible
           * @default false
@@ -1122,9 +1122,9 @@ export namespace Components {
         /**
           * @default []
          */
-        "workspaces": UpdrawWorkspace[];
+        "workspaces": UpmadeWorkspace[];
     }
-    interface UpdrawZoomPanel {
+    interface UpmadeZoomPanel {
         /**
           * Whether both zoom buttons are disabled.
           * @default false
@@ -1134,7 +1134,7 @@ export namespace Components {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms": Partial<Record<UpdrawTermKey, string>>;
+        "terms": Partial<Record<UpmadeTermKey, string>>;
         /**
           * Whether the zoom panel is visible.
           * @default true
@@ -1147,956 +1147,956 @@ export namespace Components {
         "zoomPercent": number;
     }
 }
-export interface UpdrawBackToContentCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeBackToContentCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawBackToContentElement;
+    target: HTMLUpmadeBackToContentElement;
 }
-export interface UpdrawBrushStyleCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeBrushStyleCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawBrushStyleElement;
+    target: HTMLUpmadeBrushStyleElement;
 }
-export interface UpdrawButtonCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawButtonElement;
+    target: HTMLUpmadeButtonElement;
 }
-export interface UpdrawChatBoxCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeChatBoxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawChatBoxElement;
+    target: HTMLUpmadeChatBoxElement;
 }
-export interface UpdrawColorPaletteCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeColorPaletteCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawColorPaletteElement;
+    target: HTMLUpmadeColorPaletteElement;
 }
-export interface UpdrawContextMenuCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeContextMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawContextMenuElement;
+    target: HTMLUpmadeContextMenuElement;
 }
-export interface UpdrawCurrentUserDialogCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeCurrentUserDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawCurrentUserDialogElement;
+    target: HTMLUpmadeCurrentUserDialogElement;
 }
-export interface UpdrawDialogCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawDialogElement;
+    target: HTMLUpmadeDialogElement;
 }
-export interface UpdrawDropdownCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawDropdownElement;
+    target: HTMLUpmadeDropdownElement;
 }
-export interface UpdrawEditorCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeEditorCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawEditorElement;
+    target: HTMLUpmadeEditorElement;
 }
-export interface UpdrawExportCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeExportCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawExportElement;
+    target: HTMLUpmadeExportElement;
 }
-export interface UpdrawFontFamilyCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeFontFamilyCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawFontFamilyElement;
+    target: HTMLUpmadeFontFamilyElement;
 }
-export interface UpdrawFontSizeCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeFontSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawFontSizeElement;
+    target: HTMLUpmadeFontSizeElement;
 }
-export interface UpdrawInputCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawInputElement;
+    target: HTMLUpmadeInputElement;
 }
-export interface UpdrawLineEndingsCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeLineEndingsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawLineEndingsElement;
+    target: HTMLUpmadeLineEndingsElement;
 }
-export interface UpdrawLoginDialogCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeLoginDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawLoginDialogElement;
+    target: HTMLUpmadeLoginDialogElement;
 }
-export interface UpdrawMasterDetailCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeMasterDetailCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawMasterDetailElement;
+    target: HTMLUpmadeMasterDetailElement;
 }
-export interface UpdrawMenuCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawMenuElement;
+    target: HTMLUpmadeMenuElement;
 }
-export interface UpdrawMenuItemCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeMenuItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawMenuItemElement;
+    target: HTMLUpmadeMenuItemElement;
 }
-export interface UpdrawMoreMenuCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeMoreMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawMoreMenuElement;
+    target: HTMLUpmadeMoreMenuElement;
 }
-export interface UpdrawNotificationCardCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeNotificationCardCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawNotificationCardElement;
+    target: HTMLUpmadeNotificationCardElement;
 }
-export interface UpdrawNumericInputCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeNumericInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawNumericInputElement;
+    target: HTMLUpmadeNumericInputElement;
 }
-export interface UpdrawOpacitySliderCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeOpacitySliderCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawOpacitySliderElement;
+    target: HTMLUpmadeOpacitySliderElement;
 }
-export interface UpdrawPillTabsCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadePillTabsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawPillTabsElement;
+    target: HTMLUpmadePillTabsElement;
 }
-export interface UpdrawPortalCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadePortalCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawPortalElement;
+    target: HTMLUpmadePortalElement;
 }
-export interface UpdrawSettingsCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeSettingsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawSettingsElement;
+    target: HTMLUpmadeSettingsElement;
 }
-export interface UpdrawShapeFillCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeShapeFillCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawShapeFillElement;
+    target: HTMLUpmadeShapeFillElement;
 }
-export interface UpdrawShareDialogCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeShareDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawShareDialogElement;
+    target: HTMLUpmadeShareDialogElement;
 }
-export interface UpdrawSlideToggleCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeSlideToggleCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawSlideToggleElement;
+    target: HTMLUpmadeSlideToggleElement;
 }
-export interface UpdrawSplitButtonCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeSplitButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawSplitButtonElement;
+    target: HTMLUpmadeSplitButtonElement;
 }
-export interface UpdrawStrokeSizeCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeStrokeSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawStrokeSizeElement;
+    target: HTMLUpmadeStrokeSizeElement;
 }
-export interface UpdrawTitlebarMenuCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeTitlebarMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawTitlebarMenuElement;
+    target: HTMLUpmadeTitlebarMenuElement;
 }
-export interface UpdrawToolConfigCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeToolConfigCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawToolConfigElement;
+    target: HTMLUpmadeToolConfigElement;
 }
-export interface UpdrawToolbarCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeToolbarCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawToolbarElement;
+    target: HTMLUpmadeToolbarElement;
 }
-export interface UpdrawTooltipCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeTooltipCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawTooltipElement;
+    target: HTMLUpmadeTooltipElement;
 }
-export interface UpdrawUtilityPanelCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeUtilityPanelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawUtilityPanelElement;
+    target: HTMLUpmadeUtilityPanelElement;
 }
-export interface UpdrawWorkspaceManagerCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeWorkspaceManagerCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawWorkspaceManagerElement;
+    target: HTMLUpmadeWorkspaceManagerElement;
 }
-export interface UpdrawZoomPanelCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeZoomPanelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawZoomPanelElement;
+    target: HTMLUpmadeZoomPanelElement;
 }
 declare global {
-    interface HTMLUpdrawActiveUsersElement extends Components.UpdrawActiveUsers, HTMLStencilElement {
+    interface HTMLUpmadeActiveUsersElement extends Components.UpmadeActiveUsers, HTMLStencilElement {
     }
-    var HTMLUpdrawActiveUsersElement: {
-        prototype: HTMLUpdrawActiveUsersElement;
-        new (): HTMLUpdrawActiveUsersElement;
+    var HTMLUpmadeActiveUsersElement: {
+        prototype: HTMLUpmadeActiveUsersElement;
+        new (): HTMLUpmadeActiveUsersElement;
     };
-    interface HTMLUpdrawAvatarElement extends Components.UpdrawAvatar, HTMLStencilElement {
+    interface HTMLUpmadeAvatarElement extends Components.UpmadeAvatar, HTMLStencilElement {
     }
-    var HTMLUpdrawAvatarElement: {
-        prototype: HTMLUpdrawAvatarElement;
-        new (): HTMLUpdrawAvatarElement;
+    var HTMLUpmadeAvatarElement: {
+        prototype: HTMLUpmadeAvatarElement;
+        new (): HTMLUpmadeAvatarElement;
     };
-    interface HTMLUpdrawBackToContentElementEventMap {
+    interface HTMLUpmadeBackToContentElementEventMap {
         "backToContent": void;
     }
-    interface HTMLUpdrawBackToContentElement extends Components.UpdrawBackToContent, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawBackToContentElementEventMap>(type: K, listener: (this: HTMLUpdrawBackToContentElement, ev: UpdrawBackToContentCustomEvent<HTMLUpdrawBackToContentElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeBackToContentElement extends Components.UpmadeBackToContent, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeBackToContentElementEventMap>(type: K, listener: (this: HTMLUpmadeBackToContentElement, ev: UpmadeBackToContentCustomEvent<HTMLUpmadeBackToContentElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawBackToContentElementEventMap>(type: K, listener: (this: HTMLUpdrawBackToContentElement, ev: UpdrawBackToContentCustomEvent<HTMLUpdrawBackToContentElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeBackToContentElementEventMap>(type: K, listener: (this: HTMLUpmadeBackToContentElement, ev: UpmadeBackToContentCustomEvent<HTMLUpmadeBackToContentElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawBackToContentElement: {
-        prototype: HTMLUpdrawBackToContentElement;
-        new (): HTMLUpdrawBackToContentElement;
+    var HTMLUpmadeBackToContentElement: {
+        prototype: HTMLUpmadeBackToContentElement;
+        new (): HTMLUpmadeBackToContentElement;
     };
-    interface HTMLUpdrawBrushStyleElementEventMap {
+    interface HTMLUpmadeBrushStyleElementEventMap {
         "typeChange": 'pen' | 'highlighter';
     }
-    interface HTMLUpdrawBrushStyleElement extends Components.UpdrawBrushStyle, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawBrushStyleElementEventMap>(type: K, listener: (this: HTMLUpdrawBrushStyleElement, ev: UpdrawBrushStyleCustomEvent<HTMLUpdrawBrushStyleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeBrushStyleElement extends Components.UpmadeBrushStyle, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeBrushStyleElementEventMap>(type: K, listener: (this: HTMLUpmadeBrushStyleElement, ev: UpmadeBrushStyleCustomEvent<HTMLUpmadeBrushStyleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawBrushStyleElementEventMap>(type: K, listener: (this: HTMLUpdrawBrushStyleElement, ev: UpdrawBrushStyleCustomEvent<HTMLUpdrawBrushStyleElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeBrushStyleElementEventMap>(type: K, listener: (this: HTMLUpmadeBrushStyleElement, ev: UpmadeBrushStyleCustomEvent<HTMLUpmadeBrushStyleElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawBrushStyleElement: {
-        prototype: HTMLUpdrawBrushStyleElement;
-        new (): HTMLUpdrawBrushStyleElement;
+    var HTMLUpmadeBrushStyleElement: {
+        prototype: HTMLUpmadeBrushStyleElement;
+        new (): HTMLUpmadeBrushStyleElement;
     };
-    interface HTMLUpdrawButtonElementEventMap {
+    interface HTMLUpmadeButtonElementEventMap {
         "buttonClick": void;
     }
-    interface HTMLUpdrawButtonElement extends Components.UpdrawButton, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawButtonElementEventMap>(type: K, listener: (this: HTMLUpdrawButtonElement, ev: UpdrawButtonCustomEvent<HTMLUpdrawButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeButtonElement extends Components.UpmadeButton, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeButtonElementEventMap>(type: K, listener: (this: HTMLUpmadeButtonElement, ev: UpmadeButtonCustomEvent<HTMLUpmadeButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawButtonElementEventMap>(type: K, listener: (this: HTMLUpdrawButtonElement, ev: UpdrawButtonCustomEvent<HTMLUpdrawButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeButtonElementEventMap>(type: K, listener: (this: HTMLUpmadeButtonElement, ev: UpmadeButtonCustomEvent<HTMLUpmadeButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawButtonElement: {
-        prototype: HTMLUpdrawButtonElement;
-        new (): HTMLUpdrawButtonElement;
+    var HTMLUpmadeButtonElement: {
+        prototype: HTMLUpmadeButtonElement;
+        new (): HTMLUpmadeButtonElement;
     };
-    interface HTMLUpdrawChatBoxElementEventMap {
+    interface HTMLUpmadeChatBoxElementEventMap {
         "chatSubmit": string;
         "chatStop": void;
-        "modeChange": UpdrawChatBoxMode;
-        "chatChipRemove": UpdrawChatBoxChip;
+        "modeChange": UpmadeChatBoxMode;
+        "chatChipRemove": UpmadeChatBoxChip;
     }
-    interface HTMLUpdrawChatBoxElement extends Components.UpdrawChatBox, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawChatBoxElementEventMap>(type: K, listener: (this: HTMLUpdrawChatBoxElement, ev: UpdrawChatBoxCustomEvent<HTMLUpdrawChatBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeChatBoxElement extends Components.UpmadeChatBox, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeChatBoxElementEventMap>(type: K, listener: (this: HTMLUpmadeChatBoxElement, ev: UpmadeChatBoxCustomEvent<HTMLUpmadeChatBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawChatBoxElementEventMap>(type: K, listener: (this: HTMLUpdrawChatBoxElement, ev: UpdrawChatBoxCustomEvent<HTMLUpdrawChatBoxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeChatBoxElementEventMap>(type: K, listener: (this: HTMLUpmadeChatBoxElement, ev: UpmadeChatBoxCustomEvent<HTMLUpmadeChatBoxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawChatBoxElement: {
-        prototype: HTMLUpdrawChatBoxElement;
-        new (): HTMLUpdrawChatBoxElement;
+    var HTMLUpmadeChatBoxElement: {
+        prototype: HTMLUpmadeChatBoxElement;
+        new (): HTMLUpmadeChatBoxElement;
     };
-    interface HTMLUpdrawColorElement extends Components.UpdrawColor, HTMLStencilElement {
+    interface HTMLUpmadeColorElement extends Components.UpmadeColor, HTMLStencilElement {
     }
-    var HTMLUpdrawColorElement: {
-        prototype: HTMLUpdrawColorElement;
-        new (): HTMLUpdrawColorElement;
+    var HTMLUpmadeColorElement: {
+        prototype: HTMLUpmadeColorElement;
+        new (): HTMLUpmadeColorElement;
     };
-    interface HTMLUpdrawColorPaletteElementEventMap {
+    interface HTMLUpmadeColorPaletteElementEventMap {
         "colorChange": ThemeAwareColor;
     }
-    interface HTMLUpdrawColorPaletteElement extends Components.UpdrawColorPalette, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawColorPaletteElementEventMap>(type: K, listener: (this: HTMLUpdrawColorPaletteElement, ev: UpdrawColorPaletteCustomEvent<HTMLUpdrawColorPaletteElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeColorPaletteElement extends Components.UpmadeColorPalette, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeColorPaletteElementEventMap>(type: K, listener: (this: HTMLUpmadeColorPaletteElement, ev: UpmadeColorPaletteCustomEvent<HTMLUpmadeColorPaletteElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawColorPaletteElementEventMap>(type: K, listener: (this: HTMLUpdrawColorPaletteElement, ev: UpdrawColorPaletteCustomEvent<HTMLUpdrawColorPaletteElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeColorPaletteElementEventMap>(type: K, listener: (this: HTMLUpmadeColorPaletteElement, ev: UpmadeColorPaletteCustomEvent<HTMLUpmadeColorPaletteElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawColorPaletteElement: {
-        prototype: HTMLUpdrawColorPaletteElement;
-        new (): HTMLUpdrawColorPaletteElement;
+    var HTMLUpmadeColorPaletteElement: {
+        prototype: HTMLUpmadeColorPaletteElement;
+        new (): HTMLUpmadeColorPaletteElement;
     };
-    interface HTMLUpdrawContextMenuElementEventMap {
+    interface HTMLUpmadeContextMenuElementEventMap {
         "actionSelected": ContextMenuItem;
         "close": void;
     }
-    interface HTMLUpdrawContextMenuElement extends Components.UpdrawContextMenu, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawContextMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawContextMenuElement, ev: UpdrawContextMenuCustomEvent<HTMLUpdrawContextMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeContextMenuElement extends Components.UpmadeContextMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeContextMenuElementEventMap>(type: K, listener: (this: HTMLUpmadeContextMenuElement, ev: UpmadeContextMenuCustomEvent<HTMLUpmadeContextMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawContextMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawContextMenuElement, ev: UpdrawContextMenuCustomEvent<HTMLUpdrawContextMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeContextMenuElementEventMap>(type: K, listener: (this: HTMLUpmadeContextMenuElement, ev: UpmadeContextMenuCustomEvent<HTMLUpmadeContextMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawContextMenuElement: {
-        prototype: HTMLUpdrawContextMenuElement;
-        new (): HTMLUpdrawContextMenuElement;
+    var HTMLUpmadeContextMenuElement: {
+        prototype: HTMLUpmadeContextMenuElement;
+        new (): HTMLUpmadeContextMenuElement;
     };
-    interface HTMLUpdrawCurrentUserElement extends Components.UpdrawCurrentUser, HTMLStencilElement {
+    interface HTMLUpmadeCurrentUserElement extends Components.UpmadeCurrentUser, HTMLStencilElement {
     }
-    var HTMLUpdrawCurrentUserElement: {
-        prototype: HTMLUpdrawCurrentUserElement;
-        new (): HTMLUpdrawCurrentUserElement;
+    var HTMLUpmadeCurrentUserElement: {
+        prototype: HTMLUpmadeCurrentUserElement;
+        new (): HTMLUpmadeCurrentUserElement;
     };
-    interface HTMLUpdrawCurrentUserDialogElementEventMap {
+    interface HTMLUpmadeCurrentUserDialogElementEventMap {
         "logoutRequest": void;
     }
-    interface HTMLUpdrawCurrentUserDialogElement extends Components.UpdrawCurrentUserDialog, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawCurrentUserDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawCurrentUserDialogElement, ev: UpdrawCurrentUserDialogCustomEvent<HTMLUpdrawCurrentUserDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeCurrentUserDialogElement extends Components.UpmadeCurrentUserDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeCurrentUserDialogElementEventMap>(type: K, listener: (this: HTMLUpmadeCurrentUserDialogElement, ev: UpmadeCurrentUserDialogCustomEvent<HTMLUpmadeCurrentUserDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawCurrentUserDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawCurrentUserDialogElement, ev: UpdrawCurrentUserDialogCustomEvent<HTMLUpdrawCurrentUserDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeCurrentUserDialogElementEventMap>(type: K, listener: (this: HTMLUpmadeCurrentUserDialogElement, ev: UpmadeCurrentUserDialogCustomEvent<HTMLUpmadeCurrentUserDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawCurrentUserDialogElement: {
-        prototype: HTMLUpdrawCurrentUserDialogElement;
-        new (): HTMLUpdrawCurrentUserDialogElement;
+    var HTMLUpmadeCurrentUserDialogElement: {
+        prototype: HTMLUpmadeCurrentUserDialogElement;
+        new (): HTMLUpmadeCurrentUserDialogElement;
     };
-    interface HTMLUpdrawDialogElementEventMap {
+    interface HTMLUpmadeDialogElementEventMap {
         "dialogOpen": void;
-        "dialogClose": IUpdrawDialogCloseEvent;
+        "dialogClose": IUpmadeDialogCloseEvent;
     }
-    interface HTMLUpdrawDialogElement extends Components.UpdrawDialog, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawDialogElement, ev: UpdrawDialogCustomEvent<HTMLUpdrawDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeDialogElement extends Components.UpmadeDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeDialogElementEventMap>(type: K, listener: (this: HTMLUpmadeDialogElement, ev: UpmadeDialogCustomEvent<HTMLUpmadeDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawDialogElement, ev: UpdrawDialogCustomEvent<HTMLUpdrawDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeDialogElementEventMap>(type: K, listener: (this: HTMLUpmadeDialogElement, ev: UpmadeDialogCustomEvent<HTMLUpmadeDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawDialogElement: {
-        prototype: HTMLUpdrawDialogElement;
-        new (): HTMLUpdrawDialogElement;
+    var HTMLUpmadeDialogElement: {
+        prototype: HTMLUpmadeDialogElement;
+        new (): HTMLUpmadeDialogElement;
     };
-    interface HTMLUpdrawDropdownElementEventMap {
+    interface HTMLUpmadeDropdownElementEventMap {
         "valueChanged": string;
     }
-    interface HTMLUpdrawDropdownElement extends Components.UpdrawDropdown, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawDropdownElementEventMap>(type: K, listener: (this: HTMLUpdrawDropdownElement, ev: UpdrawDropdownCustomEvent<HTMLUpdrawDropdownElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeDropdownElement extends Components.UpmadeDropdown, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeDropdownElementEventMap>(type: K, listener: (this: HTMLUpmadeDropdownElement, ev: UpmadeDropdownCustomEvent<HTMLUpmadeDropdownElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawDropdownElementEventMap>(type: K, listener: (this: HTMLUpdrawDropdownElement, ev: UpdrawDropdownCustomEvent<HTMLUpdrawDropdownElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeDropdownElementEventMap>(type: K, listener: (this: HTMLUpmadeDropdownElement, ev: UpmadeDropdownCustomEvent<HTMLUpmadeDropdownElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawDropdownElement: {
-        prototype: HTMLUpdrawDropdownElement;
-        new (): HTMLUpdrawDropdownElement;
+    var HTMLUpmadeDropdownElement: {
+        prototype: HTMLUpmadeDropdownElement;
+        new (): HTMLUpmadeDropdownElement;
     };
-    interface HTMLUpdrawEditorElementEventMap {
+    interface HTMLUpmadeEditorElementEventMap {
         "isReady": EditorIsReadyEvent;
         "activeWorkspaceChange": ActiveWorkspaceChangeEvent;
-        "objectsChange": UpdrawBaseObject[];
+        "objectsChange": UpmadeBaseObject[];
         "objectsAdded": ObjectsAddedEvent;
         "objectsRemoved": ObjectsRemovedEvent;
         "objectsUpdated": ObjectsUpdatedEvent;
-        "objectsSelectionChange": UpdrawBaseObject[];
-        "undoStateChange": UpdrawUndoState;
+        "objectsSelectionChange": UpmadeBaseObject[];
+        "undoStateChange": UpmadeUndoState;
         "themeChange": ThemeName;
         "localeChange": LocaleCode;
-        "viewportChange": UpdrawViewportState;
+        "viewportChange": UpmadeViewportState;
         "logout": void;
         "login": LoginEvent;
-        "isPublicChange": IUpdrawIsPublicChangeEvent;
+        "isPublicChange": IUpmadeIsPublicChangeEvent;
         "awarenessChange": Map<number, Record<string, any>>;
         "chatSubmit": string;
         "chatStop": void;
-        "chatChipRemove": UpdrawChatBoxChip;
-        "agentsChange": UpdrawAgentsChangeEvent;
-        "objectTitlebarAction": UpdrawObjectTitlebarActionEvent;
-        "objectElementHover": UpdrawObjectElementHoverEvent;
-        "objectElementClick": UpdrawObjectElementClickEvent;
-        "objectElementPick": UpdrawObjectElementPickEvent;
+        "chatChipRemove": UpmadeChatBoxChip;
+        "agentsChange": UpmadeAgentsChangeEvent;
+        "objectTitlebarAction": UpmadeObjectTitlebarActionEvent;
+        "objectElementHover": UpmadeObjectElementHoverEvent;
+        "objectElementClick": UpmadeObjectElementClickEvent;
+        "objectElementPick": UpmadeObjectElementPickEvent;
     }
-    interface HTMLUpdrawEditorElement extends Components.UpdrawEditor, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawEditorElementEventMap>(type: K, listener: (this: HTMLUpdrawEditorElement, ev: UpdrawEditorCustomEvent<HTMLUpdrawEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeEditorElement extends Components.UpmadeEditor, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeEditorElementEventMap>(type: K, listener: (this: HTMLUpmadeEditorElement, ev: UpmadeEditorCustomEvent<HTMLUpmadeEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawEditorElementEventMap>(type: K, listener: (this: HTMLUpdrawEditorElement, ev: UpdrawEditorCustomEvent<HTMLUpdrawEditorElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeEditorElementEventMap>(type: K, listener: (this: HTMLUpmadeEditorElement, ev: UpmadeEditorCustomEvent<HTMLUpmadeEditorElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawEditorElement: {
-        prototype: HTMLUpdrawEditorElement;
-        new (): HTMLUpdrawEditorElement;
+    var HTMLUpmadeEditorElement: {
+        prototype: HTMLUpmadeEditorElement;
+        new (): HTMLUpmadeEditorElement;
     };
-    interface HTMLUpdrawExportElementEventMap {
+    interface HTMLUpmadeExportElementEventMap {
         "exportPng": void;
         "exportSvg": void;
         "exportJson": string;
     }
-    interface HTMLUpdrawExportElement extends Components.UpdrawExport, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawExportElementEventMap>(type: K, listener: (this: HTMLUpdrawExportElement, ev: UpdrawExportCustomEvent<HTMLUpdrawExportElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeExportElement extends Components.UpmadeExport, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeExportElementEventMap>(type: K, listener: (this: HTMLUpmadeExportElement, ev: UpmadeExportCustomEvent<HTMLUpmadeExportElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawExportElementEventMap>(type: K, listener: (this: HTMLUpdrawExportElement, ev: UpdrawExportCustomEvent<HTMLUpdrawExportElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeExportElementEventMap>(type: K, listener: (this: HTMLUpmadeExportElement, ev: UpmadeExportCustomEvent<HTMLUpmadeExportElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawExportElement: {
-        prototype: HTMLUpdrawExportElement;
-        new (): HTMLUpdrawExportElement;
+    var HTMLUpmadeExportElement: {
+        prototype: HTMLUpmadeExportElement;
+        new (): HTMLUpmadeExportElement;
     };
-    interface HTMLUpdrawFontElement extends Components.UpdrawFont, HTMLStencilElement {
+    interface HTMLUpmadeFontElement extends Components.UpmadeFont, HTMLStencilElement {
     }
-    var HTMLUpdrawFontElement: {
-        prototype: HTMLUpdrawFontElement;
-        new (): HTMLUpdrawFontElement;
+    var HTMLUpmadeFontElement: {
+        prototype: HTMLUpmadeFontElement;
+        new (): HTMLUpmadeFontElement;
     };
-    interface HTMLUpdrawFontFamilyElementEventMap {
+    interface HTMLUpmadeFontFamilyElementEventMap {
         "fontFamilyChange": string;
     }
-    interface HTMLUpdrawFontFamilyElement extends Components.UpdrawFontFamily, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawFontFamilyElementEventMap>(type: K, listener: (this: HTMLUpdrawFontFamilyElement, ev: UpdrawFontFamilyCustomEvent<HTMLUpdrawFontFamilyElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeFontFamilyElement extends Components.UpmadeFontFamily, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeFontFamilyElementEventMap>(type: K, listener: (this: HTMLUpmadeFontFamilyElement, ev: UpmadeFontFamilyCustomEvent<HTMLUpmadeFontFamilyElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawFontFamilyElementEventMap>(type: K, listener: (this: HTMLUpdrawFontFamilyElement, ev: UpdrawFontFamilyCustomEvent<HTMLUpdrawFontFamilyElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeFontFamilyElementEventMap>(type: K, listener: (this: HTMLUpmadeFontFamilyElement, ev: UpmadeFontFamilyCustomEvent<HTMLUpmadeFontFamilyElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawFontFamilyElement: {
-        prototype: HTMLUpdrawFontFamilyElement;
-        new (): HTMLUpdrawFontFamilyElement;
+    var HTMLUpmadeFontFamilyElement: {
+        prototype: HTMLUpmadeFontFamilyElement;
+        new (): HTMLUpmadeFontFamilyElement;
     };
-    interface HTMLUpdrawFontSizeElementEventMap {
+    interface HTMLUpmadeFontSizeElementEventMap {
         "sizeChange": number;
     }
-    interface HTMLUpdrawFontSizeElement extends Components.UpdrawFontSize, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawFontSizeElementEventMap>(type: K, listener: (this: HTMLUpdrawFontSizeElement, ev: UpdrawFontSizeCustomEvent<HTMLUpdrawFontSizeElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeFontSizeElement extends Components.UpmadeFontSize, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeFontSizeElementEventMap>(type: K, listener: (this: HTMLUpmadeFontSizeElement, ev: UpmadeFontSizeCustomEvent<HTMLUpmadeFontSizeElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawFontSizeElementEventMap>(type: K, listener: (this: HTMLUpdrawFontSizeElement, ev: UpdrawFontSizeCustomEvent<HTMLUpdrawFontSizeElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeFontSizeElementEventMap>(type: K, listener: (this: HTMLUpmadeFontSizeElement, ev: UpmadeFontSizeCustomEvent<HTMLUpmadeFontSizeElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawFontSizeElement: {
-        prototype: HTMLUpdrawFontSizeElement;
-        new (): HTMLUpdrawFontSizeElement;
+    var HTMLUpmadeFontSizeElement: {
+        prototype: HTMLUpmadeFontSizeElement;
+        new (): HTMLUpmadeFontSizeElement;
     };
-    interface HTMLUpdrawInputElementEventMap {
+    interface HTMLUpmadeInputElementEventMap {
         "valueChange": string;
     }
-    interface HTMLUpdrawInputElement extends Components.UpdrawInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawInputElementEventMap>(type: K, listener: (this: HTMLUpdrawInputElement, ev: UpdrawInputCustomEvent<HTMLUpdrawInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeInputElement extends Components.UpmadeInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeInputElementEventMap>(type: K, listener: (this: HTMLUpmadeInputElement, ev: UpmadeInputCustomEvent<HTMLUpmadeInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawInputElementEventMap>(type: K, listener: (this: HTMLUpdrawInputElement, ev: UpdrawInputCustomEvent<HTMLUpdrawInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeInputElementEventMap>(type: K, listener: (this: HTMLUpmadeInputElement, ev: UpmadeInputCustomEvent<HTMLUpmadeInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawInputElement: {
-        prototype: HTMLUpdrawInputElement;
-        new (): HTMLUpdrawInputElement;
+    var HTMLUpmadeInputElement: {
+        prototype: HTMLUpmadeInputElement;
+        new (): HTMLUpmadeInputElement;
     };
-    interface HTMLUpdrawLineEndingsElementEventMap {
+    interface HTMLUpmadeLineEndingsElementEventMap {
         "valueChange": LineArrowConfig;
     }
-    interface HTMLUpdrawLineEndingsElement extends Components.UpdrawLineEndings, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawLineEndingsElementEventMap>(type: K, listener: (this: HTMLUpdrawLineEndingsElement, ev: UpdrawLineEndingsCustomEvent<HTMLUpdrawLineEndingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeLineEndingsElement extends Components.UpmadeLineEndings, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeLineEndingsElementEventMap>(type: K, listener: (this: HTMLUpmadeLineEndingsElement, ev: UpmadeLineEndingsCustomEvent<HTMLUpmadeLineEndingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawLineEndingsElementEventMap>(type: K, listener: (this: HTMLUpdrawLineEndingsElement, ev: UpdrawLineEndingsCustomEvent<HTMLUpdrawLineEndingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeLineEndingsElementEventMap>(type: K, listener: (this: HTMLUpmadeLineEndingsElement, ev: UpmadeLineEndingsCustomEvent<HTMLUpmadeLineEndingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawLineEndingsElement: {
-        prototype: HTMLUpdrawLineEndingsElement;
-        new (): HTMLUpdrawLineEndingsElement;
+    var HTMLUpmadeLineEndingsElement: {
+        prototype: HTMLUpmadeLineEndingsElement;
+        new (): HTMLUpmadeLineEndingsElement;
     };
-    interface HTMLUpdrawLoginDialogElementEventMap {
+    interface HTMLUpmadeLoginDialogElementEventMap {
         "providerLogin": LoginEvent;
         "dialogClosed": void;
     }
     /**
      * Login dialog component for displaying authentication provider buttons.
      * This is a presentational component that emits events for all actions.
-     * The parent component (updraw-editor) handles the actual authentication flow.
+     * The parent component (upmade-editor) handles the actual authentication flow.
      */
-    interface HTMLUpdrawLoginDialogElement extends Components.UpdrawLoginDialog, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawLoginDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawLoginDialogElement, ev: UpdrawLoginDialogCustomEvent<HTMLUpdrawLoginDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeLoginDialogElement extends Components.UpmadeLoginDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeLoginDialogElementEventMap>(type: K, listener: (this: HTMLUpmadeLoginDialogElement, ev: UpmadeLoginDialogCustomEvent<HTMLUpmadeLoginDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawLoginDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawLoginDialogElement, ev: UpdrawLoginDialogCustomEvent<HTMLUpdrawLoginDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeLoginDialogElementEventMap>(type: K, listener: (this: HTMLUpmadeLoginDialogElement, ev: UpmadeLoginDialogCustomEvent<HTMLUpmadeLoginDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawLoginDialogElement: {
-        prototype: HTMLUpdrawLoginDialogElement;
-        new (): HTMLUpdrawLoginDialogElement;
+    var HTMLUpmadeLoginDialogElement: {
+        prototype: HTMLUpmadeLoginDialogElement;
+        new (): HTMLUpmadeLoginDialogElement;
     };
-    interface HTMLUpdrawMasterDetailElementEventMap {
-        "itemSelect": IUpdrawMasterDetailSelectEvent;
+    interface HTMLUpmadeMasterDetailElementEventMap {
+        "itemSelect": IUpmadeMasterDetailSelectEvent;
     }
-    interface HTMLUpdrawMasterDetailElement extends Components.UpdrawMasterDetail, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawMasterDetailElementEventMap>(type: K, listener: (this: HTMLUpdrawMasterDetailElement, ev: UpdrawMasterDetailCustomEvent<HTMLUpdrawMasterDetailElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeMasterDetailElement extends Components.UpmadeMasterDetail, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeMasterDetailElementEventMap>(type: K, listener: (this: HTMLUpmadeMasterDetailElement, ev: UpmadeMasterDetailCustomEvent<HTMLUpmadeMasterDetailElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawMasterDetailElementEventMap>(type: K, listener: (this: HTMLUpdrawMasterDetailElement, ev: UpdrawMasterDetailCustomEvent<HTMLUpdrawMasterDetailElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeMasterDetailElementEventMap>(type: K, listener: (this: HTMLUpmadeMasterDetailElement, ev: UpmadeMasterDetailCustomEvent<HTMLUpmadeMasterDetailElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawMasterDetailElement: {
-        prototype: HTMLUpdrawMasterDetailElement;
-        new (): HTMLUpdrawMasterDetailElement;
+    var HTMLUpmadeMasterDetailElement: {
+        prototype: HTMLUpmadeMasterDetailElement;
+        new (): HTMLUpmadeMasterDetailElement;
     };
-    interface HTMLUpdrawMenuElementEventMap {
-        "itemSelect": IUpdrawMenuItemSelectEvent;
-        "itemSave": IUpdrawMenuItem;
-        "itemCancel": IUpdrawMenuItem;
-        "itemToggleChildMenu": IUpdrawMenuItemToggleChildMenuEvent;
-        "itemCloseChildMenu": IUpdrawMenuItem;
+    interface HTMLUpmadeMenuElementEventMap {
+        "itemSelect": IUpmadeMenuItemSelectEvent;
+        "itemSave": IUpmadeMenuItem;
+        "itemCancel": IUpmadeMenuItem;
+        "itemToggleChildMenu": IUpmadeMenuItemToggleChildMenuEvent;
+        "itemCloseChildMenu": IUpmadeMenuItem;
         "close": void;
     }
-    interface HTMLUpdrawMenuElement extends Components.UpdrawMenu, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawMenuElement, ev: UpdrawMenuCustomEvent<HTMLUpdrawMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeMenuElement extends Components.UpmadeMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeMenuElementEventMap>(type: K, listener: (this: HTMLUpmadeMenuElement, ev: UpmadeMenuCustomEvent<HTMLUpmadeMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawMenuElement, ev: UpdrawMenuCustomEvent<HTMLUpdrawMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeMenuElementEventMap>(type: K, listener: (this: HTMLUpmadeMenuElement, ev: UpmadeMenuCustomEvent<HTMLUpmadeMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawMenuElement: {
-        prototype: HTMLUpdrawMenuElement;
-        new (): HTMLUpdrawMenuElement;
+    var HTMLUpmadeMenuElement: {
+        prototype: HTMLUpmadeMenuElement;
+        new (): HTMLUpmadeMenuElement;
     };
-    interface HTMLUpdrawMenuItemElementEventMap {
-        "itemSelect": IUpdrawMenuItemSelectEvent;
-        "itemSave": IUpdrawMenuItem;
-        "itemCancel": IUpdrawMenuItem;
-        "itemToggleChildMenu": IUpdrawMenuItemToggleChildMenuEvent;
-        "itemCloseChildMenu": IUpdrawMenuItem;
+    interface HTMLUpmadeMenuItemElementEventMap {
+        "itemSelect": IUpmadeMenuItemSelectEvent;
+        "itemSave": IUpmadeMenuItem;
+        "itemCancel": IUpmadeMenuItem;
+        "itemToggleChildMenu": IUpmadeMenuItemToggleChildMenuEvent;
+        "itemCloseChildMenu": IUpmadeMenuItem;
     }
-    interface HTMLUpdrawMenuItemElement extends Components.UpdrawMenuItem, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawMenuItemElementEventMap>(type: K, listener: (this: HTMLUpdrawMenuItemElement, ev: UpdrawMenuItemCustomEvent<HTMLUpdrawMenuItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeMenuItemElement extends Components.UpmadeMenuItem, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeMenuItemElementEventMap>(type: K, listener: (this: HTMLUpmadeMenuItemElement, ev: UpmadeMenuItemCustomEvent<HTMLUpmadeMenuItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawMenuItemElementEventMap>(type: K, listener: (this: HTMLUpdrawMenuItemElement, ev: UpdrawMenuItemCustomEvent<HTMLUpdrawMenuItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeMenuItemElementEventMap>(type: K, listener: (this: HTMLUpmadeMenuItemElement, ev: UpmadeMenuItemCustomEvent<HTMLUpmadeMenuItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawMenuItemElement: {
-        prototype: HTMLUpdrawMenuItemElement;
-        new (): HTMLUpdrawMenuItemElement;
+    var HTMLUpmadeMenuItemElement: {
+        prototype: HTMLUpmadeMenuItemElement;
+        new (): HTMLUpmadeMenuItemElement;
     };
-    interface HTMLUpdrawMoreMenuElementEventMap {
-        "itemSelect": { item: IUpdrawMenuItem; parent: IUpdrawMenuItem };
+    interface HTMLUpmadeMoreMenuElementEventMap {
+        "itemSelect": { item: IUpmadeMenuItem; parent: IUpmadeMenuItem };
     }
-    interface HTMLUpdrawMoreMenuElement extends Components.UpdrawMoreMenu, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawMoreMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawMoreMenuElement, ev: UpdrawMoreMenuCustomEvent<HTMLUpdrawMoreMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeMoreMenuElement extends Components.UpmadeMoreMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeMoreMenuElementEventMap>(type: K, listener: (this: HTMLUpmadeMoreMenuElement, ev: UpmadeMoreMenuCustomEvent<HTMLUpmadeMoreMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawMoreMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawMoreMenuElement, ev: UpdrawMoreMenuCustomEvent<HTMLUpdrawMoreMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeMoreMenuElementEventMap>(type: K, listener: (this: HTMLUpmadeMoreMenuElement, ev: UpmadeMoreMenuCustomEvent<HTMLUpmadeMoreMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawMoreMenuElement: {
-        prototype: HTMLUpdrawMoreMenuElement;
-        new (): HTMLUpdrawMoreMenuElement;
+    var HTMLUpmadeMoreMenuElement: {
+        prototype: HTMLUpmadeMoreMenuElement;
+        new (): HTMLUpmadeMoreMenuElement;
     };
-    interface HTMLUpdrawNotificationCardElementEventMap {
+    interface HTMLUpmadeNotificationCardElementEventMap {
         "dismiss": void;
         "hoverChange": boolean;
     }
-    interface HTMLUpdrawNotificationCardElement extends Components.UpdrawNotificationCard, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawNotificationCardElementEventMap>(type: K, listener: (this: HTMLUpdrawNotificationCardElement, ev: UpdrawNotificationCardCustomEvent<HTMLUpdrawNotificationCardElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeNotificationCardElement extends Components.UpmadeNotificationCard, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeNotificationCardElementEventMap>(type: K, listener: (this: HTMLUpmadeNotificationCardElement, ev: UpmadeNotificationCardCustomEvent<HTMLUpmadeNotificationCardElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawNotificationCardElementEventMap>(type: K, listener: (this: HTMLUpdrawNotificationCardElement, ev: UpdrawNotificationCardCustomEvent<HTMLUpdrawNotificationCardElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeNotificationCardElementEventMap>(type: K, listener: (this: HTMLUpmadeNotificationCardElement, ev: UpmadeNotificationCardCustomEvent<HTMLUpmadeNotificationCardElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawNotificationCardElement: {
-        prototype: HTMLUpdrawNotificationCardElement;
-        new (): HTMLUpdrawNotificationCardElement;
+    var HTMLUpmadeNotificationCardElement: {
+        prototype: HTMLUpmadeNotificationCardElement;
+        new (): HTMLUpmadeNotificationCardElement;
     };
-    interface HTMLUpdrawNumericInputElementEventMap {
+    interface HTMLUpmadeNumericInputElementEventMap {
         "valueChange": number | undefined;
     }
-    interface HTMLUpdrawNumericInputElement extends Components.UpdrawNumericInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawNumericInputElementEventMap>(type: K, listener: (this: HTMLUpdrawNumericInputElement, ev: UpdrawNumericInputCustomEvent<HTMLUpdrawNumericInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeNumericInputElement extends Components.UpmadeNumericInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeNumericInputElementEventMap>(type: K, listener: (this: HTMLUpmadeNumericInputElement, ev: UpmadeNumericInputCustomEvent<HTMLUpmadeNumericInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawNumericInputElementEventMap>(type: K, listener: (this: HTMLUpdrawNumericInputElement, ev: UpdrawNumericInputCustomEvent<HTMLUpdrawNumericInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeNumericInputElementEventMap>(type: K, listener: (this: HTMLUpmadeNumericInputElement, ev: UpmadeNumericInputCustomEvent<HTMLUpmadeNumericInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawNumericInputElement: {
-        prototype: HTMLUpdrawNumericInputElement;
-        new (): HTMLUpdrawNumericInputElement;
+    var HTMLUpmadeNumericInputElement: {
+        prototype: HTMLUpmadeNumericInputElement;
+        new (): HTMLUpmadeNumericInputElement;
     };
-    interface HTMLUpdrawOpacitySliderElementEventMap {
+    interface HTMLUpmadeOpacitySliderElementEventMap {
         "valueChange": number;
     }
-    interface HTMLUpdrawOpacitySliderElement extends Components.UpdrawOpacitySlider, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawOpacitySliderElementEventMap>(type: K, listener: (this: HTMLUpdrawOpacitySliderElement, ev: UpdrawOpacitySliderCustomEvent<HTMLUpdrawOpacitySliderElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeOpacitySliderElement extends Components.UpmadeOpacitySlider, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeOpacitySliderElementEventMap>(type: K, listener: (this: HTMLUpmadeOpacitySliderElement, ev: UpmadeOpacitySliderCustomEvent<HTMLUpmadeOpacitySliderElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawOpacitySliderElementEventMap>(type: K, listener: (this: HTMLUpdrawOpacitySliderElement, ev: UpdrawOpacitySliderCustomEvent<HTMLUpdrawOpacitySliderElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeOpacitySliderElementEventMap>(type: K, listener: (this: HTMLUpmadeOpacitySliderElement, ev: UpmadeOpacitySliderCustomEvent<HTMLUpmadeOpacitySliderElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawOpacitySliderElement: {
-        prototype: HTMLUpdrawOpacitySliderElement;
-        new (): HTMLUpdrawOpacitySliderElement;
+    var HTMLUpmadeOpacitySliderElement: {
+        prototype: HTMLUpmadeOpacitySliderElement;
+        new (): HTMLUpmadeOpacitySliderElement;
     };
-    interface HTMLUpdrawPillTabsElementEventMap {
+    interface HTMLUpmadePillTabsElementEventMap {
         "valueChange": string;
     }
-    interface HTMLUpdrawPillTabsElement extends Components.UpdrawPillTabs, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawPillTabsElementEventMap>(type: K, listener: (this: HTMLUpdrawPillTabsElement, ev: UpdrawPillTabsCustomEvent<HTMLUpdrawPillTabsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadePillTabsElement extends Components.UpmadePillTabs, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadePillTabsElementEventMap>(type: K, listener: (this: HTMLUpmadePillTabsElement, ev: UpmadePillTabsCustomEvent<HTMLUpmadePillTabsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawPillTabsElementEventMap>(type: K, listener: (this: HTMLUpdrawPillTabsElement, ev: UpdrawPillTabsCustomEvent<HTMLUpdrawPillTabsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadePillTabsElementEventMap>(type: K, listener: (this: HTMLUpmadePillTabsElement, ev: UpmadePillTabsCustomEvent<HTMLUpmadePillTabsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawPillTabsElement: {
-        prototype: HTMLUpdrawPillTabsElement;
-        new (): HTMLUpdrawPillTabsElement;
+    var HTMLUpmadePillTabsElement: {
+        prototype: HTMLUpmadePillTabsElement;
+        new (): HTMLUpmadePillTabsElement;
     };
-    interface HTMLUpdrawPortalElementEventMap {
+    interface HTMLUpmadePortalElementEventMap {
         "close": void;
     }
-    interface HTMLUpdrawPortalElement extends Components.UpdrawPortal, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawPortalElementEventMap>(type: K, listener: (this: HTMLUpdrawPortalElement, ev: UpdrawPortalCustomEvent<HTMLUpdrawPortalElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadePortalElement extends Components.UpmadePortal, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadePortalElementEventMap>(type: K, listener: (this: HTMLUpmadePortalElement, ev: UpmadePortalCustomEvent<HTMLUpmadePortalElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawPortalElementEventMap>(type: K, listener: (this: HTMLUpdrawPortalElement, ev: UpdrawPortalCustomEvent<HTMLUpdrawPortalElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadePortalElementEventMap>(type: K, listener: (this: HTMLUpmadePortalElement, ev: UpmadePortalCustomEvent<HTMLUpmadePortalElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawPortalElement: {
-        prototype: HTMLUpdrawPortalElement;
-        new (): HTMLUpdrawPortalElement;
+    var HTMLUpmadePortalElement: {
+        prototype: HTMLUpmadePortalElement;
+        new (): HTMLUpmadePortalElement;
     };
-    interface HTMLUpdrawSettingsElementEventMap {
-        "settingsChange": UpdrawSettingsConfig;
+    interface HTMLUpmadeSettingsElementEventMap {
+        "settingsChange": UpmadeSettingsConfig;
     }
-    interface HTMLUpdrawSettingsElement extends Components.UpdrawSettings, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawSettingsElementEventMap>(type: K, listener: (this: HTMLUpdrawSettingsElement, ev: UpdrawSettingsCustomEvent<HTMLUpdrawSettingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeSettingsElement extends Components.UpmadeSettings, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeSettingsElementEventMap>(type: K, listener: (this: HTMLUpmadeSettingsElement, ev: UpmadeSettingsCustomEvent<HTMLUpmadeSettingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawSettingsElementEventMap>(type: K, listener: (this: HTMLUpdrawSettingsElement, ev: UpdrawSettingsCustomEvent<HTMLUpdrawSettingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeSettingsElementEventMap>(type: K, listener: (this: HTMLUpmadeSettingsElement, ev: UpmadeSettingsCustomEvent<HTMLUpmadeSettingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawSettingsElement: {
-        prototype: HTMLUpdrawSettingsElement;
-        new (): HTMLUpdrawSettingsElement;
+    var HTMLUpmadeSettingsElement: {
+        prototype: HTMLUpmadeSettingsElement;
+        new (): HTMLUpmadeSettingsElement;
     };
-    interface HTMLUpdrawShapeFillElementEventMap {
+    interface HTMLUpmadeShapeFillElementEventMap {
         "valueChange": ShapeFillType;
     }
-    interface HTMLUpdrawShapeFillElement extends Components.UpdrawShapeFill, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawShapeFillElementEventMap>(type: K, listener: (this: HTMLUpdrawShapeFillElement, ev: UpdrawShapeFillCustomEvent<HTMLUpdrawShapeFillElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeShapeFillElement extends Components.UpmadeShapeFill, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeShapeFillElementEventMap>(type: K, listener: (this: HTMLUpmadeShapeFillElement, ev: UpmadeShapeFillCustomEvent<HTMLUpmadeShapeFillElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawShapeFillElementEventMap>(type: K, listener: (this: HTMLUpdrawShapeFillElement, ev: UpdrawShapeFillCustomEvent<HTMLUpdrawShapeFillElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeShapeFillElementEventMap>(type: K, listener: (this: HTMLUpmadeShapeFillElement, ev: UpmadeShapeFillCustomEvent<HTMLUpmadeShapeFillElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawShapeFillElement: {
-        prototype: HTMLUpdrawShapeFillElement;
-        new (): HTMLUpdrawShapeFillElement;
+    var HTMLUpmadeShapeFillElement: {
+        prototype: HTMLUpmadeShapeFillElement;
+        new (): HTMLUpmadeShapeFillElement;
     };
-    interface HTMLUpdrawShareDialogElementEventMap {
+    interface HTMLUpmadeShareDialogElementEventMap {
         "toggleIsPublic": boolean;
         "dialogClosed": void;
     }
     /**
      * Share dialog component for managing workspace link sharing.
      * This is a presentational component that emits events for all actions.
-     * The parent component (updraw-editor) handles the business logic.
+     * The parent component (upmade-editor) handles the business logic.
      */
-    interface HTMLUpdrawShareDialogElement extends Components.UpdrawShareDialog, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawShareDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawShareDialogElement, ev: UpdrawShareDialogCustomEvent<HTMLUpdrawShareDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeShareDialogElement extends Components.UpmadeShareDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeShareDialogElementEventMap>(type: K, listener: (this: HTMLUpmadeShareDialogElement, ev: UpmadeShareDialogCustomEvent<HTMLUpmadeShareDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawShareDialogElementEventMap>(type: K, listener: (this: HTMLUpdrawShareDialogElement, ev: UpdrawShareDialogCustomEvent<HTMLUpdrawShareDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeShareDialogElementEventMap>(type: K, listener: (this: HTMLUpmadeShareDialogElement, ev: UpmadeShareDialogCustomEvent<HTMLUpmadeShareDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawShareDialogElement: {
-        prototype: HTMLUpdrawShareDialogElement;
-        new (): HTMLUpdrawShareDialogElement;
+    var HTMLUpmadeShareDialogElement: {
+        prototype: HTMLUpmadeShareDialogElement;
+        new (): HTMLUpmadeShareDialogElement;
     };
-    interface HTMLUpdrawSlideToggleElementEventMap {
+    interface HTMLUpmadeSlideToggleElementEventMap {
         "checkedChange": boolean;
     }
-    interface HTMLUpdrawSlideToggleElement extends Components.UpdrawSlideToggle, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawSlideToggleElementEventMap>(type: K, listener: (this: HTMLUpdrawSlideToggleElement, ev: UpdrawSlideToggleCustomEvent<HTMLUpdrawSlideToggleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeSlideToggleElement extends Components.UpmadeSlideToggle, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeSlideToggleElementEventMap>(type: K, listener: (this: HTMLUpmadeSlideToggleElement, ev: UpmadeSlideToggleCustomEvent<HTMLUpmadeSlideToggleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawSlideToggleElementEventMap>(type: K, listener: (this: HTMLUpdrawSlideToggleElement, ev: UpdrawSlideToggleCustomEvent<HTMLUpdrawSlideToggleElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeSlideToggleElementEventMap>(type: K, listener: (this: HTMLUpmadeSlideToggleElement, ev: UpmadeSlideToggleCustomEvent<HTMLUpmadeSlideToggleElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawSlideToggleElement: {
-        prototype: HTMLUpdrawSlideToggleElement;
-        new (): HTMLUpdrawSlideToggleElement;
+    var HTMLUpmadeSlideToggleElement: {
+        prototype: HTMLUpmadeSlideToggleElement;
+        new (): HTMLUpmadeSlideToggleElement;
     };
-    interface HTMLUpdrawSplitButtonElementEventMap {
+    interface HTMLUpmadeSplitButtonElementEventMap {
         "mainButtonClick": void;
-        "itemSelect": IUpdrawMenuItemSelectEvent;
-        "itemSave": IUpdrawMenuItem;
-        "itemCancel": IUpdrawMenuItem;
-        "itemToggleChildMenu": IUpdrawMenuItemToggleChildMenuEvent;
-        "itemCloseChildMenu": IUpdrawMenuItem;
+        "itemSelect": IUpmadeMenuItemSelectEvent;
+        "itemSave": IUpmadeMenuItem;
+        "itemCancel": IUpmadeMenuItem;
+        "itemToggleChildMenu": IUpmadeMenuItemToggleChildMenuEvent;
+        "itemCloseChildMenu": IUpmadeMenuItem;
         "menuOpen": void;
         "menuClose": void;
     }
-    interface HTMLUpdrawSplitButtonElement extends Components.UpdrawSplitButton, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawSplitButtonElementEventMap>(type: K, listener: (this: HTMLUpdrawSplitButtonElement, ev: UpdrawSplitButtonCustomEvent<HTMLUpdrawSplitButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeSplitButtonElement extends Components.UpmadeSplitButton, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeSplitButtonElementEventMap>(type: K, listener: (this: HTMLUpmadeSplitButtonElement, ev: UpmadeSplitButtonCustomEvent<HTMLUpmadeSplitButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawSplitButtonElementEventMap>(type: K, listener: (this: HTMLUpdrawSplitButtonElement, ev: UpdrawSplitButtonCustomEvent<HTMLUpdrawSplitButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeSplitButtonElementEventMap>(type: K, listener: (this: HTMLUpmadeSplitButtonElement, ev: UpmadeSplitButtonCustomEvent<HTMLUpmadeSplitButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawSplitButtonElement: {
-        prototype: HTMLUpdrawSplitButtonElement;
-        new (): HTMLUpdrawSplitButtonElement;
+    var HTMLUpmadeSplitButtonElement: {
+        prototype: HTMLUpmadeSplitButtonElement;
+        new (): HTMLUpmadeSplitButtonElement;
     };
-    interface HTMLUpdrawStrokeSizeElementEventMap {
+    interface HTMLUpmadeStrokeSizeElementEventMap {
         "sizeChange": number;
     }
-    interface HTMLUpdrawStrokeSizeElement extends Components.UpdrawStrokeSize, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawStrokeSizeElementEventMap>(type: K, listener: (this: HTMLUpdrawStrokeSizeElement, ev: UpdrawStrokeSizeCustomEvent<HTMLUpdrawStrokeSizeElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeStrokeSizeElement extends Components.UpmadeStrokeSize, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeStrokeSizeElementEventMap>(type: K, listener: (this: HTMLUpmadeStrokeSizeElement, ev: UpmadeStrokeSizeCustomEvent<HTMLUpmadeStrokeSizeElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawStrokeSizeElementEventMap>(type: K, listener: (this: HTMLUpdrawStrokeSizeElement, ev: UpdrawStrokeSizeCustomEvent<HTMLUpdrawStrokeSizeElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeStrokeSizeElementEventMap>(type: K, listener: (this: HTMLUpmadeStrokeSizeElement, ev: UpmadeStrokeSizeCustomEvent<HTMLUpmadeStrokeSizeElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawStrokeSizeElement: {
-        prototype: HTMLUpdrawStrokeSizeElement;
-        new (): HTMLUpdrawStrokeSizeElement;
+    var HTMLUpmadeStrokeSizeElement: {
+        prototype: HTMLUpmadeStrokeSizeElement;
+        new (): HTMLUpmadeStrokeSizeElement;
     };
-    interface HTMLUpdrawTitlebarMenuElementEventMap {
+    interface HTMLUpmadeTitlebarMenuElementEventMap {
         "menuItemSelect": string;
     }
     /**
-     * The menu opened from a titlebar `menu` element: a compact `updraw-menu` styled like the
-     * context menu through the `--updraw-titlebar-menu-*` theme variables.
+     * The menu opened from a titlebar `menu` element: a compact `upmade-menu` styled like the
+     * context menu through the `--upmade-titlebar-menu-*` theme variables.
      */
-    interface HTMLUpdrawTitlebarMenuElement extends Components.UpdrawTitlebarMenu, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawTitlebarMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawTitlebarMenuElement, ev: UpdrawTitlebarMenuCustomEvent<HTMLUpdrawTitlebarMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeTitlebarMenuElement extends Components.UpmadeTitlebarMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeTitlebarMenuElementEventMap>(type: K, listener: (this: HTMLUpmadeTitlebarMenuElement, ev: UpmadeTitlebarMenuCustomEvent<HTMLUpmadeTitlebarMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawTitlebarMenuElementEventMap>(type: K, listener: (this: HTMLUpdrawTitlebarMenuElement, ev: UpdrawTitlebarMenuCustomEvent<HTMLUpdrawTitlebarMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeTitlebarMenuElementEventMap>(type: K, listener: (this: HTMLUpmadeTitlebarMenuElement, ev: UpmadeTitlebarMenuCustomEvent<HTMLUpmadeTitlebarMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawTitlebarMenuElement: {
-        prototype: HTMLUpdrawTitlebarMenuElement;
-        new (): HTMLUpdrawTitlebarMenuElement;
+    var HTMLUpmadeTitlebarMenuElement: {
+        prototype: HTMLUpmadeTitlebarMenuElement;
+        new (): HTMLUpmadeTitlebarMenuElement;
     };
-    interface HTMLUpdrawToolConfigElementEventMap {
+    interface HTMLUpmadeToolConfigElementEventMap {
         "toolChange": ConfigurableTool;
         "displayValuesChange": ToolDisplayValues;
     }
-    interface HTMLUpdrawToolConfigElement extends Components.UpdrawToolConfig, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawToolConfigElementEventMap>(type: K, listener: (this: HTMLUpdrawToolConfigElement, ev: UpdrawToolConfigCustomEvent<HTMLUpdrawToolConfigElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeToolConfigElement extends Components.UpmadeToolConfig, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeToolConfigElementEventMap>(type: K, listener: (this: HTMLUpmadeToolConfigElement, ev: UpmadeToolConfigCustomEvent<HTMLUpmadeToolConfigElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawToolConfigElementEventMap>(type: K, listener: (this: HTMLUpdrawToolConfigElement, ev: UpdrawToolConfigCustomEvent<HTMLUpdrawToolConfigElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeToolConfigElementEventMap>(type: K, listener: (this: HTMLUpmadeToolConfigElement, ev: UpmadeToolConfigCustomEvent<HTMLUpmadeToolConfigElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawToolConfigElement: {
-        prototype: HTMLUpdrawToolConfigElement;
-        new (): HTMLUpdrawToolConfigElement;
+    var HTMLUpmadeToolConfigElement: {
+        prototype: HTMLUpmadeToolConfigElement;
+        new (): HTMLUpmadeToolConfigElement;
     };
-    interface HTMLUpdrawToolbarElementEventMap {
+    interface HTMLUpmadeToolbarElementEventMap {
         "isToolbarReady": void;
     }
-    interface HTMLUpdrawToolbarElement extends Components.UpdrawToolbar, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawToolbarElementEventMap>(type: K, listener: (this: HTMLUpdrawToolbarElement, ev: UpdrawToolbarCustomEvent<HTMLUpdrawToolbarElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeToolbarElement extends Components.UpmadeToolbar, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeToolbarElementEventMap>(type: K, listener: (this: HTMLUpmadeToolbarElement, ev: UpmadeToolbarCustomEvent<HTMLUpmadeToolbarElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawToolbarElementEventMap>(type: K, listener: (this: HTMLUpdrawToolbarElement, ev: UpdrawToolbarCustomEvent<HTMLUpdrawToolbarElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeToolbarElementEventMap>(type: K, listener: (this: HTMLUpmadeToolbarElement, ev: UpmadeToolbarCustomEvent<HTMLUpmadeToolbarElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawToolbarElement: {
-        prototype: HTMLUpdrawToolbarElement;
-        new (): HTMLUpdrawToolbarElement;
+    var HTMLUpmadeToolbarElement: {
+        prototype: HTMLUpmadeToolbarElement;
+        new (): HTMLUpmadeToolbarElement;
     };
-    interface HTMLUpdrawTooltipElementEventMap {
+    interface HTMLUpmadeTooltipElementEventMap {
         "tooltipClosed": void;
         "tooltipOpened": void;
     }
-    interface HTMLUpdrawTooltipElement extends Components.UpdrawTooltip, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawTooltipElementEventMap>(type: K, listener: (this: HTMLUpdrawTooltipElement, ev: UpdrawTooltipCustomEvent<HTMLUpdrawTooltipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeTooltipElement extends Components.UpmadeTooltip, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeTooltipElementEventMap>(type: K, listener: (this: HTMLUpmadeTooltipElement, ev: UpmadeTooltipCustomEvent<HTMLUpmadeTooltipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawTooltipElementEventMap>(type: K, listener: (this: HTMLUpdrawTooltipElement, ev: UpdrawTooltipCustomEvent<HTMLUpdrawTooltipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeTooltipElementEventMap>(type: K, listener: (this: HTMLUpmadeTooltipElement, ev: UpmadeTooltipCustomEvent<HTMLUpmadeTooltipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawTooltipElement: {
-        prototype: HTMLUpdrawTooltipElement;
-        new (): HTMLUpdrawTooltipElement;
+    var HTMLUpmadeTooltipElement: {
+        prototype: HTMLUpmadeTooltipElement;
+        new (): HTMLUpmadeTooltipElement;
     };
-    interface HTMLUpdrawUtilityPanelElementEventMap {
+    interface HTMLUpmadeUtilityPanelElementEventMap {
         "undo": void;
         "redo": void;
         "delete": void;
     }
-    interface HTMLUpdrawUtilityPanelElement extends Components.UpdrawUtilityPanel, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawUtilityPanelElementEventMap>(type: K, listener: (this: HTMLUpdrawUtilityPanelElement, ev: UpdrawUtilityPanelCustomEvent<HTMLUpdrawUtilityPanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeUtilityPanelElement extends Components.UpmadeUtilityPanel, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeUtilityPanelElementEventMap>(type: K, listener: (this: HTMLUpmadeUtilityPanelElement, ev: UpmadeUtilityPanelCustomEvent<HTMLUpmadeUtilityPanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawUtilityPanelElementEventMap>(type: K, listener: (this: HTMLUpdrawUtilityPanelElement, ev: UpdrawUtilityPanelCustomEvent<HTMLUpdrawUtilityPanelElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeUtilityPanelElementEventMap>(type: K, listener: (this: HTMLUpmadeUtilityPanelElement, ev: UpmadeUtilityPanelCustomEvent<HTMLUpmadeUtilityPanelElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawUtilityPanelElement: {
-        prototype: HTMLUpdrawUtilityPanelElement;
-        new (): HTMLUpdrawUtilityPanelElement;
+    var HTMLUpmadeUtilityPanelElement: {
+        prototype: HTMLUpmadeUtilityPanelElement;
+        new (): HTMLUpmadeUtilityPanelElement;
     };
-    interface HTMLUpdrawWorkspaceManagerElementEventMap {
+    interface HTMLUpmadeWorkspaceManagerElementEventMap {
         "isWorkspaceManagerReady": void;
-        "workspaceChange": UpdrawWorkspace;
+        "workspaceChange": UpmadeWorkspace;
     }
-    interface HTMLUpdrawWorkspaceManagerElement extends Components.UpdrawWorkspaceManager, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawWorkspaceManagerElementEventMap>(type: K, listener: (this: HTMLUpdrawWorkspaceManagerElement, ev: UpdrawWorkspaceManagerCustomEvent<HTMLUpdrawWorkspaceManagerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeWorkspaceManagerElement extends Components.UpmadeWorkspaceManager, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeWorkspaceManagerElementEventMap>(type: K, listener: (this: HTMLUpmadeWorkspaceManagerElement, ev: UpmadeWorkspaceManagerCustomEvent<HTMLUpmadeWorkspaceManagerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawWorkspaceManagerElementEventMap>(type: K, listener: (this: HTMLUpdrawWorkspaceManagerElement, ev: UpdrawWorkspaceManagerCustomEvent<HTMLUpdrawWorkspaceManagerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeWorkspaceManagerElementEventMap>(type: K, listener: (this: HTMLUpmadeWorkspaceManagerElement, ev: UpmadeWorkspaceManagerCustomEvent<HTMLUpmadeWorkspaceManagerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawWorkspaceManagerElement: {
-        prototype: HTMLUpdrawWorkspaceManagerElement;
-        new (): HTMLUpdrawWorkspaceManagerElement;
+    var HTMLUpmadeWorkspaceManagerElement: {
+        prototype: HTMLUpmadeWorkspaceManagerElement;
+        new (): HTMLUpmadeWorkspaceManagerElement;
     };
-    interface HTMLUpdrawZoomPanelElementEventMap {
+    interface HTMLUpmadeZoomPanelElementEventMap {
         "zoomIn": void;
         "zoomOut": void;
     }
-    interface HTMLUpdrawZoomPanelElement extends Components.UpdrawZoomPanel, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawZoomPanelElementEventMap>(type: K, listener: (this: HTMLUpdrawZoomPanelElement, ev: UpdrawZoomPanelCustomEvent<HTMLUpdrawZoomPanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeZoomPanelElement extends Components.UpmadeZoomPanel, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeZoomPanelElementEventMap>(type: K, listener: (this: HTMLUpmadeZoomPanelElement, ev: UpmadeZoomPanelCustomEvent<HTMLUpmadeZoomPanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawZoomPanelElementEventMap>(type: K, listener: (this: HTMLUpdrawZoomPanelElement, ev: UpdrawZoomPanelCustomEvent<HTMLUpdrawZoomPanelElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeZoomPanelElementEventMap>(type: K, listener: (this: HTMLUpmadeZoomPanelElement, ev: UpmadeZoomPanelCustomEvent<HTMLUpmadeZoomPanelElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawZoomPanelElement: {
-        prototype: HTMLUpdrawZoomPanelElement;
-        new (): HTMLUpdrawZoomPanelElement;
+    var HTMLUpmadeZoomPanelElement: {
+        prototype: HTMLUpmadeZoomPanelElement;
+        new (): HTMLUpmadeZoomPanelElement;
     };
     interface HTMLElementTagNameMap {
-        "updraw-active-users": HTMLUpdrawActiveUsersElement;
-        "updraw-avatar": HTMLUpdrawAvatarElement;
-        "updraw-back-to-content": HTMLUpdrawBackToContentElement;
-        "updraw-brush-style": HTMLUpdrawBrushStyleElement;
-        "updraw-button": HTMLUpdrawButtonElement;
-        "updraw-chat-box": HTMLUpdrawChatBoxElement;
-        "updraw-color": HTMLUpdrawColorElement;
-        "updraw-color-palette": HTMLUpdrawColorPaletteElement;
-        "updraw-context-menu": HTMLUpdrawContextMenuElement;
-        "updraw-current-user": HTMLUpdrawCurrentUserElement;
-        "updraw-current-user-dialog": HTMLUpdrawCurrentUserDialogElement;
-        "updraw-dialog": HTMLUpdrawDialogElement;
-        "updraw-dropdown": HTMLUpdrawDropdownElement;
-        "updraw-editor": HTMLUpdrawEditorElement;
-        "updraw-export": HTMLUpdrawExportElement;
-        "updraw-font": HTMLUpdrawFontElement;
-        "updraw-font-family": HTMLUpdrawFontFamilyElement;
-        "updraw-font-size": HTMLUpdrawFontSizeElement;
-        "updraw-input": HTMLUpdrawInputElement;
-        "updraw-line-endings": HTMLUpdrawLineEndingsElement;
-        "updraw-login-dialog": HTMLUpdrawLoginDialogElement;
-        "updraw-master-detail": HTMLUpdrawMasterDetailElement;
-        "updraw-menu": HTMLUpdrawMenuElement;
-        "updraw-menu-item": HTMLUpdrawMenuItemElement;
-        "updraw-more-menu": HTMLUpdrawMoreMenuElement;
-        "updraw-notification-card": HTMLUpdrawNotificationCardElement;
-        "updraw-numeric-input": HTMLUpdrawNumericInputElement;
-        "updraw-opacity-slider": HTMLUpdrawOpacitySliderElement;
-        "updraw-pill-tabs": HTMLUpdrawPillTabsElement;
-        "updraw-portal": HTMLUpdrawPortalElement;
-        "updraw-settings": HTMLUpdrawSettingsElement;
-        "updraw-shape-fill": HTMLUpdrawShapeFillElement;
-        "updraw-share-dialog": HTMLUpdrawShareDialogElement;
-        "updraw-slide-toggle": HTMLUpdrawSlideToggleElement;
-        "updraw-split-button": HTMLUpdrawSplitButtonElement;
-        "updraw-stroke-size": HTMLUpdrawStrokeSizeElement;
-        "updraw-titlebar-menu": HTMLUpdrawTitlebarMenuElement;
-        "updraw-tool-config": HTMLUpdrawToolConfigElement;
-        "updraw-toolbar": HTMLUpdrawToolbarElement;
-        "updraw-tooltip": HTMLUpdrawTooltipElement;
-        "updraw-utility-panel": HTMLUpdrawUtilityPanelElement;
-        "updraw-workspace-manager": HTMLUpdrawWorkspaceManagerElement;
-        "updraw-zoom-panel": HTMLUpdrawZoomPanelElement;
+        "upmade-active-users": HTMLUpmadeActiveUsersElement;
+        "upmade-avatar": HTMLUpmadeAvatarElement;
+        "upmade-back-to-content": HTMLUpmadeBackToContentElement;
+        "upmade-brush-style": HTMLUpmadeBrushStyleElement;
+        "upmade-button": HTMLUpmadeButtonElement;
+        "upmade-chat-box": HTMLUpmadeChatBoxElement;
+        "upmade-color": HTMLUpmadeColorElement;
+        "upmade-color-palette": HTMLUpmadeColorPaletteElement;
+        "upmade-context-menu": HTMLUpmadeContextMenuElement;
+        "upmade-current-user": HTMLUpmadeCurrentUserElement;
+        "upmade-current-user-dialog": HTMLUpmadeCurrentUserDialogElement;
+        "upmade-dialog": HTMLUpmadeDialogElement;
+        "upmade-dropdown": HTMLUpmadeDropdownElement;
+        "upmade-editor": HTMLUpmadeEditorElement;
+        "upmade-export": HTMLUpmadeExportElement;
+        "upmade-font": HTMLUpmadeFontElement;
+        "upmade-font-family": HTMLUpmadeFontFamilyElement;
+        "upmade-font-size": HTMLUpmadeFontSizeElement;
+        "upmade-input": HTMLUpmadeInputElement;
+        "upmade-line-endings": HTMLUpmadeLineEndingsElement;
+        "upmade-login-dialog": HTMLUpmadeLoginDialogElement;
+        "upmade-master-detail": HTMLUpmadeMasterDetailElement;
+        "upmade-menu": HTMLUpmadeMenuElement;
+        "upmade-menu-item": HTMLUpmadeMenuItemElement;
+        "upmade-more-menu": HTMLUpmadeMoreMenuElement;
+        "upmade-notification-card": HTMLUpmadeNotificationCardElement;
+        "upmade-numeric-input": HTMLUpmadeNumericInputElement;
+        "upmade-opacity-slider": HTMLUpmadeOpacitySliderElement;
+        "upmade-pill-tabs": HTMLUpmadePillTabsElement;
+        "upmade-portal": HTMLUpmadePortalElement;
+        "upmade-settings": HTMLUpmadeSettingsElement;
+        "upmade-shape-fill": HTMLUpmadeShapeFillElement;
+        "upmade-share-dialog": HTMLUpmadeShareDialogElement;
+        "upmade-slide-toggle": HTMLUpmadeSlideToggleElement;
+        "upmade-split-button": HTMLUpmadeSplitButtonElement;
+        "upmade-stroke-size": HTMLUpmadeStrokeSizeElement;
+        "upmade-titlebar-menu": HTMLUpmadeTitlebarMenuElement;
+        "upmade-tool-config": HTMLUpmadeToolConfigElement;
+        "upmade-toolbar": HTMLUpmadeToolbarElement;
+        "upmade-tooltip": HTMLUpmadeTooltipElement;
+        "upmade-utility-panel": HTMLUpmadeUtilityPanelElement;
+        "upmade-workspace-manager": HTMLUpmadeWorkspaceManagerElement;
+        "upmade-zoom-panel": HTMLUpmadeZoomPanelElement;
     }
 }
 declare namespace LocalJSX {
-    interface UpdrawActiveUsers {
+    interface UpmadeActiveUsers {
         /**
           * Agents to display after the users: local agents and agents of collaborators. Shown with a bot badge, a ring while they work and their status in the tooltip.
           * @default []
          */
-        "agents"?: (UpdrawAgentPresence | UpdrawRemoteAgentPresence)[];
+        "agents"?: (UpmadeAgentPresence | UpmadeRemoteAgentPresence)[];
         /**
           * Avatar size in pixels
           * @default 40
@@ -2116,9 +2116,9 @@ declare namespace LocalJSX {
           * Array of active users to display
           * @default []
          */
-        "users"?: IUpdrawUser[];
+        "users"?: IUpmadeUser[];
     }
-    interface UpdrawAvatar {
+    interface UpmadeAvatar {
         /**
           * Background color for initials fallback
          */
@@ -2135,13 +2135,13 @@ declare namespace LocalJSX {
         /**
           * Full user object. If provided, individual props are ignored.
          */
-        "user"?: IUpdrawUser;
+        "user"?: IUpmadeUser;
     }
-    interface UpdrawBackToContent {
+    interface UpmadeBackToContent {
         /**
           * Emitted when the button is clicked
          */
-        "onBackToContent"?: (event: UpdrawBackToContentCustomEvent<void>) => void;
+        "onBackToContent"?: (event: UpmadeBackToContentCustomEvent<void>) => void;
         /**
           * The text to display on the button
           * @default 'Back to content'
@@ -2153,18 +2153,18 @@ declare namespace LocalJSX {
          */
         "visible"?: boolean;
     }
-    interface UpdrawBrushStyle {
+    interface UpmadeBrushStyle {
         /**
           * @default [     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]
          */
         "brushOptions"?: BrushStyleOption[];
-        "onTypeChange"?: (event: UpdrawBrushStyleCustomEvent<'pen' | 'highlighter'>) => void;
+        "onTypeChange"?: (event: UpmadeBrushStyleCustomEvent<'pen' | 'highlighter'>) => void;
         /**
           * @default 'pen'
          */
         "type"?: 'pen' | 'highlighter';
     }
-    interface UpdrawButton {
+    interface UpmadeButton {
         /**
           * Whether the button is disabled
           * @default false
@@ -2173,7 +2173,7 @@ declare namespace LocalJSX {
         /**
           * Emitted when the button is clicked
          */
-        "onButtonClick"?: (event: UpdrawButtonCustomEvent<void>) => void;
+        "onButtonClick"?: (event: UpmadeButtonCustomEvent<void>) => void;
         /**
           * The type attribute for the native button element
           * @default 'button'
@@ -2185,12 +2185,12 @@ declare namespace LocalJSX {
          */
         "variant"?: 'primary' | 'secondary' | 'text';
     }
-    interface UpdrawChatBox {
+    interface UpmadeChatBox {
         /**
           * Chips shown above the box, e.g. the object or element the next prompt refers to. The first three share one row as wide as the box; the rest are summarized as "+N more". The box never changes this array: pass a new array to add, change or remove chips. Each chip's remove button emits `chatChipRemove`.
           * @default []
          */
-        "chips"?: UpdrawChatBoxChip[];
+        "chips"?: UpmadeChatBoxChip[];
         /**
           * Whether the chat box is disabled.
           * @default false
@@ -2205,23 +2205,23 @@ declare namespace LocalJSX {
           * Display mode. `collapsed` shows a single row and switches to `expanded` automatically while focused once the text no longer fits on one line, collapsing again when focus is lost.
           * @default 'collapsed'
          */
-        "mode"?: UpdrawChatBoxMode;
+        "mode"?: UpmadeChatBoxMode;
         /**
           * Emitted with the chip whose remove button the user activated. The chip stays until `chips` no longer contains it.
          */
-        "onChatChipRemove"?: (event: UpdrawChatBoxCustomEvent<UpdrawChatBoxChip>) => void;
+        "onChatChipRemove"?: (event: UpmadeChatBoxCustomEvent<UpmadeChatBoxChip>) => void;
         /**
           * Emitted when the user stops the current response.
          */
-        "onChatStop"?: (event: UpdrawChatBoxCustomEvent<void>) => void;
+        "onChatStop"?: (event: UpmadeChatBoxCustomEvent<void>) => void;
         /**
           * Emitted with the current text when the user submits the chat box.
          */
-        "onChatSubmit"?: (event: UpdrawChatBoxCustomEvent<string>) => void;
+        "onChatSubmit"?: (event: UpmadeChatBoxCustomEvent<string>) => void;
         /**
           * Emitted when the mode changes, including automatic expansion.
          */
-        "onModeChange"?: (event: UpdrawChatBoxCustomEvent<UpdrawChatBoxMode>) => void;
+        "onModeChange"?: (event: UpmadeChatBoxCustomEvent<UpmadeChatBoxMode>) => void;
         /**
           * Placeholder text shown when the chat box is empty. Falls back to the localized term.
          */
@@ -2230,14 +2230,14 @@ declare namespace LocalJSX {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<UpdrawTermKey, string>>;
+        "terms"?: Partial<Record<UpmadeTermKey, string>>;
         /**
           * Current text value of the chat box.
           * @default ''
          */
         "value"?: string;
     }
-    interface UpdrawColor {
+    interface UpmadeColor {
         /**
           * @default 24
          */
@@ -2245,7 +2245,7 @@ declare namespace LocalJSX {
         "theme"?: ThemeName;
         "value"?: string | ThemeAwareColor;
     }
-    interface UpdrawColorPalette {
+    interface UpmadeColorPalette {
         /**
           * @default []
          */
@@ -2258,7 +2258,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "isOpaque"?: boolean;
-        "onColorChange"?: (event: UpdrawColorPaletteCustomEvent<ThemeAwareColor>) => void;
+        "onColorChange"?: (event: UpmadeColorPaletteCustomEvent<ThemeAwareColor>) => void;
         /**
           * @default 1
          */
@@ -2269,13 +2269,13 @@ declare namespace LocalJSX {
         "selectedColor"?: ThemeAwareColor | null;
         "theme"?: ThemeName;
     }
-    interface UpdrawContextMenu {
+    interface UpmadeContextMenu {
         "items"?: ContextMenuItem[];
-        "objects"?: UpdrawBaseObject[];
-        "onActionSelected"?: (event: UpdrawContextMenuCustomEvent<ContextMenuItem>) => void;
-        "onClose"?: (event: UpdrawContextMenuCustomEvent<void>) => void;
+        "objects"?: UpmadeBaseObject[];
+        "onActionSelected"?: (event: UpmadeContextMenuCustomEvent<ContextMenuItem>) => void;
+        "onClose"?: (event: UpmadeContextMenuCustomEvent<void>) => void;
     }
-    interface UpdrawCurrentUser {
+    interface UpmadeCurrentUser {
         /**
           * Avatar size in pixels
           * @default 40
@@ -2285,25 +2285,25 @@ declare namespace LocalJSX {
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<UpdrawTermKey, string>>;
+        "terms"?: Partial<Record<UpmadeTermKey, string>>;
         /**
           * The current user to display
          */
-        "user"?: IUpdrawUser;
+        "user"?: IUpmadeUser;
     }
-    interface UpdrawCurrentUserDialog {
+    interface UpmadeCurrentUserDialog {
         /**
           * Emitted when the user clicks the logout action.
          */
-        "onLogoutRequest"?: (event: UpdrawCurrentUserDialogCustomEvent<void>) => void;
+        "onLogoutRequest"?: (event: UpmadeCurrentUserDialogCustomEvent<void>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<UpdrawTermKey, string>>;
-        "user"?: IUpdrawUser;
+        "terms"?: Partial<Record<UpmadeTermKey, string>>;
+        "user"?: IUpmadeUser;
     }
-    interface UpdrawDialog {
+    interface UpmadeDialog {
         /**
           * Whether to auto-focus the first focusable element when opened
           * @default true
@@ -2346,11 +2346,11 @@ declare namespace LocalJSX {
         /**
           * Emitted when the dialog closes
          */
-        "onDialogClose"?: (event: UpdrawDialogCustomEvent<IUpdrawDialogCloseEvent>) => void;
+        "onDialogClose"?: (event: UpmadeDialogCustomEvent<IUpmadeDialogCloseEvent>) => void;
         /**
           * Emitted when the dialog opens
          */
-        "onDialogOpen"?: (event: UpdrawDialogCustomEvent<void>) => void;
+        "onDialogOpen"?: (event: UpmadeDialogCustomEvent<void>) => void;
         /**
           * Size of the dialog
           * @default 'medium'
@@ -2362,12 +2362,12 @@ declare namespace LocalJSX {
          */
         "trapFocus"?: boolean;
     }
-    interface UpdrawDropdown {
+    interface UpmadeDropdown {
         /**
           * Force the dropdown to open in a specific direction instead of auto-detecting
          */
         "forceOpenDirection"?: 'down' | 'up';
-        "onValueChanged"?: (event: UpdrawDropdownCustomEvent<string>) => void;
+        "onValueChanged"?: (event: UpmadeDropdownCustomEvent<string>) => void;
         /**
           * @default []
          */
@@ -2379,8 +2379,8 @@ declare namespace LocalJSX {
         "value"?: string;
         "width"?: string;
     }
-    interface UpdrawEditor {
-        "activeUsers"?: IUpdrawUser[];
+    interface UpmadeEditor {
+        "activeUsers"?: IUpmadeUser[];
         /**
           * Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID.
          */
@@ -2388,21 +2388,21 @@ declare namespace LocalJSX {
         /**
           * @default DEFAULT_ASSET_STORAGE_CONFIG
          */
-        "assetStorageConfig"?: UpdrawAssetStorageConfig;
+        "assetStorageConfig"?: UpmadeAssetStorageConfig;
         /**
           * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Up to three share one row as wide as the box; the rest are summarized as "+N more". Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
           * @default []
          */
-        "chatBoxChips"?: UpdrawChatBoxChip[];
+        "chatBoxChips"?: UpmadeChatBoxChip[];
         /**
           * Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row.
           * @default "collapsed"
          */
-        "chatBoxMode"?: UpdrawChatBoxMode1;
+        "chatBoxMode"?: UpmadeChatBoxMode1;
         /**
           * A chat session the chat box sends its prompts to, with `chatBoxChips` as what they refer to. While it runs, the chat box shows its progress and the stop button stops it. Call `preventDefault()` on `chatSubmit` to send a prompt yourself.
          */
-        "chatSession"?: UpdrawChatSession | null;
+        "chatSession"?: UpmadeChatSession | null;
         /**
           * The element to use as the target for the cursor. Defaults to the editor container if not set.
          */
@@ -2411,15 +2411,15 @@ declare namespace LocalJSX {
           * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts.
           * @default {}
          */
-        "customFonts"?: UpdrawFontMap;
+        "customFonts"?: UpmadeFontMap;
         /**
           * @default {}
          */
-        "customSvgIcons"?: UpdrawSvgIconMap;
+        "customSvgIcons"?: UpmadeSvgIconMap;
         /**
           * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,     showAssetResolverInfo: false,   }
          */
-        "debugInfo"?: UpdrawDebugInfo;
+        "debugInfo"?: UpmadeDebugInfo;
         /**
           * Optional unique identifier for namespacing storage keys across multiple editor instances.
          */
@@ -2464,7 +2464,7 @@ declare namespace LocalJSX {
          */
         "isUtilityPanelVisible"?: boolean;
         /**
-          * Whether the "Powered by Updraw" watermark is shown. Keeping it visible helps support the project.
+          * Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project.
           * @default true
          */
         "isWatermarkVisible"?: boolean;
@@ -2488,7 +2488,7 @@ declare namespace LocalJSX {
         /**
           * An array of available locale definitions (with optional partial term overrides).
          */
-        "locales"?: UpdrawLocale[];
+        "locales"?: UpmadeLocale[];
         /**
           * @default true
          */
@@ -2496,79 +2496,79 @@ declare namespace LocalJSX {
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
          */
-        "loginConfig"?: UpdrawLoginConfig;
+        "loginConfig"?: UpmadeLoginConfig;
         /**
           * @default [     {       id: "share",       label: "menu.share",       icon: "share",       isVisible: async () => hasRemoteSyncProvider(this.syncConfig),       action: () => {         if (!this.isLoggedIn && this.loginConfig) {           this.openLoginDialog();           return;         }         this.shareDialogRef.open();       },     },     {       id: "export",       label: "menu.export",       icon: "upload",       action: async () => {         const preview = await this.engineRef.getScreenshot("png");         this.exportRef.open(preview ?? undefined);       },     },     {       id: "import",       label: "menu.import",       icon: "download",       action: () => this.engineRef.importFromFile(),     },     {       id: "settings",       label: "menu.settings",       icon: "settings",       action: () => this.settingsRef.open(),     },   ]
          */
-        "moreMenuItems"?: IUpdrawMenuItem[];
+        "moreMenuItems"?: IUpmadeMenuItem[];
         /**
           * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
          */
-        "objectConfig"?: UpdrawObjectConfig;
+        "objectConfig"?: UpmadeObjectConfig;
         /**
-          * @default [     {       label: "menu.copy",       icon: "copy",       group: "clipboard",       action: () => this.engineRef.copy(),     },     {       label: "menu.cut",       icon: "cut",       group: "clipboard",       action: () => this.engineRef.cut(),     },     {       label: "menu.paste",       icon: "paste",       group: "clipboard",       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.export",       icon: "upload",       group: "clipboard",       isVisible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: "menu.order",       icon: "ordering",       group: "other",       children: [         {           label: "menu.bringToFront",           icon: "bringToFront",           action: () => this.engineRef.bringToFront(),         },         {           label: "menu.sendToBack",           icon: "sendToBack",           action: () => this.engineRef.sendToBack(),         },         {           label: "menu.moveUp",           icon: "arrowUpFromDot",           action: () => this.engineRef.bringForward(),         },         {           label: "menu.moveDown",           icon: "arrowDownFromDot",           action: () => this.engineRef.sendBackward(),         },       ],     },     {       label: "menu.align",       icon: "align",       group: "other",       children: [         {           label: "menu.alignLeft",           icon: "alignStartVertical",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.StartHorizontal),         },         {           label: "menu.alignCenterHorizontal",           icon: "alignCenterHorizontal",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.CenterHorizontal),         },         {           label: "menu.alignRight",           icon: "alignEndVertical",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.EndHorizontal),         },         {           label: "menu.alignTop",           icon: "alignStartHorizontal",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.StartVertical),         },         {           label: "menu.alignCenterVertical",           icon: "alignCenterVertical",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.CenterVertical),         },         {           label: "menu.alignBottom",           icon: "alignEndHorizontal",           action: () =>             this.engineRef.alignObjects(UpdrawAlignment.EndVertical),         },       ],     },     {       label: "menu.group",       icon: "group",       group: "other",       children: [         {           label: "menu.group",           icon: "group",           action: (_, objects) => this.engineRef.group(objects),         },         {           label: "menu.ungroup",           icon: "ungroup",           action: (_, objects) => {             const groups = objects.filter(               (object): object is UpdrawGroup =>                 object.__class__ === "UpdrawGroup",             );             this.engineRef.ungroup(groups);           },         },       ],     },     {       label: "menu.delete",       icon: "delete",       group: "edit",       action: () => this.engineRef.delete(),     },   ]
+          * @default [     {       label: "menu.copy",       icon: "copy",       group: "clipboard",       action: () => this.engineRef.copy(),     },     {       label: "menu.cut",       icon: "cut",       group: "clipboard",       action: () => this.engineRef.cut(),     },     {       label: "menu.paste",       icon: "paste",       group: "clipboard",       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.export",       icon: "upload",       group: "clipboard",       isVisible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: "menu.order",       icon: "ordering",       group: "other",       children: [         {           label: "menu.bringToFront",           icon: "bringToFront",           action: () => this.engineRef.bringToFront(),         },         {           label: "menu.sendToBack",           icon: "sendToBack",           action: () => this.engineRef.sendToBack(),         },         {           label: "menu.moveUp",           icon: "arrowUpFromDot",           action: () => this.engineRef.bringForward(),         },         {           label: "menu.moveDown",           icon: "arrowDownFromDot",           action: () => this.engineRef.sendBackward(),         },       ],     },     {       label: "menu.align",       icon: "align",       group: "other",       children: [         {           label: "menu.alignLeft",           icon: "alignStartVertical",           action: () =>             this.engineRef.alignObjects(UpmadeAlignment.StartHorizontal),         },         {           label: "menu.alignCenterHorizontal",           icon: "alignCenterHorizontal",           action: () =>             this.engineRef.alignObjects(UpmadeAlignment.CenterHorizontal),         },         {           label: "menu.alignRight",           icon: "alignEndVertical",           action: () =>             this.engineRef.alignObjects(UpmadeAlignment.EndHorizontal),         },         {           label: "menu.alignTop",           icon: "alignStartHorizontal",           action: () =>             this.engineRef.alignObjects(UpmadeAlignment.StartVertical),         },         {           label: "menu.alignCenterVertical",           icon: "alignCenterVertical",           action: () =>             this.engineRef.alignObjects(UpmadeAlignment.CenterVertical),         },         {           label: "menu.alignBottom",           icon: "alignEndHorizontal",           action: () =>             this.engineRef.alignObjects(UpmadeAlignment.EndVertical),         },       ],     },     {       label: "menu.group",       icon: "group",       group: "other",       children: [         {           label: "menu.group",           icon: "group",           action: (_, objects) => this.engineRef.group(objects),         },         {           label: "menu.ungroup",           icon: "ungroup",           action: (_, objects) => {             const groups = objects.filter(               (object): object is UpmadeGroup =>                 object.__class__ === "UpmadeGroup",             );             this.engineRef.ungroup(groups);           },         },       ],     },     {       label: "menu.delete",       icon: "delete",       group: "edit",       action: () => this.engineRef.delete(),     },   ]
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         /**
           * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
          */
-        "objectTitlebar"?: UpdrawObjectTitlebarConfig;
-        "onActiveWorkspaceChange"?: (event: UpdrawEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;
+        "objectTitlebar"?: UpmadeObjectTitlebarConfig;
+        "onActiveWorkspaceChange"?: (event: UpmadeEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;
         /**
           * Emitted when agents are added or removed, or when what the avatar stack shows of them changes (name, color, avatar, status, visibility, activity). Never emitted for plain cursor motion.
          */
-        "onAgentsChange"?: (event: UpdrawEditorCustomEvent<UpdrawAgentsChangeEvent>) => void;
-        "onAwarenessChange"?: (event: UpdrawEditorCustomEvent<Map<number, Record<string, any>>>) => void;
+        "onAgentsChange"?: (event: UpmadeEditorCustomEvent<UpmadeAgentsChangeEvent>) => void;
+        "onAwarenessChange"?: (event: UpmadeEditorCustomEvent<Map<number, Record<string, any>>>) => void;
         /**
           * Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it.
          */
-        "onChatChipRemove"?: (event: UpdrawEditorCustomEvent<UpdrawChatBoxChip>) => void;
+        "onChatChipRemove"?: (event: UpmadeEditorCustomEvent<UpmadeChatBoxChip>) => void;
         /**
           * Emitted when the user stops the current chat response. A `chatSession` is stopped too.
          */
-        "onChatStop"?: (event: UpdrawEditorCustomEvent<void>) => void;
+        "onChatStop"?: (event: UpmadeEditorCustomEvent<void>) => void;
         /**
           * Emitted with the chat box text when the user submits it. With a `chatSession`, the prompt is sent to it unless a listener calls `preventDefault()`.
          */
-        "onChatSubmit"?: (event: UpdrawEditorCustomEvent<string>) => void;
-        "onIsPublicChange"?: (event: UpdrawEditorCustomEvent<IUpdrawIsPublicChangeEvent>) => void;
-        "onIsReady"?: (event: UpdrawEditorCustomEvent<EditorIsReadyEvent>) => void;
-        "onLocaleChange"?: (event: UpdrawEditorCustomEvent<LocaleCode>) => void;
-        "onLogin"?: (event: UpdrawEditorCustomEvent<LoginEvent>) => void;
-        "onLogout"?: (event: UpdrawEditorCustomEvent<void>) => void;
+        "onChatSubmit"?: (event: UpmadeEditorCustomEvent<string>) => void;
+        "onIsPublicChange"?: (event: UpmadeEditorCustomEvent<IUpmadeIsPublicChangeEvent>) => void;
+        "onIsReady"?: (event: UpmadeEditorCustomEvent<EditorIsReadyEvent>) => void;
+        "onLocaleChange"?: (event: UpmadeEditorCustomEvent<LocaleCode>) => void;
+        "onLogin"?: (event: UpmadeEditorCustomEvent<LoginEvent>) => void;
+        "onLogout"?: (event: UpmadeEditorCustomEvent<void>) => void;
         /**
           * Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual.
          */
-        "onObjectElementClick"?: (event: UpdrawEditorCustomEvent<UpdrawObjectElementClickEvent>) => void;
+        "onObjectElementClick"?: (event: UpmadeEditorCustomEvent<UpmadeObjectElementClickEvent>) => void;
         /**
           * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object, such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
          */
-        "onObjectElementHover"?: (event: UpdrawEditorCustomEvent<UpdrawObjectElementHoverEvent>) => void;
+        "onObjectElementHover"?: (event: UpmadeEditorCustomEvent<UpmadeObjectElementHoverEvent>) => void;
         /**
           * Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`.
          */
-        "onObjectElementPick"?: (event: UpdrawEditorCustomEvent<UpdrawObjectElementPickEvent>) => void;
+        "onObjectElementPick"?: (event: UpmadeEditorCustomEvent<UpmadeObjectElementPickEvent>) => void;
         /**
           * Emitted when a button or a menu item in an object titlebar is clicked.
          */
-        "onObjectTitlebarAction"?: (event: UpdrawEditorCustomEvent<UpdrawObjectTitlebarActionEvent>) => void;
+        "onObjectTitlebarAction"?: (event: UpmadeEditorCustomEvent<UpmadeObjectTitlebarActionEvent>) => void;
         /**
           * Emitted when objects are added. `source` is set when an agent made the change.
          */
-        "onObjectsAdded"?: (event: UpdrawEditorCustomEvent<ObjectsAddedEvent>) => void;
-        "onObjectsChange"?: (event: UpdrawEditorCustomEvent<UpdrawBaseObject[]>) => void;
+        "onObjectsAdded"?: (event: UpmadeEditorCustomEvent<ObjectsAddedEvent>) => void;
+        "onObjectsChange"?: (event: UpmadeEditorCustomEvent<UpmadeBaseObject[]>) => void;
         /**
           * Emitted when objects are removed. `source` is set when an agent made the change.
          */
-        "onObjectsRemoved"?: (event: UpdrawEditorCustomEvent<ObjectsRemovedEvent>) => void;
-        "onObjectsSelectionChange"?: (event: UpdrawEditorCustomEvent<UpdrawBaseObject[]>) => void;
+        "onObjectsRemoved"?: (event: UpmadeEditorCustomEvent<ObjectsRemovedEvent>) => void;
+        "onObjectsSelectionChange"?: (event: UpmadeEditorCustomEvent<UpmadeBaseObject[]>) => void;
         /**
           * Emitted when objects are updated. `source` is set when an agent made the change.
          */
-        "onObjectsUpdated"?: (event: UpdrawEditorCustomEvent<ObjectsUpdatedEvent>) => void;
-        "onThemeChange"?: (event: UpdrawEditorCustomEvent<ThemeName>) => void;
-        "onUndoStateChange"?: (event: UpdrawEditorCustomEvent<UpdrawUndoState>) => void;
-        "onViewportChange"?: (event: UpdrawEditorCustomEvent<UpdrawViewportState>) => void;
+        "onObjectsUpdated"?: (event: UpmadeEditorCustomEvent<ObjectsUpdatedEvent>) => void;
+        "onThemeChange"?: (event: UpmadeEditorCustomEvent<ThemeName>) => void;
+        "onUndoStateChange"?: (event: UpmadeEditorCustomEvent<UpmadeUndoState>) => void;
+        "onViewportChange"?: (event: UpmadeEditorCustomEvent<UpmadeViewportState>) => void;
         /**
           * @default 1000
          */
@@ -2580,17 +2580,17 @@ declare namespace LocalJSX {
         /**
           * @default DEFAULT_SYNC_CONFIG
          */
-        "syncConfig"?: UpdrawSyncConfig;
+        "syncConfig"?: UpmadeSyncConfig;
         /**
           * @default "light"
          */
         "theme"?: ThemeName;
-        "themes"?: UpdrawTheme[];
+        "themes"?: UpmadeTheme[];
         /**
-          * @default [     {       name: "selection",       type: "tool",       isDefault: true,       tool: UpdrawSelectionTool,       icon: "cursor",     },     {       name: "brush",       type: "tool",       tool: UpdrawBrushTool,       icon: "pen",       config: DEFAULT_BRUSH_CONFIG,     },     {       name: "eraser",       type: "tool",       tool: UpdrawEraserTool,       icon: "eraser",     },     {       name: "line",       type: "tool",       tool: UpdrawLineTool,       icon: "arrow",       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: "shape",       type: "tool",       tool: UpdrawShapeTool,       icon: "shapeRectangle",       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         {           id: "rectangle",           icon: "shapeRectangle",           label: "Rectangle",           value: ShapeType.Rectangle,           toolProperty: "shapeType",         },         {           id: "ellipse",           icon: "shapeEllipse",           label: "Ellipse",           value: ShapeType.Ellipse,           toolProperty: "shapeType",         },         {           id: "triangle",           icon: "shapeTriangle",           label: "Triangle",           value: ShapeType.Triangle,           toolProperty: "shapeType",         },       ],     },     {       name: "text",       type: "tool",       tool: UpdrawTextTool,       icon: "type",       config: DEFAULT_TEXT_CONFIG,     },     {       name: "image",       type: "tool",       tool: UpdrawImageTool,       icon: "image",     },     {       name: "config",       type: "config",     },   ]
+          * @default [     {       name: "selection",       type: "tool",       isDefault: true,       tool: UpmadeSelectionTool,       icon: "cursor",     },     {       name: "brush",       type: "tool",       tool: UpmadeBrushTool,       icon: "pen",       config: DEFAULT_BRUSH_CONFIG,     },     {       name: "eraser",       type: "tool",       tool: UpmadeEraserTool,       icon: "eraser",     },     {       name: "line",       type: "tool",       tool: UpmadeLineTool,       icon: "arrow",       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: "shape",       type: "tool",       tool: UpmadeShapeTool,       icon: "shapeRectangle",       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         {           id: "rectangle",           icon: "shapeRectangle",           label: "Rectangle",           value: ShapeType.Rectangle,           toolProperty: "shapeType",         },         {           id: "ellipse",           icon: "shapeEllipse",           label: "Ellipse",           value: ShapeType.Ellipse,           toolProperty: "shapeType",         },         {           id: "triangle",           icon: "shapeTriangle",           label: "Triangle",           value: ShapeType.Triangle,           toolProperty: "shapeType",         },       ],     },     {       name: "text",       type: "tool",       tool: UpmadeTextTool,       icon: "type",       config: DEFAULT_TEXT_CONFIG,     },     {       name: "image",       type: "tool",       tool: UpmadeImageTool,       icon: "image",     },     {       name: "config",       type: "config",     },   ]
          */
-        "toolbarItems"?: UpdrawToolbarItem[];
-        "user"?: IUpdrawUser;
+        "toolbarItems"?: UpmadeToolbarItem[];
+        "user"?: IUpmadeUser;
         /**
           * @default Infinity
          */
@@ -2610,24 +2610,24 @@ declare namespace LocalJSX {
         /**
           * Authoritative workspace catalog for this editor instance. When provided, provider-only workspaces are hidden but not deleted.
          */
-        "workspaces"?: UpdrawWorkspace[];
+        "workspaces"?: UpmadeWorkspace[];
     }
-    interface UpdrawExport {
-        "onExportJson"?: (event: UpdrawExportCustomEvent<string>) => void;
-        "onExportPng"?: (event: UpdrawExportCustomEvent<void>) => void;
-        "onExportSvg"?: (event: UpdrawExportCustomEvent<void>) => void;
+    interface UpmadeExport {
+        "onExportJson"?: (event: UpmadeExportCustomEvent<string>) => void;
+        "onExportPng"?: (event: UpmadeExportCustomEvent<void>) => void;
+        "onExportSvg"?: (event: UpmadeExportCustomEvent<void>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<UpdrawTermKey, string>>;
+        "terms"?: Partial<Record<UpmadeTermKey, string>>;
         /**
           * The name of the current workspace, used as default filename
           * @default 'workspace'
          */
         "workspaceName"?: string;
     }
-    interface UpdrawFont {
+    interface UpmadeFont {
         /**
           * @default '#000000'
          */
@@ -2641,20 +2641,20 @@ declare namespace LocalJSX {
          */
         "size"?: number;
     }
-    interface UpdrawFontFamily {
+    interface UpmadeFontFamily {
         /**
           * @default []
          */
         "fontOptions"?: FontOption[];
-        "onFontFamilyChange"?: (event: UpdrawFontFamilyCustomEvent<string>) => void;
+        "onFontFamilyChange"?: (event: UpmadeFontFamilyCustomEvent<string>) => void;
         "selectedFontFamily"?: string;
     }
-    interface UpdrawFontSize {
+    interface UpmadeFontSize {
         /**
           * @default 'Arial'
          */
         "fontFamily"?: string;
-        "onSizeChange"?: (event: UpdrawFontSizeCustomEvent<number>) => void;
+        "onSizeChange"?: (event: UpmadeFontSizeCustomEvent<number>) => void;
         /**
           * @default null
          */
@@ -2664,7 +2664,7 @@ declare namespace LocalJSX {
          */
         "sizes"?: number[];
     }
-    interface UpdrawInput {
+    interface UpmadeInput {
         /**
           * Whether the input is disabled
           * @default false
@@ -2678,7 +2678,7 @@ declare namespace LocalJSX {
         /**
           * Emitted when the value changes
          */
-        "onValueChange"?: (event: UpdrawInputCustomEvent<string>) => void;
+        "onValueChange"?: (event: UpmadeInputCustomEvent<string>) => void;
         /**
           * Placeholder text shown when input is empty
           * @default ''
@@ -2700,8 +2700,8 @@ declare namespace LocalJSX {
          */
         "value"?: string;
     }
-    interface UpdrawLineEndings {
-        "onValueChange"?: (event: UpdrawLineEndingsCustomEvent<LineArrowConfig>) => void;
+    interface UpmadeLineEndings {
+        "onValueChange"?: (event: UpmadeLineEndingsCustomEvent<LineArrowConfig>) => void;
         /**
           * Available ending styles
           * @default ['none', 'triangle']
@@ -2715,9 +2715,9 @@ declare namespace LocalJSX {
     /**
      * Login dialog component for displaying authentication provider buttons.
      * This is a presentational component that emits events for all actions.
-     * The parent component (updraw-editor) handles the actual authentication flow.
+     * The parent component (upmade-editor) handles the actual authentication flow.
      */
-    interface UpdrawLoginDialog {
+    interface UpmadeLoginDialog {
         /**
           * Dialog title
           * @default 'Sign in'
@@ -2726,62 +2726,62 @@ declare namespace LocalJSX {
         /**
           * Emitted when the dialog is closed
          */
-        "onDialogClosed"?: (event: UpdrawLoginDialogCustomEvent<void>) => void;
+        "onDialogClosed"?: (event: UpmadeLoginDialogCustomEvent<void>) => void;
         /**
           * Emitted when a provider button is clicked
          */
-        "onProviderLogin"?: (event: UpdrawLoginDialogCustomEvent<LoginEvent>) => void;
+        "onProviderLogin"?: (event: UpmadeLoginDialogCustomEvent<LoginEvent>) => void;
         /**
           * Array of authentication provider buttons to render
           * @default []
          */
-        "providers"?: UpdrawLoginProvider[];
+        "providers"?: UpmadeLoginProvider[];
         /**
           * Optional subtitle text displayed below the title
          */
         "subtitle"?: string;
     }
-    interface UpdrawMasterDetail {
+    interface UpmadeMasterDetail {
         /**
           * Array of menu items to display in the master (left) panel
           * @default []
          */
-        "items"?: IUpdrawMasterDetailItem[];
+        "items"?: IUpmadeMasterDetailItem[];
         /**
           * Emitted when an item is selected
          */
-        "onItemSelect"?: (event: UpdrawMasterDetailCustomEvent<IUpdrawMasterDetailSelectEvent>) => void;
+        "onItemSelect"?: (event: UpmadeMasterDetailCustomEvent<IUpmadeMasterDetailSelectEvent>) => void;
         /**
           * ID of the currently selected item
          */
         "selectedItemId"?: string;
     }
-    interface UpdrawMenu {
-        "items"?: IUpdrawMenuItem[];
-        "onClose"?: (event: UpdrawMenuCustomEvent<void>) => void;
-        "onItemCancel"?: (event: UpdrawMenuCustomEvent<IUpdrawMenuItem>) => void;
-        "onItemCloseChildMenu"?: (event: UpdrawMenuCustomEvent<IUpdrawMenuItem>) => void;
-        "onItemSave"?: (event: UpdrawMenuCustomEvent<IUpdrawMenuItem>) => void;
-        "onItemSelect"?: (event: UpdrawMenuCustomEvent<IUpdrawMenuItemSelectEvent>) => void;
-        "onItemToggleChildMenu"?: (event: UpdrawMenuCustomEvent<IUpdrawMenuItemToggleChildMenuEvent>) => void;
+    interface UpmadeMenu {
+        "items"?: IUpmadeMenuItem[];
+        "onClose"?: (event: UpmadeMenuCustomEvent<void>) => void;
+        "onItemCancel"?: (event: UpmadeMenuCustomEvent<IUpmadeMenuItem>) => void;
+        "onItemCloseChildMenu"?: (event: UpmadeMenuCustomEvent<IUpmadeMenuItem>) => void;
+        "onItemSave"?: (event: UpmadeMenuCustomEvent<IUpmadeMenuItem>) => void;
+        "onItemSelect"?: (event: UpmadeMenuCustomEvent<IUpmadeMenuItemSelectEvent>) => void;
+        "onItemToggleChildMenu"?: (event: UpmadeMenuCustomEvent<IUpmadeMenuItemToggleChildMenuEvent>) => void;
         /**
           * @default null
          */
-        "parent"?: IUpdrawMenuItem;
+        "parent"?: IUpmadeMenuItem;
     }
-    interface UpdrawMenuItem {
-        "item"?: IUpdrawMenuItem;
-        "onItemCancel"?: (event: UpdrawMenuItemCustomEvent<IUpdrawMenuItem>) => void;
-        "onItemCloseChildMenu"?: (event: UpdrawMenuItemCustomEvent<IUpdrawMenuItem>) => void;
-        "onItemSave"?: (event: UpdrawMenuItemCustomEvent<IUpdrawMenuItem>) => void;
-        "onItemSelect"?: (event: UpdrawMenuItemCustomEvent<IUpdrawMenuItemSelectEvent>) => void;
-        "onItemToggleChildMenu"?: (event: UpdrawMenuItemCustomEvent<IUpdrawMenuItemToggleChildMenuEvent>) => void;
+    interface UpmadeMenuItem {
+        "item"?: IUpmadeMenuItem;
+        "onItemCancel"?: (event: UpmadeMenuItemCustomEvent<IUpmadeMenuItem>) => void;
+        "onItemCloseChildMenu"?: (event: UpmadeMenuItemCustomEvent<IUpmadeMenuItem>) => void;
+        "onItemSave"?: (event: UpmadeMenuItemCustomEvent<IUpmadeMenuItem>) => void;
+        "onItemSelect"?: (event: UpmadeMenuItemCustomEvent<IUpmadeMenuItemSelectEvent>) => void;
+        "onItemToggleChildMenu"?: (event: UpmadeMenuItemCustomEvent<IUpmadeMenuItemToggleChildMenuEvent>) => void;
         /**
           * @default null
          */
-        "parent"?: IUpdrawMenuItem;
+        "parent"?: IUpmadeMenuItem;
     }
-    interface UpdrawMoreMenu {
+    interface UpmadeMoreMenu {
         /**
           * The icon to display on the button
           * @default 'ellipsisVertical'
@@ -2796,7 +2796,7 @@ declare namespace LocalJSX {
           * The menu items to display in the dropdown. Items with `isVisible` set to `false` will be filtered out. Items with an `action` will have that action invoked on selection.
           * @default []
          */
-        "items"?: IUpdrawMenuItem[];
+        "items"?: IUpmadeMenuItem[];
         /**
           * Offset Y for the portal positioning
           * @default 4
@@ -2805,19 +2805,19 @@ declare namespace LocalJSX {
         /**
           * Emitted when a menu item is selected
          */
-        "onItemSelect"?: (event: UpdrawMoreMenuCustomEvent<{ item: IUpdrawMenuItem; parent: IUpdrawMenuItem }>) => void;
+        "onItemSelect"?: (event: UpmadeMoreMenuCustomEvent<{ item: IUpmadeMenuItem; parent: IUpmadeMenuItem }>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<UpdrawTermKey, string>>;
+        "terms"?: Partial<Record<UpmadeTermKey, string>>;
         /**
           * Whether the menu button is visible
           * @default false
          */
         "visible"?: boolean;
     }
-    interface UpdrawNotificationCard {
+    interface UpmadeNotificationCard {
         /**
           * Locale used for formatting the timestamp.
          */
@@ -2825,22 +2825,22 @@ declare namespace LocalJSX {
         /**
           * Notification data rendered by this card.
          */
-        "notification"?: UpdrawNotification;
+        "notification"?: UpmadeNotification;
         /**
           * Emitted when the notification should be dismissed manually.
          */
-        "onDismiss"?: (event: UpdrawNotificationCardCustomEvent<void>) => void;
+        "onDismiss"?: (event: UpmadeNotificationCardCustomEvent<void>) => void;
         /**
           * Emitted when pointer hover state changes.
          */
-        "onHoverChange"?: (event: UpdrawNotificationCardCustomEvent<boolean>) => void;
+        "onHoverChange"?: (event: UpmadeNotificationCardCustomEvent<boolean>) => void;
         /**
           * Whether a formatted timestamp should be displayed when available.
           * @default true
          */
         "showTimestamp"?: boolean;
     }
-    interface UpdrawNumericInput {
+    interface UpmadeNumericInput {
         /**
           * Label text displayed above the input
           * @default ''
@@ -2859,7 +2859,7 @@ declare namespace LocalJSX {
         /**
           * Emitted when the value changes (after normalization)
          */
-        "onValueChange"?: (event: UpdrawNumericInputCustomEvent<number | undefined>) => void;
+        "onValueChange"?: (event: UpmadeNumericInputCustomEvent<number | undefined>) => void;
         /**
           * Placeholder text shown when input is empty
           * @default ''
@@ -2875,7 +2875,7 @@ declare namespace LocalJSX {
          */
         "value"?: number;
     }
-    interface UpdrawOpacitySlider {
+    interface UpmadeOpacitySlider {
         /**
           * Maximum opacity value
           * @default 1
@@ -2886,7 +2886,7 @@ declare namespace LocalJSX {
           * @default 0
          */
         "min"?: number;
-        "onValueChange"?: (event: UpdrawOpacitySliderCustomEvent<number>) => void;
+        "onValueChange"?: (event: UpmadeOpacitySliderCustomEvent<number>) => void;
         /**
           * Color to display in the preview (optional)
           * @default '#000000'
@@ -2903,22 +2903,22 @@ declare namespace LocalJSX {
          */
         "value"?: number;
     }
-    interface UpdrawPillTabs {
+    interface UpmadePillTabs {
         /**
           * Emitted when the selected tab changes
          */
-        "onValueChange"?: (event: UpdrawPillTabsCustomEvent<string>) => void;
+        "onValueChange"?: (event: UpmadePillTabsCustomEvent<string>) => void;
         /**
           * Array of tab definitions to render
           * @default []
          */
-        "tabs"?: UpdrawPillTab[];
+        "tabs"?: UpmadePillTab[];
         /**
           * Currently selected tab ID
          */
         "value"?: string;
     }
-    interface UpdrawPortal {
+    interface UpmadePortal {
         "anchor"?: HTMLElement;
         /**
           * @default true
@@ -2926,9 +2926,9 @@ declare namespace LocalJSX {
         "autoFocus"?: boolean;
         "offsetX"?: number;
         "offsetY"?: number;
-        "onClose"?: (event: UpdrawPortalCustomEvent<void>) => void;
+        "onClose"?: (event: UpmadePortalCustomEvent<void>) => void;
     }
-    interface UpdrawSettings {
+    interface UpmadeSettings {
         /**
           * Available locales as `{ code, label }` options for the language selector.
           * @default []
@@ -2942,23 +2942,23 @@ declare namespace LocalJSX {
         /**
           * Emitted when settings change
          */
-        "onSettingsChange"?: (event: UpdrawSettingsCustomEvent<UpdrawSettingsConfig>) => void;
+        "onSettingsChange"?: (event: UpmadeSettingsCustomEvent<UpmadeSettingsConfig>) => void;
         /**
           * Current settings values. Used to initialize and sync the component's internal state.
          */
-        "settings"?: Partial<UpdrawSettingsConfig>;
+        "settings"?: Partial<UpmadeSettingsConfig>;
         /**
           * @default []
          */
-        "shortcuts"?: Omit<UpdrawShortcut, 'action' | 'condition'>[];
+        "shortcuts"?: Omit<UpmadeShortcut, 'action' | 'condition'>[];
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<UpdrawTermKey, string>>;
+        "terms"?: Partial<Record<UpmadeTermKey, string>>;
     }
-    interface UpdrawShapeFill {
-        "onValueChange"?: (event: UpdrawShapeFillCustomEvent<ShapeFillType>) => void;
+    interface UpmadeShapeFill {
+        "onValueChange"?: (event: UpmadeShapeFillCustomEvent<ShapeFillType>) => void;
         /**
           * Current fill type
           * @default 'transparent'
@@ -2968,9 +2968,9 @@ declare namespace LocalJSX {
     /**
      * Share dialog component for managing workspace link sharing.
      * This is a presentational component that emits events for all actions.
-     * The parent component (updraw-editor) handles the business logic.
+     * The parent component (upmade-editor) handles the business logic.
      */
-    interface UpdrawShareDialog {
+    interface UpmadeShareDialog {
         /**
           * Whether the workspace is currently public.
           * @default false
@@ -2979,23 +2979,23 @@ declare namespace LocalJSX {
         /**
           * Emitted when the dialog is closed.
          */
-        "onDialogClosed"?: (event: UpdrawShareDialogCustomEvent<void>) => void;
+        "onDialogClosed"?: (event: UpmadeShareDialogCustomEvent<void>) => void;
         /**
           * Emitted when the user toggles the public sharing state.
          */
-        "onToggleIsPublic"?: (event: UpdrawShareDialogCustomEvent<boolean>) => void;
+        "onToggleIsPublic"?: (event: UpmadeShareDialogCustomEvent<boolean>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<UpdrawTermKey, string>>;
+        "terms"?: Partial<Record<UpmadeTermKey, string>>;
         /**
           * The ID of the workspace being shared. Used to build the share URL.
           * @default undefined
          */
         "workspaceId"?: string | undefined;
     }
-    interface UpdrawSlideToggle {
+    interface UpmadeSlideToggle {
         /**
           * Whether the toggle is checked/on
           * @default false
@@ -3013,9 +3013,9 @@ declare namespace LocalJSX {
         /**
           * Emitted when the toggle state changes
          */
-        "onCheckedChange"?: (event: UpdrawSlideToggleCustomEvent<boolean>) => void;
+        "onCheckedChange"?: (event: UpmadeSlideToggleCustomEvent<boolean>) => void;
     }
-    interface UpdrawSplitButton {
+    interface UpmadeSplitButton {
         /**
           * @default 'plus'
          */
@@ -3027,7 +3027,7 @@ declare namespace LocalJSX {
         /**
           * @default []
          */
-        "items"?: IUpdrawMenuItem[];
+        "items"?: IUpmadeMenuItem[];
         /**
           * @default false
          */
@@ -3036,17 +3036,17 @@ declare namespace LocalJSX {
           * @default false
          */
         "menuButtonDisabled"?: boolean;
-        "onItemCancel"?: (event: UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>) => void;
-        "onItemCloseChildMenu"?: (event: UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>) => void;
-        "onItemSave"?: (event: UpdrawSplitButtonCustomEvent<IUpdrawMenuItem>) => void;
-        "onItemSelect"?: (event: UpdrawSplitButtonCustomEvent<IUpdrawMenuItemSelectEvent>) => void;
-        "onItemToggleChildMenu"?: (event: UpdrawSplitButtonCustomEvent<IUpdrawMenuItemToggleChildMenuEvent>) => void;
-        "onMainButtonClick"?: (event: UpdrawSplitButtonCustomEvent<void>) => void;
-        "onMenuClose"?: (event: UpdrawSplitButtonCustomEvent<void>) => void;
-        "onMenuOpen"?: (event: UpdrawSplitButtonCustomEvent<void>) => void;
+        "onItemCancel"?: (event: UpmadeSplitButtonCustomEvent<IUpmadeMenuItem>) => void;
+        "onItemCloseChildMenu"?: (event: UpmadeSplitButtonCustomEvent<IUpmadeMenuItem>) => void;
+        "onItemSave"?: (event: UpmadeSplitButtonCustomEvent<IUpmadeMenuItem>) => void;
+        "onItemSelect"?: (event: UpmadeSplitButtonCustomEvent<IUpmadeMenuItemSelectEvent>) => void;
+        "onItemToggleChildMenu"?: (event: UpmadeSplitButtonCustomEvent<IUpmadeMenuItemToggleChildMenuEvent>) => void;
+        "onMainButtonClick"?: (event: UpmadeSplitButtonCustomEvent<void>) => void;
+        "onMenuClose"?: (event: UpmadeSplitButtonCustomEvent<void>) => void;
+        "onMenuOpen"?: (event: UpmadeSplitButtonCustomEvent<void>) => void;
     }
-    interface UpdrawStrokeSize {
-        "onSizeChange"?: (event: UpdrawStrokeSizeCustomEvent<number>) => void;
+    interface UpmadeStrokeSize {
+        "onSizeChange"?: (event: UpmadeStrokeSizeCustomEvent<number>) => void;
         /**
           * @default null
          */
@@ -3057,51 +3057,51 @@ declare namespace LocalJSX {
         "sizes"?: number[];
     }
     /**
-     * The menu opened from a titlebar `menu` element: a compact `updraw-menu` styled like the
-     * context menu through the `--updraw-titlebar-menu-*` theme variables.
+     * The menu opened from a titlebar `menu` element: a compact `upmade-menu` styled like the
+     * context menu through the `--upmade-titlebar-menu-*` theme variables.
      */
-    interface UpdrawTitlebarMenu {
+    interface UpmadeTitlebarMenu {
         /**
           * Menu items of the open titlebar menu, as resolved by the engine.
           * @default []
          */
-        "items"?: UpdrawTitlebarMenuItem[];
+        "items"?: UpmadeTitlebarMenuItem[];
         /**
           * Emitted with the id of the selected menu item.
          */
-        "onMenuItemSelect"?: (event: UpdrawTitlebarMenuCustomEvent<string>) => void;
+        "onMenuItemSelect"?: (event: UpmadeTitlebarMenuCustomEvent<string>) => void;
     }
-    interface UpdrawToolConfig {
+    interface UpmadeToolConfig {
         "engine"?: HTMLElement;
         /**
           * @default false
          */
         "isExpanded"?: boolean;
-        "onDisplayValuesChange"?: (event: UpdrawToolConfigCustomEvent<ToolDisplayValues>) => void;
-        "onToolChange"?: (event: UpdrawToolConfigCustomEvent<ConfigurableTool>) => void;
+        "onDisplayValuesChange"?: (event: UpmadeToolConfigCustomEvent<ToolDisplayValues>) => void;
+        "onToolChange"?: (event: UpmadeToolConfigCustomEvent<ConfigurableTool>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<UpdrawTermKey, string>>;
+        "terms"?: Partial<Record<UpmadeTermKey, string>>;
         "theme"?: ThemeName;
         "tool"?: ConfigurableTool;
     }
-    interface UpdrawToolbar {
+    interface UpmadeToolbar {
         /**
           * @default null
          */
-        "activeControl"?: UpdrawToolbarItem | null;
+        "activeControl"?: UpmadeToolbarItem | null;
         /**
           * @default true
          */
         "isUtilityPanelVisible"?: boolean;
-        "onIsToolbarReady"?: (event: UpdrawToolbarCustomEvent<void>) => void;
+        "onIsToolbarReady"?: (event: UpmadeToolbarCustomEvent<void>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<UpdrawTermKey, string>>;
+        "terms"?: Partial<Record<UpmadeTermKey, string>>;
         /**
           * @default 'light'
          */
@@ -3109,17 +3109,17 @@ declare namespace LocalJSX {
         /**
           * @default []
          */
-        "toolbarItems"?: UpdrawToolbarItem[];
+        "toolbarItems"?: UpmadeToolbarItem[];
         /**
           * @default null
          */
-        "undoState"?: UpdrawUndoState;
+        "undoState"?: UpmadeUndoState;
         /**
           * @default true
          */
         "visible"?: boolean;
     }
-    interface UpdrawTooltip {
+    interface UpmadeTooltip {
         "anchorElement"?: HTMLElement;
         /**
           * @default false
@@ -3129,33 +3129,33 @@ declare namespace LocalJSX {
           * @default 24
          */
         "offsetY"?: number;
-        "onTooltipClosed"?: (event: UpdrawTooltipCustomEvent<void>) => void;
-        "onTooltipOpened"?: (event: UpdrawTooltipCustomEvent<void>) => void;
+        "onTooltipClosed"?: (event: UpmadeTooltipCustomEvent<void>) => void;
+        "onTooltipOpened"?: (event: UpmadeTooltipCustomEvent<void>) => void;
         "triggerElement"?: HTMLElement;
     }
-    interface UpdrawUtilityPanel {
-        "onDelete"?: (event: UpdrawUtilityPanelCustomEvent<void>) => void;
-        "onRedo"?: (event: UpdrawUtilityPanelCustomEvent<void>) => void;
-        "onUndo"?: (event: UpdrawUtilityPanelCustomEvent<void>) => void;
+    interface UpmadeUtilityPanel {
+        "onDelete"?: (event: UpmadeUtilityPanelCustomEvent<void>) => void;
+        "onRedo"?: (event: UpmadeUtilityPanelCustomEvent<void>) => void;
+        "onUndo"?: (event: UpmadeUtilityPanelCustomEvent<void>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<UpdrawTermKey, string>>;
+        "terms"?: Partial<Record<UpmadeTermKey, string>>;
         /**
           * @default null
          */
-        "undoState"?: UpdrawUndoState;
+        "undoState"?: UpmadeUndoState;
     }
-    interface UpdrawWorkspaceManager {
-        "activeWorkspace"?: UpdrawWorkspace;
-        "onIsWorkspaceManagerReady"?: (event: UpdrawWorkspaceManagerCustomEvent<void>) => void;
-        "onWorkspaceChange"?: (event: UpdrawWorkspaceManagerCustomEvent<UpdrawWorkspace>) => void;
+    interface UpmadeWorkspaceManager {
+        "activeWorkspace"?: UpmadeWorkspace;
+        "onIsWorkspaceManagerReady"?: (event: UpmadeWorkspaceManagerCustomEvent<void>) => void;
+        "onWorkspaceChange"?: (event: UpmadeWorkspaceManagerCustomEvent<UpmadeWorkspace>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<UpdrawTermKey, string>>;
+        "terms"?: Partial<Record<UpmadeTermKey, string>>;
         /**
           * Whether the workspace manager is visible
           * @default false
@@ -3164,9 +3164,9 @@ declare namespace LocalJSX {
         /**
           * @default []
          */
-        "workspaces"?: UpdrawWorkspace[];
+        "workspaces"?: UpmadeWorkspace[];
     }
-    interface UpdrawZoomPanel {
+    interface UpmadeZoomPanel {
         /**
           * Whether both zoom buttons are disabled.
           * @default false
@@ -3175,16 +3175,16 @@ declare namespace LocalJSX {
         /**
           * Emitted when the zoom-in button is clicked.
          */
-        "onZoomIn"?: (event: UpdrawZoomPanelCustomEvent<void>) => void;
+        "onZoomIn"?: (event: UpmadeZoomPanelCustomEvent<void>) => void;
         /**
           * Emitted when the zoom-out button is clicked.
          */
-        "onZoomOut"?: (event: UpdrawZoomPanelCustomEvent<void>) => void;
+        "onZoomOut"?: (event: UpmadeZoomPanelCustomEvent<void>) => void;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
           * @default {}
          */
-        "terms"?: Partial<Record<UpdrawTermKey, string>>;
+        "terms"?: Partial<Record<UpmadeTermKey, string>>;
         /**
           * Whether the zoom panel is visible.
           * @default true
@@ -3197,50 +3197,50 @@ declare namespace LocalJSX {
         "zoomPercent"?: number;
     }
 
-    interface UpdrawActiveUsersAttributes {
+    interface UpmadeActiveUsersAttributes {
         "avatarSize": number;
         "maxVisible": number;
         "overlap": number;
     }
-    interface UpdrawAvatarAttributes {
+    interface UpmadeAvatarAttributes {
         "name": string;
         "size": number;
         "color": string;
     }
-    interface UpdrawBackToContentAttributes {
+    interface UpmadeBackToContentAttributes {
         "visible": boolean;
         "text": string;
     }
-    interface UpdrawBrushStyleAttributes {
+    interface UpmadeBrushStyleAttributes {
         "type": 'pen' | 'highlighter';
     }
-    interface UpdrawButtonAttributes {
+    interface UpmadeButtonAttributes {
         "variant": 'primary' | 'secondary' | 'text';
         "disabled": boolean;
         "type": 'button' | 'submit' | 'reset';
     }
-    interface UpdrawChatBoxAttributes {
+    interface UpmadeChatBoxAttributes {
         "value": string;
-        "mode": UpdrawChatBoxMode;
+        "mode": UpmadeChatBoxMode;
         "placeholder": string;
         "disabled": boolean;
         "loading": boolean;
     }
-    interface UpdrawColorAttributes {
+    interface UpmadeColorAttributes {
         "value": string | ThemeAwareColor;
         "theme": ThemeName;
         "size": number;
     }
-    interface UpdrawColorPaletteAttributes {
+    interface UpmadeColorPaletteAttributes {
         "isExpanded": boolean;
         "isOpaque": boolean;
         "opacity": number;
         "theme": ThemeName;
     }
-    interface UpdrawCurrentUserAttributes {
+    interface UpmadeCurrentUserAttributes {
         "avatarSize": number;
     }
-    interface UpdrawDialogAttributes {
+    interface UpmadeDialogAttributes {
         "isOpen": boolean;
         "dialogTitle": string;
         "closable": boolean;
@@ -3252,12 +3252,12 @@ declare namespace LocalJSX {
         "fullscreenOnMobile": boolean;
         "contained": boolean;
     }
-    interface UpdrawDropdownAttributes {
+    interface UpmadeDropdownAttributes {
         "value": string;
         "width": string;
         "forceOpenDirection": 'down' | 'up';
     }
-    interface UpdrawEditorAttributes {
+    interface UpmadeEditorAttributes {
         "scaleMax": number;
         "scaleMin": number;
         "lockDrawingScale": boolean;
@@ -3273,7 +3273,7 @@ declare namespace LocalJSX {
         "isZoomingEnabled": boolean;
         "isToolbarVisible": boolean;
         "isChatBoxVisible": boolean;
-        "chatBoxMode": UpdrawChatBoxMode;
+        "chatBoxMode": UpmadeChatBoxMode;
         "isChatBoxLoading": boolean;
         "isUtilityPanelVisible": boolean;
         "isWorkspaceManagerVisible": boolean;
@@ -3283,22 +3283,22 @@ declare namespace LocalJSX {
         "editorId": string;
         "activeWorkspaceId": string;
     }
-    interface UpdrawExportAttributes {
+    interface UpmadeExportAttributes {
         "workspaceName": string;
     }
-    interface UpdrawFontAttributes {
+    interface UpmadeFontAttributes {
         "fontFamily": string;
         "size": number;
         "color": string;
     }
-    interface UpdrawFontFamilyAttributes {
+    interface UpmadeFontFamilyAttributes {
         "selectedFontFamily": string;
     }
-    interface UpdrawFontSizeAttributes {
+    interface UpmadeFontSizeAttributes {
         "selectedSize": number | null;
         "fontFamily": string;
     }
-    interface UpdrawInputAttributes {
+    interface UpmadeInputAttributes {
         "value": string;
         "label": string;
         "placeholder": string;
@@ -3306,24 +3306,24 @@ declare namespace LocalJSX {
         "type": 'text' | 'email' | 'password' | 'url';
         "disabled": boolean;
     }
-    interface UpdrawLoginDialogAttributes {
+    interface UpmadeLoginDialogAttributes {
         "dialogTitle": string;
         "subtitle": string;
     }
-    interface UpdrawMasterDetailAttributes {
+    interface UpmadeMasterDetailAttributes {
         "selectedItemId": string;
     }
-    interface UpdrawMoreMenuAttributes {
+    interface UpmadeMoreMenuAttributes {
         "visible": boolean;
         "icon": string;
         "iconSize": number;
         "offsetY": number;
     }
-    interface UpdrawNotificationCardAttributes {
+    interface UpmadeNotificationCardAttributes {
         "showTimestamp": boolean;
         "locale": string;
     }
-    interface UpdrawNumericInputAttributes {
+    interface UpmadeNumericInputAttributes {
         "value": number;
         "min": number;
         "max": number;
@@ -3331,171 +3331,171 @@ declare namespace LocalJSX {
         "label": string;
         "placeholder": string;
     }
-    interface UpdrawOpacitySliderAttributes {
+    interface UpmadeOpacitySliderAttributes {
         "value": number;
         "min": number;
         "max": number;
         "step": number;
         "previewColor": string;
     }
-    interface UpdrawPillTabsAttributes {
+    interface UpmadePillTabsAttributes {
         "value": string;
     }
-    interface UpdrawPortalAttributes {
+    interface UpmadePortalAttributes {
         "offsetX": number;
         "offsetY": number;
         "autoFocus": boolean;
     }
-    interface UpdrawShapeFillAttributes {
+    interface UpmadeShapeFillAttributes {
         "value": ShapeFillType;
     }
-    interface UpdrawShareDialogAttributes {
+    interface UpmadeShareDialogAttributes {
         "isPublic": boolean;
         "workspaceId": string | undefined;
     }
-    interface UpdrawSlideToggleAttributes {
+    interface UpmadeSlideToggleAttributes {
         "checked": boolean;
         "disabled": boolean;
         "label": string;
     }
-    interface UpdrawSplitButtonAttributes {
+    interface UpmadeSplitButtonAttributes {
         "buttonIcon": string;
         "dropdownIcon": string;
         "mainButtonDisabled": boolean;
         "menuButtonDisabled": boolean;
     }
-    interface UpdrawStrokeSizeAttributes {
+    interface UpmadeStrokeSizeAttributes {
         "selectedSize": number | null;
     }
-    interface UpdrawToolConfigAttributes {
+    interface UpmadeToolConfigAttributes {
         "isExpanded": boolean;
         "theme": ThemeName;
     }
-    interface UpdrawToolbarAttributes {
+    interface UpmadeToolbarAttributes {
         "visible": boolean;
         "isUtilityPanelVisible": boolean;
         "theme": ThemeName;
     }
-    interface UpdrawTooltipAttributes {
+    interface UpmadeTooltipAttributes {
         "isVisible": boolean;
         "offsetY": number;
     }
-    interface UpdrawWorkspaceManagerAttributes {
+    interface UpmadeWorkspaceManagerAttributes {
         "visible": boolean;
     }
-    interface UpdrawZoomPanelAttributes {
+    interface UpmadeZoomPanelAttributes {
         "visible": boolean;
         "disabled": boolean;
         "zoomPercent": number;
     }
 
     interface IntrinsicElements {
-        "updraw-active-users": Omit<UpdrawActiveUsers, keyof UpdrawActiveUsersAttributes> & { [K in keyof UpdrawActiveUsers & keyof UpdrawActiveUsersAttributes]?: UpdrawActiveUsers[K] } & { [K in keyof UpdrawActiveUsers & keyof UpdrawActiveUsersAttributes as `attr:${K}`]?: UpdrawActiveUsersAttributes[K] } & { [K in keyof UpdrawActiveUsers & keyof UpdrawActiveUsersAttributes as `prop:${K}`]?: UpdrawActiveUsers[K] };
-        "updraw-avatar": Omit<UpdrawAvatar, keyof UpdrawAvatarAttributes> & { [K in keyof UpdrawAvatar & keyof UpdrawAvatarAttributes]?: UpdrawAvatar[K] } & { [K in keyof UpdrawAvatar & keyof UpdrawAvatarAttributes as `attr:${K}`]?: UpdrawAvatarAttributes[K] } & { [K in keyof UpdrawAvatar & keyof UpdrawAvatarAttributes as `prop:${K}`]?: UpdrawAvatar[K] };
-        "updraw-back-to-content": Omit<UpdrawBackToContent, keyof UpdrawBackToContentAttributes> & { [K in keyof UpdrawBackToContent & keyof UpdrawBackToContentAttributes]?: UpdrawBackToContent[K] } & { [K in keyof UpdrawBackToContent & keyof UpdrawBackToContentAttributes as `attr:${K}`]?: UpdrawBackToContentAttributes[K] } & { [K in keyof UpdrawBackToContent & keyof UpdrawBackToContentAttributes as `prop:${K}`]?: UpdrawBackToContent[K] };
-        "updraw-brush-style": Omit<UpdrawBrushStyle, keyof UpdrawBrushStyleAttributes> & { [K in keyof UpdrawBrushStyle & keyof UpdrawBrushStyleAttributes]?: UpdrawBrushStyle[K] } & { [K in keyof UpdrawBrushStyle & keyof UpdrawBrushStyleAttributes as `attr:${K}`]?: UpdrawBrushStyleAttributes[K] } & { [K in keyof UpdrawBrushStyle & keyof UpdrawBrushStyleAttributes as `prop:${K}`]?: UpdrawBrushStyle[K] };
-        "updraw-button": Omit<UpdrawButton, keyof UpdrawButtonAttributes> & { [K in keyof UpdrawButton & keyof UpdrawButtonAttributes]?: UpdrawButton[K] } & { [K in keyof UpdrawButton & keyof UpdrawButtonAttributes as `attr:${K}`]?: UpdrawButtonAttributes[K] } & { [K in keyof UpdrawButton & keyof UpdrawButtonAttributes as `prop:${K}`]?: UpdrawButton[K] };
-        "updraw-chat-box": Omit<UpdrawChatBox, keyof UpdrawChatBoxAttributes> & { [K in keyof UpdrawChatBox & keyof UpdrawChatBoxAttributes]?: UpdrawChatBox[K] } & { [K in keyof UpdrawChatBox & keyof UpdrawChatBoxAttributes as `attr:${K}`]?: UpdrawChatBoxAttributes[K] } & { [K in keyof UpdrawChatBox & keyof UpdrawChatBoxAttributes as `prop:${K}`]?: UpdrawChatBox[K] };
-        "updraw-color": Omit<UpdrawColor, keyof UpdrawColorAttributes> & { [K in keyof UpdrawColor & keyof UpdrawColorAttributes]?: UpdrawColor[K] } & { [K in keyof UpdrawColor & keyof UpdrawColorAttributes as `attr:${K}`]?: UpdrawColorAttributes[K] } & { [K in keyof UpdrawColor & keyof UpdrawColorAttributes as `prop:${K}`]?: UpdrawColor[K] };
-        "updraw-color-palette": Omit<UpdrawColorPalette, keyof UpdrawColorPaletteAttributes> & { [K in keyof UpdrawColorPalette & keyof UpdrawColorPaletteAttributes]?: UpdrawColorPalette[K] } & { [K in keyof UpdrawColorPalette & keyof UpdrawColorPaletteAttributes as `attr:${K}`]?: UpdrawColorPaletteAttributes[K] } & { [K in keyof UpdrawColorPalette & keyof UpdrawColorPaletteAttributes as `prop:${K}`]?: UpdrawColorPalette[K] };
-        "updraw-context-menu": UpdrawContextMenu;
-        "updraw-current-user": Omit<UpdrawCurrentUser, keyof UpdrawCurrentUserAttributes> & { [K in keyof UpdrawCurrentUser & keyof UpdrawCurrentUserAttributes]?: UpdrawCurrentUser[K] } & { [K in keyof UpdrawCurrentUser & keyof UpdrawCurrentUserAttributes as `attr:${K}`]?: UpdrawCurrentUserAttributes[K] } & { [K in keyof UpdrawCurrentUser & keyof UpdrawCurrentUserAttributes as `prop:${K}`]?: UpdrawCurrentUser[K] };
-        "updraw-current-user-dialog": UpdrawCurrentUserDialog;
-        "updraw-dialog": Omit<UpdrawDialog, keyof UpdrawDialogAttributes> & { [K in keyof UpdrawDialog & keyof UpdrawDialogAttributes]?: UpdrawDialog[K] } & { [K in keyof UpdrawDialog & keyof UpdrawDialogAttributes as `attr:${K}`]?: UpdrawDialogAttributes[K] } & { [K in keyof UpdrawDialog & keyof UpdrawDialogAttributes as `prop:${K}`]?: UpdrawDialog[K] };
-        "updraw-dropdown": Omit<UpdrawDropdown, keyof UpdrawDropdownAttributes> & { [K in keyof UpdrawDropdown & keyof UpdrawDropdownAttributes]?: UpdrawDropdown[K] } & { [K in keyof UpdrawDropdown & keyof UpdrawDropdownAttributes as `attr:${K}`]?: UpdrawDropdownAttributes[K] } & { [K in keyof UpdrawDropdown & keyof UpdrawDropdownAttributes as `prop:${K}`]?: UpdrawDropdown[K] };
-        "updraw-editor": Omit<UpdrawEditor, keyof UpdrawEditorAttributes> & { [K in keyof UpdrawEditor & keyof UpdrawEditorAttributes]?: UpdrawEditor[K] } & { [K in keyof UpdrawEditor & keyof UpdrawEditorAttributes as `attr:${K}`]?: UpdrawEditorAttributes[K] } & { [K in keyof UpdrawEditor & keyof UpdrawEditorAttributes as `prop:${K}`]?: UpdrawEditor[K] };
-        "updraw-export": Omit<UpdrawExport, keyof UpdrawExportAttributes> & { [K in keyof UpdrawExport & keyof UpdrawExportAttributes]?: UpdrawExport[K] } & { [K in keyof UpdrawExport & keyof UpdrawExportAttributes as `attr:${K}`]?: UpdrawExportAttributes[K] } & { [K in keyof UpdrawExport & keyof UpdrawExportAttributes as `prop:${K}`]?: UpdrawExport[K] };
-        "updraw-font": Omit<UpdrawFont, keyof UpdrawFontAttributes> & { [K in keyof UpdrawFont & keyof UpdrawFontAttributes]?: UpdrawFont[K] } & { [K in keyof UpdrawFont & keyof UpdrawFontAttributes as `attr:${K}`]?: UpdrawFontAttributes[K] } & { [K in keyof UpdrawFont & keyof UpdrawFontAttributes as `prop:${K}`]?: UpdrawFont[K] };
-        "updraw-font-family": Omit<UpdrawFontFamily, keyof UpdrawFontFamilyAttributes> & { [K in keyof UpdrawFontFamily & keyof UpdrawFontFamilyAttributes]?: UpdrawFontFamily[K] } & { [K in keyof UpdrawFontFamily & keyof UpdrawFontFamilyAttributes as `attr:${K}`]?: UpdrawFontFamilyAttributes[K] } & { [K in keyof UpdrawFontFamily & keyof UpdrawFontFamilyAttributes as `prop:${K}`]?: UpdrawFontFamily[K] };
-        "updraw-font-size": Omit<UpdrawFontSize, keyof UpdrawFontSizeAttributes> & { [K in keyof UpdrawFontSize & keyof UpdrawFontSizeAttributes]?: UpdrawFontSize[K] } & { [K in keyof UpdrawFontSize & keyof UpdrawFontSizeAttributes as `attr:${K}`]?: UpdrawFontSizeAttributes[K] } & { [K in keyof UpdrawFontSize & keyof UpdrawFontSizeAttributes as `prop:${K}`]?: UpdrawFontSize[K] };
-        "updraw-input": Omit<UpdrawInput, keyof UpdrawInputAttributes> & { [K in keyof UpdrawInput & keyof UpdrawInputAttributes]?: UpdrawInput[K] } & { [K in keyof UpdrawInput & keyof UpdrawInputAttributes as `attr:${K}`]?: UpdrawInputAttributes[K] } & { [K in keyof UpdrawInput & keyof UpdrawInputAttributes as `prop:${K}`]?: UpdrawInput[K] };
-        "updraw-line-endings": UpdrawLineEndings;
-        "updraw-login-dialog": Omit<UpdrawLoginDialog, keyof UpdrawLoginDialogAttributes> & { [K in keyof UpdrawLoginDialog & keyof UpdrawLoginDialogAttributes]?: UpdrawLoginDialog[K] } & { [K in keyof UpdrawLoginDialog & keyof UpdrawLoginDialogAttributes as `attr:${K}`]?: UpdrawLoginDialogAttributes[K] } & { [K in keyof UpdrawLoginDialog & keyof UpdrawLoginDialogAttributes as `prop:${K}`]?: UpdrawLoginDialog[K] };
-        "updraw-master-detail": Omit<UpdrawMasterDetail, keyof UpdrawMasterDetailAttributes> & { [K in keyof UpdrawMasterDetail & keyof UpdrawMasterDetailAttributes]?: UpdrawMasterDetail[K] } & { [K in keyof UpdrawMasterDetail & keyof UpdrawMasterDetailAttributes as `attr:${K}`]?: UpdrawMasterDetailAttributes[K] } & { [K in keyof UpdrawMasterDetail & keyof UpdrawMasterDetailAttributes as `prop:${K}`]?: UpdrawMasterDetail[K] };
-        "updraw-menu": UpdrawMenu;
-        "updraw-menu-item": UpdrawMenuItem;
-        "updraw-more-menu": Omit<UpdrawMoreMenu, keyof UpdrawMoreMenuAttributes> & { [K in keyof UpdrawMoreMenu & keyof UpdrawMoreMenuAttributes]?: UpdrawMoreMenu[K] } & { [K in keyof UpdrawMoreMenu & keyof UpdrawMoreMenuAttributes as `attr:${K}`]?: UpdrawMoreMenuAttributes[K] } & { [K in keyof UpdrawMoreMenu & keyof UpdrawMoreMenuAttributes as `prop:${K}`]?: UpdrawMoreMenu[K] };
-        "updraw-notification-card": Omit<UpdrawNotificationCard, keyof UpdrawNotificationCardAttributes> & { [K in keyof UpdrawNotificationCard & keyof UpdrawNotificationCardAttributes]?: UpdrawNotificationCard[K] } & { [K in keyof UpdrawNotificationCard & keyof UpdrawNotificationCardAttributes as `attr:${K}`]?: UpdrawNotificationCardAttributes[K] } & { [K in keyof UpdrawNotificationCard & keyof UpdrawNotificationCardAttributes as `prop:${K}`]?: UpdrawNotificationCard[K] };
-        "updraw-numeric-input": Omit<UpdrawNumericInput, keyof UpdrawNumericInputAttributes> & { [K in keyof UpdrawNumericInput & keyof UpdrawNumericInputAttributes]?: UpdrawNumericInput[K] } & { [K in keyof UpdrawNumericInput & keyof UpdrawNumericInputAttributes as `attr:${K}`]?: UpdrawNumericInputAttributes[K] } & { [K in keyof UpdrawNumericInput & keyof UpdrawNumericInputAttributes as `prop:${K}`]?: UpdrawNumericInput[K] };
-        "updraw-opacity-slider": Omit<UpdrawOpacitySlider, keyof UpdrawOpacitySliderAttributes> & { [K in keyof UpdrawOpacitySlider & keyof UpdrawOpacitySliderAttributes]?: UpdrawOpacitySlider[K] } & { [K in keyof UpdrawOpacitySlider & keyof UpdrawOpacitySliderAttributes as `attr:${K}`]?: UpdrawOpacitySliderAttributes[K] } & { [K in keyof UpdrawOpacitySlider & keyof UpdrawOpacitySliderAttributes as `prop:${K}`]?: UpdrawOpacitySlider[K] };
-        "updraw-pill-tabs": Omit<UpdrawPillTabs, keyof UpdrawPillTabsAttributes> & { [K in keyof UpdrawPillTabs & keyof UpdrawPillTabsAttributes]?: UpdrawPillTabs[K] } & { [K in keyof UpdrawPillTabs & keyof UpdrawPillTabsAttributes as `attr:${K}`]?: UpdrawPillTabsAttributes[K] } & { [K in keyof UpdrawPillTabs & keyof UpdrawPillTabsAttributes as `prop:${K}`]?: UpdrawPillTabs[K] };
-        "updraw-portal": Omit<UpdrawPortal, keyof UpdrawPortalAttributes> & { [K in keyof UpdrawPortal & keyof UpdrawPortalAttributes]?: UpdrawPortal[K] } & { [K in keyof UpdrawPortal & keyof UpdrawPortalAttributes as `attr:${K}`]?: UpdrawPortalAttributes[K] } & { [K in keyof UpdrawPortal & keyof UpdrawPortalAttributes as `prop:${K}`]?: UpdrawPortal[K] };
-        "updraw-settings": UpdrawSettings;
-        "updraw-shape-fill": Omit<UpdrawShapeFill, keyof UpdrawShapeFillAttributes> & { [K in keyof UpdrawShapeFill & keyof UpdrawShapeFillAttributes]?: UpdrawShapeFill[K] } & { [K in keyof UpdrawShapeFill & keyof UpdrawShapeFillAttributes as `attr:${K}`]?: UpdrawShapeFillAttributes[K] } & { [K in keyof UpdrawShapeFill & keyof UpdrawShapeFillAttributes as `prop:${K}`]?: UpdrawShapeFill[K] };
-        "updraw-share-dialog": Omit<UpdrawShareDialog, keyof UpdrawShareDialogAttributes> & { [K in keyof UpdrawShareDialog & keyof UpdrawShareDialogAttributes]?: UpdrawShareDialog[K] } & { [K in keyof UpdrawShareDialog & keyof UpdrawShareDialogAttributes as `attr:${K}`]?: UpdrawShareDialogAttributes[K] } & { [K in keyof UpdrawShareDialog & keyof UpdrawShareDialogAttributes as `prop:${K}`]?: UpdrawShareDialog[K] };
-        "updraw-slide-toggle": Omit<UpdrawSlideToggle, keyof UpdrawSlideToggleAttributes> & { [K in keyof UpdrawSlideToggle & keyof UpdrawSlideToggleAttributes]?: UpdrawSlideToggle[K] } & { [K in keyof UpdrawSlideToggle & keyof UpdrawSlideToggleAttributes as `attr:${K}`]?: UpdrawSlideToggleAttributes[K] } & { [K in keyof UpdrawSlideToggle & keyof UpdrawSlideToggleAttributes as `prop:${K}`]?: UpdrawSlideToggle[K] };
-        "updraw-split-button": Omit<UpdrawSplitButton, keyof UpdrawSplitButtonAttributes> & { [K in keyof UpdrawSplitButton & keyof UpdrawSplitButtonAttributes]?: UpdrawSplitButton[K] } & { [K in keyof UpdrawSplitButton & keyof UpdrawSplitButtonAttributes as `attr:${K}`]?: UpdrawSplitButtonAttributes[K] } & { [K in keyof UpdrawSplitButton & keyof UpdrawSplitButtonAttributes as `prop:${K}`]?: UpdrawSplitButton[K] };
-        "updraw-stroke-size": Omit<UpdrawStrokeSize, keyof UpdrawStrokeSizeAttributes> & { [K in keyof UpdrawStrokeSize & keyof UpdrawStrokeSizeAttributes]?: UpdrawStrokeSize[K] } & { [K in keyof UpdrawStrokeSize & keyof UpdrawStrokeSizeAttributes as `attr:${K}`]?: UpdrawStrokeSizeAttributes[K] } & { [K in keyof UpdrawStrokeSize & keyof UpdrawStrokeSizeAttributes as `prop:${K}`]?: UpdrawStrokeSize[K] };
-        "updraw-titlebar-menu": UpdrawTitlebarMenu;
-        "updraw-tool-config": Omit<UpdrawToolConfig, keyof UpdrawToolConfigAttributes> & { [K in keyof UpdrawToolConfig & keyof UpdrawToolConfigAttributes]?: UpdrawToolConfig[K] } & { [K in keyof UpdrawToolConfig & keyof UpdrawToolConfigAttributes as `attr:${K}`]?: UpdrawToolConfigAttributes[K] } & { [K in keyof UpdrawToolConfig & keyof UpdrawToolConfigAttributes as `prop:${K}`]?: UpdrawToolConfig[K] };
-        "updraw-toolbar": Omit<UpdrawToolbar, keyof UpdrawToolbarAttributes> & { [K in keyof UpdrawToolbar & keyof UpdrawToolbarAttributes]?: UpdrawToolbar[K] } & { [K in keyof UpdrawToolbar & keyof UpdrawToolbarAttributes as `attr:${K}`]?: UpdrawToolbarAttributes[K] } & { [K in keyof UpdrawToolbar & keyof UpdrawToolbarAttributes as `prop:${K}`]?: UpdrawToolbar[K] };
-        "updraw-tooltip": Omit<UpdrawTooltip, keyof UpdrawTooltipAttributes> & { [K in keyof UpdrawTooltip & keyof UpdrawTooltipAttributes]?: UpdrawTooltip[K] } & { [K in keyof UpdrawTooltip & keyof UpdrawTooltipAttributes as `attr:${K}`]?: UpdrawTooltipAttributes[K] } & { [K in keyof UpdrawTooltip & keyof UpdrawTooltipAttributes as `prop:${K}`]?: UpdrawTooltip[K] };
-        "updraw-utility-panel": UpdrawUtilityPanel;
-        "updraw-workspace-manager": Omit<UpdrawWorkspaceManager, keyof UpdrawWorkspaceManagerAttributes> & { [K in keyof UpdrawWorkspaceManager & keyof UpdrawWorkspaceManagerAttributes]?: UpdrawWorkspaceManager[K] } & { [K in keyof UpdrawWorkspaceManager & keyof UpdrawWorkspaceManagerAttributes as `attr:${K}`]?: UpdrawWorkspaceManagerAttributes[K] } & { [K in keyof UpdrawWorkspaceManager & keyof UpdrawWorkspaceManagerAttributes as `prop:${K}`]?: UpdrawWorkspaceManager[K] };
-        "updraw-zoom-panel": Omit<UpdrawZoomPanel, keyof UpdrawZoomPanelAttributes> & { [K in keyof UpdrawZoomPanel & keyof UpdrawZoomPanelAttributes]?: UpdrawZoomPanel[K] } & { [K in keyof UpdrawZoomPanel & keyof UpdrawZoomPanelAttributes as `attr:${K}`]?: UpdrawZoomPanelAttributes[K] } & { [K in keyof UpdrawZoomPanel & keyof UpdrawZoomPanelAttributes as `prop:${K}`]?: UpdrawZoomPanel[K] };
+        "upmade-active-users": Omit<UpmadeActiveUsers, keyof UpmadeActiveUsersAttributes> & { [K in keyof UpmadeActiveUsers & keyof UpmadeActiveUsersAttributes]?: UpmadeActiveUsers[K] } & { [K in keyof UpmadeActiveUsers & keyof UpmadeActiveUsersAttributes as `attr:${K}`]?: UpmadeActiveUsersAttributes[K] } & { [K in keyof UpmadeActiveUsers & keyof UpmadeActiveUsersAttributes as `prop:${K}`]?: UpmadeActiveUsers[K] };
+        "upmade-avatar": Omit<UpmadeAvatar, keyof UpmadeAvatarAttributes> & { [K in keyof UpmadeAvatar & keyof UpmadeAvatarAttributes]?: UpmadeAvatar[K] } & { [K in keyof UpmadeAvatar & keyof UpmadeAvatarAttributes as `attr:${K}`]?: UpmadeAvatarAttributes[K] } & { [K in keyof UpmadeAvatar & keyof UpmadeAvatarAttributes as `prop:${K}`]?: UpmadeAvatar[K] };
+        "upmade-back-to-content": Omit<UpmadeBackToContent, keyof UpmadeBackToContentAttributes> & { [K in keyof UpmadeBackToContent & keyof UpmadeBackToContentAttributes]?: UpmadeBackToContent[K] } & { [K in keyof UpmadeBackToContent & keyof UpmadeBackToContentAttributes as `attr:${K}`]?: UpmadeBackToContentAttributes[K] } & { [K in keyof UpmadeBackToContent & keyof UpmadeBackToContentAttributes as `prop:${K}`]?: UpmadeBackToContent[K] };
+        "upmade-brush-style": Omit<UpmadeBrushStyle, keyof UpmadeBrushStyleAttributes> & { [K in keyof UpmadeBrushStyle & keyof UpmadeBrushStyleAttributes]?: UpmadeBrushStyle[K] } & { [K in keyof UpmadeBrushStyle & keyof UpmadeBrushStyleAttributes as `attr:${K}`]?: UpmadeBrushStyleAttributes[K] } & { [K in keyof UpmadeBrushStyle & keyof UpmadeBrushStyleAttributes as `prop:${K}`]?: UpmadeBrushStyle[K] };
+        "upmade-button": Omit<UpmadeButton, keyof UpmadeButtonAttributes> & { [K in keyof UpmadeButton & keyof UpmadeButtonAttributes]?: UpmadeButton[K] } & { [K in keyof UpmadeButton & keyof UpmadeButtonAttributes as `attr:${K}`]?: UpmadeButtonAttributes[K] } & { [K in keyof UpmadeButton & keyof UpmadeButtonAttributes as `prop:${K}`]?: UpmadeButton[K] };
+        "upmade-chat-box": Omit<UpmadeChatBox, keyof UpmadeChatBoxAttributes> & { [K in keyof UpmadeChatBox & keyof UpmadeChatBoxAttributes]?: UpmadeChatBox[K] } & { [K in keyof UpmadeChatBox & keyof UpmadeChatBoxAttributes as `attr:${K}`]?: UpmadeChatBoxAttributes[K] } & { [K in keyof UpmadeChatBox & keyof UpmadeChatBoxAttributes as `prop:${K}`]?: UpmadeChatBox[K] };
+        "upmade-color": Omit<UpmadeColor, keyof UpmadeColorAttributes> & { [K in keyof UpmadeColor & keyof UpmadeColorAttributes]?: UpmadeColor[K] } & { [K in keyof UpmadeColor & keyof UpmadeColorAttributes as `attr:${K}`]?: UpmadeColorAttributes[K] } & { [K in keyof UpmadeColor & keyof UpmadeColorAttributes as `prop:${K}`]?: UpmadeColor[K] };
+        "upmade-color-palette": Omit<UpmadeColorPalette, keyof UpmadeColorPaletteAttributes> & { [K in keyof UpmadeColorPalette & keyof UpmadeColorPaletteAttributes]?: UpmadeColorPalette[K] } & { [K in keyof UpmadeColorPalette & keyof UpmadeColorPaletteAttributes as `attr:${K}`]?: UpmadeColorPaletteAttributes[K] } & { [K in keyof UpmadeColorPalette & keyof UpmadeColorPaletteAttributes as `prop:${K}`]?: UpmadeColorPalette[K] };
+        "upmade-context-menu": UpmadeContextMenu;
+        "upmade-current-user": Omit<UpmadeCurrentUser, keyof UpmadeCurrentUserAttributes> & { [K in keyof UpmadeCurrentUser & keyof UpmadeCurrentUserAttributes]?: UpmadeCurrentUser[K] } & { [K in keyof UpmadeCurrentUser & keyof UpmadeCurrentUserAttributes as `attr:${K}`]?: UpmadeCurrentUserAttributes[K] } & { [K in keyof UpmadeCurrentUser & keyof UpmadeCurrentUserAttributes as `prop:${K}`]?: UpmadeCurrentUser[K] };
+        "upmade-current-user-dialog": UpmadeCurrentUserDialog;
+        "upmade-dialog": Omit<UpmadeDialog, keyof UpmadeDialogAttributes> & { [K in keyof UpmadeDialog & keyof UpmadeDialogAttributes]?: UpmadeDialog[K] } & { [K in keyof UpmadeDialog & keyof UpmadeDialogAttributes as `attr:${K}`]?: UpmadeDialogAttributes[K] } & { [K in keyof UpmadeDialog & keyof UpmadeDialogAttributes as `prop:${K}`]?: UpmadeDialog[K] };
+        "upmade-dropdown": Omit<UpmadeDropdown, keyof UpmadeDropdownAttributes> & { [K in keyof UpmadeDropdown & keyof UpmadeDropdownAttributes]?: UpmadeDropdown[K] } & { [K in keyof UpmadeDropdown & keyof UpmadeDropdownAttributes as `attr:${K}`]?: UpmadeDropdownAttributes[K] } & { [K in keyof UpmadeDropdown & keyof UpmadeDropdownAttributes as `prop:${K}`]?: UpmadeDropdown[K] };
+        "upmade-editor": Omit<UpmadeEditor, keyof UpmadeEditorAttributes> & { [K in keyof UpmadeEditor & keyof UpmadeEditorAttributes]?: UpmadeEditor[K] } & { [K in keyof UpmadeEditor & keyof UpmadeEditorAttributes as `attr:${K}`]?: UpmadeEditorAttributes[K] } & { [K in keyof UpmadeEditor & keyof UpmadeEditorAttributes as `prop:${K}`]?: UpmadeEditor[K] };
+        "upmade-export": Omit<UpmadeExport, keyof UpmadeExportAttributes> & { [K in keyof UpmadeExport & keyof UpmadeExportAttributes]?: UpmadeExport[K] } & { [K in keyof UpmadeExport & keyof UpmadeExportAttributes as `attr:${K}`]?: UpmadeExportAttributes[K] } & { [K in keyof UpmadeExport & keyof UpmadeExportAttributes as `prop:${K}`]?: UpmadeExport[K] };
+        "upmade-font": Omit<UpmadeFont, keyof UpmadeFontAttributes> & { [K in keyof UpmadeFont & keyof UpmadeFontAttributes]?: UpmadeFont[K] } & { [K in keyof UpmadeFont & keyof UpmadeFontAttributes as `attr:${K}`]?: UpmadeFontAttributes[K] } & { [K in keyof UpmadeFont & keyof UpmadeFontAttributes as `prop:${K}`]?: UpmadeFont[K] };
+        "upmade-font-family": Omit<UpmadeFontFamily, keyof UpmadeFontFamilyAttributes> & { [K in keyof UpmadeFontFamily & keyof UpmadeFontFamilyAttributes]?: UpmadeFontFamily[K] } & { [K in keyof UpmadeFontFamily & keyof UpmadeFontFamilyAttributes as `attr:${K}`]?: UpmadeFontFamilyAttributes[K] } & { [K in keyof UpmadeFontFamily & keyof UpmadeFontFamilyAttributes as `prop:${K}`]?: UpmadeFontFamily[K] };
+        "upmade-font-size": Omit<UpmadeFontSize, keyof UpmadeFontSizeAttributes> & { [K in keyof UpmadeFontSize & keyof UpmadeFontSizeAttributes]?: UpmadeFontSize[K] } & { [K in keyof UpmadeFontSize & keyof UpmadeFontSizeAttributes as `attr:${K}`]?: UpmadeFontSizeAttributes[K] } & { [K in keyof UpmadeFontSize & keyof UpmadeFontSizeAttributes as `prop:${K}`]?: UpmadeFontSize[K] };
+        "upmade-input": Omit<UpmadeInput, keyof UpmadeInputAttributes> & { [K in keyof UpmadeInput & keyof UpmadeInputAttributes]?: UpmadeInput[K] } & { [K in keyof UpmadeInput & keyof UpmadeInputAttributes as `attr:${K}`]?: UpmadeInputAttributes[K] } & { [K in keyof UpmadeInput & keyof UpmadeInputAttributes as `prop:${K}`]?: UpmadeInput[K] };
+        "upmade-line-endings": UpmadeLineEndings;
+        "upmade-login-dialog": Omit<UpmadeLoginDialog, keyof UpmadeLoginDialogAttributes> & { [K in keyof UpmadeLoginDialog & keyof UpmadeLoginDialogAttributes]?: UpmadeLoginDialog[K] } & { [K in keyof UpmadeLoginDialog & keyof UpmadeLoginDialogAttributes as `attr:${K}`]?: UpmadeLoginDialogAttributes[K] } & { [K in keyof UpmadeLoginDialog & keyof UpmadeLoginDialogAttributes as `prop:${K}`]?: UpmadeLoginDialog[K] };
+        "upmade-master-detail": Omit<UpmadeMasterDetail, keyof UpmadeMasterDetailAttributes> & { [K in keyof UpmadeMasterDetail & keyof UpmadeMasterDetailAttributes]?: UpmadeMasterDetail[K] } & { [K in keyof UpmadeMasterDetail & keyof UpmadeMasterDetailAttributes as `attr:${K}`]?: UpmadeMasterDetailAttributes[K] } & { [K in keyof UpmadeMasterDetail & keyof UpmadeMasterDetailAttributes as `prop:${K}`]?: UpmadeMasterDetail[K] };
+        "upmade-menu": UpmadeMenu;
+        "upmade-menu-item": UpmadeMenuItem;
+        "upmade-more-menu": Omit<UpmadeMoreMenu, keyof UpmadeMoreMenuAttributes> & { [K in keyof UpmadeMoreMenu & keyof UpmadeMoreMenuAttributes]?: UpmadeMoreMenu[K] } & { [K in keyof UpmadeMoreMenu & keyof UpmadeMoreMenuAttributes as `attr:${K}`]?: UpmadeMoreMenuAttributes[K] } & { [K in keyof UpmadeMoreMenu & keyof UpmadeMoreMenuAttributes as `prop:${K}`]?: UpmadeMoreMenu[K] };
+        "upmade-notification-card": Omit<UpmadeNotificationCard, keyof UpmadeNotificationCardAttributes> & { [K in keyof UpmadeNotificationCard & keyof UpmadeNotificationCardAttributes]?: UpmadeNotificationCard[K] } & { [K in keyof UpmadeNotificationCard & keyof UpmadeNotificationCardAttributes as `attr:${K}`]?: UpmadeNotificationCardAttributes[K] } & { [K in keyof UpmadeNotificationCard & keyof UpmadeNotificationCardAttributes as `prop:${K}`]?: UpmadeNotificationCard[K] };
+        "upmade-numeric-input": Omit<UpmadeNumericInput, keyof UpmadeNumericInputAttributes> & { [K in keyof UpmadeNumericInput & keyof UpmadeNumericInputAttributes]?: UpmadeNumericInput[K] } & { [K in keyof UpmadeNumericInput & keyof UpmadeNumericInputAttributes as `attr:${K}`]?: UpmadeNumericInputAttributes[K] } & { [K in keyof UpmadeNumericInput & keyof UpmadeNumericInputAttributes as `prop:${K}`]?: UpmadeNumericInput[K] };
+        "upmade-opacity-slider": Omit<UpmadeOpacitySlider, keyof UpmadeOpacitySliderAttributes> & { [K in keyof UpmadeOpacitySlider & keyof UpmadeOpacitySliderAttributes]?: UpmadeOpacitySlider[K] } & { [K in keyof UpmadeOpacitySlider & keyof UpmadeOpacitySliderAttributes as `attr:${K}`]?: UpmadeOpacitySliderAttributes[K] } & { [K in keyof UpmadeOpacitySlider & keyof UpmadeOpacitySliderAttributes as `prop:${K}`]?: UpmadeOpacitySlider[K] };
+        "upmade-pill-tabs": Omit<UpmadePillTabs, keyof UpmadePillTabsAttributes> & { [K in keyof UpmadePillTabs & keyof UpmadePillTabsAttributes]?: UpmadePillTabs[K] } & { [K in keyof UpmadePillTabs & keyof UpmadePillTabsAttributes as `attr:${K}`]?: UpmadePillTabsAttributes[K] } & { [K in keyof UpmadePillTabs & keyof UpmadePillTabsAttributes as `prop:${K}`]?: UpmadePillTabs[K] };
+        "upmade-portal": Omit<UpmadePortal, keyof UpmadePortalAttributes> & { [K in keyof UpmadePortal & keyof UpmadePortalAttributes]?: UpmadePortal[K] } & { [K in keyof UpmadePortal & keyof UpmadePortalAttributes as `attr:${K}`]?: UpmadePortalAttributes[K] } & { [K in keyof UpmadePortal & keyof UpmadePortalAttributes as `prop:${K}`]?: UpmadePortal[K] };
+        "upmade-settings": UpmadeSettings;
+        "upmade-shape-fill": Omit<UpmadeShapeFill, keyof UpmadeShapeFillAttributes> & { [K in keyof UpmadeShapeFill & keyof UpmadeShapeFillAttributes]?: UpmadeShapeFill[K] } & { [K in keyof UpmadeShapeFill & keyof UpmadeShapeFillAttributes as `attr:${K}`]?: UpmadeShapeFillAttributes[K] } & { [K in keyof UpmadeShapeFill & keyof UpmadeShapeFillAttributes as `prop:${K}`]?: UpmadeShapeFill[K] };
+        "upmade-share-dialog": Omit<UpmadeShareDialog, keyof UpmadeShareDialogAttributes> & { [K in keyof UpmadeShareDialog & keyof UpmadeShareDialogAttributes]?: UpmadeShareDialog[K] } & { [K in keyof UpmadeShareDialog & keyof UpmadeShareDialogAttributes as `attr:${K}`]?: UpmadeShareDialogAttributes[K] } & { [K in keyof UpmadeShareDialog & keyof UpmadeShareDialogAttributes as `prop:${K}`]?: UpmadeShareDialog[K] };
+        "upmade-slide-toggle": Omit<UpmadeSlideToggle, keyof UpmadeSlideToggleAttributes> & { [K in keyof UpmadeSlideToggle & keyof UpmadeSlideToggleAttributes]?: UpmadeSlideToggle[K] } & { [K in keyof UpmadeSlideToggle & keyof UpmadeSlideToggleAttributes as `attr:${K}`]?: UpmadeSlideToggleAttributes[K] } & { [K in keyof UpmadeSlideToggle & keyof UpmadeSlideToggleAttributes as `prop:${K}`]?: UpmadeSlideToggle[K] };
+        "upmade-split-button": Omit<UpmadeSplitButton, keyof UpmadeSplitButtonAttributes> & { [K in keyof UpmadeSplitButton & keyof UpmadeSplitButtonAttributes]?: UpmadeSplitButton[K] } & { [K in keyof UpmadeSplitButton & keyof UpmadeSplitButtonAttributes as `attr:${K}`]?: UpmadeSplitButtonAttributes[K] } & { [K in keyof UpmadeSplitButton & keyof UpmadeSplitButtonAttributes as `prop:${K}`]?: UpmadeSplitButton[K] };
+        "upmade-stroke-size": Omit<UpmadeStrokeSize, keyof UpmadeStrokeSizeAttributes> & { [K in keyof UpmadeStrokeSize & keyof UpmadeStrokeSizeAttributes]?: UpmadeStrokeSize[K] } & { [K in keyof UpmadeStrokeSize & keyof UpmadeStrokeSizeAttributes as `attr:${K}`]?: UpmadeStrokeSizeAttributes[K] } & { [K in keyof UpmadeStrokeSize & keyof UpmadeStrokeSizeAttributes as `prop:${K}`]?: UpmadeStrokeSize[K] };
+        "upmade-titlebar-menu": UpmadeTitlebarMenu;
+        "upmade-tool-config": Omit<UpmadeToolConfig, keyof UpmadeToolConfigAttributes> & { [K in keyof UpmadeToolConfig & keyof UpmadeToolConfigAttributes]?: UpmadeToolConfig[K] } & { [K in keyof UpmadeToolConfig & keyof UpmadeToolConfigAttributes as `attr:${K}`]?: UpmadeToolConfigAttributes[K] } & { [K in keyof UpmadeToolConfig & keyof UpmadeToolConfigAttributes as `prop:${K}`]?: UpmadeToolConfig[K] };
+        "upmade-toolbar": Omit<UpmadeToolbar, keyof UpmadeToolbarAttributes> & { [K in keyof UpmadeToolbar & keyof UpmadeToolbarAttributes]?: UpmadeToolbar[K] } & { [K in keyof UpmadeToolbar & keyof UpmadeToolbarAttributes as `attr:${K}`]?: UpmadeToolbarAttributes[K] } & { [K in keyof UpmadeToolbar & keyof UpmadeToolbarAttributes as `prop:${K}`]?: UpmadeToolbar[K] };
+        "upmade-tooltip": Omit<UpmadeTooltip, keyof UpmadeTooltipAttributes> & { [K in keyof UpmadeTooltip & keyof UpmadeTooltipAttributes]?: UpmadeTooltip[K] } & { [K in keyof UpmadeTooltip & keyof UpmadeTooltipAttributes as `attr:${K}`]?: UpmadeTooltipAttributes[K] } & { [K in keyof UpmadeTooltip & keyof UpmadeTooltipAttributes as `prop:${K}`]?: UpmadeTooltip[K] };
+        "upmade-utility-panel": UpmadeUtilityPanel;
+        "upmade-workspace-manager": Omit<UpmadeWorkspaceManager, keyof UpmadeWorkspaceManagerAttributes> & { [K in keyof UpmadeWorkspaceManager & keyof UpmadeWorkspaceManagerAttributes]?: UpmadeWorkspaceManager[K] } & { [K in keyof UpmadeWorkspaceManager & keyof UpmadeWorkspaceManagerAttributes as `attr:${K}`]?: UpmadeWorkspaceManagerAttributes[K] } & { [K in keyof UpmadeWorkspaceManager & keyof UpmadeWorkspaceManagerAttributes as `prop:${K}`]?: UpmadeWorkspaceManager[K] };
+        "upmade-zoom-panel": Omit<UpmadeZoomPanel, keyof UpmadeZoomPanelAttributes> & { [K in keyof UpmadeZoomPanel & keyof UpmadeZoomPanelAttributes]?: UpmadeZoomPanel[K] } & { [K in keyof UpmadeZoomPanel & keyof UpmadeZoomPanelAttributes as `attr:${K}`]?: UpmadeZoomPanelAttributes[K] } & { [K in keyof UpmadeZoomPanel & keyof UpmadeZoomPanelAttributes as `prop:${K}`]?: UpmadeZoomPanel[K] };
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "updraw-active-users": LocalJSX.IntrinsicElements["updraw-active-users"] & JSXBase.HTMLAttributes<HTMLUpdrawActiveUsersElement>;
-            "updraw-avatar": LocalJSX.IntrinsicElements["updraw-avatar"] & JSXBase.HTMLAttributes<HTMLUpdrawAvatarElement>;
-            "updraw-back-to-content": LocalJSX.IntrinsicElements["updraw-back-to-content"] & JSXBase.HTMLAttributes<HTMLUpdrawBackToContentElement>;
-            "updraw-brush-style": LocalJSX.IntrinsicElements["updraw-brush-style"] & JSXBase.HTMLAttributes<HTMLUpdrawBrushStyleElement>;
-            "updraw-button": LocalJSX.IntrinsicElements["updraw-button"] & JSXBase.HTMLAttributes<HTMLUpdrawButtonElement>;
-            "updraw-chat-box": LocalJSX.IntrinsicElements["updraw-chat-box"] & JSXBase.HTMLAttributes<HTMLUpdrawChatBoxElement>;
-            "updraw-color": LocalJSX.IntrinsicElements["updraw-color"] & JSXBase.HTMLAttributes<HTMLUpdrawColorElement>;
-            "updraw-color-palette": LocalJSX.IntrinsicElements["updraw-color-palette"] & JSXBase.HTMLAttributes<HTMLUpdrawColorPaletteElement>;
-            "updraw-context-menu": LocalJSX.IntrinsicElements["updraw-context-menu"] & JSXBase.HTMLAttributes<HTMLUpdrawContextMenuElement>;
-            "updraw-current-user": LocalJSX.IntrinsicElements["updraw-current-user"] & JSXBase.HTMLAttributes<HTMLUpdrawCurrentUserElement>;
-            "updraw-current-user-dialog": LocalJSX.IntrinsicElements["updraw-current-user-dialog"] & JSXBase.HTMLAttributes<HTMLUpdrawCurrentUserDialogElement>;
-            "updraw-dialog": LocalJSX.IntrinsicElements["updraw-dialog"] & JSXBase.HTMLAttributes<HTMLUpdrawDialogElement>;
-            "updraw-dropdown": LocalJSX.IntrinsicElements["updraw-dropdown"] & JSXBase.HTMLAttributes<HTMLUpdrawDropdownElement>;
-            "updraw-editor": LocalJSX.IntrinsicElements["updraw-editor"] & JSXBase.HTMLAttributes<HTMLUpdrawEditorElement>;
-            "updraw-export": LocalJSX.IntrinsicElements["updraw-export"] & JSXBase.HTMLAttributes<HTMLUpdrawExportElement>;
-            "updraw-font": LocalJSX.IntrinsicElements["updraw-font"] & JSXBase.HTMLAttributes<HTMLUpdrawFontElement>;
-            "updraw-font-family": LocalJSX.IntrinsicElements["updraw-font-family"] & JSXBase.HTMLAttributes<HTMLUpdrawFontFamilyElement>;
-            "updraw-font-size": LocalJSX.IntrinsicElements["updraw-font-size"] & JSXBase.HTMLAttributes<HTMLUpdrawFontSizeElement>;
-            "updraw-input": LocalJSX.IntrinsicElements["updraw-input"] & JSXBase.HTMLAttributes<HTMLUpdrawInputElement>;
-            "updraw-line-endings": LocalJSX.IntrinsicElements["updraw-line-endings"] & JSXBase.HTMLAttributes<HTMLUpdrawLineEndingsElement>;
+            "upmade-active-users": LocalJSX.IntrinsicElements["upmade-active-users"] & JSXBase.HTMLAttributes<HTMLUpmadeActiveUsersElement>;
+            "upmade-avatar": LocalJSX.IntrinsicElements["upmade-avatar"] & JSXBase.HTMLAttributes<HTMLUpmadeAvatarElement>;
+            "upmade-back-to-content": LocalJSX.IntrinsicElements["upmade-back-to-content"] & JSXBase.HTMLAttributes<HTMLUpmadeBackToContentElement>;
+            "upmade-brush-style": LocalJSX.IntrinsicElements["upmade-brush-style"] & JSXBase.HTMLAttributes<HTMLUpmadeBrushStyleElement>;
+            "upmade-button": LocalJSX.IntrinsicElements["upmade-button"] & JSXBase.HTMLAttributes<HTMLUpmadeButtonElement>;
+            "upmade-chat-box": LocalJSX.IntrinsicElements["upmade-chat-box"] & JSXBase.HTMLAttributes<HTMLUpmadeChatBoxElement>;
+            "upmade-color": LocalJSX.IntrinsicElements["upmade-color"] & JSXBase.HTMLAttributes<HTMLUpmadeColorElement>;
+            "upmade-color-palette": LocalJSX.IntrinsicElements["upmade-color-palette"] & JSXBase.HTMLAttributes<HTMLUpmadeColorPaletteElement>;
+            "upmade-context-menu": LocalJSX.IntrinsicElements["upmade-context-menu"] & JSXBase.HTMLAttributes<HTMLUpmadeContextMenuElement>;
+            "upmade-current-user": LocalJSX.IntrinsicElements["upmade-current-user"] & JSXBase.HTMLAttributes<HTMLUpmadeCurrentUserElement>;
+            "upmade-current-user-dialog": LocalJSX.IntrinsicElements["upmade-current-user-dialog"] & JSXBase.HTMLAttributes<HTMLUpmadeCurrentUserDialogElement>;
+            "upmade-dialog": LocalJSX.IntrinsicElements["upmade-dialog"] & JSXBase.HTMLAttributes<HTMLUpmadeDialogElement>;
+            "upmade-dropdown": LocalJSX.IntrinsicElements["upmade-dropdown"] & JSXBase.HTMLAttributes<HTMLUpmadeDropdownElement>;
+            "upmade-editor": LocalJSX.IntrinsicElements["upmade-editor"] & JSXBase.HTMLAttributes<HTMLUpmadeEditorElement>;
+            "upmade-export": LocalJSX.IntrinsicElements["upmade-export"] & JSXBase.HTMLAttributes<HTMLUpmadeExportElement>;
+            "upmade-font": LocalJSX.IntrinsicElements["upmade-font"] & JSXBase.HTMLAttributes<HTMLUpmadeFontElement>;
+            "upmade-font-family": LocalJSX.IntrinsicElements["upmade-font-family"] & JSXBase.HTMLAttributes<HTMLUpmadeFontFamilyElement>;
+            "upmade-font-size": LocalJSX.IntrinsicElements["upmade-font-size"] & JSXBase.HTMLAttributes<HTMLUpmadeFontSizeElement>;
+            "upmade-input": LocalJSX.IntrinsicElements["upmade-input"] & JSXBase.HTMLAttributes<HTMLUpmadeInputElement>;
+            "upmade-line-endings": LocalJSX.IntrinsicElements["upmade-line-endings"] & JSXBase.HTMLAttributes<HTMLUpmadeLineEndingsElement>;
             /**
              * Login dialog component for displaying authentication provider buttons.
              * This is a presentational component that emits events for all actions.
-             * The parent component (updraw-editor) handles the actual authentication flow.
+             * The parent component (upmade-editor) handles the actual authentication flow.
              */
-            "updraw-login-dialog": LocalJSX.IntrinsicElements["updraw-login-dialog"] & JSXBase.HTMLAttributes<HTMLUpdrawLoginDialogElement>;
-            "updraw-master-detail": LocalJSX.IntrinsicElements["updraw-master-detail"] & JSXBase.HTMLAttributes<HTMLUpdrawMasterDetailElement>;
-            "updraw-menu": LocalJSX.IntrinsicElements["updraw-menu"] & JSXBase.HTMLAttributes<HTMLUpdrawMenuElement>;
-            "updraw-menu-item": LocalJSX.IntrinsicElements["updraw-menu-item"] & JSXBase.HTMLAttributes<HTMLUpdrawMenuItemElement>;
-            "updraw-more-menu": LocalJSX.IntrinsicElements["updraw-more-menu"] & JSXBase.HTMLAttributes<HTMLUpdrawMoreMenuElement>;
-            "updraw-notification-card": LocalJSX.IntrinsicElements["updraw-notification-card"] & JSXBase.HTMLAttributes<HTMLUpdrawNotificationCardElement>;
-            "updraw-numeric-input": LocalJSX.IntrinsicElements["updraw-numeric-input"] & JSXBase.HTMLAttributes<HTMLUpdrawNumericInputElement>;
-            "updraw-opacity-slider": LocalJSX.IntrinsicElements["updraw-opacity-slider"] & JSXBase.HTMLAttributes<HTMLUpdrawOpacitySliderElement>;
-            "updraw-pill-tabs": LocalJSX.IntrinsicElements["updraw-pill-tabs"] & JSXBase.HTMLAttributes<HTMLUpdrawPillTabsElement>;
-            "updraw-portal": LocalJSX.IntrinsicElements["updraw-portal"] & JSXBase.HTMLAttributes<HTMLUpdrawPortalElement>;
-            "updraw-settings": LocalJSX.IntrinsicElements["updraw-settings"] & JSXBase.HTMLAttributes<HTMLUpdrawSettingsElement>;
-            "updraw-shape-fill": LocalJSX.IntrinsicElements["updraw-shape-fill"] & JSXBase.HTMLAttributes<HTMLUpdrawShapeFillElement>;
+            "upmade-login-dialog": LocalJSX.IntrinsicElements["upmade-login-dialog"] & JSXBase.HTMLAttributes<HTMLUpmadeLoginDialogElement>;
+            "upmade-master-detail": LocalJSX.IntrinsicElements["upmade-master-detail"] & JSXBase.HTMLAttributes<HTMLUpmadeMasterDetailElement>;
+            "upmade-menu": LocalJSX.IntrinsicElements["upmade-menu"] & JSXBase.HTMLAttributes<HTMLUpmadeMenuElement>;
+            "upmade-menu-item": LocalJSX.IntrinsicElements["upmade-menu-item"] & JSXBase.HTMLAttributes<HTMLUpmadeMenuItemElement>;
+            "upmade-more-menu": LocalJSX.IntrinsicElements["upmade-more-menu"] & JSXBase.HTMLAttributes<HTMLUpmadeMoreMenuElement>;
+            "upmade-notification-card": LocalJSX.IntrinsicElements["upmade-notification-card"] & JSXBase.HTMLAttributes<HTMLUpmadeNotificationCardElement>;
+            "upmade-numeric-input": LocalJSX.IntrinsicElements["upmade-numeric-input"] & JSXBase.HTMLAttributes<HTMLUpmadeNumericInputElement>;
+            "upmade-opacity-slider": LocalJSX.IntrinsicElements["upmade-opacity-slider"] & JSXBase.HTMLAttributes<HTMLUpmadeOpacitySliderElement>;
+            "upmade-pill-tabs": LocalJSX.IntrinsicElements["upmade-pill-tabs"] & JSXBase.HTMLAttributes<HTMLUpmadePillTabsElement>;
+            "upmade-portal": LocalJSX.IntrinsicElements["upmade-portal"] & JSXBase.HTMLAttributes<HTMLUpmadePortalElement>;
+            "upmade-settings": LocalJSX.IntrinsicElements["upmade-settings"] & JSXBase.HTMLAttributes<HTMLUpmadeSettingsElement>;
+            "upmade-shape-fill": LocalJSX.IntrinsicElements["upmade-shape-fill"] & JSXBase.HTMLAttributes<HTMLUpmadeShapeFillElement>;
             /**
              * Share dialog component for managing workspace link sharing.
              * This is a presentational component that emits events for all actions.
-             * The parent component (updraw-editor) handles the business logic.
+             * The parent component (upmade-editor) handles the business logic.
              */
-            "updraw-share-dialog": LocalJSX.IntrinsicElements["updraw-share-dialog"] & JSXBase.HTMLAttributes<HTMLUpdrawShareDialogElement>;
-            "updraw-slide-toggle": LocalJSX.IntrinsicElements["updraw-slide-toggle"] & JSXBase.HTMLAttributes<HTMLUpdrawSlideToggleElement>;
-            "updraw-split-button": LocalJSX.IntrinsicElements["updraw-split-button"] & JSXBase.HTMLAttributes<HTMLUpdrawSplitButtonElement>;
-            "updraw-stroke-size": LocalJSX.IntrinsicElements["updraw-stroke-size"] & JSXBase.HTMLAttributes<HTMLUpdrawStrokeSizeElement>;
+            "upmade-share-dialog": LocalJSX.IntrinsicElements["upmade-share-dialog"] & JSXBase.HTMLAttributes<HTMLUpmadeShareDialogElement>;
+            "upmade-slide-toggle": LocalJSX.IntrinsicElements["upmade-slide-toggle"] & JSXBase.HTMLAttributes<HTMLUpmadeSlideToggleElement>;
+            "upmade-split-button": LocalJSX.IntrinsicElements["upmade-split-button"] & JSXBase.HTMLAttributes<HTMLUpmadeSplitButtonElement>;
+            "upmade-stroke-size": LocalJSX.IntrinsicElements["upmade-stroke-size"] & JSXBase.HTMLAttributes<HTMLUpmadeStrokeSizeElement>;
             /**
-             * The menu opened from a titlebar `menu` element: a compact `updraw-menu` styled like the
-             * context menu through the `--updraw-titlebar-menu-*` theme variables.
+             * The menu opened from a titlebar `menu` element: a compact `upmade-menu` styled like the
+             * context menu through the `--upmade-titlebar-menu-*` theme variables.
              */
-            "updraw-titlebar-menu": LocalJSX.IntrinsicElements["updraw-titlebar-menu"] & JSXBase.HTMLAttributes<HTMLUpdrawTitlebarMenuElement>;
-            "updraw-tool-config": LocalJSX.IntrinsicElements["updraw-tool-config"] & JSXBase.HTMLAttributes<HTMLUpdrawToolConfigElement>;
-            "updraw-toolbar": LocalJSX.IntrinsicElements["updraw-toolbar"] & JSXBase.HTMLAttributes<HTMLUpdrawToolbarElement>;
-            "updraw-tooltip": LocalJSX.IntrinsicElements["updraw-tooltip"] & JSXBase.HTMLAttributes<HTMLUpdrawTooltipElement>;
-            "updraw-utility-panel": LocalJSX.IntrinsicElements["updraw-utility-panel"] & JSXBase.HTMLAttributes<HTMLUpdrawUtilityPanelElement>;
-            "updraw-workspace-manager": LocalJSX.IntrinsicElements["updraw-workspace-manager"] & JSXBase.HTMLAttributes<HTMLUpdrawWorkspaceManagerElement>;
-            "updraw-zoom-panel": LocalJSX.IntrinsicElements["updraw-zoom-panel"] & JSXBase.HTMLAttributes<HTMLUpdrawZoomPanelElement>;
+            "upmade-titlebar-menu": LocalJSX.IntrinsicElements["upmade-titlebar-menu"] & JSXBase.HTMLAttributes<HTMLUpmadeTitlebarMenuElement>;
+            "upmade-tool-config": LocalJSX.IntrinsicElements["upmade-tool-config"] & JSXBase.HTMLAttributes<HTMLUpmadeToolConfigElement>;
+            "upmade-toolbar": LocalJSX.IntrinsicElements["upmade-toolbar"] & JSXBase.HTMLAttributes<HTMLUpmadeToolbarElement>;
+            "upmade-tooltip": LocalJSX.IntrinsicElements["upmade-tooltip"] & JSXBase.HTMLAttributes<HTMLUpmadeTooltipElement>;
+            "upmade-utility-panel": LocalJSX.IntrinsicElements["upmade-utility-panel"] & JSXBase.HTMLAttributes<HTMLUpmadeUtilityPanelElement>;
+            "upmade-workspace-manager": LocalJSX.IntrinsicElements["upmade-workspace-manager"] & JSXBase.HTMLAttributes<HTMLUpmadeWorkspaceManagerElement>;
+            "upmade-zoom-panel": LocalJSX.IntrinsicElements["upmade-zoom-panel"] & JSXBase.HTMLAttributes<HTMLUpmadeZoomPanelElement>;
         }
     }
 }

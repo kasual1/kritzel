@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { UpdrawEditor, UpdrawLoginConfig, UpdrawWorkspace } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeLoginConfig, UpmadeWorkspace } from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -17,10 +17,10 @@ const providerIcons: Record<string, string> = {
 
 @Component({
   selector: 'app-user-management-providers',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       editorId="user-management-providers"
       [loginConfig]="loginConfig"
       [customSvgIcons]="providerIcons"
@@ -32,7 +32,7 @@ const providerIcons: Record<string, string> = {
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady()"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [
     `
@@ -56,7 +56,7 @@ const providerIcons: Record<string, string> = {
       .toolbar-note span {
         color: #555;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
         min-height: 0;
       }
@@ -64,16 +64,16 @@ const providerIcons: Record<string, string> = {
   ],
 })
 export class UserManagementProvidersComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
   providerIcons = providerIcons;
 
-  loginConfig: UpdrawLoginConfig = {
-    title: 'Sign in to Updraw',
+  loginConfig: UpmadeLoginConfig = {
+    title: 'Sign in to Upmade',
     providers: [
       { name: 'google', icon: 'google', label: 'Continue with Google' },
       { name: 'facebook', icon: 'facebook', label: 'Continue with Facebook' },

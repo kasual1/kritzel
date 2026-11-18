@@ -1,12 +1,12 @@
 import { useMemo, useRef, useState } from "react";
 import {
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawEraserTool,
-  UpdrawSelectionTool,
-  type HTMLUpdrawEditorElement,
-  type UpdrawToolbarItem,
-} from "@updraw/react-editor";
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeEraserTool,
+  UpmadeSelectionTool,
+  type HTMLUpmadeEditorElement,
+  type UpmadeToolbarItem,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
@@ -19,26 +19,26 @@ import { Toolbar } from "../../../components/Toolbar";
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ToolsDisablePage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const [isEraserDisabled, setIsEraserDisabled] = useState(true);
-  const toolbarItems = useMemo<UpdrawToolbarItem[]>(() => [
+  const toolbarItems = useMemo<UpmadeToolbarItem[]>(() => [
     {
       name: "selection",
       type: "tool",
       isDefault: true,
-      tool: UpdrawSelectionTool,
+      tool: UpmadeSelectionTool,
       icon: "cursor",
     },
     {
       name: "brush",
       type: "tool",
-      tool: UpdrawBrushTool,
+      tool: UpmadeBrushTool,
       icon: "pen",
     },
     {
       name: "eraser",
       type: "tool",
-      tool: UpdrawEraserTool,
+      tool: UpmadeEraserTool,
       icon: "eraser",
       isDisabled: () => isEraserDisabled,
     },
@@ -55,7 +55,7 @@ export function ToolsDisablePage() {
           {isEraserDisabled ? "Enable eraser tool" : "Disable eraser tool"}
         </button>
       </Toolbar>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="tools-disable"
         theme="light"

@@ -1,11 +1,11 @@
 import { useRef, useState } from "react";
 import {
-  UpdrawEditor,
-  HTMLUpdrawEditorElement,
-  UpdrawWorkspace,
-  type UpdrawBaseObject,
-  type UpdrawGroup,
-} from "@updraw/react-editor";
+  UpmadeEditor,
+  HTMLUpmadeEditorElement,
+  UpmadeWorkspace,
+  type UpmadeBaseObject,
+  type UpmadeGroup,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -19,17 +19,17 @@ import { InfoPanel, InfoPanelToggle, useInfoPanel } from "../../../components/In
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ObjectsGroupingPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const infoPanel = useInfoPanel({ hasToolbarToggle: true });
-  const [objects, setObjects] = useState<UpdrawBaseObject<HTMLElement | SVGElement>[]>([]);
+  const [objects, setObjects] = useState<UpmadeBaseObject<HTMLElement | SVGElement>[]>([]);
   const [workspaces] = useState(() => [
-    new UpdrawWorkspace({ objects: createSeedObjects() }),
+    new UpmadeWorkspace({ objects: createSeedObjects() }),
   ]);
 
   async function refreshObjects() {
     const all = (await editorRef.current?.getAllObjects()) ?? [];
     setObjects([
-      ...(all as UpdrawBaseObject<HTMLElement | SVGElement>[]),
+      ...(all as UpmadeBaseObject<HTMLElement | SVGElement>[]),
     ].sort((a, b) => a.zIndex - b.zIndex));
   }
 
@@ -51,7 +51,7 @@ export function ObjectsGroupingPage() {
     const editor = editorRef.current;
     if (!editor) return;
     const selected = await editor.getSelectedObjects();
-    const groups = selected.filter((object): object is UpdrawGroup => object.__class__ === "UpdrawGroup");
+    const groups = selected.filter((object): object is UpmadeGroup => object.__class__ === "UpmadeGroup");
     await editor.ungroup(groups);
     await refreshObjects();
   }
@@ -65,7 +65,7 @@ export function ObjectsGroupingPage() {
         <InfoPanelToggle panel={infoPanel} />
       </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        <UpdrawEditor
+        <UpmadeEditor
           ref={editorRef}
           editorId="objects-grouping"
           theme="light"

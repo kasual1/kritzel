@@ -1,10 +1,10 @@
-import { createScriptedTransport, type UpdrawChatRequest, type UpdrawScriptedAnswer } from '@updraw/angular-editor';
+import { createScriptedTransport, type UpmadeChatRequest, type UpmadeScriptedAnswer } from '@upmade/angular-editor';
 
 /** A prompt containing this phrase takes long to answer, so the stop button can be tried. */
 export const SLOW_PHRASE = 'think slowly';
 
 /** The text of the newest user message. */
-function lastPrompt(request: UpdrawChatRequest): string {
+function lastPrompt(request: UpmadeChatRequest): string {
   const user = [...request.messages].reverse().find(message => message.role === 'user');
   return user?.parts.map(part => (part.type === 'text' ? part.text : '')).join('\n') ?? '';
 }
@@ -20,7 +20,7 @@ function referencedIds(prompt: string): string[] {
  */
 export function createDemoTransport() {
   let notes = 0;
-  return createScriptedTransport((request): string | UpdrawScriptedAnswer => {
+  return createScriptedTransport((request): string | UpmadeScriptedAnswer => {
     const last = request.messages[request.messages.length - 1];
     if (last.role === 'tool') {
       return request.mode === 'agent' ? "Done. Undo it with the agent's history." : 'Done. Press Ctrl+Z to take it back.';

@@ -1,8 +1,8 @@
 {
-  "name": "@updraw/core",
+  "name": "@upmade/core",
   "version": "0.6.2",
-  "homepage": "https://updraw.io/",
-  "description": "Framework-agnostic core of Updraw: objects, tools, sync, themes, locales and helpers shared by @updraw/engine and @updraw/editor.",
+  "homepage": "https://upmade.io/",
+  "description": "Framework-agnostic core of Upmade: objects, tools, sync, themes, locales and helpers shared by @upmade/engine and @upmade/editor.",
   "keywords": [
     "infinite canvas",
     "collaboration",

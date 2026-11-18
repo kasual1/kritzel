@@ -1,8 +1,8 @@
 ---
 sidebar_label: Tools
 displayed_sidebar: tutorialSidebar
-title: "Tools Concept | Updraw for Angular"
-description: "Understand the core concept of Tools in Updraw."
+title: "Tools Concept | Upmade for Angular"
+description: "Understand the core concept of Tools in Upmade."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,7 +11,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-In Updraw, the easiest way to manually interact with the canvas is through tools. Updraw comes with a configurable toolbar that allows users to select and switch between a set of different prebuilt tools. A tool handles user interaction on the canvas and typically either adds or removes objects.
+In Upmade, the easiest way to manually interact with the canvas is through tools. Upmade comes with a configurable toolbar that allows users to select and switch between a set of different prebuilt tools. A tool handles user interaction on the canvas and typically either adds or removes objects.
 
 The toolbar includes the following tools:
 
@@ -29,7 +29,7 @@ If you rather want to programmatically interact with the canvas, take a look at 
 
 ## Adjusting the Toolbar
 
-You can adjust the toolbar by passing a custom `toolbarItems` array to `updraw-editor`. The editor will register and render only the tools you provide. In this example, the toolbar items are limited to `select`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
+You can adjust the toolbar by passing a custom `toolbarItems` array to `upmade-editor`. The editor will register and render only the tools you provide. In this example, the toolbar items are limited to `select`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
@@ -57,7 +57,7 @@ Add a toolbar item of type `config` to let users adjust the active tool at runti
 
 ## Adding Custom Tools
 
-To add a custom tool, include it as an item in the `toolbarItems` array. Updraw registers the tool automatically and renders it in the toolbar. This example adds a highlighter built from `UpdrawBrushTool` alongside `selection`, `pen`, and `text`.
+To add a custom tool, include it as an item in the `toolbarItems` array. Upmade registers the tool automatically and renders it in the toolbar. This example adds a highlighter built from `UpmadeBrushTool` alongside `selection`, `pen`, and `text`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"

@@ -1,11 +1,11 @@
 import { useMemo, useRef, useState } from "react";
 import {
-  UpdrawAgent,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type HTMLUpdrawEditorElement,
-  type UpdrawAgentOptions,
-} from "@updraw/react-editor";
+  UpmadeAgent,
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type HTMLUpmadeEditorElement,
+  type UpmadeAgentOptions,
+} from "@upmade/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -15,19 +15,19 @@ const PLANNER = "planner";
 const WRITER = "writer";
 
 export function AgentsBasicPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   // Recreated by Reset, so the Planner starts at the rectangle again.
-  const plannerRef = useRef<UpdrawAgent | null>(null);
-  const writerRef = useRef<UpdrawAgent | null>(null);
+  const plannerRef = useRef<UpmadeAgent | null>(null);
+  const writerRef = useRef<UpmadeAgent | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [message, setMessage] = useState("");
   const workspaces = useMemo(
-    () => [new UpdrawWorkspace({ objects: createSeedObjects() })],
+    () => [new UpmadeWorkspace({ objects: createSeedObjects() })],
     [],
   );
 
   async function getShapeIds() {
-    const shapes = (await editorRef.current?.findObjects(obj => obj.__class__ === "UpdrawShape")) ?? [];
+    const shapes = (await editorRef.current?.findObjects(obj => obj.__class__ === "UpmadeShape")) ?? [];
     return shapes.map(shape => shape.id);
   }
 
@@ -56,8 +56,8 @@ export function AgentsBasicPage() {
     await editor.addAgent(writerRef.current);
   }
 
-  function createAgent(options: UpdrawAgentOptions) {
-    const agent = new UpdrawAgent(options);
+  function createAgent(options: UpmadeAgentOptions) {
+    const agent = new UpmadeAgent(options);
     agent.on("detached", ({ reason }) => setMessage(`"${agent.id}" detached (${reason}).`));
     return agent;
   }
@@ -121,7 +121,7 @@ export function AgentsBasicPage() {
         <button onClick={() => void addAgents()}>Reset</button>
         {message && <span className="label">{message}</span>}
       </Toolbar>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="agents-basic"
         theme="light"

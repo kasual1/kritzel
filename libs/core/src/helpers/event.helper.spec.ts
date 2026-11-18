@@ -1,29 +1,29 @@
 
-import { UpdrawMouseButton } from '../enums/event-button.enum';
-import { UpdrawEventHelper } from './event.helper';
+import { UpmadeMouseButton } from '../enums/event-button.enum';
+import { UpmadeEventHelper } from './event.helper';
 
-describe('UpdrawEventHelper', () => {
+describe('UpmadeEventHelper', () => {
   describe('isRightClick', () => {
     it('should return true if button is right mouse button', () => {
-      const event = { button: UpdrawMouseButton.Right } as MouseEvent;
-      expect(UpdrawEventHelper.isRightClick(event)).toBe(true);
+      const event = { button: UpmadeMouseButton.Right } as MouseEvent;
+      expect(UpmadeEventHelper.isRightClick(event)).toBe(true);
     });
 
     it('should return false if button is not right mouse button', () => {
-      const event = { button: UpdrawMouseButton.Left } as MouseEvent;
-      expect(UpdrawEventHelper.isRightClick(event)).toBe(false);
+      const event = { button: UpmadeMouseButton.Left } as MouseEvent;
+      expect(UpmadeEventHelper.isRightClick(event)).toBe(false);
     });
   });
 
   describe('isLeftClick', () => {
     it('should return true if button is left mouse button', () => {
-      const event = { button: UpdrawMouseButton.Left } as MouseEvent;
-      expect(UpdrawEventHelper.isLeftClick(event)).toBe(true);
+      const event = { button: UpmadeMouseButton.Left } as MouseEvent;
+      expect(UpmadeEventHelper.isLeftClick(event)).toBe(true);
     });
 
     it('should return false if button is not left mouse button', () => {
-      const event = { button: UpdrawMouseButton.Right } as MouseEvent;
-      expect(UpdrawEventHelper.isLeftClick(event)).toBe(false);
+      const event = { button: UpmadeMouseButton.Right } as MouseEvent;
+      expect(UpmadeEventHelper.isLeftClick(event)).toBe(false);
     });
   });
 
@@ -38,7 +38,7 @@ describe('UpdrawEventHelper', () => {
         composedPath: () => [child, contextMenu, document.body, document.documentElement],
       } as unknown as PointerEvent;
 
-      expect(UpdrawEventHelper.isPointerEventOnContextMenu(event)).toBe(true);
+      expect(UpmadeEventHelper.isPointerEventOnContextMenu(event)).toBe(true);
     });
 
     it('should return false if event path does not contain context-menu', () => {
@@ -47,7 +47,7 @@ describe('UpdrawEventHelper', () => {
         composedPath: () => [otherElement, document.body, document.documentElement],
       } as unknown as PointerEvent;
 
-      expect(UpdrawEventHelper.isPointerEventOnContextMenu(event)).toBe(false);
+      expect(UpmadeEventHelper.isPointerEventOnContextMenu(event)).toBe(false);
     });
   });
 
@@ -71,7 +71,7 @@ describe('UpdrawEventHelper', () => {
         target,
       } as unknown as PointerEvent;
 
-      UpdrawEventHelper.onLongPress(event, onSuccess, onCancel);
+      UpmadeEventHelper.onLongPress(event, onSuccess, onCancel);
 
       expect(onSuccess).not.toHaveBeenCalled();
       jest.advanceTimersByTime(400);
@@ -84,7 +84,7 @@ describe('UpdrawEventHelper', () => {
       const onCancel = jest.fn();
       const event = { pointerType: 'mouse' } as PointerEvent;
 
-      UpdrawEventHelper.onLongPress(event, onSuccess, onCancel);
+      UpmadeEventHelper.onLongPress(event, onSuccess, onCancel);
 
       jest.advanceTimersByTime(400);
       expect(onSuccess).not.toHaveBeenCalled();
@@ -102,7 +102,7 @@ describe('UpdrawEventHelper', () => {
         target,
       } as unknown as PointerEvent;
 
-      const cancel = UpdrawEventHelper.onLongPress(event, onSuccess, onCancel);
+      const cancel = UpmadeEventHelper.onLongPress(event, onSuccess, onCancel);
       cancel();
 
       jest.advanceTimersByTime(400);

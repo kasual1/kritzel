@@ -1,15 +1,15 @@
-import { UpdrawWorkspace } from './workspace.class';
-import { UpdrawCore } from './core.class';
+import { UpmadeWorkspace } from './workspace.class';
+import { UpmadeCore } from './core.class';
 
-describe('UpdrawWorkspace', () => {
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadeWorkspace', () => {
+  let mockCore: jest.Mocked<UpmadeCore>;
 
-  const createMockCore = (): jest.Mocked<UpdrawCore> => {
+  const createMockCore = (): jest.Mocked<UpmadeCore> => {
     return {
       engine: {
         addObject: jest.fn(),
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
   };
 
   beforeEach(() => {
@@ -21,8 +21,8 @@ describe('UpdrawWorkspace', () => {
   });
 
   describe('constructor', () => {
-    it('should create a workspace from an UpdrawWorkspaceConfig object', () => {
-      const workspace = new UpdrawWorkspace({
+    it('should create a workspace from an UpmadeWorkspaceConfig object', () => {
+      const workspace = new UpmadeWorkspace({
         name: 'Configured Workspace',
         id: 'ws-config-1',
         viewport: { centerWorldX: 10, centerWorldY: 20, scale: 1.5 },
@@ -31,11 +31,11 @@ describe('UpdrawWorkspace', () => {
       expect(workspace.id).toBe('ws-config-1');
       expect(workspace.name).toBe('Configured Workspace');
       expect(workspace.viewport).toEqual({ centerWorldX: 10, centerWorldY: 20, scale: 1.5 });
-      expect(workspace.__class__).toBe('UpdrawWorkspace');
+      expect(workspace.__class__).toBe('UpmadeWorkspace');
     });
 
-    it('should auto-generate an ID if omitted in UpdrawWorkspaceConfig', () => {
-      const workspace = new UpdrawWorkspace({ name: 'Auto ID Workspace' });
+    it('should auto-generate an ID if omitted in UpmadeWorkspaceConfig', () => {
+      const workspace = new UpmadeWorkspace({ name: 'Auto ID Workspace' });
 
       expect(workspace.id).toBeDefined();
       expect(typeof workspace.id).toBe('string');
@@ -44,13 +44,13 @@ describe('UpdrawWorkspace', () => {
     });
 
     it('should leave objects undefined when none are declared', () => {
-      const workspace = new UpdrawWorkspace({ name: 'No Objects' });
+      const workspace = new UpmadeWorkspace({ name: 'No Objects' });
 
       expect(workspace.objects).toBeUndefined();
     });
 
     it('should set default viewport values when none provided', () => {
-      const workspace = new UpdrawWorkspace({ name: 'Test' });
+      const workspace = new UpmadeWorkspace({ name: 'Test' });
 
       expect(workspace.viewport).toEqual({
         centerWorldX: 0,
@@ -60,7 +60,7 @@ describe('UpdrawWorkspace', () => {
     });
 
     it('should set default name when none provided', () => {
-      const workspace = new UpdrawWorkspace();
+      const workspace = new UpmadeWorkspace();
 
       expect(workspace.name).toBe('New Workspace');
       expect(workspace.id).toBeDefined();
@@ -68,14 +68,14 @@ describe('UpdrawWorkspace', () => {
 
     it('should accept custom viewport values', () => {
       const viewport = { centerWorldX: 100, centerWorldY: 200, scale: 2 };
-      const workspace = new UpdrawWorkspace({ name: 'Test', viewport });
+      const workspace = new UpmadeWorkspace({ name: 'Test', viewport });
 
       expect(workspace.viewport).toEqual(viewport);
     });
 
     it('should set createdAt and updatedAt to current dates', () => {
       const before = new Date();
-      const workspace = new UpdrawWorkspace({ name: 'Test' });
+      const workspace = new UpmadeWorkspace({ name: 'Test' });
       const after = new Date();
 
       expect(workspace.createdAt.getTime()).toBeGreaterThanOrEqual(before.getTime());
@@ -88,7 +88,7 @@ describe('UpdrawWorkspace', () => {
   describe('create', () => {
     it('should create a workspace from an object and assign core', () => {
       const obj = { id: 'ws-2', name: 'Created Workspace', viewport: { centerWorldX: 50, centerWorldY: 60, scale: 1.5 } };
-      const workspace = UpdrawWorkspace.create(mockCore, obj);
+      const workspace = UpmadeWorkspace.create(mockCore, obj);
 
       expect(workspace.id).toBe('ws-2');
       expect(workspace.name).toBe('Created Workspace');
@@ -96,17 +96,17 @@ describe('UpdrawWorkspace', () => {
       expect(workspace._core).toBe(mockCore);
     });
 
-    it('should return an instance of UpdrawWorkspace', () => {
+    it('should return an instance of UpmadeWorkspace', () => {
       const obj = { id: 'ws-3', name: 'Test' };
-      const workspace = UpdrawWorkspace.create(mockCore, obj);
+      const workspace = UpmadeWorkspace.create(mockCore, obj);
 
-      expect(workspace).toBeInstanceOf(UpdrawWorkspace);
+      expect(workspace).toBeInstanceOf(UpmadeWorkspace);
     });
   });
 
   describe('addObject', () => {
     it('should delegate to core.engine.addObject', () => {
-      const workspace = UpdrawWorkspace.create(mockCore, { id: 'ws-1', name: 'Test' });
+      const workspace = UpmadeWorkspace.create(mockCore, { id: 'ws-1', name: 'Test' });
       const mockObj = { id: 'obj-1', type: 'path' };
 
       workspace.addObject(mockObj);
@@ -117,17 +117,17 @@ describe('UpdrawWorkspace', () => {
 
   describe('serialize', () => {
     it('should return a serialized representation', () => {
-      const workspace = new UpdrawWorkspace({ id: 'ws-1', name: 'Test Workspace', viewport: { centerWorldX: 10, centerWorldY: 20, scale: 1.5 } });
+      const workspace = new UpmadeWorkspace({ id: 'ws-1', name: 'Test Workspace', viewport: { centerWorldX: 10, centerWorldY: 20, scale: 1.5 } });
       const serialized = workspace.serialize();
 
-      expect(serialized.__class__).toBe('UpdrawWorkspace');
+      expect(serialized.__class__).toBe('UpmadeWorkspace');
       expect(serialized.id).toBe('ws-1');
       expect(serialized.name).toBe('Test Workspace');
       expect(serialized.viewport).toEqual({ centerWorldX: 10, centerWorldY: 20, scale: 1.5 });
     });
 
     it('should serialize dates as ISO strings', () => {
-      const workspace = new UpdrawWorkspace({ id: 'ws-1', name: 'Test' });
+      const workspace = new UpmadeWorkspace({ id: 'ws-1', name: 'Test' });
       const serialized = workspace.serialize();
 
       expect(typeof serialized.createdAt).toBe('string');
@@ -139,7 +139,7 @@ describe('UpdrawWorkspace', () => {
 
   describe('deserialize', () => {
     it('should restore workspace properties from a plain object', () => {
-      const workspace = new UpdrawWorkspace();
+      const workspace = new UpmadeWorkspace();
       const data = {
         id: 'ws-restored',
         name: 'Restored Workspace',
@@ -156,7 +156,7 @@ describe('UpdrawWorkspace', () => {
     });
 
     it('should convert date strings back to Date objects', () => {
-      const workspace = new UpdrawWorkspace();
+      const workspace = new UpmadeWorkspace();
       const data = {
         createdAt: '2025-01-15T10:00:00.000Z',
         updatedAt: '2025-01-16T12:00:00.000Z',
@@ -171,7 +171,7 @@ describe('UpdrawWorkspace', () => {
     });
 
     it('should return the workspace instance for chaining', () => {
-      const workspace = new UpdrawWorkspace();
+      const workspace = new UpmadeWorkspace();
       const result = workspace.deserialize({ createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
 
       expect(result).toBe(workspace);
@@ -180,10 +180,10 @@ describe('UpdrawWorkspace', () => {
 
   describe('serialize/deserialize roundtrip', () => {
     it('should preserve data through a serialize-deserialize cycle', () => {
-      const original = new UpdrawWorkspace({ id: 'ws-round', name: 'Roundtrip', viewport: { centerWorldX: 5, centerWorldY: 10, scale: 3 } });
+      const original = new UpmadeWorkspace({ id: 'ws-round', name: 'Roundtrip', viewport: { centerWorldX: 5, centerWorldY: 10, scale: 3 } });
       const serialized = original.serialize();
 
-      const restored = new UpdrawWorkspace();
+      const restored = new UpmadeWorkspace();
       restored.deserialize(serialized);
 
       expect(restored.id).toBe(original.id);

@@ -2,15 +2,15 @@
 import { computed, onBeforeUnmount, ref } from 'vue'
 import {
   getEditorRef,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type UpdrawBaseObject,
-  type UpdrawSyncConfig,
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type UpmadeBaseObject,
+  type UpmadeSyncConfig,
   type ObjectsAddedEvent,
   type ObjectsRemovedEvent,
   type ObjectsUpdatedEvent,
   ShapeType,
-} from '@updraw/vue-editor'
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../const/vue-theme-dark'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import { createSeedObjects } from '../getting-started/seed-objects'
@@ -38,20 +38,20 @@ type AnyObject = {
   width?: number
 }
 
-const syncConfig: UpdrawSyncConfig = {
+const syncConfig: UpmadeSyncConfig = {
   providers: [],
 }
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 const editorStyle = { display: 'block', width: '100%', height: '100%' }
 
-const availableTypes = ['UpdrawShape', 'UpdrawText', 'UpdrawLine', 'UpdrawPath']
+const availableTypes = ['UpmadeShape', 'UpmadeText', 'UpmadeLine', 'UpmadePath']
 
 const allObjects = ref<AnyObject[]>([])
 const expandedGroups = ref<Set<string>>(new Set())
 const selectedObject = ref<AnyObject | null>(null)
 const searchQuery = ref('')
-const selectedTypes = ref<Set<string>>(new Set([...availableTypes, 'UpdrawGroup']))
+const selectedTypes = ref<Set<string>>(new Set([...availableTypes, 'UpmadeGroup']))
 
 let selectionListenerAttached = false
 const handleSelectionChange = () => {
@@ -61,7 +61,7 @@ const handleSelectionChange = () => {
 const childIds = computed(() => {
   const ids = new Set<string>()
   allObjects.value.forEach((obj) => {
-    if (obj.__class__ === 'UpdrawGroup') {
+    if (obj.__class__ === 'UpmadeGroup') {
       const group = obj as unknown as { childIds?: string[] }
       group.childIds?.forEach((id) => ids.add(id))
     }
@@ -85,7 +85,7 @@ const flatNodes = computed(() => {
       return
     }
     result.push({ obj, depth })
-    if (obj.__class__ === 'UpdrawGroup' && isExpanded(obj.id)) {
+    if (obj.__class__ === 'UpmadeGroup' && isExpanded(obj.id)) {
       for (const child of getGroupChildren(obj)) {
         walk(child, depth + 1)
       }
@@ -176,7 +176,7 @@ function isExpanded(groupId: string): boolean {
 
 function toggleExpand(event: Event, obj: AnyObject) {
   event.stopPropagation()
-  if (obj.__class__ !== 'UpdrawGroup') {
+  if (obj.__class__ !== 'UpmadeGroup') {
     return
   }
   const next = new Set(expandedGroups.value)
@@ -199,7 +199,7 @@ function getGroupChildren(groupObj: AnyObject): AnyObject[] {
 function isNodeVisible(obj: AnyObject): boolean {
   return (
     matchesFilter(obj) ||
-    (obj.__class__ === 'UpdrawGroup' && hasMatchingDescendant(obj))
+    (obj.__class__ === 'UpmadeGroup' && hasMatchingDescendant(obj))
   )
 }
 
@@ -221,14 +221,14 @@ function matchesFilter(obj: AnyObject): boolean {
     return true
   }
 
-  if (obj.__class__ === 'UpdrawText') {
+  if (obj.__class__ === 'UpmadeText') {
     const txt = (obj as unknown as { text?: string }).text || ''
     if (txt.toLowerCase().includes(query)) {
       return true
     }
   }
 
-  if (obj.__class__ === 'UpdrawShape') {
+  if (obj.__class__ === 'UpmadeShape') {
     const shapeType = (obj as unknown as { shapeType?: string }).shapeType || ''
     if (shapeType.toLowerCase().includes(query)) {
       return true
@@ -244,7 +244,7 @@ function hasMatchingDescendant(groupObj: AnyObject): boolean {
     if (matchesFilter(child)) {
       return true
     }
-    if (child.__class__ === 'UpdrawGroup' && hasMatchingDescendant(child)) {
+    if (child.__class__ === 'UpmadeGroup' && hasMatchingDescendant(child)) {
       return true
     }
   }
@@ -253,36 +253,36 @@ function hasMatchingDescendant(groupObj: AnyObject): boolean {
 
 function getDisplayName(obj: AnyObject): string {
   switch (obj.__class__) {
-    case 'UpdrawGroup': {
+    case 'UpmadeGroup': {
       const count = (obj as unknown as { childIds?: string[] }).childIds?.length ?? 0
       return `Group (${count} items)`
     }
-    case 'UpdrawShape': {
+    case 'UpmadeShape': {
       const shape = obj as unknown as { shapeType?: ShapeType }
       return shape.shapeType === ShapeType.Ellipse ? 'Ellipse' : 'Rectangle'
     }
-    case 'UpdrawText': {
+    case 'UpmadeText': {
       const txt = (obj as unknown as { text?: string }).text || 'Blank Text'
       return `Text "${txt.length > 15 ? `${txt.slice(0, 15)}...` : txt}"`
     }
-    case 'UpdrawLine':
+    case 'UpmadeLine':
       return 'Line'
-    case 'UpdrawPath':
+    case 'UpmadePath':
       return 'Brush Path'
     default:
-      return obj.__class__.replace('Updraw', '')
+      return obj.__class__.replace('Upmade', '')
   }
 }
 
 async function selectTreeObject(obj: AnyObject) {
   selectedObject.value = obj
-  await editor.value?.panToObject(asUpdrawObject(obj))
-  await editor.value?.selectObjects([asUpdrawObject(obj)])
+  await editor.value?.panToObject(asUpmadeObject(obj))
+  await editor.value?.selectObjects([asUpmadeObject(obj)])
 }
 
 async function deleteTreeObject(event: Event, obj: AnyObject) {
   event.stopPropagation()
-  await editor.value?.removeObject(asUpdrawObject(obj))
+  await editor.value?.removeObject(asUpmadeObject(obj))
 }
 
 function getTextContent(obj: AnyObject): string {
@@ -329,7 +329,7 @@ async function updateSelectedProperty(prop: string, event: Event) {
     payload[prop] = value
   }
 
-  await editor.value?.updateObject(asUpdrawObject(active), payload)
+  await editor.value?.updateObject(asUpmadeObject(active), payload)
 }
 
 async function syncInspectorWithSelection() {
@@ -346,7 +346,7 @@ async function applyTypeOpacityFilter() {
     const targetOpacity = types.has(obj.__class__) ? 1 : 0.5
     const currentOpacity = obj.opacity ?? 1
     if (currentOpacity !== targetOpacity) {
-      return editor.value!.updateObject(asUpdrawObject(obj), { opacity: targetOpacity })
+      return editor.value!.updateObject(asUpmadeObject(obj), { opacity: targetOpacity })
     }
     return Promise.resolve()
   })
@@ -373,8 +373,8 @@ function resolveThemeColor(raw: unknown, fallback: string): string {
   return fallback
 }
 
-function asUpdrawObject(obj: AnyObject) {
-  return obj as unknown as UpdrawBaseObject<HTMLElement | SVGElement>
+function asUpmadeObject(obj: AnyObject) {
+  return obj as unknown as UpmadeBaseObject<HTMLElement | SVGElement>
 }
 
 </script>
@@ -382,7 +382,7 @@ function asUpdrawObject(obj: AnyObject) {
 <template>
   <div class="content-shell">
     <div class="editor-container">
-      <UpdrawEditor
+      <UpmadeEditor
         ref="editor"
         editorId="object-explorer"
         theme="light"
@@ -427,7 +427,7 @@ function asUpdrawObject(obj: AnyObject) {
             :class="{ active: selectedTypes.has(type) }"
             @click="toggleTypeFilter(type)"
           >
-            {{ type.replace('Updraw', '') }}
+            {{ type.replace('Upmade', '') }}
           </button>
         </div>
       </section>
@@ -450,7 +450,7 @@ function asUpdrawObject(obj: AnyObject) {
               }"
             >
               <span class="node-arrow" @click="toggleExpand($event, node.obj)">
-                <template v-if="node.obj.__class__ === 'UpdrawGroup'">
+                <template v-if="node.obj.__class__ === 'UpmadeGroup'">
                   {{ isExpanded(node.obj.id) ? '▼' : '▶' }}
                 </template>
                 <template v-else>•</template>
@@ -476,7 +476,7 @@ function asUpdrawObject(obj: AnyObject) {
       </section>
 
       <section v-if="selectedObject" class="section inspector">
-        <h4>Inspector: {{ selectedObject.__class__.replace('Updraw', '') }}</h4>
+        <h4>Inspector: {{ selectedObject.__class__.replace('Upmade', '') }}</h4>
 
         <div class="inspector-field">
           <label>ID</label>
@@ -499,7 +499,7 @@ function asUpdrawObject(obj: AnyObject) {
           </div>
         </div>
 
-        <div v-if="selectedObject.__class__ === 'UpdrawText'" class="inspector-field">
+        <div v-if="selectedObject.__class__ === 'UpmadeText'" class="inspector-field">
           <label>Text Content</label>
           <input
             type="text"
@@ -508,7 +508,7 @@ function asUpdrawObject(obj: AnyObject) {
           />
         </div>
 
-        <template v-if="selectedObject.__class__ === 'UpdrawShape'">
+        <template v-if="selectedObject.__class__ === 'UpmadeShape'">
           <div class="inspector-field">
             <label>Size W / H</label>
             <div class="coords-row">
@@ -535,7 +535,7 @@ function asUpdrawObject(obj: AnyObject) {
           </div>
         </template>
 
-        <template v-if="selectedObject.__class__ === 'UpdrawPath'">
+        <template v-if="selectedObject.__class__ === 'UpmadePath'">
           <div class="inspector-field">
             <label>Fill Color</label>
             <input

@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
 import {
-  HTMLUpdrawEditorElement,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type UpdrawBaseObject,
-} from "@updraw/react-editor";
+  HTMLUpmadeEditorElement,
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type UpmadeBaseObject,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -15,14 +15,14 @@ import { InfoPanel, InfoPanelToggle, useInfoPanel } from "../../../components/In
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ObjectsFilterPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const infoPanel = useInfoPanel({ hasToolbarToggle: true });
-  const [results, setResults] = useState<UpdrawBaseObject[]>([]);
+  const [results, setResults] = useState<UpmadeBaseObject[]>([]);
   const [workspaces] = useState(() => [
-    new UpdrawWorkspace({ objects: createSeedObjects() }),
+    new UpmadeWorkspace({ objects: createSeedObjects() }),
   ]);
 
-  async function highlightResults(nextResults: UpdrawBaseObject[]) {
+  async function highlightResults(nextResults: UpmadeBaseObject[]) {
     const editor = editorRef.current;
     if (!editor) return;
     const all = await editor.getAllObjects();
@@ -30,7 +30,7 @@ export function ObjectsFilterPage() {
     await Promise.all(nextResults.map((object) => editor.updateObject(object, { opacity: 1 })));
   }
 
-  async function showResults(nextResults: UpdrawBaseObject[]) {
+  async function showResults(nextResults: UpmadeBaseObject[]) {
     setResults(nextResults);
     await highlightResults(nextResults);
   }
@@ -61,16 +61,16 @@ export function ObjectsFilterPage() {
   return (
     <div style={hostStyle}>
       <Toolbar>
-        <button onClick={() => void queryByType("UpdrawShape")}>Shapes</button>
-        <button onClick={() => void queryByType("UpdrawPath")}>Paths</button>
-        <button onClick={() => void queryByType("UpdrawLine")}>Lines</button>
+        <button onClick={() => void queryByType("UpmadeShape")}>Shapes</button>
+        <button onClick={() => void queryByType("UpmadePath")}>Paths</button>
+        <button onClick={() => void queryByType("UpmadeLine")}>Lines</button>
         <button onClick={() => void queryAll()}>All</button>
         <button onClick={() => void queryNone()}>None</button>
         <button onClick={() => void queryInViewport()}>In Viewport</button>
         <InfoPanelToggle panel={infoPanel} />
       </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        <UpdrawEditor
+        <UpmadeEditor
           ref={editorRef}
           editorId="objects-filter"
           theme="light"

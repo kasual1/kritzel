@@ -1,7 +1,7 @@
-import { UpdrawEmbeddedObject } from '../interfaces/embedded-object.interface';
+import { UpmadeEmbeddedObject } from '../interfaces/embedded-object.interface';
 
-export class UpdrawWheelHelper {
-  public static shouldKeepWheelInDynamicObject(ev: WheelEvent, dynamicObject: UpdrawEmbeddedObject): boolean {
+export class UpmadeWheelHelper {
+  public static shouldKeepWheelInDynamicObject(ev: WheelEvent, dynamicObject: UpmadeEmbeddedObject): boolean {
     // Keep Ctrl+wheel available for viewport zoom gestures.
     if (ev.ctrlKey || dynamicObject.isSelected !== true) {
       return false;
@@ -19,9 +19,9 @@ export class UpdrawWheelHelper {
     return this.canElementConsumeWheel(scrollContainer, ev.deltaX, ev.deltaY);
   }
 
-  private static getScrollableContainerFromEventPath(path: EventTarget[], dynamicObject: UpdrawEmbeddedObject): HTMLElement | null {
+  private static getScrollableContainerFromEventPath(path: EventTarget[], dynamicObject: UpmadeEmbeddedObject): HTMLElement | null {
     const potentialRoots = dynamicObject.getEmbeddedContentRoots();
-    const legacyElementRef = (dynamicObject as UpdrawEmbeddedObject & { elmeentRef?: HTMLElement }).elmeentRef;
+    const legacyElementRef = (dynamicObject as UpmadeEmbeddedObject & { elmeentRef?: HTMLElement }).elmeentRef;
     if (legacyElementRef instanceof HTMLElement) {
       potentialRoots.push(legacyElementRef);
     }

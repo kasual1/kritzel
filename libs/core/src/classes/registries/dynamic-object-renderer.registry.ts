@@ -1,23 +1,23 @@
-import { UpdrawDynamicObjectRenderer } from "../../interfaces/dynamic-object-renderer.interface";
+import { UpmadeDynamicObjectRenderer } from "../../interfaces/dynamic-object-renderer.interface";
 
-type UpdrawRendererRegistryStore = {
-  renderers: Map<string, UpdrawDynamicObjectRenderer>;
+type UpmadeRendererRegistryStore = {
+  renderers: Map<string, UpmadeDynamicObjectRenderer>;
 };
 
-const UPDRAW_RENDERER_REGISTRY_KEY = '__updrawDynamicObjectRendererRegistry__';
+const UPMADE_RENDERER_REGISTRY_KEY = '__upmadeDynamicObjectRendererRegistry__';
 
-const getGlobalRegistryStore = (): UpdrawRendererRegistryStore => {
+const getGlobalRegistryStore = (): UpmadeRendererRegistryStore => {
   const globalScope = globalThis as unknown as Record<string, unknown>;
-  const existing = globalScope[UPDRAW_RENDERER_REGISTRY_KEY] as UpdrawRendererRegistryStore | undefined;
+  const existing = globalScope[UPMADE_RENDERER_REGISTRY_KEY] as UpmadeRendererRegistryStore | undefined;
 
   if (existing) {
     return existing;
   }
 
-  const created: UpdrawRendererRegistryStore = {
-    renderers: new Map<string, UpdrawDynamicObjectRenderer>(),
+  const created: UpmadeRendererRegistryStore = {
+    renderers: new Map<string, UpmadeDynamicObjectRenderer>(),
   };
-  globalScope[UPDRAW_RENDERER_REGISTRY_KEY] = created;
+  globalScope[UPMADE_RENDERER_REGISTRY_KEY] = created;
   return created;
 };
 
@@ -31,8 +31,8 @@ const getGlobalRegistryStore = (): UpdrawRendererRegistryStore => {
  * When a dynamic object is deserialized with a rendererKey, the registry is consulted to
  * resolve the renderer and mount with the persisted rendererData.
  */
-export class UpdrawDynamicObjectRendererRegistry {
-  private static get _renderers(): Map<string, UpdrawDynamicObjectRenderer> {
+export class UpmadeDynamicObjectRendererRegistry {
+  private static get _renderers(): Map<string, UpmadeDynamicObjectRenderer> {
     return getGlobalRegistryStore().renderers;
   }
 
@@ -41,7 +41,7 @@ export class UpdrawDynamicObjectRendererRegistry {
    * @param key - Stable identifier for this renderer (e.g., 'angular-my-component')
    * @param renderer - Renderer implementation with mount/unmount/update handlers
    */
-  static register(key: string, renderer: UpdrawDynamicObjectRenderer): void {
+  static register(key: string, renderer: UpmadeDynamicObjectRenderer): void {
     this._renderers.set(key, renderer);
   }
 
@@ -50,7 +50,7 @@ export class UpdrawDynamicObjectRendererRegistry {
    * @param key - Renderer identifier
    * @returns The registered renderer, or undefined if not found
    */
-  static get(key: string): UpdrawDynamicObjectRenderer | undefined {
+  static get(key: string): UpmadeDynamicObjectRenderer | undefined {
     return this._renderers.get(key);
   }
 

@@ -1,12 +1,12 @@
-import { UpdrawClipboardPayload, getClipboardPayloadJson, PasteIntent } from '../../managers/clipboard.types';
-import { UpdrawPasteIntentProvider, UpdrawPasteIntentProviderContext } from '../../../interfaces/paste-intent-provider.interface';
+import { UpmadeClipboardPayload, getClipboardPayloadJson, PasteIntent } from '../../managers/clipboard.types';
+import { UpmadePasteIntentProvider, UpmadePasteIntentProviderContext } from '../../../interfaces/paste-intent-provider.interface';
 
-export class UpdrawEventPasteIntentProvider implements UpdrawPasteIntentProvider {
-  canHandle(context: UpdrawPasteIntentProviderContext): boolean {
+export class UpmadeEventPasteIntentProvider implements UpmadePasteIntentProvider {
+  canHandle(context: UpmadePasteIntentProviderContext): boolean {
     return !!context.event?.clipboardData;
   }
 
-  async getPasteIntent(context: UpdrawPasteIntentProviderContext): Promise<PasteIntent> {
+  async getPasteIntent(context: UpmadePasteIntentProviderContext): Promise<PasteIntent> {
     const data = context.event?.clipboardData;
     if (!data) {
       return { type: 'unknown' };
@@ -27,14 +27,14 @@ export class UpdrawEventPasteIntentProvider implements UpdrawPasteIntentProvider
     return { type: 'unknown' };
   }
 
-  private parseClipboardPayload(text: string | null | undefined): UpdrawClipboardPayload | null {
+  private parseClipboardPayload(text: string | null | undefined): UpmadeClipboardPayload | null {
     const json = getClipboardPayloadJson(text);
     if (json === null) {
       return null;
     }
 
     try {
-      const parsed = JSON.parse(json) as UpdrawClipboardPayload;
+      const parsed = JSON.parse(json) as UpmadeClipboardPayload;
       if (parsed?.version !== 1 || !Array.isArray(parsed.objects)) {
         return null;
       }
@@ -48,7 +48,7 @@ export class UpdrawEventPasteIntentProvider implements UpdrawPasteIntentProvider
   private determineTextPasteIntent(text: string | null | undefined): PasteIntent | null {
     const payload = this.parseClipboardPayload(text);
     if (payload) {
-      return { type: 'updraw_objects', payload };
+      return { type: 'upmade_objects', payload };
     }
 
     if (text && text.trim().length > 0) {

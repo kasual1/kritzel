@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import {
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawEraserTool,
-  UpdrawSelectionTool,
-  UpdrawWorkspace,
-  type UpdrawToolbarItem,
-} from '@updraw/vue-editor'
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeEraserTool,
+  UpmadeSelectionTool,
+  UpmadeWorkspace,
+  type UpmadeToolbarItem,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -18,27 +18,27 @@ import {
 import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 const isEraserDisabled = ref(true)
 
-const toolbarItems = computed<UpdrawToolbarItem[]>(() => [
+const toolbarItems = computed<UpmadeToolbarItem[]>(() => [
   {
     name: 'selection',
     type: 'tool',
     isDefault: true,
-    tool: UpdrawSelectionTool,
+    tool: UpmadeSelectionTool,
     icon: 'cursor',
   },
   {
     name: 'brush',
     type: 'tool',
-    tool: UpdrawBrushTool,
+    tool: UpmadeBrushTool,
     icon: 'pen',
   },
   {
     name: 'eraser',
     type: 'tool',
-    tool: UpdrawEraserTool,
+    tool: UpmadeEraserTool,
     icon: 'eraser',
     isDisabled: () => isEraserDisabled.value,
   },
@@ -60,7 +60,7 @@ function toggle() {
         {{ isEraserDisabled ? 'Enable eraser tool' : 'Disable eraser tool' }}
       </button>
     </Toolbar>
-    <UpdrawEditor
+    <UpmadeEditor
       editorId="tools-disable"
       theme="light"
       :themes="themes"

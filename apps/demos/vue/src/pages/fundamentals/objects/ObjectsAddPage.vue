@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  UpdrawEditor,
-  UpdrawPath,
-  UpdrawShape,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadePath,
+  UpmadeShape,
+  UpmadeWorkspace,
   ShapeType,
-  type UpdrawBaseObject,
-} from '@updraw/vue-editor'
+  type UpmadeBaseObject,
+} from '@upmade/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -16,9 +16,9 @@ import { editorStyle, hostStyle } from '../../shared/demo-shared'
 import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
-const objects = ref<UpdrawBaseObject[]>([])
+const objects = ref<UpmadeBaseObject[]>([])
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 
 function randomOffset() {
   return Math.floor(Math.random() * 200) - 100
@@ -29,7 +29,7 @@ async function refreshObjects() {
 }
 
 async function addRectangle() {
-  await editor.value?.addObject(new UpdrawShape({
+  await editor.value?.addObject(new UpmadeShape({
     translateX: randomOffset(),
     translateY: randomOffset(),
     width: 120,
@@ -43,7 +43,7 @@ async function addRectangle() {
 }
 
 async function addEllipse() {
-  await editor.value?.addObject(new UpdrawShape({
+  await editor.value?.addObject(new UpmadeShape({
     translateX: randomOffset(),
     translateY: randomOffset(),
     width: 100,
@@ -57,7 +57,7 @@ async function addEllipse() {
 }
 
 async function addPath() {
-  await editor.value?.addObject(new UpdrawPath({
+  await editor.value?.addObject(new UpmadePath({
     points: [
       [0, 0, 0.5],
       [20, -15, 0.5],
@@ -84,7 +84,7 @@ async function addPath() {
       <button @click="addPath">Add Path</button>
       <span class="object-count">Objects: {{ objects.length }}</span>
     </Toolbar>
-    <UpdrawEditor
+    <UpmadeEditor
       ref="editor"
       editorId="objects-add"
       theme="light"

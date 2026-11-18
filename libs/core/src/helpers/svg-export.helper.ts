@@ -1,15 +1,15 @@
-import { UpdrawBaseObject } from '../classes/objects/base-object.class';
-import { UpdrawPath } from '../classes/objects/path.class';
-import { UpdrawLine } from '../classes/objects/line.class';
-import { UpdrawShape } from '../classes/objects/shape.class';
-import { UpdrawText } from '../classes/objects/text.class';
-import { UpdrawImage } from '../classes/objects/image.class';
-import { UpdrawGroup } from '../classes/objects/group.class';
-import { UpdrawDynamicObject } from '../classes/objects/dynamic-object.class';
-import { UpdrawIframeObject } from '../classes/objects/iframe.class';
-import { UpdrawColorHelper } from './color.helper';
+import { UpmadeBaseObject } from '../classes/objects/base-object.class';
+import { UpmadePath } from '../classes/objects/path.class';
+import { UpmadeLine } from '../classes/objects/line.class';
+import { UpmadeShape } from '../classes/objects/shape.class';
+import { UpmadeText } from '../classes/objects/text.class';
+import { UpmadeImage } from '../classes/objects/image.class';
+import { UpmadeGroup } from '../classes/objects/group.class';
+import { UpmadeDynamicObject } from '../classes/objects/dynamic-object.class';
+import { UpmadeIframeObject } from '../classes/objects/iframe.class';
+import { UpmadeColorHelper } from './color.helper';
 import { ThemeName } from '../interfaces/theme.interface';
-import { UpdrawBoundingBox } from '../interfaces/bounding-box.interface';
+import { UpmadeBoundingBox } from '../interfaces/bounding-box.interface';
 
 /**
  * Options for SVG export.
@@ -32,7 +32,7 @@ export interface SvgExportOptions {
    * bytes directly into the exported markup. Required for the bytes to
    * survive rasterization (e.g. SVG -> PNG), because browsers refuse to
    * load external/`blob:` resources referenced from an SVG loaded into
-   * an `<img>` element. Populate via {@link UpdrawSvgExportHelper.resolveImageDataUrls}.
+   * an `<img>` element. Populate via {@link UpmadeSvgExportHelper.resolveImageDataUrls}.
    */
   imageDataUrls?: Map<string, string>;
 }
@@ -47,17 +47,17 @@ export interface SvgExportAssetResolver {
 }
 
 /**
- * Helper class for exporting Updraw objects to SVG format.
+ * Helper class for exporting Upmade objects to SVG format.
  * Generates clean, standards-compliant SVG markup from canvas objects.
  */
-export class UpdrawSvgExportHelper {
+export class UpmadeSvgExportHelper {
   /**
    * Calculates the combined bounding box that encompasses all objects.
    * Uses rotatedBoundingBox to account for object rotation.
    * @param objects - Array of objects to calculate bounds for
    * @returns Combined bounding box, or null if no objects provided
    */
-  static calculateCombinedBounds(objects: UpdrawBaseObject[]): UpdrawBoundingBox | null {
+  static calculateCombinedBounds(objects: UpmadeBaseObject[]): UpmadeBoundingBox | null {
     if (!objects || objects.length === 0) {
       return null;
     }
@@ -90,7 +90,7 @@ export class UpdrawSvgExportHelper {
    * @param options - Export options
    * @returns SVG document string
    */
-  static generateSvg(objects: UpdrawBaseObject[], options: SvgExportOptions = {}): string {
+  static generateSvg(objects: UpmadeBaseObject[], options: SvgExportOptions = {}): string {
     const { theme, padding = 0, includeXmlDeclaration = true, rasterSafeForCanvas = false, imageDataUrls } = options;
 
     if (!objects || objects.length === 0) {
@@ -134,11 +134,11 @@ export class UpdrawSvgExportHelper {
    * @param objects - Objects to flatten
    * @returns Flat array of all objects including group children
    */
-  private static flattenObjects(objects: UpdrawBaseObject[]): UpdrawBaseObject[] {
-    const result: UpdrawBaseObject[] = [];
+  private static flattenObjects(objects: UpmadeBaseObject[]): UpmadeBaseObject[] {
+    const result: UpmadeBaseObject[] = [];
     
     for (const obj of objects) {
-      if (obj instanceof UpdrawGroup) {
+      if (obj instanceof UpmadeGroup) {
         result.push(...this.flattenObjects(obj.children));
       } else {
         result.push(obj);
@@ -165,14 +165,14 @@ export class UpdrawSvgExportHelper {
    * @param assetResolver - Resolver used to fetch asset bytes; optional
    * @returns Map of image object id -> inlined `data:` URL
    */
-  static async resolveImageDataUrls(objects: UpdrawBaseObject[], assetResolver?: SvgExportAssetResolver): Promise<Map<string, string>> {
+  static async resolveImageDataUrls(objects: UpmadeBaseObject[], assetResolver?: SvgExportAssetResolver): Promise<Map<string, string>> {
     const dataUrls = new Map<string, string>();
 
     if (!objects || objects.length === 0) {
       return dataUrls;
     }
 
-    const images = this.flattenObjects(objects).filter((obj): obj is UpdrawImage => obj instanceof UpdrawImage);
+    const images = this.flattenObjects(objects).filter((obj): obj is UpmadeImage => obj instanceof UpmadeImage);
 
     await Promise.all(
       images.map(async image => {
@@ -193,7 +193,7 @@ export class UpdrawSvgExportHelper {
           const blob = await assetResolver.fetchBlob(image.assetId);
           dataUrls.set(image.id, await this.blobToDataUrl(blob));
         } catch (err) {
-          console.warn(`[UpdrawSvgExportHelper] Failed to inline image asset ${image.assetId} for export:`, err);
+          console.warn(`[UpmadeSvgExportHelper] Failed to inline image asset ${image.assetId} for export:`, err);
         }
       }),
     );
@@ -261,11 +261,11 @@ export class UpdrawSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns Array of def element strings
    */
-  private static collectDefs(objects: UpdrawBaseObject[], theme?: ThemeName): string[] {
+  private static collectDefs(objects: UpmadeBaseObject[], theme?: ThemeName): string[] {
     const defs: string[] = [];
 
     for (const obj of objects) {
-      if (obj instanceof UpdrawLine) {
+      if (obj instanceof UpmadeLine) {
         if (obj.hasStartArrow) {
           defs.push(this.generateArrowMarker(obj, 'start', theme));
         }
@@ -285,7 +285,7 @@ export class UpdrawSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns SVG marker element string
    */
-  private static generateArrowMarker(line: UpdrawLine, end: 'start' | 'end', _theme?: ThemeName): string {
+  private static generateArrowMarker(line: UpmadeLine, end: 'start' | 'end', _theme?: ThemeName): string {
     const markerId = end === 'start' ? line.startMarkerId : line.endMarkerId;
     const size = line.getArrowSize(end);
     const fill = line.getArrowFill(end);
@@ -301,40 +301,40 @@ export class UpdrawSvgExportHelper {
   }
 
   /**
-   * Converts an Updraw object to its SVG element representation.
+   * Converts an Upmade object to its SVG element representation.
    * @param object - The object to convert
    * @param theme - Theme for color resolution
    * @param imageDataUrls - Optional map of image id -> inlined data URL
    * @returns SVG element string, or empty string if object type is not supported
    */
   static objectToSvgElement(
-    object: UpdrawBaseObject,
+    object: UpmadeBaseObject,
     theme?: ThemeName,
     imageDataUrls?: Map<string, string>,
     rasterSafeForCanvas: boolean = false,
   ): string {
-    if (object instanceof UpdrawPath) {
+    if (object instanceof UpmadePath) {
       return this.pathToSvg(object, theme);
     }
-    if (object instanceof UpdrawLine) {
+    if (object instanceof UpmadeLine) {
       return this.lineToSvg(object, theme);
     }
-    if (object instanceof UpdrawShape) {
+    if (object instanceof UpmadeShape) {
       return this.shapeToSvg(object, theme);
     }
-    if (object instanceof UpdrawText) {
+    if (object instanceof UpmadeText) {
       return this.textToSvg(object, theme, rasterSafeForCanvas);
     }
-    if (object instanceof UpdrawImage) {
+    if (object instanceof UpmadeImage) {
       return this.imageToSvg(object, imageDataUrls);
     }
-    if (object instanceof UpdrawDynamicObject) {
+    if (object instanceof UpmadeDynamicObject) {
       return this.dynamicObjectToSvg(object, rasterSafeForCanvas);
     }
-    if (object instanceof UpdrawIframeObject) {
+    if (object instanceof UpmadeIframeObject) {
       return this.iframeObjectToSvg(object);
     }
-    if (object instanceof UpdrawGroup) {
+    if (object instanceof UpmadeGroup) {
       return this.groupToSvg(object, theme, imageDataUrls, rasterSafeForCanvas);
     }
 
@@ -342,15 +342,15 @@ export class UpdrawSvgExportHelper {
   }
 
   /**
-   * Converts an UpdrawPath to SVG.
+   * Converts an UpmadePath to SVG.
    * @param path - The path object
    * @param theme - Theme for color resolution
    * @returns SVG element string
    */
-  private static pathToSvg(path: UpdrawPath, theme?: ThemeName): string {
+  private static pathToSvg(path: UpmadePath, theme?: ThemeName): string {
     const transform = this.buildTransform(path);
-    const fill = UpdrawColorHelper.resolveThemeColor(path.fill, theme);
-    const stroke = UpdrawColorHelper.resolveThemeColor(path.stroke, theme);
+    const fill = UpmadeColorHelper.resolveThemeColor(path.fill, theme);
+    const stroke = UpmadeColorHelper.resolveThemeColor(path.stroke, theme);
     const opacity = path.opacity !== 1 ? ` opacity="${path.opacity}"` : '';
     const scale = this.getObjectScale(path);
 
@@ -363,14 +363,14 @@ export class UpdrawSvgExportHelper {
   }
 
   /**
-   * Converts an UpdrawLine to SVG.
+   * Converts an UpmadeLine to SVG.
    * @param line - The line object
    * @param theme - Theme for color resolution
    * @returns SVG element string
    */
-  private static lineToSvg(line: UpdrawLine, theme?: ThemeName): string {
+  private static lineToSvg(line: UpmadeLine, theme?: ThemeName): string {
     const transform = this.buildTransform(line);
-    const stroke = UpdrawColorHelper.resolveThemeColor(line.stroke, theme);
+    const stroke = UpmadeColorHelper.resolveThemeColor(line.stroke, theme);
     const opacity = line.opacity !== 1 ? ` opacity="${line.opacity}"` : '';
     const scale = this.getObjectScale(line);
     
@@ -385,15 +385,15 @@ export class UpdrawSvgExportHelper {
   }
 
   /**
-   * Converts an UpdrawShape to SVG.
+   * Converts an UpmadeShape to SVG.
    * @param shape - The shape object
    * @param theme - Theme for color resolution
    * @returns SVG element string
    */
-  private static shapeToSvg(shape: UpdrawShape, theme?: ThemeName): string {
+  private static shapeToSvg(shape: UpmadeShape, theme?: ThemeName): string {
     const transform = this.buildTransform(shape);
-    const fill = UpdrawColorHelper.resolveThemeColor(shape.fillColor, theme);
-    const stroke = UpdrawColorHelper.resolveThemeColor(shape.strokeColor, theme);
+    const fill = UpmadeColorHelper.resolveThemeColor(shape.fillColor, theme);
+    const stroke = UpmadeColorHelper.resolveThemeColor(shape.strokeColor, theme);
     const opacity = shape.opacity !== 1 ? ` opacity="${shape.opacity}"` : '';
     const scale = this.getObjectScale(shape);
 
@@ -407,7 +407,7 @@ export class UpdrawSvgExportHelper {
     } else if (shape.content) {
       const textHtml = this.prosemirrorToHtml(shape.content, shape, theme);
       if (textHtml) {
-        const fontColor = UpdrawColorHelper.resolveThemeColor(shape.fontColor, theme);
+        const fontColor = UpmadeColorHelper.resolveThemeColor(shape.fontColor, theme);
         textContent = `
     <foreignObject x="${shape.x}" y="${shape.y}" width="${shape.width}" height="${shape.height}">
       <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; font-family: ${shape.fontFamily}; font-size: ${shape.fontSize}px; color: ${fontColor}; overflow: hidden;">
@@ -425,20 +425,20 @@ export class UpdrawSvgExportHelper {
   }
 
   /**
-   * Converts an UpdrawText to SVG using foreignObject for rich text support.
+   * Converts an UpmadeText to SVG using foreignObject for rich text support.
    * @param text - The text object
    * @param theme - Theme for color resolution
    * @returns SVG element string
    */
-  private static textToSvg(text: UpdrawText, theme?: ThemeName, rasterSafeForCanvas: boolean = false): string {
+  private static textToSvg(text: UpmadeText, theme?: ThemeName, rasterSafeForCanvas: boolean = false): string {
     if (rasterSafeForCanvas) {
       return this.textToSvgRasterSafe(text, theme);
     }
 
     const transform = this.buildTransform(text);
     const opacity = text.opacity !== 1 ? ` opacity="${text.opacity}"` : '';
-    const fontColor = UpdrawColorHelper.resolveThemeColor(text.fontColor, theme);
-    const bgColor = UpdrawColorHelper.resolveThemeColor(text.backgroundColor, theme);
+    const fontColor = UpmadeColorHelper.resolveThemeColor(text.fontColor, theme);
+    const bgColor = UpmadeColorHelper.resolveThemeColor(text.backgroundColor, theme);
     const scale = this.getObjectScale(text);
 
     // Convert ProseMirror content to HTML
@@ -465,15 +465,15 @@ export class UpdrawSvgExportHelper {
   }
 
   /**
-   * Converts an UpdrawText to SVG using pure SVG text primitives.
+   * Converts an UpmadeText to SVG using pure SVG text primitives.
    * This path avoids `<foreignObject>`, which taints canvases when the
    * generated SVG is rasterized through `<img>` and `drawImage`.
    */
-  private static textToSvgRasterSafe(text: UpdrawText, theme?: ThemeName): string {
+  private static textToSvgRasterSafe(text: UpmadeText, theme?: ThemeName): string {
     const transform = this.buildTransform(text);
     const opacity = text.opacity !== 1 ? ` opacity="${text.opacity}"` : '';
-    const fontColor = UpdrawColorHelper.resolveThemeColor(text.fontColor, theme);
-    const bgColor = UpdrawColorHelper.resolveThemeColor(text.backgroundColor, theme);
+    const fontColor = UpmadeColorHelper.resolveThemeColor(text.fontColor, theme);
+    const bgColor = UpmadeColorHelper.resolveThemeColor(text.backgroundColor, theme);
     const scale = this.getObjectScale(text);
 
     const width = text.totalWidth / scale;
@@ -508,7 +508,7 @@ export class UpdrawSvgExportHelper {
   }
 
   /**
-   * Converts an UpdrawImage to SVG.
+   * Converts an UpmadeImage to SVG.
    *
    * Prefers an inlined `data:` URL from `imageDataUrls` (keyed by object
    * id) when provided, so the embedded bytes survive rasterization to
@@ -519,12 +519,12 @@ export class UpdrawSvgExportHelper {
    * Note: a `blob:` `resolvedSrc` renders correctly on-canvas but becomes
    * a broken-image placeholder once the SVG is loaded into an `<img>` and
    * drawn to a canvas. Callers that rasterize the SVG must pass
-   * `imageDataUrls` (see {@link UpdrawSvgExportHelper.resolveImageDataUrls}).
+   * `imageDataUrls` (see {@link UpmadeSvgExportHelper.resolveImageDataUrls}).
    * @param image - The image object
    * @param imageDataUrls - Optional map of image id -> inlined data URL
    * @returns SVG element string
    */
-  private static imageToSvg(image: UpdrawImage, imageDataUrls?: Map<string, string>): string {
+  private static imageToSvg(image: UpmadeImage, imageDataUrls?: Map<string, string>): string {
     const transform = this.buildTransform(image);
     const opacity = image.opacity !== 1 ? ` opacity="${image.opacity}"` : '';
     const scale = this.getObjectScale(image);
@@ -541,14 +541,14 @@ export class UpdrawSvgExportHelper {
   }
 
   /**
-   * Converts an UpdrawDynamicObject to SVG.
+   * Converts an UpmadeDynamicObject to SVG.
    * SVG mode: embeds HTML in foreignObject (best-effort).
    * PNG/raster mode: renders placeholder rect with warning.
    * @param obj - The dynamic object
    * @param rasterSafeForCanvas - If true, render placeholder (for PNG export)
    * @returns SVG element string
    */
-  private static dynamicObjectToSvg(obj: UpdrawDynamicObject, rasterSafeForCanvas: boolean = false): string {
+  private static dynamicObjectToSvg(obj: UpmadeDynamicObject, rasterSafeForCanvas: boolean = false): string {
     const transform = this.buildTransform(obj);
     const opacity = obj.opacity !== 1 ? ` opacity="${obj.opacity}"` : '';
     const scale = this.getObjectScale(obj);
@@ -557,7 +557,7 @@ export class UpdrawSvgExportHelper {
 
     if (rasterSafeForCanvas) {
       // PNG export: render placeholder rect (foreignObject doesn't rasterize to PNG well)
-      console.warn('[UpdrawDynamicObject SVG Export] Dynamic objects do not serialize well to PNG. Use SVG export or screenshot instead.');
+      console.warn('[UpmadeDynamicObject SVG Export] Dynamic objects do not serialize well to PNG. Use SVG export or screenshot instead.');
       return `<g transform="${transform}"${opacity}>
       <rect x="0" y="0" width="${width}" height="${height}" fill="#f0f0f0" stroke="#999" stroke-width="1" />
       <text x="${width / 2}" y="${height / 2}" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#999">[Dynamic Object]</text>
@@ -575,7 +575,7 @@ export class UpdrawSvgExportHelper {
     </g>`;
   }
 
-  private static iframeObjectToSvg(object: UpdrawIframeObject): string {
+  private static iframeObjectToSvg(object: UpmadeIframeObject): string {
     const transform = this.buildTransform(object);
     const opacity = object.opacity !== 1 ? ` opacity="${object.opacity}"` : '';
     const scale = this.getObjectScale(object);
@@ -589,14 +589,14 @@ export class UpdrawSvgExportHelper {
   }
 
   /**
-   * Converts an UpdrawGroup to SVG by recursively converting children.
+   * Converts an UpmadeGroup to SVG by recursively converting children.
    * @param group - The group object
    * @param theme - Theme for color resolution
    * @param imageDataUrls - Optional map of image id -> inlined data URL
    * @returns SVG element string
    */
   private static groupToSvg(
-    group: UpdrawGroup,
+    group: UpmadeGroup,
     theme?: ThemeName,
     imageDataUrls?: Map<string, string>,
     rasterSafeForCanvas: boolean = false,
@@ -624,7 +624,7 @@ export class UpdrawSvgExportHelper {
    * @param object - The object to build transform for
    * @returns Transform attribute value string
    */
-  private static buildTransform(object: UpdrawBaseObject): string {
+  private static buildTransform(object: UpmadeBaseObject): string {
     const transforms: string[] = [];
     const scale = this.getObjectScale(object);
 
@@ -645,7 +645,7 @@ export class UpdrawSvgExportHelper {
   /**
    * Returns a safe non-zero scale for export geometry calculations.
    */
-  private static getObjectScale(object: UpdrawBaseObject): number {
+  private static getObjectScale(object: UpmadeBaseObject): number {
     const scale = object.scale ?? 1;
     return scale === 0 ? 1 : scale;
   }
@@ -657,7 +657,7 @@ export class UpdrawSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns HTML string
    */
-  private static prosemirrorToHtml(content: any, _context: UpdrawText | UpdrawShape, theme?: ThemeName): string {
+  private static prosemirrorToHtml(content: any, _context: UpmadeText | UpmadeShape, theme?: ThemeName): string {
     if (!content || !content.content) {
       return '';
     }

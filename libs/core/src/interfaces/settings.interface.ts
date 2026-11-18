@@ -1,8 +1,8 @@
-import { UpdrawDebugInfo } from './debug-info.interface';
+import { UpmadeDebugInfo } from './debug-info.interface';
 import { ThemeName } from './theme.interface';
 import { LocaleCode } from './localization.interface';
 
-export interface UpdrawSettingsConfig {
+export interface UpmadeSettingsConfig {
   /** Minimum zoom level allowed (0.0001 to 1) */
   scaleMin: number;
   /** Maximum zoom level allowed (1 to 1000) */
@@ -22,5 +22,5 @@ export interface UpdrawSettingsConfig {
   /** Bottom boundary of the viewport in world coordinates */
   viewportBoundaryBottom: number;
   /** Debug info display options */
-  debugInfo: UpdrawDebugInfo;
+  debugInfo: UpmadeDebugInfo;
 }

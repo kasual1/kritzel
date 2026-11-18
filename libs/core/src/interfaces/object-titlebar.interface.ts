@@ -1,6 +1,6 @@
-import { UpdrawBaseObject } from '../classes/objects/base-object.class';
-import { UpdrawIconName } from '../classes/registries/icon-registry.class';
-import { UpdrawTermKey, UpdrawTermVars } from './localization.interface';
+import { UpmadeBaseObject } from '../classes/objects/base-object.class';
+import { UpmadeIconName } from '../classes/registries/icon-registry.class';
+import { UpmadeTermKey, UpmadeTermVars } from './localization.interface';
 
 /**
  * A static value or a function resolving it from the titlebar context.
@@ -8,19 +8,19 @@ import { UpdrawTermKey, UpdrawTermVars } from './localization.interface';
  * Functions are evaluated synchronously on every render, so they must be pure and cheap.
  * Unlike {@link ContextMenuItem} predicates, promises are not supported.
  */
-export type UpdrawTitlebarValue<T> = T | ((context: UpdrawObjectTitlebarContext) => T);
+export type UpmadeTitlebarValue<T> = T | ((context: UpmadeObjectTitlebarContext) => T);
 
 /** Section of the titlebar an element is rendered in. */
-export type UpdrawTitlebarSection = 'left' | 'center' | 'right';
+export type UpmadeTitlebarSection = 'left' | 'center' | 'right';
 
 /** Information about the object a titlebar belongs to, passed to dynamic element values and actions. */
-export interface UpdrawObjectTitlebarContext {
+export interface UpmadeObjectTitlebarContext {
   /** The owner of the titlebar: a top-level object or group for which `objectConfig.hasTitlebar` is true. */
-  object: UpdrawBaseObject;
-  /** The owner's class name, e.g. `'UpdrawGroup'`. */
+  object: UpmadeBaseObject;
+  /** The owner's class name, e.g. `'UpmadeGroup'`. */
   objectType: string;
   /** The owner's children when it is a group, otherwise an empty array. */
-  children: UpdrawBaseObject[];
+  children: UpmadeBaseObject[];
   /** Whether the owner, or something inside it, is part of the local selection. */
   isActive: boolean;
   /** The resolved title (item text, config resolver, object name, or localized type label). */
@@ -32,13 +32,13 @@ export interface UpdrawObjectTitlebarContext {
   /** Width of the titlebar in screen pixels. */
   barWidth: number;
   /** Translates a term key through the engine's active locale; other strings are returned verbatim. */
-  t: (key: UpdrawTermKey | (string & NonNullable<unknown>), vars?: UpdrawTermVars) => string;
+  t: (key: UpmadeTermKey | (string & NonNullable<unknown>), vars?: UpmadeTermVars) => string;
 }
 
-interface UpdrawTitlebarElementBase {
+interface UpmadeTitlebarElementBase {
   /** Stable identifier, used as render key, `data-element-id` and in `objectTitlebarAction` events. */
   id: string;
-  isVisible?: UpdrawTitlebarValue<boolean>;
+  isVisible?: UpmadeTitlebarValue<boolean>;
   /** Restricts the element to the active or inactive state. Defaults to `'always'`. */
   showWhen?: 'always' | 'active' | 'inactive';
   /** Hides the element while the titlebar is narrower than this many screen pixels. */
@@ -48,105 +48,105 @@ interface UpdrawTitlebarElementBase {
 }
 
 /** Displays the resolved title of the owner. */
-export interface UpdrawTitlebarTitle extends UpdrawTitlebarElementBase {
+export interface UpmadeTitlebarTitle extends UpmadeTitlebarElementBase {
   type: 'title';
   /** Overrides the resolved title for this element. A title with `text` cannot be edited. */
-  text?: UpdrawTitlebarValue<string>;
+  text?: UpmadeTitlebarValue<string>;
   /**
    * Lets users rename the object by clicking the title of its active titlebar again.
    * The new name is stored in the object's `name`; an empty name falls back to the default title.
    * Defaults to `false`.
    */
-  isEditable?: UpdrawTitlebarValue<boolean>;
+  isEditable?: UpmadeTitlebarValue<boolean>;
 }
 
 /** Displays arbitrary text, e.g. the object's width. */
-export interface UpdrawTitlebarText extends UpdrawTitlebarElementBase {
+export interface UpmadeTitlebarText extends UpmadeTitlebarElementBase {
   type: 'text';
-  text: UpdrawTitlebarValue<string>;
+  text: UpmadeTitlebarValue<string>;
   tone?: 'default' | 'muted' | 'strong';
 }
 
 /** Displays a non-interactive icon from the icon registry. */
-export interface UpdrawTitlebarIcon extends UpdrawTitlebarElementBase {
+export interface UpmadeTitlebarIcon extends UpmadeTitlebarElementBase {
   type: 'icon';
-  icon: UpdrawTitlebarValue<UpdrawIconName>;
+  icon: UpmadeTitlebarValue<UpmadeIconName>;
 }
 
 /** An interactive button. Clicking it never starts a drag or changes the selection. */
-export interface UpdrawTitlebarButton extends UpdrawTitlebarElementBase {
+export interface UpmadeTitlebarButton extends UpmadeTitlebarElementBase {
   type: 'button';
-  icon?: UpdrawTitlebarValue<UpdrawIconName>;
+  icon?: UpmadeTitlebarValue<UpmadeIconName>;
   /** Button text. Term keys are translated through the active locale, other strings are used verbatim. */
-  label?: UpdrawTermKey | (string & NonNullable<unknown>);
+  label?: UpmadeTermKey | (string & NonNullable<unknown>);
   /** Tooltip and accessible label. Term keys are translated through the active locale. */
-  tooltip?: UpdrawTermKey | (string & NonNullable<unknown>);
+  tooltip?: UpmadeTermKey | (string & NonNullable<unknown>);
   variant?: 'ghost' | 'filled' | 'outlined';
-  isDisabled?: UpdrawTitlebarValue<boolean>;
-  isPressed?: UpdrawTitlebarValue<boolean>;
+  isDisabled?: UpmadeTitlebarValue<boolean>;
+  isPressed?: UpmadeTitlebarValue<boolean>;
   /** Called on click. The `objectTitlebarAction` event is emitted either way. */
-  action?: (context: UpdrawObjectTitlebarContext, event: MouseEvent) => void;
+  action?: (context: UpmadeObjectTitlebarContext, event: MouseEvent) => void;
 }
 
-/** An entry of a {@link UpdrawTitlebarMenu}. */
-export interface UpdrawTitlebarMenuItem {
+/** An entry of a {@link UpmadeTitlebarMenu}. */
+export interface UpmadeTitlebarMenuItem {
   /** Stable identifier, reported as `menuItemId` in `objectTitlebarAction` events. */
   id: string;
   /** Term keys are translated through the active locale, other strings are used verbatim. */
-  label: UpdrawTermKey | (string & NonNullable<unknown>);
-  icon?: UpdrawIconName;
-  isVisible?: UpdrawTitlebarValue<boolean>;
-  isDisabled?: UpdrawTitlebarValue<boolean>;
+  label: UpmadeTermKey | (string & NonNullable<unknown>);
+  icon?: UpmadeIconName;
+  isVisible?: UpmadeTitlebarValue<boolean>;
+  isDisabled?: UpmadeTitlebarValue<boolean>;
   /** Called when the menu item is selected. The `objectTitlebarAction` event is emitted either way. */
-  action?: (context: UpdrawObjectTitlebarContext, menuItem: UpdrawTitlebarMenuItem) => void;
+  action?: (context: UpmadeObjectTitlebarContext, menuItem: UpmadeTitlebarMenuItem) => void;
 }
 
 /**
  * A button that opens a menu. The engine only tracks which menu is open and emits
- * `objectTitlebarMenuStateChange`; rendering the menu is up to the host, e.g. `updraw-editor`.
+ * `objectTitlebarMenuStateChange`; rendering the menu is up to the host, e.g. `upmade-editor`.
  * The menu closes when the camera moves, the object is deselected or its titlebar is hidden.
  */
-export interface UpdrawTitlebarMenu extends UpdrawTitlebarElementBase {
+export interface UpmadeTitlebarMenu extends UpmadeTitlebarElementBase {
   type: 'menu';
-  icon?: UpdrawTitlebarValue<UpdrawIconName>;
+  icon?: UpmadeTitlebarValue<UpmadeIconName>;
   /** Button text. Term keys are translated through the active locale, other strings are used verbatim. */
-  label?: UpdrawTermKey | (string & NonNullable<unknown>);
+  label?: UpmadeTermKey | (string & NonNullable<unknown>);
   /** Tooltip and accessible label. Term keys are translated through the active locale. */
-  tooltip?: UpdrawTermKey | (string & NonNullable<unknown>);
+  tooltip?: UpmadeTermKey | (string & NonNullable<unknown>);
   variant?: 'ghost' | 'filled' | 'outlined';
-  isDisabled?: UpdrawTitlebarValue<boolean>;
+  isDisabled?: UpmadeTitlebarValue<boolean>;
   /** Menu items, resolved when the menu opens. */
-  items: UpdrawTitlebarValue<UpdrawTitlebarMenuItem[]>;
+  items: UpmadeTitlebarValue<UpmadeTitlebarMenuItem[]>;
 }
 
 /** Flexible empty space (`spacer`) or a thin divider (`separator`). */
-export interface UpdrawTitlebarSpacer extends UpdrawTitlebarElementBase {
+export interface UpmadeTitlebarSpacer extends UpmadeTitlebarElementBase {
   type: 'spacer' | 'separator';
 }
 
-export type UpdrawTitlebarElement =
-  | UpdrawTitlebarTitle
-  | UpdrawTitlebarText
-  | UpdrawTitlebarIcon
-  | UpdrawTitlebarButton
-  | UpdrawTitlebarMenu
-  | UpdrawTitlebarSpacer;
+export type UpmadeTitlebarElement =
+  | UpmadeTitlebarTitle
+  | UpmadeTitlebarText
+  | UpmadeTitlebarIcon
+  | UpmadeTitlebarButton
+  | UpmadeTitlebarMenu
+  | UpmadeTitlebarSpacer;
 
 /**
  * Content and appearance of the titlebar rendered above the objects for which
  * `objectConfig.hasTitlebar` is true. The same configuration applies to every object.
  */
-export interface UpdrawObjectTitlebarConfig {
+export interface UpmadeObjectTitlebarConfig {
   /** Elements in the left section. Defaults to a single title element. */
-  left?: UpdrawTitlebarElement[];
-  center?: UpdrawTitlebarElement[];
-  right?: UpdrawTitlebarElement[];
+  left?: UpmadeTitlebarElement[];
+  center?: UpmadeTitlebarElement[];
+  right?: UpmadeTitlebarElement[];
   /** Show titlebars always (default) or only while their object is selected. */
   visibility?: 'always' | 'active';
   /** Follow the object's rotation (default) or stay upright above its rotated bounding box. */
   rotation?: 'follow' | 'upright';
   /** Resolves the title of an object. Falls back to the object's name, then to a localized type label. */
-  title?: (object: UpdrawBaseObject) => string | undefined;
+  title?: (object: UpmadeBaseObject) => string | undefined;
   /** Whether dragging the titlebar moves its object. Defaults to `true`. */
   draggable?: boolean;
   /** Hides titlebars whose object is narrower than this many screen pixels. Defaults to 40. */
@@ -154,12 +154,12 @@ export interface UpdrawObjectTitlebarConfig {
 }
 
 /** Payload of the `objectTitlebarAction` event emitted when a titlebar button or menu item is clicked. */
-export interface UpdrawObjectTitlebarActionEvent {
+export interface UpmadeObjectTitlebarActionEvent {
   /** Id of the clicked button, or of the menu the selected menu item belongs to. */
   elementId: string;
   /** Id of the selected menu item, when a menu item was selected. */
   menuItemId?: string;
-  section: UpdrawTitlebarSection;
+  section: UpmadeTitlebarSection;
   objectId: string;
   objectType: string;
   workspaceId: string;
@@ -168,18 +168,18 @@ export interface UpdrawObjectTitlebarActionEvent {
 }
 
 /** Payload of the `objectTitlebarMenuStateChange` event, emitted when a titlebar menu opens or closes. */
-export interface UpdrawObjectTitlebarMenuState {
+export interface UpmadeObjectTitlebarMenuState {
   isVisible: boolean;
   /** Owner of the titlebar whose menu is open. */
   objectId?: string;
   /** Id of the open menu element. */
   elementId?: string;
-  section?: UpdrawTitlebarSection;
+  section?: UpmadeTitlebarSection;
   /**
    * Visible menu items with their values resolved: labels translated and `isDisabled` evaluated.
    * Select one through the engine's `selectObjectTitlebarMenuItem` method.
    */
-  items: UpdrawTitlebarMenuItem[];
+  items: UpmadeTitlebarMenuItem[];
   /** The menu button, for anchoring and returning focus to. Lives in the engine's shadow root. */
   anchor?: HTMLElement;
   /** Client rect of the menu button when the menu opened. */

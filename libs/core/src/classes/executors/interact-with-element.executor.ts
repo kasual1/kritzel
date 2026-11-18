@@ -1,29 +1,29 @@
-import type { UpdrawAgenticInteractWithElementAction } from '../../interfaces/agentic-action.interface';
-import type { UpdrawAgenticElementTarget } from '../../interfaces/agentic-cursor.interface';
+import type { UpmadeAgenticInteractWithElementAction } from '../../interfaces/agentic-action.interface';
+import type { UpmadeAgenticElementTarget } from '../../interfaces/agentic-cursor.interface';
 import type {
-  UpdrawElementAwareObject,
-  UpdrawObjectElementInteraction,
-  UpdrawObjectElementInteractionResult,
+  UpmadeElementAwareObject,
+  UpmadeObjectElementInteraction,
+  UpmadeObjectElementInteractionResult,
 } from '../../interfaces/object-element.interface';
-import type { UpdrawAgenticActionExecutor, UpdrawAgenticPreparation, UpdrawAgenticRefusal } from '../../types/agentic-action.types';
-import type { UpdrawAgenticActionRun } from '../managers/agentic-action-run.class';
+import type { UpmadeAgenticActionExecutor, UpmadeAgenticPreparation, UpmadeAgenticRefusal } from '../../types/agentic-action.types';
+import type { UpmadeAgenticActionRun } from '../managers/agentic-action-run.class';
 import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor } from '../../helpers/agentic-geometry.helper';
 import { assertElementTarget } from '../../helpers/agentic-validation.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { readElementInteraction } from '../objects/iframe-element-bridge.class';
-import { UpdrawAgenticAbortError } from '../agent/agentic-abort-error.class';
+import { UpmadeAgenticAbortError } from '../agent/agentic-abort-error.class';
 
 /** An object whose content elements can be interacted with. */
-type UpdrawInteractiveElementObject = UpdrawElementAwareObject & Required<Pick<UpdrawElementAwareObject, 'interactWithElement'>>;
+type UpmadeInteractiveElementObject = UpmadeElementAwareObject & Required<Pick<UpmadeElementAwareObject, 'interactWithElement'>>;
 
-/** Whether an object's content elements can be interacted with (see `UpdrawElementAwareObject.interactWithElement`). */
-export function isInteractiveElementObject(object: unknown): object is UpdrawInteractiveElementObject {
-  return ObjectHelper.isUpdrawElementAwareObject(object) && typeof object.interactWithElement === 'function';
+/** Whether an object's content elements can be interacted with (see `UpmadeElementAwareObject.interactWithElement`). */
+export function isInteractiveElementObject(object: unknown): object is UpmadeInteractiveElementObject {
+  return ObjectHelper.isUpmadeElementAwareObject(object) && typeof object.interactWithElement === 'function';
 }
 
 /** Throws a `TypeError` unless `interaction` is a valid element interaction. */
-export function assertElementInteraction(interaction: unknown, field: string): asserts interaction is UpdrawObjectElementInteraction {
+export function assertElementInteraction(interaction: unknown, field: string): asserts interaction is UpmadeObjectElementInteraction {
   try {
     readElementInteraction(interaction);
   } catch (error) {
@@ -33,9 +33,9 @@ export function assertElementInteraction(interaction: unknown, field: string): a
 
 /** Preparation of an action on an element: the object must exist and have elements; it is only read. */
 export function prepareElementTarget(
-  run: UpdrawAgenticActionRun,
-  target: UpdrawAgenticElementTarget,
-): UpdrawAgenticPreparation | UpdrawAgenticRefusal {
+  run: UpmadeAgenticActionRun,
+  target: UpmadeAgenticElementTarget,
+): UpmadeAgenticPreparation | UpmadeAgenticRefusal {
   const object = run.map!.findById(target.objectId);
   if (!object || isSelectionObject(object) || !isInteractiveElementObject(object)) {
     return { reason: 'invalid-target', objectIds: [target.objectId] };
@@ -52,12 +52,12 @@ export function prepareElementTarget(
  * `'element-interaction-failed'` when the content refuses the interaction.
  */
 export async function performElementInteraction(
-  run: UpdrawAgenticActionRun,
-  target: UpdrawAgenticElementTarget,
-  interaction: UpdrawObjectElementInteraction,
+  run: UpmadeAgenticActionRun,
+  target: UpmadeAgenticElementTarget,
+  interaction: UpmadeObjectElementInteraction,
 ): Promise<string[]> {
   const { objectId, selector } = target;
-  const currentObject = (): UpdrawInteractiveElementObject => {
+  const currentObject = (): UpmadeInteractiveElementObject => {
     const object = run.map?.findById(objectId);
     if (!object || !isInteractiveElementObject(object)) {
       run.stop('object-removed', [objectId]);
@@ -66,11 +66,11 @@ export async function performElementInteraction(
   };
   const hasCursor = run.actorKind !== 'user';
   // An object that throws (an implementation that rejects the selector, for example) fails the action like a refusal.
-  const ask = async (options?: { trial: true }): Promise<UpdrawObjectElementInteractionResult> => {
+  const ask = async (options?: { trial: true }): Promise<UpmadeObjectElementInteractionResult> => {
     try {
       return await currentObject().interactWithElement(selector, interaction, ...(options ? [options] : []));
     } catch (error) {
-      if (error instanceof UpdrawAgenticAbortError) {
+      if (error instanceof UpmadeAgenticAbortError) {
         throw error;
       }
       return { completed: false, reason: 'invalid-value', message: error instanceof Error ? error.message : String(error) };
@@ -85,7 +85,7 @@ export async function performElementInteraction(
       currentObject().trackElement(selector);
       tracking = true;
     } catch (error) {
-      if (error instanceof UpdrawAgenticAbortError) {
+      if (error instanceof UpmadeAgenticAbortError) {
         throw error;
       }
     }
@@ -93,7 +93,7 @@ export async function performElementInteraction(
     // replacement takes the tracking over.
     run.onSettle(() => {
       const current = tracking ? run.core.store.objects?.findById(objectId) : null;
-      if (ObjectHelper.isUpdrawElementAwareObject(current)) {
+      if (ObjectHelper.isUpmadeElementAwareObject(current)) {
         current.untrackElement(selector);
       }
     });
@@ -140,7 +140,7 @@ export async function performElementInteraction(
 }
 
 /** Where the cursor flies: the target's anchor on the visible part of the element, as the trial reported it. */
-function destinationOf(object: UpdrawInteractiveElementObject, target: UpdrawAgenticElementTarget, trial: UpdrawObjectElementInteractionResult) {
+function destinationOf(object: UpmadeInteractiveElementObject, target: UpmadeAgenticElementTarget, trial: UpmadeObjectElementInteractionResult) {
   const rect = trial.element?.visibleRect ?? trial.element?.rect;
   if (!rect) {
     return { objectId: target.objectId, anchor: 'center' as const, ...(target.offset ? { offset: target.offset } : {}) };
@@ -158,7 +158,7 @@ function destinationOf(object: UpdrawInteractiveElementObject, target: UpdrawAge
 }
 
 /** Stops the run because the content refused the interaction, keeping what it reported for the result. */
-function failElementInteraction(run: UpdrawAgenticActionRun, target: UpdrawAgenticElementTarget, result: UpdrawObjectElementInteractionResult): never {
+function failElementInteraction(run: UpmadeAgenticActionRun, target: UpmadeAgenticElementTarget, result: UpmadeObjectElementInteractionResult): never {
   let message = `Element "${target.selector}": ${result.message ?? 'the interaction could not be performed.'}`;
   if (result.coveredBy) {
     message += ` It is covered by "${result.coveredBy.selector}"${result.coveredBy.text ? ` (${JSON.stringify(result.coveredBy.text)})` : ''}.`;
@@ -172,7 +172,7 @@ function failElementInteraction(run: UpdrawAgenticActionRun, target: UpdrawAgent
 }
 
 /** `interactWithElement`: performs an interaction with an element inside an object. */
-export const interactWithElementExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticInteractWithElementAction> = {
+export const interactWithElementExecutor: UpmadeAgenticActionExecutor<UpmadeAgenticInteractWithElementAction> = {
   mutates: false,
 
   validate(action) {

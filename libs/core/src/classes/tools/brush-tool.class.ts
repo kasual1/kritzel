@@ -1,7 +1,7 @@
-import { UpdrawEventHelper } from '../../helpers/event.helper';
-import { UpdrawPath } from '../objects/path.class';
-import { UpdrawBaseTool } from './base-tool.class';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
+import { UpmadePath } from '../objects/path.class';
+import { UpmadeBaseTool } from './base-tool.class';
+import { UpmadeCore } from '../core/core.class';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
 
@@ -10,7 +10,7 @@ import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
  * Creates smooth paths by tracking pointer movement and rendering stroke paths.
  * Supports mouse, touch, and pen input with configurable color, size, and opacity.
  */
-export class UpdrawBrushTool extends UpdrawBaseTool {
+export class UpmadeBrushTool extends UpmadeBaseTool {
   override toolType = 'brush' as const;
 
   /** The color of the brush stroke (supports theme-aware light/dark colors) */
@@ -50,7 +50,7 @@ export class UpdrawBrushTool extends UpdrawBaseTool {
    *
    * Uses squared distance to avoid a per-move `Math.sqrt`.
    */
-  private shouldAppendPoint(currentPath: UpdrawPath, x: number, y: number, divider: number): boolean {
+  private shouldAppendPoint(currentPath: UpmadePath, x: number, y: number, divider: number): boolean {
     const points = currentPath.points;
     if (!points || points.length === 0) {
       return true;
@@ -58,21 +58,21 @@ export class UpdrawBrushTool extends UpdrawBaseTool {
     const last = points[points.length - 1];
     const dx = x - last[0];
     const dy = y - last[1];
-    const threshold = UpdrawBrushTool.MIN_POINT_DISTANCE_PX / divider;
+    const threshold = UpmadeBrushTool.MIN_POINT_DISTANCE_PX / divider;
     return dx * dx + dy * dy >= threshold * threshold;
   }
 
   /**
-   * Creates a new instance of UpdrawBrushTool.
-   * @param core - The UpdrawCore instance that provides access to application state and functionality
+   * Creates a new instance of UpmadeBrushTool.
+   * @param core - The UpmadeCore instance that provides access to application state and functionality
    */
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     super(core);
   }
 
   /**
    * Handles pointer down events to start drawing a new path.
-   * Creates a new UpdrawPath object at the pointer position and adds it to the canvas.
+   * Creates a new UpmadePath object at the pointer position and adds it to the canvas.
    * Supports both mouse (left-click) and touch/pen input.
    * @param event - The PointerEvent containing pointer position and input type information
    */
@@ -82,7 +82,7 @@ export class UpdrawBrushTool extends UpdrawBaseTool {
     }
 
     if (event.pointerType === 'mouse') {
-      if (UpdrawEventHelper.isLeftClick(event)) {
+      if (UpmadeEventHelper.isLeftClick(event)) {
         this._core.store.state.isDrawing = true;
         const viewportScale = this._core.store.state.scale;
         const lockScale = this._core.store.state.lockDrawingScale;
@@ -90,7 +90,7 @@ export class UpdrawBrushTool extends UpdrawBaseTool {
         const x = (event.clientX - this._core.store.offsetX) / divider;
         const y = (event.clientY - this._core.store.offsetY) / divider;
 
-        const path = UpdrawPath.create(this._core, {
+        const path = UpmadePath.create(this._core, {
           points: [[x, y]],
           translateX: -this._core.store.state.translateX / divider,
           translateY: -this._core.store.state.translateY / divider,
@@ -119,7 +119,7 @@ export class UpdrawBrushTool extends UpdrawBaseTool {
 
         this._core.store.state.isDrawing = true;
 
-        const path = UpdrawPath.create(this._core, {
+        const path = UpmadePath.create(this._core, {
           points: [[x, y]],
           translateX: -this._core.store.state.translateX / divider,
           translateY: -this._core.store.state.translateY / divider,
@@ -150,7 +150,7 @@ export class UpdrawBrushTool extends UpdrawBaseTool {
 
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isDrawing && this._currentPathId) {
-        const currentPath = this._core.store.objects.findById(this._currentPathId) as UpdrawPath | undefined;
+        const currentPath = this._core.store.objects.findById(this._currentPathId) as UpmadePath | undefined;
 
         if (currentPath) {
           const viewportScale = this._core.store.state.scale;
@@ -163,7 +163,7 @@ export class UpdrawBrushTool extends UpdrawBaseTool {
             return;
           }
 
-          const updatedPath = UpdrawPath.create(this._core, {
+          const updatedPath = UpmadePath.create(this._core, {
             points: [...currentPath.points, [x, y]],
             translateX: -this._core.store.state.translateX / divider,
             translateY: -this._core.store.state.translateY / divider,
@@ -187,7 +187,7 @@ export class UpdrawBrushTool extends UpdrawBaseTool {
 
       if (activePointers.length === 1) {
         if (this._currentPathId) {
-          const currentPath = this._core.store.objects.findById(this._currentPathId) as UpdrawPath | undefined;
+          const currentPath = this._core.store.objects.findById(this._currentPathId) as UpmadePath | undefined;
 
           if (currentPath) {
             const viewportScale = this._core.store.state.scale;
@@ -200,7 +200,7 @@ export class UpdrawBrushTool extends UpdrawBaseTool {
               return;
             }
 
-            const updatedPath = UpdrawPath.create(this._core, {
+            const updatedPath = UpmadePath.create(this._core, {
               points: [...currentPath.points, [x, y]],
               translateX: -this._core.store.state.translateX / divider,
               translateY: -this._core.store.state.translateY / divider,
@@ -237,7 +237,7 @@ export class UpdrawBrushTool extends UpdrawBaseTool {
         this._core.store.state.isDrawing = false;
 
         if (this._currentPathId) {
-          const currentPath = this._core.store.objects.findById(this._currentPathId) as UpdrawPath | undefined;
+          const currentPath = this._core.store.objects.findById(this._currentPathId) as UpmadePath | undefined;
 
           if (currentPath) {
             currentPath.isCompleted = true;
@@ -257,7 +257,7 @@ export class UpdrawBrushTool extends UpdrawBaseTool {
         this._core.store.state.isDrawing = false;
 
         if (this._currentPathId) {
-          const currentPath = this._core.store.objects.findById(this._currentPathId) as UpdrawPath | undefined;
+          const currentPath = this._core.store.objects.findById(this._currentPathId) as UpmadePath | undefined;
 
           if (currentPath) {
             currentPath.isCompleted = true;

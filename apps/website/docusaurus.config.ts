@@ -32,50 +32,9 @@ const ABSOLUTE_URL = (path: string) =>
 
 const FRAMEWORKS = ["angular", "react", "vue"] as const;
 
-// Legacy flat doc paths -> current category-based paths, applied to every framework instance.
-const LEGACY_DOC_PATHS: Record<string, string> = {
-  "quick-start": "getting-started/quick-start",
-  "basic-usage": "getting-started/basic-usage",
-  "concept-tools": "fundamentals/tools",
-  "concept-objects": "fundamentals/objects",
-  "concept-viewport": "fundamentals/viewport",
-  "concept-workspaces": "fundamentals/workspaces",
-  "concept-persistence": "fundamentals/persistence",
-  "advanced/concept-collaboration": "advanced/collaboration",
-  "advanced/concept-dynamic-objects": "advanced/dynamic-objects",
-  "advanced/concept-user-management": "advanced/user-management",
-  "advanced/agentic-cursors": "advanced/agents",
-  "advanced/chat-sessions": "advanced/agents",
-  "advanced/customization/concept-theming": "customization/themes",
-  "advanced/customization/concept-fonts": "customization/fonts",
-  "advanced/customization/concept-icons": "customization/icons",
-  "advanced/customization/concept-localization": "customization/locales",
-  "customization/titlebars": "fundamentals/controls",
-  "customization/object-config": "fundamentals/objects",
-  "example-object-explorer": "examples/object-explorer",
-  "example-blueprint-defect-mapper": "examples/blueprint-defect-mapper",
-  "example-slideshow-presentation": "examples/slideshow-presentation",
-  "example-image-annotation-studio": "examples/image-annotation-studio",
-  "api-reference-editor": "api-reference/editor",
-  "api-reference-engine": "api-reference/engine",
-  objects: "api-reference/objects",
-  theming: "api-reference/theme-tokens",
-  types: "api-reference/types",
-};
-
-const DOC_REDIRECTS = FRAMEWORKS.flatMap((framework) =>
-  Object.entries(LEGACY_DOC_PATHS)
-    // not every page exists for every framework
-    .filter(([, to]) => fs.existsSync(nodePath.join(__dirname, "docs", framework, `${to}.md`)))
-    .map(([from, to]) => ({
-      from: `/docs/${framework}/${from}`,
-      to: `/docs/${framework}/${to}`,
-    })),
-);
-
 const config: Config = {
-  title: "Updraw",
-  tagline: "Updraw helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools. Fully open-source and easy to integrate into React, Vue & Angular.",
+  title: "Upmade",
+  tagline: "Upmade helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools. Fully open-source and easy to integrate into React, Vue & Angular.",
   favicon: "img/favicon.svg",
   future: {
     v4: true,
@@ -143,7 +102,7 @@ const config: Config = {
     [
       "docusaurus-plugin-llms",
       {
-        title: "Updraw",
+        title: "Upmade",
         description: "The infinite canvas development kit for Angular, React, and Vue.",
         docsDir: FRAMEWORKS.map((framework) => ({
           path: `docs/${framework}`,
@@ -175,12 +134,12 @@ const config: Config = {
         logLevel: "normal",
         rootContent: [
           "Choose the application's framework first and read only the matching setup and API references. Do not mix Angular, React, and Vue wrappers.",
-          "- Use @updraw/angular-editor, @updraw/react-editor, or @updraw/vue-editor for the complete editor UI. Use the matching engine wrapper for a bare canvas and custom UI; the engine registers no tools by default.",
+          "- Use @upmade/angular-editor, @upmade/react-editor, or @upmade/vue-editor for the complete editor UI. Use the matching engine wrapper for a bare canvas and custom UI; the engine registers no tools by default.",
           "- Give the canvas host an explicit width and height. Wait for the editor's isReady or the engine's isEngineReady event before calling methods, and await asynchronous methods.",
           "- Check the installed package version and prefer its TypeScript types when they differ from these current documentation pages.",
           "- Persistence is opt-in through syncConfig. Use a distinct editorId for each instance when multiple canvases can exist.",
           "- Use addObject/addObjects to insert objects and updateObject to change them. Object positions use world coordinates; use screenToWorld to convert pointer coordinates.",
-          "- For a reusable coding-agent integration workflow, install the Updraw skill with `npx skills add kasual1/kritzel`.",
+          "- For a reusable coding-agent integration workflow, install the Upmade skill with `npx skills add kasual1/kritzel`.",
           "LiveDemo tags are source metadata, not instructions to execute JSX: repoUrl identifies the public framework demo directory, repoFiles lists source files relative to it, and demoPath identifies the runnable example route. For a source file, replace /tree/ with /blob/ in repoUrl and append its repoFiles path. Runnable demos are hosted at https://kasual1.github.io/kritzel/{framework}{demoPath}.",
           "Start with the matching framework's Quick Start and Basic Usage, then follow the focused API or concept pages below. The linked Markdown pages are generated from the same sources as the human documentation.",
         ].join("\n\n"),
@@ -262,12 +221,6 @@ const config: Config = {
       };
     },
     [
-      "@docusaurus/plugin-client-redirects",
-      {
-        redirects: DOC_REDIRECTS,
-      },
-    ],
-    [
       "@docusaurus/plugin-content-docs",
       {
         id: "angular",
@@ -306,12 +259,21 @@ const config: Config = {
       },
     },
     image: "img/docusaurus-social-card.jpg",
+    // Shown above the navbar on every page. src/theme/AnnouncementBar renders it as the RenameBanner component
+    // (the names with their logos); `content` is only the plain-text fallback.
+    announcementBar: {
+      id: "kritzel-is-now-upmade",
+      content: "Kritzel is now Upmade",
+      backgroundColor: "#0a0a0a",
+      textColor: "#ffffff",
+      isCloseable: false,
+    },
     navbar: {
-      title: "Updraw",
+      title: "Upmade",
       logo: {
-        alt: "Updraw Infinite Canvas",
+        alt: "Upmade Infinite Canvas",
         src: "img/logo.svg",
-        width: 24,
+        width: 19,
         height: 24,
       },
       items: [
@@ -408,24 +370,27 @@ const config: Config = {
           title: 'Community',
           items: [
             {
-              html: '<a href="https://x.com/kritzel_io" target="_blank" rel="noopener noreferrer" class="footer__link-item">X</a>',
+              html: '<a href="https://x.com/upmade_io" target="_blank" rel="noopener noreferrer" class="footer__link-item">X</a>',
             },
             {
-              html: '<a href="https://linkedin.com/in/kritzel-app-26721b40b" target="_blank" rel="noopener noreferrer" class="footer__link-item">LinkedIn</a>',
+              html: '<a href="https://www.linkedin.com/in/upmade-io-26721b40b" target="_blank" rel="noopener noreferrer" class="footer__link-item">LinkedIn</a>',
             },
             {
-              html: '<a href="https://bsky.app/profile/kritzelio.bsky.social" target="_blank" rel="noopener noreferrer" class="footer__link-item">Bluesky</a>',
+              html: '<a href="https://mastodon.social/@upmade" target="_blank" rel="me noopener noreferrer" class="footer__link-item">Mastodon</a>',
+            },
+            {
+              html: '<a href="https://bsky.app/profile/upmade.bsky.social" target="_blank" rel="noopener noreferrer" class="footer__link-item">Bluesky</a>',
             },
             {
               html: '<a href="https://github.com/kasual1/kritzel" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub</a>',
             },
             {
-              html: '<a href="https://www.npmjs.com/package/@updraw/engine" target="_blank" rel="noopener noreferrer" class="footer__link-item">NPM</a>',
+              html: '<a href="https://www.npmjs.com/package/@upmade/core" target="_blank" rel="noopener noreferrer" class="footer__link-item">NPM</a>',
             },
           ],
         },
       ],
-      copyright: `<span class="footer__meta"><span class="footer__meta-item">Copyright © ${new Date().getFullYear()} Updraw</span></span>`,
+      copyright: `<span class="footer__meta"><span class="footer__meta-item">Copyright © ${new Date().getFullYear()} Upmade</span></span>`,
     },
   } satisfies Preset.ThemeConfig,
   headTags: [
@@ -461,11 +426,11 @@ const config: Config = {
       innerHTML: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "WebSite",
-        name: "Updraw",
-        alternateName: "Updraw Infinite Canvas Library",
+        name: "Upmade",
+        alternateName: "Upmade Infinite Canvas Library",
         url: ABSOLUTE_URL("/"),
         description:
-          "Updraw is a framework-agnostic infinite canvas and collaborative whiteboard library for Angular, React, and Vue.",
+          "Upmade is a framework-agnostic infinite canvas and collaborative whiteboard library for Angular, React, and Vue.",
       }),
     },
     // Structured data: Organization
@@ -477,7 +442,7 @@ const config: Config = {
       innerHTML: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Organization",
-        name: "Updraw",
+        name: "Upmade",
         url: ABSOLUTE_URL("/"),
         logo: ABSOLUTE_URL("/img/logo.svg"),
         sameAs: ["https://github.com/kasual1/kritzel"],
@@ -497,42 +462,42 @@ const config: Config = {
             "@type": "SiteNavigationElement",
             position: 1,
             name: "Documentation",
-            description: "Guides, concepts, and API reference for the Updraw infinite canvas library.",
+            description: "Guides, concepts, and API reference for the Upmade infinite canvas library.",
             url: ABSOLUTE_URL("/docs/react/getting-started/quick-start"),
           },
           {
             "@type": "SiteNavigationElement",
             position: 2,
             name: "Getting Started",
-            description: "Quick start guide to install and integrate Updraw into your app.",
+            description: "Quick start guide to install and integrate Upmade into your app.",
             url: ABSOLUTE_URL("/docs/react/getting-started/quick-start"),
           },
           {
             "@type": "SiteNavigationElement",
             position: 3,
             name: "API Reference",
-            description: "Detailed reference for the Updraw editor and engine components.",
+            description: "Detailed reference for the Upmade editor and engine components.",
             url: ABSOLUTE_URL("/docs/react/api-reference/editor"),
           },
           {
             "@type": "SiteNavigationElement",
             position: 4,
             name: "Angular",
-            description: "Use Updraw in Angular applications.",
+            description: "Use Upmade in Angular applications.",
             url: ABSOLUTE_URL("/docs/angular/getting-started/quick-start"),
           },
           {
             "@type": "SiteNavigationElement",
             position: 5,
             name: "React",
-            description: "Use Updraw in React applications.",
+            description: "Use Upmade in React applications.",
             url: ABSOLUTE_URL("/docs/react/getting-started/quick-start"),
           },
           {
             "@type": "SiteNavigationElement",
             position: 6,
             name: "Vue",
-            description: "Use Updraw in Vue applications.",
+            description: "Use Upmade in Vue applications.",
             url: ABSOLUTE_URL("/docs/vue/getting-started/quick-start"),
           },
         ],

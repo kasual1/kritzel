@@ -11,9 +11,11 @@ const DEFAULT_HEIGHT = 360;
 const DEFAULT_OUT_DIR = path.join(__dirname, 'recordings');
 const PROFILE_DIR = path.join(__dirname, '.profile');
 const ICON_REGISTRY = path.join(__dirname, '../../libs/core/src/classes/registries/icon-registry.class.ts');
-// Same hotspot UpdrawCursorHelper.getCursor() uses for the default cursor.
+// Same hotspot UpmadeCursorHelper.getCursor() uses for the default cursor.
 const CURSOR_HOTSPOT = { x: 4, y: 4 };
-const WATERMARK_TEXT = 'Powered by updraw.io';
+const WATERMARK_TEXT = 'upmade.io';
+// The dark (black) Upmade mark; logo_dark.svg next to it is the white one for dark backgrounds.
+const WATERMARK_LOGO = path.join(__dirname, '../../apps/website/static/img/logo.svg');
 
 function getArgValue(name) {
 	const prefix = `--${name}=`;
@@ -40,7 +42,7 @@ function toDimension(value, fallback, label) {
 
 function toUrl(value) {
 	if (!value) {
-		throw new Error('Missing --url. Example: npm run record -- --url=https://app.updraw.io');
+		throw new Error('Missing --url. Example: npm run record -- --url=https://app.upmade.io');
 	}
 
 	try {
@@ -51,7 +53,7 @@ function toUrl(value) {
 }
 
 // Reads the engine's default cursor (the `mousePointer` icon) so the recording
-// shows the same cursor as the Updraw engine.
+// shows the same cursor as the Upmade engine.
 function loadEngineCursorSvg() {
 	const source = fs.readFileSync(ICON_REGISTRY, 'utf8');
 	const match = source.match(/^\s*mousePointer:\s*'([^']*)'/m);
@@ -60,6 +62,19 @@ function loadEngineCursorSvg() {
 	}
 
 	return match[1].replace(/currentColor/g, 'black');
+}
+
+/** Reads the viewBox, fill colour and path data of the Upmade mark for the watermark. */
+function loadWatermarkLogo() {
+	const source = fs.readFileSync(WATERMARK_LOGO, 'utf8');
+	const viewBox = source.match(/viewBox="([^"]+)"/)?.[1];
+	const paths = [...source.matchAll(/<path\b[^>]*\bd="([^"]+)"/g)].map((match) => match[1]);
+	const color = source.match(/<path\b[^>]*\bfill="([^"]+)"/)?.[1] ?? '#000000';
+	if (!viewBox || !paths.length) {
+		throw new Error(`Could not read the Upmade mark from ${WATERMARK_LOGO}.`);
+	}
+
+	return { viewBox, paths, color };
 }
 
 function defaultName() {
@@ -81,7 +96,7 @@ function defaultName() {
 		const fresh = hasFlag('fresh');
 		const headless = hasFlag('headless');
 
-		tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'updraw-recorder-'));
+		tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'upmade-recorder-'));
 		const profileDir = fresh ? path.join(tempDir, 'profile') : PROFILE_DIR;
 		const videoDir = path.join(tempDir, 'video');
 
@@ -102,7 +117,7 @@ function defaultName() {
 		}
 
 		if (withWatermark) {
-			await context.addInitScript(installRecorderWatermark, { text: WATERMARK_TEXT });
+			await context.addInitScript(installRecorderWatermark, { text: WATERMARK_TEXT, logo: loadWatermarkLogo() });
 		}
 
 		const page = context.pages()[0] || (await context.newPage());

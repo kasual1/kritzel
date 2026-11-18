@@ -1,40 +1,40 @@
-import { UpdrawObjectConfigManager } from './object-config.manager';
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawObjectConfig } from '../../interfaces/object-config.interface';
+import { UpmadeObjectConfigManager } from './object-config.manager';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeObjectConfig } from '../../interfaces/object-config.interface';
 
-describe('UpdrawObjectConfigManager', () => {
+describe('UpmadeObjectConfigManager', () => {
   let mockCore: any;
-  let objects: Map<string, UpdrawBaseObject<any>>;
-  let manager: UpdrawObjectConfigManager;
+  let objects: Map<string, UpmadeBaseObject<any>>;
+  let manager: UpmadeObjectConfigManager;
 
-  const setConfig = (config: UpdrawObjectConfig | undefined) => {
+  const setConfig = (config: UpmadeObjectConfig | undefined) => {
     mockCore.engine.objectConfig = config;
   };
 
-  const createObject = (id: string, props: Record<string, unknown> = {}): UpdrawBaseObject<any> => {
-    const object = Object.assign(Object.create(UpdrawBaseObject.prototype), {
-      __class__: 'UpdrawShape',
+  const createObject = (id: string, props: Record<string, unknown> = {}): UpmadeBaseObject<any> => {
+    const object = Object.assign(Object.create(UpmadeBaseObject.prototype), {
+      __class__: 'UpmadeShape',
       id,
       isRotatable: true,
       isResizable: true,
       ...props,
-    }) as UpdrawBaseObject<any>;
+    }) as UpmadeBaseObject<any>;
     objects.set(id, object);
     return object;
   };
 
-  const createGroup = (id: string, childIds: string[], props: Record<string, unknown> = {}): UpdrawGroup => {
-    const group = createObject(id, { __class__: 'UpdrawGroup', ...props }) as unknown as UpdrawGroup;
-    Object.setPrototypeOf(group, UpdrawGroup.prototype);
+  const createGroup = (id: string, childIds: string[], props: Record<string, unknown> = {}): UpmadeGroup => {
+    const group = createObject(id, { __class__: 'UpmadeGroup', ...props }) as unknown as UpmadeGroup;
+    Object.setPrototypeOf(group, UpmadeGroup.prototype);
     group.childIds = childIds;
     return group;
   };
 
-  const createSelection = (...selected: UpdrawBaseObject<any>[]): UpdrawSelectionGroup => {
-    const selection = Object.create(UpdrawSelectionGroup.prototype) as UpdrawSelectionGroup;
-    Object.defineProperty(selection, '__class__', { value: 'UpdrawSelectionGroup' });
+  const createSelection = (...selected: UpmadeBaseObject<any>[]): UpmadeSelectionGroup => {
+    const selection = Object.create(UpmadeSelectionGroup.prototype) as UpmadeSelectionGroup;
+    Object.defineProperty(selection, '__class__', { value: 'UpmadeSelectionGroup' });
     Object.defineProperty(selection, 'objects', { get: () => selected });
     return selection;
   };
@@ -45,7 +45,7 @@ describe('UpdrawObjectConfigManager', () => {
       engine: { objectConfig: undefined },
       store: { objects: { findById: (id: string) => objects.get(id) } },
     };
-    manager = new UpdrawObjectConfigManager(mockCore);
+    manager = new UpmadeObjectConfigManager(mockCore);
     jest.spyOn(console, 'warn').mockImplementation(() => undefined);
   });
 
@@ -84,10 +84,10 @@ describe('UpdrawObjectConfigManager', () => {
     });
 
     it('accepts functions deciding per object', () => {
-      setConfig({ isRotatable: object => object.__class__ !== 'UpdrawText' });
+      setConfig({ isRotatable: object => object.__class__ !== 'UpmadeText' });
 
       expect(manager.isRotatable(createObject('shape'))).toBe(true);
-      expect(manager.isRotatable(createObject('text', { __class__: 'UpdrawText' }))).toBe(false);
+      expect(manager.isRotatable(createObject('text', { __class__: 'UpmadeText' }))).toBe(false);
     });
 
     it('uses the default for non-boolean results', () => {
@@ -150,10 +150,10 @@ describe('UpdrawObjectConfigManager', () => {
     });
 
     it('applies the config to the objects inside a group', () => {
-      createObject('text', { __class__: 'UpdrawText' });
+      createObject('text', { __class__: 'UpmadeText' });
       const group = createGroup('group', ['text']);
 
-      setConfig({ isResizable: object => object.__class__ !== 'UpdrawText' });
+      setConfig({ isResizable: object => object.__class__ !== 'UpmadeText' });
 
       expect(manager.isResizable(group)).toBe(false);
     });

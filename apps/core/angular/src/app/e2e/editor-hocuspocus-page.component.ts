@@ -1,25 +1,25 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-import { HocuspocusSyncProvider, UpdrawEditor, UpdrawSyncConfig } from '@updraw/angular-editor';
+import { HocuspocusSyncProvider, UpmadeEditor, UpmadeSyncConfig } from '@upmade/angular-editor';
 import { angularThemeLight } from '../const/angular-theme-light';
 import { angularThemeDark } from '../const/angular-theme-dark';
 
 @Component({
   selector: 'app-editor-hocuspocus-page',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       [theme]="'light'"
       [themes]="themes"
       [syncConfig]="syncConfig"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
 })
 export class EditorHocuspocusPageComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: UpdrawSyncConfig = {
+  syncConfig: UpmadeSyncConfig = {
     providers: [HocuspocusSyncProvider.with({ url: 'wss://your-hocuspocus-server.com', connectionTimeout: 2000 })],
   };
 }

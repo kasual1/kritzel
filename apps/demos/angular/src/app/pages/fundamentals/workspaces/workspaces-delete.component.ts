@@ -7,10 +7,10 @@ import {
 import {
   ActiveWorkspaceChangeEvent,
   InMemorySyncProvider,
-  UpdrawEditor,
-  UpdrawSyncConfig,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeEditor,
+  UpmadeSyncConfig,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { LucideX } from '@lucide/angular';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -19,7 +19,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-workspaces-delete',
-  imports: [UpdrawEditor, LucideX, ToolbarComponent],
+  imports: [UpmadeEditor, LucideX, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -43,7 +43,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         </div>
       }
     </app-toolbar>
-    <updraw-editor
+    <upmade-editor
       editorId="workspaces-delete"
       [theme]="'light'"
       [themes]="themes"
@@ -55,7 +55,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [
     `
@@ -65,7 +65,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         height: 100%;
         font-family: Roboto, sans-serif;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
       }
       .workspace-tab {
@@ -106,17 +106,17 @@ import { createSeedObjects } from '../../../const/seed-objects';
   ],
 })
 export class WorkspacesDeleteComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-  syncConfig: UpdrawSyncConfig = {
+  syncConfig: UpmadeSyncConfig = {
     providers: [InMemorySyncProvider],
   };
-  workspaces = signal<UpdrawWorkspace[]>(
+  workspaces = signal<UpmadeWorkspace[]>(
     Array.from(
       { length: 6 },
       (_, index) =>
-        new UpdrawWorkspace({
+        new UpmadeWorkspace({
           id: `board-${index + 1}`,
           name: `Board ${index + 1}`,
           objects: createSeedObjects(),
@@ -129,11 +129,11 @@ export class WorkspacesDeleteComponent {
     this.activeWorkspaceId.set(event.detail.id);
   }
 
-  async switchTo(workspace: UpdrawWorkspace) {
+  async switchTo(workspace: UpmadeWorkspace) {
     await this.editor.setActiveWorkspace(workspace.id);
   }
 
-  async deleteWorkspace(workspace: UpdrawWorkspace, event: MouseEvent) {
+  async deleteWorkspace(workspace: UpmadeWorkspace, event: MouseEvent) {
     event.stopPropagation();
     const currentWorkspaces = this.workspaces();
     if (currentWorkspaces.length <= 1) return;

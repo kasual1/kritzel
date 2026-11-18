@@ -7,10 +7,10 @@ import {
 import {
   ActiveWorkspaceChangeEvent,
   InMemorySyncProvider,
-  UpdrawEditor,
-  UpdrawSyncConfig,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeEditor,
+  UpmadeSyncConfig,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -18,7 +18,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-workspaces-create',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -32,7 +32,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         </button>
       }
     </app-toolbar>
-    <updraw-editor
+    <upmade-editor
       editorId="workspaces-create"
       [theme]="'light'"
       [themes]="themes"
@@ -44,7 +44,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [
     `
@@ -54,21 +54,21 @@ import { createSeedObjects } from '../../../const/seed-objects';
         height: 100%;
         font-family: Roboto, sans-serif;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
       }
     `,
   ],
 })
 export class WorkspacesCreateComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-  syncConfig: UpdrawSyncConfig = {
+  syncConfig: UpmadeSyncConfig = {
     providers: [InMemorySyncProvider],
   };
-  workspaces = signal<UpdrawWorkspace[]>([
-    new UpdrawWorkspace({
+  workspaces = signal<UpmadeWorkspace[]>([
+    new UpmadeWorkspace({
       id: 'board-1',
       name: 'Board 1',
       objects: createSeedObjects(),
@@ -83,7 +83,7 @@ export class WorkspacesCreateComponent {
   async addWorkspace() {
     const workspaceNumber = this.workspaces().length + 1;
     const workspace = await this.editor.createWorkspace(
-      new UpdrawWorkspace({
+      new UpmadeWorkspace({
         id: `board-${workspaceNumber}`,
         name: `Board ${workspaceNumber}`,
         objects: createSeedObjects(),
@@ -96,7 +96,7 @@ export class WorkspacesCreateComponent {
     }
   }
 
-  async switchTo(workspace: UpdrawWorkspace) {
+  async switchTo(workspace: UpmadeWorkspace) {
     await this.editor.setActiveWorkspace(workspace.id);
   }
 }

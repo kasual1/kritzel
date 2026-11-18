@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  UpdrawAgent,
-  UpdrawChatSession,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type UpdrawBaseObject,
-  type UpdrawChatBoxChip,
-  type UpdrawChatMessage,
-} from "@updraw/react-editor";
+  UpmadeAgent,
+  UpmadeChatSession,
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type UpmadeBaseObject,
+  type UpmadeChatBoxChip,
+  type UpmadeChatMessage,
+} from "@upmade/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -20,7 +20,7 @@ const USER = { id: "demo-user", name: "Demo User" };
 const SYSTEM = "You draw on a whiteboard. Keep answers short.";
 
 /** One line of the transcript: who wrote it and what. */
-function describe(message: UpdrawChatMessage): string {
+function describe(message: UpmadeChatMessage): string {
   return message.parts
     .map(part => {
       if (part.type === "text") return part.text;
@@ -32,19 +32,19 @@ function describe(message: UpdrawChatMessage): string {
 }
 
 export function ChatSessionsModesPage() {
-  const workspaces = useMemo(() => [new UpdrawWorkspace({ objects: createSeedObjects() })], []);
+  const workspaces = useMemo(() => [new UpmadeWorkspace({ objects: createSeedObjects() })], []);
   // One session per mode, created once: switching the mode binds the other one.
   const sessions = useMemo(() => {
     const transport = createDemoTransport();
-    const agent = new UpdrawAgent({ id: "assistant", name: "Assistant", color: "#7C3AED" });
+    const agent = new UpmadeAgent({ id: "assistant", name: "Assistant", color: "#7C3AED" });
     return {
-      user: new UpdrawChatSession({ transport, system: SYSTEM }),
-      agent: new UpdrawChatSession({ transport, system: SYSTEM, agent }),
+      user: new UpmadeChatSession({ transport, system: SYSTEM }),
+      agent: new UpmadeChatSession({ transport, system: SYSTEM, agent }),
     };
   }, []);
   const [mode, setMode] = useState<Mode>("user");
-  const [chips, setChips] = useState<UpdrawChatBoxChip[]>([]);
-  const [messages, setMessages] = useState<readonly UpdrawChatMessage[]>([]);
+  const [chips, setChips] = useState<UpmadeChatBoxChip[]>([]);
+  const [messages, setMessages] = useState<readonly UpmadeChatMessage[]>([]);
   const session = sessions[mode];
 
   useEffect(() => {
@@ -52,12 +52,12 @@ export function ChatSessionsModesPage() {
     return session.on("change", () => setMessages(session.messages));
   }, [session]);
 
-  function handleSelection(objects: UpdrawBaseObject[]) {
+  function handleSelection(objects: UpmadeBaseObject[]) {
     setChips(
       objects.map(object => ({
         id: object.id,
         objectId: object.id,
-        label: object.name || object.__class__.replace("Updraw", ""),
+        label: object.name || object.__class__.replace("Upmade", ""),
         icon: "cursor",
       })),
     );
@@ -76,7 +76,7 @@ export function ChatSessionsModesPage() {
         <span className="label">Try “{SLOW_PHRASE}” to stop a response.</span>
       </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        <UpdrawEditor
+        <UpmadeEditor
           editorId="chat-sessions-modes"
           theme="light"
           themes={[reactThemeLight, reactThemeDark]}

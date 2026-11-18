@@ -2,5 +2,5 @@
 import * as d from './proxy';
 
 export const DIRECTIVES = [
-  d.UpdrawEngine
+  d.UpmadeEngine
 ];

@@ -1,17 +1,17 @@
 import { useRef, useState, type CSSProperties } from "react";
 import {
   InMemorySyncProvider,
-  UpdrawEditor,
-  UpdrawLine,
-  UpdrawPath,
-  UpdrawShape,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeLine,
+  UpmadePath,
+  UpmadeShape,
+  UpmadeWorkspace,
   ShapeType,
   type ActiveWorkspaceChangeEvent,
-  type HTMLUpdrawEditorElement,
-  type UpdrawBaseObject,
-  type UpdrawSyncConfig,
-} from "@updraw/react-editor";
+  type HTMLUpmadeEditorElement,
+  type UpmadeBaseObject,
+  type UpmadeSyncConfig,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
@@ -28,7 +28,7 @@ interface WorkspacePalette {
 }
 
 const themes = [reactThemeLight, reactThemeDark];
-const syncConfig: UpdrawSyncConfig = {
+const syncConfig: UpmadeSyncConfig = {
   providers: [InMemorySyncProvider],
 };
 const contentStyle: CSSProperties = {
@@ -45,9 +45,9 @@ const jsonStyle: CSSProperties = {
   lineHeight: 1.45,
 };
 
-function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
+function createWorkspaceObjects(palette: WorkspacePalette): UpmadeBaseObject[] {
   return [
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -57,7 +57,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
       strokeColor: { light: palette.stroke, dark: palette.stroke },
       strokeWidth: 3,
     }),
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -67,7 +67,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
       strokeColor: { light: palette.accent, dark: palette.accent },
       strokeWidth: 3,
     }),
-    new UpdrawLine({
+    new UpmadeLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -75,7 +75,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
       stroke: { light: palette.accent, dark: palette.accent },
       strokeWidth: 3,
     }),
-    new UpdrawPath({
+    new UpmadePath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -97,17 +97,17 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
 
 function createInitialWorkspaces() {
   return [
-    new UpdrawWorkspace({ id: "coral", name: "Coral", objects: createWorkspaceObjects({ fill: "#fce4ec", stroke: "#c62828", accent: "#ff9800" }) }),
-    new UpdrawWorkspace({ id: "ocean", name: "Ocean", objects: createWorkspaceObjects({ fill: "#e3f2fd", stroke: "#1565c0", accent: "#00bcd4" }) }),
-    new UpdrawWorkspace({ id: "violet", name: "Violet", objects: createWorkspaceObjects({ fill: "#f3e5f5", stroke: "#6a1b9a", accent: "#e91e63" }) }),
-    new UpdrawWorkspace({ id: "meadow", name: "Meadow", objects: createWorkspaceObjects({ fill: "#e8f5e9", stroke: "#2e7d32", accent: "#8bc34a" }) }),
-    new UpdrawWorkspace({ id: "amber", name: "Amber", objects: createWorkspaceObjects({ fill: "#fff3e0", stroke: "#ef6c00", accent: "#795548" }) }),
-    new UpdrawWorkspace({ id: "lagoon", name: "Lagoon", objects: createWorkspaceObjects({ fill: "#e0f7fa", stroke: "#00838f", accent: "#3f51b5" }) }),
+    new UpmadeWorkspace({ id: "coral", name: "Coral", objects: createWorkspaceObjects({ fill: "#fce4ec", stroke: "#c62828", accent: "#ff9800" }) }),
+    new UpmadeWorkspace({ id: "ocean", name: "Ocean", objects: createWorkspaceObjects({ fill: "#e3f2fd", stroke: "#1565c0", accent: "#00bcd4" }) }),
+    new UpmadeWorkspace({ id: "violet", name: "Violet", objects: createWorkspaceObjects({ fill: "#f3e5f5", stroke: "#6a1b9a", accent: "#e91e63" }) }),
+    new UpmadeWorkspace({ id: "meadow", name: "Meadow", objects: createWorkspaceObjects({ fill: "#e8f5e9", stroke: "#2e7d32", accent: "#8bc34a" }) }),
+    new UpmadeWorkspace({ id: "amber", name: "Amber", objects: createWorkspaceObjects({ fill: "#fff3e0", stroke: "#ef6c00", accent: "#795548" }) }),
+    new UpmadeWorkspace({ id: "lagoon", name: "Lagoon", objects: createWorkspaceObjects({ fill: "#e0f7fa", stroke: "#00838f", accent: "#3f51b5" }) }),
   ];
 }
 
 export function WorkspacesSwitchPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const [workspaces] = useState(createInitialWorkspaces);
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | undefined>(
     "coral",
@@ -119,7 +119,7 @@ export function WorkspacesSwitchPage() {
     setActiveWorkspaceId(event.detail.id);
   }
 
-  async function switchTo(workspace: UpdrawWorkspace) {
+  async function switchTo(workspace: UpmadeWorkspace) {
     await editorRef.current?.setActiveWorkspace(workspace.id);
   }
 
@@ -151,7 +151,7 @@ export function WorkspacesSwitchPage() {
         ))}
       </Toolbar>
       <div style={contentStyle}>
-        <UpdrawEditor
+        <UpmadeEditor
           ref={editorRef}
           editorId="workspaces-switch"
           theme="light"

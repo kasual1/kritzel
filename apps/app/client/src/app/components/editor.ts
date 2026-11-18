@@ -7,12 +7,12 @@ import {
   HttpAssetProvider,
   IndexedDBAssetProvider,
   IndexedDBSyncProvider,
-  UpdrawAssetStorageConfig,
-  UpdrawDynamicObject,
-  UpdrawEditor,
-  UpdrawSyncConfig,
+  UpmadeAssetStorageConfig,
+  UpmadeDynamicObject,
+  UpmadeEditor,
+  UpmadeSyncConfig,
   LoginEvent
-} from '@updraw/angular-editor';
+} from '@upmade/angular-editor';
 import { UserData } from '../resolvers/user.resolver';
 import { AuthService } from '../services/auth.service';
 import { ConfigService } from '../services/config.service';
@@ -22,9 +22,9 @@ import { animateWelcomeObject, createWelcomeObject, getWelcomeBoundsUpdate, getW
 
 @Component({
   selector: 'app-editor',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   template: `
-      <updraw-editor
+      <upmade-editor
         [user]="user"
         [activeUsers]="activeUsers"
         [syncConfig]="syncConfig"
@@ -36,15 +36,15 @@ import { animateWelcomeObject, createWelcomeObject, getWelcomeBoundsUpdate, getW
         (logout)="onLogout()"
         (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
         (awarenessChange)="onAwarenessChange($event)"
-      ></updraw-editor>
+      ></upmade-editor>
   `,
   styles: [`
     :host { display: block; width: 100%; height: 100dvh; }
-    updraw-editor { display: block; width: 100%; height: 100%; }
+    upmade-editor { display: block; width: 100%; height: 100%; }
   `],
 })
 export class Editor {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   private readonly route = inject(ActivatedRoute);
   private readonly auth = inject(AuthService);
@@ -62,15 +62,15 @@ export class Editor {
 
   activeUsers: IUser[] = [];
 
-  syncConfig!: UpdrawSyncConfig;
+  syncConfig!: UpmadeSyncConfig;
 
-  assetStorageConfig!: UpdrawAssetStorageConfig;
+  assetStorageConfig!: UpmadeAssetStorageConfig;
 
   loginConfig = {
     providers: [
       { name: 'google', label: 'Sign in with Google', icon: 'google' }
     ],
-    title: 'Welcome to Updraw',
+    title: 'Welcome to Upmade',
   };
 
   async ngOnInit(): Promise<void> {
@@ -134,7 +134,7 @@ export class Editor {
       throw new Error('Cannot initialize the starter workspace without a user.');
     }
 
-    const key = `updraw_welcome_initialized:${this.user.id}`;
+    const key = `upmade_welcome_initialized:${this.user.id}`;
     if (localStorage.getItem(key)) {
       return;
     }
@@ -174,14 +174,14 @@ export class Editor {
   private async animateWorkspaceWelcome(): Promise<void> {
     const objects = await this.editor.getAllObjects();
     for (const object of objects) {
-      if (object instanceof UpdrawDynamicObject) {
+      if (object instanceof UpmadeDynamicObject) {
         const update = { ...getWelcomeBoundsUpdate(object), ...getWelcomeStyleUpdate(object) };
         if (Object.keys(update).length > 0 && !await this.editor.updateObject(object, update)) {
           throw new Error('Cannot update the saved Welcome object.');
         }
       }
       if (
-        object.__class__ === 'UpdrawDynamicObject' &&
+        object.__class__ === 'UpmadeDynamicObject' &&
         'element' in object &&
         object.element instanceof HTMLElement &&
         object.element.querySelector('svg[aria-label="Welcome"]') &&

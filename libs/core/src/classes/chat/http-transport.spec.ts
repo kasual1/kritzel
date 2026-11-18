@@ -1,7 +1,7 @@
-import { createHttpTransport, UpdrawChatHttpError } from './http-transport';
-import type { UpdrawChatRequest, UpdrawChatStreamEvent } from '../../interfaces/chat-session.interface';
+import { createHttpTransport, UpmadeChatHttpError } from './http-transport';
+import type { UpmadeChatRequest, UpmadeChatStreamEvent } from '../../interfaces/chat-session.interface';
 
-const request: UpdrawChatRequest = { version: 1, messages: [{ role: 'user', parts: [{ type: 'text', text: 'hi' }] }], tools: [], mode: 'user' };
+const request: UpmadeChatRequest = { version: 1, messages: [{ role: 'user', parts: [{ type: 'text', text: 'hi' }] }], tools: [], mode: 'user' };
 
 /** A body that arrives in the given chunks. */
 function chunked(chunks: string[]): ReadableStream<Uint8Array> {
@@ -55,9 +55,9 @@ function respond(body: string | ReadableStream<Uint8Array> | null, init: { statu
   return { fetchFn, calls };
 }
 
-async function collect(answer: unknown): Promise<UpdrawChatStreamEvent[]> {
-  const events: UpdrawChatStreamEvent[] = [];
-  for await (const event of answer as AsyncIterable<UpdrawChatStreamEvent>) {
+async function collect(answer: unknown): Promise<UpmadeChatStreamEvent[]> {
+  const events: UpmadeChatStreamEvent[] = [];
+  for await (const event of answer as AsyncIterable<UpmadeChatStreamEvent>) {
     events.push(event);
   }
   return events;
@@ -132,13 +132,13 @@ describe('createHttpTransport', () => {
   });
 
   describe('errors', () => {
-    it('throws an UpdrawChatHttpError with the error of a JSON body', async () => {
+    it('throws an UpmadeChatHttpError with the error of a JSON body', async () => {
       const { fetchFn } = respond(JSON.stringify({ error: 'Rate limit reached.' }), { status: 429 });
       const error = await Promise.resolve(createHttpTransport({ url: '/x', fetch: fetchFn })(request, { signal: signal() })).then(
         () => null,
         e => e,
       );
-      expect(error).toBeInstanceOf(UpdrawChatHttpError);
+      expect(error).toBeInstanceOf(UpmadeChatHttpError);
       expect(error).toBeInstanceOf(Error);
       expect(error.status).toBe(429);
       expect(error.body).toBe('{"error":"Rate limit reached."}');
@@ -242,7 +242,7 @@ describe('createHttpTransport', () => {
         },
       });
       const { fetchFn } = respond(body, { headers: { 'Content-Type': 'application/x-ndjson' } });
-      const answer = (await createHttpTransport({ url: '/x', fetch: fetchFn })(request, { signal: signal() })) as AsyncIterable<UpdrawChatStreamEvent>;
+      const answer = (await createHttpTransport({ url: '/x', fetch: fetchFn })(request, { signal: signal() })) as AsyncIterable<UpmadeChatStreamEvent>;
       for await (const event of answer) {
         expect(event).toEqual({ type: 'finish' });
         break;

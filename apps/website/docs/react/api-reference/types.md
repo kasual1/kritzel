@@ -1,20 +1,20 @@
 ---
 sidebar_label: Types & Interfaces
-title: "Types & Interfaces | Updraw for React"
-description: "TypeScript types and interfaces exposed by the Updraw library for use in React projects."
+title: "Types & Interfaces | Upmade for React"
+description: "TypeScript types and interfaces exposed by the Upmade library for use in React projects."
 ---
 # Other
 
-All types below are exported from `@updraw/engine`.
+All types below are exported from `@upmade/engine`.
 
 ## Interfaces
 
-### `UpdrawViewportState`
+### `UpmadeViewportState`
 
 Emitted by the `viewportChange` event. Returned by `getViewport()`.
 
 ```ts
-interface UpdrawViewportState {
+interface UpmadeViewportState {
   translateX: number;
   translateY: number;
   scale: number;
@@ -23,12 +23,12 @@ interface UpdrawViewportState {
 }
 ```
 
-### `UpdrawUndoState`
+### `UpmadeUndoState`
 
 Emitted by the `undoStateChange` event.
 
 ```ts
-interface UpdrawUndoState {
+interface UpmadeUndoState {
   canUndo: boolean;
   canRedo: boolean;
   undoStackSize: number;
@@ -36,22 +36,22 @@ interface UpdrawUndoState {
 }
 ```
 
-### `UpdrawSyncConfig`
+### `UpmadeSyncConfig`
 
 Passed to the `syncConfig` prop. See [Sync & Collaboration](../advanced/collaboration.md).
 
 ```ts
-interface UpdrawSyncConfig {
+interface UpmadeSyncConfig {
   providers: ProviderConfig[];
 }
 ```
 
-### `UpdrawShortcut`
+### `UpmadeShortcut`
 
 Keyboard shortcut definition. Returned by `getDisplayableShortcuts()`.
 
 ```ts
-interface UpdrawShortcut {
+interface UpmadeShortcut {
   key: string;
   ctrl?: boolean;
   shift?: boolean;
@@ -62,23 +62,23 @@ interface UpdrawShortcut {
 }
 ```
 
-### `UpdrawToolbarItem`
+### `UpmadeToolbarItem`
 
-Defines a toolbar item for the `toolbarItems` prop on `<UpdrawEditor>`.
+Defines a toolbar item for the `toolbarItems` prop on `<UpmadeEditor>`.
 
 ```ts
-interface UpdrawToolbarItem {
+interface UpmadeToolbarItem {
   type: 'tool' | 'config';
-  tool?: (new (...args: any[]) => UpdrawBaseTool) | UpdrawBaseTool;
+  tool?: (new (...args: any[]) => UpmadeBaseTool) | UpmadeBaseTool;
   icon?: string;
   isDefault?: boolean;
   isDisabled?: boolean | (() => boolean | Promise<boolean>);
   name: string;
-  config?: UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawTextToolConfig | UpdrawShapeToolConfig;
-  subOptions?: UpdrawToolbarSubOption[];
+  config?: UpmadeBrushToolConfig | UpmadeLineToolConfig | UpmadeTextToolConfig | UpmadeShapeToolConfig;
+  subOptions?: UpmadeToolbarSubOption[];
 }
 
-interface UpdrawToolbarSubOption {
+interface UpmadeToolbarSubOption {
   id: string;
   icon: string;
   label: string;
@@ -90,13 +90,13 @@ interface UpdrawToolbarSubOption {
 ### Tool Config Interfaces
 
 ```ts
-interface UpdrawBrushToolConfig {
+interface UpmadeBrushToolConfig {
   color: ThemeAwareColor;
   size: number;
   palette: ThemeAwareColor[];
 }
 
-interface UpdrawLineToolConfig {
+interface UpmadeLineToolConfig {
   color: ThemeAwareColor;
   size: number;
   palette: ThemeAwareColor[];
@@ -106,14 +106,14 @@ interface UpdrawLineToolConfig {
   };
 }
 
-interface UpdrawTextToolConfig {
+interface UpmadeTextToolConfig {
   color: ThemeAwareColor;
   size: number;
   fontFamily: string;
   palette: ThemeAwareColor[];
 }
 
-interface UpdrawShapeToolConfig {
+interface UpmadeShapeToolConfig {
   shapeType: ShapeType;
   fillColor: ThemeAwareColor;
   strokeColor: ThemeAwareColor;
@@ -129,28 +129,28 @@ interface UpdrawShapeToolConfig {
 
 ```ts
 interface ObjectsAddedEvent {
-  objects: UpdrawBaseObject[];
+  objects: UpmadeBaseObject[];
   /** Set when an agent made the change. */
-  source?: UpdrawAgentChangeSource;
+  source?: UpmadeAgentChangeSource;
 }
 
 interface ObjectsRemovedEvent {
-  objects: UpdrawBaseObject[];
+  objects: UpmadeBaseObject[];
   /** Set when an agent made the change. */
-  source?: UpdrawAgentChangeSource;
+  source?: UpmadeAgentChangeSource;
 }
 
 interface ObjectsUpdatedEvent {
-  objects: { object: UpdrawBaseObject; changedProperties: Partial<UpdrawBaseObject> }[];
+  objects: { object: UpmadeBaseObject; changedProperties: Partial<UpmadeBaseObject> }[];
   /** Set when an agent made the change. */
-  source?: UpdrawAgentChangeSource;
+  source?: UpmadeAgentChangeSource;
 }
 ```
 
 ### Geometry Interfaces
 
 ```ts
-interface UpdrawBoundingBox {
+interface UpmadeBoundingBox {
   x: number;
   y: number;
   z: number;
@@ -158,7 +158,7 @@ interface UpdrawBoundingBox {
   height: number;
 }
 
-interface UpdrawPolygon {
+interface UpmadePolygon {
   topLeft: { x: number; y: number };
   topRight: { x: number; y: number };
   bottomRight: { x: number; y: number };
@@ -177,7 +177,7 @@ interface LineAnchor {
 ### Theme Interface
 
 ```ts
-interface UpdrawTheme {
+interface UpmadeTheme {
   global?: { ... };
   engine?: { backgroundColor?: string; ... };
   toolbarItems?: { ... };
@@ -195,12 +195,12 @@ See [Theming](../customization/themes.md) for details.
 
 ## Classes
 
-### `UpdrawWorkspace`
+### `UpmadeWorkspace`
 
 Represents a workspace (canvas) within the editor.
 
 ```ts
-class UpdrawWorkspace {
+class UpmadeWorkspace {
   id: string;
   name: string;
   createdAt: Date;
@@ -226,12 +226,12 @@ Default viewport: `{ centerWorldX: 0, centerWorldY: 0, scale: 1 }`.
 
 ## Enums
 
-### `UpdrawAlignment`
+### `UpmadeAlignment`
 
 Used with `alignObjects()`.
 
 ```ts
-enum UpdrawAlignment {
+enum UpmadeAlignment {
   StartHorizontal  = 'start-horizontal',   // Align left edges
   CenterHorizontal = 'center-horizontal',  // Align horizontal centers
   EndHorizontal    = 'end-horizontal',     // Align right edges
@@ -243,7 +243,7 @@ enum UpdrawAlignment {
 
 ### `ShapeType`
 
-Used with `UpdrawShapeToolConfig`.
+Used with `UpmadeShapeToolConfig`.
 
 ```ts
 enum ShapeType {
@@ -265,68 +265,68 @@ enum ShapeType {
 
 ## Agent Types
 
-Types used by [`UpdrawAgent`](./agent.md) and the [agent methods](./editor.md#agents) of the editor. The [Agent API Reference](./agent.md#related-types) lists their full definitions.
+Types used by [`UpmadeAgent`](./agent.md) and the [agent methods](./editor.md#agents) of the editor. The [Agent API Reference](./agent.md#related-types) lists their full definitions.
 
 | Type | Description |
 |------|-------------|
-| [`UpdrawAgentOptions`](./agent.md#updrawagentoptions) | Options of `new UpdrawAgent()`: `name` (required), `id`, `color`, `avatarUrl`, `speed`, `broadcast`, `status`, `visible`, and `position`. |
-| [`UpdrawAgentState`](./agent.md#updrawagentstate) | Snapshot returned by `agent.state`: position, attachment, status, visibility, selection, activity, and `canUndo` / `canRedo`. |
-| [`UpdrawAgentPresence`](./agent.md#updrawagentpresence) | An agent of this editor as reported by `agentsChange` and `agent.toPresence()`, with `isRemote: false`. |
-| [`UpdrawAgentsChangeEvent`](./agent.md#updrawagentschangeevent) | Detail of the `agentsChange` event: `{ agents: (UpdrawAgentPresence \| UpdrawRemoteAgentPresence)[] }`, the agents of the editor first, then those of collaborators. `isRemote` tells them apart. |
-| [`UpdrawRemoteAgentPresence`](./agent.md#updrawremoteagentpresence) | An agent of a collaborator, as returned by `getRemoteAgents()` and listed in `agentsChange`: `isRemote: true`, `clientId`, and `hostUser`. |
-| [`UpdrawAgentEventMap`](./agent.md#updrawagenteventmap) | Events of `agent.on()`, with `UpdrawAgentDetachedEvent` and `UpdrawAgentInterruptedEvent`. |
-| [`UpdrawAgenticTarget`](./agent.md#updrawagentictarget) | A point in world coordinates, an anchor (`UpdrawAgenticAnchor`) on an object, or an element inside an object's content (`UpdrawAgenticElementTarget`: `{ objectId, selector }`), such as a button in an iframe object. |
-| [`UpdrawAgenticMoveOptions`](./agent.md#updrawagenticmoveoptions) | Options of `agent.moveTo()`, which resolves with `UpdrawAgenticMoveResult`. |
-| [`UpdrawAgenticAction`](./agent.md#updrawagenticaction) | The actions of `agent.perform()`, from `click` to `setStyle`, `addObject`, `undo`, and `redo`. |
-| [`UpdrawAgenticFill`](./agent.md#updrawagenticfill) | What fills in the loading placeholder of an `addObject` action with a `fill`: `content` and `apply(placeholder, content)`. |
-| [`UpdrawAgenticActionOptions`](./agent.md#updrawagenticactionoptions) | `speed`, `instant`, `signal`, and `easing` of an action. |
-| [`UpdrawAgenticActionResult`](./agent.md#updrawagenticactionresult) | Result of an action, with an `UpdrawAgenticActionFailureReason` when it did not complete. |
-| [`UpdrawAgentActionError`](./agent.md#updrawagentactionerror) | Thrown when an action that belongs to a running `agent.task()` does not complete. |
-| [`UpdrawAgentTool`](./agent.md#updrawagenttool) | A provider-neutral LLM tool from `agent.tools()`: `name`, `description`, `inputSchema`, `run(input, context?)` with an `UpdrawAgentToolContext` (`signal`, `toolCallId`), and the optional `begin(context)`, which begins a call while the model writes it and returns an `UpdrawAgentToolCall` (`update`, `finish`, and `cancel`). |
-| [`UpdrawAgentToolSchema`](./agent.md#updrawagenttoolschema) | The JSON Schema of a tool's input. |
-| [`UpdrawAgentToolsOptions`](./agent.md#updrawagenttoolsoptions) | `only`, `prefix`, and `maxTextLength` of `agent.tools()`. |
-| [`UpdrawAgentToolResult`](./agent.md#updrawagenttoolresult) | What a tool's `run()` resolves with as JSON: `completed`, `reason`, `objectIds`, `message`, `hint`, and `objects`. |
-| [`UpdrawObserveOptions`](./agent.md#updrawobserveoptions) | `scope`, `objectIds`, `maxObjects`, and `maxTextLength` of `agent.observe()`. |
-| [`UpdrawCanvasSnapshot`](./agent.md#updrawcanvassnapshot) | What `agent.observe()` returns: the viewport, the user's selection, the agent, and the objects. |
-| [`UpdrawCanvasObject`](./agent.md#updrawcanvasobject) | One object of a snapshot: ID, type, box, rotation, text, group and line relations, style, `busy`, and `createdBy`. |
+| [`UpmadeAgentOptions`](./agent.md#upmadeagentoptions) | Options of `new UpmadeAgent()`: `name` (required), `id`, `color`, `avatarUrl`, `speed`, `broadcast`, `status`, `visible`, and `position`. |
+| [`UpmadeAgentState`](./agent.md#upmadeagentstate) | Snapshot returned by `agent.state`: position, attachment, status, visibility, selection, activity, and `canUndo` / `canRedo`. |
+| [`UpmadeAgentPresence`](./agent.md#upmadeagentpresence) | An agent of this editor as reported by `agentsChange` and `agent.toPresence()`, with `isRemote: false`. |
+| [`UpmadeAgentsChangeEvent`](./agent.md#upmadeagentschangeevent) | Detail of the `agentsChange` event: `{ agents: (UpmadeAgentPresence \| UpmadeRemoteAgentPresence)[] }`, the agents of the editor first, then those of collaborators. `isRemote` tells them apart. |
+| [`UpmadeRemoteAgentPresence`](./agent.md#upmaderemoteagentpresence) | An agent of a collaborator, as returned by `getRemoteAgents()` and listed in `agentsChange`: `isRemote: true`, `clientId`, and `hostUser`. |
+| [`UpmadeAgentEventMap`](./agent.md#upmadeagenteventmap) | Events of `agent.on()`, with `UpmadeAgentDetachedEvent` and `UpmadeAgentInterruptedEvent`. |
+| [`UpmadeAgenticTarget`](./agent.md#upmadeagentictarget) | A point in world coordinates, an anchor (`UpmadeAgenticAnchor`) on an object, or an element inside an object's content (`UpmadeAgenticElementTarget`: `{ objectId, selector }`), such as a button in an iframe object. |
+| [`UpmadeAgenticMoveOptions`](./agent.md#upmadeagenticmoveoptions) | Options of `agent.moveTo()`, which resolves with `UpmadeAgenticMoveResult`. |
+| [`UpmadeAgenticAction`](./agent.md#upmadeagenticaction) | The actions of `agent.perform()`, from `click` to `setStyle`, `addObject`, `undo`, and `redo`. |
+| [`UpmadeAgenticFill`](./agent.md#upmadeagenticfill) | What fills in the loading placeholder of an `addObject` action with a `fill`: `content` and `apply(placeholder, content)`. |
+| [`UpmadeAgenticActionOptions`](./agent.md#upmadeagenticactionoptions) | `speed`, `instant`, `signal`, and `easing` of an action. |
+| [`UpmadeAgenticActionResult`](./agent.md#upmadeagenticactionresult) | Result of an action, with an `UpmadeAgenticActionFailureReason` when it did not complete. |
+| [`UpmadeAgentActionError`](./agent.md#upmadeagentactionerror) | Thrown when an action that belongs to a running `agent.task()` does not complete. |
+| [`UpmadeAgentTool`](./agent.md#upmadeagenttool) | A provider-neutral LLM tool from `agent.tools()`: `name`, `description`, `inputSchema`, `run(input, context?)` with an `UpmadeAgentToolContext` (`signal`, `toolCallId`), and the optional `begin(context)`, which begins a call while the model writes it and returns an `UpmadeAgentToolCall` (`update`, `finish`, and `cancel`). |
+| [`UpmadeAgentToolSchema`](./agent.md#upmadeagenttoolschema) | The JSON Schema of a tool's input. |
+| [`UpmadeAgentToolsOptions`](./agent.md#upmadeagenttoolsoptions) | `only`, `prefix`, and `maxTextLength` of `agent.tools()`. |
+| [`UpmadeAgentToolResult`](./agent.md#upmadeagenttoolresult) | What a tool's `run()` resolves with as JSON: `completed`, `reason`, `objectIds`, `message`, `hint`, and `objects`. |
+| [`UpmadeObserveOptions`](./agent.md#upmadeobserveoptions) | `scope`, `objectIds`, `maxObjects`, and `maxTextLength` of `agent.observe()`. |
+| [`UpmadeCanvasSnapshot`](./agent.md#upmadecanvassnapshot) | What `agent.observe()` returns: the viewport, the user's selection, the agent, and the objects. |
+| [`UpmadeCanvasObject`](./agent.md#upmadecanvasobject) | One object of a snapshot: ID, type, box, rotation, text, group and line relations, style, `busy`, and `createdBy`. |
 
-### `UpdrawAgentChangeSource`
+### `UpmadeAgentChangeSource`
 
 The `source` of `objectsAdded`, `objectsUpdated`, and `objectsRemoved` when an agent made the change. `actionType` is `'undo'` or `'redo'` for changes from the agent's own history.
 
 ```ts
-interface UpdrawAgentChangeSource {
+interface UpmadeAgentChangeSource {
   type: 'agent';
   agentId: string;
-  actionType: UpdrawAgenticAction['type'];
+  actionType: UpmadeAgenticAction['type'];
 }
 ```
 
 ## Object Element Types
 
-Types used by the [object element events and methods](./editor.md#object-elements). See [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content) for usage. To point an agent's cursor at an element, pass a [`UpdrawAgenticElementTarget`](./agent.md#updrawagentictarget) to `agent.moveTo()`.
+Types used by the [object element events and methods](./editor.md#object-elements). See [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content) for usage. To point an agent's cursor at an element, pass a [`UpmadeAgenticElementTarget`](./agent.md#upmadeagentictarget) to `agent.moveTo()`.
 
-### `UpdrawObjectElementInfo`
+### `UpmadeObjectElementInfo`
 
 Description of an element inside an object's content, reported by events and returned by `queryObjectElements()`. The content is untrusted, so treat these values like any other untrusted input.
 
 ```ts
-interface UpdrawObjectElementInfo {
+interface UpmadeObjectElementInfo {
   selector: string;                    // matched exactly this element when it was reported
-  updrawId?: string;                  // the data-updraw-id attribute
+  upmadeId?: string;                  // the data-upmade-id attribute
   tagName: string;                     // lowercase, e.g. 'button'
   id?: string;
   classList: string[];
   text?: string;                       // collapsed whitespace, at most 200 characters
   attributes: Record<string, string>;  // role, aria-*, data-*, name, type, href, src, alt, title, placeholder, for
-  rect: UpdrawObjectElementRect;
-  visibleRect?: UpdrawObjectElementRect; // omitted when no part of the element can be seen
-  state?: UpdrawObjectElementState;      // omitted when there is none
+  rect: UpmadeObjectElementRect;
+  visibleRect?: UpmadeObjectElementRect; // omitted when no part of the element can be seen
+  state?: UpmadeObjectElementState;      // omitted when there is none
   value?: string;                         // form field value, only with includeValues or from interactions; never for passwords
 }
 
 // Only the fields that apply to the element are set
-interface UpdrawObjectElementState {
+interface UpmadeObjectElementState {
   disabled?: boolean;
   checked?: boolean | 'mixed'; // checkboxes, radio buttons, switches (also by ARIA role)
   selected?: boolean;          // <option>
@@ -337,7 +337,7 @@ interface UpdrawObjectElementState {
 }
 
 // CSS pixels relative to the top-left corner of the content, before canvas zoom, object scale and rotation
-interface UpdrawObjectElementRect {
+interface UpmadeObjectElementRect {
   x: number;
   y: number;
   width: number;
@@ -345,24 +345,24 @@ interface UpdrawObjectElementRect {
 }
 ```
 
-### `UpdrawObjectElementHighlight`
+### `UpmadeObjectElementHighlight`
 
 Passed to `highlightObjectElements()`.
 
 ```ts
-interface UpdrawObjectElementHighlight {
+interface UpmadeObjectElementHighlight {
   selector: string; // every match is highlighted, up to 100 elements
   color?: string;   // defaults to the theme's elementHighlight.color
   label?: string;   // shown above each highlighted element
 }
 ```
 
-### `UpdrawObjectElementPickingOptions`
+### `UpmadeObjectElementPickingOptions`
 
 Passed to `setObjectElementPicking()`.
 
 ```ts
-interface UpdrawObjectElementPickingOptions {
+interface UpmadeObjectElementPickingOptions {
   selector?: string; // picks the closest matching ancestor of the element under the pointer
   color?: string;    // defaults to the theme's elementHighlight.color
 }
@@ -373,25 +373,25 @@ interface UpdrawObjectElementPickingOptions {
 Emitted by the `objectElementHover`, `objectElementClick`, and `objectElementPick` events.
 
 ```ts
-interface UpdrawObjectElementHoverEvent {
+interface UpmadeObjectElementHoverEvent {
   objectId: string;
-  element: UpdrawObjectElementInfo | null; // null when the pointer left the content or the object was deselected
+  element: UpmadeObjectElementInfo | null; // null when the pointer left the content or the object was deselected
   isPicking: boolean;
 }
 
-interface UpdrawObjectElementClickEvent {
+interface UpmadeObjectElementClickEvent {
   objectId: string;
-  element: UpdrawObjectElementInfo;
+  element: UpmadeObjectElementInfo;
   shiftKey: boolean;
   ctrlKey: boolean;
   altKey: boolean;
   metaKey: boolean;
 }
 
-// Same shape as UpdrawObjectElementClickEvent
-interface UpdrawObjectElementPickEvent {
+// Same shape as UpmadeObjectElementClickEvent
+interface UpmadeObjectElementPickEvent {
   objectId: string;
-  element: UpdrawObjectElementInfo;
+  element: UpmadeObjectElementInfo;
   shiftKey: boolean;
   ctrlKey: boolean;
   altKey: boolean;
@@ -403,15 +403,15 @@ interface UpdrawObjectElementPickEvent {
 
 Types used by the [`objectConfig` prop](./editor.md#object). See [Configuring Objects](../fundamentals/objects.md#configuring-objects) for usage.
 
-### `UpdrawObjectConfig`
+### `UpmadeObjectConfig`
 
 Passed to the `objectConfig` prop. Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized.
 
 ```ts
-interface UpdrawObjectConfig {
-  hasTitlebar?: boolean | ((object: UpdrawBaseObject) => boolean); // defaults to false
-  isRotatable?: boolean | ((object: UpdrawBaseObject) => boolean); // defaults to true
-  isResizable?: boolean | ((object: UpdrawBaseObject) => boolean); // defaults to true
+interface UpmadeObjectConfig {
+  hasTitlebar?: boolean | ((object: UpmadeBaseObject) => boolean); // defaults to false
+  isRotatable?: boolean | ((object: UpmadeBaseObject) => boolean); // defaults to true
+  isResizable?: boolean | ((object: UpmadeBaseObject) => boolean); // defaults to true
 }
 ```
 
@@ -421,143 +421,143 @@ interface UpdrawObjectConfig {
 
 The configuration is local to your app and neither persisted nor synced. Pass a new object to update it.
 
-Each option is a fixed value for every object, or a function deciding per object. Functions are called synchronously while the engine renders or handles input, so they must be cheap and must not return a promise. A function that throws or returns a promise resolves to the option's default and logs a warning once. Any return value other than a boolean also resolves to the default. Check types with `instanceof` against the classes your Updraw package exports or compare `object.__class__` (for example `'UpdrawGroup'`), and prefer `childIds` over `children` to inspect a group's children, for example `(object) => object.__class__ === 'UpdrawGroup' && (object as UpdrawGroup).childIds.length > 1`.
+Each option is a fixed value for every object, or a function deciding per object. Functions are called synchronously while the engine renders or handles input, so they must be cheap and must not return a promise. A function that throws or returns a promise resolves to the option's default and logs a warning once. Any return value other than a boolean also resolves to the default. Check types with `instanceof` against the classes your Upmade package exports or compare `object.__class__` (for example `'UpmadeGroup'`), and prefer `childIds` over `children` to inspect a group's children, for example `(object) => object.__class__ === 'UpmadeGroup' && (object as UpmadeGroup).childIds.length > 1`.
 
 ## Object Titlebar Types
 
 Types used by the [`objectTitlebar` prop](./editor.md#object-titlebar). See [Object Titlebar](../fundamentals/controls.md#object-titlebar) for usage.
 
-### `UpdrawObjectTitlebarConfig`
+### `UpmadeObjectTitlebarConfig`
 
 Passed to the `objectTitlebar` prop. The same configuration applies to every object for which the `hasTitlebar` option of the `objectConfig` prop is `true`. Without `hasTitlebar`, no titlebars are rendered.
 
 ```ts
-interface UpdrawObjectTitlebarConfig {
-  left?: UpdrawTitlebarElement[];   // defaults to [{ id: 'title', type: 'title' }]
-  center?: UpdrawTitlebarElement[];
-  right?: UpdrawTitlebarElement[];
+interface UpmadeObjectTitlebarConfig {
+  left?: UpmadeTitlebarElement[];   // defaults to [{ id: 'title', type: 'title' }]
+  center?: UpmadeTitlebarElement[];
+  right?: UpmadeTitlebarElement[];
   visibility?: 'always' | 'active';
   rotation?: 'follow' | 'upright';
-  title?: (object: UpdrawBaseObject) => string | undefined;
+  title?: (object: UpmadeBaseObject) => string | undefined;
   draggable?: boolean;            // defaults to true
   hideBelowWidth?: number;        // screen pixels, defaults to 40
 }
 ```
 
-Which objects get a titlebar is decided by [`UpdrawObjectConfig`](#updrawobjectconfig) on the `objectConfig` prop, not by this configuration. See [Object Titlebar](../fundamentals/controls.md#object-titlebar).
+Which objects get a titlebar is decided by [`UpmadeObjectConfig`](#upmadeobjectconfig) on the `objectConfig` prop, not by this configuration. See [Object Titlebar](../fundamentals/controls.md#object-titlebar).
 
-`UPDRAW_DEFAULT_OBJECT_TITLEBAR` is a ready-made configuration that shows an icon for the object type followed by the title. Pass it as is, or spread it and override individual options, for example `{ ...UPDRAW_DEFAULT_OBJECT_TITLEBAR, visibility: 'active' }`.
+`UPMADE_DEFAULT_OBJECT_TITLEBAR` is a ready-made configuration that shows an icon for the object type followed by the title. Pass it as is, or spread it and override individual options, for example `{ ...UPMADE_DEFAULT_OBJECT_TITLEBAR, visibility: 'active' }`.
 
-### `UpdrawTitlebarElement`
+### `UpmadeTitlebarElement`
 
 ```ts
-type UpdrawTitlebarElement =
-  | UpdrawTitlebarTitle
-  | UpdrawTitlebarText
-  | UpdrawTitlebarIcon
-  | UpdrawTitlebarButton
-  | UpdrawTitlebarMenu
-  | UpdrawTitlebarSpacer;
+type UpmadeTitlebarElement =
+  | UpmadeTitlebarTitle
+  | UpmadeTitlebarText
+  | UpmadeTitlebarIcon
+  | UpmadeTitlebarButton
+  | UpmadeTitlebarMenu
+  | UpmadeTitlebarSpacer;
 
 // Options shared by every element (internal, not exported)
-interface UpdrawTitlebarElementBase {
+interface UpmadeTitlebarElementBase {
   id: string;
-  isVisible?: UpdrawTitlebarValue<boolean>;
+  isVisible?: UpmadeTitlebarValue<boolean>;
   showWhen?: 'always' | 'active' | 'inactive';
   minBarWidth?: number;
   part?: string;
 }
 
-interface UpdrawTitlebarTitle extends UpdrawTitlebarElementBase {
+interface UpmadeTitlebarTitle extends UpmadeTitlebarElementBase {
   type: 'title';
-  text?: UpdrawTitlebarValue<string>;
-  isEditable?: UpdrawTitlebarValue<boolean>; // lets users rename the object, defaults to false
+  text?: UpmadeTitlebarValue<string>;
+  isEditable?: UpmadeTitlebarValue<boolean>; // lets users rename the object, defaults to false
 }
 
-interface UpdrawTitlebarText extends UpdrawTitlebarElementBase {
+interface UpmadeTitlebarText extends UpmadeTitlebarElementBase {
   type: 'text';
-  text: UpdrawTitlebarValue<string>;
+  text: UpmadeTitlebarValue<string>;
   tone?: 'default' | 'muted' | 'strong';
 }
 
-interface UpdrawTitlebarIcon extends UpdrawTitlebarElementBase {
+interface UpmadeTitlebarIcon extends UpmadeTitlebarElementBase {
   type: 'icon';
-  icon: UpdrawTitlebarValue<UpdrawIconName>;
+  icon: UpmadeTitlebarValue<UpmadeIconName>;
 }
 
-interface UpdrawTitlebarButton extends UpdrawTitlebarElementBase {
+interface UpmadeTitlebarButton extends UpmadeTitlebarElementBase {
   type: 'button';
-  icon?: UpdrawTitlebarValue<UpdrawIconName>;
-  label?: UpdrawTermKey | string;
-  tooltip?: UpdrawTermKey | string;
+  icon?: UpmadeTitlebarValue<UpmadeIconName>;
+  label?: UpmadeTermKey | string;
+  tooltip?: UpmadeTermKey | string;
   variant?: 'ghost' | 'filled' | 'outlined';
-  isDisabled?: UpdrawTitlebarValue<boolean>;
-  isPressed?: UpdrawTitlebarValue<boolean>;
-  action?: (context: UpdrawObjectTitlebarContext, event: MouseEvent) => void;
+  isDisabled?: UpmadeTitlebarValue<boolean>;
+  isPressed?: UpmadeTitlebarValue<boolean>;
+  action?: (context: UpmadeObjectTitlebarContext, event: MouseEvent) => void;
 }
 
-interface UpdrawTitlebarMenu extends UpdrawTitlebarElementBase {
+interface UpmadeTitlebarMenu extends UpmadeTitlebarElementBase {
   type: 'menu';
-  icon?: UpdrawTitlebarValue<UpdrawIconName>;
-  label?: UpdrawTermKey | string;
-  tooltip?: UpdrawTermKey | string;
+  icon?: UpmadeTitlebarValue<UpmadeIconName>;
+  label?: UpmadeTermKey | string;
+  tooltip?: UpmadeTermKey | string;
   variant?: 'ghost' | 'filled' | 'outlined';
-  isDisabled?: UpdrawTitlebarValue<boolean>;
-  items: UpdrawTitlebarValue<UpdrawTitlebarMenuItem[]>; // resolved when the menu opens
+  isDisabled?: UpmadeTitlebarValue<boolean>;
+  items: UpmadeTitlebarValue<UpmadeTitlebarMenuItem[]>; // resolved when the menu opens
 }
 
-interface UpdrawTitlebarSpacer extends UpdrawTitlebarElementBase {
+interface UpmadeTitlebarSpacer extends UpmadeTitlebarElementBase {
   type: 'spacer' | 'separator';
 }
 ```
 
-### `UpdrawTitlebarMenuItem`
+### `UpmadeTitlebarMenuItem`
 
-An entry of a [`UpdrawTitlebarMenu`](#updrawtitlebarelement). `isVisible` and `isDisabled` are evaluated when the menu opens and again when the menu item is selected.
+An entry of a [`UpmadeTitlebarMenu`](#upmadetitlebarelement). `isVisible` and `isDisabled` are evaluated when the menu opens and again when the menu item is selected.
 
 ```ts
-interface UpdrawTitlebarMenuItem {
+interface UpmadeTitlebarMenuItem {
   id: string;                      // reported as menuItemId in objectTitlebarAction
-  label: UpdrawTermKey | string;  // term keys are translated through the active locale
-  icon?: UpdrawIconName;
-  isVisible?: UpdrawTitlebarValue<boolean>;
-  isDisabled?: UpdrawTitlebarValue<boolean>;
-  action?: (context: UpdrawObjectTitlebarContext, menuItem: UpdrawTitlebarMenuItem) => void;
+  label: UpmadeTermKey | string;  // term keys are translated through the active locale
+  icon?: UpmadeIconName;
+  isVisible?: UpmadeTitlebarValue<boolean>;
+  isDisabled?: UpmadeTitlebarValue<boolean>;
+  action?: (context: UpmadeObjectTitlebarContext, menuItem: UpmadeTitlebarMenuItem) => void;
 }
 ```
 
-### `UpdrawTitlebarValue`
+### `UpmadeTitlebarValue`
 
 A static value or a function that resolves it from the titlebar context. Functions are evaluated synchronously on every render; promises are not supported.
 
 ```ts
-type UpdrawTitlebarValue<T> = T | ((context: UpdrawObjectTitlebarContext) => T);
+type UpmadeTitlebarValue<T> = T | ((context: UpmadeObjectTitlebarContext) => T);
 ```
 
-### `UpdrawObjectTitlebarContext`
+### `UpmadeObjectTitlebarContext`
 
 Passed to dynamic element values and the `action` callbacks of buttons and menu items.
 
 ```ts
-interface UpdrawObjectTitlebarContext {
-  object: UpdrawBaseObject;
+interface UpmadeObjectTitlebarContext {
+  object: UpmadeBaseObject;
   objectType: string;
-  children: UpdrawBaseObject[];
+  children: UpmadeBaseObject[];
   isActive: boolean;
   title: string;
   size: { width: number; height: number };        // world units, including padding
   contentSize: { width: number; height: number }; // the object's own width and height
   barWidth: number;                                // screen pixels
-  t: (key: UpdrawTermKey | string, vars?: UpdrawTermVars) => string;
+  t: (key: UpmadeTermKey | string, vars?: UpmadeTermVars) => string;
 }
 ```
 
-### `UpdrawObjectTitlebarActionEvent`
+### `UpmadeObjectTitlebarActionEvent`
 
 Emitted by the `objectTitlebarAction` event.
 
 ```ts
-interface UpdrawObjectTitlebarActionEvent {
+interface UpmadeObjectTitlebarActionEvent {
   elementId: string;   // id of the clicked button, or of the menu that contains the selected menu item
   menuItemId?: string; // id of the selected menu item, unset for button clicks
   section: 'left' | 'center' | 'right';
@@ -568,17 +568,17 @@ interface UpdrawObjectTitlebarActionEvent {
 }
 ```
 
-### `UpdrawObjectTitlebarMenuState`
+### `UpmadeObjectTitlebarMenuState`
 
-Emitted by the `objectTitlebarMenuStateChange` event of `<UpdrawEngine>` when a titlebar menu opens or closes. Only needed when rendering titlebar menus without `<UpdrawEditor>`.
+Emitted by the `objectTitlebarMenuStateChange` event of `<UpmadeEngine>` when a titlebar menu opens or closes. Only needed when rendering titlebar menus without `<UpmadeEditor>`.
 
 ```ts
-interface UpdrawObjectTitlebarMenuState {
+interface UpmadeObjectTitlebarMenuState {
   isVisible: boolean;
   objectId?: string;                  // owner of the titlebar whose menu is open
   elementId?: string;                 // id of the open menu element
   section?: 'left' | 'center' | 'right';
-  items: UpdrawTitlebarMenuItem[];   // visible menu items, labels translated and isDisabled evaluated
+  items: UpmadeTitlebarMenuItem[];   // visible menu items, labels translated and isDisabled evaluated
   anchor?: HTMLElement;               // the menu button, inside the engine's shadow root
   anchorRect?: DOMRect;               // client rect of the menu button when the menu opened
 }

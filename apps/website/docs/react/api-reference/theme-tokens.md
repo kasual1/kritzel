@@ -1,30 +1,30 @@
 ---
 sidebar_label: Theming
-title: "Theming | Updraw for React"
-description: "Customize the look and feel of the Updraw editor with CSS variables and theme tokens."
+title: "Theming | Upmade for React"
+description: "Customize the look and feel of the Upmade editor with CSS variables and theme tokens."
 ---
 # Theming
 
-Updraw includes built-in light and dark themes. Themes are applied via CSS variables, making every visual aspect customizable.
+Upmade includes built-in light and dark themes. Themes are applied via CSS variables, making every visual aspect customizable.
 
 ## Setting the Theme
 
-### On `<UpdrawEngine>`
+### On `<UpmadeEngine>`
 
 ```tsx
-import { UpdrawEngine } from '@updraw/react-editor';
+import { UpmadeEngine } from '@upmade/react-editor';
 
 export function DarkCanvas() {
-  return <UpdrawEngine theme="dark" />;
+  return <UpmadeEngine theme="dark" />;
 }
 ```
 
-### On `<UpdrawEditor>`
+### On `<UpmadeEditor>`
 
 The editor manages the theme internally and emits a `themeChange` event when it changes. The user can toggle the theme through the settings panel.
 
 ```tsx
-<UpdrawEditor
+<UpmadeEditor
   onThemeChange={(event) => {
     console.log('Theme changed to:', event.detail);
   }}
@@ -81,12 +81,12 @@ const color: ThemeAwareColor = {
 
 When the theme switches, all objects and tools automatically resolve to the appropriate color value.
 
-## UpdrawTheme Interface
+## UpmadeTheme Interface
 
-The `UpdrawTheme` interface defines CSS variables for every component section. You can import and customize the built-in themes:
+The `UpmadeTheme` interface defines CSS variables for every component section. You can import and customize the built-in themes:
 
 ```ts
-import { lightTheme, darkTheme } from '@updraw/engine';
+import { lightTheme, darkTheme } from '@upmade/engine';
 ```
 
 Theme sections include: `global`, `engine`, `toolbar`, `selection`, `dialog`, `contextMenu`, `utilityPanel`, `tooltip`, `menu`, `dropdown`, `portal`, `settings`, `splitButton`, `moreMenu`, `titlebar`, and more.

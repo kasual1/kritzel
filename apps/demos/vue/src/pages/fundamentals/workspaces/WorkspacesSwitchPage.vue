@@ -2,16 +2,16 @@
 import { computed, ref, shallowRef, type CSSProperties } from 'vue'
 import {
   InMemorySyncProvider,
-  UpdrawEditor,
-  UpdrawLine,
-  UpdrawPath,
-  UpdrawShape,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeLine,
+  UpmadePath,
+  UpmadeShape,
+  UpmadeWorkspace,
   ShapeType,
   type ActiveWorkspaceChangeEvent,
-  type UpdrawBaseObject,
-  type UpdrawSyncConfig,
-} from '@updraw/vue-editor'
+  type UpmadeBaseObject,
+  type UpmadeSyncConfig,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
@@ -27,9 +27,9 @@ interface WorkspacePalette {
   accent: string
 }
 
-function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
+function createWorkspaceObjects(palette: WorkspacePalette): UpmadeBaseObject[] {
   return [
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: -140,
       translateY: -170,
       width: 120,
@@ -39,7 +39,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
       strokeColor: { light: palette.stroke, dark: palette.stroke },
       strokeWidth: 3,
     }),
-    new UpdrawShape({
+    new UpmadeShape({
       translateX: 20,
       translateY: -150,
       width: 120,
@@ -49,7 +49,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
       strokeColor: { light: palette.accent, dark: palette.accent },
       strokeWidth: 3,
     }),
-    new UpdrawLine({
+    new UpmadeLine({
       startX: -170,
       startY: 10,
       endX: 130,
@@ -57,7 +57,7 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
       stroke: { light: palette.accent, dark: palette.accent },
       strokeWidth: 3,
     }),
-    new UpdrawPath({
+    new UpmadePath({
       points: [
         [0, 0, 0.5],
         [30, -40, 0.5],
@@ -78,11 +78,11 @@ function createWorkspaceObjects(palette: WorkspacePalette): UpdrawBaseObject[] {
 }
 
 const themes = [vueThemeLight, vueThemeDark]
-const syncConfig: UpdrawSyncConfig = {
+const syncConfig: UpmadeSyncConfig = {
   providers: [InMemorySyncProvider],
 }
-const workspaces = shallowRef<UpdrawWorkspace[]>([
-  new UpdrawWorkspace({
+const workspaces = shallowRef<UpmadeWorkspace[]>([
+  new UpmadeWorkspace({
     id: 'coral',
     name: 'Coral',
     objects: createWorkspaceObjects({
@@ -91,7 +91,7 @@ const workspaces = shallowRef<UpdrawWorkspace[]>([
       accent: '#ff9800',
     }),
   }),
-  new UpdrawWorkspace({
+  new UpmadeWorkspace({
     id: 'ocean',
     name: 'Ocean',
     objects: createWorkspaceObjects({
@@ -100,7 +100,7 @@ const workspaces = shallowRef<UpdrawWorkspace[]>([
       accent: '#00bcd4',
     }),
   }),
-  new UpdrawWorkspace({
+  new UpmadeWorkspace({
     id: 'violet',
     name: 'Violet',
     objects: createWorkspaceObjects({
@@ -109,7 +109,7 @@ const workspaces = shallowRef<UpdrawWorkspace[]>([
       accent: '#e91e63',
     }),
   }),
-  new UpdrawWorkspace({
+  new UpmadeWorkspace({
     id: 'meadow',
     name: 'Meadow',
     objects: createWorkspaceObjects({
@@ -118,7 +118,7 @@ const workspaces = shallowRef<UpdrawWorkspace[]>([
       accent: '#8bc34a',
     }),
   }),
-  new UpdrawWorkspace({
+  new UpmadeWorkspace({
     id: 'amber',
     name: 'Amber',
     objects: createWorkspaceObjects({
@@ -127,7 +127,7 @@ const workspaces = shallowRef<UpdrawWorkspace[]>([
       accent: '#795548',
     }),
   }),
-  new UpdrawWorkspace({
+  new UpmadeWorkspace({
     id: 'lagoon',
     name: 'Lagoon',
     objects: createWorkspaceObjects({
@@ -179,7 +179,7 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
   activeWorkspaceId.value = event.detail.id
 }
 
-function switchTo(workspace: UpdrawWorkspace) {
+function switchTo(workspace: UpmadeWorkspace) {
   activeWorkspaceId.value = workspace.id
 }
 </script>
@@ -197,7 +197,7 @@ function switchTo(workspace: UpdrawWorkspace) {
       </button>
     </Toolbar>
     <div :style="contentStyle">
-      <UpdrawEditor
+      <UpmadeEditor
         editorId="workspaces-switch"
         theme="light"
         :themes="themes"

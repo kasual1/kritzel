@@ -1,15 +1,15 @@
-import { UpdrawSerializable } from "../../interfaces/serializable.interface";
+import { UpmadeSerializable } from "../../interfaces/serializable.interface";
 import { ObjectHelper } from "../../helpers/object.helper";
-import type { UpdrawCore } from "./core.class";
-import type { UpdrawBaseObject } from "../objects/base-object.class";
+import type { UpmadeCore } from "./core.class";
+import type { UpmadeBaseObject } from "../objects/base-object.class";
 
 /** Current version of the workspace export format */
 export const WORKSPACE_EXPORT_VERSION = '1.3.0';
 
 /**
- * Configuration options for creating an UpdrawWorkspace instance.
+ * Configuration options for creating an UpmadeWorkspace instance.
  */
-export interface UpdrawWorkspaceConfig {
+export interface UpmadeWorkspaceConfig {
   /** Unique identifier for the workspace. Auto-generated if omitted. */
   id?: string;
   /** Display name of the workspace. Defaults to 'New Workspace' if omitted. */
@@ -24,16 +24,16 @@ export interface UpdrawWorkspaceConfig {
    * Canvas objects for this workspace. Seeded on first initialization, and treated as the
    * desired object set by `updateWorkspace()`. Omit to leave existing objects untouched.
    */
-  objects?: UpdrawBaseObject<any>[];
+  objects?: UpmadeBaseObject<any>[];
 }
 
 /**
- * Represents a workspace in the Updraw canvas.
+ * Represents a workspace in the Upmade canvas.
  * A workspace is an isolated canvas area with its own set of objects and viewport state.
  * It can be serialized and deserialized for persistence and collaborative editing.
  */
-export class UpdrawWorkspace implements UpdrawSerializable {
-  __class__ = 'UpdrawWorkspace';
+export class UpmadeWorkspace implements UpmadeSerializable {
+  __class__ = 'UpmadeWorkspace';
 
   /** Unique identifier for the workspace */
   id: string;
@@ -53,19 +53,19 @@ export class UpdrawWorkspace implements UpdrawSerializable {
    * Desired canvas objects. Seeded when the workspace is first initialized and applied as the
    * full desired set by `updateWorkspace()`: `undefined` leaves objects untouched, `[]` removes all.
    */
-  objects?: UpdrawBaseObject<any>[];
+  objects?: UpmadeBaseObject<any>[];
 
   /** Whether the workspace is publicly accessible via a share link */
   isPublic: boolean;
 
-  /** Reference to the UpdrawCore instance managing this workspace */
-  _core!: UpdrawCore;
+  /** Reference to the UpmadeCore instance managing this workspace */
+  _core!: UpmadeCore;
 
   /**
-   * Creates a new UpdrawWorkspace instance.
+   * Creates a new UpmadeWorkspace instance.
    * @param config - Configuration options object for the workspace
    */
-  constructor(config?: UpdrawWorkspaceConfig) {
+  constructor(config?: UpmadeWorkspaceConfig) {
     this.id = config?.id ?? ObjectHelper.generateUUID();
     this.name = config?.name ?? 'New Workspace';
     this.createdAt = new Date();
@@ -81,12 +81,12 @@ export class UpdrawWorkspace implements UpdrawSerializable {
 
   /**
    * Factory method to create a workspace with a core reference.
-   * @param core - The UpdrawCore instance to associate with this workspace
+   * @param core - The UpmadeCore instance to associate with this workspace
    * @param obj - Object containing workspace properties (id, name, viewport)
-   * @returns A new UpdrawWorkspace instance with the core reference set
+   * @returns A new UpmadeWorkspace instance with the core reference set
    */
-  static create(core: UpdrawCore, obj: any): UpdrawWorkspace {
-    const workspace = new UpdrawWorkspace({
+  static create(core: UpmadeCore, obj: any): UpmadeWorkspace {
+    const workspace = new UpmadeWorkspace({
       id: obj.id,
       name: obj.name,
       viewport: obj.viewport,
@@ -134,7 +134,7 @@ export class UpdrawWorkspace implements UpdrawSerializable {
    * Creates a shallow clone of this workspace, preserving the prototype chain.
    * Useful when Stencil needs a new object reference to detect property changes.
    */
-  clone(): UpdrawWorkspace {
+  clone(): UpmadeWorkspace {
     return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
   }
 
@@ -144,7 +144,7 @@ export class UpdrawWorkspace implements UpdrawSerializable {
    * @param object - The plain object to deserialize from
    * @returns This workspace instance with updated properties
    */
-  deserialize(object: any): UpdrawSerializable {
+  deserialize(object: any): UpmadeSerializable {
     // The class defines its own `__class__`; a serialized value (possibly a legacy name) must not override it.
     const data = { ...object };
     delete data.__class__;

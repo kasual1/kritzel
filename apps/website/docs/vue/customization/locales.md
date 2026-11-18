@@ -1,8 +1,8 @@
 ---
 sidebar_label: Locales
 displayed_sidebar: tutorialSidebar
-title: "Locales | Updraw for Vue"
-description: "Understand how to customize Updraw with locales."
+title: "Locales | Upmade for Vue"
+description: "Understand how to customize Upmade with locales."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,13 +11,13 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Updraw comes with built-in support for multiple languages and allows you to override or extend the default translations with custom locales.
+Upmade comes with built-in support for multiple languages and allows you to override or extend the default translations with custom locales.
 
 Take a look at the [Localization Terms](../api-reference/localization-terms.md) to see all available localization keys.
 
 ## Switching the Locale
 
-Set the `locale` prop on `<UpdrawEditor>` or call the asynchronous `setLocale()` method through the editor ref. The editor updates its UI without a page reload.
+Set the `locale` prop on `<UpmadeEditor>` or call the asynchronous `setLocale()` method through the editor ref. The editor updates its UI without a page reload.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
@@ -37,7 +37,7 @@ Listen for the `localeChange` event to react when the active locale changes, for
 
 ## Registering Custom Locales
 
-Add support for additional languages or override individual term keys by providing an `UpdrawLocale` definition. Pass custom locales through the `locales` prop or register them dynamically using `registerLocales()`.
+Add support for additional languages or override individual term keys by providing an `UpmadeLocale` definition. Pass custom locales through the `locales` prop or register them dynamically using `registerLocales()`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"

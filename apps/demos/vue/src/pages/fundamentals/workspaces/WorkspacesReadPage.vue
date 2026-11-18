@@ -3,11 +3,11 @@ import { computed, ref, shallowRef, type CSSProperties } from 'vue'
 import {
   getEditorRef,
   InMemorySyncProvider,
-  UpdrawEditor,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeWorkspace,
   type ActiveWorkspaceChangeEvent,
-  type UpdrawSyncConfig,
-} from '@updraw/vue-editor'
+  type UpmadeSyncConfig,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -24,18 +24,18 @@ const infoPanel = useInfoPanel()
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const syncConfig: UpdrawSyncConfig = {
+const syncConfig: UpmadeSyncConfig = {
   providers: [InMemorySyncProvider],
 }
-const workspaces = shallowRef<UpdrawWorkspace[]>([
-  new UpdrawWorkspace({
+const workspaces = shallowRef<UpmadeWorkspace[]>([
+  new UpmadeWorkspace({
     id: 'board-1',
     name: 'Board 1',
     objects: createSeedObjects(),
   }),
 ])
 const activeWorkspaceId = ref<string | undefined>('board-1')
-const activeWorkspace = shallowRef<UpdrawWorkspace | null>(null)
+const activeWorkspace = shallowRef<UpmadeWorkspace | null>(null)
 const activeWorkspaceJson = computed(() =>
   activeWorkspace.value
     ? JSON.stringify(
@@ -72,7 +72,7 @@ async function onReady() {
 async function addWorkspace() {
   const workspaceNumber = workspaces.value.length + 1
   const workspace = await editor.value?.createWorkspace(
-    new UpdrawWorkspace({
+    new UpmadeWorkspace({
       id: `board-${workspaceNumber}`,
       name: `Board ${workspaceNumber}`,
       objects: createSeedObjects(),
@@ -85,7 +85,7 @@ async function addWorkspace() {
   }
 }
 
-async function switchTo(workspace: UpdrawWorkspace) {
+async function switchTo(workspace: UpmadeWorkspace) {
   await editor.value?.setActiveWorkspace(workspace.id)
 }
 
@@ -113,7 +113,7 @@ async function onActiveWorkspaceChange(
       <InfoPanelToggle :panel="infoPanel" />
     </Toolbar>
     <div :style="contentStyle">
-      <UpdrawEditor
+      <UpmadeEditor
         ref="editor"
         editorId="workspaces-read"
         theme="light"

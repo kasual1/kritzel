@@ -1,6 +1,6 @@
-import { UpdrawDynamicObject } from '@updraw/react-editor';
+import { UpmadeDynamicObject } from '@upmade/react-editor';
 
-export function createOpenSourceObject(): UpdrawDynamicObject {
+export function createOpenSourceObject(): UpmadeDynamicObject {
   const element = document.createElement('div');
   element.style.width = '100%';
   element.style.height = '100%';
@@ -14,11 +14,13 @@ export function createOpenSourceObject(): UpdrawDynamicObject {
         d="M 71.4,185.3 A 90,90 0 1 1 128.6,185.3 L 108.7,127.6 A 28,28 0 1 0 91.3,127.6 Z" />
     </svg>`;
 
-  return new UpdrawDynamicObject({
+  return new UpmadeDynamicObject({
     element,
     width: 180,
     height: 180 * 182 / 186,
     translateX: 0,
     translateY: 0,
+    // 'none' overrides the theme's object shadow, so the drawing sits flat on the canvas.
+    boxShadow: 'none',
   });
 }

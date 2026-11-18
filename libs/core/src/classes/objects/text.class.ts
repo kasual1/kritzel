@@ -1,7 +1,7 @@
-import { UpdrawBaseObject } from './base-object.class';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawKeyboardHelper } from '../../helpers/keyboard.helper';
-import { UpdrawDevicesHelper } from '../../helpers/devices.helper';
+import { UpmadeBaseObject } from './base-object.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeKeyboardHelper } from '../../helpers/keyboard.helper';
+import { UpmadeDevicesHelper } from '../../helpers/devices.helper';
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
@@ -10,17 +10,17 @@ import { addListNodes } from 'prosemirror-schema-list';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
-import { UpdrawColorHelper } from '../../helpers/color.helper';
-import { UpdrawMathHelper } from '../../helpers/math.helper';
-import { UpdrawFontRegistry } from '../registries/font-registry.class';
+import { UpmadeColorHelper } from '../../helpers/color.helper';
+import { UpmadeMathHelper } from '../../helpers/math.helper';
+import { UpmadeFontRegistry } from '../registries/font-registry.class';
 
 /**
- * Configuration options for creating an UpdrawText instance.
+ * Configuration options for creating an UpmadeText instance.
  */
-export interface UpdrawTextConfig {
+export interface UpmadeTextConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
-  /** Whether the engine's loading placeholder is drawn over the object, see `UpdrawBaseObject.setLoading()`. */
+  /** Whether the engine's loading placeholder is drawn over the object, see `UpmadeBaseObject.setLoading()`. */
   isLoading?: boolean;
   text?: string;
   translateX?: number;
@@ -42,8 +42,8 @@ export interface UpdrawTextConfig {
  * Represents a text object on the canvas that supports rich text editing via ProseMirror.
  * Extends the base object class to inherit common object properties and behaviors.
  */
-export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
-  override __class__: string = 'UpdrawText';
+export class UpmadeText extends UpmadeBaseObject<HTMLDivElement> {
+  override __class__: string = 'UpmadeText';
 
   fontFamily: string = 'Arial';
   fontSize: number = 8;
@@ -67,7 +67,7 @@ export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
     marks: schema.spec.marks,
   });
 
-  uneditedObject: UpdrawText | null = null;
+  uneditedObject: UpmadeText | null = null;
 
   readonly rows: number = 1;
 
@@ -91,10 +91,10 @@ export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
   }
 
   /**
-   * Constructs a new UpdrawText instance with optional configuration.
+   * Constructs a new UpmadeText instance with optional configuration.
    * Can be used by consumers to create text objects programmatically:
    * ```ts
-   * const text = new UpdrawText({ text: 'Hello World', translateX: 100, translateY: 100 });
+   * const text = new UpmadeText({ text: 'Hello World', translateX: 100, translateY: 100 });
    * await editor.addObject(text);
    * ```
    * @param config - Optional configuration object.
@@ -112,12 +112,12 @@ export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
    * @param config.scaleX - Horizontal scale factor.
    * @param config.scaleY - Vertical scale factor.
    */
-  constructor(config?: UpdrawTextConfig) {
+  constructor(config?: UpmadeTextConfig) {
     super();
     this.name = config?.name;
     this.isLoading = config?.isLoading ?? false;
 
-    this.rotation = UpdrawMathHelper.degreesToRadians(config?.rotation ?? 0);
+    this.rotation = UpmadeMathHelper.degreesToRadians(config?.rotation ?? 0);
 
     // Always create the editor so setContent() works immediately
     this.editor = this.createEditor();
@@ -154,16 +154,16 @@ export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
   }
 
   /**
-   * Factory method to create a new UpdrawText instance with default settings.
+   * Factory method to create a new UpmadeText instance with default settings.
    * Initializes the editor and registers the object with the core store.
-   * @param core - The UpdrawCore instance managing the canvas.
+   * @param core - The UpmadeCore instance managing the canvas.
    * @param fontSize - Optional font size in points.
    * @param fontFamily - Optional font family name.
    * @param scale - Optional scale factor (defaults to current viewport scale).
-   * @returns A new, fully initialized UpdrawText instance.
+   * @returns A new, fully initialized UpmadeText instance.
    */
-  static override create(core: UpdrawCore, fontSize?: number, fontFamily?: string, scale?: number, rotation?: number): UpdrawText {
-    const object = new UpdrawText();
+  static override create(core: UpmadeCore, fontSize?: number, fontFamily?: string, scale?: number, rotation?: number): UpmadeText {
+    const object = new UpmadeText();
 
     object._core = core;
     object.id = object.generateId();
@@ -173,7 +173,7 @@ export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
     object.fontFamily = fontFamily || 'Arial';
     object.translateX = 0;
     object.translateY = 0;
-    object.rotation = UpdrawMathHelper.degreesToRadians(rotation ?? 0);
+    object.rotation = UpmadeMathHelper.degreesToRadians(rotation ?? 0);
 
     const coreScale = core.store.state.scale;
     const effectiveScale = coreScale < 0 ? coreScale : 1;
@@ -202,9 +202,9 @@ export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
       return;
     }
 
-    element.style.fontFamily = UpdrawFontRegistry.resolveCssFontFamily(this.fontFamily);
+    element.style.fontFamily = UpmadeFontRegistry.resolveCssFontFamily(this.fontFamily);
     element.style.fontSize = `${this.fontSize}pt`;
-    element.style.color = UpdrawColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
+    element.style.color = UpmadeColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
 
     if (this.isMounted && this.elementRef === element && this.editor!.dom.parentElement === element) {
       if (!this._core.store.state.isScaling && !this._core.store.state.isPanning) {
@@ -364,7 +364,7 @@ export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
           this.editor!.dispatch(this.editor!.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
           this.editor!.focus();
 
-          if (UpdrawDevicesHelper.isIOS()) {
+          if (UpmadeDevicesHelper.isIOS()) {
             this.scrollIntoViewOnIOS();
           }
           return;
@@ -375,7 +375,7 @@ export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
       this.editor!.dispatch(this.editor!.state.tr.setSelection(TextSelection.create(doc, end)));
       this.editor!.focus();
 
-      if (UpdrawDevicesHelper.isIOS()) {
+      if (UpmadeDevicesHelper.isIOS()) {
         this.scrollIntoViewOnIOS();
       }
     }
@@ -409,9 +409,9 @@ export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
       return;
     }
 
-    UpdrawKeyboardHelper.disableInteractiveWidget();
+    UpmadeKeyboardHelper.disableInteractiveWidget();
 
-    this.uneditedObject = this.clone() as UpdrawText;
+    this.uneditedObject = this.clone() as UpmadeText;
 
     this._core.store.setState('activeTool', this._core.toolRegistry.getTool('text'));
 
@@ -427,7 +427,7 @@ export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
       this.focus({ x: event?.clientX, y: event?.clientY });
     }
 
-    UpdrawKeyboardHelper.enableInteractiveWidget();
+    UpmadeKeyboardHelper.enableInteractiveWidget();
   }
 
   /**
@@ -547,10 +547,10 @@ export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
   /**
    * Creates a deep copy of this text object, including a new editor instance.
    * Preserves all content from the original object.
-   * @returns A new UpdrawText instance with copied properties and content.
+   * @returns A new UpmadeText instance with copied properties and content.
    */
-  override copy(): UpdrawText {
-    const copiedObject = super.copy() as UpdrawText;
+  override copy(): UpmadeText {
+    const copiedObject = super.copy() as UpmadeText;
     copiedObject.editor = copiedObject.createEditor();
 
     if (this.content) {
@@ -581,15 +581,15 @@ export class UpdrawText extends UpdrawBaseObject<HTMLDivElement> {
   /**
    * Restores a text object from a serialized representation.
    * Reconstructs the editor content from the saved document state.
-   * @template UpdrawText - The return type (for type inference).
+   * @template UpmadeText - The return type (for type inference).
    * @param object - The serialized object data to restore from.
    * @returns The deserialized text object instance.
    */
-  override deserialize<UpdrawText>(object: any): UpdrawText {
-    super.deserialize<UpdrawText>(object);
+  override deserialize<UpmadeText>(object: any): UpmadeText {
+    super.deserialize<UpmadeText>(object);
     if (object.content) {
       this.setContent(object.content);
     }
-    return this as unknown as UpdrawText;
+    return this as unknown as UpmadeText;
   }
 }

@@ -1,30 +1,30 @@
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawObjectConfig } from '../../interfaces/object-config.interface';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeObjectConfig } from '../../interfaces/object-config.interface';
 
-type UpdrawObjectConfigKey = keyof UpdrawObjectConfig;
+type UpmadeObjectConfigKey = keyof UpmadeObjectConfig;
 
 /**
  * Resolves the engine's `objectConfig` prop for individual objects. The configuration is read
  * live from the engine, so late prop updates from framework wrappers always apply.
  */
-export class UpdrawObjectConfigManager {
-  private readonly _core: UpdrawCore;
-  private readonly _warnedKeys = new Set<UpdrawObjectConfigKey>();
+export class UpmadeObjectConfigManager {
+  private readonly _core: UpmadeCore;
+  private readonly _warnedKeys = new Set<UpmadeObjectConfigKey>();
 
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     this._core = core;
   }
 
   /** The current object configuration, or `undefined` when none is set. */
-  get config(): UpdrawObjectConfig | undefined {
+  get config(): UpmadeObjectConfig | undefined {
     return this._core.engine?.objectConfig ?? undefined;
   }
 
   /** Whether the configuration sets the given option. */
-  isConfigured(key: UpdrawObjectConfigKey): boolean {
+  isConfigured(key: UpmadeObjectConfigKey): boolean {
     return this.config?.[key] !== undefined;
   }
 
@@ -34,7 +34,7 @@ export class UpdrawObjectConfigManager {
   }
 
   /** Whether the object gets a titlebar. Defaults to `false`. */
-  hasTitlebar(object: UpdrawBaseObject<any>): boolean {
+  hasTitlebar(object: UpmadeBaseObject<any>): boolean {
     return this.evaluate('hasTitlebar', object, false);
   }
 
@@ -42,7 +42,7 @@ export class UpdrawObjectConfigManager {
    * Whether the object can be rotated: its own flag and the configuration must both allow it.
    * Selection groups and groups require every object inside them to be rotatable.
    */
-  isRotatable(object: UpdrawBaseObject<any>): boolean {
+  isRotatable(object: UpmadeBaseObject<any>): boolean {
     return this.allowsAll(object, unit => unit.isRotatable !== false && this.evaluate('isRotatable', unit, true));
   }
 
@@ -50,13 +50,13 @@ export class UpdrawObjectConfigManager {
    * Whether the object can be resized: its own flag and the configuration must both allow it.
    * Selection groups and groups require every object inside them to be resizable.
    */
-  isResizable(object: UpdrawBaseObject<any>): boolean {
+  isResizable(object: UpmadeBaseObject<any>): boolean {
     return this.allowsAll(object, unit => unit.isResizable !== false && this.evaluate('isResizable', unit, true));
   }
 
   /** Applies a check to an object and everything a transform of it also transforms. */
-  private allowsAll(object: UpdrawBaseObject<any>, check: (object: UpdrawBaseObject<any>) => boolean): boolean {
-    if (object instanceof UpdrawSelectionGroup) {
+  private allowsAll(object: UpmadeBaseObject<any>, check: (object: UpmadeBaseObject<any>) => boolean): boolean {
+    if (object instanceof UpmadeSelectionGroup) {
       return object.objects.every(selected => this.allowsAll(selected, check));
     }
 
@@ -64,7 +64,7 @@ export class UpdrawObjectConfigManager {
       return false;
     }
 
-    if (object instanceof UpdrawGroup) {
+    if (object instanceof UpmadeGroup) {
       return object.childIds.every(childId => {
         const child = this._core.store.objects.findById(childId);
         return !child || this.allowsAll(child, check);
@@ -75,7 +75,7 @@ export class UpdrawObjectConfigManager {
   }
 
   /** Resolves one option for one object. Only a synchronous boolean counts; failures are reported once. */
-  private evaluate(key: UpdrawObjectConfigKey, object: UpdrawBaseObject<any>, fallback: boolean): boolean {
+  private evaluate(key: UpmadeObjectConfigKey, object: UpmadeBaseObject<any>, fallback: boolean): boolean {
     const value = this.config?.[key];
     if (value === undefined) {
       return fallback;
@@ -97,11 +97,11 @@ export class UpdrawObjectConfigManager {
     }
   }
 
-  private warnOnce(key: UpdrawObjectConfigKey, error: unknown): void {
+  private warnOnce(key: UpmadeObjectConfigKey, error: unknown): void {
     if (this._warnedKeys.has(key)) {
       return;
     }
     this._warnedKeys.add(key);
-    console.warn(`[UpdrawObjectConfig] \`${key}\` failed; using its default for the affected objects:`, error);
+    console.warn(`[UpmadeObjectConfig] \`${key}\` failed; using its default for the affected objects:`, error);
   }
 }

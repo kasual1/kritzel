@@ -1,6 +1,6 @@
-import { UpdrawAssetStorageConfig } from '../interfaces/asset-storage-config.interface';
-import { UpdrawLoginConfig } from '../interfaces/login-config.interface';
-import { UpdrawSyncConfig } from '../interfaces/sync-config.interface';
+import { UpmadeAssetStorageConfig } from '../interfaces/asset-storage-config.interface';
+import { UpmadeLoginConfig } from '../interfaces/login-config.interface';
+import { UpmadeSyncConfig } from '../interfaces/sync-config.interface';
 import { ThemeName } from '../interfaces/theme.interface';
 
 export interface EditorIsReadyEvent {
@@ -12,8 +12,8 @@ export interface EditorIsReadyEvent {
         createdAt: Date;
         updatedAt: Date;
     };
-    syncConfig: UpdrawSyncConfig;
-    assetStorageConfig?: UpdrawAssetStorageConfig;
-    loginConfig: UpdrawLoginConfig;
+    syncConfig: UpmadeSyncConfig;
+    assetStorageConfig?: UpmadeAssetStorageConfig;
+    loginConfig: UpmadeLoginConfig;
     theme: ThemeName;
 }

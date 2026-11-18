@@ -1,10 +1,10 @@
-import { UpdrawBaseTool } from './base-tool.class';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeBaseTool } from './base-tool.class';
+import { UpmadeCore } from '../core/core.class';
 
 jest.mock('../core/core.class');
 
-describe('UpdrawBaseTool', () => {
-  let tool: UpdrawBaseTool;
+describe('UpmadeBaseTool', () => {
+  let tool: UpmadeBaseTool;
   let mockCore: any;
 
   const createPointerEvent = (overrides: Partial<PointerEvent> = {}): PointerEvent => {
@@ -26,8 +26,8 @@ describe('UpdrawBaseTool', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockCore = {} as jest.Mocked<UpdrawCore>;
-    tool = new UpdrawBaseTool(mockCore);
+    mockCore = {} as jest.Mocked<UpmadeCore>;
+    tool = new UpmadeBaseTool(mockCore);
   });
 
   describe('constructor', () => {
@@ -36,7 +36,7 @@ describe('UpdrawBaseTool', () => {
     });
 
     it('should set __class__ to the constructor name', () => {
-      expect(tool.__class__).toBe('UpdrawBaseTool');
+      expect(tool.__class__).toBe('UpmadeBaseTool');
     });
   });
 
@@ -81,7 +81,7 @@ describe('UpdrawBaseTool', () => {
       const result = tool.serialize();
 
       expect(result).toEqual({
-        __class__: 'UpdrawBaseTool',
+        __class__: 'UpmadeBaseTool',
         name: 'base-tool',
       });
     });
@@ -108,10 +108,10 @@ describe('UpdrawBaseTool', () => {
       expect(tool.name).toBe('restored');
     });
 
-    it('should keep its own class name instead of the serialized one', () => {
+    it.each(['UpdrawBrushTool', 'KritzelBrushTool'])('should keep its own class name instead of the serialized %s', legacyClass => {
       const ownClass = tool.__class__;
 
-      tool.deserialize({ __class__: 'KritzelBrushTool', name: 'restored' });
+      tool.deserialize({ __class__: legacyClass, name: 'restored' });
 
       expect(tool.__class__).toBe(ownClass);
       expect(tool.name).toBe('restored');

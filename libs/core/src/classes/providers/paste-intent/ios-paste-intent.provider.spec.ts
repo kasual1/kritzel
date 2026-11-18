@@ -1,22 +1,22 @@
-import { UpdrawIosPasteIntentProvider } from './ios-paste-intent.provider';
-import { UpdrawDevicesHelper } from '../../../helpers/devices.helper';
+import { UpmadeIosPasteIntentProvider } from './ios-paste-intent.provider';
+import { UpmadeDevicesHelper } from '../../../helpers/devices.helper';
 
 jest.mock('../../../helpers/devices.helper', () => ({
-  UpdrawDevicesHelper: {
+  UpmadeDevicesHelper: {
     isIOS: jest.fn(),
   },
 }));
 
-describe('UpdrawIosPasteIntentProvider', () => {
-  let provider: UpdrawIosPasteIntentProvider;
+describe('UpmadeIosPasteIntentProvider', () => {
+  let provider: UpmadeIosPasteIntentProvider;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    provider = new UpdrawIosPasteIntentProvider();
+    provider = new UpmadeIosPasteIntentProvider();
   });
 
   it('handles iOS eventless paste context', () => {
-    (UpdrawDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
+    (UpmadeDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
 
     const canHandle = provider.canHandle({ core: {} as any });
 
@@ -24,7 +24,7 @@ describe('UpdrawIosPasteIntentProvider', () => {
   });
 
   it('does not handle when a native clipboard event is present', () => {
-    (UpdrawDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
+    (UpmadeDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
 
     const canHandle = provider.canHandle({
       core: {} as any,
@@ -35,12 +35,12 @@ describe('UpdrawIosPasteIntentProvider', () => {
   });
 
   it('returns the in-memory session payload when available', async () => {
-    const payload = { version: 1, objects: [{ id: 'x', __class__: 'UpdrawShape' }] };
+    const payload = { version: 1, objects: [{ id: 'x', __class__: 'UpmadeShape' }] };
     const core = { clipboardManager: { sessionClipboardPayload: payload } } as any;
 
     const intent = await provider.getPasteIntent({ core });
 
-    expect(intent).toEqual({ type: 'updraw_objects', payload });
+    expect(intent).toEqual({ type: 'upmade_objects', payload });
   });
 
   it('returns unknown when the session buffer is empty', async () => {

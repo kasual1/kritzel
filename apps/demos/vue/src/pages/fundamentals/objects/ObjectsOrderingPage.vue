@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {
   getEditorRef,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type UpdrawBaseObject,
-} from '@updraw/vue-editor'
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type UpmadeBaseObject,
+} from '@upmade/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -20,7 +20,7 @@ import { useInfoPanel } from '../../../components/info-panel'
 
 const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
-function createOverlappingSeedObjects(): UpdrawBaseObject[] {
+function createOverlappingSeedObjects(): UpmadeBaseObject[] {
   return createSeedObjects().map((object) => {
     object.translateX -= object.centerX
     object.translateY -= object.centerY
@@ -30,13 +30,13 @@ function createOverlappingSeedObjects(): UpdrawBaseObject[] {
 
 const editor = getEditorRef('editor')
 const seedObjects = createOverlappingSeedObjects()
-const objects = ref<UpdrawBaseObject[]>(seedObjects)
+const objects = ref<UpmadeBaseObject[]>(seedObjects)
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: seedObjects })]
+const workspaces = [new UpmadeWorkspace({ objects: seedObjects })]
 
 async function refreshObjects() {
   const all = (await editor.value?.findObjects(
-    (object) => object.__class__ !== 'UpdrawSelectionBox',
+    (object) => object.__class__ !== 'UpmadeSelectionBox',
   )) ?? []
   objects.value = [...all].sort(
     (a, b) => a.zIndex - b.zIndex,
@@ -81,7 +81,7 @@ async function sendToBack() {
       <InfoPanelToggle :panel="infoPanel" />
     </Toolbar>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
-      <UpdrawEditor
+      <UpmadeEditor
         ref="editor"
         editorId="objects-ordering"
         theme="light"

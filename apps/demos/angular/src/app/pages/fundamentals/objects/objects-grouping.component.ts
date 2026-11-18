@@ -5,11 +5,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  UpdrawEditor,
-  UpdrawBaseObject,
-  UpdrawGroup,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeEditor,
+  UpmadeBaseObject,
+  UpmadeGroup,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import {
@@ -21,7 +21,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-objects-grouping',
-  imports: [UpdrawEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
+  imports: [UpmadeEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -31,7 +31,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       <app-info-panel-toggle [panel]="infoPanel"></app-info-panel-toggle>
     </app-toolbar>
     <div class="content">
-      <updraw-editor
+      <upmade-editor
         editorId="objects-grouping"
         [theme]="'light'"
         [themes]="themes"
@@ -42,7 +42,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady()"
         (objectsSelectionChange)="onObjectsSelectionChange()"
-      ></updraw-editor>
+      ></upmade-editor>
       <app-info-panel #infoPanel [hasToolbarToggle]="true">
         <h3>Objects</h3>
         <ul>
@@ -69,7 +69,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         min-height: 0;
         position: relative;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
       }
       app-info-panel {
@@ -99,13 +99,13 @@ import { createSeedObjects } from '../../../const/seed-objects';
   ],
 })
 export class ObjectsGroupingComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
-  objects = signal<UpdrawBaseObject[]>([]);
+  objects = signal<UpmadeBaseObject[]>([]);
 
   async onReady() {
     await this.refreshObjects();
@@ -128,7 +128,7 @@ export class ObjectsGroupingComponent {
 
   async ungroupSelected() {
     const selected = await this.editor.getSelectedObjects();
-    const groups = selected.filter((object): object is UpdrawGroup => object.__class__ === 'UpdrawGroup');
+    const groups = selected.filter((object): object is UpmadeGroup => object.__class__ === 'UpmadeGroup');
     await this.editor.ungroup(groups);
     await this.refreshObjects();
   }

@@ -3,7 +3,7 @@
 //
 // It runs inside the Vite dev server (`npm run demo:react`), not in the browser: it reads `ANTHROPIC_API_KEY` from
 // the `.env` file at the repository root, so the key never reaches the page. Each request is one model step in
-// Updraw's chat protocol; the answer streams back as newline-delimited JSON, one `UpdrawChatStreamEvent` per line,
+// Upmade's chat protocol; the answer streams back as newline-delimited JSON, one `UpmadeChatStreamEvent` per line,
 // which `createHttpTransport()` reads.
 import { readFileSync } from 'node:fs';
 import type { IncomingMessage, ServerResponse } from 'node:http';
@@ -12,12 +12,12 @@ import Anthropic from '@anthropic-ai/sdk';
 import { parse } from 'dotenv';
 import type { Plugin } from 'vite';
 import type {
-  UpdrawChatMessage,
-  UpdrawChatPart,
-  UpdrawChatRequest,
-  UpdrawChatStopReason,
-  UpdrawChatStreamEvent,
-} from '@updraw/react-editor';
+  UpmadeChatMessage,
+  UpmadeChatPart,
+  UpmadeChatRequest,
+  UpmadeChatStopReason,
+  UpmadeChatStreamEvent,
+} from '@upmade/react-editor';
 
 const MODEL = 'claude-opus-5-5';
 
@@ -80,7 +80,7 @@ async function handleChat(client: Anthropic | null, req: IncomingMessage, res: S
     sendJson(res, 500, { error: 'ANTHROPIC_API_KEY is not set in the .env file at the repository root.' });
     return;
   }
-  let request: UpdrawChatRequest;
+  let request: UpmadeChatRequest;
   try {
     request = JSON.parse(await readBody(req));
   } catch {
@@ -88,7 +88,7 @@ async function handleChat(client: Anthropic | null, req: IncomingMessage, res: S
     return;
   }
   if (!request || !Array.isArray(request.messages) || !Array.isArray(request.tools)) {
-    sendJson(res, 400, { error: 'The request is not an Updraw chat request.' });
+    sendJson(res, 400, { error: 'The request is not an Upmade chat request.' });
     return;
   }
 
@@ -100,7 +100,7 @@ async function handleChat(client: Anthropic | null, req: IncomingMessage, res: S
 
   // The status is sent with the first event, so that a failure before it (a wrong key, a rate limit) still gets
   // an error status. Once the answer has started, a failure is sent as an `error` event.
-  const send = (event: UpdrawChatStreamEvent) => {
+  const send = (event: UpmadeChatStreamEvent) => {
     if (!res.headersSent) {
       res.writeHead(200, { 'Content-Type': 'application/x-ndjson; charset=utf-8', 'Cache-Control': 'no-cache' });
     }
@@ -129,7 +129,7 @@ async function handleChat(client: Anthropic | null, req: IncomingMessage, res: S
  * One model step, streamed while Claude writes it. Each tool call is announced when the model starts it and its
  * input streams as written; it is sent complete as soon as its input is, so the session can run it right away.
  */
-async function* streamChat(client: Anthropic, request: UpdrawChatRequest, signal: AbortSignal): AsyncGenerator<UpdrawChatStreamEvent> {
+async function* streamChat(client: Anthropic, request: UpmadeChatRequest, signal: AbortSignal): AsyncGenerator<UpmadeChatStreamEvent> {
   const stream = client.beta.messages.stream(
     {
       model: MODEL,
@@ -199,7 +199,7 @@ async function* streamChat(client: Anthropic, request: UpdrawChatRequest, signal
 }
 
 /** The conversation in the Messages API's shape. Tool results go back as user messages. */
-function toAnthropicMessages(messages: UpdrawChatMessage[]): Anthropic.Beta.BetaMessageParam[] {
+function toAnthropicMessages(messages: UpmadeChatMessage[]): Anthropic.Beta.BetaMessageParam[] {
   const result: Anthropic.Beta.BetaMessageParam[] = [];
   // Tool calls left out of the assistant message before (see `withoutDeclined`), by ID, with their names.
   let leftOut = new Map<string, string>();
@@ -259,7 +259,7 @@ function withoutDeclined(content: Anthropic.Beta.BetaContentBlockParam[]): {
   return { content: kept, leftOut };
 }
 
-function toAnthropicBlock(part: UpdrawChatPart): Anthropic.Beta.BetaContentBlockParam[] {
+function toAnthropicBlock(part: UpmadeChatPart): Anthropic.Beta.BetaContentBlockParam[] {
   switch (part.type) {
     case 'text':
       return part.text ? [{ type: 'text', text: part.text }] : [];
@@ -285,7 +285,7 @@ function parseJson(text: string, fallback: unknown): unknown {
   }
 }
 
-const STOP_REASONS: Record<string, UpdrawChatStopReason> = {
+const STOP_REASONS: Record<string, UpmadeChatStopReason> = {
   end_turn: 'end',
   tool_use: 'tool-calls',
   max_tokens: 'max-tokens',

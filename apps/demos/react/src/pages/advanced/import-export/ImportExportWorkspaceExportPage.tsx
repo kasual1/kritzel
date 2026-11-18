@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type CSSProperties } from "react";
-import { UpdrawEditor, UpdrawWorkspace, type HTMLUpdrawEditorElement } from "@updraw/react-editor";
+import { UpmadeEditor, UpmadeWorkspace, type HTMLUpmadeEditorElement } from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -16,10 +16,10 @@ const preStyle: CSSProperties = {
 };
 
 export function ImportExportWorkspaceExportPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const [jsonPreview, setJsonPreview] = useState('Click "Preview as JSON" to see the exported workspace.');
   const workspaces = useMemo(
-    () => [new UpdrawWorkspace({ id: "workspace-export", name: "Workspace Export", objects: createSeedObjects() })],
+    () => [new UpmadeWorkspace({ id: "workspace-export", name: "Workspace Export", objects: createSeedObjects() })],
     [],
   );
 
@@ -42,7 +42,7 @@ export function ImportExportWorkspaceExportPage() {
         <button onClick={() => void downloadJson()}>Download JSON</button>
       </Toolbar>
       <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
-        <UpdrawEditor
+        <UpmadeEditor
           ref={editorRef}
           editorId="import-export-workspace-export"
           theme="light"

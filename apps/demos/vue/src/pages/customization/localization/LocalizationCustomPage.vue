@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { UpdrawEditor, UpdrawWorkspace, type UpdrawLocale, type LocaleCode } from '@updraw/vue-editor'
+import { UpmadeEditor, UpmadeWorkspace, type UpmadeLocale, type LocaleCode } from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -8,8 +8,8 @@ import { editorStyle, hostStyle } from '../../shared/demo-shared'
 import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
-const spanishLocale: UpdrawLocale = {
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
+const spanishLocale: UpmadeLocale = {
   code: 'es',
   label: 'Espanol',
   terms: {
@@ -35,7 +35,7 @@ const activeLocale = ref<LocaleCode>('es')
     <Toolbar>
       <button :class="{ active: activeLocale === 'es' }" @click="activeLocale = 'es'">Espanol</button>
     </Toolbar>
-    <UpdrawEditor
+    <UpmadeEditor
       editorId="localization-custom"
       :locales="customLocales"
       :locale="activeLocale"

@@ -1,19 +1,19 @@
 :root {
   --ifm-navbar-height: 3rem;
-  --updraw-nav-max-width: 1240px;
-  --ifm-container-width-xl: var(--updraw-nav-max-width);
-  --updraw-nav-bg: rgba(255, 255, 255, 0.82);
-  --updraw-nav-border: rgba(0, 0, 0, 0.08);
-  --updraw-nav-shadow: 0 14px 32px rgba(8, 12, 18, 0.12);
+  --upmade-nav-max-width: 1240px;
+  --ifm-container-width-xl: var(--upmade-nav-max-width);
+  --upmade-nav-bg: rgba(255, 255, 255, 0.82);
+  --upmade-nav-border: rgba(0, 0, 0, 0.08);
+  --upmade-nav-shadow: 0 14px 32px rgba(8, 12, 18, 0.12);
 }
 
 .navbar {
-  width: min(var(--updraw-nav-max-width), calc(100% - 1.75rem));
+  width: min(var(--upmade-nav-max-width), calc(100% - 1.75rem));
   margin: 0.75rem auto 0;
-  border: 1px solid var(--updraw-nav-border);
+  border: 1px solid var(--upmade-nav-border);
   border-radius: 1rem;
   background: transparent;
-  box-shadow: var(--updraw-nav-shadow);
+  box-shadow: var(--upmade-nav-shadow);
   padding: 0.3rem 1rem;
 }
 
@@ -81,44 +81,9 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
   backdrop-filter: none;
 }
 
-.blog-sidebar-brand .navbar__logo,
-.blog-sidebar-brand .navbar__logo img {
-  width: 36px;
-  height: 36px;
-}
-
-.blog-sidebar-brand .navbar__title {
-  font-size: 26px;
-  letter-spacing: -0.02em;
-}
-
-/* Matches the landing pages' hero brand (.brand in Landing/styles.module.css). */
-.blog-navigation-logo,
-.blog-navigation-logo:hover {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* The logo + name (UpmadeBrand, which styles it), as tall as the landing pages' hero brand. */
+.blog-navigation-logo {
   min-height: 48px;
-  color: #0a0a0a;
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  text-decoration: none;
-}
-
-.blog-navigation-logo svg {
-  width: 36px;
-}
-
-@media (max-width: 768px) {
-  .blog-navigation-logo,
-  .blog-navigation-logo:hover {
-    font-size: 22px;
-  }
-
-  .blog-navigation-logo svg {
-    width: 28px;
-  }
 }
 
 .blog-sidebar-brand {
@@ -252,7 +217,7 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
   inset: 0;
   z-index: 0;
   border-radius: inherit;
-  background: var(--updraw-nav-bg);
+  background: var(--upmade-nav-bg);
   -webkit-backdrop-filter: blur(28px);
   backdrop-filter: blur(28px);
   content: "";
@@ -302,29 +267,6 @@ html.landing-page .navbar--fixed-top {
 
 .navbar__brand {
   margin-right: 1.1rem;
-}
-
-.navbar__title {
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.navbar__logo {
-  display: flex;
-  align-items: center;
-  height: 24px;
-  width: 24px;
-}
-
-/*
- * Don't set `display` here: Docusaurus SSR renders a light and a dark logo and hides the
- * inactive one via `.themedComponent { display: none }` until hydration. Overriding it
- * shows both stacked, and the logo jumps once React removes the extra one.
- */
-.navbar__logo img {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
 }
 
 .navbar__items {

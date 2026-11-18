@@ -1,14 +1,14 @@
-import { UpdrawBaseObject } from '../classes/objects/base-object.class';
+import { UpmadeBaseObject } from '../classes/objects/base-object.class';
 
 /** Viewport transform needed to place titlebars inside the world-space origin layer. */
-export interface UpdrawTitlebarViewportState {
+export interface UpmadeTitlebarViewportState {
   scale: number;
   translateX: number;
   translateY: number;
 }
 
 /** Where a titlebar is anchored, in world coordinates, and how wide it is on screen. */
-export interface UpdrawTitlebarAnchor {
+export interface UpmadeTitlebarAnchor {
   /** World x of the anchor (the owner's top-left corner). */
   x: number;
   /** World y of the anchor (the owner's top-left corner). */
@@ -19,15 +19,15 @@ export interface UpdrawTitlebarAnchor {
   rotationDegrees: number;
 }
 
-export const UPDRAW_TITLEBAR_DEFAULT_HEIGHT = 28;
-export const UPDRAW_TITLEBAR_DEFAULT_OFFSET = 6;
-export const UPDRAW_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH = 40;
+export const UPMADE_TITLEBAR_DEFAULT_HEIGHT = 28;
+export const UPMADE_TITLEBAR_DEFAULT_OFFSET = 6;
+export const UPMADE_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH = 40;
 
 /**
  * Pure geometry for object titlebars. Titlebars live in a world-space layer inside the
  * engine's origin and are counter-scaled, so their content keeps a constant screen size.
  */
-export class UpdrawObjectTitlebarHelper {
+export class UpmadeObjectTitlebarHelper {
   /**
    * Parses a pixel length such as `'28px'` or `'28'`. Other units cannot be resolved
    * without layout, so they fall back to the default.
@@ -56,11 +56,11 @@ export class UpdrawObjectTitlebarHelper {
    * In `follow` mode the bar sits on the object's rotated top edge; in `upright` mode it sits
    * unrotated on top of the object's rotated bounding box.
    */
-  static getAnchor(object: UpdrawBaseObject<any>, viewport: UpdrawTitlebarViewportState, rotation: 'follow' | 'upright' = 'follow'): UpdrawTitlebarAnchor {
+  static getAnchor(object: UpmadeBaseObject<any>, viewport: UpmadeTitlebarViewportState, rotation: 'follow' | 'upright' = 'follow'): UpmadeTitlebarAnchor {
     if (rotation === 'upright') {
       const box = object.rotatedBoundingBox;
       return {
-        ...UpdrawObjectTitlebarHelper.snapToPixel(box.x, box.y, viewport),
+        ...UpmadeObjectTitlebarHelper.snapToPixel(box.x, box.y, viewport),
         width: box.width * viewport.scale,
         rotationDegrees: 0,
       };
@@ -69,7 +69,7 @@ export class UpdrawObjectTitlebarHelper {
     const topLeft = object.rotatedPolygon.topLeft;
     const rotationDegrees = object.rotationDegrees;
     // Snapping a rotated anchor would shift it off the rotated edge, so only snap axis-aligned bars.
-    const position = rotationDegrees % 360 === 0 ? UpdrawObjectTitlebarHelper.snapToPixel(topLeft.x, topLeft.y, viewport) : topLeft;
+    const position = rotationDegrees % 360 === 0 ? UpmadeObjectTitlebarHelper.snapToPixel(topLeft.x, topLeft.y, viewport) : topLeft;
 
     return {
       x: position.x,
@@ -83,13 +83,13 @@ export class UpdrawObjectTitlebarHelper {
    * Builds the CSS transform that places a titlebar anchor in the origin layer.
    * The inverse scale cancels the viewport zoom, so one CSS pixel equals one screen pixel.
    */
-  static getTransform(anchor: UpdrawTitlebarAnchor, scale: number): string {
+  static getTransform(anchor: UpmadeTitlebarAnchor, scale: number): string {
     const inverseScale = scale > 0 ? 1 / scale : 1;
     return `translate(${anchor.x}px, ${anchor.y}px) rotate(${anchor.rotationDegrees}deg) scale(${inverseScale})`;
   }
 
   /** Rounds a world point so it lands on a whole screen pixel, which keeps counter-scaled text crisp. */
-  static snapToPixel(x: number, y: number, viewport: UpdrawTitlebarViewportState): { x: number; y: number } {
+  static snapToPixel(x: number, y: number, viewport: UpmadeTitlebarViewportState): { x: number; y: number } {
     const { scale, translateX, translateY } = viewport;
     if (!(scale > 0)) {
       return { x, y };

@@ -1,14 +1,14 @@
-import { UpdrawSvgExportHelper, SvgExportOptions } from './svg-export.helper';
-import { UpdrawPath } from '../classes/objects/path.class';
-import { UpdrawLine } from '../classes/objects/line.class';
-import { UpdrawShape } from '../classes/objects/shape.class';
-import { UpdrawText } from '../classes/objects/text.class';
-import { UpdrawImage } from '../classes/objects/image.class';
-import { UpdrawGroup } from '../classes/objects/group.class';
-import { UpdrawDynamicObject } from '../classes/objects/dynamic-object.class';
+import { UpmadeSvgExportHelper, SvgExportOptions } from './svg-export.helper';
+import { UpmadePath } from '../classes/objects/path.class';
+import { UpmadeLine } from '../classes/objects/line.class';
+import { UpmadeShape } from '../classes/objects/shape.class';
+import { UpmadeText } from '../classes/objects/text.class';
+import { UpmadeImage } from '../classes/objects/image.class';
+import { UpmadeGroup } from '../classes/objects/group.class';
+import { UpmadeDynamicObject } from '../classes/objects/dynamic-object.class';
 import { ShapeType } from '../enums/shape-type.enum';
 
-// Mock ProseMirror modules for UpdrawText
+// Mock ProseMirror modules for UpmadeText
 jest.mock('prosemirror-state', () => ({
   EditorState: {
     create: jest.fn(() => ({
@@ -96,25 +96,25 @@ jest.mock('prosemirror-commands', () => ({
 }));
 
 jest.mock('../classes/managers/theme.manager', () => ({
-  UpdrawThemeManager: {
+  UpmadeThemeManager: {
     getStoredTheme: jest.fn().mockReturnValue('light'),
   },
 }));
 
-describe('UpdrawSvgExportHelper', () => {
+describe('UpmadeSvgExportHelper', () => {
   describe('calculateCombinedBounds', () => {
     it('should return null for empty array', () => {
-      const result = UpdrawSvgExportHelper.calculateCombinedBounds([]);
+      const result = UpmadeSvgExportHelper.calculateCombinedBounds([]);
       expect(result).toBeNull();
     });
 
     it('should return null for undefined input', () => {
-      const result = UpdrawSvgExportHelper.calculateCombinedBounds(undefined as any);
+      const result = UpmadeSvgExportHelper.calculateCombinedBounds(undefined as any);
       expect(result).toBeNull();
     });
 
     it('should calculate bounds for a single object', () => {
-      const path = new UpdrawPath({
+      const path = new UpmadePath({
         points: [[0, 0], [100, 100]],
         translateX: 50,
         translateY: 50,
@@ -123,7 +123,7 @@ describe('UpdrawSvgExportHelper', () => {
       path.width = 100;
       path.height = 100;
 
-      const result = UpdrawSvgExportHelper.calculateCombinedBounds([path]);
+      const result = UpmadeSvgExportHelper.calculateCombinedBounds([path]);
 
       expect(result).not.toBeNull();
       expect(result!.x).toBe(46);
@@ -133,7 +133,7 @@ describe('UpdrawSvgExportHelper', () => {
     });
 
     it('should calculate union bounds for multiple objects', () => {
-      const path1 = new UpdrawPath({
+      const path1 = new UpmadePath({
         points: [[0, 0], [50, 50]],
         translateX: 0,
         translateY: 0,
@@ -142,7 +142,7 @@ describe('UpdrawSvgExportHelper', () => {
       path1.width = 50;
       path1.height = 50;
 
-      const path2 = new UpdrawPath({
+      const path2 = new UpmadePath({
         points: [[0, 0], [50, 50]],
         translateX: 100,
         translateY: 100,
@@ -151,7 +151,7 @@ describe('UpdrawSvgExportHelper', () => {
       path2.width = 50;
       path2.height = 50;
 
-      const result = UpdrawSvgExportHelper.calculateCombinedBounds([path1, path2]);
+      const result = UpmadeSvgExportHelper.calculateCombinedBounds([path1, path2]);
 
       expect(result).not.toBeNull();
       expect(result!.x).toBe(-4);
@@ -163,12 +163,12 @@ describe('UpdrawSvgExportHelper', () => {
 
   describe('generateSvg', () => {
     it('should return empty string for empty array', () => {
-      const result = UpdrawSvgExportHelper.generateSvg([]);
+      const result = UpmadeSvgExportHelper.generateSvg([]);
       expect(result).toBe('');
     });
 
     it('should generate valid SVG with XML declaration by default', () => {
-      const path = new UpdrawPath({
+      const path = new UpmadePath({
         points: [[0, 0], [100, 100]],
         translateX: 0,
         translateY: 0,
@@ -179,7 +179,7 @@ describe('UpdrawSvgExportHelper', () => {
       path.height = 100;
       path.d = 'M 0 0 L 100 100';
 
-      const result = UpdrawSvgExportHelper.generateSvg([path]);
+      const result = UpmadeSvgExportHelper.generateSvg([path]);
 
       expect(result).toContain('<?xml version="1.0" encoding="UTF-8"?>');
       expect(result).toContain('<svg xmlns="http://www.w3.org/2000/svg"');
@@ -188,7 +188,7 @@ describe('UpdrawSvgExportHelper', () => {
     });
 
     it('should omit XML declaration when option is false', () => {
-      const path = new UpdrawPath({
+      const path = new UpmadePath({
         points: [[0, 0], [100, 100]],
         translateX: 0,
         translateY: 0,
@@ -199,14 +199,14 @@ describe('UpdrawSvgExportHelper', () => {
       path.d = 'M 0 0 L 100 100';
 
       const options: SvgExportOptions = { includeXmlDeclaration: false };
-      const result = UpdrawSvgExportHelper.generateSvg([path], options);
+      const result = UpmadeSvgExportHelper.generateSvg([path], options);
 
       expect(result).not.toContain('<?xml');
       expect(result).toContain('<svg xmlns');
     });
 
     it('should add padding to viewBox', () => {
-      const path = new UpdrawPath({
+      const path = new UpmadePath({
         points: [[0, 0], [100, 100]],
         translateX: 0,
         translateY: 0,
@@ -217,7 +217,7 @@ describe('UpdrawSvgExportHelper', () => {
       path.d = 'M 0 0 L 100 100';
 
       const options: SvgExportOptions = { padding: 10 };
-      const result = UpdrawSvgExportHelper.generateSvg([path], options);
+      const result = UpmadeSvgExportHelper.generateSvg([path], options);
 
       // ViewBox should include negative offset for padding
       expect(result).toContain('viewBox="-14 -14');
@@ -225,9 +225,9 @@ describe('UpdrawSvgExportHelper', () => {
   });
 
   describe('objectToSvgElement', () => {
-    describe('UpdrawPath', () => {
+    describe('UpmadePath', () => {
       it('should convert path to SVG element', () => {
-        const path = new UpdrawPath({
+        const path = new UpmadePath({
           points: [[0, 0], [100, 100]],
           translateX: 10,
           translateY: 20,
@@ -238,7 +238,7 @@ describe('UpdrawSvgExportHelper', () => {
         path.height = 100;
         path.d = 'M 0 0 L 100 100';
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(path, 'light');
+        const result = UpmadeSvgExportHelper.objectToSvgElement(path, 'light');
 
         expect(result).toContain('<g transform="translate(6, 16)"');
         expect(result).toContain('<path d="M 0 0 L 100 100"');
@@ -246,7 +246,7 @@ describe('UpdrawSvgExportHelper', () => {
       });
 
       it('should include opacity when not 1', () => {
-        const path = new UpdrawPath({
+        const path = new UpmadePath({
           points: [[0, 0], [100, 100]],
           translateX: 0,
           translateY: 0,
@@ -257,15 +257,15 @@ describe('UpdrawSvgExportHelper', () => {
         path.d = 'M 0 0 L 100 100';
         path.opacity = 0.5;
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(path, 'light');
+        const result = UpmadeSvgExportHelper.objectToSvgElement(path, 'light');
 
         expect(result).toContain('opacity="0.5"');
       });
     });
 
-    describe('UpdrawLine', () => {
+    describe('UpmadeLine', () => {
       it('should convert line to SVG element', () => {
-        const line = new UpdrawLine({
+        const line = new UpmadeLine({
           startX: 0,
           startY: 0,
           endX: 100,
@@ -277,7 +277,7 @@ describe('UpdrawSvgExportHelper', () => {
           stroke: { light: '#000000', dark: '#ffffff' },
         });
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(line, 'light');
+        const result = UpmadeSvgExportHelper.objectToSvgElement(line, 'light');
 
         expect(result).toContain('<path d=');
         expect(result).toContain('stroke="#000000"');
@@ -285,7 +285,7 @@ describe('UpdrawSvgExportHelper', () => {
       });
 
       it('should include arrow markers when arrows are enabled', () => {
-        const line = new UpdrawLine({
+        const line = new UpmadeLine({
           startX: 0,
           startY: 0,
           endX: 100,
@@ -301,7 +301,7 @@ describe('UpdrawSvgExportHelper', () => {
           },
         });
 
-        const result = UpdrawSvgExportHelper.generateSvg([line], { includeXmlDeclaration: false });
+        const result = UpmadeSvgExportHelper.generateSvg([line], { includeXmlDeclaration: false });
 
         expect(result).toContain('<defs>');
         expect(result).toContain('<marker');
@@ -310,9 +310,9 @@ describe('UpdrawSvgExportHelper', () => {
       });
     });
 
-    describe('UpdrawShape', () => {
+    describe('UpmadeShape', () => {
       it('should convert rectangle shape to SVG element', () => {
-        const shape = new UpdrawShape({
+        const shape = new UpmadeShape({
           x: 0,
           y: 0,
           translateX: 10,
@@ -326,7 +326,7 @@ describe('UpdrawSvgExportHelper', () => {
           scale: 1,
         });
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(shape, 'light');
+        const result = UpmadeSvgExportHelper.objectToSvgElement(shape, 'light');
 
         expect(result).toContain('<g transform="translate(10, 20)"');
         expect(result).toContain('fill="#0000ff"');
@@ -335,7 +335,7 @@ describe('UpdrawSvgExportHelper', () => {
       });
 
       it('should convert ellipse shape to SVG element', () => {
-        const shape = new UpdrawShape({
+        const shape = new UpmadeShape({
           x: 0,
           y: 0,
           translateX: 0,
@@ -346,7 +346,7 @@ describe('UpdrawSvgExportHelper', () => {
           scale: 1,
         });
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(shape, 'light');
+        const result = UpmadeSvgExportHelper.objectToSvgElement(shape, 'light');
 
         expect(result).toContain('<path d=');
         // Ellipse path uses arc commands
@@ -354,7 +354,7 @@ describe('UpdrawSvgExportHelper', () => {
       });
 
       it('should convert triangle shape to SVG element', () => {
-        const shape = new UpdrawShape({
+        const shape = new UpmadeShape({
           x: 0,
           y: 0,
           translateX: 0,
@@ -365,7 +365,7 @@ describe('UpdrawSvgExportHelper', () => {
           scale: 1,
         });
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(shape, 'light');
+        const result = UpmadeSvgExportHelper.objectToSvgElement(shape, 'light');
 
         expect(result).toContain('<path d=');
         // Triangle has M, L, L, Z
@@ -373,9 +373,9 @@ describe('UpdrawSvgExportHelper', () => {
       });
     });
 
-    describe('UpdrawText', () => {
+    describe('UpmadeText', () => {
       it('should convert text to SVG with foreignObject', () => {
-        const text = new UpdrawText({
+        const text = new UpmadeText({
           text: 'Hello World',
           translateX: 50,
           translateY: 100,
@@ -388,7 +388,7 @@ describe('UpdrawSvgExportHelper', () => {
         text.scale = 1;
         text.scaleFactor = 1;
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(text, 'light');
+        const result = UpmadeSvgExportHelper.objectToSvgElement(text, 'light');
 
         expect(result).toContain('<g transform="translate(50, 100)"');
         expect(result).toContain('<foreignObject');
@@ -407,7 +407,7 @@ describe('UpdrawSvgExportHelper', () => {
       });
 
       it('should apply scaleFactor to font-size in foreignObject', () => {
-        const text = new UpdrawText({
+        const text = new UpmadeText({
           text: 'Hello',
           translateX: 0,
           translateY: 0,
@@ -420,7 +420,7 @@ describe('UpdrawSvgExportHelper', () => {
         text.scale = 1;
         text.scaleFactor = 2;
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(text, 'light');
+        const result = UpmadeSvgExportHelper.objectToSvgElement(text, 'light');
 
         // font-size = 8 * 4/3 * scaleFactor(2) / scale(1) = 21.3333px
         expect(result).toContain('font-size: 21.3333px');
@@ -428,7 +428,7 @@ describe('UpdrawSvgExportHelper', () => {
       });
 
       it('should scale down font-size when object scale (coreScale) > 1', () => {
-        const text = new UpdrawText({
+        const text = new UpmadeText({
           text: 'Hello',
           translateX: 0,
           translateY: 0,
@@ -441,14 +441,14 @@ describe('UpdrawSvgExportHelper', () => {
         text.scale = 2;
         text.scaleFactor = 1;
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(text, 'light');
+        const result = UpmadeSvgExportHelper.objectToSvgElement(text, 'light');
 
         // font-size = 8 * 4/3 * scaleFactor(1) / scale(2) = 5.3333px
         expect(result).toContain('font-size: 5.3333px');
       });
 
       it('should export text without foreignObject in raster-safe mode', () => {
-        const text = new UpdrawText({
+        const text = new UpmadeText({
           text: 'Hello\nWorld',
           translateX: 50,
           translateY: 100,
@@ -461,7 +461,7 @@ describe('UpdrawSvgExportHelper', () => {
         text.scale = 1;
         text.scaleFactor = 1;
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(text, 'light', undefined, true);
+        const result = UpmadeSvgExportHelper.objectToSvgElement(text, 'light', undefined, true);
 
         expect(result).toContain('<g transform="translate(50, 100)"');
         expect(result).not.toContain('<foreignObject');
@@ -474,7 +474,7 @@ describe('UpdrawSvgExportHelper', () => {
       });
 
       it('should scale raster-safe font-size down when object scale (coreScale) > 1', () => {
-        const text = new UpdrawText({
+        const text = new UpmadeText({
           text: 'Hello',
           translateX: 0,
           translateY: 0,
@@ -487,16 +487,16 @@ describe('UpdrawSvgExportHelper', () => {
         text.scale = 2;
         text.scaleFactor = 1;
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(text, 'light', undefined, true);
+        const result = UpmadeSvgExportHelper.objectToSvgElement(text, 'light', undefined, true);
 
         // font-size = 8 * 4/3 * scaleFactor(1) / scale(2) ≈ 5.3333
         expect(result).toContain('font-size="5.3333');
       });
     });
 
-    describe('UpdrawImage', () => {
+    describe('UpmadeImage', () => {
       it('should convert image to SVG element', () => {
-        const image = new UpdrawImage({
+        const image = new UpmadeImage({
           src: 'data:image/png;base64,ABC123',
           translateX: 100,
           translateY: 200,
@@ -505,7 +505,7 @@ describe('UpdrawSvgExportHelper', () => {
           scale: 1,
         });
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(image);
+        const result = UpmadeSvgExportHelper.objectToSvgElement(image);
 
         expect(result).toContain('<g transform="translate(100, 200)"');
         expect(result).toContain('<image href="data:image/png;base64,ABC123"');
@@ -514,7 +514,7 @@ describe('UpdrawSvgExportHelper', () => {
       });
 
       it('should prefer the inlined data URL from imageDataUrls over resolvedSrc', () => {
-        const image = new UpdrawImage({
+        const image = new UpmadeImage({
           translateX: 0,
           translateY: 0,
           width: 100,
@@ -527,7 +527,7 @@ describe('UpdrawSvgExportHelper', () => {
 
         const imageDataUrls = new Map<string, string>([['img-1', 'data:image/png;base64,INLINED']]);
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(image, undefined, imageDataUrls);
+        const result = UpmadeSvgExportHelper.objectToSvgElement(image, undefined, imageDataUrls);
 
         expect(result).toContain('<image href="data:image/png;base64,INLINED"');
         expect(result).not.toContain('blob:https://example.com/abc');
@@ -536,60 +536,60 @@ describe('UpdrawSvgExportHelper', () => {
 
     describe('resolveImageDataUrls', () => {
       it('returns an empty map when there are no objects', async () => {
-        const result = await UpdrawSvgExportHelper.resolveImageDataUrls([]);
+        const result = await UpmadeSvgExportHelper.resolveImageDataUrls([]);
         expect(result.size).toBe(0);
       });
 
       it('uses the legacy inline data URL src without touching the resolver', async () => {
-        const image = new UpdrawImage({ src: 'data:image/png;base64,LEGACY', width: 10, height: 10, scale: 1 });
+        const image = new UpmadeImage({ src: 'data:image/png;base64,LEGACY', width: 10, height: 10, scale: 1 });
         image.id = 'img-legacy';
 
         const fetchBlob = jest.fn();
-        const result = await UpdrawSvgExportHelper.resolveImageDataUrls([image], { fetchBlob });
+        const result = await UpmadeSvgExportHelper.resolveImageDataUrls([image], { fetchBlob });
 
         expect(result.get('img-legacy')).toBe('data:image/png;base64,LEGACY');
         expect(fetchBlob).not.toHaveBeenCalled();
       });
 
       it('fetches asset bytes and inlines them as a data URL', async () => {
-        const image = new UpdrawImage({ width: 10, height: 10, scale: 1 });
+        const image = new UpmadeImage({ width: 10, height: 10, scale: 1 });
         image.id = 'img-asset';
         image.assetId = 'asset-123';
 
         const blob = new Blob(['hello'], { type: 'image/png' });
         const fetchBlob = jest.fn().mockResolvedValue(blob);
 
-        const result = await UpdrawSvgExportHelper.resolveImageDataUrls([image], { fetchBlob });
+        const result = await UpmadeSvgExportHelper.resolveImageDataUrls([image], { fetchBlob });
 
         expect(fetchBlob).toHaveBeenCalledWith('asset-123');
         expect(result.get('img-asset')).toMatch(/^data:image\/png;base64,/);
       });
 
       it('omits images whose asset fails to resolve', async () => {
-        const image = new UpdrawImage({ width: 10, height: 10, scale: 1 });
+        const image = new UpmadeImage({ width: 10, height: 10, scale: 1 });
         image.id = 'img-missing';
         image.assetId = 'asset-missing';
 
         const fetchBlob = jest.fn().mockRejectedValue(new Error('not found'));
         const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
 
-        const result = await UpdrawSvgExportHelper.resolveImageDataUrls([image], { fetchBlob });
+        const result = await UpmadeSvgExportHelper.resolveImageDataUrls([image], { fetchBlob });
 
         expect(result.has('img-missing')).toBe(false);
         warnSpy.mockRestore();
       });
     });
 
-    describe('UpdrawGroup', () => {
+    describe('UpmadeGroup', () => {
       it('should convert group with children to nested SVG elements', () => {
         // Create a group with mock _core to enable children getter
-        const group = new UpdrawGroup();
+        const group = new UpmadeGroup();
         group.translateX = 10;
         group.translateY = 20;
         group.opacity = 0.8;
 
         // Add pending children since _core is not available
-        const path = new UpdrawPath({
+        const path = new UpmadePath({
           points: [[0, 0], [50, 50]],
           translateX: 0,
           translateY: 0,
@@ -601,16 +601,16 @@ describe('UpdrawSvgExportHelper', () => {
         path.d = 'M 0 0 L 50 50';
         group._pendingChildren.push(path);
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(group, 'light');
+        const result = UpmadeSvgExportHelper.objectToSvgElement(group, 'light');
 
         expect(result).toContain('<g opacity="0.8"');
         expect(result).toContain('<path d="M 0 0 L 50 50"');
       });
 
       it('should return empty string for empty group', () => {
-        const group = new UpdrawGroup();
+        const group = new UpmadeGroup();
 
-        const result = UpdrawSvgExportHelper.objectToSvgElement(group, 'light');
+        const result = UpmadeSvgExportHelper.objectToSvgElement(group, 'light');
 
         expect(result).toBe('');
       });
@@ -619,7 +619,7 @@ describe('UpdrawSvgExportHelper', () => {
 
   describe('rotation handling', () => {
     it('should include rotation transform when object is rotated', () => {
-      const path = new UpdrawPath({
+      const path = new UpmadePath({
         points: [[0, 0], [100, 100]],
         translateX: 0,
         translateY: 0,
@@ -630,13 +630,13 @@ describe('UpdrawSvgExportHelper', () => {
       path.d = 'M 0 0 L 100 100';
       path.rotation = Math.PI / 4; // 45 degrees
 
-      const result = UpdrawSvgExportHelper.objectToSvgElement(path, 'light');
+      const result = UpmadeSvgExportHelper.objectToSvgElement(path, 'light');
 
       expect(result).toContain('rotate(45');
     });
 
     it('should not include rotation transform when rotation is 0', () => {
-      const path = new UpdrawPath({
+      const path = new UpmadePath({
         points: [[0, 0], [100, 100]],
         translateX: 0,
         translateY: 0,
@@ -647,7 +647,7 @@ describe('UpdrawSvgExportHelper', () => {
       path.d = 'M 0 0 L 100 100';
       path.rotation = 0;
 
-      const result = UpdrawSvgExportHelper.objectToSvgElement(path, 'light');
+      const result = UpmadeSvgExportHelper.objectToSvgElement(path, 'light');
 
       expect(result).not.toContain('rotate(');
     });
@@ -655,7 +655,7 @@ describe('UpdrawSvgExportHelper', () => {
 
   describe('theme color resolution', () => {
     it('should resolve light theme colors', () => {
-      const path = new UpdrawPath({
+      const path = new UpmadePath({
         points: [[0, 0], [100, 100]],
         translateX: 0,
         translateY: 0,
@@ -666,13 +666,13 @@ describe('UpdrawSvgExportHelper', () => {
       path.height = 100;
       path.d = 'M 0 0 L 100 100';
 
-      const result = UpdrawSvgExportHelper.objectToSvgElement(path, 'light');
+      const result = UpmadeSvgExportHelper.objectToSvgElement(path, 'light');
 
       expect(result).toContain('fill="#aabbcc"');
     });
 
     it('should resolve dark theme colors', () => {
-      const path = new UpdrawPath({
+      const path = new UpmadePath({
         points: [[0, 0], [100, 100]],
         translateX: 0,
         translateY: 0,
@@ -683,7 +683,7 @@ describe('UpdrawSvgExportHelper', () => {
       path.height = 100;
       path.d = 'M 0 0 L 100 100';
 
-      const result = UpdrawSvgExportHelper.objectToSvgElement(path, 'dark');
+      const result = UpmadeSvgExportHelper.objectToSvgElement(path, 'dark');
 
       expect(result).toContain('fill="#112233"');
     });
@@ -691,7 +691,7 @@ describe('UpdrawSvgExportHelper', () => {
 
   describe('HTML escaping', () => {
     it('should escape special characters in text content', () => {
-      const text = new UpdrawText({
+      const text = new UpmadeText({
         translateX: 0,
         translateY: 0,
       });
@@ -708,18 +708,18 @@ describe('UpdrawSvgExportHelper', () => {
         }],
       };
 
-      const result = UpdrawSvgExportHelper.objectToSvgElement(text, 'light');
+      const result = UpmadeSvgExportHelper.objectToSvgElement(text, 'light');
 
       expect(result).not.toContain('<script>');
       expect(result).toContain('&lt;script&gt;');
     });
   });
 
-  describe('UpdrawDynamicObject SVG export', () => {
+  describe('UpmadeDynamicObject SVG export', () => {
     it('should export dynamic object as foreignObject in SVG mode', () => {
       const el = document.createElement('div');
       el.textContent = 'Custom Content';
-      const obj = new UpdrawDynamicObject({
+      const obj = new UpmadeDynamicObject({
         element: el,
         translateX: 0,
         translateY: 0,
@@ -727,7 +727,7 @@ describe('UpdrawSvgExportHelper', () => {
       obj.width = 200;
       obj.height = 100;
 
-      const svg = UpdrawSvgExportHelper.objectToSvgElement(obj, 'light', undefined, false);
+      const svg = UpmadeSvgExportHelper.objectToSvgElement(obj, 'light', undefined, false);
 
       expect(svg).toContain('foreignObject');
       expect(svg).toContain('Custom Content');
@@ -738,7 +738,7 @@ describe('UpdrawSvgExportHelper', () => {
     it('should export dynamic object as placeholder rect in raster-safe mode', () => {
       const el = document.createElement('div');
       el.textContent = 'Custom';
-      const obj = new UpdrawDynamicObject({
+      const obj = new UpmadeDynamicObject({
         element: el,
         translateX: 0,
         translateY: 0,
@@ -747,7 +747,7 @@ describe('UpdrawSvgExportHelper', () => {
       obj.height = 80;
 
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
-      const svg = UpdrawSvgExportHelper.objectToSvgElement(obj, 'light', undefined, true);
+      const svg = UpmadeSvgExportHelper.objectToSvgElement(obj, 'light', undefined, true);
 
       expect(svg).toContain('<rect');
       expect(svg).toContain('[Dynamic Object]');
@@ -758,7 +758,7 @@ describe('UpdrawSvgExportHelper', () => {
     });
 
     it('should handle empty dynamic object', () => {
-      const obj = new UpdrawDynamicObject({
+      const obj = new UpmadeDynamicObject({
         element: document.createElement('div'),
         translateX: 0,
         translateY: 0,
@@ -766,7 +766,7 @@ describe('UpdrawSvgExportHelper', () => {
       obj.width = 100;
       obj.height = 100;
 
-      const svg = UpdrawSvgExportHelper.objectToSvgElement(obj, 'light', undefined, false);
+      const svg = UpmadeSvgExportHelper.objectToSvgElement(obj, 'light', undefined, false);
 
       expect(svg).toContain('foreignObject');
     });
@@ -774,7 +774,7 @@ describe('UpdrawSvgExportHelper', () => {
     it('should apply opacity to dynamic object SVG', () => {
       const el = document.createElement('div');
       el.textContent = 'Transparent';
-      const obj = new UpdrawDynamicObject({
+      const obj = new UpmadeDynamicObject({
         element: el,
         translateX: 0,
         translateY: 0,
@@ -783,7 +783,7 @@ describe('UpdrawSvgExportHelper', () => {
       obj.height = 100;
       obj.opacity = 0.5;
 
-      const svg = UpdrawSvgExportHelper.objectToSvgElement(obj, 'light', undefined, false);
+      const svg = UpmadeSvgExportHelper.objectToSvgElement(obj, 'light', undefined, false);
 
       expect(svg).toContain('opacity=\"0.5\"');
     });

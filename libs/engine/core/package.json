@@ -1,8 +1,8 @@
 {
-  "name": "@updraw/engine",
+  "name": "@upmade/engine",
   "version": "0.6.2",
-  "homepage": "https://updraw.io/",
-  "description": "Updraw helps you build infinite whiteboard experiences.",
+  "homepage": "https://upmade.io/",
+  "description": "Upmade helps you build infinite whiteboard experiences.",
   "keywords": [
     "infinite canvas",
     "collaboration",
@@ -62,7 +62,7 @@
     "release": "npm publish"
   },
   "dependencies": {
-    "@updraw/core": "^0.6.2",
+    "@upmade/core": "^0.6.2",
     "@types/lodash": "^4.17.20",
     "html-to-image": "^1.11.11",
     "lodash": "^4.17.21",

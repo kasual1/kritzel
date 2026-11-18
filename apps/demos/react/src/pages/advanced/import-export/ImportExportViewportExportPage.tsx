@@ -1,14 +1,14 @@
 import { useMemo, useRef } from "react";
-import { UpdrawEditor, UpdrawWorkspace, type HTMLUpdrawEditorElement } from "@updraw/react-editor";
+import { UpmadeEditor, UpmadeWorkspace, type HTMLUpmadeEditorElement } from "@upmade/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 import { Toolbar } from "../../../components/Toolbar";
 
 export function ImportExportViewportExportPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const workspaces = useMemo(
-    () => [new UpdrawWorkspace({ objects: createSeedObjects() })],
+    () => [new UpmadeWorkspace({ objects: createSeedObjects() })],
     [],
   );
 
@@ -27,7 +27,7 @@ export function ImportExportViewportExportPage() {
         <button onClick={() => void exportAsPng()}>Export as PNG</button>
         <button onClick={() => void exportAsSvg()}>Export as SVG</button>
       </Toolbar>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="import-export-viewport-export"
         theme="light"

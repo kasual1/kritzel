@@ -5,16 +5,16 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ContextMenuItem, IUpdrawUser, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName, UpdrawAgent, UpdrawAgentsChangeEvent, UpdrawAlignment, UpdrawAssetStorageConfig, UpdrawBaseObject, UpdrawBaseTool, UpdrawBrushToolConfig, UpdrawChatSession, UpdrawContextMenuState, UpdrawCore, UpdrawDebugInfo, UpdrawEngineState, UpdrawGroup, UpdrawIconName, UpdrawLineToolConfig, UpdrawLocale, UpdrawNotification, UpdrawObjectConfig, UpdrawObjectElementClickEvent, UpdrawObjectElementHighlight, UpdrawObjectElementHoverEvent, UpdrawObjectElementInfo, UpdrawObjectElementPickEvent, UpdrawObjectElementPickingOptions, UpdrawObjectExportFormat, UpdrawObjectTitlebarActionEvent, UpdrawObjectTitlebarConfig, UpdrawObjectTitlebarMenuState, UpdrawRemoteAgentPresence, UpdrawResolvedTitlebar, UpdrawSettingsConfig, UpdrawShapeToolConfig, UpdrawShortcut, UpdrawSyncConfig, UpdrawTermKey, UpdrawTermVars, UpdrawTextToolConfig, UpdrawTheme, UpdrawToolDefinition, UpdrawUndoState, UpdrawViewportState, UpdrawWorkspace } from "@updraw/core";
+import { ContextMenuItem, IUpmadeUser, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName, UpmadeAgent, UpmadeAgentsChangeEvent, UpmadeAlignment, UpmadeAssetStorageConfig, UpmadeBaseObject, UpmadeBaseTool, UpmadeBrushToolConfig, UpmadeChatSession, UpmadeContextMenuState, UpmadeCore, UpmadeDebugInfo, UpmadeEngineState, UpmadeGroup, UpmadeIconName, UpmadeLineToolConfig, UpmadeLocale, UpmadeNotification, UpmadeObjectConfig, UpmadeObjectElementClickEvent, UpmadeObjectElementHighlight, UpmadeObjectElementHoverEvent, UpmadeObjectElementInfo, UpmadeObjectElementPickEvent, UpmadeObjectElementPickingOptions, UpmadeObjectExportFormat, UpmadeObjectTitlebarActionEvent, UpmadeObjectTitlebarConfig, UpmadeObjectTitlebarMenuState, UpmadeRemoteAgentPresence, UpmadeResolvedTitlebar, UpmadeSettingsConfig, UpmadeShapeToolConfig, UpmadeShortcut, UpmadeSyncConfig, UpmadeTermKey, UpmadeTermVars, UpmadeTextToolConfig, UpmadeTheme, UpmadeToolDefinition, UpmadeUndoState, UpmadeViewportState, UpmadeWorkspace } from "@upmade/core";
 import { Element, Event } from "@stencil/core";
-import { UpdrawTitlebarElementClickHandler, UpdrawTitlebarTitleEditHandlers } from "./components/updraw-object-titlebar-layer/updraw-object-titlebar-layer";
-export { ContextMenuItem, IUpdrawUser, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName, UpdrawAgent, UpdrawAgentsChangeEvent, UpdrawAlignment, UpdrawAssetStorageConfig, UpdrawBaseObject, UpdrawBaseTool, UpdrawBrushToolConfig, UpdrawChatSession, UpdrawContextMenuState, UpdrawCore, UpdrawDebugInfo, UpdrawEngineState, UpdrawGroup, UpdrawIconName, UpdrawLineToolConfig, UpdrawLocale, UpdrawNotification, UpdrawObjectConfig, UpdrawObjectElementClickEvent, UpdrawObjectElementHighlight, UpdrawObjectElementHoverEvent, UpdrawObjectElementInfo, UpdrawObjectElementPickEvent, UpdrawObjectElementPickingOptions, UpdrawObjectExportFormat, UpdrawObjectTitlebarActionEvent, UpdrawObjectTitlebarConfig, UpdrawObjectTitlebarMenuState, UpdrawRemoteAgentPresence, UpdrawResolvedTitlebar, UpdrawSettingsConfig, UpdrawShapeToolConfig, UpdrawShortcut, UpdrawSyncConfig, UpdrawTermKey, UpdrawTermVars, UpdrawTextToolConfig, UpdrawTheme, UpdrawToolDefinition, UpdrawUndoState, UpdrawViewportState, UpdrawWorkspace } from "@updraw/core";
+import { UpmadeTitlebarElementClickHandler, UpmadeTitlebarTitleEditHandlers } from "./components/upmade-object-titlebar-layer/upmade-object-titlebar-layer";
+export { ContextMenuItem, IUpmadeUser, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName, UpmadeAgent, UpmadeAgentsChangeEvent, UpmadeAlignment, UpmadeAssetStorageConfig, UpmadeBaseObject, UpmadeBaseTool, UpmadeBrushToolConfig, UpmadeChatSession, UpmadeContextMenuState, UpmadeCore, UpmadeDebugInfo, UpmadeEngineState, UpmadeGroup, UpmadeIconName, UpmadeLineToolConfig, UpmadeLocale, UpmadeNotification, UpmadeObjectConfig, UpmadeObjectElementClickEvent, UpmadeObjectElementHighlight, UpmadeObjectElementHoverEvent, UpmadeObjectElementInfo, UpmadeObjectElementPickEvent, UpmadeObjectElementPickingOptions, UpmadeObjectExportFormat, UpmadeObjectTitlebarActionEvent, UpmadeObjectTitlebarConfig, UpmadeObjectTitlebarMenuState, UpmadeRemoteAgentPresence, UpmadeResolvedTitlebar, UpmadeSettingsConfig, UpmadeShapeToolConfig, UpmadeShortcut, UpmadeSyncConfig, UpmadeTermKey, UpmadeTermVars, UpmadeTextToolConfig, UpmadeTheme, UpmadeToolDefinition, UpmadeUndoState, UpmadeViewportState, UpmadeWorkspace } from "@upmade/core";
 export { Element, Event } from "@stencil/core";
-export { UpdrawTitlebarElementClickHandler, UpdrawTitlebarTitleEditHandlers } from "./components/updraw-object-titlebar-layer/updraw-object-titlebar-layer";
+export { UpmadeTitlebarElementClickHandler, UpmadeTitlebarTitleEditHandlers } from "./components/upmade-object-titlebar-layer/upmade-object-titlebar-layer";
 export namespace Components {
     /**
-     * Renders the cursors of the local agents (`UpdrawAgenticCursorManager`) and of collaborators' agents
-     * (`UpdrawRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
+     * Renders the cursors of the local agents (`UpmadeAgenticCursorManager`) and of collaborators' agents
+     * (`UpmadeRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
      * selection of one object, its rotation handle. Everything is keyed by the cursor key, so the same agent ID
      * in two tabs never collides.
      * Structural changes (added/removed cursors, name, color, status, selections) re-render through
@@ -22,8 +22,8 @@ export namespace Components {
      * elements, in Stencil's write phase: the engine renders objects there too, so an outline is drawn in
      * the same frame as the object state it follows and never runs ahead of the object.
      */
-    interface UpdrawAgenticCursors {
-        "core": UpdrawCore;
+    interface UpmadeAgenticCursors {
+        "core": UpmadeCore;
         /**
           * @default 8
          */
@@ -33,8 +33,8 @@ export namespace Components {
          */
         "showEdgeIndicators": boolean;
     }
-    interface UpdrawAwarenessCursors {
-        "core": UpdrawCore;
+    interface UpmadeAwarenessCursors {
+        "core": UpmadeCore;
         /**
           * @default 8
          */
@@ -44,41 +44,41 @@ export namespace Components {
          */
         "showEdgeIndicators": boolean;
     }
-    interface UpdrawCursorTrail {
-        "core": UpdrawCore;
+    interface UpmadeCursorTrail {
+        "core": UpmadeCore;
     }
-    interface UpdrawEngine {
+    interface UpmadeEngine {
         /**
           * Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.
          */
         "activeWorkspaceId"?: string;
         /**
           * Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to one editor at a time; an agent of an editor that was removed from the page moves here.
-          * @param agent - A `new UpdrawAgent({ name })`.
+          * @param agent - A `new UpmadeAgent({ name })`.
           * @returns The same agent.
          */
-        "addAgent": (agent: UpdrawAgent) => Promise<UpdrawAgent>;
+        "addAgent": (agent: UpmadeAgent) => Promise<UpmadeAgent>;
         /**
           * Adds a new object to the canvas. The object will be assigned an ID, core reference, and z-index automatically.
           * @param object - The object instance to add.
           * @returns The added object.
          */
-        "addObject": <T extends UpdrawBaseObject>(object: T) => Promise<T | null>;
+        "addObject": <T extends UpmadeBaseObject>(object: T) => Promise<T | null>;
         /**
           * Adds multiple objects to the canvas in a single batch operation. All objects are inserted within one Yjs transaction (single undo step), triggering only one rerender cycle. Intended for programmatic streaming scenarios where per-object overhead would cause stutter.
           * @param objects - The object instances to add.
           * @returns The added objects.
          */
-        "addObjects": <T extends UpdrawBaseObject>(objects: T[]) => Promise<T[]>;
+        "addObjects": <T extends UpmadeBaseObject>(objects: T[]) => Promise<T[]>;
         /**
           * Aligns the currently selected objects according to the specified alignment.
           * @param alignment - The alignment direction (e.g., `CenterHorizontal`, `StartVertical`).
          */
-        "alignObjects": (alignment: UpdrawAlignment) => Promise<void>;
+        "alignObjects": (alignment: UpmadeAlignment) => Promise<void>;
         /**
           * Configuration for binary asset storage (e.g., images).  The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as `HttpAssetProvider` or `PresignedAssetProvider`.
          */
-        "assetStorageConfig"?: UpdrawAssetStorageConfig;
+        "assetStorageConfig"?: UpmadeAssetStorageConfig;
         /**
           * Pans and zooms the viewport to fit the nearest content, with padding. Useful when the user has panned away from all objects.
           * @returns `true` if content was found and the viewport was adjusted, `false` otherwise.
@@ -92,16 +92,16 @@ export namespace Components {
           * Moves an object, or each selected layer, one layer forward in the z-order, past the next layer above it. A group is one layer: all of its children move together. A grouped object moves within its group.
           * @param object - The object to move. If omitted, applies to the current selection.
          */
-        "bringForward": (object?: UpdrawBaseObject<any>) => Promise<void>;
+        "bringForward": (object?: UpmadeBaseObject<any>) => Promise<void>;
         /**
           * Moves an object, or the selected layers, to the very front of the z-order, keeping the relative order of the moved layers. A group moves together with all of its children; a grouped object moves to the front of its group.
           * @param object - The object to move. If omitted, applies to the current selection.
          */
-        "bringToFront": (object?: UpdrawBaseObject<any>) => Promise<void>;
+        "bringToFront": (object?: UpmadeBaseObject<any>) => Promise<void>;
         /**
           * Checks whether the currently selected object supports a specific export format. Returns false when none or multiple objects are selected.
          */
-        "canExportSelectedObjectAs": (format: UpdrawObjectExportFormat) => Promise<boolean>;
+        "canExportSelectedObjectAs": (format: UpmadeObjectExportFormat) => Promise<boolean>;
         /**
           * Cancels an active file picker opened by importFromFile.
          */
@@ -117,18 +117,18 @@ export namespace Components {
           * @param object - The object to center in the viewport.
           * @returns The centered object.
          */
-        "centerObjectInViewport": (object: UpdrawBaseObject) => Promise<UpdrawBaseObject<HTMLElement | SVGElement>>;
+        "centerObjectInViewport": (object: UpmadeBaseObject) => Promise<UpmadeBaseObject<HTMLElement | SVGElement>>;
         /**
           * Pans and zooms the viewport to fit the provided objects. Calculates the combined bounding box of the given objects and centers the viewport to show them.
           * @param objects - The objects to center and fit in the viewport.
           * @param animate - Whether to animate the viewport transition (default: true).
           * @returns `true` if objects were provided and the viewport was adjusted, `false` otherwise.
          */
-        "centerObjects": (objects: UpdrawBaseObject[], animate?: boolean) => Promise<boolean>;
+        "centerObjects": (objects: UpmadeBaseObject[], animate?: boolean) => Promise<boolean>;
         /**
           * A chat session bound to this engine: its tools act on this canvas. With an agent, the agent is added here. A session replaced by another one is unbound once its running prompt ends.
          */
-        "chatSession"?: UpdrawChatSession | null;
+        "chatSession"?: UpmadeChatSession | null;
         /**
           * Removes element highlights.
           * @param objectId - The object whose highlights are removed. Removes the highlights of all objects when omitted.
@@ -146,7 +146,7 @@ export namespace Components {
           * Declaratively configures the full locale catalog, replacing the available locale set. Pass `undefined` to restore the built-in locales (en/de/fr).
           * @param locales - The full locale catalog, or `undefined` for built-ins.
          */
-        "configureLocales": (locales?: UpdrawLocale[]) => Promise<void>;
+        "configureLocales": (locales?: UpmadeLocale[]) => Promise<void>;
         /**
           * Copies the currently selected objects to the internal clipboard.
          */
@@ -156,7 +156,7 @@ export namespace Components {
           * @param workspace - The workspace instance to create.
           * @returns The created workspace.
          */
-        "createWorkspace": (workspace: UpdrawWorkspace) => Promise<UpdrawWorkspace | null>;
+        "createWorkspace": (workspace: UpmadeWorkspace) => Promise<UpmadeWorkspace | null>;
         /**
           * The HTML element to apply cursor styles to. Defaults to `document.body` if not set.
          */
@@ -168,7 +168,7 @@ export namespace Components {
         /**
           * Debug info display options controlling which debug overlays are visible
          */
-        "debugInfo"?: UpdrawDebugInfo;
+        "debugInfo"?: UpmadeDebugInfo;
         /**
           * Deletes the currently selected objects from the canvas.
          */
@@ -177,7 +177,7 @@ export namespace Components {
           * Deletes a workspace and emits a `workspacesChange` event.
           * @param workspace - The workspace to delete.
          */
-        "deleteWorkspace": (workspace: UpdrawWorkspace) => Promise<void>;
+        "deleteWorkspace": (workspace: UpmadeWorkspace) => Promise<void>;
         /**
           * Disables all user interaction with the engine (pointer, keyboard, etc.).
          */
@@ -207,7 +207,7 @@ export namespace Components {
         /**
           * Exports the currently selected object in the requested format and triggers a file download. Only supports single selection.
          */
-        "exportSelectedObject": (format: UpdrawObjectExportFormat) => Promise<void>;
+        "exportSelectedObject": (format: UpmadeObjectExportFormat) => Promise<void>;
         /**
           * Exports the current viewport as a PNG file and triggers a browser download.
          */
@@ -225,26 +225,26 @@ export namespace Components {
           * Returns all objects that match the given predicate function. Excludes internal selection-related objects (selection groups and selection boxes).
           * @param predicate - A filter function called for each object. Return `true` to include.
           * @returns An array of matching objects.
-          * @example ```ts // Find all text objects const texts = await engine.findObjects(obj => obj.__class__ === 'UpdrawText');  // Find objects at a point const hits = await engine.findObjects(obj => obj.hitTest(100, 200));  // Combine criteria const filtered = await engine.findObjects(obj => obj.__class__ === 'UpdrawPath' && obj.opacity < 0.5); ```
+          * @example ```ts // Find all text objects const texts = await engine.findObjects(obj => obj.__class__ === 'UpmadeText');  // Find objects at a point const hits = await engine.findObjects(obj => obj.hitTest(100, 200));  // Combine criteria const filtered = await engine.findObjects(obj => obj.__class__ === 'UpmadePath' && obj.opacity < 0.5); ```
          */
-        "findObjects": <T extends UpdrawBaseObject>(predicate: (obj: UpdrawBaseObject<Element>) => boolean) => Promise<T[]>;
+        "findObjects": <T extends UpmadeBaseObject>(predicate: (obj: UpmadeBaseObject<Element>) => boolean) => Promise<T[]>;
         /**
           * Returns the currently active workspace.
          */
-        "getActiveWorkspace": () => Promise<UpdrawWorkspace>;
+        "getActiveWorkspace": () => Promise<UpmadeWorkspace>;
         /**
           * Returns an added agent by its ID.
           * @param id - The agent's ID.
          */
-        "getAgent": (id: string) => Promise<UpdrawAgent | null>;
+        "getAgent": (id: string) => Promise<UpmadeAgent | null>;
         /**
           * Returns the added agents.
          */
-        "getAgents": () => Promise<UpdrawAgent[]>;
+        "getAgents": () => Promise<UpmadeAgent[]>;
         /**
           * Returns all objects on the canvas across all layers.
          */
-        "getAllObjects": <T extends UpdrawBaseObject>() => Promise<T[]>;
+        "getAllObjects": <T extends UpmadeBaseObject>() => Promise<T[]>;
         /**
           * Gets the list of available locales as `{ code, label }` options for a selector.
          */
@@ -256,7 +256,7 @@ export namespace Components {
         /**
           * Returns all registered keyboard shortcuts (without action/condition) for display in a help UI.
          */
-        "getDisplayableShortcuts": () => Promise<Omit<UpdrawShortcut, "action" | "condition">[]>;
+        "getDisplayableShortcuts": () => Promise<Omit<UpmadeShortcut, "action" | "condition">[]>;
         /**
           * Gets whether the active workspace is publicly accessible.
           * @returns True if the workspace is public, false otherwise
@@ -271,11 +271,11 @@ export namespace Components {
           * @param id - The object's unique identifier.
           * @returns The matching object, or `null` if not found.
          */
-        "getObjectById": <T extends UpdrawBaseObject>(id: string) => Promise<T | null>;
+        "getObjectById": <T extends UpmadeBaseObject>(id: string) => Promise<T | null>;
         /**
           * Returns all objects currently visible within the viewport bounds.
          */
-        "getObjectsInViewport": () => Promise<UpdrawBaseObject[]>;
+        "getObjectsInViewport": () => Promise<UpmadeBaseObject[]>;
         /**
           * Returns the total number of objects on the canvas.
          */
@@ -283,11 +283,11 @@ export namespace Components {
         /**
           * Returns the agents of collaborators, as shared through presence.
          */
-        "getRemoteAgents": () => Promise<UpdrawRemoteAgentPresence[]>;
+        "getRemoteAgents": () => Promise<UpmadeRemoteAgentPresence[]>;
         /**
           * Resolves every known term key for the active locale into a flat map. Useful for UI layers that need to localize many strings at once.
          */
-        "getResolvedTerms": () => Promise<Partial<Record<UpdrawTermKey, string>>>;
+        "getResolvedTerms": () => Promise<Partial<Record<UpmadeTermKey, string>>>;
         /**
           * Captures a screenshot of the current viewport as a data URL.
           * @param format - The image format: `'png'` (default) or `'svg'`.
@@ -297,34 +297,34 @@ export namespace Components {
         /**
           * Returns export formats supported by the currently selected object. Only returns formats when exactly one object is selected.
          */
-        "getSelectedObjectSupportedExportFormats": () => Promise<UpdrawObjectExportFormat[]>;
+        "getSelectedObjectSupportedExportFormats": () => Promise<UpmadeObjectExportFormat[]>;
         /**
           * Returns the currently selected objects. Returns an empty array if nothing is selected.
          */
-        "getSelectedObjects": () => Promise<UpdrawBaseObject<any>[]>;
+        "getSelectedObjects": () => Promise<UpmadeBaseObject<any>[]>;
         /**
           * Returns a tool registered in this engine instance.
          */
-        "getTool": (toolName: string) => Promise<UpdrawBaseTool | null>;
+        "getTool": (toolName: string) => Promise<UpmadeBaseTool | null>;
         /**
           * Returns the current viewport state including position, scale, and dimensions.
           * @returns The current viewport state.
          */
-        "getViewport": () => Promise<UpdrawViewportState>;
+        "getViewport": () => Promise<UpmadeViewportState>;
         /**
           * Returns all available workspaces.
          */
-        "getWorkspaces": () => Promise<UpdrawWorkspace[]>;
+        "getWorkspaces": () => Promise<UpmadeWorkspace[]>;
         /**
           * Context menu items shown when right-clicking the canvas background.
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
-          * Creates a group (`UpdrawGroup`) from the given objects. Requires at least two objects. The grouped objects become one layer at the position of the topmost object, as a single undoable step.  Objects are resolved by id, so stale references work. Objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. An object passed together with one of its ancestor groups is grouped as part of that ancestor. Selected objects that end up in the group are replaced by the group in the selection.  To group the current selection, pass `await getSelectedObjects()`.
+          * Creates a group (`UpmadeGroup`) from the given objects. Requires at least two objects. The grouped objects become one layer at the position of the topmost object, as a single undoable step.  Objects are resolved by id, so stale references work. Objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. An object passed together with one of its ancestor groups is grouped as part of that ancestor. Selected objects that end up in the group are replaced by the group in the selection.  To group the current selection, pass `await getSelectedObjects()`.
           * @param objects - The objects to group.
           * @returns The created group, or `null` (with a console warning) when fewer than two objects could be grouped.
          */
-        "group": (objects: UpdrawBaseObject<any>[]) => Promise<UpdrawGroup | null>;
+        "group": (objects: UpmadeBaseObject<any>[]) => Promise<UpmadeGroup | null>;
         /**
           * Hides the context menu and resets any associated selection state.
          */
@@ -334,7 +334,7 @@ export namespace Components {
           * @param objectId - The object ID.
           * @param highlights - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted.
          */
-        "highlightObjectElements": (objectId: string, highlights: UpdrawObjectElementHighlight[]) => Promise<void>;
+        "highlightObjectElements": (objectId: string, highlights: UpmadeObjectElementHighlight[]) => Promise<void>;
         /**
           * Opens a file picker dialog and imports the selected JSON file into the workspace. This method creates a hidden file input, triggers the browser's file chooser, reads the selected JSON file, and imports it using importFromJson.
           * @returns A promise that resolves when the import is complete or rejects on error/cancel.
@@ -352,7 +352,7 @@ export namespace Components {
          */
         "isPanningEnabled": boolean;
         /**
-          * Whether the "Powered by Updraw" watermark is shown. Keeping it visible helps support the project.
+          * Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project.
           * @default true
          */
         "isWatermarkVisible": boolean;
@@ -372,7 +372,7 @@ export namespace Components {
           * Loads the persisted settings object from localStorage.
           * @returns The stored settings, or null if nothing is stored or the value is invalid.
          */
-        "loadSettings": () => Promise<Partial<UpdrawSettingsConfig> | null>;
+        "loadSettings": () => Promise<Partial<UpmadeSettingsConfig> | null>;
         /**
           * Loads a shared workspace by token. If the workspace exists locally, it switches to it. If it doesn't exist, it adds it to the local workspaces list and then switches to it.
           * @param token - The connection token identifying the shared workspace
@@ -386,7 +386,7 @@ export namespace Components {
         /**
           * An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty.
          */
-        "locales"?: UpdrawLocale[];
+        "locales"?: UpmadeLocale[];
         /**
           * When true, objects are drawn at a fixed visual size regardless of zoom level
           * @default true
@@ -395,7 +395,7 @@ export namespace Components {
         /**
           * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
          */
-        "objectConfig"?: UpdrawObjectConfig;
+        "objectConfig"?: UpmadeObjectConfig;
         /**
           * Context menu items shown when right-clicking a selected object.
          */
@@ -403,7 +403,7 @@ export namespace Components {
         /**
           * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
          */
-        "objectTitlebar"?: UpdrawObjectTitlebarConfig;
+        "objectTitlebar"?: UpmadeObjectTitlebarConfig;
         /**
           * Programmatically opens the context menu at a specified world-coordinate position. If `objectId` is provided and found, the object context menu is shown for that object. If no `objectId` is provided but a selection group already exists, the object context menu is shown. Otherwise, the global context menu is shown.
           * @param options.x - The X position in world (canvas) coordinates.
@@ -421,7 +421,7 @@ export namespace Components {
           * Pans the viewport to center on the given object without changing the zoom level. Unlike `centerObjectInViewport`, this moves the camera — not the object.
           * @param object - The object whose center the viewport should pan to.
          */
-        "panToObject": (object: UpdrawBaseObject) => Promise<void>;
+        "panToObject": (object: UpmadeBaseObject) => Promise<void>;
         /**
           * Pastes previously copied objects at the specified world coordinates.
           * @param x - X position in world coordinates.
@@ -431,11 +431,11 @@ export namespace Components {
         /**
           * Describes the elements inside an object's content that match a CSS selector, in document order. The object must be mounted, which it is while it is in or near the viewport.
           * @param objectId - The object ID.
-          * @param selector - A CSS selector, e.g. `'button'` or `'[data-updraw-id]'`.
+          * @param selector - A CSS selector, e.g. `'button'` or `'[data-upmade-id]'`.
           * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
           * @returns The matching elements, each with a `selector` that can be used to highlight it or point an agent's cursor at it with `agent.moveTo({ objectId, selector })`.
          */
-        "queryObjectElements": (objectId: string, selector: string, limit?: number) => Promise<UpdrawObjectElementInfo[]>;
+        "queryObjectElements": (objectId: string, selector: string, limit?: number) => Promise<UpmadeObjectElementInfo[]>;
         /**
           * Redoes the last undone action.
          */
@@ -444,15 +444,15 @@ export namespace Components {
           * Registers additional locale definitions (with optional partial term overrides).
           * @param locales - The locale definitions to register.
          */
-        "registerLocales": (locales: UpdrawLocale[]) => Promise<void>;
+        "registerLocales": (locales: UpmadeLocale[]) => Promise<void>;
         /**
           * Registers a new drawing tool with the engine.
           * @param toolName - Unique identifier for the tool (e.g., 'brush', 'eraser').
-          * @param toolClass - Constructor class extending `UpdrawBaseTool`.
+          * @param toolClass - Constructor class extending `UpmadeBaseTool`.
           * @param toolConfig - Optional initial configuration to apply to the tool instance.
           * @returns The registered tool instance, or `null` if registration failed.
          */
-        "registerTool": (toolName: string, toolClass: any, toolConfig?: UpdrawTextToolConfig | UpdrawBrushToolConfig | UpdrawLineToolConfig | UpdrawShapeToolConfig) => Promise<UpdrawBaseTool | null>;
+        "registerTool": (toolName: string, toolClass: any, toolConfig?: UpmadeTextToolConfig | UpmadeBrushToolConfig | UpmadeLineToolConfig | UpmadeShapeToolConfig) => Promise<UpmadeBaseTool | null>;
         /**
           * Reinitializes sync by performing a full teardown and re-initialization. Destroys the current Yjs documents and providers, then rebuilds everything from the current syncConfig. Data reloads from IndexedDB nearly instantly. Call this after updating the syncConfig prop (e.g. after authentication state changes).
          */
@@ -462,24 +462,24 @@ export namespace Components {
           * @param agent - The agent or its ID.
           * @returns `false` if the agent was not added.
          */
-        "removeAgent": (agent: UpdrawAgent | string) => Promise<boolean>;
+        "removeAgent": (agent: UpmadeAgent | string) => Promise<boolean>;
         /**
           * Removes an object from the canvas.
           * @param object - The object to remove.
           * @returns The removed object.
          */
-        "removeObject": <T extends UpdrawBaseObject>(object: T) => Promise<T | null>;
+        "removeObject": <T extends UpmadeBaseObject>(object: T) => Promise<T | null>;
         /**
           * Removes multiple objects from the canvas in a single batch operation. All removals happen within one Yjs transaction (single undo step), triggering only one rerender cycle. Intended for programmatic streaming scenarios where per-object overhead would cause stutter.
           * @param objects - The objects to remove.
           * @returns The removed objects.
          */
-        "removeObjects": <T extends UpdrawBaseObject>(objects: T[]) => Promise<T[]>;
+        "removeObjects": <T extends UpmadeBaseObject>(objects: T[]) => Promise<T[]>;
         /**
           * Persists the given settings object to localStorage using the namespaced storage key.
           * @param settings - The settings configuration to persist.
          */
-        "saveSettings": (settings: UpdrawSettingsConfig) => Promise<void>;
+        "saveSettings": (settings: UpmadeSettingsConfig) => Promise<void>;
         /**
           * Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.
           * @default 1000
@@ -510,17 +510,17 @@ export namespace Components {
           * Programmatically selects the given objects. Switches to the selection tool automatically.
           * @param objects - The objects to select.
          */
-        "selectObjects": (objects: UpdrawBaseObject[]) => Promise<void>;
+        "selectObjects": (objects: UpmadeBaseObject[]) => Promise<void>;
         /**
           * Moves an object, or each selected layer, one layer backward in the z-order, past the next layer below it. A group is one layer: all of its children move together. A grouped object moves within its group.
           * @param object - The object to move. If omitted, applies to the current selection.
          */
-        "sendBackward": (object?: UpdrawBaseObject<any>) => Promise<void>;
+        "sendBackward": (object?: UpmadeBaseObject<any>) => Promise<void>;
         /**
           * Moves an object, or the selected layers, to the very back of the z-order, keeping the relative order of the moved layers. A group moves together with all of its children; a grouped object moves to the back of its group.
           * @param object - The object to move. If omitted, applies to the current selection.
          */
-        "sendToBack": (object?: UpdrawBaseObject<any>) => Promise<void>;
+        "sendToBack": (object?: UpmadeBaseObject<any>) => Promise<void>;
         /**
           * Switches the active drawing tool by its registered name.
           * @param toolName - The name the tool was registered with (e.g., 'brush', 'eraser').
@@ -542,7 +542,7 @@ export namespace Components {
           * @param enabled - Whether the object picks elements.
           * @param options - `selector` limits picking to matching elements, `color` sets the highlight color.
          */
-        "setObjectElementPicking": (objectId: string, enabled: boolean, options?: UpdrawObjectElementPickingOptions) => Promise<void>;
+        "setObjectElementPicking": (objectId: string, enabled: boolean, options?: UpmadeObjectElementPickingOptions) => Promise<void>;
         /**
           * Sets the viewport to center on the given world coordinates at the specified scale.
           * @param x - X position in world coordinates to center on.
@@ -553,13 +553,13 @@ export namespace Components {
         /**
           * Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).
          */
-        "syncConfig"?: UpdrawSyncConfig;
+        "syncConfig"?: UpmadeSyncConfig;
         /**
           * Resolves a term key to its translated string for the active locale.
           * @param key - The term key to resolve.
           * @param vars - Optional values for `{placeholder}` interpolation.
          */
-        "t": (key: UpdrawTermKey, vars?: UpdrawTermVars) => Promise<string>;
+        "t": (key: UpmadeTermKey, vars?: UpmadeTermVars) => Promise<string>;
         /**
           * The current theme to apply to the editor
           * @default 'light'
@@ -568,12 +568,12 @@ export namespace Components {
         /**
           * An array of available themes for the editor.
          */
-        "themes"?: UpdrawTheme[];
+        "themes"?: UpmadeTheme[];
         /**
           * Tool definitions to register with this engine instance.
           * @default []
          */
-        "tools": UpdrawToolDefinition[];
+        "tools": UpmadeToolDefinition[];
         /**
           * Manually triggers the `objectsSelectionChange` event.
          */
@@ -583,27 +583,27 @@ export namespace Components {
          */
         "undo": () => Promise<void>;
         /**
-          * Ungroups the given groups. Their children become individual objects again and keep their stacking order; the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step.  Groups are resolved by id, so stale references work. Entries that are not an `UpdrawGroup` or not in the active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their children.  To ungroup the current selection, pass the `UpdrawGroup` objects from `await getSelectedObjects()`.
+          * Ungroups the given groups. Their children become individual objects again and keep their stacking order; the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step.  Groups are resolved by id, so stale references work. Entries that are not an `UpmadeGroup` or not in the active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their children.  To ungroup the current selection, pass the `UpmadeGroup` objects from `await getSelectedObjects()`.
           * @param groups - The groups to ungroup.
           * @returns The extracted children.
          */
-        "ungroup": (groups: UpdrawGroup[]) => Promise<UpdrawBaseObject<any>[]>;
+        "ungroup": (groups: UpmadeGroup[]) => Promise<UpmadeBaseObject<any>[]>;
         /**
           * Updates properties of an existing canvas object.
           * @param object - The object to update.
           * @param updatedProperties - A partial set of properties to apply.
           * @returns The updated object.
          */
-        "updateObject": <T extends UpdrawBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
+        "updateObject": <T extends UpmadeBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         /**
           * Applies a workspace as declared and emits a `workspacesChange` event. Metadata and viewport are always applied. When `workspace.objects` is set it is treated as the complete desired object set (`undefined` leaves objects untouched, `[]` removes them all); updating objects of a non-active workspace requires a configured sync provider.
           * @param workspace - The workspace describing the desired state.
          */
-        "updateWorkspace": (workspace: UpdrawWorkspace) => Promise<void>;
+        "updateWorkspace": (workspace: UpmadeWorkspace) => Promise<void>;
         /**
           * The current user for awareness broadcasting (name, id, cursor position).
          */
-        "user"?: IUpdrawUser;
+        "user"?: IUpmadeUser;
         /**
           * Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.
           * @default Infinity
@@ -627,7 +627,7 @@ export namespace Components {
         /**
           * Authoritative workspace catalog for this engine instance. When provided, provider-only workspaces are hidden but not deleted.
          */
-        "workspaces"?: UpdrawWorkspace[];
+        "workspaces"?: UpmadeWorkspace[];
         /**
           * Converts world coordinates to screen-relative pixel coordinates.
           * @param x - X position in world coordinates.
@@ -655,9 +655,9 @@ export namespace Components {
          */
         "zoomTo": (scale: number, worldX?: number, worldY?: number) => Promise<void>;
     }
-    interface UpdrawIcon {
+    interface UpmadeIcon {
         "label"?: string;
-        "name": UpdrawIconName;
+        "name": UpmadeIconName;
         /**
           * @default 24
          */
@@ -667,10 +667,10 @@ export namespace Components {
      * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
      * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
      * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
-     * `updraw-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+     * `upmade-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
      * Must never use the `object` class: pointer handling treats `.object` elements as objects.
      */
-    interface UpdrawObjectTitlebarLayer {
+    interface UpmadeObjectTitlebarLayer {
         /**
           * The objects playing their appear animation, with their stagger index, by object ID. Their titlebars appear with them.
          */
@@ -678,7 +678,7 @@ export namespace Components {
         /**
           * Called when a titlebar button or menu button is clicked.
          */
-        "elementClick"?: UpdrawTitlebarElementClickHandler;
+        "elementClick"?: UpmadeTitlebarElementClickHandler;
         /**
           * Pointer events of the drag surfaces. Controls always receive pointer input.
           * @default 'none'
@@ -687,38 +687,38 @@ export namespace Components {
         /**
           * Called while a title is edited to rename its object.
          */
-        "titleEdit"?: UpdrawTitlebarTitleEditHandlers;
+        "titleEdit"?: UpmadeTitlebarTitleEditHandlers;
         /**
           * The titlebars to render, resolved by the engine for the current frame.
           * @default []
          */
-        "titlebars": UpdrawResolvedTitlebar[];
+        "titlebars": UpmadeResolvedTitlebar[];
     }
     /**
-     * "Powered by Updraw" watermark shown in the bottom-right corner of the engine.
+     * "Powered by Upmade" watermark shown in the bottom-right corner of the engine.
      * Rendered inside the engine's Shadow DOM unless the engine's
-     * `isWatermarkVisible` prop is set to false. The badge links to the Updraw
+     * `isWatermarkVisible` prop is set to false. The badge links to the Upmade
      * website.
      */
-    interface UpdrawWatermark {
+    interface UpmadeWatermark {
         /**
           * The core instance used to resolve localized terms.
          */
-        "core": UpdrawCore;
+        "core": UpmadeCore;
         /**
-          * Resolved "Powered by Updraw" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
+          * Resolved "Powered by Upmade" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
          */
         "label"?: string;
     }
 }
-export interface UpdrawEngineCustomEvent<T> extends CustomEvent<T> {
+export interface UpmadeEngineCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLUpdrawEngineElement;
+    target: HTMLUpmadeEngineElement;
 }
 declare global {
     /**
-     * Renders the cursors of the local agents (`UpdrawAgenticCursorManager`) and of collaborators' agents
-     * (`UpdrawRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
+     * Renders the cursors of the local agents (`UpmadeAgenticCursorManager`) and of collaborators' agents
+     * (`UpmadeRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
      * selection of one object, its rotation handle. Everything is keyed by the cursor key, so the same agent ID
      * in two tabs never collides.
      * Structural changes (added/removed cursors, name, color, status, selections) re-render through
@@ -726,108 +726,108 @@ declare global {
      * elements, in Stencil's write phase: the engine renders objects there too, so an outline is drawn in
      * the same frame as the object state it follows and never runs ahead of the object.
      */
-    interface HTMLUpdrawAgenticCursorsElement extends Components.UpdrawAgenticCursors, HTMLStencilElement {
+    interface HTMLUpmadeAgenticCursorsElement extends Components.UpmadeAgenticCursors, HTMLStencilElement {
     }
-    var HTMLUpdrawAgenticCursorsElement: {
-        prototype: HTMLUpdrawAgenticCursorsElement;
-        new (): HTMLUpdrawAgenticCursorsElement;
+    var HTMLUpmadeAgenticCursorsElement: {
+        prototype: HTMLUpmadeAgenticCursorsElement;
+        new (): HTMLUpmadeAgenticCursorsElement;
     };
-    interface HTMLUpdrawAwarenessCursorsElement extends Components.UpdrawAwarenessCursors, HTMLStencilElement {
+    interface HTMLUpmadeAwarenessCursorsElement extends Components.UpmadeAwarenessCursors, HTMLStencilElement {
     }
-    var HTMLUpdrawAwarenessCursorsElement: {
-        prototype: HTMLUpdrawAwarenessCursorsElement;
-        new (): HTMLUpdrawAwarenessCursorsElement;
+    var HTMLUpmadeAwarenessCursorsElement: {
+        prototype: HTMLUpmadeAwarenessCursorsElement;
+        new (): HTMLUpmadeAwarenessCursorsElement;
     };
-    interface HTMLUpdrawCursorTrailElement extends Components.UpdrawCursorTrail, HTMLStencilElement {
+    interface HTMLUpmadeCursorTrailElement extends Components.UpmadeCursorTrail, HTMLStencilElement {
     }
-    var HTMLUpdrawCursorTrailElement: {
-        prototype: HTMLUpdrawCursorTrailElement;
-        new (): HTMLUpdrawCursorTrailElement;
+    var HTMLUpmadeCursorTrailElement: {
+        prototype: HTMLUpmadeCursorTrailElement;
+        new (): HTMLUpmadeCursorTrailElement;
     };
-    interface HTMLUpdrawEngineElementEventMap {
-        "isEngineReady": UpdrawEngineState;
-        "activeToolChange": UpdrawBaseTool;
-        "workspacesChange": UpdrawWorkspace[];
-        "activeWorkspaceChange": UpdrawWorkspace;
+    interface HTMLUpmadeEngineElementEventMap {
+        "isEngineReady": UpmadeEngineState;
+        "activeToolChange": UpmadeBaseTool;
+        "workspacesChange": UpmadeWorkspace[];
+        "activeWorkspaceChange": UpmadeWorkspace;
         "longpress": PointerEvent;
-        "objectsChange": UpdrawBaseObject[];
+        "objectsChange": UpmadeBaseObject[];
         "objectsAdded": ObjectsAddedEvent;
         "objectsRemoved": ObjectsRemovedEvent;
         "objectsUpdated": ObjectsUpdatedEvent;
-        "objectsSelectionChange": UpdrawBaseObject[];
-        "undoStateChange": UpdrawUndoState;
+        "objectsSelectionChange": UpmadeBaseObject[];
+        "undoStateChange": UpmadeUndoState;
         "objectsInViewportChange": ObjectsInViewportChangeEvent;
-        "viewportChange": UpdrawViewportState;
+        "viewportChange": UpmadeViewportState;
         "awarenessChange": Map<number, Record<string, any>>;
-        "notificationsChange": UpdrawNotification;
-        "contextMenuStateChange": UpdrawContextMenuState;
+        "notificationsChange": UpmadeNotification;
+        "contextMenuStateChange": UpmadeContextMenuState;
         "isLoadingChange": boolean;
-        "agentsChange": UpdrawAgentsChangeEvent;
-        "objectTitlebarAction": UpdrawObjectTitlebarActionEvent;
-        "objectTitlebarMenuStateChange": UpdrawObjectTitlebarMenuState;
-        "objectElementHover": UpdrawObjectElementHoverEvent;
-        "objectElementClick": UpdrawObjectElementClickEvent;
-        "objectElementPick": UpdrawObjectElementPickEvent;
+        "agentsChange": UpmadeAgentsChangeEvent;
+        "objectTitlebarAction": UpmadeObjectTitlebarActionEvent;
+        "objectTitlebarMenuStateChange": UpmadeObjectTitlebarMenuState;
+        "objectElementHover": UpmadeObjectElementHoverEvent;
+        "objectElementClick": UpmadeObjectElementClickEvent;
+        "objectElementPick": UpmadeObjectElementPickEvent;
     }
-    interface HTMLUpdrawEngineElement extends Components.UpdrawEngine, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUpdrawEngineElementEventMap>(type: K, listener: (this: HTMLUpdrawEngineElement, ev: UpdrawEngineCustomEvent<HTMLUpdrawEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUpmadeEngineElement extends Components.UpmadeEngine, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUpmadeEngineElementEventMap>(type: K, listener: (this: HTMLUpmadeEngineElement, ev: UpmadeEngineCustomEvent<HTMLUpmadeEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUpdrawEngineElementEventMap>(type: K, listener: (this: HTMLUpdrawEngineElement, ev: UpdrawEngineCustomEvent<HTMLUpdrawEngineElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUpmadeEngineElementEventMap>(type: K, listener: (this: HTMLUpmadeEngineElement, ev: UpmadeEngineCustomEvent<HTMLUpmadeEngineElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLUpdrawEngineElement: {
-        prototype: HTMLUpdrawEngineElement;
-        new (): HTMLUpdrawEngineElement;
+    var HTMLUpmadeEngineElement: {
+        prototype: HTMLUpmadeEngineElement;
+        new (): HTMLUpmadeEngineElement;
     };
-    interface HTMLUpdrawIconElement extends Components.UpdrawIcon, HTMLStencilElement {
+    interface HTMLUpmadeIconElement extends Components.UpmadeIcon, HTMLStencilElement {
     }
-    var HTMLUpdrawIconElement: {
-        prototype: HTMLUpdrawIconElement;
-        new (): HTMLUpdrawIconElement;
+    var HTMLUpmadeIconElement: {
+        prototype: HTMLUpmadeIconElement;
+        new (): HTMLUpmadeIconElement;
     };
     /**
      * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
      * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
      * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
-     * `updraw-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+     * `upmade-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
      * Must never use the `object` class: pointer handling treats `.object` elements as objects.
      */
-    interface HTMLUpdrawObjectTitlebarLayerElement extends Components.UpdrawObjectTitlebarLayer, HTMLStencilElement {
+    interface HTMLUpmadeObjectTitlebarLayerElement extends Components.UpmadeObjectTitlebarLayer, HTMLStencilElement {
     }
-    var HTMLUpdrawObjectTitlebarLayerElement: {
-        prototype: HTMLUpdrawObjectTitlebarLayerElement;
-        new (): HTMLUpdrawObjectTitlebarLayerElement;
+    var HTMLUpmadeObjectTitlebarLayerElement: {
+        prototype: HTMLUpmadeObjectTitlebarLayerElement;
+        new (): HTMLUpmadeObjectTitlebarLayerElement;
     };
     /**
-     * "Powered by Updraw" watermark shown in the bottom-right corner of the engine.
+     * "Powered by Upmade" watermark shown in the bottom-right corner of the engine.
      * Rendered inside the engine's Shadow DOM unless the engine's
-     * `isWatermarkVisible` prop is set to false. The badge links to the Updraw
+     * `isWatermarkVisible` prop is set to false. The badge links to the Upmade
      * website.
      */
-    interface HTMLUpdrawWatermarkElement extends Components.UpdrawWatermark, HTMLStencilElement {
+    interface HTMLUpmadeWatermarkElement extends Components.UpmadeWatermark, HTMLStencilElement {
     }
-    var HTMLUpdrawWatermarkElement: {
-        prototype: HTMLUpdrawWatermarkElement;
-        new (): HTMLUpdrawWatermarkElement;
+    var HTMLUpmadeWatermarkElement: {
+        prototype: HTMLUpmadeWatermarkElement;
+        new (): HTMLUpmadeWatermarkElement;
     };
     interface HTMLElementTagNameMap {
-        "updraw-agentic-cursors": HTMLUpdrawAgenticCursorsElement;
-        "updraw-awareness-cursors": HTMLUpdrawAwarenessCursorsElement;
-        "updraw-cursor-trail": HTMLUpdrawCursorTrailElement;
-        "updraw-engine": HTMLUpdrawEngineElement;
-        "updraw-icon": HTMLUpdrawIconElement;
-        "updraw-object-titlebar-layer": HTMLUpdrawObjectTitlebarLayerElement;
-        "updraw-watermark": HTMLUpdrawWatermarkElement;
+        "upmade-agentic-cursors": HTMLUpmadeAgenticCursorsElement;
+        "upmade-awareness-cursors": HTMLUpmadeAwarenessCursorsElement;
+        "upmade-cursor-trail": HTMLUpmadeCursorTrailElement;
+        "upmade-engine": HTMLUpmadeEngineElement;
+        "upmade-icon": HTMLUpmadeIconElement;
+        "upmade-object-titlebar-layer": HTMLUpmadeObjectTitlebarLayerElement;
+        "upmade-watermark": HTMLUpmadeWatermarkElement;
     }
 }
 declare namespace LocalJSX {
     /**
-     * Renders the cursors of the local agents (`UpdrawAgenticCursorManager`) and of collaborators' agents
-     * (`UpdrawRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
+     * Renders the cursors of the local agents (`UpmadeAgenticCursorManager`) and of collaborators' agents
+     * (`UpmadeRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
      * selection of one object, its rotation handle. Everything is keyed by the cursor key, so the same agent ID
      * in two tabs never collides.
      * Structural changes (added/removed cursors, name, color, status, selections) re-render through
@@ -835,8 +835,8 @@ declare namespace LocalJSX {
      * elements, in Stencil's write phase: the engine renders objects there too, so an outline is drawn in
      * the same frame as the object state it follows and never runs ahead of the object.
      */
-    interface UpdrawAgenticCursors {
-        "core": UpdrawCore;
+    interface UpmadeAgenticCursors {
+        "core": UpmadeCore;
         /**
           * @default 8
          */
@@ -846,8 +846,8 @@ declare namespace LocalJSX {
          */
         "showEdgeIndicators"?: boolean;
     }
-    interface UpdrawAwarenessCursors {
-        "core": UpdrawCore;
+    interface UpmadeAwarenessCursors {
+        "core": UpmadeCore;
         /**
           * @default 8
          */
@@ -857,10 +857,10 @@ declare namespace LocalJSX {
          */
         "showEdgeIndicators"?: boolean;
     }
-    interface UpdrawCursorTrail {
-        "core": UpdrawCore;
+    interface UpmadeCursorTrail {
+        "core": UpmadeCore;
     }
-    interface UpdrawEngine {
+    interface UpmadeEngine {
         /**
           * Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.
          */
@@ -868,11 +868,11 @@ declare namespace LocalJSX {
         /**
           * Configuration for binary asset storage (e.g., images).  The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as `HttpAssetProvider` or `PresignedAssetProvider`.
          */
-        "assetStorageConfig"?: UpdrawAssetStorageConfig;
+        "assetStorageConfig"?: UpmadeAssetStorageConfig;
         /**
           * A chat session bound to this engine: its tools act on this canvas. With an agent, the agent is added here. A session replaced by another one is unbound once its running prompt ends.
          */
-        "chatSession"?: UpdrawChatSession | null;
+        "chatSession"?: UpmadeChatSession | null;
         /**
           * The HTML element to apply cursor styles to. Defaults to `document.body` if not set.
          */
@@ -880,7 +880,7 @@ declare namespace LocalJSX {
         /**
           * Debug info display options controlling which debug overlays are visible
          */
-        "debugInfo"?: UpdrawDebugInfo;
+        "debugInfo"?: UpmadeDebugInfo;
         /**
           * Optional unique identifier for namespacing storage keys across multiple editor instances.
          */
@@ -900,7 +900,7 @@ declare namespace LocalJSX {
          */
         "isPanningEnabled"?: boolean;
         /**
-          * Whether the "Powered by Updraw" watermark is shown. Keeping it visible helps support the project.
+          * Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project.
           * @default true
          */
         "isWatermarkVisible"?: boolean;
@@ -917,7 +917,7 @@ declare namespace LocalJSX {
         /**
           * An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty.
          */
-        "locales"?: UpdrawLocale[];
+        "locales"?: UpmadeLocale[];
         /**
           * When true, objects are drawn at a fixed visual size regardless of zoom level
           * @default true
@@ -926,7 +926,7 @@ declare namespace LocalJSX {
         /**
           * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
          */
-        "objectConfig"?: UpdrawObjectConfig;
+        "objectConfig"?: UpmadeObjectConfig;
         /**
           * Context menu items shown when right-clicking a selected object.
          */
@@ -934,99 +934,99 @@ declare namespace LocalJSX {
         /**
           * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
          */
-        "objectTitlebar"?: UpdrawObjectTitlebarConfig;
+        "objectTitlebar"?: UpmadeObjectTitlebarConfig;
         /**
           * Emitted when the active drawing tool changes.
          */
-        "onActiveToolChange"?: (event: UpdrawEngineCustomEvent<UpdrawBaseTool>) => void;
+        "onActiveToolChange"?: (event: UpmadeEngineCustomEvent<UpmadeBaseTool>) => void;
         /**
           * Emitted when the active workspace changes (e.g., after import).
          */
-        "onActiveWorkspaceChange"?: (event: UpdrawEngineCustomEvent<UpdrawWorkspace>) => void;
+        "onActiveWorkspaceChange"?: (event: UpmadeEngineCustomEvent<UpmadeWorkspace>) => void;
         /**
           * Emitted when agents are added or removed, or when what the avatar stack shows of them changes (name, color, avatar, status, visibility, activity). Lists the local agents first, then the agents of collaborators (`isRemote: true`). Never emitted for plain cursor motion.
          */
-        "onAgentsChange"?: (event: UpdrawEngineCustomEvent<UpdrawAgentsChangeEvent>) => void;
+        "onAgentsChange"?: (event: UpmadeEngineCustomEvent<UpmadeAgentsChangeEvent>) => void;
         /**
           * Emitted when the awareness state changes (remote user cursors, presence).
          */
-        "onAwarenessChange"?: (event: UpdrawEngineCustomEvent<Map<number, Record<string, any>>>) => void;
+        "onAwarenessChange"?: (event: UpmadeEngineCustomEvent<Map<number, Record<string, any>>>) => void;
         /**
           * Emitted when context-menu visibility, items, or position changes.
          */
-        "onContextMenuStateChange"?: (event: UpdrawEngineCustomEvent<UpdrawContextMenuState>) => void;
+        "onContextMenuStateChange"?: (event: UpmadeEngineCustomEvent<UpmadeContextMenuState>) => void;
         /**
           * Emitted when the engine has fully initialized and is ready for interaction.
          */
-        "onIsEngineReady"?: (event: UpdrawEngineCustomEvent<UpdrawEngineState>) => void;
+        "onIsEngineReady"?: (event: UpmadeEngineCustomEvent<UpmadeEngineState>) => void;
         /**
           * Emitted while the selected workspace's objects are being initialized and synchronized.
          */
-        "onIsLoadingChange"?: (event: UpdrawEngineCustomEvent<boolean>) => void;
+        "onIsLoadingChange"?: (event: UpmadeEngineCustomEvent<boolean>) => void;
         /**
           * Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.
          */
-        "onLongpress"?: (event: UpdrawEngineCustomEvent<PointerEvent>) => void;
+        "onLongpress"?: (event: UpmadeEngineCustomEvent<PointerEvent>) => void;
         /**
           * Emitted when notifications change.
          */
-        "onNotificationsChange"?: (event: UpdrawEngineCustomEvent<UpdrawNotification>) => void;
+        "onNotificationsChange"?: (event: UpmadeEngineCustomEvent<UpmadeNotification>) => void;
         /**
           * Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual.
          */
-        "onObjectElementClick"?: (event: UpdrawEngineCustomEvent<UpdrawObjectElementClickEvent>) => void;
+        "onObjectElementClick"?: (event: UpmadeEngineCustomEvent<UpmadeObjectElementClickEvent>) => void;
         /**
           * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object, such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
          */
-        "onObjectElementHover"?: (event: UpdrawEngineCustomEvent<UpdrawObjectElementHoverEvent>) => void;
+        "onObjectElementHover"?: (event: UpmadeEngineCustomEvent<UpmadeObjectElementHoverEvent>) => void;
         /**
           * Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`.
          */
-        "onObjectElementPick"?: (event: UpdrawEngineCustomEvent<UpdrawObjectElementPickEvent>) => void;
+        "onObjectElementPick"?: (event: UpmadeEngineCustomEvent<UpmadeObjectElementPickEvent>) => void;
         /**
           * Emitted when a button or a menu item in an object titlebar is clicked.
          */
-        "onObjectTitlebarAction"?: (event: UpdrawEngineCustomEvent<UpdrawObjectTitlebarActionEvent>) => void;
+        "onObjectTitlebarAction"?: (event: UpmadeEngineCustomEvent<UpmadeObjectTitlebarActionEvent>) => void;
         /**
           * Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`.
          */
-        "onObjectTitlebarMenuStateChange"?: (event: UpdrawEngineCustomEvent<UpdrawObjectTitlebarMenuState>) => void;
+        "onObjectTitlebarMenuStateChange"?: (event: UpmadeEngineCustomEvent<UpmadeObjectTitlebarMenuState>) => void;
         /**
           * Emitted when one or more objects are added to the canvas. `source` is set when an agent made the change.
          */
-        "onObjectsAdded"?: (event: UpdrawEngineCustomEvent<ObjectsAddedEvent>) => void;
+        "onObjectsAdded"?: (event: UpmadeEngineCustomEvent<ObjectsAddedEvent>) => void;
         /**
           * Emitted when objects on the canvas are added, removed, or modified.
          */
-        "onObjectsChange"?: (event: UpdrawEngineCustomEvent<UpdrawBaseObject[]>) => void;
+        "onObjectsChange"?: (event: UpmadeEngineCustomEvent<UpmadeBaseObject[]>) => void;
         /**
           * Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).
          */
-        "onObjectsInViewportChange"?: (event: UpdrawEngineCustomEvent<ObjectsInViewportChangeEvent>) => void;
+        "onObjectsInViewportChange"?: (event: UpmadeEngineCustomEvent<ObjectsInViewportChangeEvent>) => void;
         /**
           * Emitted when one or more objects are removed from the canvas. `source` is set when an agent made the change.
          */
-        "onObjectsRemoved"?: (event: UpdrawEngineCustomEvent<ObjectsRemovedEvent>) => void;
+        "onObjectsRemoved"?: (event: UpmadeEngineCustomEvent<ObjectsRemovedEvent>) => void;
         /**
           * Emitted when the set of selected objects changes.
          */
-        "onObjectsSelectionChange"?: (event: UpdrawEngineCustomEvent<UpdrawBaseObject[]>) => void;
+        "onObjectsSelectionChange"?: (event: UpmadeEngineCustomEvent<UpmadeBaseObject[]>) => void;
         /**
           * Emitted when one or more objects are updated on the canvas. `source` is set when an agent made the change.
          */
-        "onObjectsUpdated"?: (event: UpdrawEngineCustomEvent<ObjectsUpdatedEvent>) => void;
+        "onObjectsUpdated"?: (event: UpmadeEngineCustomEvent<ObjectsUpdatedEvent>) => void;
         /**
           * Emitted when the undo/redo state changes, providing current undo availability.
          */
-        "onUndoStateChange"?: (event: UpdrawEngineCustomEvent<UpdrawUndoState>) => void;
+        "onUndoStateChange"?: (event: UpmadeEngineCustomEvent<UpmadeUndoState>) => void;
         /**
           * Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize).
          */
-        "onViewportChange"?: (event: UpdrawEngineCustomEvent<UpdrawViewportState>) => void;
+        "onViewportChange"?: (event: UpmadeEngineCustomEvent<UpmadeViewportState>) => void;
         /**
           * Emitted when workspaces are created, updated, or deleted.
          */
-        "onWorkspacesChange"?: (event: UpdrawEngineCustomEvent<UpdrawWorkspace[]>) => void;
+        "onWorkspacesChange"?: (event: UpmadeEngineCustomEvent<UpmadeWorkspace[]>) => void;
         /**
           * Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.
           * @default 1000
@@ -1040,7 +1040,7 @@ declare namespace LocalJSX {
         /**
           * Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).
          */
-        "syncConfig"?: UpdrawSyncConfig;
+        "syncConfig"?: UpmadeSyncConfig;
         /**
           * The current theme to apply to the editor
           * @default 'light'
@@ -1049,16 +1049,16 @@ declare namespace LocalJSX {
         /**
           * An array of available themes for the editor.
          */
-        "themes"?: UpdrawTheme[];
+        "themes"?: UpmadeTheme[];
         /**
           * Tool definitions to register with this engine instance.
           * @default []
          */
-        "tools"?: UpdrawToolDefinition[];
+        "tools"?: UpmadeToolDefinition[];
         /**
           * The current user for awareness broadcasting (name, id, cursor position).
          */
-        "user"?: IUpdrawUser;
+        "user"?: IUpmadeUser;
         /**
           * Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.
           * @default Infinity
@@ -1082,11 +1082,11 @@ declare namespace LocalJSX {
         /**
           * Authoritative workspace catalog for this engine instance. When provided, provider-only workspaces are hidden but not deleted.
          */
-        "workspaces"?: UpdrawWorkspace[];
+        "workspaces"?: UpmadeWorkspace[];
     }
-    interface UpdrawIcon {
+    interface UpmadeIcon {
         "label"?: string;
-        "name"?: UpdrawIconName;
+        "name"?: UpmadeIconName;
         /**
           * @default 24
          */
@@ -1096,10 +1096,10 @@ declare namespace LocalJSX {
      * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
      * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
      * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
-     * `updraw-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+     * `upmade-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
      * Must never use the `object` class: pointer handling treats `.object` elements as objects.
      */
-    interface UpdrawObjectTitlebarLayer {
+    interface UpmadeObjectTitlebarLayer {
         /**
           * The objects playing their appear animation, with their stagger index, by object ID. Their titlebars appear with them.
          */
@@ -1107,7 +1107,7 @@ declare namespace LocalJSX {
         /**
           * Called when a titlebar button or menu button is clicked.
          */
-        "elementClick"?: UpdrawTitlebarElementClickHandler;
+        "elementClick"?: UpmadeTitlebarElementClickHandler;
         /**
           * Pointer events of the drag surfaces. Controls always receive pointer input.
           * @default 'none'
@@ -1116,39 +1116,39 @@ declare namespace LocalJSX {
         /**
           * Called while a title is edited to rename its object.
          */
-        "titleEdit"?: UpdrawTitlebarTitleEditHandlers;
+        "titleEdit"?: UpmadeTitlebarTitleEditHandlers;
         /**
           * The titlebars to render, resolved by the engine for the current frame.
           * @default []
          */
-        "titlebars"?: UpdrawResolvedTitlebar[];
+        "titlebars"?: UpmadeResolvedTitlebar[];
     }
     /**
-     * "Powered by Updraw" watermark shown in the bottom-right corner of the engine.
+     * "Powered by Upmade" watermark shown in the bottom-right corner of the engine.
      * Rendered inside the engine's Shadow DOM unless the engine's
-     * `isWatermarkVisible` prop is set to false. The badge links to the Updraw
+     * `isWatermarkVisible` prop is set to false. The badge links to the Upmade
      * website.
      */
-    interface UpdrawWatermark {
+    interface UpmadeWatermark {
         /**
           * The core instance used to resolve localized terms.
          */
-        "core": UpdrawCore;
+        "core": UpmadeCore;
         /**
-          * Resolved "Powered by Updraw" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
+          * Resolved "Powered by Upmade" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
          */
         "label"?: string;
     }
 
-    interface UpdrawAgenticCursorsAttributes {
+    interface UpmadeAgenticCursorsAttributes {
         "showEdgeIndicators": boolean;
         "edgeIndicatorPadding": number;
     }
-    interface UpdrawAwarenessCursorsAttributes {
+    interface UpmadeAwarenessCursorsAttributes {
         "showEdgeIndicators": boolean;
         "edgeIndicatorPadding": number;
     }
-    interface UpdrawEngineAttributes {
+    interface UpmadeEngineAttributes {
         "editorId": string;
         "activeWorkspaceId": string;
         "scaleMax": number;
@@ -1165,26 +1165,26 @@ declare namespace LocalJSX {
         "isPanningEnabled": boolean;
         "isZoomingEnabled": boolean;
     }
-    interface UpdrawIconAttributes {
-        "name": UpdrawIconName;
+    interface UpmadeIconAttributes {
+        "name": UpmadeIconName;
         "label": string;
         "size": number;
     }
-    interface UpdrawObjectTitlebarLayerAttributes {
+    interface UpmadeObjectTitlebarLayerAttributes {
         "surfacePointerEvents": 'auto' | 'none';
     }
-    interface UpdrawWatermarkAttributes {
+    interface UpmadeWatermarkAttributes {
         "label": string;
     }
 
     interface IntrinsicElements {
-        "updraw-agentic-cursors": Omit<UpdrawAgenticCursors, keyof UpdrawAgenticCursorsAttributes> & { [K in keyof UpdrawAgenticCursors & keyof UpdrawAgenticCursorsAttributes]?: UpdrawAgenticCursors[K] } & { [K in keyof UpdrawAgenticCursors & keyof UpdrawAgenticCursorsAttributes as `attr:${K}`]?: UpdrawAgenticCursorsAttributes[K] } & { [K in keyof UpdrawAgenticCursors & keyof UpdrawAgenticCursorsAttributes as `prop:${K}`]?: UpdrawAgenticCursors[K] };
-        "updraw-awareness-cursors": Omit<UpdrawAwarenessCursors, keyof UpdrawAwarenessCursorsAttributes> & { [K in keyof UpdrawAwarenessCursors & keyof UpdrawAwarenessCursorsAttributes]?: UpdrawAwarenessCursors[K] } & { [K in keyof UpdrawAwarenessCursors & keyof UpdrawAwarenessCursorsAttributes as `attr:${K}`]?: UpdrawAwarenessCursorsAttributes[K] } & { [K in keyof UpdrawAwarenessCursors & keyof UpdrawAwarenessCursorsAttributes as `prop:${K}`]?: UpdrawAwarenessCursors[K] };
-        "updraw-cursor-trail": UpdrawCursorTrail;
-        "updraw-engine": Omit<UpdrawEngine, keyof UpdrawEngineAttributes> & { [K in keyof UpdrawEngine & keyof UpdrawEngineAttributes]?: UpdrawEngine[K] } & { [K in keyof UpdrawEngine & keyof UpdrawEngineAttributes as `attr:${K}`]?: UpdrawEngineAttributes[K] } & { [K in keyof UpdrawEngine & keyof UpdrawEngineAttributes as `prop:${K}`]?: UpdrawEngine[K] };
-        "updraw-icon": Omit<UpdrawIcon, keyof UpdrawIconAttributes> & { [K in keyof UpdrawIcon & keyof UpdrawIconAttributes]?: UpdrawIcon[K] } & { [K in keyof UpdrawIcon & keyof UpdrawIconAttributes as `attr:${K}`]?: UpdrawIconAttributes[K] } & { [K in keyof UpdrawIcon & keyof UpdrawIconAttributes as `prop:${K}`]?: UpdrawIcon[K] };
-        "updraw-object-titlebar-layer": Omit<UpdrawObjectTitlebarLayer, keyof UpdrawObjectTitlebarLayerAttributes> & { [K in keyof UpdrawObjectTitlebarLayer & keyof UpdrawObjectTitlebarLayerAttributes]?: UpdrawObjectTitlebarLayer[K] } & { [K in keyof UpdrawObjectTitlebarLayer & keyof UpdrawObjectTitlebarLayerAttributes as `attr:${K}`]?: UpdrawObjectTitlebarLayerAttributes[K] } & { [K in keyof UpdrawObjectTitlebarLayer & keyof UpdrawObjectTitlebarLayerAttributes as `prop:${K}`]?: UpdrawObjectTitlebarLayer[K] };
-        "updraw-watermark": Omit<UpdrawWatermark, keyof UpdrawWatermarkAttributes> & { [K in keyof UpdrawWatermark & keyof UpdrawWatermarkAttributes]?: UpdrawWatermark[K] } & { [K in keyof UpdrawWatermark & keyof UpdrawWatermarkAttributes as `attr:${K}`]?: UpdrawWatermarkAttributes[K] } & { [K in keyof UpdrawWatermark & keyof UpdrawWatermarkAttributes as `prop:${K}`]?: UpdrawWatermark[K] };
+        "upmade-agentic-cursors": Omit<UpmadeAgenticCursors, keyof UpmadeAgenticCursorsAttributes> & { [K in keyof UpmadeAgenticCursors & keyof UpmadeAgenticCursorsAttributes]?: UpmadeAgenticCursors[K] } & { [K in keyof UpmadeAgenticCursors & keyof UpmadeAgenticCursorsAttributes as `attr:${K}`]?: UpmadeAgenticCursorsAttributes[K] } & { [K in keyof UpmadeAgenticCursors & keyof UpmadeAgenticCursorsAttributes as `prop:${K}`]?: UpmadeAgenticCursors[K] };
+        "upmade-awareness-cursors": Omit<UpmadeAwarenessCursors, keyof UpmadeAwarenessCursorsAttributes> & { [K in keyof UpmadeAwarenessCursors & keyof UpmadeAwarenessCursorsAttributes]?: UpmadeAwarenessCursors[K] } & { [K in keyof UpmadeAwarenessCursors & keyof UpmadeAwarenessCursorsAttributes as `attr:${K}`]?: UpmadeAwarenessCursorsAttributes[K] } & { [K in keyof UpmadeAwarenessCursors & keyof UpmadeAwarenessCursorsAttributes as `prop:${K}`]?: UpmadeAwarenessCursors[K] };
+        "upmade-cursor-trail": UpmadeCursorTrail;
+        "upmade-engine": Omit<UpmadeEngine, keyof UpmadeEngineAttributes> & { [K in keyof UpmadeEngine & keyof UpmadeEngineAttributes]?: UpmadeEngine[K] } & { [K in keyof UpmadeEngine & keyof UpmadeEngineAttributes as `attr:${K}`]?: UpmadeEngineAttributes[K] } & { [K in keyof UpmadeEngine & keyof UpmadeEngineAttributes as `prop:${K}`]?: UpmadeEngine[K] };
+        "upmade-icon": Omit<UpmadeIcon, keyof UpmadeIconAttributes> & { [K in keyof UpmadeIcon & keyof UpmadeIconAttributes]?: UpmadeIcon[K] } & { [K in keyof UpmadeIcon & keyof UpmadeIconAttributes as `attr:${K}`]?: UpmadeIconAttributes[K] } & { [K in keyof UpmadeIcon & keyof UpmadeIconAttributes as `prop:${K}`]?: UpmadeIcon[K] };
+        "upmade-object-titlebar-layer": Omit<UpmadeObjectTitlebarLayer, keyof UpmadeObjectTitlebarLayerAttributes> & { [K in keyof UpmadeObjectTitlebarLayer & keyof UpmadeObjectTitlebarLayerAttributes]?: UpmadeObjectTitlebarLayer[K] } & { [K in keyof UpmadeObjectTitlebarLayer & keyof UpmadeObjectTitlebarLayerAttributes as `attr:${K}`]?: UpmadeObjectTitlebarLayerAttributes[K] } & { [K in keyof UpmadeObjectTitlebarLayer & keyof UpmadeObjectTitlebarLayerAttributes as `prop:${K}`]?: UpmadeObjectTitlebarLayer[K] };
+        "upmade-watermark": Omit<UpmadeWatermark, keyof UpmadeWatermarkAttributes> & { [K in keyof UpmadeWatermark & keyof UpmadeWatermarkAttributes]?: UpmadeWatermark[K] } & { [K in keyof UpmadeWatermark & keyof UpmadeWatermarkAttributes as `attr:${K}`]?: UpmadeWatermarkAttributes[K] } & { [K in keyof UpmadeWatermark & keyof UpmadeWatermarkAttributes as `prop:${K}`]?: UpmadeWatermark[K] };
     }
 }
 export { LocalJSX as JSX };
@@ -1192,8 +1192,8 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             /**
-             * Renders the cursors of the local agents (`UpdrawAgenticCursorManager`) and of collaborators' agents
-             * (`UpdrawRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
+             * Renders the cursors of the local agents (`UpmadeAgenticCursorManager`) and of collaborators' agents
+             * (`UpmadeRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
              * selection of one object, its rotation handle. Everything is keyed by the cursor key, so the same agent ID
              * in two tabs never collides.
              * Structural changes (added/removed cursors, name, color, status, selections) re-render through
@@ -1201,26 +1201,26 @@ declare module "@stencil/core" {
              * elements, in Stencil's write phase: the engine renders objects there too, so an outline is drawn in
              * the same frame as the object state it follows and never runs ahead of the object.
              */
-            "updraw-agentic-cursors": LocalJSX.IntrinsicElements["updraw-agentic-cursors"] & JSXBase.HTMLAttributes<HTMLUpdrawAgenticCursorsElement>;
-            "updraw-awareness-cursors": LocalJSX.IntrinsicElements["updraw-awareness-cursors"] & JSXBase.HTMLAttributes<HTMLUpdrawAwarenessCursorsElement>;
-            "updraw-cursor-trail": LocalJSX.IntrinsicElements["updraw-cursor-trail"] & JSXBase.HTMLAttributes<HTMLUpdrawCursorTrailElement>;
-            "updraw-engine": LocalJSX.IntrinsicElements["updraw-engine"] & JSXBase.HTMLAttributes<HTMLUpdrawEngineElement>;
-            "updraw-icon": LocalJSX.IntrinsicElements["updraw-icon"] & JSXBase.HTMLAttributes<HTMLUpdrawIconElement>;
+            "upmade-agentic-cursors": LocalJSX.IntrinsicElements["upmade-agentic-cursors"] & JSXBase.HTMLAttributes<HTMLUpmadeAgenticCursorsElement>;
+            "upmade-awareness-cursors": LocalJSX.IntrinsicElements["upmade-awareness-cursors"] & JSXBase.HTMLAttributes<HTMLUpmadeAwarenessCursorsElement>;
+            "upmade-cursor-trail": LocalJSX.IntrinsicElements["upmade-cursor-trail"] & JSXBase.HTMLAttributes<HTMLUpmadeCursorTrailElement>;
+            "upmade-engine": LocalJSX.IntrinsicElements["upmade-engine"] & JSXBase.HTMLAttributes<HTMLUpmadeEngineElement>;
+            "upmade-icon": LocalJSX.IntrinsicElements["upmade-icon"] & JSXBase.HTMLAttributes<HTMLUpmadeIconElement>;
             /**
              * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
              * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
              * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
-             * `updraw-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+             * `upmade-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
              * Must never use the `object` class: pointer handling treats `.object` elements as objects.
              */
-            "updraw-object-titlebar-layer": LocalJSX.IntrinsicElements["updraw-object-titlebar-layer"] & JSXBase.HTMLAttributes<HTMLUpdrawObjectTitlebarLayerElement>;
+            "upmade-object-titlebar-layer": LocalJSX.IntrinsicElements["upmade-object-titlebar-layer"] & JSXBase.HTMLAttributes<HTMLUpmadeObjectTitlebarLayerElement>;
             /**
-             * "Powered by Updraw" watermark shown in the bottom-right corner of the engine.
+             * "Powered by Upmade" watermark shown in the bottom-right corner of the engine.
              * Rendered inside the engine's Shadow DOM unless the engine's
-             * `isWatermarkVisible` prop is set to false. The badge links to the Updraw
+             * `isWatermarkVisible` prop is set to false. The badge links to the Upmade
              * website.
              */
-            "updraw-watermark": LocalJSX.IntrinsicElements["updraw-watermark"] & JSXBase.HTMLAttributes<HTMLUpdrawWatermarkElement>;
+            "upmade-watermark": LocalJSX.IntrinsicElements["upmade-watermark"] & JSXBase.HTMLAttributes<HTMLUpmadeWatermarkElement>;
         }
     }
 }

@@ -1,4 +1,4 @@
-import { UpdrawEditor } from "@updraw/react-editor";
+import { UpmadeEditor } from "@upmade/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 import { useSearchParams } from "react-router-dom";
 
@@ -21,7 +21,7 @@ export function WrappedEditorPage() {
         margin: "24px",
       }}
     >
-      <UpdrawEditor
+      <UpmadeEditor
         style={{ width: "100%", height: "100%" }}
         theme="light"
         themes={[reactThemeLight]}

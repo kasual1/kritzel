@@ -1,13 +1,13 @@
 import { useState } from "react";
 import {
-  UpdrawEditor,
-  UpdrawShape,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeShape,
+  UpmadeWorkspace,
   ShapeType,
-  type UpdrawObjectConfig,
-  type UpdrawObjectTitlebarConfig,
-  type UpdrawTheme,
-} from "@updraw/react-editor";
+  type UpmadeObjectConfig,
+  type UpmadeObjectTitlebarConfig,
+  type UpmadeTheme,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle } from "../../shared/demo-shared";
@@ -21,25 +21,25 @@ const transparentTitlebar = {
   paddingX: "0",
 };
 
-const transparentTitlebarLightTheme: UpdrawTheme = {
+const transparentTitlebarLightTheme: UpmadeTheme = {
   ...reactThemeLight,
   titlebar: { ...reactThemeLight.titlebar, ...transparentTitlebar },
 };
 
-const transparentTitlebarDarkTheme: UpdrawTheme = {
+const transparentTitlebarDarkTheme: UpmadeTheme = {
   ...reactThemeDark,
   titlebar: { ...reactThemeDark.titlebar, ...transparentTitlebar },
 };
 
 const themes = [transparentTitlebarLightTheme, transparentTitlebarDarkTheme];
 
-const objectConfig: UpdrawObjectConfig = {
-  hasTitlebar: (object) => object.__class__ === "UpdrawShape",
+const objectConfig: UpmadeObjectConfig = {
+  hasTitlebar: (object) => object.__class__ === "UpmadeShape",
   isRotatable: false,
   isResizable: false,
 };
 
-const objectTitlebar: UpdrawObjectTitlebarConfig = {
+const objectTitlebar: UpmadeObjectTitlebarConfig = {
   left: [{ id: "title", type: "title" }],
   right: [
     { id: "settings", type: "button", icon: "settings", tooltip: "Settings" },
@@ -57,19 +57,19 @@ const frameConfig = {
 
 function createFrames() {
   return [
-    new UpdrawShape({ ...frameConfig, name: "Landing page", translateX: -270, translateY: -110, width: 300, height: 200 }),
-    new UpdrawShape({ ...frameConfig, name: "Pricing", translateX: 70, translateY: -110, width: 200, height: 200 }),
+    new UpmadeShape({ ...frameConfig, name: "Landing page", translateX: -270, translateY: -110, width: 300, height: 200 }),
+    new UpmadeShape({ ...frameConfig, name: "Pricing", translateX: 70, translateY: -110, width: 200, height: 200 }),
   ];
 }
 
 export function TitlebarStylingPage() {
   const [workspaces] = useState(() => [
-    new UpdrawWorkspace({ objects: createFrames() }),
+    new UpmadeWorkspace({ objects: createFrames() }),
   ]);
 
   return (
     <div style={hostStyle}>
-      <UpdrawEditor
+      <UpmadeEditor
         editorId="titlebar-styling"
         theme="light"
         themes={themes}

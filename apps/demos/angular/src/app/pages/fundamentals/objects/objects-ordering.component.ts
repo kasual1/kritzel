@@ -5,10 +5,10 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  UpdrawEditor,
-  UpdrawBaseObject,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeEditor,
+  UpmadeBaseObject,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -18,7 +18,7 @@ import {
 } from '../../../components/info-panel.component';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 
-function createOverlappingSeedObjects(): UpdrawBaseObject[] {
+function createOverlappingSeedObjects(): UpmadeBaseObject[] {
   return createSeedObjects().map((object) => {
     object.translateX -= object.centerX;
     object.translateY -= object.centerY;
@@ -28,7 +28,7 @@ function createOverlappingSeedObjects(): UpdrawBaseObject[] {
 
 @Component({
   selector: 'app-objects-ordering',
-  imports: [UpdrawEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
+  imports: [UpmadeEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -41,7 +41,7 @@ function createOverlappingSeedObjects(): UpdrawBaseObject[] {
       <app-info-panel-toggle [panel]="infoPanel"></app-info-panel-toggle>
     </app-toolbar>
     <div class="content">
-      <updraw-editor
+      <upmade-editor
         editorId="objects-ordering"
         [theme]="'light'"
         [themes]="themes"
@@ -51,7 +51,7 @@ function createOverlappingSeedObjects(): UpdrawBaseObject[] {
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (objectSelectionChange)="handleObjectSelectionChange()"
-      ></updraw-editor>
+      ></upmade-editor>
       <app-info-panel #infoPanel [hasToolbarToggle]="true">
         <h3>Objects</h3>
         <ul>
@@ -79,7 +79,7 @@ function createOverlappingSeedObjects(): UpdrawBaseObject[] {
         min-height: 0;
         position: relative;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
       }
       app-info-panel {
@@ -109,13 +109,13 @@ function createOverlappingSeedObjects(): UpdrawBaseObject[] {
   ],
 })
 export class ObjectsOrderingComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
   private readonly seedObjects = createOverlappingSeedObjects();
-  workspaces = signal([new UpdrawWorkspace({ objects: this.seedObjects })]);
-  objects = signal<UpdrawBaseObject[]>(this.seedObjects);
+  workspaces = signal([new UpmadeWorkspace({ objects: this.seedObjects })]);
+  objects = signal<UpmadeBaseObject[]>(this.seedObjects);
 
   async handleObjectSelectionChange() {
     this.refreshObjects();
@@ -147,7 +147,7 @@ export class ObjectsOrderingComponent {
   }
 
   private async refreshObjects() {
-    const all = await this.editor.findObjects(obj => obj.__class__ !== 'UpdrawSelectionBox');
+    const all = await this.editor.findObjects(obj => obj.__class__ !== 'UpmadeSelectionBox');
     this.objects.set([...all].sort((a, b) => a.zIndex - b.zIndex));
   }
 }

@@ -7,7 +7,7 @@ const REPO_URL = "https://github.com/kasual1/kritzel";
 const SOCIAL_LINKS = [
   {
     label: "NPM",
-    href: "https://www.npmjs.com/package/@updraw/engine",
+    href: "https://www.npmjs.com/package/@upmade/core",
     path: "M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.04 19.17H5.113z",
   },
   {
@@ -17,12 +17,12 @@ const SOCIAL_LINKS = [
   },
   {
     label: "X",
-    href: "https://x.com/kritzel_io",
+    href: "https://x.com/upmade_io",
     path: "M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z",
   },
   {
     label: "Bluesky",
-    href: "https://bsky.app/profile/kritzelio.bsky.social",
+    href: "https://bsky.app/profile/upmade.bsky.social",
     path: "M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.206-.659-.298-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8Z",
   },
 ];
@@ -32,7 +32,7 @@ export default function DocsFootnote() {
     <footer className="docs-footnote">
       <h2 className="docs-footnote__title">Support us</h2>
       <p className="docs-footnote__text">
-        Updraw is an MIT-licensed open source project. If you like the idea of a framework-agnostic
+        Upmade is an MIT-licensed open source project. If you like the idea of a framework-agnostic
         infinite canvas library and want to support our work, leave us a{" "}
         <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
           star
@@ -72,7 +72,7 @@ export default function DocsFootnote() {
           ))}
         </div>
         <p className="docs-footnote__copyright">
-          Copyright © {new Date().getFullYear()} Updraw by{" "}
+          Copyright © {new Date().getFullYear()} Upmade by{" "}
           <a href="https://github.com/kasual1" target="_blank" rel="noopener noreferrer">
             Lukas Mühlenbeck
           </a>

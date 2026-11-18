@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onBeforeUnmount } from 'vue'
 import {
-  UpdrawDynamicObject,
-  UpdrawEditor,
-  UpdrawWorkspace,
+  UpmadeDynamicObject,
+  UpmadeEditor,
+  UpmadeWorkspace,
   registerVueDynamicObjectRenderer,
-} from '@updraw/vue-editor'
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import CalculatorWidget from './CalculatorWidget.ce.vue'
@@ -20,7 +20,7 @@ const themes = [vueThemeLight, vueThemeDark]
 const unregisterCalculatorRenderer = registerVueDynamicObjectRenderer<CalculatorState>(
   CALCULATOR_RENDERER_KEY,
   {
-    tagName: 'updraw-vue-calculator-widget',
+    tagName: 'upmade-vue-calculator-widget',
     component: CalculatorWidget,
     createInitialState: createCalculatorInitialState,
     getInitialState: (data) => normalizeCalculatorState(data),
@@ -34,10 +34,10 @@ const unregisterCalculatorRenderer = registerVueDynamicObjectRenderer<Calculator
   },
 )
 
-function createCalculatorObject(): UpdrawDynamicObject {
+function createCalculatorObject(): UpmadeDynamicObject {
   const placeholder = document.createElement('div')
   placeholder.textContent = 'Loading Calculator...'
-  const object = new UpdrawDynamicObject({
+  const object = new UpmadeDynamicObject({
     element: placeholder,
     rendererKey: CALCULATOR_RENDERER_KEY,
     rendererData: createCalculatorInitialState(),
@@ -51,7 +51,7 @@ function createCalculatorObject(): UpdrawDynamicObject {
   return object
 }
 
-const workspaces = [new UpdrawWorkspace({ objects: [createCalculatorObject()] })]
+const workspaces = [new UpmadeWorkspace({ objects: [createCalculatorObject()] })]
 
 onBeforeUnmount(() => {
   unregisterCalculatorRenderer()
@@ -59,7 +59,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <UpdrawEditor
+  <UpmadeEditor
     editorId="dynamic-objects-component"
     theme="light"
     :themes="themes"

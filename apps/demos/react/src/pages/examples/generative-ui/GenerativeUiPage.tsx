@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import {
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type HTMLUpdrawEditorElement,
-  type UpdrawChatBoxChip,
-  type UpdrawObjectTitlebarActionEvent,
-} from "@updraw/react-editor";
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type HTMLUpmadeEditorElement,
+  type UpmadeChatBoxChip,
+  type UpmadeObjectTitlebarActionEvent,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createBrowserTransport, type Credentials } from "./browser-transport";
@@ -40,7 +40,7 @@ interface Preview {
 }
 
 export function GenerativeUiPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   // The key only lives in this component's memory: it is gone when the page reloads.
   const [credentials, setCredentials] = useState<Credentials | null>(null);
   // One session per mode, created once: choosing a mode binds its session to the editor.
@@ -54,9 +54,9 @@ export function GenerativeUiPage() {
   const [mode, setMode] = useState<RequestMode | null>(null);
   const [keyError, setKeyError] = useState("");
   const [hasUis, setHasUis] = useState(false);
-  const [chips, setChips] = useState<UpdrawChatBoxChip[]>([]);
+  const [chips, setChips] = useState<UpmadeChatBoxChip[]>([]);
   const [preview, setPreview] = useState<Preview | null>(null);
-  const [workspaces] = useState(() => [new UpdrawWorkspace({ name: "Generative UI", objects: [] })]);
+  const [workspaces] = useState(() => [new UpmadeWorkspace({ name: "Generative UI", objects: [] })]);
   const session = mode ? sessions[mode] : null;
   const subscribe = useCallback((onChange: () => void) => session?.on("change", onChange) ?? (() => {}), [session]);
   const isWorking = useSyncExternalStore(subscribe, () => session?.running ?? false);
@@ -96,7 +96,7 @@ export function GenerativeUiPage() {
     setKeyError("");
   }
 
-  async function onTitlebarAction({ elementId, objectId }: UpdrawObjectTitlebarActionEvent) {
+  async function onTitlebarAction({ elementId, objectId }: UpmadeObjectTitlebarActionEvent) {
     const ui = await editorRef.current?.getObjectById(objectId);
     if (elementId === "play" && ui && isUi(ui) && !ui.isLoading) {
       setPreview({ title: getUiTitle(ui), document: createUiDocument(ui.content, getUiTitle(ui)) });
@@ -107,7 +107,7 @@ export function GenerativeUiPage() {
 
   return (
     <div className="generative-ui" style={accentStyle}>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         className="generative-ui__editor"
         editorId="generative-ui"

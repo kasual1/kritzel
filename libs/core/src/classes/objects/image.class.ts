@@ -1,17 +1,17 @@
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawAssetLoadState } from '../../interfaces/asset.interface';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeAssetLoadState } from '../../interfaces/asset.interface';
 import { AssetNotFoundError } from '../providers/assets/asset-resolver.class';
-import { UpdrawBaseObject } from './base-object.class';
-import { UpdrawMathHelper } from '../../helpers/math.helper';
-import { UpdrawObjectExportContext, UpdrawObjectExportFormat } from '../../interfaces/object-export.interface';
+import { UpmadeBaseObject } from './base-object.class';
+import { UpmadeMathHelper } from '../../helpers/math.helper';
+import { UpmadeObjectExportContext, UpmadeObjectExportFormat } from '../../interfaces/object-export.interface';
 
 /**
- * Configuration options for creating an UpdrawImage instance.
+ * Configuration options for creating an UpmadeImage instance.
  */
-export interface UpdrawImageConfig {
+export interface UpmadeImageConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
-  /** Whether the engine's loading placeholder is drawn over the object, see `UpdrawBaseObject.setLoading()`. */
+  /** Whether the engine's loading placeholder is drawn over the object, see `UpmadeBaseObject.setLoading()`. */
   isLoading?: boolean;
   assetId?: string;
   mimeType?: string;
@@ -36,7 +36,7 @@ export interface UpdrawImageConfig {
  *
  * Image bytes are NOT stored on this object or inside the Yjs document.
  * Instead, the image is identified by a stable `assetId`; the actual
- * bytes live in the asset storage layer (see `UpdrawAssetResolver`).
+ * bytes live in the asset storage layer (see `UpmadeAssetResolver`).
  * This keeps the CRDT small and lets images be served from pluggable
  * storage (IndexedDB, HTTP, pre-signed S3, ...).
  *
@@ -44,8 +44,8 @@ export interface UpdrawImageConfig {
  * a `src` data URL; the renderer and migration path treat `src` as a
  * read-only fallback that is upgraded to an `assetId` on first load.
  */
-export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
-  override __class__: string = 'UpdrawImage';
+export class UpmadeImage extends UpmadeBaseObject<HTMLImageElement> {
+  override __class__: string = 'UpmadeImage';
 
   /**
    * Stable asset identifier (uuid) persisted in the Yjs document.
@@ -99,7 +99,7 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
    * Current load state for the referenced asset.
    * Not serialized into the Yjs document.
    */
-  loadState: UpdrawAssetLoadState = 'idle';
+  loadState: UpmadeAssetLoadState = 'idle';
 
   /**
    * Maximum number of resolution attempts per page load before the
@@ -112,7 +112,7 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
    * {@link maxTransientRetryDurationMs} instead.
    *
    * The counter is transient (not persisted to Yjs) and resets every
-   * time a fresh `UpdrawImage` instance is constructed, so a full page
+   * time a fresh `UpmadeImage` instance is constructed, so a full page
    * reload always grants a fresh budget.
    */
   maxLoadAttempts: number = 3;
@@ -145,11 +145,11 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
   transientRetryStartedAt: number | null = null;
 
   /**
-   * Creates a new UpdrawImage instance.
+   * Creates a new UpmadeImage instance.
    * @param config - Optional configuration object to initialize image properties
    *                 including assetId, src, position (x, y), translation, and scale.
    */
-  constructor(config?: UpdrawImageConfig) {
+  constructor(config?: UpmadeImageConfig) {
     super();
     this.name = config?.name;
     this.isLoading = config?.isLoading ?? false;
@@ -160,7 +160,7 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
     this.y = config?.y || 0;
     this.translateX = config?.translateX || 0;
     this.translateY = config?.translateY || 0;
-    this.rotation = UpdrawMathHelper.degreesToRadians(config?.rotation ?? 0);
+    this.rotation = UpmadeMathHelper.degreesToRadians(config?.rotation ?? 0);
     this.scale = config?.scale || 1;
     this.width = config?.width || 0;
     this.height = config?.height || 0;
@@ -172,13 +172,13 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
   }
 
   /**
-   * Factory method to create a new UpdrawImage instance with core integration.
+   * Factory method to create a new UpmadeImage instance with core integration.
    * Initializes the image with default values and links it to the core store.
-   * @param core - The UpdrawCore instance providing access to store and state management.
-   * @returns A new UpdrawImage instance configured with the core context.
+   * @param core - The UpmadeCore instance providing access to store and state management.
+   * @returns A new UpmadeImage instance configured with the core context.
    */
-  static override create(core: UpdrawCore, config?: Partial<UpdrawImage>): UpdrawImage {
-    const object = new UpdrawImage(config);
+  static override create(core: UpmadeCore, config?: Partial<UpmadeImage>): UpmadeImage {
+    const object = new UpmadeImage(config);
 
     object._core = core;
     object.id = object.generateId();
@@ -189,7 +189,7 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
     object.translateX = config?.translateX ?? 0;
     object.translateY = config?.translateY ?? 0;
     object.scale = config?.scale ?? object._core.store.state.scale;
-    object.rotation = UpdrawMathHelper.degreesToRadians(config?.rotation ?? 0);
+    object.rotation = UpmadeMathHelper.degreesToRadians(config?.rotation ?? 0);
     object.zIndex = core.store.currentZIndex;
 
     return object;
@@ -242,8 +242,8 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
    * would reset `loadState` to `'idle'` on every tick and cause the
    * skeleton to flicker between renders.
    */
-  override adoptTransientStateFrom(previous: UpdrawBaseObject<any>): void {
-    if (!(previous instanceof UpdrawImage)) return;
+  override adoptTransientStateFrom(previous: UpmadeBaseObject<any>): void {
+    if (!(previous instanceof UpmadeImage)) return;
     // Only carry over the resolved URL when the asset reference itself
     // hasn't changed; otherwise the new asset must be re-resolved.
     if (previous.assetId === this.assetId) {
@@ -301,7 +301,7 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
           this.transientRetryStartedAt = null;
           const attemptsExhausted = this.loadAttempts >= this.maxLoadAttempts;
           console.warn(
-            `[UpdrawImage] Asset ${this.assetId} not found ` +
+            `[UpmadeImage] Asset ${this.assetId} not found ` +
               `(attempt ${this.loadAttempts}/${this.maxLoadAttempts}):`,
             err,
           );
@@ -324,7 +324,7 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
         const elapsed = now - this.transientRetryStartedAt;
         const deadlineExceeded = elapsed >= this.maxTransientRetryDurationMs;
         console.warn(
-          `[UpdrawImage] Transient resolve failure for asset ${this.assetId} ` +
+          `[UpmadeImage] Transient resolve failure for asset ${this.assetId} ` +
             `(elapsed ${Math.round(elapsed / 1000)}s/${Math.round(this.maxTransientRetryDurationMs / 1000)}s):`,
           err,
         );
@@ -383,7 +383,7 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
         this._core?.store.objects?.update(this);
       })
       .catch(err => {
-        console.warn('[UpdrawImage] Failed to migrate legacy data URL to asset storage:', err);
+        console.warn('[UpmadeImage] Failed to migrate legacy data URL to asset storage:', err);
       });
   }
 
@@ -406,7 +406,7 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
 
   /**
    * Prepares image objects for insertion into the canvas while preserving
-   * the standard object-first flow (`new UpdrawImage(...); addObject(image)`).
+   * the standard object-first flow (`new UpmadeImage(...); addObject(image)`).
    *
    * Behavior:
    * - If `assetId` is already set, no-op.
@@ -485,22 +485,22 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
   }
 
   /**
-   * Creates an UpdrawImage from a URL, handling image loading and dimension calculation.
+   * Creates an UpmadeImage from a URL, handling image loading and dimension calculation.
    * Loads the image, calculates scaled dimensions respecting maxWidth/maxHeight constraints,
-   * and returns a fully configured UpdrawImage instance.
+   * and returns a fully configured UpmadeImage instance.
    *
    * Intended for legacy / data-URL code paths only. New callers should
    * upload through the asset resolver and construct the image from the
    * resulting asset descriptor.
    * @param src - The image URL or data URI to load.
-   * @param config - Optional partial configuration to pass to the UpdrawImage constructor.
-   * @returns A promise resolving to a fully configured UpdrawImage with correct dimensions.
+   * @param config - Optional partial configuration to pass to the UpmadeImage constructor.
+   * @returns A promise resolving to a fully configured UpmadeImage with correct dimensions.
    */
-  static fromUrl(src: string, config?: Partial<UpdrawImage>): Promise<UpdrawImage> {
+  static fromUrl(src: string, config?: Partial<UpmadeImage>): Promise<UpmadeImage> {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
-        const image = new UpdrawImage({ ...config, src });
+        const image = new UpmadeImage({ ...config, src });
         const { scaledWidth, scaledHeight } = image.calculateScaledDimensions(img);
         image.width = scaledWidth;
         image.height = scaledHeight;
@@ -512,15 +512,15 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
   }
 
   /**
-   * Creates a fully initialized UpdrawImage from a Blob.
+   * Creates a fully initialized UpmadeImage from a Blob.
    * Uploads the blob via the asset resolver and sets up dimensions/asset references.
    *
-   * @param core - The UpdrawCore instance providing the asset resolver and state.
+   * @param core - The UpmadeCore instance providing the asset resolver and state.
    * @param blob - The image Blob (e.g. from clipboard or file picker).
    * @param config - Optional configuration to merge into the new image.
-   * @returns A promise resolving to a fully loaded UpdrawImage object.
+   * @returns A promise resolving to a fully loaded UpmadeImage object.
    */
-  static async fromBlob(core: UpdrawCore, blob: Blob, config?: Partial<UpdrawImage>): Promise<UpdrawImage> {
+  static async fromBlob(core: UpmadeCore, blob: Blob, config?: Partial<UpmadeImage>): Promise<UpmadeImage> {
     const objectUrl = URL.createObjectURL(blob);
     try {
       const dimensions = await new Promise<{ naturalWidth: number; naturalHeight: number }>((resolve, reject) => {
@@ -538,7 +538,7 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
         height: dimensions.naturalHeight,
       });
 
-      const image = UpdrawImage.create(core, config);
+      const image = UpmadeImage.create(core, config);
       image.assetId = asset.id;
       image.mimeType = asset.mimeType;
 
@@ -580,11 +580,11 @@ export class UpdrawImage extends UpdrawBaseObject<HTMLImageElement> {
     return { scaledWidth, scaledHeight };
   }
 
-  getSupportedExportFormats(): UpdrawObjectExportFormat[] {
+  getSupportedExportFormats(): UpmadeObjectExportFormat[] {
     return ['png'];
   }
 
-  async exportAs(format: UpdrawObjectExportFormat, context: UpdrawObjectExportContext): Promise<string | null> {
+  async exportAs(format: UpmadeObjectExportFormat, context: UpmadeObjectExportContext): Promise<string | null> {
     if (format !== 'png') {
       return null;
     }

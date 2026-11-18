@@ -9,8 +9,8 @@ import zlib from 'node:zlib';
 import { W, H } from './lib.mjs';
 import { renderArtwork, thumbnailSvg } from './painting.mjs';
 
-// The navbar logo (static/img/logo.svg, a single path drawn filled and outlined in the same colour), read at
-// runtime so thumbnails follow logo changes.
+// The navbar logo (static/img/logo.svg: one path of filled subpaths, plus an outline of its stroke-width when it has
+// one), read at runtime so thumbnails follow logo changes.
 const LOGO_SVG = fs.readFileSync(fileURLToPath(new URL('../../static/img/logo.svg', import.meta.url)), 'utf8');
 const LOGO_VIEWBOX = LOGO_SVG.match(/viewBox="([^"]+)"/)[1].trim().split(/\s+/).map(Number);
 const LOGO_PATH = LOGO_SVG.match(/<path\b[^>]*>/)[0];
@@ -69,8 +69,8 @@ function encodePng(w, h, rgba) {
   ]);
 }
 
-const SEED_KEY = 'updraw-thumbnail-seed';
-const LOGO_KEY = 'updraw-thumbnail-logo';
+const SEED_KEY = 'upmade-thumbnail-seed';
+const LOGO_KEY = 'upmade-thumbnail-logo';
 
 // Inserts tEXt chunks for the seed and the logo fingerprint right before IEND (tEXt is Latin-1, so values are
 // stored URI-encoded).
@@ -117,7 +117,7 @@ export function renderThumbnail(seed, outFile, { scale = 1 } = {}) {
   return outFile;
 }
 
-// Experiment: the artwork only shines through the shape of the Updraw logo (no label, no seed).
+// Experiment: the artwork only shines through the shape of the Upmade logo (no label, no seed).
 // `background` is a CSS color, 'transparent', or 'dim' (the artwork itself, darkened, around the logo).
 export const LOGO_MASK_BACKGROUNDS = { white: '#ffffff', dark: '#141a2b', dim: 'dim', transparent: 'transparent' };
 

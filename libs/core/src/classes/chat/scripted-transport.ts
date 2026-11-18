@@ -1,23 +1,23 @@
 import {
-  UPDRAW_CHAT_PROTOCOL_VERSION,
-  type UpdrawChatMessage,
-  type UpdrawChatPart,
-  type UpdrawChatRequest,
-  type UpdrawChatResponse,
-  type UpdrawChatStopReason,
-  type UpdrawChatStreamEvent,
-  type UpdrawChatToolCallPart,
-  type UpdrawChatTransport,
+  UPMADE_CHAT_PROTOCOL_VERSION,
+  type UpmadeChatMessage,
+  type UpmadeChatPart,
+  type UpmadeChatRequest,
+  type UpmadeChatResponse,
+  type UpmadeChatStopReason,
+  type UpmadeChatStreamEvent,
+  type UpmadeChatToolCallPart,
+  type UpmadeChatTransport,
 } from '../../interfaces/chat-session.interface';
 
 /** A tool call in a script; the ID is generated when left out. */
-export type UpdrawScriptedToolCall = { tool: string; input?: Record<string, unknown>; id?: string };
+export type UpmadeScriptedToolCall = { tool: string; input?: Record<string, unknown>; id?: string };
 
 /** One scripted answer: text, tool calls and parts in any mix. */
-export interface UpdrawScriptedAnswer {
+export interface UpmadeScriptedAnswer {
   text?: string;
-  toolCalls?: UpdrawScriptedToolCall[];
-  parts?: UpdrawChatPart[];
+  toolCalls?: UpmadeScriptedToolCall[];
+  parts?: UpmadeChatPart[];
   /** Overrides the transport's `delayMs` for this answer. */
   delayMs?: number;
 }
@@ -26,10 +26,10 @@ export interface UpdrawScriptedAnswer {
  * A scripted step: a text answer, an answer object, or a function of the request (e.g. to answer the ID of an
  * object created by an earlier tool call, found in the request's messages).
  */
-export type UpdrawScriptedStep = string | UpdrawScriptedAnswer | ((request: UpdrawChatRequest, index: number) => string | UpdrawScriptedAnswer);
+export type UpmadeScriptedStep = string | UpmadeScriptedAnswer | ((request: UpmadeChatRequest, index: number) => string | UpmadeScriptedAnswer);
 
 /** Options of `createScriptedTransport()`. */
-export interface UpdrawScriptedTransportOptions {
+export interface UpmadeScriptedTransportOptions {
   /** How long each answer takes, like a model thinking. Defaults to 0. */
   delayMs?: number;
   /**
@@ -47,14 +47,14 @@ export interface UpdrawScriptedTransportOptions {
  * answered with the last step. With a function, the script decides per request.
  */
 export function createScriptedTransport(
-  steps: UpdrawScriptedStep[] | ((request: UpdrawChatRequest, index: number) => string | UpdrawScriptedAnswer),
-  options: UpdrawScriptedTransportOptions = {},
-): UpdrawChatTransport {
+  steps: UpmadeScriptedStep[] | ((request: UpmadeChatRequest, index: number) => string | UpmadeScriptedAnswer),
+  options: UpmadeScriptedTransportOptions = {},
+): UpmadeChatTransport {
   let index = 0;
   let callCount = 0;
   return async (request, { signal }) => {
     const current = index++;
-    let step: UpdrawScriptedStep | undefined;
+    let step: UpmadeScriptedStep | undefined;
     if (typeof steps === 'function') {
       step = steps;
     } else {
@@ -64,24 +64,24 @@ export function createScriptedTransport(
       step = steps[Math.min(current, steps.length - 1)];
     }
     const answer = typeof step === 'function' ? step(request, current) : step;
-    const resolved: UpdrawScriptedAnswer = typeof answer === 'string' ? { text: answer } : answer;
+    const resolved: UpmadeScriptedAnswer = typeof answer === 'string' ? { text: answer } : answer;
     await delay(resolved.delayMs ?? options.delayMs ?? 0, signal);
 
-    const calls = (resolved.toolCalls ?? []).map<UpdrawChatToolCallPart>(call => ({
+    const calls = (resolved.toolCalls ?? []).map<UpmadeChatToolCallPart>(call => ({
       type: 'tool-call',
       id: call.id ?? `scripted-${++callCount}`,
       name: call.tool,
       input: call.input ?? {},
     }));
     const extra = resolved.parts ?? [];
-    const parts: UpdrawChatPart[] = [...(resolved.text ? [{ type: 'text' as const, text: resolved.text }] : []), ...calls, ...extra];
-    const stopReason: UpdrawChatStopReason = parts.some(part => part.type === 'tool-call') ? 'tool-calls' : 'end';
+    const parts: UpmadeChatPart[] = [...(resolved.text ? [{ type: 'text' as const, text: resolved.text }] : []), ...calls, ...extra];
+    const stopReason: UpmadeChatStopReason = parts.some(part => part.type === 'tool-call') ? 'tool-calls' : 'end';
     if (options.stream) {
       const { chunkSize = 16, chunkDelayMs = 0 } = options.stream === true ? {} : options.stream;
       return streamAnswer(resolved.text ?? '', calls, extra, stopReason, Math.max(1, Math.floor(chunkSize)), chunkDelayMs, signal);
     }
-    const message: UpdrawChatMessage = { role: 'assistant', parts };
-    const response: UpdrawChatResponse = { version: UPDRAW_CHAT_PROTOCOL_VERSION, message, stopReason };
+    const message: UpmadeChatMessage = { role: 'assistant', parts };
+    const response: UpmadeChatResponse = { version: UPMADE_CHAT_PROTOCOL_VERSION, message, stopReason };
     return response;
   };
 }
@@ -89,13 +89,13 @@ export function createScriptedTransport(
 /** One scripted answer as a stream of events, like a model writing it. */
 async function* streamAnswer(
   text: string,
-  calls: UpdrawChatToolCallPart[],
-  extra: UpdrawChatPart[],
-  stopReason: UpdrawChatStopReason,
+  calls: UpmadeChatToolCallPart[],
+  extra: UpmadeChatPart[],
+  stopReason: UpmadeChatStopReason,
   chunkSize: number,
   chunkDelayMs: number,
   signal: AbortSignal,
-): AsyncGenerator<UpdrawChatStreamEvent> {
+): AsyncGenerator<UpmadeChatStreamEvent> {
   for (const chunk of chunks(text, chunkSize)) {
     await delay(chunkDelayMs, signal);
     yield { type: 'text-delta', text: chunk };

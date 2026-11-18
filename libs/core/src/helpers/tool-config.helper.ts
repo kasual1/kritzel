@@ -1,6 +1,6 @@
 import { ConfigurableTool, ToolConfigDefinition } from '../interfaces/tool-config.interface';
 
-export class UpdrawToolConfigHelper {
+export class UpmadeToolConfigHelper {
   static getToolConfig(tool: ConfigurableTool): ToolConfigDefinition | null {
     switch (tool?.toolType) {
       case 'selection':

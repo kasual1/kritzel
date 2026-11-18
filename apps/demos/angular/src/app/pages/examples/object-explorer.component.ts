@@ -10,15 +10,15 @@ import {
 import { CommonModule } from '@angular/common';
 import {
   EditorIsReadyEvent,
-  UpdrawBaseObject,
-  UpdrawEditor,
-  UpdrawSyncConfig,
-  UpdrawWorkspace,
+  UpmadeBaseObject,
+  UpmadeEditor,
+  UpmadeSyncConfig,
+  UpmadeWorkspace,
   ShapeType,
   ObjectsAddedEvent,
   ObjectsRemovedEvent,
   ObjectsUpdatedEvent,
-} from '@updraw/angular-editor';
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
@@ -26,12 +26,12 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
 
 @Component({
   selector: 'app-object-explorer',
-  imports: [CommonModule, UpdrawEditor, InfoPanelComponent],
+  imports: [CommonModule, UpmadeEditor, InfoPanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="content-shell">
       <div class="editor-container">
-        <updraw-editor
+        <upmade-editor
           editorId="object-explorer"
           [theme]="'light'"
           [themes]="themes"
@@ -45,7 +45,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
           (objectsAdded)="onObjectsAdded($event)"
           (objectsRemoved)="onObjectsRemoved($event)"
           (objectsUpdated)="onObjectsUpdated($event)"
-        ></updraw-editor>
+        ></upmade-editor>
       </div>
 
       <app-info-panel [showOnMobile]="true">
@@ -72,7 +72,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
                 (click)="toggleTypeFilter(type)"
                 class="filter-chip"
               >
-                {{ type.replace('Updraw', '') }}
+                {{ type.replace('Upmade', '') }}
               </button>
             }
           </div>
@@ -102,7 +102,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
               [class.hidden-obj]="!obj.isVisible"
             >
               <span class="node-arrow" (click)="toggleExpand($event, obj)">
-                @if (obj.__class__ === 'UpdrawGroup') {
+                @if (obj.__class__ === 'UpmadeGroup') {
                   {{ isExpanded(obj.id) ? '▼' : '▶' }}
                 } @else {
                   •
@@ -125,7 +125,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
               </div>
             </div>
 
-            @if (obj.__class__ === 'UpdrawGroup' && isExpanded(obj.id)) {
+            @if (obj.__class__ === 'UpmadeGroup' && isExpanded(obj.id)) {
               @for (child of getGroupChildren(obj); track child.id) {
                 <ng-container
                   *ngTemplateOutlet="nodeTemplate; context: { obj: child, depth: depth + 1 }"
@@ -142,7 +142,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
             (pointerup)="restoreInspectorSelection()"
             (pointercancel)="restoreInspectorSelection()"
           >
-            <h4>Inspector: {{ selObj.__class__.replace('Updraw', '') }}</h4>
+            <h4>Inspector: {{ selObj.__class__.replace('Upmade', '') }}</h4>
 
             <div class="inspector-field">
               <label>ID</label>
@@ -165,7 +165,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
               </div>
             </div>
 
-            @if (selObj.__class__ === 'UpdrawText') {
+            @if (selObj.__class__ === 'UpmadeText') {
               <div class="inspector-field">
                 <label>Text Content</label>
                 <input
@@ -176,7 +176,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
               </div>
             }
 
-            @if (selObj.__class__ === 'UpdrawShape') {
+            @if (selObj.__class__ === 'UpmadeShape') {
               <div class="inspector-field">
                 <label>Size W / H</label>
                 <div class="coords-row">
@@ -203,7 +203,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
               </div>
             }
 
-            @if (selObj.__class__ === 'UpdrawPath') {
+            @if (selObj.__class__ === 'UpmadePath') {
               <div class="inspector-field">
                 <label>Fill Color</label>
                 <input
@@ -261,7 +261,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
       min-width: 0;
     }
 
-    updraw-editor {
+    upmade-editor {
       display: block;
       width: 100%;
       height: 100%;
@@ -587,25 +587,25 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
   `,
 })
 export class ObjectExplorerComponent implements OnDestroy {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
-  @ViewChild(UpdrawEditor, { read: ElementRef }) editorHostRef!: ElementRef<HTMLElement>;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
+  @ViewChild(UpmadeEditor, { read: ElementRef }) editorHostRef!: ElementRef<HTMLElement>;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
-  syncConfig: UpdrawSyncConfig = {
+  syncConfig: UpmadeSyncConfig = {
     providers: [],
   };
 
-  allObjects = signal<UpdrawBaseObject[]>([]);
+  allObjects = signal<UpmadeBaseObject[]>([]);
   expandedGroups = signal<Set<string>>(new Set<string>());
-  selectedObject = signal<UpdrawBaseObject | null>(null);
-  private inspectorInteractionObject: UpdrawBaseObject | null = null;
+  selectedObject = signal<UpmadeBaseObject | null>(null);
+  private inspectorInteractionObject: UpmadeBaseObject | null = null;
 
   searchQuery = signal<string>('');
-  availableTypes = ['UpdrawShape', 'UpdrawText', 'UpdrawLine', 'UpdrawPath'];
-  selectedTypes = signal<Set<string>>(new Set([...this.availableTypes, 'UpdrawGroup']));
+  availableTypes = ['UpmadeShape', 'UpmadeText', 'UpmadeLine', 'UpmadePath'];
+  selectedTypes = signal<Set<string>>(new Set([...this.availableTypes, 'UpmadeGroup']));
 
   private selectionListenerAttached = false;
   private readonly handleSelectionChangeBound = () => {
@@ -615,7 +615,7 @@ export class ObjectExplorerComponent implements OnDestroy {
   childIds = computed(() => {
     const ids = new Set<string>();
     this.allObjects().forEach((obj) => {
-      if (obj.__class__ === 'UpdrawGroup') {
+      if (obj.__class__ === 'UpmadeGroup') {
         const group = obj as any;
         if (group.childIds) {
           group.childIds.forEach((id: string) => ids.add(id));
@@ -709,9 +709,9 @@ export class ObjectExplorerComponent implements OnDestroy {
     return this.expandedGroups().has(groupId);
   }
 
-  toggleExpand(event: Event, obj: UpdrawBaseObject) {
+  toggleExpand(event: Event, obj: UpmadeBaseObject) {
     event.stopPropagation();
-    if (obj.__class__ !== 'UpdrawGroup') {
+    if (obj.__class__ !== 'UpmadeGroup') {
       return;
     }
     this.expandedGroups.update((groups) => {
@@ -725,7 +725,7 @@ export class ObjectExplorerComponent implements OnDestroy {
     });
   }
 
-  getGroupChildren(groupObj: UpdrawBaseObject): UpdrawBaseObject[] {
+  getGroupChildren(groupObj: UpmadeBaseObject): UpmadeBaseObject[] {
     const group = groupObj as any;
     if (!group.childIds) {
       return [];
@@ -733,11 +733,11 @@ export class ObjectExplorerComponent implements OnDestroy {
     return this.allObjects().filter((o) => group.childIds.includes(o.id));
   }
 
-  isNodeVisible(obj: UpdrawBaseObject): boolean {
-    return this.matchesFilter(obj) || (obj.__class__ === 'UpdrawGroup' && this.hasMatchingDescendant(obj));
+  isNodeVisible(obj: UpmadeBaseObject): boolean {
+    return this.matchesFilter(obj) || (obj.__class__ === 'UpmadeGroup' && this.hasMatchingDescendant(obj));
   }
 
-  matchesFilter(obj: UpdrawBaseObject): boolean {
+  matchesFilter(obj: UpmadeBaseObject): boolean {
     const types = this.selectedTypes();
     if (!types.has(obj.__class__)) {
       return false;
@@ -755,14 +755,14 @@ export class ObjectExplorerComponent implements OnDestroy {
       return true;
     }
 
-    if (obj.__class__ === 'UpdrawText') {
+    if (obj.__class__ === 'UpmadeText') {
       const txt = (obj as any).text || '';
       if (txt.toLowerCase().includes(query)) {
         return true;
       }
     }
 
-    if (obj.__class__ === 'UpdrawShape') {
+    if (obj.__class__ === 'UpmadeShape') {
       const shapeType = (obj as any).shapeType || '';
       if (shapeType.toLowerCase().includes(query)) {
         return true;
@@ -772,70 +772,70 @@ export class ObjectExplorerComponent implements OnDestroy {
     return false;
   }
 
-  hasMatchingDescendant(groupObj: UpdrawBaseObject): boolean {
+  hasMatchingDescendant(groupObj: UpmadeBaseObject): boolean {
     const children = this.getGroupChildren(groupObj);
     for (const child of children) {
       if (this.matchesFilter(child)) {
         return true;
       }
-      if (child.__class__ === 'UpdrawGroup' && this.hasMatchingDescendant(child)) {
+      if (child.__class__ === 'UpmadeGroup' && this.hasMatchingDescendant(child)) {
         return true;
       }
     }
     return false;
   }
 
-  getDisplayName(obj: UpdrawBaseObject): string {
+  getDisplayName(obj: UpmadeBaseObject): string {
     switch (obj.__class__) {
-      case 'UpdrawGroup': {
+      case 'UpmadeGroup': {
         const count = (obj as any).childIds?.length ?? 0;
         return `Group (${count} items)`;
       }
-      case 'UpdrawShape': {
+      case 'UpmadeShape': {
         const shape = obj as any;
         return shape.shapeType === ShapeType.Ellipse ? 'Ellipse' : 'Rectangle';
       }
-      case 'UpdrawText': {
+      case 'UpmadeText': {
         const txt = (obj as any).text || 'Blank Text';
         return `Text "${txt.length > 15 ? `${txt.slice(0, 15)}...` : txt}"`;
       }
-      case 'UpdrawLine':
+      case 'UpmadeLine':
         return 'Line';
-      case 'UpdrawPath':
+      case 'UpmadePath':
         return 'Brush Path';
       default:
-        return obj.__class__.replace('Updraw', '');
+        return obj.__class__.replace('Upmade', '');
     }
   }
 
-  async selectTreeObject(obj: UpdrawBaseObject) {
+  async selectTreeObject(obj: UpmadeBaseObject) {
     this.selectedObject.set(obj);
     await this.editor.panToObject(obj);
     await this.editor.selectObjects([obj]);
   }
 
-  async deleteTreeObject(event: Event, obj: UpdrawBaseObject) {
+  async deleteTreeObject(event: Event, obj: UpmadeBaseObject) {
     event.stopPropagation();
     await this.editor.removeObject(obj);
   }
 
-  getTextContent(obj: UpdrawBaseObject): string {
+  getTextContent(obj: UpmadeBaseObject): string {
     return (obj as any).text ?? '';
   }
 
-  getShapeFillColor(obj: UpdrawBaseObject): string {
+  getShapeFillColor(obj: UpmadeBaseObject): string {
     return this.resolveThemeColor((obj as any).fillColor, '#ffffff');
   }
 
-  getPathFillColor(obj: UpdrawBaseObject): string {
+  getPathFillColor(obj: UpmadeBaseObject): string {
     return this.resolveThemeColor((obj as any).fill, '#000000');
   }
 
-  getPathStrokeColor(obj: UpdrawBaseObject): string {
+  getPathStrokeColor(obj: UpmadeBaseObject): string {
     return this.resolveThemeColor((obj as any).stroke, '#000000');
   }
 
-  getOpacityPercent(obj: UpdrawBaseObject): number {
+  getOpacityPercent(obj: UpmadeBaseObject): number {
     return Math.round((obj.opacity ?? 1) * 100);
   }
 

@@ -1,9 +1,9 @@
-import { UpdrawTheme } from '../interfaces/theme.interface';
+import { UpmadeTheme } from '../interfaces/theme.interface';
 
 /**
  * Light theme preset - the default theme
  */
-export const lightTheme: UpdrawTheme = {
+export const lightTheme: UpmadeTheme = {
   name: 'light',
 
   global: {
@@ -448,7 +448,7 @@ export const lightTheme: UpdrawTheme = {
     buttonPressedBackgroundColor: 'rgba(0, 0, 0, 0.1)',
     buttonSize: '22px',
     focusRing: '2px solid #007aff',
-    fontFamily: 'var(--updraw-global-font-family, sans-serif)',
+    fontFamily: 'var(--upmade-global-font-family, sans-serif)',
     fontSize: '12px',
     fontWeight: '400',
     gap: '4px',

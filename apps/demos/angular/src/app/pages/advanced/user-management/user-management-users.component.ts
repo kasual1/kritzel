@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { IUpdrawUser, UpdrawEditor, UpdrawWorkspace } from '@updraw/angular-editor';
+import { IUpmadeUser, UpmadeEditor, UpmadeWorkspace } from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
-const currentUser: IUpdrawUser = {
+const currentUser: IUpmadeUser = {
   id: 'user-current-1',
   displayName: 'Ada Lovelace',
   email: 'ada@example.com',
@@ -13,7 +13,7 @@ const currentUser: IUpdrawUser = {
   isGuest: false,
 };
 
-const collaborators: IUpdrawUser[] = [
+const collaborators: IUpmadeUser[] = [
   {
     id: 'user-collaborator-1',
     displayName: 'Grace Hopper',
@@ -42,10 +42,10 @@ const collaborators: IUpdrawUser[] = [
 
 @Component({
   selector: 'app-user-management-users',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       editorId="user-management-users"
       [user]="user()"
       [activeUsers]="activeUsers()"
@@ -56,7 +56,7 @@ const collaborators: IUpdrawUser[] = [
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [
     `
@@ -92,7 +92,7 @@ const collaborators: IUpdrawUser[] = [
       .toolbar-note button:first-of-type {
         margin-left: auto;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
         min-height: 0;
       }
@@ -102,11 +102,11 @@ const collaborators: IUpdrawUser[] = [
 export class UserManagementUsersComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
-  user = signal<IUpdrawUser | undefined>(currentUser);
+  user = signal<IUpmadeUser | undefined>(currentUser);
 
-  activeUsers = signal<IUpdrawUser[]>(collaborators);
+  activeUsers = signal<IUpmadeUser[]>(collaborators);
 
   visibleUserCount = computed(() => this.activeUsers().length + (this.user() ? 1 : 0));
 

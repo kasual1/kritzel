@@ -1,6 +1,6 @@
-import { UpdrawDynamicObject } from '@updraw/react-editor';
+import { UpmadeDynamicObject } from '@upmade/react-editor';
 
-export function createWelcomeObject(): UpdrawDynamicObject {
+export function createWelcomeObject(): UpmadeDynamicObject {
   const element = document.createElement('div');
   element.style.width = '100%';
   element.style.height = '100%';
@@ -23,11 +23,13 @@ export function createWelcomeObject(): UpdrawDynamicObject {
     path.parentNode!.appendChild(nextPath);
   }
 
-  return new UpdrawDynamicObject({
+  return new UpmadeDynamicObject({
     element,
     width: 480,
     height: 480 * 72 / 253,
     translateX: 0,
     translateY: 0,
+    // 'none' overrides the theme's object shadow, so the drawing sits flat on the canvas.
+    boxShadow: 'none',
   });
 }

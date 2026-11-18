@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, computed, signal } from '@angular/core';
 import {
-  UpdrawAgent,
-  UpdrawBaseObject,
-  UpdrawChatBoxChip,
-  UpdrawChatMessage,
-  UpdrawChatSession,
-  UpdrawEditor,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeAgent,
+  UpmadeBaseObject,
+  UpmadeChatBoxChip,
+  UpmadeChatMessage,
+  UpmadeChatSession,
+  UpmadeEditor,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -19,7 +19,7 @@ type Mode = 'user' | 'agent';
 const SYSTEM = 'You draw on a whiteboard. Keep answers short.';
 
 /** One line of the transcript: who wrote it and what. */
-function describe(message: UpdrawChatMessage): string {
+function describe(message: UpmadeChatMessage): string {
   return message.parts
     .map(part => {
       if (part.type === 'text') return part.text;
@@ -32,7 +32,7 @@ function describe(message: UpdrawChatMessage): string {
 
 @Component({
   selector: 'app-chat-sessions-modes',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -47,7 +47,7 @@ function describe(message: UpdrawChatMessage): string {
     </app-toolbar>
     <div class="content">
       <div class="editor-wrap">
-        <updraw-editor
+        <upmade-editor
           editorId="chat-sessions-modes"
           [theme]="'light'"
           [themes]="themes"
@@ -60,7 +60,7 @@ function describe(message: UpdrawChatMessage): string {
           [isWorkspaceManagerVisible]="false"
           (objectsSelectionChange)="onSelectionChange($event.detail)"
           (chatChipRemove)="onChipRemove($event.detail)"
-        ></updraw-editor>
+        ></upmade-editor>
       </div>
       <ol class="chat-transcript" aria-label="Transcript">
         @for (message of messages(); track $index) {
@@ -107,17 +107,17 @@ export class ChatSessionsModesComponent implements OnDestroy {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
   user = { id: 'demo-user', name: 'Demo User' };
 
   // One session per mode, created once: switching the mode binds the other one.
-  private readonly sessions: Record<Mode, UpdrawChatSession> = (() => {
+  private readonly sessions: Record<Mode, UpmadeChatSession> = (() => {
     const transport = createDemoTransport();
-    const agent = new UpdrawAgent({ id: 'assistant', name: 'Assistant', color: '#7C3AED' });
+    const agent = new UpmadeAgent({ id: 'assistant', name: 'Assistant', color: '#7C3AED' });
     return {
-      user: new UpdrawChatSession({ transport, system: SYSTEM }),
-      agent: new UpdrawChatSession({ transport, system: SYSTEM, agent }),
+      user: new UpmadeChatSession({ transport, system: SYSTEM }),
+      agent: new UpmadeChatSession({ transport, system: SYSTEM, agent }),
     };
   })();
 
@@ -125,9 +125,9 @@ export class ChatSessionsModesComponent implements OnDestroy {
 
   session = computed(() => this.sessions[this.mode()]);
 
-  chips = signal<UpdrawChatBoxChip[]>([]);
+  chips = signal<UpmadeChatBoxChip[]>([]);
 
-  messages = signal<readonly UpdrawChatMessage[]>([]);
+  messages = signal<readonly UpmadeChatMessage[]>([]);
 
   private unsubscribe: (() => void) | null = null;
 
@@ -141,18 +141,18 @@ export class ChatSessionsModesComponent implements OnDestroy {
     this.subscribe();
   }
 
-  onSelectionChange(objects: UpdrawBaseObject[]): void {
+  onSelectionChange(objects: UpmadeBaseObject[]): void {
     this.chips.set(
       objects.map(object => ({
         id: object.id,
         objectId: object.id,
-        label: object.name || object.__class__.replace('Updraw', ''),
+        label: object.name || object.__class__.replace('Upmade', ''),
         icon: 'cursor',
       })),
     );
   }
 
-  onChipRemove(chip: UpdrawChatBoxChip): void {
+  onChipRemove(chip: UpmadeChatBoxChip): void {
     this.chips.update(current => current.filter(item => item.id !== chip.id));
   }
 

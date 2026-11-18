@@ -1,24 +1,24 @@
-import type { UpdrawIframeContent } from '@updraw/vue-editor'
+import type { UpmadeIframeContent } from '@upmade/vue-editor'
 
-export const iframeElementsContent: UpdrawIframeContent = {
+export const iframeElementsContent: UpmadeIframeContent = {
   html: `
     <main class="card">
       <header>
-        <h2 data-updraw-id="title">Team plan</h2>
-        <a data-updraw-id="details-link" href="#details">Details</a>
+        <h2 data-upmade-id="title">Team plan</h2>
+        <a data-upmade-id="details-link" href="#details">Details</a>
       </header>
       <div class="periods" role="group" aria-label="Billing period">
-        <button data-updraw-id="monthly" class="period active" type="button">Monthly</button>
-        <button data-updraw-id="yearly" class="period" type="button">Yearly</button>
+        <button data-upmade-id="monthly" class="period active" type="button">Monthly</button>
+        <button data-upmade-id="yearly" class="period" type="button">Yearly</button>
       </div>
       <div class="seats">
         <span class="label">Seats</span>
-        <button data-updraw-id="seats-decrease" class="step" type="button" aria-label="Remove a seat">−</button>
-        <output data-updraw-id="seats-count">3</output>
-        <button data-updraw-id="seats-increase" class="step" type="button" aria-label="Add a seat">+</button>
+        <button data-upmade-id="seats-decrease" class="step" type="button" aria-label="Remove a seat">−</button>
+        <output data-upmade-id="seats-count">3</output>
+        <button data-upmade-id="seats-increase" class="step" type="button" aria-label="Add a seat">+</button>
       </div>
-      <p class="total"><span class="label">Total</span> <strong data-updraw-id="total">$36 / month</strong></p>
-      <button data-updraw-id="checkout" class="checkout" type="button">Checkout</button>
+      <p class="total"><span class="label">Total</span> <strong data-upmade-id="total">$36 / month</strong></p>
+      <button data-upmade-id="checkout" class="checkout" type="button">Checkout</button>
     </main>
   `,
   css: `
@@ -39,7 +39,7 @@ export const iframeElementsContent: UpdrawIframeContent = {
   `,
   script: `
     const plan = { seats: 3, yearly: false };
-    const $ = id => document.querySelector('[data-updraw-id="' + id + '"]');
+    const $ = id => document.querySelector('[data-upmade-id="' + id + '"]');
     const render = () => {
       $('seats-count').textContent = String(plan.seats);
       $('total').textContent = plan.yearly ? '$' + plan.seats * 120 + ' / year' : '$' + plan.seats * 12 + ' / month';

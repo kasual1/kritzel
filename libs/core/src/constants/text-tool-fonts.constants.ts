@@ -1,6 +1,6 @@
-import { UpdrawFontRegistration } from '../interfaces/font.interface';
+import { UpmadeFontRegistration } from '../interfaces/font.interface';
 
-export const DEFAULT_TEXT_TOOL_AVAILABLE_FONTS: UpdrawFontRegistration[] = [
+export const DEFAULT_TEXT_TOOL_AVAILABLE_FONTS: UpmadeFontRegistration[] = [
   'Arial',
   'Verdana',
   'Helvetica',
@@ -14,8 +14,8 @@ export const DEFAULT_TEXT_TOOL_AVAILABLE_FONTS: UpdrawFontRegistration[] = [
 ];
 
 export const resolveTextToolAvailableFonts = (
-  availableFonts?: UpdrawFontRegistration[],
-): UpdrawFontRegistration[] => {
+  availableFonts?: UpmadeFontRegistration[],
+): UpmadeFontRegistration[] => {
   if (!availableFonts || availableFonts.length === 0) {
     return [...DEFAULT_TEXT_TOOL_AVAILABLE_FONTS];
   }

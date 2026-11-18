@@ -1,6 +1,6 @@
-import { UpdrawImageTool } from './image-tool.class';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawImage } from '../objects/image.class';
+import { UpmadeImageTool } from './image-tool.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeImage } from '../objects/image.class';
 
 jest.mock('../core/core.class');
 jest.mock('../objects/image.class');
@@ -11,8 +11,8 @@ jest.mock('browser-image-compression', () => ({
   default: (...args: any[]) => mockImageCompression(...args),
 }));
 
-describe('UpdrawImageTool', () => {
-  let tool: UpdrawImageTool;
+describe('UpmadeImageTool', () => {
+  let tool: UpmadeImageTool;
   let mockCore: any;
   let mockFileInput: any;
   let mockSelectionTool: any;
@@ -48,7 +48,7 @@ describe('UpdrawImageTool', () => {
       updatePosition: jest.fn(),
     };
 
-    (UpdrawImage.fromBlob as jest.Mock).mockResolvedValue(mockImage);
+    (UpmadeImage.fromBlob as jest.Mock).mockResolvedValue(mockImage);
 
     mockCore = {
       store: {
@@ -66,9 +66,9 @@ describe('UpdrawImageTool', () => {
         emitObjectsUpdated: jest.fn(),
       },
       toolRegistry: { getTool: jest.fn().mockReturnValue(mockSelectionTool) },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    tool = new UpdrawImageTool(mockCore);
+    tool = new UpmadeImageTool(mockCore);
   });
 
   afterEach(() => {
@@ -231,7 +231,7 @@ describe('UpdrawImageTool', () => {
       handleFileSelect = changeCall[1];
     });
 
-    it('should pass compressed files to UpdrawImage.fromBlob with core', async () => {
+    it('should pass compressed files to UpmadeImage.fromBlob with core', async () => {
       const compressedFile = new File(['compressed'], 'compressed.jpg', { type: 'image/png' });
       mockImageCompression.mockResolvedValue(compressedFile);
       const mockFile = new File(['image-data'], 'test.png', { type: 'image/png' });
@@ -241,10 +241,10 @@ describe('UpdrawImageTool', () => {
       await new Promise(process.nextTick);
       await new Promise(process.nextTick);
 
-      expect(UpdrawImage.fromBlob).toHaveBeenCalledWith(mockCore, compressedFile);
+      expect(UpmadeImage.fromBlob).toHaveBeenCalledWith(mockCore, compressedFile);
     });
 
-    it('should pass GIF files to UpdrawImage.fromBlob without compression', async () => {
+    it('should pass GIF files to UpmadeImage.fromBlob without compression', async () => {
       const gifFile = new File(['gif-data'], 'animated.gif', { type: 'image/gif' });
       const event = { target: { files: [gifFile] } } as unknown as Event;
 
@@ -253,7 +253,7 @@ describe('UpdrawImageTool', () => {
       await new Promise(process.nextTick);
 
       expect(mockImageCompression).not.toHaveBeenCalled();
-      expect(UpdrawImage.fromBlob).toHaveBeenCalledWith(mockCore, gifFile);
+      expect(UpmadeImage.fromBlob).toHaveBeenCalledWith(mockCore, gifFile);
     });
 
     it('should preserve GIF files identified by extension when the MIME type is empty', async () => {
@@ -265,7 +265,7 @@ describe('UpdrawImageTool', () => {
       await new Promise(process.nextTick);
 
       expect(mockImageCompression).not.toHaveBeenCalled();
-      expect(UpdrawImage.fromBlob).toHaveBeenCalledWith(mockCore, gifFile);
+      expect(UpmadeImage.fromBlob).toHaveBeenCalledWith(mockCore, gifFile);
     });
   });
 
@@ -356,7 +356,7 @@ describe('UpdrawImageTool', () => {
       handleFileSelect = changeCall[1];
 
       createdImages = [];
-      (UpdrawImage.fromBlob as jest.Mock).mockImplementation(() => {
+      (UpmadeImage.fromBlob as jest.Mock).mockImplementation(() => {
         const img: any = {
           id: `img-${createdImages.length + 1}`,
           src: '',
@@ -395,10 +395,10 @@ describe('UpdrawImageTool', () => {
       await flushAsync();
     };
 
-    it('should create one UpdrawImage per selected file', async () => {
+    it('should create one UpmadeImage per selected file', async () => {
       await triggerMultiFileFlow(3);
 
-      expect(UpdrawImage.fromBlob).toHaveBeenCalledTimes(3);
+      expect(UpmadeImage.fromBlob).toHaveBeenCalledTimes(3);
       expect(mockCore.addObject).toHaveBeenCalledTimes(3);
     });
 

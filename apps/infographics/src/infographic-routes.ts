@@ -5,6 +5,7 @@ import { AgenticCanvasCursorsInfographic } from "./infographics/agentic-canvas-c
 import { AgenticCanvasRectangleInfographic } from "./infographics/agentic-canvas-rectangle/AgenticCanvasRectangleInfographic";
 import { GenerativeUiInfographic } from "./infographics/generative-ui/GenerativeUiInfographic";
 import { OpenSourceInfographic } from "./infographics/open-source/OpenSourceInfographic";
+import { RebrandInfographic } from "./infographics/rebrand/RebrandInfographic";
 import { WelcomeInfographic } from "./infographics/welcome/WelcomeInfographic";
 
 export interface InfographicRoute {
@@ -25,4 +26,5 @@ export const infographicRoutes: InfographicRoute[] = [
   { path: "/agentic-canvas-cursors", title: "Agentic Canvas Cursors", component: AgenticCanvasCursorsInfographic },
   { path: "/agentic-canvas-rectangle", title: "Agentic Canvas Rectangle", component: AgenticCanvasRectangleInfographic },
   { path: "/generative-ui", title: "Generative UI", component: GenerativeUiInfographic },
+  { path: "/rebrand", title: "Kritzel is now Upmade", component: RebrandInfographic },
 ];

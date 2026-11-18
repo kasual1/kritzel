@@ -11,7 +11,6 @@ import {
   PerformanceSection,
   Wordmark,
 } from "@site/src/components/Landing/Sections";
-import RenameBanner from "@site/src/components/RenameBanner";
 import styles from "@site/src/components/Landing/styles.module.css";
 import {
   frameworkPaths,
@@ -19,9 +18,9 @@ import {
   subscribeToPreferredFramework,
 } from "@site/src/utils/frameworkPreference";
 
-const TITLE = "Updraw - Infinite Canvas Library for React, Vue & Angular";
+const TITLE = "Upmade - Infinite Canvas Library for React, Vue & Angular";
 const DESCRIPTION =
-  "Updraw helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools. Fully open-source and easy to integrate into React, Vue & Angular.";
+  "Upmade helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools. Fully open-source and easy to integrate into React, Vue & Angular.";
 
 function usePreferredDocsPath() {
   const [docsPath, setDocsPath] = useState(frameworkPaths.react);
@@ -47,7 +46,6 @@ export default function Home(): ReactNode {
           <meta name="twitter:title" content={TITLE} />
         </Head>
         <main className={styles.page}>
-          <RenameBanner />
           <div className={styles.heroArea}>
             <Hero docsPath={docsPath} />
             <div aria-hidden="true" className={styles.heroSpacer} />

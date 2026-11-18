@@ -152,7 +152,7 @@ test.describe('Object loading state', () => {
     await editorPage.group();
     await editorPage.clearSelection();
 
-    const group = (await editorPage.getAllObjects<Record<string, unknown>>()).find(object => object.__class__ === 'UpdrawGroup');
+    const group = (await editorPage.getAllObjects<Record<string, unknown>>()).find(object => object.__class__ === 'UpmadeGroup');
     expect(group).toBeDefined();
 
     await editorPage.setObjectLoading(group!, true);

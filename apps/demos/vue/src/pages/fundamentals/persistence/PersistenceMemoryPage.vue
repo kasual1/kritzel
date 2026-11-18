@@ -2,11 +2,11 @@
 import { ref, shallowRef } from 'vue'
 import {
   InMemorySyncProvider,
-  UpdrawEditor,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeWorkspace,
   type ActiveWorkspaceChangeEvent,
-  type UpdrawSyncConfig,
-} from '@updraw/vue-editor'
+  type UpmadeSyncConfig,
+} from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -17,21 +17,21 @@ import {
 import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
-const syncConfig: UpdrawSyncConfig = {
+const syncConfig: UpmadeSyncConfig = {
   providers: [InMemorySyncProvider],
 }
-const workspaces = shallowRef<UpdrawWorkspace[]>([
-  new UpdrawWorkspace({
+const workspaces = shallowRef<UpmadeWorkspace[]>([
+  new UpmadeWorkspace({
     id: 'board-1',
     name: 'Board 1',
     objects: createSeedObjects(),
   }),
-  new UpdrawWorkspace({
+  new UpmadeWorkspace({
     id: 'board-2',
     name: 'Board 2',
     objects: createSeedObjects(),
   }),
-  new UpdrawWorkspace({
+  new UpmadeWorkspace({
     id: 'board-3',
     name: 'Board 3',
     objects: createSeedObjects(),
@@ -43,7 +43,7 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
   activeWorkspaceId.value = event.detail.id
 }
 
-function switchTo(workspace: UpdrawWorkspace) {
+function switchTo(workspace: UpmadeWorkspace) {
   activeWorkspaceId.value = workspace.id
 }
 </script>
@@ -66,7 +66,7 @@ function switchTo(workspace: UpdrawWorkspace) {
         {{ workspace.name }}
       </button>
     </Toolbar>
-    <UpdrawEditor
+    <UpmadeEditor
       editorId="persistence-memory"
       theme="light"
       :themes="themes"

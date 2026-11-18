@@ -1,4 +1,4 @@
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeCore } from '../core/core.class';
 import { LocalizationHelper } from '../../helpers/localization.helper';
 import { EN_LOCALE } from '../../locales/en-locale';
 import { DE_LOCALE } from '../../locales/de-locale';
@@ -8,18 +8,18 @@ import { ES_LOCALE } from '../../locales/es-locale';
 import { PL_LOCALE } from '../../locales/pl-locale';
 import { NL_LOCALE } from '../../locales/nl-locale';
 import { IT_LOCALE } from '../../locales/it-locale';
-import { UpdrawLocale, UpdrawTermKey, UpdrawTermVars, LocaleCode } from '../../interfaces/localization.interface';
+import { UpmadeLocale, UpmadeTermKey, UpmadeTermVars, LocaleCode } from '../../interfaces/localization.interface';
 
 /** Key used to store the settings object in localStorage. */
-const SETTINGS_STORAGE_KEY = 'updraw-settings';
+const SETTINGS_STORAGE_KEY = 'upmade-settings';
 
 /** Default locale used when no stored preference exists. */
 const DEFAULT_LOCALE: LocaleCode = 'en';
 
 /**
- * Manages localization state and term resolution across the Updraw editor.
+ * Manages localization state and term resolution across the Upmade editor.
  *
- * The manager is owned per {@link UpdrawCore} instance (like the theme manager)
+ * The manager is owned per {@link UpmadeCore} instance (like the theme manager)
  * so that multiple editors on the same page can use different languages in
  * isolation.
  *
@@ -30,17 +30,17 @@ const DEFAULT_LOCALE: LocaleCode = 'en';
  * 4. fallback locale's built-in terms
  * 5. the key itself (last resort)
  *
- * Persistence of the selected locale is handled by the UpdrawSettings
+ * Persistence of the selected locale is handled by the UpmadeSettings
  * component; this manager only reads the stored value.
  */
-export class UpdrawLocalizationManager {
-  private readonly _core: UpdrawCore;
+export class UpmadeLocalizationManager {
+  private readonly _core: UpmadeCore;
   private readonly _storageKey: string;
 
   /** Built-in locale definitions, keyed by locale code. */
-  private readonly _builtinLocales = new Map<string, UpdrawLocale>();
+  private readonly _builtinLocales = new Map<string, UpmadeLocale>();
   /** Consumer-registered locale definitions, keyed by locale code. */
-  private readonly _customLocales = new Map<string, UpdrawLocale>();
+  private readonly _customLocales = new Map<string, UpmadeLocale>();
 
   private _currentLocale: LocaleCode = DEFAULT_LOCALE;
   private _fallbackLocale: LocaleCode = DEFAULT_LOCALE;
@@ -48,13 +48,13 @@ export class UpdrawLocalizationManager {
   private _explicitLocales = false;
 
   /**
-   * Creates a new UpdrawLocalizationManager instance.
+   * Creates a new UpmadeLocalizationManager instance.
    * Seeds the built-in locales and initializes the current locale from the
    * settings object in localStorage (or the default locale).
    *
-   * @param core - The UpdrawCore instance this manager belongs to
+   * @param core - The UpmadeCore instance this manager belongs to
    */
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     this._core = core;
     this._storageKey = core.editorId ? `${SETTINGS_STORAGE_KEY}-${core.editorId}` : SETTINGS_STORAGE_KEY;
 
@@ -101,7 +101,7 @@ export class UpdrawLocalizationManager {
    *
    * @param locales - The locale definitions to register
    */
-  registerLocales(locales: UpdrawLocale[]): void {
+  registerLocales(locales: UpmadeLocale[]): void {
     for (const locale of locales) {
       this._customLocales.set(locale.code, locale);
     }
@@ -118,7 +118,7 @@ export class UpdrawLocalizationManager {
    *
    * @param locales - The full locale catalog, or `undefined` to use built-ins
    */
-  configureLocales(locales?: UpdrawLocale[]): void {
+  configureLocales(locales?: UpmadeLocale[]): void {
     this._customLocales.clear();
     this._explicitLocales = locales !== undefined;
     if (locales) {
@@ -191,7 +191,7 @@ export class UpdrawLocalizationManager {
    * manager.translate('menu.copy'); // 'Copy'
    * manager.translate('share.expires', { date: '5/1' }); // 'Expires 5/1'
    */
-  translate(key: UpdrawTermKey, vars?: UpdrawTermVars): string {
+  translate(key: UpmadeTermKey, vars?: UpmadeTermVars): string {
     const resolved =
       this._customLocales.get(this._currentLocale)?.terms[key] ??
       this._builtinLocales.get(this._currentLocale)?.terms[key] ??
@@ -212,15 +212,15 @@ export class UpdrawLocalizationManager {
    *
    * @returns A map of every term key to its resolved string for the active locale
    */
-  getAllTerms(): Partial<Record<UpdrawTermKey, string>> {
-    const keys = new Set<UpdrawTermKey>();
+  getAllTerms(): Partial<Record<UpmadeTermKey, string>> {
+    const keys = new Set<UpmadeTermKey>();
     for (const locale of [...this._builtinLocales.values(), ...this._customLocales.values()]) {
-      for (const key of Object.keys(locale.terms) as UpdrawTermKey[]) {
+      for (const key of Object.keys(locale.terms) as UpmadeTermKey[]) {
         keys.add(key);
       }
     }
 
-    const result: Partial<Record<UpdrawTermKey, string>> = {};
+    const result: Partial<Record<UpmadeTermKey, string>> = {};
     for (const key of keys) {
       result[key] = this.translate(key);
     }

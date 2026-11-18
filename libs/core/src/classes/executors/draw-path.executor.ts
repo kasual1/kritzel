@@ -1,8 +1,8 @@
-import type { UpdrawAgenticDrawPathAction } from '../../interfaces/agentic-action.interface';
-import type { UpdrawPoint } from '../../interfaces/point.interface';
-import { UpdrawPath } from '../objects/path.class';
+import type { UpmadeAgenticDrawPathAction } from '../../interfaces/agentic-action.interface';
+import type { UpmadePoint } from '../../interfaces/point.interface';
+import { UpmadePath } from '../objects/path.class';
 import { AGENTIC_ACTION_DRAW_SPEED } from '../../constants/agentic-action.constants';
-import type { UpdrawAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { UpmadeAgenticActionExecutor } from '../../types/agentic-action.types';
 import { resolveBrushStyle } from '../../helpers/agentic-style.helper';
 import { AGENTIC_STROKE_STYLE_KEYS, assertStyle } from '../../helpers/agentic-validation.helper';
 
@@ -10,7 +10,7 @@ import { AGENTIC_STROKE_STYLE_KEYS, assertStyle } from '../../helpers/agentic-va
 const MIN_POINT_DISTANCE_PX = 3;
 
 /** Cumulative arc lengths of a polyline. */
-export function cumulativeLengths(points: UpdrawPoint[]): number[] {
+export function cumulativeLengths(points: UpmadePoint[]): number[] {
   const lengths = [0];
   for (let i = 1; i < points.length; i++) {
     lengths.push(lengths[i - 1] + Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y));
@@ -22,11 +22,11 @@ export function cumulativeLengths(points: UpdrawPoint[]): number[] {
  * The part of a polyline up to arc length `distance`, ending in an interpolated tip.
  * Points closer than `minDistance` to the previously kept point are dropped (the tip is always kept).
  */
-export function polylinePrefix(points: UpdrawPoint[], lengths: number[], distance: number, minDistance: number): UpdrawPoint[] {
+export function polylinePrefix(points: UpmadePoint[], lengths: number[], distance: number, minDistance: number): UpmadePoint[] {
   const total = lengths[lengths.length - 1];
   const target = Math.max(0, Math.min(distance, total));
-  const result: UpdrawPoint[] = [points[0]];
-  let tip: UpdrawPoint = points[0];
+  const result: UpmadePoint[] = [points[0]];
+  let tip: UpmadePoint = points[0];
 
   for (let i = 1; i < points.length; i++) {
     if (lengths[i] <= target) {
@@ -51,7 +51,7 @@ export function polylinePrefix(points: UpdrawPoint[], lengths: number[], distanc
 }
 
 /** `drawPath`: presses at the first point and draws through the points like the brush. */
-export const drawPathExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticDrawPathAction> = {
+export const drawPathExecutor: UpmadeAgenticActionExecutor<UpmadeAgenticDrawPathAction> = {
   mutates: true,
 
   validate(action) {
@@ -82,8 +82,8 @@ export const drawPathExecutor: UpdrawAgenticActionExecutor<UpdrawAgenticDrawPath
     const total = lengths[lengths.length - 1];
     const minDistance = MIN_POINT_DISTANCE_PX / (state.scale || 1);
 
-    const build = (worldPoints: UpdrawPoint[]) => {
-      const path = UpdrawPath.create(core, {
+    const build = (worldPoints: UpmadePoint[]) => {
+      const path = UpmadePath.create(core, {
         points: worldPoints.map(point => [point.x * scale, point.y * scale]),
         translateX: 0,
         translateY: 0,

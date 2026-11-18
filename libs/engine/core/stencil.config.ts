@@ -5,12 +5,12 @@ import { vueOutputTarget } from '@stencil/vue-output-target';
 import { resolve } from 'path';
 
 const INTERNAL_COMPONENTS = [
-  'updraw-cursor-trail',
-  'updraw-icon',
-  'updraw-watermark',
-  'updraw-awareness-cursors',
-  'updraw-agentic-cursors',
-  'updraw-object-titlebar-layer',
+  'upmade-cursor-trail',
+  'upmade-icon',
+  'upmade-watermark',
+  'upmade-awareness-cursors',
+  'upmade-agentic-cursors',
+  'upmade-object-titlebar-layer',
 ];
 
 const isDev = process.argv.includes('--dev') || process.argv.includes('--serve');
@@ -21,8 +21,8 @@ export const config: Config = {
   // Ship non-minified ESM: pre-minified dist/components (adjacent top-level classes) breaks
   // @angular/build >= 22.1.0 advancedOptimizations (angular-cli#33699); consumers minify anyway
   minifyJs: false,
-  // Exclude @updraw/core, yjs and its dependencies from the bundle, as they will be loaded separately in the consuming application.
-  // @updraw/core holds every class, so all outputs (and the editor, which compiles these components) share one copy of them.
+  // Exclude @upmade/core, yjs and its dependencies from the bundle, as they will be loaded separately in the consuming application.
+  // @upmade/core holds every class, so all outputs (and the editor, which compiles these components) share one copy of them.
   // Bundling yjs would also make it throw a multiple import error
   ...(isDev
     ? {
@@ -32,7 +32,7 @@ export const config: Config = {
     : {
         rollupConfig: {
           inputOptions: {
-            external: [/^@updraw\/core(\/.*)?$/, /^(yjs|y-websocket|y-indexeddb|lib0)(\/.*)?$/],
+            external: [/^@upmade\/core(\/.*)?$/, /^(yjs|y-websocket|y-indexeddb|lib0)(\/.*)?$/],
           },
         },
       }),
@@ -46,7 +46,7 @@ export const config: Config = {
           { type: 'docs-json' as const, file: '.stencil/docs.json' },
           { type: 'www' as const, serviceWorker: null },
           angularOutputTarget({
-            componentCorePackage: '@updraw/engine',
+            componentCorePackage: '@upmade/engine',
             directivesProxyFile: '../angular/projects/lib/src/lib/proxy.ts',
             directivesArrayFile: '../angular/projects/lib/src/lib/index.ts',
             outputType: 'standalone',
@@ -55,11 +55,11 @@ export const config: Config = {
           }),
           reactOutputTarget({
             outDir: '../react/lib/components/stencil-generated/',
-            stencilPackageName: '@updraw/engine',
+            stencilPackageName: '@upmade/engine',
             excludeComponents: INTERNAL_COMPONENTS,
           }),
           vueOutputTarget({
-            componentCorePackage: '@updraw/engine',
+            componentCorePackage: '@upmade/engine',
             proxiesFile: '../vue/lib/components.ts',
             includeImportCustomElements: true,
             customElementsDir: 'dist/components',
@@ -70,11 +70,11 @@ export const config: Config = {
   testing: {
     browserHeadless: 'shell',
     transform: { '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }] },
-    // Specs run against @updraw/core's source, so they don't need a core build. The `src/` alias is
-    // test-only and lets specs mock single core modules with jest.mock('@updraw/core/src/...').
+    // Specs run against @upmade/core's source, so they don't need a core build. The `src/` alias is
+    // test-only and lets specs mock single core modules with jest.mock('@upmade/core/src/...').
     moduleNameMapper: {
-      '^@updraw/core$': '<rootDir>/../../core/src/index.ts',
-      '^@updraw/core/src/(.*)$': '<rootDir>/../../core/src/$1',
+      '^@upmade/core$': '<rootDir>/../../core/src/index.ts',
+      '^@upmade/core/src/(.*)$': '<rootDir>/../../core/src/$1',
     },
     setupFiles: ['<rootDir>/jest.setup.ts'],
     testPathIgnorePatterns: ['/node_modules/'],

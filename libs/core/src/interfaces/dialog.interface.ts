@@ -1,5 +1,5 @@
-export type UpdrawDialogCloseReason = 'backdrop' | 'escape' | 'close-button' | 'programmatic';
+export type UpmadeDialogCloseReason = 'backdrop' | 'escape' | 'close-button' | 'programmatic';
 
-export interface IUpdrawDialogCloseEvent {
-  reason: UpdrawDialogCloseReason;
+export interface IUpmadeDialogCloseEvent {
+  reason: UpmadeDialogCloseReason;
 }

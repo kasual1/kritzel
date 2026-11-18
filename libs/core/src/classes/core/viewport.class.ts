@@ -1,22 +1,22 @@
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawMouseButton } from '../../enums/event-button.enum';
-import { UpdrawCore } from './core.class';
-import { UpdrawSelectionBox } from '../objects/selection-box.class';
-import { UpdrawPath } from '../objects/path.class';
-import { UpdrawViewportState } from '../../interfaces/viewport-state.interface';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeMouseButton } from '../../enums/event-button.enum';
+import { UpmadeCore } from './core.class';
+import { UpmadeSelectionBox } from '../objects/selection-box.class';
+import { UpmadePath } from '../objects/path.class';
+import { UpmadeViewportState } from '../../interfaces/viewport-state.interface';
 import debounce from 'lodash/debounce';
 import type { DebouncedFunc } from 'lodash';
-import { UpdrawKeyboardHelper } from '../../helpers/keyboard.helper';
-import { UpdrawDevicesHelper } from '../../helpers/devices.helper';
+import { UpmadeKeyboardHelper } from '../../helpers/keyboard.helper';
+import { UpmadeDevicesHelper } from '../../helpers/devices.helper';
 
 /**
  * Manages viewport transformations including panning, zooming, and centering.
  * Handles mouse, touch, and wheel events for viewport manipulation.
  * Supports viewport boundaries and animated transitions.
  */
-export class UpdrawViewport {
-  /** Reference to the UpdrawCore instance */
-  private readonly _core: UpdrawCore;
+export class UpmadeViewport {
+  /** Reference to the UpmadeCore instance */
+  private readonly _core: UpmadeCore;
   /** Debounced function to persist viewport state to workspace */
   private readonly _debounceUpdate: DebouncedFunc<() => void>;
   /** Debounced function to end scaling state after pinch gestures */
@@ -55,12 +55,12 @@ export class UpdrawViewport {
   private _touchCursorBroadcastActive: boolean = false;
 
   /**
-   * Creates a new UpdrawViewport instance and initializes viewport state.
+   * Creates a new UpmadeViewport instance and initializes viewport state.
    * Sets up debounced handlers for viewport updates and scaling end events.
-   * @param core - The UpdrawCore instance to manage viewport for
+   * @param core - The UpmadeCore instance to manage viewport for
    * @param host - The HTML element hosting the canvas
    */
-  constructor(core: UpdrawCore, host: HTMLElement) {
+  constructor(core: UpmadeCore, host: HTMLElement) {
     this._core = core;
     this._core.store.state.host = host;
     this._core.store.state.viewportWidth = host.clientWidth;
@@ -86,8 +86,8 @@ export class UpdrawViewport {
     this._debounceSyncWithVirtualKeyboard = debounce(() => this.syncWithVirtualKeyboard(), 100);
 
     // Capture the keyboard-free viewport height while no keyboard can be open yet
-    if (UpdrawDevicesHelper.isMobile()) {
-      UpdrawKeyboardHelper.recordViewportBaseline();
+    if (UpmadeDevicesHelper.isMobile()) {
+      UpmadeKeyboardHelper.recordViewportBaseline();
     }
   }
 
@@ -202,11 +202,11 @@ export class UpdrawViewport {
    * Only runs on mobile devices (iOS, iPadOS, Android), so resizing a desktop window never pans.
    */
   syncWithVirtualKeyboard(): void {
-    if (!UpdrawDevicesHelper.isMobile()) {
+    if (!UpmadeDevicesHelper.isMobile()) {
       return;
     }
 
-    if (this._keyboardPanOffset && !UpdrawKeyboardHelper.isKeyboardOpen()) {
+    if (this._keyboardPanOffset && !UpmadeKeyboardHelper.isKeyboardOpen()) {
       this.restoreKeyboardPanOffset();
       return;
     }
@@ -255,7 +255,7 @@ export class UpdrawViewport {
     const visualViewport = window.visualViewport;
     const visibleTop = Math.max(hostRect.top, visualViewport ? visualViewport.offsetTop : 0);
     const visibleBottom = Math.min(hostRect.bottom, visualViewport ? visualViewport.offsetTop + visualViewport.height : window.innerHeight);
-    const padding = UpdrawViewport.EDITING_CARET_VISIBLE_PADDING;
+    const padding = UpmadeViewport.EDITING_CARET_VISIBLE_PADDING;
 
     if (visibleBottom - visibleTop < caretRect.bottom - caretRect.top + padding * 2) {
       return;
@@ -275,7 +275,7 @@ export class UpdrawViewport {
     const { translateX, translateY, scale } = this._core.store.state;
     const targetTranslateY = this.clampTranslate(translateX, translateY + deltaY).translateY;
 
-    if (UpdrawKeyboardHelper.isKeyboardOpen()) {
+    if (UpmadeKeyboardHelper.isKeyboardOpen()) {
       const previousDeltaY = this._keyboardPanOffset?.scale === scale ? this._keyboardPanOffset.deltaY : 0;
       this._keyboardPanOffset = { deltaY: previousDeltaY + (targetTranslateY - translateY), scale };
     }
@@ -298,7 +298,7 @@ export class UpdrawViewport {
       const adjustedClientX = event.clientX - this._core.store.offsetX;
       const adjustedClientY = event.clientY - this._core.store.offsetY;
 
-      if (event.button === UpdrawMouseButton.Right) {
+      if (event.button === UpmadeMouseButton.Right) {
         this._core.store.state.isPanning = true;
         this._core.store.state.startX = adjustedClientX;
         this._core.store.state.startY = adjustedClientY;
@@ -322,14 +322,14 @@ export class UpdrawViewport {
         // user's own stroke: collaborators' unfinished strokes are unfinished paths too.
         const drawingObjectId = this._core.store.objects?.localActiveDrawingObjectId;
         const drawingObject = drawingObjectId ? this._core.store.objects.findById(drawingObjectId) : undefined;
-        if (drawingObject instanceof UpdrawPath) {
+        if (drawingObject instanceof UpmadePath) {
           this._core.store.objects.discard(drawingObject.id);
         }
 
         // Clear selection box when scaling starts to prevent it from remaining on screen
         if (this._core.store.state.isSelecting) {
           this._core.store.state.isSelecting = false;
-          this._core.store.objects.remove(obj => obj instanceof UpdrawSelectionBox);
+          this._core.store.objects.remove(obj => obj instanceof UpmadeSelectionBox);
           this._core.store.setSelectionBox(null);
           // Clear selection preview state from objects - use selectedObjects for efficiency
           this._core.store.selectedObjects.forEach(object => {
@@ -405,7 +405,7 @@ export class UpdrawViewport {
         if (!this._touchCursorBroadcastActive) {
           const dx = event.clientX - this._touchStartScreenX;
           const dy = event.clientY - this._touchStartScreenY;
-          if (Math.sqrt(dx * dx + dy * dy) >= UpdrawViewport.TOUCH_CURSOR_BROADCAST_THRESHOLD) {
+          if (Math.sqrt(dx * dx + dy * dy) >= UpmadeViewport.TOUCH_CURSOR_BROADCAST_THRESHOLD) {
             this._touchCursorBroadcastActive = true;
           }
         }
@@ -506,7 +506,7 @@ export class UpdrawViewport {
    * Returns the current viewport state.
    * @returns The current viewport position, scale, and dimensions.
    */
-  getViewport(): UpdrawViewportState {
+  getViewport(): UpmadeViewportState {
     const state = this._core.store.state;
     return {
       translateX: state.translateX,
@@ -724,7 +724,7 @@ export class UpdrawViewport {
    * Respects viewport boundary constraints.
    * @param object - The object to center in the viewport
    */
-  centerInViewport(object: UpdrawBaseObject): void {
+  centerInViewport(object: UpmadeBaseObject): void {
     const { scale, viewportWidth, viewportHeight } = this._core.store.state;
     const { x, y, width, height } = object.rotatedBoundingBox;
 
@@ -748,7 +748,7 @@ export class UpdrawViewport {
    * scale limits and viewport boundaries.
    * @param object - The object to fit in the viewport
    */
-  centerFitInViewport(object: UpdrawBaseObject): void {
+  centerFitInViewport(object: UpmadeBaseObject): void {
     const scaleX = this._core.store.state.viewportWidth / (object.rotatedBoundingBox.width * 1.1);
     const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
     const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
@@ -764,7 +764,7 @@ export class UpdrawViewport {
    * fits, the scale is left unchanged.
    * @param object - The object to fit in the viewport
    */
-  centerFitInViewportIfNeeded(object: UpdrawBaseObject): void {
+  centerFitInViewportIfNeeded(object: UpmadeBaseObject): void {
     const scaleX = this._core.store.state.viewportWidth / (object.rotatedBoundingBox.width * 1.1);
     const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
     const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
@@ -782,7 +782,7 @@ export class UpdrawViewport {
    * viewport is left completely unchanged.
    * @param object - The object to check and fit in the viewport
    */
-  fitInViewportIfNeeded(object: UpdrawBaseObject): void {
+  fitInViewportIfNeeded(object: UpmadeBaseObject): void {
     const scaleX = this._core.store.state.viewportWidth / (object.rotatedBoundingBox.width * 1.1);
     const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
     const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
@@ -801,7 +801,7 @@ export class UpdrawViewport {
    * the viewport is left unchanged.
    * @param object - The object to bring into view
    */
-  bringIntoViewIfNeeded(object: UpdrawBaseObject): void {
+  bringIntoViewIfNeeded(object: UpmadeBaseObject): void {
     const { scale, translateX, translateY, viewportWidth, viewportHeight } = this._core.store.state;
     const bounds = object.rotatedBoundingBox;
 
@@ -1060,7 +1060,7 @@ export class UpdrawViewport {
    * @param animate - Whether to animate the viewport transition (default: true)
    * @returns true if at least one object was provided and viewport was adjusted, false otherwise
    */
-  centerFitObjects<T extends Element>(objects: UpdrawBaseObject<T>[], animate = true): boolean {
+  centerFitObjects<T extends Element>(objects: UpmadeBaseObject<T>[], animate = true): boolean {
     if (objects.length === 0) {
       return false;
     }

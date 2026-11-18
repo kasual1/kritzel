@@ -1,23 +1,23 @@
-import { UpdrawHandleType } from '../../enums/handle-type.enum';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpmadeHandleType } from '../../enums/handle-type.enum';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { UpdrawColorHelper } from '../../helpers/color.helper';
-import { UpdrawMoveHandler } from '../handlers/move.handler';
-import { UpdrawResizeHandler } from '../handlers/resize.handler';
-import { UpdrawRotationHandler } from '../handlers/rotation.handler';
-import { UpdrawSelectionHandler } from '../handlers/selection.handler';
-import { UpdrawSelectionGroup } from '../objects/selection-group.class';
-import { UpdrawGroup } from '../objects/group.class';
-import { UpdrawBaseObject } from '../objects/base-object.class';
-import { UpdrawBaseTool } from './base-tool.class';
-import { UpdrawHoverHandler } from '../handlers/hover.handler';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawLineHandleHandler, LineHandleType } from '../handlers/line-handle.handler';
-import { UpdrawPath } from '../objects/path.class';
-import { UpdrawLine } from '../objects/line.class';
-import { UpdrawShape } from '../objects/shape.class';
-import { UpdrawText } from '../objects/text.class';
-import { UpdrawImage } from '../objects/image.class';
+import { UpmadeColorHelper } from '../../helpers/color.helper';
+import { UpmadeMoveHandler } from '../handlers/move.handler';
+import { UpmadeResizeHandler } from '../handlers/resize.handler';
+import { UpmadeRotationHandler } from '../handlers/rotation.handler';
+import { UpmadeSelectionHandler } from '../handlers/selection.handler';
+import { UpmadeSelectionGroup } from '../objects/selection-group.class';
+import { UpmadeGroup } from '../objects/group.class';
+import { UpmadeBaseObject } from '../objects/base-object.class';
+import { UpmadeBaseTool } from './base-tool.class';
+import { UpmadeHoverHandler } from '../handlers/hover.handler';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeLineHandleHandler, LineHandleType } from '../handlers/line-handle.handler';
+import { UpmadePath } from '../objects/path.class';
+import { UpmadeLine } from '../objects/line.class';
+import { UpmadeShape } from '../objects/shape.class';
+import { UpmadeText } from '../objects/text.class';
+import { UpmadeImage } from '../objects/image.class';
 import { ToolConfigControl, ToolConfigDefinition } from '../../interfaces/tool-config.interface';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
@@ -33,26 +33,26 @@ const TITLE_EDIT_CLICK_TOLERANCE = 5;
 
 type SelectionToolTitleEditCandidate = { ownerId: string; elementId: string; clientX: number; clientY: number };
 
-export class UpdrawSelectionTool extends UpdrawBaseTool {
+export class UpmadeSelectionTool extends UpmadeBaseTool {
   override toolType = 'selection' as const;
 
   /** Handler for selection box and object selection logic */
-  selectionHandler: UpdrawSelectionHandler;
+  selectionHandler: UpmadeSelectionHandler;
 
   /** Handler for moving selected objects */
-  moveHandler: UpdrawMoveHandler;
+  moveHandler: UpmadeMoveHandler;
 
   /** Handler for hover effects on objects */
-  hoverHandler: UpdrawHoverHandler;
+  hoverHandler: UpmadeHoverHandler;
 
   /** Handler for resizing selected objects */
-  resizeHandler: UpdrawResizeHandler;
+  resizeHandler: UpmadeResizeHandler;
 
   /** Handler for rotating selected objects */
-  rotationHandler: UpdrawRotationHandler;
+  rotationHandler: UpmadeRotationHandler;
 
   /** Handler for manipulating line start/end handles */
-  lineHandleHandler: UpdrawLineHandleHandler;
+  lineHandleHandler: UpmadeLineHandleHandler;
 
   /** Available color palette for selected objects */
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
@@ -62,12 +62,12 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
    * potential pinch-zoom gesture, so it can be restored when the second finger
    * arrives. Cleared when the touch interaction ends.
    */
-  private _savedSelectionGroupForPinch: UpdrawSelectionGroup | null = null;
+  private _savedSelectionGroupForPinch: UpmadeSelectionGroup | null = null;
 
   /** Pointer currently pressing an object titlebar, if any. */
   private _titlebarPointerId: number | null = null;
   /** Embedded object whose interactivity is deferred until the titlebar press ends. */
-  private _titlebarDeferredInteractiveObject: UpdrawBaseObject<any> | null = null;
+  private _titlebarDeferredInteractiveObject: UpmadeBaseObject<any> | null = null;
   /** Editable title pressed while its object was already the only selected object. */
   private _titlebarTitleEditCandidate: SelectionToolTitleEditCandidate | null = null;
 
@@ -95,7 +95,7 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
   private flattenObjects(objects: any[]): any[] {
     let result: any[] = [];
     for (const obj of objects) {
-      if (obj instanceof UpdrawGroup) {
+      if (obj instanceof UpmadeGroup) {
         result = result.concat(this.flattenObjects(obj.children));
       } else {
         result.push(obj);
@@ -112,10 +112,10 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
     const objects = this.flattenObjects(this.getSelectedObjects());
     if (objects.length === 0) return DEFAULT_COLOR_PALETTE[0];
     for (const obj of objects) {
-      if (obj instanceof UpdrawPath) return obj.fill;
-      if (obj instanceof UpdrawLine) return obj.stroke;
-      if (obj instanceof UpdrawText) return obj.fontColor;
-      if (obj instanceof UpdrawShape) return obj.strokeColor;
+      if (obj instanceof UpmadePath) return obj.fill;
+      if (obj instanceof UpmadeLine) return obj.stroke;
+      if (obj instanceof UpmadeText) return obj.fontColor;
+      if (obj instanceof UpmadeShape) return obj.strokeColor;
     }
     return DEFAULT_COLOR_PALETTE[0];
   }
@@ -127,10 +127,10 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
   set color(value: ThemeAwareColor) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
-      if (obj instanceof UpdrawPath) this._core.updateObject(obj, { fill: value });
-      if (obj instanceof UpdrawLine) this._core.updateObject(obj, { stroke: value });
-      if (obj instanceof UpdrawText) this._core.updateObject(obj, { fontColor: value });
-      if (obj instanceof UpdrawShape) this._core.updateObject(obj, { strokeColor: value });
+      if (obj instanceof UpmadePath) this._core.updateObject(obj, { fill: value });
+      if (obj instanceof UpmadeLine) this._core.updateObject(obj, { stroke: value });
+      if (obj instanceof UpmadeText) this._core.updateObject(obj, { fontColor: value });
+      if (obj instanceof UpmadeShape) this._core.updateObject(obj, { strokeColor: value });
     });
     this._core.rerender();
   }
@@ -163,10 +163,10 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
     const objects = this.flattenObjects(this.getSelectedObjects());
     if (objects.length === 0) return 1;
     for (const obj of objects) {
-      if (obj instanceof UpdrawPath) return obj.strokeWidth;
-      if (obj instanceof UpdrawLine) return obj.strokeWidth;
-      if (obj instanceof UpdrawText) return obj.fontSize;
-      if (obj instanceof UpdrawShape) return obj.strokeWidth;
+      if (obj instanceof UpmadePath) return obj.strokeWidth;
+      if (obj instanceof UpmadeLine) return obj.strokeWidth;
+      if (obj instanceof UpmadeText) return obj.fontSize;
+      if (obj instanceof UpmadeShape) return obj.strokeWidth;
     }
     return 1;
   }
@@ -179,10 +179,10 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
   set size(value: number) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
-      if (obj instanceof UpdrawPath) this._core.updateObject(obj, { strokeWidth: value });
-      if (obj instanceof UpdrawLine) this._core.updateObject(obj, { strokeWidth: value });
-      if (obj instanceof UpdrawText) this._core.updateObject(obj, { fontSize: value });
-      if (obj instanceof UpdrawShape) this._core.updateObject(obj, { strokeWidth: value });
+      if (obj instanceof UpmadePath) this._core.updateObject(obj, { strokeWidth: value });
+      if (obj instanceof UpmadeLine) this._core.updateObject(obj, { strokeWidth: value });
+      if (obj instanceof UpmadeText) this._core.updateObject(obj, { fontSize: value });
+      if (obj instanceof UpmadeShape) this._core.updateObject(obj, { strokeWidth: value });
     });
     this._core.rerender();
     this.refreshSelectionGroupDimensions();
@@ -195,7 +195,7 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
   get fillColor(): ThemeAwareColor {
     const objects = this.flattenObjects(this.getSelectedObjects());
     for (const obj of objects) {
-      if (obj instanceof UpdrawShape) return obj.fillColor;
+      if (obj instanceof UpmadeShape) return obj.fillColor;
     }
     return { light: 'transparent', dark: 'transparent' };
   }
@@ -207,9 +207,9 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
   set fillColor(value: ThemeAwareColor) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
-      if (obj instanceof UpdrawShape) {
+      if (obj instanceof UpmadeShape) {
         // Calculate new font color based on fill color
-        const newFontColor = UpdrawColorHelper.determineTextColor(value);
+        const newFontColor = UpmadeColorHelper.determineTextColor(value);
         this._core.updateObject(obj, { fillColor: value, fontColor: newFontColor });
         // When switching to fill mode, also update stroke color to match
         const isTransparent = typeof value === 'string' ? value === 'transparent' :
@@ -229,8 +229,8 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
   get fontFamily(): string {
     const objects = this.flattenObjects(this.getSelectedObjects());
     for (const obj of objects) {
-      if (obj instanceof UpdrawText) return obj.fontFamily;
-      if (obj instanceof UpdrawShape) return obj.fontFamily;
+      if (obj instanceof UpmadeText) return obj.fontFamily;
+      if (obj instanceof UpmadeShape) return obj.fontFamily;
     }
     return 'Arial';
   }
@@ -242,8 +242,8 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
   set fontFamily(value: string) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
-      if (obj instanceof UpdrawText) this._core.updateObject(obj, { fontFamily: value });
-      if (obj instanceof UpdrawShape) this._core.updateObject(obj, { fontFamily: value });
+      if (obj instanceof UpmadeText) this._core.updateObject(obj, { fontFamily: value });
+      if (obj instanceof UpmadeShape) this._core.updateObject(obj, { fontFamily: value });
     });
     this._core.rerender();
     this.refreshSelectionGroupDimensions();
@@ -256,7 +256,7 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
   get arrows(): LineArrowConfig {
     const objects = this.flattenObjects(this.getSelectedObjects());
     for (const obj of objects) {
-      if (obj instanceof UpdrawLine) return obj.arrows ?? { start: { enabled: false }, end: { enabled: false } };
+      if (obj instanceof UpmadeLine) return obj.arrows ?? { start: { enabled: false }, end: { enabled: false } };
     }
     return { start: { enabled: false }, end: { enabled: false } };
   }
@@ -268,7 +268,7 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
   set arrows(value: LineArrowConfig) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
-      if (obj instanceof UpdrawLine) this._core.updateObject(obj, { arrows: value });
+      if (obj instanceof UpmadeLine) this._core.updateObject(obj, { arrows: value });
     });
     this._core.rerender();
     this.refreshSelectionGroupDimensions();
@@ -286,12 +286,12 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
     const objects = this.flattenObjects(this.getSelectedObjects());
     const controls: ToolConfigControl[] = [];
 
-    const hasShape = objects.some(o => o instanceof UpdrawShape);
-    const hasText = objects.some(o => o instanceof UpdrawText);
-    const hasLine = objects.some(o => o instanceof UpdrawLine);
-    const hasImage = objects.some(o => o instanceof UpdrawImage);
+    const hasShape = objects.some(o => o instanceof UpmadeShape);
+    const hasText = objects.some(o => o instanceof UpmadeText);
+    const hasLine = objects.some(o => o instanceof UpmadeLine);
+    const hasImage = objects.some(o => o instanceof UpmadeImage);
     const hasStroke = objects.some(
-      o => o instanceof UpdrawPath || o instanceof UpdrawLine || o instanceof UpdrawShape
+      o => o instanceof UpmadePath || o instanceof UpmadeLine || o instanceof UpmadeShape
     );
 
     // If only images are selected, return config with opacity only (no palette, no controls)
@@ -352,14 +352,14 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
     }
   }
 
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     super(core);
-    this.selectionHandler = new UpdrawSelectionHandler(this._core);
-    this.moveHandler = new UpdrawMoveHandler(this._core);
-    this.hoverHandler = new UpdrawHoverHandler(this._core);
-    this.resizeHandler = new UpdrawResizeHandler(this._core);
-    this.rotationHandler = new UpdrawRotationHandler(this._core);
-    this.lineHandleHandler = new UpdrawLineHandleHandler(this._core);
+    this.selectionHandler = new UpmadeSelectionHandler(this._core);
+    this.moveHandler = new UpmadeMoveHandler(this._core);
+    this.hoverHandler = new UpmadeHoverHandler(this._core);
+    this.resizeHandler = new UpmadeResizeHandler(this._core);
+    this.rotationHandler = new UpmadeRotationHandler(this._core);
+    this.lineHandleHandler = new UpmadeLineHandleHandler(this._core);
   }
 
   /**
@@ -379,7 +379,7 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
     this.resetTitlebarGesture();
 
     if (event.pointerType === 'mouse') {
-      if (UpdrawEventHelper.isLeftClick(event)) {
+      if (UpmadeEventHelper.isLeftClick(event)) {
         this._core.store.state.isResizeHandleSelected = this.isHandleSelected(event);
         this._core.store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
         this._core.store.state.isLineHandleSelected = this.isLineHandleSelected(event);
@@ -409,7 +409,7 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
 
         if (selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1) {
           const firstObj = selectedObject.objects[0];
-          if (ObjectHelper.isUpdrawEmbeddedObject(firstObj)) {
+          if (ObjectHelper.isUpmadeEmbeddedObject(firstObj)) {
             // Selected embedded objects hand pointer interaction to their content.
             if (firstObj.isSelected && this._core.store.selectionGroup?.objects.length === 1) return;
           } else if (firstObj.isInteractive) {
@@ -646,7 +646,7 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
    * Clicking the editable title of an object that is already the only selected one renames it,
    * like clicking a selected text object again edits it.
    */
-  private getTitleEditCandidate(event: PointerEvent, owner: UpdrawBaseObject<any>): SelectionToolTitleEditCandidate | null {
+  private getTitleEditCandidate(event: PointerEvent, owner: UpmadeBaseObject<any>): SelectionToolTitleEditCandidate | null {
     if (event.shiftKey || event.ctrlKey) {
       return null;
     }
@@ -665,8 +665,8 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
    * Selecting an embedded object makes its content interactive. During a titlebar press that
    * would let an iframe capture the pointer mid-drag, so interactivity is applied on release.
    */
-  private deferEmbeddedInteractivity(object: UpdrawBaseObject<any>): void {
-    if (ObjectHelper.isUpdrawEmbeddedObject(object) && object.isInteractive) {
+  private deferEmbeddedInteractivity(object: UpmadeBaseObject<any>): void {
+    if (ObjectHelper.isUpmadeEmbeddedObject(object) && object.isInteractive) {
       object.setIsInteractive(false);
       this._titlebarDeferredInteractiveObject = object;
     }
@@ -683,7 +683,7 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
     this._titlebarDeferredInteractiveObject = null;
     this._titlebarTitleEditCandidate = null;
 
-    if (deferred && ObjectHelper.isUpdrawEmbeddedObject(deferred) && this._core.store.selectionGroup?.objectIds.includes(deferred.id)) {
+    if (deferred && ObjectHelper.isUpmadeEmbeddedObject(deferred) && this._core.store.selectionGroup?.objectIds.includes(deferred.id)) {
       deferred.setIsInteractive(true);
     }
 
@@ -709,7 +709,7 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
     this._titlebarTitleEditCandidate = null;
     this.selectionHandler.skipEditForPointerId = null;
 
-    if (deferred && ObjectHelper.isUpdrawEmbeddedObject(deferred) && this._core.store.selectionGroup?.objectIds.includes(deferred.id)) {
+    if (deferred && ObjectHelper.isUpmadeEmbeddedObject(deferred) && this._core.store.selectionGroup?.objectIds.includes(deferred.id)) {
       deferred.setIsInteractive(true);
     }
   }
@@ -718,9 +718,9 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
    * Gets the object at the pointer event location and wraps it in a selection group.
    * Performs hit testing to ensure the pointer is actually over the object.
    * @param event - The PointerEvent to get the object from
-   * @returns An UpdrawSelectionGroup containing the object, or null if no object at that location
+   * @returns An UpmadeSelectionGroup containing the object, or null if no object at that location
    */
-  private getSelectedObject(event: PointerEvent): UpdrawSelectionGroup | null {
+  private getSelectedObject(event: PointerEvent): UpmadeSelectionGroup | null {
     const path = event.composedPath() as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
     const object = objectElement?.id ? this._core.findObjectById(objectElement.id) : null;
@@ -739,10 +739,10 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
       return currentSelectionGroup;
     }
 
-    if (object instanceof UpdrawSelectionGroup) {
+    if (object instanceof UpmadeSelectionGroup) {
       return object;
     } else {
-      const group = UpdrawSelectionGroup.create(this._core);
+      const group = UpmadeSelectionGroup.create(this._core);
       group.translateX = 0;
       group.translateY = 0;
       group.objectIds = [object.id];
@@ -753,9 +753,9 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
   /**
    * Determines the type of resize handle at the pointer location.
    * @param event - The PointerEvent to check for handle type
-   * @returns The UpdrawHandleType if a resize handle is at the location, undefined otherwise
+   * @returns The UpmadeHandleType if a resize handle is at the location, undefined otherwise
    */
-  private getHandleType(event: PointerEvent): UpdrawHandleType | undefined {
+  private getHandleType(event: PointerEvent): UpmadeHandleType | undefined {
     const shadowRoot = this._core.store.state.host?.shadowRoot;
     if (!shadowRoot) return;
 
@@ -763,7 +763,7 @@ export class UpdrawSelectionTool extends UpdrawBaseTool {
 
     const handle = elementsAtPoint.find(el => el.classList.contains('resize-handle-overlay'));
 
-    return handle?.classList[1] as UpdrawHandleType;
+    return handle?.classList[1] as UpmadeHandleType;
   }
 
   /**

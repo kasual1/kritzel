@@ -1,33 +1,33 @@
 import {
-  UpdrawFontMap,
-  UpdrawFontRegistration,
-  UpdrawRegisteredFont,
+  UpmadeFontMap,
+  UpmadeFontRegistration,
+  UpmadeRegisteredFont,
 } from '../../interfaces/font.interface';
 
-type UpdrawFontRegistryStore = {
-  fonts: Map<string, UpdrawRegisteredFont>;
+type UpmadeFontRegistryStore = {
+  fonts: Map<string, UpmadeRegisteredFont>;
 };
 
-const UPDRAW_FONT_REGISTRY_KEY = '__updrawFontRegistry__';
-const UPDRAW_FONT_REGISTRY_EVENT = 'updraw-font-registry-change';
+const UPMADE_FONT_REGISTRY_KEY = '__upmadeFontRegistry__';
+const UPMADE_FONT_REGISTRY_EVENT = 'upmade-font-registry-change';
 
-const getGlobalRegistryStore = (): UpdrawFontRegistryStore => {
+const getGlobalRegistryStore = (): UpmadeFontRegistryStore => {
   const globalScope = globalThis as unknown as Record<string, unknown>;
-  const existing = globalScope[UPDRAW_FONT_REGISTRY_KEY] as UpdrawFontRegistryStore | undefined;
+  const existing = globalScope[UPMADE_FONT_REGISTRY_KEY] as UpmadeFontRegistryStore | undefined;
 
   if (existing) {
     return existing;
   }
 
-  const created: UpdrawFontRegistryStore = {
-    fonts: new Map<string, UpdrawRegisteredFont>(),
+  const created: UpmadeFontRegistryStore = {
+    fonts: new Map<string, UpmadeRegisteredFont>(),
   };
 
-  globalScope[UPDRAW_FONT_REGISTRY_KEY] = created;
+  globalScope[UPMADE_FONT_REGISTRY_KEY] = created;
   return created;
 };
 
-const normalizeFontRegistration = (key: string, registration: UpdrawFontRegistration): UpdrawRegisteredFont => {
+const normalizeFontRegistration = (key: string, registration: UpmadeFontRegistration): UpmadeRegisteredFont => {
   if (typeof registration === 'string') {
     return {
       key,
@@ -50,8 +50,8 @@ const normalizeKey = (value: string): string => value.trim().toLocaleLowerCase()
 
 const normalizeFamily = (value: string): string => value.trim().toLocaleLowerCase();
 
-export class UpdrawFontRegistry {
-  private static get _fonts(): Map<string, UpdrawRegisteredFont> {
+export class UpmadeFontRegistry {
+  private static get _fonts(): Map<string, UpmadeRegisteredFont> {
     return getGlobalRegistryStore().fonts;
   }
 
@@ -69,7 +69,7 @@ export class UpdrawFontRegistry {
       : fontFamily;
   }
 
-  private static getRegisteredFontFamilies(fonts: UpdrawFontMap): string[] {
+  private static getRegisteredFontFamilies(fonts: UpmadeFontMap): string[] {
     return [...new Set(
       Object.values(fonts)
         .map(registration => (typeof registration === 'string' ? registration : registration.family))
@@ -78,7 +78,7 @@ export class UpdrawFontRegistry {
     )];
   }
 
-  static register(key: string, registration: UpdrawFontRegistration): void {
+  static register(key: string, registration: UpmadeFontRegistration): void {
     const normalized = normalizeFontRegistration(key, registration);
 
     if (this._fonts.has(key)) {
@@ -89,13 +89,13 @@ export class UpdrawFontRegistry {
     this.emitChange();
   }
 
-  static registerFonts(fonts: UpdrawFontMap): void {
+  static registerFonts(fonts: UpmadeFontMap): void {
     for (const [key, registration] of Object.entries(fonts)) {
       this.register(key, registration);
     }
   }
 
-  private static injectFontStylesheets(fonts: UpdrawFontMap): Promise<void[]> {
+  private static injectFontStylesheets(fonts: UpmadeFontMap): Promise<void[]> {
     if (typeof document === 'undefined') {
       return Promise.resolve([]);
     }
@@ -108,7 +108,7 @@ export class UpdrawFontRegistry {
       }
 
       const sourceUrl = registration.source;
-      const linkId = `updraw-font-stylesheet-${key}`;
+      const linkId = `upmade-font-stylesheet-${key}`;
 
       if (document.getElementById(linkId)) {
         continue;
@@ -134,7 +134,7 @@ export class UpdrawFontRegistry {
     return Promise.all(loadPromises);
   }
 
-  static async waitForFonts(fonts: UpdrawFontMap): Promise<void> {
+  static async waitForFonts(fonts: UpmadeFontMap): Promise<void> {
     await this.injectFontStylesheets(fonts);
 
     const fontFaceSet = this.getFontFaceSet();
@@ -151,7 +151,7 @@ export class UpdrawFontRegistry {
     await fontFaceSet.ready;
   }
 
-  static get(key: string): UpdrawRegisteredFont | undefined {
+  static get(key: string): UpmadeRegisteredFont | undefined {
     return this._fonts.get(key);
   }
 
@@ -169,7 +169,7 @@ export class UpdrawFontRegistry {
     return deleted;
   }
 
-  static list(): UpdrawRegisteredFont[] {
+  static list(): UpmadeRegisteredFont[] {
     return [...this._fonts.values()];
   }
 
@@ -186,7 +186,7 @@ export class UpdrawFontRegistry {
     return match?.cssFontFamily ?? fontFamily;
   }
 
-  static toRegisteredFont(registration: UpdrawFontRegistration): UpdrawRegisteredFont {
+  static toRegisteredFont(registration: UpmadeFontRegistration): UpmadeRegisteredFont {
     if (typeof registration === 'string') {
       return {
         key: registration,
@@ -212,10 +212,10 @@ export class UpdrawFontRegistry {
       return;
     }
 
-    eventTarget.dispatchEvent(new CustomEvent(UPDRAW_FONT_REGISTRY_EVENT));
+    eventTarget.dispatchEvent(new CustomEvent(UPMADE_FONT_REGISTRY_EVENT));
   }
 
   static get changeEventName(): string {
-    return UPDRAW_FONT_REGISTRY_EVENT;
+    return UPMADE_FONT_REGISTRY_EVENT;
   }
 }

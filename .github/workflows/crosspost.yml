@@ -1,0 +1,194 @@
+# Posts a message to X, Bluesky, Mastodon (via the @humanwhocodes/crosspost CLI) and as a GitHub Discussion in
+# this repository. Manual only; dry run is the default.
+#
+# Setup: create a "social" environment (Settings > Environments, optionally with required reviewers) holding:
+#   Secrets:   TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET, TWITTER_API_CONSUMER_KEY,
+#              TWITTER_API_CONSUMER_SECRET, BLUESKY_APP_PASSWORD (an app password, not the account password),
+#              MASTODON_ACCESS_TOKEN
+#   Variables: BLUESKY_IDENTIFIER (e.g. upmade.bsky.social), MASTODON_HOST (e.g. mastodon.social),
+#              DISCUSSION_CATEGORY (optional, default "Announcements"; Discussions must be enabled on the repo)
+# How to create each token: https://github.com/humanwhocodes/crosspost#setting-up-strategies
+name: Crosspost
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: "Text to post (X: 280 chars with links counted as 23; Bluesky: 300 chars)"
+        required: true
+        type: string
+      title:
+        description: "GitHub Discussion title (default: start of the message)"
+        required: false
+        type: string
+      image:
+        description: "Optional image path in the repo (PNG/JPEG/GIF), e.g. apps/website/static/img/blog/foo.png"
+        required: false
+        type: string
+      image-alt:
+        description: "Alt text for the image"
+        required: false
+        type: string
+      x:
+        description: "Post to X"
+        type: boolean
+        default: true
+      bluesky:
+        description: "Post to Bluesky"
+        type: boolean
+        default: true
+      mastodon:
+        description: "Post to Mastodon"
+        type: boolean
+        default: true
+      github:
+        description: "Post as a GitHub Discussion"
+        type: boolean
+        default: true
+      dry-run:
+        description: "Only preview, don't post"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  discussions: write
+
+concurrency:
+  group: crosspost
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: social
+    # Inputs reach the scripts only through env, never ${{ }} inside run:, so quotes or $() in a message can't
+    # inject shell.
+    env:
+      MESSAGE: ${{ inputs.message }}
+      TITLE: ${{ inputs.title }}
+      IMAGE: ${{ inputs.image }}
+      IMAGE_ALT: ${{ inputs.image-alt }}
+      DRY_RUN: ${{ inputs.dry-run }}
+      USE_X: ${{ inputs.x }}
+      USE_BLUESKY: ${{ inputs.bluesky }}
+      USE_MASTODON: ${{ inputs.mastodon }}
+      USE_GITHUB: ${{ inputs.github }}
+    steps:
+      - name: Checkout repository
+        if: ${{ inputs.image != '' }}
+        uses: actions/checkout@v5
+
+      - name: Validate and preview
+        id: validate
+        env:
+          # Only whether each network's credentials are set, never their values. Checked here so a missing secret
+          # stops the run before anything is posted anywhere.
+          HAS_X: ${{ secrets.TWITTER_API_CONSUMER_KEY != '' && secrets.TWITTER_API_CONSUMER_SECRET != '' && secrets.TWITTER_ACCESS_TOKEN_KEY != '' && secrets.TWITTER_ACCESS_TOKEN_SECRET != '' }}
+          HAS_BLUESKY: ${{ vars.BLUESKY_IDENTIFIER != '' && secrets.BLUESKY_APP_PASSWORD != '' }}
+          HAS_MASTODON: ${{ vars.MASTODON_HOST != '' && secrets.MASTODON_ACCESS_TOKEN != '' }}
+        run: |
+          set -euo pipefail
+          networks=()
+          missing=()
+          [ "$USE_X" = true ] && networks+=(--twitter)
+          [ "$USE_BLUESKY" = true ] && networks+=(--bluesky)
+          [ "$USE_MASTODON" = true ] && networks+=(--mastodon)
+          if [ ${#networks[@]} -eq 0 ] && [ "$USE_GITHUB" != true ]; then
+            echo "::error::Select at least one network."; exit 1
+          fi
+          [ "$USE_X" = true ] && [ "$HAS_X" != true ] && missing+=("X: secrets TWITTER_API_CONSUMER_KEY, TWITTER_API_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET")
+          [ "$USE_BLUESKY" = true ] && [ "$HAS_BLUESKY" != true ] && missing+=("Bluesky: variable BLUESKY_IDENTIFIER, secret BLUESKY_APP_PASSWORD")
+          [ "$USE_MASTODON" = true ] && [ "$HAS_MASTODON" != true ] && missing+=("Mastodon: variable MASTODON_HOST, secret MASTODON_ACCESS_TOKEN")
+          if [ ${#missing[@]} -gt 0 ]; then
+            for m in "${missing[@]}"; do echo "::error::Missing credentials in the \"social\" environment for $m"; done
+            exit 1
+          fi
+          if [ -n "$IMAGE" ]; then
+            test -f "$IMAGE" || { echo "::error::Image $IMAGE not found in the repository."; exit 1; }
+            case "${IMAGE,,}" in *.png|*.jpg|*.jpeg|*.gif) ;; *) echo "::error::Image must be PNG, JPEG or GIF."; exit 1;; esac
+          fi
+          len=$(printf '%s' "$MESSAGE" | wc -m)
+          # X counts every link as 23 characters.
+          xlen=$(printf '%s' "$MESSAGE" | sed -E 's#https?://[^[:space:]]+#xxxxxxxxxxxxxxxxxxxxxxx#g' | wc -m)
+          if [ "$USE_X" = true ] && [ "$xlen" -gt 280 ]; then
+            echo "::error::Message is $xlen characters for X; X allows 280."; exit 1
+          fi
+          if [ "$USE_BLUESKY" = true ] && [ "$len" -gt 300 ]; then
+            echo "::error::Message is $len characters; Bluesky allows 300."; exit 1
+          fi
+          [ "$USE_GITHUB" = true ] && shown=("${networks[@]}" --github) || shown=("${networks[@]}")
+          {
+            [ "$DRY_RUN" = true ] && echo "### Crosspost (dry run, nothing posted)" || echo "### Crosspost"
+            echo "Networks: ${shown[*]}"
+            echo "Length: $len (X: $xlen)"
+            [ -n "$IMAGE" ] && echo "Image: \`$IMAGE\` (alt: ${IMAGE_ALT:-$(basename "$IMAGE")})"
+            echo
+            echo '```'
+            printf '%s\n' "$MESSAGE"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "networks=${networks[*]}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node.js
+        if: ${{ !inputs.dry-run && steps.validate.outputs.networks != '' }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24.18.0"
+
+      - name: Post to X, Bluesky and Mastodon
+        if: ${{ !inputs.dry-run && steps.validate.outputs.networks != '' }}
+        env:
+          NETWORKS: ${{ steps.validate.outputs.networks }}
+          TWITTER_ACCESS_TOKEN_KEY: ${{ secrets.TWITTER_ACCESS_TOKEN_KEY }}
+          TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+          TWITTER_API_CONSUMER_KEY: ${{ secrets.TWITTER_API_CONSUMER_KEY }}
+          TWITTER_API_CONSUMER_SECRET: ${{ secrets.TWITTER_API_CONSUMER_SECRET }}
+          BLUESKY_HOST: bsky.social
+          BLUESKY_IDENTIFIER: ${{ vars.BLUESKY_IDENTIFIER }}
+          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          MASTODON_HOST: ${{ vars.MASTODON_HOST }}
+          MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+        run: |
+          set -euo pipefail
+          read -ra args <<< "$NETWORKS"
+          if [ -n "$IMAGE" ]; then
+            args+=(--image "$IMAGE" --image-alt "${IMAGE_ALT:-$(basename "$IMAGE")}")
+          fi
+          # Exits non-zero if any network fails; the others are still attempted.
+          npx --yes @humanwhocodes/crosspost@1.0.4 "${args[@]}" "$MESSAGE"
+
+      # Runs even if a social network failed above, so one broken token doesn't block the announcement here.
+      - name: Post GitHub Discussion
+        if: ${{ !cancelled() && !inputs.dry-run && inputs.github && steps.validate.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CATEGORY: ${{ vars.DISCUSSION_CATEGORY || 'Announcements' }}
+        run: |
+          set -euo pipefail
+          title="$TITLE"
+          if [ -z "$title" ]; then
+            title=$(printf '%s' "$MESSAGE" | head -n1 | cut -c1-100)
+          fi
+          body="$MESSAGE"
+          if [ -n "$IMAGE" ]; then
+            body+=$'\n\n'"![${IMAGE_ALT:-$(basename "$IMAGE")}](https://github.com/$GITHUB_REPOSITORY/raw/$GITHUB_SHA/$IMAGE)"
+          fi
+          repo=$(gh api graphql \
+            -f query='query($owner:String!,$name:String!){repository(owner:$owner,name:$name){id hasDiscussionsEnabled discussionCategories(first:50){nodes{id name}}}}' \
+            -f owner="${GITHUB_REPOSITORY%/*}" -f name="${GITHUB_REPOSITORY#*/}")
+          if [ "$(jq -r .data.repository.hasDiscussionsEnabled <<< "$repo")" != true ]; then
+            echo "::error::Discussions are not enabled for $GITHUB_REPOSITORY."; exit 1
+          fi
+          repo_id=$(jq -r .data.repository.id <<< "$repo")
+          category_id=$(jq -r --arg c "$CATEGORY" '.data.repository.discussionCategories.nodes[] | select(.name == $c) | .id' <<< "$repo")
+          if [ -z "$category_id" ]; then
+            echo "::error::Discussion category \"$CATEGORY\" not found."; exit 1
+          fi
+          url=$(gh api graphql \
+            -f query='mutation($repo:ID!,$cat:ID!,$title:String!,$body:String!){createDiscussion(input:{repositoryId:$repo,categoryId:$cat,title:$title,body:$body}){discussion{url}}}' \
+            -f repo="$repo_id" -f cat="$category_id" -f title="$title" -f body="$body" \
+            --jq .data.createDiscussion.discussion.url)
+          echo "Posted: $url"
+          echo "GitHub Discussion: $url" >> "$GITHUB_STEP_SUMMARY"

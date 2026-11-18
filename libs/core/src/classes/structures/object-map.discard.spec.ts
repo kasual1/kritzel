@@ -1,5 +1,5 @@
-import { UpdrawObjectMap } from './object-map.structure';
-import type { UpdrawCore } from '../core/core.class';
+import { UpmadeObjectMap } from './object-map.structure';
+import type { UpmadeCore } from '../core/core.class';
 
 // Real Yjs on purpose: these tests pin how a discarded in-progress object interacts with the undo history.
 
@@ -20,7 +20,7 @@ class FakeObject {
 }
 
 jest.mock('../core/reviver.class', () => ({
-  UpdrawReviver: jest.fn().mockImplementation(() => ({
+  UpmadeReviver: jest.fn().mockImplementation(() => ({
     revive: (data: { id: string; x: number }) => new FakeObject(data.id, data.x),
   })),
 }));
@@ -47,7 +47,7 @@ const createCore = () => ({
 });
 
 /** Starts an in-progress object the way the drawing tools do: insert, mark it active, then grow it. */
-const startDrawing = (map: UpdrawObjectMap<any>, id: string, moves: number) => {
+const startDrawing = (map: UpmadeObjectMap<any>, id: string, moves: number) => {
   const object = new FakeObject(id, 0);
   map.insert(object as any);
   map.setActiveDrawingObject(id);
@@ -57,14 +57,14 @@ const startDrawing = (map: UpdrawObjectMap<any>, id: string, moves: number) => {
   }
 };
 
-describe('UpdrawObjectMap.discard (real Yjs)', () => {
-  let map: UpdrawObjectMap<any>;
+describe('UpmadeObjectMap.discard (real Yjs)', () => {
+  let map: UpmadeObjectMap<any>;
   let core: ReturnType<typeof createCore>;
 
   beforeEach(async () => {
     core = createCore();
-    map = new UpdrawObjectMap<any>();
-    await map.initialize(core as unknown as UpdrawCore, 'ws', { providers: [] });
+    map = new UpmadeObjectMap<any>();
+    await map.initialize(core as unknown as UpmadeCore, 'ws', { providers: [] });
     // An earlier, finished action the user can undo.
     map.insert(new FakeObject('earlier', 0) as any);
     map.stopUndoCapturing();

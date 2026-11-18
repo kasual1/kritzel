@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { UpdrawEditor, UpdrawLocale, UpdrawWorkspace, LocaleCode } from '@updraw/angular-editor';
+import { UpmadeEditor, UpmadeLocale, UpmadeWorkspace, LocaleCode } from '@upmade/angular-editor';
 import { createSeedObjects } from '../../../const/seed-objects';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 
-const spanishLocale: UpdrawLocale = {
+const spanishLocale: UpmadeLocale = {
   code: 'es',
   label: 'Español',
   terms: {
@@ -31,14 +31,14 @@ const spanishLocale: UpdrawLocale = {
 
 @Component({
   selector: 'app-localization-custom',
-  imports: [UpdrawEditor, ToolbarComponent],
+  imports: [UpmadeEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
       <button [class.active]="activeLocale() === 'es'" (click)="setLocale('es')">Español</button>
     </app-toolbar>
     <div class="editor-wrap">
-      <updraw-editor
+      <upmade-editor
         editorId="localization-custom"
         [locales]="customLocales"
         [locale]="activeLocale()"
@@ -49,7 +49,7 @@ const spanishLocale: UpdrawLocale = {
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="true"
         [isWorkspaceManagerVisible]="true"
-      ></updraw-editor>
+      ></upmade-editor>
     </div>
   `,
   styles: [`
@@ -61,9 +61,9 @@ const spanishLocale: UpdrawLocale = {
 export class LocalizationCustomComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
   
-  customLocales: UpdrawLocale[] = [spanishLocale];
+  customLocales: UpmadeLocale[] = [spanishLocale];
   
   activeLocale = signal<LocaleCode>('es');
 

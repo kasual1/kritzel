@@ -8,7 +8,7 @@ Run all commands from `apps/app` (or use the `app:*` scripts from the monorepo r
 This development environment matches production architecture exactly:
 - **nginx** serves as the single entry point on port 8080, routing traffic to all backend services
 - **api**, **websocket** and **postgres** are accessible only through the internal Docker network
-- The **Angular client** is not a container in dev: it runs on the host via `npm run app:client` (from the monorepo root) so it can use the local updraw libraries. nginx proxies `/` to `host.docker.internal:4200`
+- The **Angular client** is not a container in dev: it runs on the host via `npm run app:client` (from the monorepo root) so it can use the local upmade libraries. nginx proxies `/` to `host.docker.internal:4200`
 - This ensures you test the same routing and reverse proxy behavior as production
 
 ### Accessing Services
@@ -27,7 +27,7 @@ This development environment matches production architecture exactly:
 docker compose --env-file .env.dev -f docker-compose.dev.yml up -d --build
 ```
 
-Then start the client from the monorepo root (builds the updraw libraries, installs them into the client and runs `ng serve`):
+Then start the client from the monorepo root (builds the upmade libraries, installs them into the client and runs `ng serve`):
 
 ```bash
 npm run app:client
@@ -170,7 +170,7 @@ docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql 
 ```
 
 ```bash
-docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d updraw -c "\\dt"
+docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d upmade -c "\\dt"
 ```
 
 ## API migrations (TypeORM)
@@ -198,7 +198,7 @@ docker compose --env-file .env.dev -f docker-compose.dev.yml exec api sh -lc "np
 Show applied migration history in the DB:
 
 ```bash
-docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d updraw -c "SELECT id, timestamp, name FROM migrations ORDER BY id"
+docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d upmade -c "SELECT id, timestamp, name FROM migrations ORDER BY id"
 ```
 
 Auto-apply pending migrations by restarting the api (startup runs migrations first):
@@ -209,17 +209,30 @@ docker compose --env-file .env.dev -f docker-compose.dev.yml restart api
 
 ## Local setup from before the rename
 
-The dev compose project is now `updraw-app` (it was `kritzel-app`), so `app:dev` starts with a fresh `updraw-app_pgdata_dev` volume and the database `updraw`.
+The dev compose project is now `upmade-app`, so `app:dev` starts with a fresh `upmade-app_pgdata_dev` volume and the database `upmade`. Earlier setups used `updraw-app` (volume `updraw-app_pgdata_dev`, database `updraw`) or, before that, `kritzel-app` (volume `kritzel-app_pgdata_dev`, database `kritzel`).
 
-- In `.env.dev`, change the database name at the end of `DATABASE_URL` to `updraw`. Otherwise the api cannot connect, never becomes healthy, and websocket does not start.
-- To keep your old local data, copy the old volume before the first start, then rename the database (as in step 3 of [docs/rebrand-cutover.md](docs/rebrand-cutover.md)):
+- In `.env.dev`, change the database name at the end of `DATABASE_URL` to `upmade`. Otherwise the api cannot connect, never becomes healthy, and websocket does not start.
+- To keep your old local data, copy the old volume before the first start, then rename the database (as in step 3 of [docs/rebrand-cutover.md](docs/rebrand-cutover.md)). On its first start the api moves the documents to the `upmade-…` names; a Kritzel-era database gets both rebrand migrations.
+
+Copy the newest one you used: `updraw-app_pgdata_dev`, or `kritzel-app_pgdata_dev` if you never ran the Updraw setup.
+
+First stop the old stack. `npm run app:stop` and the commands in this file only reach `upmade-app` now, so a running `updraw-app` or `kritzel-app` stack would keep writing to the volume you copy and keep ports 5432 and 8080, and `up -d postgres` below would fail with `port is already allocated`:
+
+```bash
+docker compose -p updraw-app down    # no -v: the old volume is what you copy
+docker compose -p kritzel-app down   # Kritzel-era setups; does nothing if there is no such stack
+docker volume ls | grep pgdata_dev
+```
+
+If `upmade-app_pgdata_dev` is already listed, `app:dev` ran before the copy. Unless you need its data, remove it first: `docker compose --env-file .env.dev -f docker-compose.dev.yml down -v` (this deletes `upmade-app_pgdata_dev` only).
 
 ```bash
 docker compose --env-file .env.dev -f docker-compose.dev.yml create postgres
 ```
 
 ```bash
-docker run --rm -v kritzel-app_pgdata_dev:/from:ro -v updraw-app_pgdata_dev:/to alpine sh -c 'cp -a /from/. /to/'
+OLD_VOLUME=updraw-app_pgdata_dev   # or kritzel-app_pgdata_dev
+docker run --rm -v "$OLD_VOLUME":/from:ro -v upmade-app_pgdata_dev:/to alpine sh -c 'cp -a /from/. /to/'
 ```
 
 ```bash
@@ -227,8 +240,14 @@ docker compose --env-file .env.dev -f docker-compose.dev.yml up -d postgres
 ```
 
 ```bash
-docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d postgres -c 'ALTER DATABASE kritzel RENAME TO updraw'
+docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -l   # updraw or kritzel
 ```
+
+```bash
+docker compose --env-file .env.dev -f docker-compose.dev.yml exec postgres psql -U postgres -d postgres -c 'ALTER DATABASE updraw RENAME TO upmade'   # or kritzel
+```
+
+The old volumes stay as they were; remove them with `docker volume rm` once you no longer need them.
 
 ## Clean restart flow (good for DB init issues)
 

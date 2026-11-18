@@ -1,6 +1,6 @@
-import { UpdrawEngineState } from "../interfaces/engine-state.interface";
+import { UpmadeEngineState } from "../interfaces/engine-state.interface";
 
-export const DEFAULT_ENGINE_CONFIG: UpdrawEngineState = {
+export const DEFAULT_ENGINE_CONFIG: UpmadeEngineState = {
   activeWorkspace: undefined,
   activeTool: null,
   objects: null,

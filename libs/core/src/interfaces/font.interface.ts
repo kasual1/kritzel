@@ -1,13 +1,13 @@
-export interface UpdrawFontDefinition {
+export interface UpmadeFontDefinition {
   family: string;
   label?: string;
   cssFontFamily?: string;
   source?: string;
 }
 
-export type UpdrawFontRegistration = string | UpdrawFontDefinition;
+export type UpmadeFontRegistration = string | UpmadeFontDefinition;
 
-export interface UpdrawRegisteredFont {
+export interface UpmadeRegisteredFont {
   key: string;
   family: string;
   label: string;
@@ -15,4 +15,4 @@ export interface UpdrawRegisteredFont {
   source?: string;
 }
 
-export type UpdrawFontMap = Record<string, UpdrawFontRegistration>;
+export type UpmadeFontMap = Record<string, UpmadeFontRegistration>;

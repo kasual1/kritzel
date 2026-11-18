@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { UpdrawEditor, UpdrawWorkspace, type HTMLUpdrawEditorElement } from '@updraw/react-editor';
+import { UpmadeEditor, UpmadeWorkspace, type HTMLUpmadeEditorElement } from '@upmade/react-editor';
 import { playHeroScene } from './hero-scene';
 
 const WORKSPACE_ID = 'agentic-canvas';
@@ -14,11 +14,11 @@ const hostStyle: CSSProperties = {
  * The scene plays once when the editor is ready; reload the page to play it again.
  */
 export function AgenticCanvasInfographic() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const [isWorking, setIsWorking] = useState(false);
   const [workspaces] = useState(() => [
-    new UpdrawWorkspace({ id: WORKSPACE_ID, name: 'Agentic canvas', objects: [] }),
+    new UpmadeWorkspace({ id: WORKSPACE_ID, name: 'Agentic canvas', objects: [] }),
   ]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
@@ -39,11 +39,12 @@ export function AgenticCanvasInfographic() {
 
   return (
     <div style={hostStyle}>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="infographic-agentic-canvas"
         workspaces={workspaces}
         activeWorkspaceId={WORKSPACE_ID}
+        isWatermarkVisible={false}
         isChatBoxVisible
         isChatBoxLoading={isWorking}
         isWorkspaceManagerVisible={false}

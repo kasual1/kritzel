@@ -3,12 +3,12 @@
 /* auto-generated vue proxies */
 import { defineContainer, type StencilVueComponent } from '@stencil/vue-output-target/runtime';
 
-import type { JSX } from '@updraw/engine/dist/components';
+import type { JSX } from '@upmade/engine/dist/components';
 
-import { defineCustomElement as defineUpdrawEngine } from '@updraw/engine/dist/components/updraw-engine.js';
+import { defineCustomElement as defineUpmadeEngine } from '@upmade/engine/dist/components/upmade-engine.js';
 
 
-export const UpdrawEngine: StencilVueComponent<JSX.UpdrawEngine> = /*@__PURE__*/ defineContainer<JSX.UpdrawEngine>('updraw-engine', defineUpdrawEngine, [
+export const UpmadeEngine: StencilVueComponent<JSX.UpmadeEngine> = /*@__PURE__*/ defineContainer<JSX.UpmadeEngine>('upmade-engine', defineUpmadeEngine, [
   'workspaces',
   'editorId',
   'activeWorkspaceId',

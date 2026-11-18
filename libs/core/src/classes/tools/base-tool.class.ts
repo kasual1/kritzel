@@ -1,31 +1,31 @@
-import { UpdrawSerializable } from '../../interfaces/serializable.interface';
-import { UpdrawToolType } from '../../interfaces/tool-type.interface';
-import { UpdrawTool } from '../../interfaces/tool.interface';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeSerializable } from '../../interfaces/serializable.interface';
+import { UpmadeToolType } from '../../interfaces/tool-type.interface';
+import { UpmadeTool } from '../../interfaces/tool.interface';
+import { UpmadeCore } from '../core/core.class';
 
 /**
- * Abstract base class for all drawing tools in Updraw.
+ * Abstract base class for all drawing tools in Upmade.
  * Provides common functionality and defines the interface that all tools must implement.
  * Tools handle user interactions (pointer events, wheel events) and can be serialized/deserialized.
  */
-export class UpdrawBaseTool implements UpdrawTool, UpdrawSerializable {
+export class UpmadeBaseTool implements UpmadeTool, UpmadeSerializable {
   /** Class name identifier used for serialization/deserialization */
   __class__: string = this.constructor.name;
 
   /** Identifies the tool type for config resolution (survives minification and dual-package bundling) */
-  toolType: UpdrawToolType = 'base';
+  toolType: UpmadeToolType = 'base';
 
   /** Human-readable name of the tool */
   name: string = 'base-tool';
 
-  /** Reference to the Updraw core instance for accessing store, viewport, and other core functionality */
-  protected readonly _core: UpdrawCore;
+  /** Reference to the Upmade core instance for accessing store, viewport, and other core functionality */
+  protected readonly _core: UpmadeCore;
 
   /**
-   * Creates a new instance of UpdrawBaseTool.
-   * @param core - The UpdrawCore instance that provides access to application state and functionality
+   * Creates a new instance of UpmadeBaseTool.
+   * @param core - The UpmadeCore instance that provides access to application state and functionality
    */
-  constructor(core: UpdrawCore) {
+  constructor(core: UpmadeCore) {
     this._core = core;
     void this._core; // Avoid unused variable warning
   }
@@ -113,7 +113,7 @@ export class UpdrawBaseTool implements UpdrawTool, UpdrawSerializable {
    * @param object - The serialized tool data to restore
    * @returns This tool instance with restored properties
    */
-  deserialize(object: any): UpdrawSerializable {
+  deserialize(object: any): UpmadeSerializable {
     // The class defines its own `__class__`; a serialized value (possibly a legacy name) must not override it.
     const data = { ...object };
     delete data.__class__;

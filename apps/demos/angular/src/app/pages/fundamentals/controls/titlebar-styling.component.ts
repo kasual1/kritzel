@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
-  UpdrawEditor,
-  UpdrawObjectConfig,
-  UpdrawObjectTitlebarConfig,
-  UpdrawShape,
-  UpdrawTheme,
-  UpdrawWorkspace,
+  UpmadeEditor,
+  UpmadeObjectConfig,
+  UpmadeObjectTitlebarConfig,
+  UpmadeShape,
+  UpmadeTheme,
+  UpmadeWorkspace,
   ShapeType,
-} from '@updraw/angular-editor';
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 
@@ -20,12 +20,12 @@ const transparentTitlebar = {
   paddingX: '0',
 };
 
-const transparentTitlebarLightTheme: UpdrawTheme = {
+const transparentTitlebarLightTheme: UpmadeTheme = {
   ...angularThemeLight,
   titlebar: { ...angularThemeLight.titlebar, ...transparentTitlebar },
 };
 
-const transparentTitlebarDarkTheme: UpdrawTheme = {
+const transparentTitlebarDarkTheme: UpmadeTheme = {
   ...angularThemeDark,
   titlebar: { ...angularThemeDark.titlebar, ...transparentTitlebar },
 };
@@ -39,17 +39,17 @@ const frameConfig = {
 
 function createFrames() {
   return [
-    new UpdrawShape({ ...frameConfig, name: 'Landing page', translateX: -270, translateY: -110, width: 300, height: 200 }),
-    new UpdrawShape({ ...frameConfig, name: 'Pricing', translateX: 70, translateY: -110, width: 200, height: 200 }),
+    new UpmadeShape({ ...frameConfig, name: 'Landing page', translateX: -270, translateY: -110, width: 300, height: 200 }),
+    new UpmadeShape({ ...frameConfig, name: 'Pricing', translateX: 70, translateY: -110, width: 200, height: 200 }),
   ];
 }
 
 @Component({
   selector: 'app-titlebar-styling',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       editorId="titlebar-styling"
       theme="light"
       [themes]="themes"
@@ -60,25 +60,25 @@ function createFrames() {
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="true"
       [isWorkspaceManagerVisible]="false"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    updraw-editor { flex: 1; }
+    upmade-editor { flex: 1; }
   `],
 })
 export class TitlebarStylingComponent {
-  themes: UpdrawTheme[] = [transparentTitlebarLightTheme, transparentTitlebarDarkTheme];
+  themes: UpmadeTheme[] = [transparentTitlebarLightTheme, transparentTitlebarDarkTheme];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createFrames() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createFrames() })]);
 
-  readonly objectConfig: UpdrawObjectConfig = {
-    hasTitlebar: object => object.__class__ === 'UpdrawShape',
+  readonly objectConfig: UpmadeObjectConfig = {
+    hasTitlebar: object => object.__class__ === 'UpmadeShape',
     isRotatable: false,
     isResizable: false,
   };
 
-  readonly objectTitlebar: UpdrawObjectTitlebarConfig = {
+  readonly objectTitlebar: UpmadeObjectTitlebarConfig = {
     left: [{ id: 'title', type: 'title' }],
     right: [
       { id: 'settings', type: 'button', icon: 'settings', tooltip: 'Settings' },

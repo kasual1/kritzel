@@ -1,7 +1,7 @@
 import { bindCanvasTool, defineCanvasTool } from './canvas-tool';
-import { UpdrawShape } from '../objects/shape.class';
+import { UpmadeShape } from '../objects/shape.class';
 import { createIframeTool } from './canvas-tool-definitions';
-import { UpdrawIframeObject } from '../objects/iframe.class';
+import { UpmadeIframeObject } from '../objects/iframe.class';
 
 const actor = () => ({
   kind: 'agent' as const,
@@ -89,17 +89,17 @@ describe('bindCanvasTool with a placeholder', () => {
     });
     const tool = bindCanvasTool(
       placingActor,
-      defineCanvasTool<BoxInput, UpdrawShape>({
+      defineCanvasTool<BoxInput, UpmadeShape>({
         name: 'box',
         description: 'Adds a box.',
         inputSchema: boxSchema,
         example: { x: 0, width: 10, body: 'b' },
-        prepare: (input, ctx) => (input.body === 'bad' ? ctx.invalid('Bad body.') : new UpdrawShape({ translateX: input.x, width: input.width, height: 10 })),
+        prepare: (input, ctx) => (input.body === 'bad' ? ctx.invalid('Bad body.') : new UpmadeShape({ translateX: input.x, width: input.width, height: 10 })),
         execute: (shape, ctx) => ctx.perform({ type: 'addObject', object: shape }),
         placeholder: {
-          create: input => (typeof input.x === 'number' && typeof input.width === 'number' ? new UpdrawShape({ translateX: input.x, width: input.width, height: 10 }) : null),
+          create: input => (typeof input.x === 'number' && typeof input.width === 'number' ? new UpmadeShape({ translateX: input.x, width: input.width, height: 10 }) : null),
           fill: (placeholder, content) => {
-            (placeholder as UpdrawShape).height = (content as UpdrawShape).height;
+            (placeholder as UpmadeShape).height = (content as UpmadeShape).height;
           },
         },
       }),
@@ -166,11 +166,11 @@ describe('bindCanvasTool with a placeholder', () => {
 
 describe('create_iframe placeholder', () => {
   it('loads the code into the mounted iframe when it fills the placeholder', () => {
-    const placeholder = createIframeTool.placeholder!.create({ name: 'Counter', x: 0, y: 0, width: 200, height: 100 }, {} as any) as UpdrawIframeObject;
+    const placeholder = createIframeTool.placeholder!.create({ name: 'Counter', x: 0, y: 0, width: 200, height: 100 }, {} as any) as UpmadeIframeObject;
     expect(placeholder).toMatchObject({ isLoading: true, html: '', width: 200 });
     const element = document.createElement('iframe');
     placeholder.mount(element);
-    const content = new UpdrawIframeObject({ name: 'Counter', html: '<button id="plus">+</button>' });
+    const content = new UpmadeIframeObject({ name: 'Counter', html: '<button id="plus">+</button>' });
     createIframeTool.placeholder!.fill(placeholder, content);
     expect(placeholder.html).toBe('<button id="plus">+</button>');
     expect(element.srcdoc).toContain('<button id="plus">+</button>');

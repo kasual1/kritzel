@@ -1,7 +1,7 @@
-import { UpdrawKeyboardHelper } from './keyboard.helper';
-import { UpdrawDevicesHelper } from './devices.helper';
+import { UpmadeKeyboardHelper } from './keyboard.helper';
+import { UpmadeDevicesHelper } from './devices.helper';
 
-describe('UpdrawKeyboardHelper', () => {
+describe('UpmadeKeyboardHelper', () => {
   // Set up and tear down for meta tags
   let viewportMeta: HTMLMetaElement | null;
 
@@ -21,7 +21,7 @@ describe('UpdrawKeyboardHelper', () => {
 
       requestAnimationFrame(() => {
         const blurSpy = jest.spyOn(input, 'blur');
-        UpdrawKeyboardHelper.forceHideKeyboard();
+        UpmadeKeyboardHelper.forceHideKeyboard();
 
         expect(blurSpy).toHaveBeenCalledTimes(1);
         expect(document.activeElement).not.toBe(input);
@@ -39,7 +39,7 @@ describe('UpdrawKeyboardHelper', () => {
       }
 
       const activeElementBefore = document.activeElement;
-      UpdrawKeyboardHelper.forceHideKeyboard();
+      UpmadeKeyboardHelper.forceHideKeyboard();
       expect(document.activeElement).toBe(activeElementBefore);
     });
   });
@@ -53,7 +53,7 @@ describe('UpdrawKeyboardHelper', () => {
       document.head.appendChild(viewportMeta);
 
       requestAnimationFrame(() => {
-        UpdrawKeyboardHelper.enableInteractiveWidget();
+        UpmadeKeyboardHelper.enableInteractiveWidget();
         expect(viewportMeta!.content).toContain('interactive-widget=resizes-content');
       });
     });
@@ -65,12 +65,12 @@ describe('UpdrawKeyboardHelper', () => {
       viewportMeta.content = initialContent;
       document.head.appendChild(viewportMeta);
 
-      UpdrawKeyboardHelper.enableInteractiveWidget();
+      UpmadeKeyboardHelper.enableInteractiveWidget();
       expect(viewportMeta.content).toBe(initialContent);
     });
 
     it('should do nothing if no viewport meta tag is found', () => {
-      UpdrawKeyboardHelper.enableInteractiveWidget();
+      UpmadeKeyboardHelper.enableInteractiveWidget();
       const meta = document.querySelector('meta[name="viewport"]');
       expect(meta).toBeNull();
     });
@@ -84,7 +84,7 @@ describe('UpdrawKeyboardHelper', () => {
       viewportMeta.setAttribute('content', 'width=device-width, interactive-widget=resizes-content, initial-scale=1.0');
       document.head.appendChild(viewportMeta);
 
-      UpdrawKeyboardHelper.disableInteractiveWidget();
+      UpmadeKeyboardHelper.disableInteractiveWidget();
       expect(viewportMeta.getAttribute('content')).not.toContain('interactive-widget=resizes-content');
       expect(viewportMeta.getAttribute('content')).toBe('width=device-width, initial-scale=1.0');
     });
@@ -95,7 +95,7 @@ describe('UpdrawKeyboardHelper', () => {
       viewportMeta.setAttribute('content', 'interactive-widget=resizes-content, width=device-width');
       document.head.appendChild(viewportMeta);
 
-      UpdrawKeyboardHelper.disableInteractiveWidget();
+      UpmadeKeyboardHelper.disableInteractiveWidget();
       expect(viewportMeta.getAttribute('content')).toBe('width=device-width');
     });
 
@@ -106,7 +106,7 @@ describe('UpdrawKeyboardHelper', () => {
       viewportMeta.content = initialContent;
       document.head.appendChild(viewportMeta);
 
-      UpdrawKeyboardHelper.disableInteractiveWidget();
+      UpmadeKeyboardHelper.disableInteractiveWidget();
       expect(viewportMeta.content).toBe(initialContent);
     });
 
@@ -116,7 +116,7 @@ describe('UpdrawKeyboardHelper', () => {
       viewportMeta.setAttribute('content', 'interactive-widget=resizes-content');
       document.head.appendChild(viewportMeta);
 
-      UpdrawKeyboardHelper.disableInteractiveWidget();
+      UpmadeKeyboardHelper.disableInteractiveWidget();
       expect(viewportMeta.getAttribute('content')).toBe('');
     });
   });
@@ -130,8 +130,8 @@ describe('UpdrawKeyboardHelper', () => {
     };
 
     beforeEach(() => {
-      UpdrawKeyboardHelper.resetViewportBaseline();
-      jest.spyOn(UpdrawDevicesHelper, 'isMobile').mockReturnValue(true);
+      UpmadeKeyboardHelper.resetViewportBaseline();
+      jest.spyOn(UpmadeDevicesHelper, 'isMobile').mockReturnValue(true);
     });
 
     afterEach(() => {
@@ -141,48 +141,48 @@ describe('UpdrawKeyboardHelper', () => {
 
     it('should return false when the viewport is at its full height', () => {
       setInnerHeight(800);
-      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 800))).toBe(false);
+      expect(UpmadeKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 800))).toBe(false);
     });
 
     it('should detect the keyboard when the layout viewport does not resize (iOS)', () => {
       setInnerHeight(800);
-      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 450))).toBe(true);
+      expect(UpmadeKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 450))).toBe(true);
     });
 
     it('should detect the keyboard when the layout viewport resizes too (Android resizes-content)', () => {
       setInnerHeight(800);
-      UpdrawKeyboardHelper.recordViewportBaseline(createVisualViewport(400, 800));
+      UpmadeKeyboardHelper.recordViewportBaseline(createVisualViewport(400, 800));
 
       setInnerHeight(450);
-      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 450))).toBe(true);
+      expect(UpmadeKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 450))).toBe(true);
     });
 
     it('should detect the keyboard in landscape using a separate baseline', () => {
       setInnerHeight(800);
-      UpdrawKeyboardHelper.recordViewportBaseline(createVisualViewport(400, 800));
+      UpmadeKeyboardHelper.recordViewportBaseline(createVisualViewport(400, 800));
 
       setInnerHeight(380);
-      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(850, 380))).toBe(false);
+      expect(UpmadeKeyboardHelper.isKeyboardOpen(createVisualViewport(850, 380))).toBe(false);
 
       setInnerHeight(380);
-      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(850, 180))).toBe(true);
+      expect(UpmadeKeyboardHelper.isKeyboardOpen(createVisualViewport(850, 180))).toBe(true);
     });
 
     it('should not treat a minor height change (e.g. browser toolbar) as a keyboard', () => {
       setInnerHeight(800);
-      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 720))).toBe(false);
+      expect(UpmadeKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 720))).toBe(false);
     });
 
     it('should always return false on non-mobile devices, even with a small viewport', () => {
-      (UpdrawDevicesHelper.isMobile as jest.Mock).mockReturnValue(false);
+      (UpmadeDevicesHelper.isMobile as jest.Mock).mockReturnValue(false);
       setInnerHeight(800);
-      UpdrawKeyboardHelper.recordViewportBaseline(createVisualViewport(400, 800));
+      UpmadeKeyboardHelper.recordViewportBaseline(createVisualViewport(400, 800));
 
-      expect(UpdrawKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 200))).toBe(false);
+      expect(UpmadeKeyboardHelper.isKeyboardOpen(createVisualViewport(400, 200))).toBe(false);
     });
 
     it('should return false without a visual viewport', () => {
-      expect(UpdrawKeyboardHelper.isKeyboardOpen(null)).toBe(false);
+      expect(UpmadeKeyboardHelper.isKeyboardOpen(null)).toBe(false);
     });
   });
 });

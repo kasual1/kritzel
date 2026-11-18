@@ -1,13 +1,13 @@
-import { UpdrawResizeHandler } from './resize.handler';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
-import { UpdrawHandleType } from '../../enums/handle-type.enum';
+import { UpmadeResizeHandler } from './resize.handler';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
+import { UpmadeHandleType } from '../../enums/handle-type.enum';
 
 jest.mock('../../helpers/event.helper');
 
-describe('UpdrawResizeHandler', () => {
-  let resizeHandler: UpdrawResizeHandler;
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadeResizeHandler', () => {
+  let resizeHandler: UpmadeResizeHandler;
+  let mockCore: jest.Mocked<UpmadeCore>;
   let mockSelectionGroup: {
     width: number;
     height: number;
@@ -23,7 +23,7 @@ describe('UpdrawResizeHandler', () => {
   let mockState: {
     isResizing: boolean;
     isResizeHandleSelected: boolean;
-    resizeHandleType: UpdrawHandleType | null;
+    resizeHandleType: UpmadeHandleType | null;
     scale: number;
     pointers: Map<number, { clientX: number; clientY: number }>;
     longTouchTimeout: ReturnType<typeof setTimeout> | undefined;
@@ -52,7 +52,7 @@ describe('UpdrawResizeHandler', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockSelectionGroup = null;
     mockState = {
@@ -86,9 +86,9 @@ describe('UpdrawResizeHandler', () => {
         emitObjectsRemoved: jest.fn(),
         emitObjectsUpdated: jest.fn(),
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    resizeHandler = new UpdrawResizeHandler(mockCore);
+    resizeHandler = new UpmadeResizeHandler(mockCore);
   });
 
   describe('handlePointerDown', () => {
@@ -125,7 +125,7 @@ describe('UpdrawResizeHandler', () => {
       });
 
       it('should not start resize on non-left click', () => {
-        (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+        (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
         mockSelectionGroup = {
           width: 100,
           height: 50,
@@ -427,7 +427,7 @@ describe('UpdrawResizeHandler', () => {
       });
 
       it('should resize when above threshold', () => {
-        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+        mockState.resizeHandleType = UpmadeHandleType.BottomRight;
 
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'mouse',
@@ -459,7 +459,7 @@ describe('UpdrawResizeHandler', () => {
         });
 
         it('should resize correctly with BottomRight handle', () => {
-          mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+          mockState.resizeHandleType = UpmadeHandleType.BottomRight;
 
           const moveEvent = createPointerEvent('pointermove', {
             pointerType: 'mouse',
@@ -474,7 +474,7 @@ describe('UpdrawResizeHandler', () => {
         });
 
         it('should resize correctly with TopLeft handle', () => {
-          mockState.resizeHandleType = UpdrawHandleType.TopLeft;
+          mockState.resizeHandleType = UpmadeHandleType.TopLeft;
 
           const moveEvent = createPointerEvent('pointermove', {
             pointerType: 'mouse',
@@ -489,7 +489,7 @@ describe('UpdrawResizeHandler', () => {
         });
 
         it('should resize correctly with TopRight handle', () => {
-          mockState.resizeHandleType = UpdrawHandleType.TopRight;
+          mockState.resizeHandleType = UpmadeHandleType.TopRight;
 
           const moveEvent = createPointerEvent('pointermove', {
             pointerType: 'mouse',
@@ -504,7 +504,7 @@ describe('UpdrawResizeHandler', () => {
         });
 
         it('should resize correctly with BottomLeft handle', () => {
-          mockState.resizeHandleType = UpdrawHandleType.BottomLeft;
+          mockState.resizeHandleType = UpmadeHandleType.BottomLeft;
 
           const moveEvent = createPointerEvent('pointermove', {
             pointerType: 'mouse',
@@ -520,7 +520,7 @@ describe('UpdrawResizeHandler', () => {
       });
 
       it('should consider current scale when calculating resize', () => {
-        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+        mockState.resizeHandleType = UpmadeHandleType.BottomRight;
         mockState.scale = 2;
 
         const downEvent = createPointerEvent('pointerdown', {
@@ -544,7 +544,7 @@ describe('UpdrawResizeHandler', () => {
 
       it('should handle rotated selection group', () => {
         mockSelectionGroup!.rotation = Math.PI / 2; // 90 degrees
-        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+        mockState.resizeHandleType = UpmadeHandleType.BottomRight;
 
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'mouse',
@@ -565,7 +565,7 @@ describe('UpdrawResizeHandler', () => {
       });
 
       it('should rebase resize baseline when external anchored lines reshape the group', () => {
-        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+        mockState.resizeHandleType = UpmadeHandleType.BottomRight;
         mockSelectionGroup!.hasExternalAnchoredLineConnections = jest.fn().mockReturnValue(true);
 
         const downEvent = createPointerEvent('pointerdown', {
@@ -617,7 +617,7 @@ describe('UpdrawResizeHandler', () => {
       });
 
       it('should resize on touch move above threshold', () => {
-        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+        mockState.resizeHandleType = UpmadeHandleType.BottomRight;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'touch',
@@ -641,7 +641,7 @@ describe('UpdrawResizeHandler', () => {
         mockState.longTouchTimeout = setTimeout(() => { }, 1000);
         const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
-        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+        mockState.resizeHandleType = UpmadeHandleType.BottomRight;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'touch',
@@ -694,7 +694,7 @@ describe('UpdrawResizeHandler', () => {
       });
 
       it('should end resize and reset state', () => {
-        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+        mockState.resizeHandleType = UpmadeHandleType.BottomRight;
 
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'mouse',
@@ -715,7 +715,7 @@ describe('UpdrawResizeHandler', () => {
       });
 
       it('should update selection and emit changes when resized', () => {
-        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+        mockState.resizeHandleType = UpmadeHandleType.BottomRight;
 
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'mouse',
@@ -788,7 +788,7 @@ describe('UpdrawResizeHandler', () => {
       });
 
       it('should end resize on touch up', () => {
-        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+        mockState.resizeHandleType = UpmadeHandleType.BottomRight;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'touch',
@@ -806,7 +806,7 @@ describe('UpdrawResizeHandler', () => {
       });
 
       it('should update selection and emit changes when resized with touch', () => {
-        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+        mockState.resizeHandleType = UpmadeHandleType.BottomRight;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'touch',
@@ -837,7 +837,7 @@ describe('UpdrawResizeHandler', () => {
         mockState.longTouchTimeout = setTimeout(() => { }, 1000);
         const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
-        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+        mockState.resizeHandleType = UpmadeHandleType.BottomRight;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
         const downEvent = createPointerEvent('pointerdown', {
           pointerType: 'touch',
@@ -870,7 +870,7 @@ describe('UpdrawResizeHandler', () => {
           beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
-        mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+        mockState.resizeHandleType = UpmadeHandleType.BottomRight;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
 
         const downEvent = createPointerEvent('pointerdown', {
@@ -905,7 +905,7 @@ describe('UpdrawResizeHandler', () => {
         beginTransform: jest.fn(),
       };
       mockState.isResizeHandleSelected = true;
-      mockState.resizeHandleType = UpdrawHandleType.BottomRight;
+      mockState.resizeHandleType = UpmadeHandleType.BottomRight;
     });
 
     it('should continue resizing after initial threshold is met', () => {

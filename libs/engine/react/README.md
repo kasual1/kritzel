@@ -1,28 +1,28 @@
-# Updraw Engine for React
+# Upmade Engine for React
 
-Build infinite canvas and collaborative whiteboard experiences in React with Updraw's native wrapper and TypeScript-first API.
+Build infinite canvas and collaborative whiteboard experiences in React with Upmade's native wrapper and TypeScript-first API.
 
-Updraw is a framework-agnostic infinite canvas and collaborative whiteboard engine. It provides web components that work natively in any framework, with a first-class React wrapper for idiomatic JSX integration.
+Upmade is a framework-agnostic infinite canvas and collaborative whiteboard engine. It provides web components that work natively in any framework, with a first-class React wrapper for idiomatic JSX integration.
 
-Updraw handles the hard parts of canvas-based applications — infinite pan and zoom, hit-testing, CRDT-based collaboration, undo and redo, and cross-browser rendering — so you can focus on your product's domain logic.
+Upmade handles the hard parts of canvas-based applications — infinite pan and zoom, hit-testing, CRDT-based collaboration, undo and redo, and cross-browser rendering — so you can focus on your product's domain logic.
 
-**Full documentation:** [updraw.io/docs/react/getting-started/quick-start](https://updraw.io/docs/react/getting-started/quick-start)
+**Full documentation:** [upmade.io/docs/react/getting-started/quick-start](https://upmade.io/docs/react/getting-started/quick-start)
 
 ## Installation
 
 ```bash
-npm install @updraw/react-engine
+npm install @upmade/react-engine
 ```
 
 ## Setup
 
-Render Updraw in your component:
+Render Upmade in your component:
 
 ```tsx
-import { UpdrawEngine } from '@updraw/react-engine';
+import { UpmadeEngine } from '@upmade/react-engine';
 
 export function Editor() {
-  return <UpdrawEngine style={{ display: 'block', width: '100%', height: '100vh' }} />;
+  return <UpmadeEngine style={{ display: 'block', width: '100%', height: '100vh' }} />;
 }
 ```
 
@@ -35,7 +35,7 @@ This renders the lower-level engine canvas without the editor toolbar shell.
 By default, the engine uses an empty sync provider list, so canvas state is reset on reload. To persist objects locally across page reloads, configure `syncConfig` explicitly with `IndexedDBSyncProvider`.
 
 ```tsx
-import { UpdrawEngine, IndexedDBSyncProvider } from '@updraw/react-engine';
+import { UpmadeEngine, IndexedDBSyncProvider } from '@upmade/react-engine';
 
 export function Editor() {
   const syncConfig = {
@@ -43,7 +43,7 @@ export function Editor() {
   };
 
   return (
-    <UpdrawEngine
+    <UpmadeEngine
       syncConfig={syncConfig}
       style={{ display: 'block', width: '100%', height: '100vh' }}
     />
@@ -53,7 +53,7 @@ export function Editor() {
 
 ### Apply Full Viewport Styling
 
-To ensure the Updraw engine occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g. `styles.css`):
+To ensure the Upmade engine occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g. `styles.css`):
 
 ```css
 html,
@@ -80,17 +80,17 @@ For optimal rendering and responsiveness on mobile devices, add this meta tag wi
 
 ## Fundamentals
 
-Updraw is composed of a small set of core concepts that work together to power your canvas experience:
+Upmade is composed of a small set of core concepts that work together to power your canvas experience:
 
-- **[Components](https://updraw.io/docs/react/getting-started/basic-usage)** — Two entry points, a batteries-included editor and a headless engine, to match any integration style.
-- **[Tools](https://updraw.io/docs/react/fundamentals/tools)** — State-machine interaction handlers that define how users draw, select, and manipulate the canvas.
-- **[Objects](https://updraw.io/docs/react/fundamentals/objects)** — The visual building blocks on the canvas, such as paths, shapes, text, and images with shared spatial properties.
-- **[Workspaces](https://updraw.io/docs/react/fundamentals/workspaces)** — Containers that manage an entire canvas collection, view state, and editor configuration.
-- **[Theming](https://updraw.io/docs/react/customization/themes)** — Built-in light and dark themes with full CSS variable customization to match your brand.
-- **[Collaboration](https://updraw.io/docs/react/advanced/collaboration)** — Real-time multi-user sync powered by Yjs CRDTs with pluggable transport providers.
+- **[Components](https://upmade.io/docs/react/getting-started/basic-usage)** — Two entry points, a batteries-included editor and a headless engine, to match any integration style.
+- **[Tools](https://upmade.io/docs/react/fundamentals/tools)** — State-machine interaction handlers that define how users draw, select, and manipulate the canvas.
+- **[Objects](https://upmade.io/docs/react/fundamentals/objects)** — The visual building blocks on the canvas, such as paths, shapes, text, and images with shared spatial properties.
+- **[Workspaces](https://upmade.io/docs/react/fundamentals/workspaces)** — Containers that manage an entire canvas collection, view state, and editor configuration.
+- **[Theming](https://upmade.io/docs/react/customization/themes)** — Built-in light and dark themes with full CSS variable customization to match your brand.
+- **[Collaboration](https://upmade.io/docs/react/advanced/collaboration)** — Real-time multi-user sync powered by Yjs CRDTs with pluggable transport providers.
 
-Learn more in the [full documentation](https://updraw.io/docs/react/getting-started/basic-usage).
+Learn more in the [full documentation](https://upmade.io/docs/react/getting-started/basic-usage).
 
 ## License
 
-Updraw is released under the [MIT License](./LICENSE.md).
+Upmade is released under the [MIT License](./LICENSE.md).

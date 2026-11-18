@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import {
-  UpdrawDynamicObjectRendererRegistry,
-  UpdrawEditor,
-  UpdrawWorkspace,
-  type HTMLUpdrawEditorElement,
-  type UpdrawSyncConfig,
-} from "@updraw/react-editor";
+  UpmadeDynamicObjectRendererRegistry,
+  UpmadeEditor,
+  UpmadeWorkspace,
+  type HTMLUpmadeEditorElement,
+  type UpmadeSyncConfig,
+} from "@upmade/react-editor";
 import { reactThemeDark } from "../../const/react-theme-dark";
 import { reactThemeLight } from "../../const/react-theme-light";
 import {
@@ -64,13 +64,13 @@ function countButtonStyle(active: boolean): CSSProperties {
 }
 
 export function PerformanceShowcasePage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const mountedButtons = useRef(new Map<string, GithubStarButtonInstance>());
   const [starCount, setStarCount] = useState(DEFAULT_STAR_COUNT);
   const [isBusy, setIsBusy] = useState(false);
 
-  const syncConfig = useMemo<UpdrawSyncConfig>(() => ({ providers: [] }), []);
-  const workspaces = useMemo(() => [new UpdrawWorkspace({ objects: createGithubStarObjects(DEFAULT_STAR_COUNT) })], []);
+  const syncConfig = useMemo<UpmadeSyncConfig>(() => ({ providers: [] }), []);
+  const workspaces = useMemo(() => [new UpmadeWorkspace({ objects: createGithubStarObjects(DEFAULT_STAR_COUNT) })], []);
 
   useEffect(() => {
     const buttons = mountedButtons.current;
@@ -79,7 +79,7 @@ export function PerformanceShowcasePage() {
       buttons.delete(objectId);
       if (container) container.innerHTML = "";
     };
-    UpdrawDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
+    UpmadeDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
       onMount: ({ object, container, data }) => {
         if (!container) return;
         destroy(object.id, container);
@@ -95,7 +95,7 @@ export function PerformanceShowcasePage() {
     return () => {
       buttons.forEach((instance) => instance.destroy());
       buttons.clear();
-      UpdrawDynamicObjectRendererRegistry.unregister(GITHUB_STAR_RENDERER_KEY);
+      UpmadeDynamicObjectRendererRegistry.unregister(GITHUB_STAR_RENDERER_KEY);
     };
   }, []);
 
@@ -116,7 +116,7 @@ export function PerformanceShowcasePage() {
 
   return (
     <div style={hostStyle}>
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="examples-performance-showcase"
         theme="light"

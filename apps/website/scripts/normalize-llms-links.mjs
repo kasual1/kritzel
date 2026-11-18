@@ -11,7 +11,7 @@ const baseUrl = `/${(process.env.Docusaurus_BASE_URL || '/').split('/').filter(B
 const parser = unified().use(remarkParse).use(remarkGfm).use(remarkStringify);
 const indexPath = new URL('llms.txt', buildRoot);
 const index = await readFile(indexPath, 'utf8');
-if (!index.startsWith('# Updraw\n')) throw new Error('Missing or invalid generated llms.txt');
+if (!index.startsWith('# Upmade\n')) throw new Error('Missing or invalid generated llms.txt');
 
 function visit(node, visitor) {
   for (const child of node.children ?? []) visit(child, visitor);

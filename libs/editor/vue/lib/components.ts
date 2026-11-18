@@ -3,18 +3,18 @@
 /* auto-generated vue proxies */
 import { defineContainer, type StencilVueComponent } from '@stencil/vue-output-target/runtime';
 
-import type { JSX } from '@updraw/editor/dist/components';
+import type { JSX } from '@upmade/editor/dist/components';
 
-import { defineCustomElement as defineUpdrawChatBox } from '@updraw/editor/dist/components/updraw-chat-box.js';
-import { defineCustomElement as defineUpdrawEditor } from '@updraw/editor/dist/components/updraw-editor.js';
-import { defineCustomElement as defineUpdrawSettings } from '@updraw/editor/dist/components/updraw-settings.js';
-import { defineCustomElement as defineUpdrawShapeFill } from '@updraw/editor/dist/components/updraw-shape-fill.js';
-import { defineCustomElement as defineUpdrawShareDialog } from '@updraw/editor/dist/components/updraw-share-dialog.js';
-import { defineCustomElement as defineUpdrawSplitButton } from '@updraw/editor/dist/components/updraw-split-button.js';
-import { defineCustomElement as defineUpdrawStrokeSize } from '@updraw/editor/dist/components/updraw-stroke-size.js';
+import { defineCustomElement as defineUpmadeChatBox } from '@upmade/editor/dist/components/upmade-chat-box.js';
+import { defineCustomElement as defineUpmadeEditor } from '@upmade/editor/dist/components/upmade-editor.js';
+import { defineCustomElement as defineUpmadeSettings } from '@upmade/editor/dist/components/upmade-settings.js';
+import { defineCustomElement as defineUpmadeShapeFill } from '@upmade/editor/dist/components/upmade-shape-fill.js';
+import { defineCustomElement as defineUpmadeShareDialog } from '@upmade/editor/dist/components/upmade-share-dialog.js';
+import { defineCustomElement as defineUpmadeSplitButton } from '@upmade/editor/dist/components/upmade-split-button.js';
+import { defineCustomElement as defineUpmadeStrokeSize } from '@upmade/editor/dist/components/upmade-stroke-size.js';
 
 
-export const UpdrawChatBox: StencilVueComponent<JSX.UpdrawChatBox> = /*@__PURE__*/ defineContainer<JSX.UpdrawChatBox>('updraw-chat-box', defineUpdrawChatBox, [
+export const UpmadeChatBox: StencilVueComponent<JSX.UpmadeChatBox> = /*@__PURE__*/ defineContainer<JSX.UpmadeChatBox>('upmade-chat-box', defineUpmadeChatBox, [
   'value',
   'mode',
   'placeholder',
@@ -34,7 +34,7 @@ export const UpdrawChatBox: StencilVueComponent<JSX.UpdrawChatBox> = /*@__PURE__
 ]);
 
 
-export const UpdrawEditor: StencilVueComponent<JSX.UpdrawEditor> = /*@__PURE__*/ defineContainer<JSX.UpdrawEditor>('updraw-editor', defineUpdrawEditor, [
+export const UpmadeEditor: StencilVueComponent<JSX.UpmadeEditor> = /*@__PURE__*/ defineContainer<JSX.UpmadeEditor>('upmade-editor', defineUpmadeEditor, [
   'scaleMax',
   'scaleMin',
   'lockDrawingScale',
@@ -129,7 +129,7 @@ export const UpdrawEditor: StencilVueComponent<JSX.UpdrawEditor> = /*@__PURE__*/
 ]);
 
 
-export const UpdrawSettings: StencilVueComponent<JSX.UpdrawSettings> = /*@__PURE__*/ defineContainer<JSX.UpdrawSettings>('updraw-settings', defineUpdrawSettings, [
+export const UpmadeSettings: StencilVueComponent<JSX.UpmadeSettings> = /*@__PURE__*/ defineContainer<JSX.UpmadeSettings>('upmade-settings', defineUpmadeSettings, [
   'availableThemes',
   'availableLocales',
   'shortcuts',
@@ -141,7 +141,7 @@ export const UpdrawSettings: StencilVueComponent<JSX.UpdrawSettings> = /*@__PURE
 ]);
 
 
-export const UpdrawShapeFill: StencilVueComponent<JSX.UpdrawShapeFill> = /*@__PURE__*/ defineContainer<JSX.UpdrawShapeFill>('updraw-shape-fill', defineUpdrawShapeFill, [
+export const UpmadeShapeFill: StencilVueComponent<JSX.UpmadeShapeFill> = /*@__PURE__*/ defineContainer<JSX.UpmadeShapeFill>('upmade-shape-fill', defineUpmadeShapeFill, [
   'value',
   'valueChange'
 ], [
@@ -149,7 +149,7 @@ export const UpdrawShapeFill: StencilVueComponent<JSX.UpdrawShapeFill> = /*@__PU
 ]);
 
 
-export const UpdrawShareDialog: StencilVueComponent<JSX.UpdrawShareDialog> = /*@__PURE__*/ defineContainer<JSX.UpdrawShareDialog>('updraw-share-dialog', defineUpdrawShareDialog, [
+export const UpmadeShareDialog: StencilVueComponent<JSX.UpmadeShareDialog> = /*@__PURE__*/ defineContainer<JSX.UpmadeShareDialog>('upmade-share-dialog', defineUpmadeShareDialog, [
   'isPublic',
   'workspaceId',
   'terms',
@@ -161,7 +161,7 @@ export const UpdrawShareDialog: StencilVueComponent<JSX.UpdrawShareDialog> = /*@
 ]);
 
 
-export const UpdrawSplitButton: StencilVueComponent<JSX.UpdrawSplitButton> = /*@__PURE__*/ defineContainer<JSX.UpdrawSplitButton>('updraw-split-button', defineUpdrawSplitButton, [
+export const UpmadeSplitButton: StencilVueComponent<JSX.UpmadeSplitButton> = /*@__PURE__*/ defineContainer<JSX.UpmadeSplitButton>('upmade-split-button', defineUpmadeSplitButton, [
   'buttonIcon',
   'dropdownIcon',
   'items',
@@ -187,7 +187,7 @@ export const UpdrawSplitButton: StencilVueComponent<JSX.UpdrawSplitButton> = /*@
 ]);
 
 
-export const UpdrawStrokeSize: StencilVueComponent<JSX.UpdrawStrokeSize> = /*@__PURE__*/ defineContainer<JSX.UpdrawStrokeSize>('updraw-stroke-size', defineUpdrawStrokeSize, [
+export const UpmadeStrokeSize: StencilVueComponent<JSX.UpmadeStrokeSize> = /*@__PURE__*/ defineContainer<JSX.UpmadeStrokeSize>('upmade-stroke-size', defineUpmadeStrokeSize, [
   'sizes',
   'selectedSize',
   'sizeChange'

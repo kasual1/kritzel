@@ -1,8 +1,8 @@
 ---
 sidebar_label: Basic Usage
 displayed_sidebar: tutorialSidebar
-title: "Basic Usage | Updraw for React"
-description: "Learn the main ways to interact with Updraw from React: set props, listen to events, and call public methods."
+title: "Basic Usage | Upmade for React"
+description: "Learn the main ways to interact with Upmade from React: set props, listen to events, and call public methods."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,28 +11,28 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-For most use cases `<UpdrawEditor>` is the preferred choice. It gives you a ready-made whiteboard experience and includes customizable controls that can be further tuned to your needs. Only use `<UpdrawEngine>` when you want to build the entire UI yourself.
+For most use cases `<UpmadeEditor>` is the preferred choice. It gives you a ready-made whiteboard experience and includes customizable controls that can be further tuned to your needs. Only use `<UpmadeEngine>` when you want to build the entire UI yourself.
 
-Once `<UpdrawEditor>` or `<UpdrawEngine>` is rendering in your application, you can interact with the canvas in three complementary ways:
+Once `<UpmadeEditor>` or `<UpmadeEngine>` is rendering in your application, you can interact with the canvas in three complementary ways:
 
 - **Setting props** to configure the component declaratively.
 - **Listening to events** to react to changes from the editor or engine.
 - **Calling methods** to make imperative changes or query state.
 
-While `<UpdrawEditor>` is the main way to integrate Updraw into your application, the same APIs also apply to `<UpdrawEngine>`. The examples below focus on `<UpdrawEditor>`, but the concepts carry over to the engine as well.
+While `<UpmadeEditor>` is the main way to integrate Upmade into your application, the same APIs also apply to `<UpmadeEngine>`. The examples below focus on `<UpmadeEditor>`, but the concepts carry over to the engine as well.
 
 For the full documentation, please see the API reference of the [Editor](../api-reference/editor.md) or the [Engine](../api-reference/engine.md).
 
 ## Waiting for Initialization
 
-Before interacting with an editor instance through its public API, you must wait for the editor's `isReady` event. `<UpdrawEditor>` emits `isReady` after the engine is mounted, the internal rendering context is created, and the initial workspace state is available.
+Before interacting with an editor instance through its public API, you must wait for the editor's `isReady` event. `<UpmadeEditor>` emits `isReady` after the engine is mounted, the internal rendering context is created, and the initial workspace state is available.
 
 ```tsx
 import { useRef } from 'react';
-import { UpdrawEditor, type HTMLUpdrawEditorElement } from '@updraw/react-editor';
+import { UpmadeEditor, type HTMLUpmadeEditorElement } from '@upmade/react-editor';
 
 export function App() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
 
   async function onReady() {
     const editor = editorRef.current;
@@ -43,7 +43,7 @@ export function App() {
     await editor.setActiveTool('brush');
   }
 
-  return <UpdrawEditor ref={editorRef} onIsReady={() => void onReady()} />;
+  return <UpmadeEditor ref={editorRef} onIsReady={() => void onReady()} />;
 }
 ```
 
@@ -55,7 +55,7 @@ Props are the declarative way to configure the editor. Use props such as `theme`
 
 ```tsx
 import { useState } from 'react';
-import { UpdrawEditor } from '@updraw/react-editor';
+import { UpmadeEditor } from '@upmade/react-editor';
 
 export function Canvas() {
   const [isToolbarVisible, setIsToolbarVisible] = useState(false);
@@ -65,7 +65,7 @@ export function Canvas() {
       <button onClick={() => setIsToolbarVisible((visible) => !visible)}>
         Toggle toolbar
       </button>
-      <UpdrawEditor isToolbarVisible={isToolbarVisible} />
+      <UpmadeEditor isToolbarVisible={isToolbarVisible} />
     </>
   );
 }
@@ -79,22 +79,22 @@ Events are the way the editor reports state changes. Pass event callbacks as `on
 
 ```tsx
 import {
-  UpdrawBaseObject,
-  UpdrawEditor,
-  UpdrawViewportState,
-} from '@updraw/react-editor';
+  UpmadeBaseObject,
+  UpmadeEditor,
+  UpmadeViewportState,
+} from '@upmade/react-editor';
 
-function onObjectsChange(event: CustomEvent<UpdrawBaseObject[]>) {
+function onObjectsChange(event: CustomEvent<UpmadeBaseObject[]>) {
   console.log('Canvas objects updated:', event.detail.length);
 }
 
-function onViewportChange(event: CustomEvent<UpdrawViewportState>) {
+function onViewportChange(event: CustomEvent<UpmadeViewportState>) {
   console.log('Viewport updated:', event.detail);
 }
 
 export function Canvas() {
   return (
-    <UpdrawEditor
+    <UpmadeEditor
       onObjectsChange={onObjectsChange}
       onViewportChange={onViewportChange}
     />
@@ -106,18 +106,18 @@ The `isReady` event is also an event you can listen to. Treat it as the point at
 
 ## Calling Methods
 
-Public methods are the imperative way to control the editor canvas and query its state. Updraw methods are asynchronous and return Promises, so call them from an `async` function and `await` their results. The element reference must be ready before these calls are made. The following example demonstrates adding a text object programmatically.
+Public methods are the imperative way to control the editor canvas and query its state. Upmade methods are asynchronous and return Promises, so call them from an `async` function and `await` their results. The element reference must be ready before these calls are made. The following example demonstrates adding a text object programmatically.
 
 ```tsx
 import { useRef } from 'react';
 import {
-  UpdrawEditor,
-  UpdrawText,
-  type HTMLUpdrawEditorElement,
-} from '@updraw/react-editor';
+  UpmadeEditor,
+  UpmadeText,
+  type HTMLUpmadeEditorElement,
+} from '@upmade/react-editor';
 
 export function Canvas() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
 
   async function addText() {
     const editor = editorRef.current;
@@ -125,7 +125,7 @@ export function Canvas() {
       return;
     }
 
-    await editor.addObject(new UpdrawText({
+    await editor.addObject(new UpmadeText({
       text: 'Programmatic text!',
       translateX: 0,
       translateY: 0,
@@ -138,7 +138,7 @@ export function Canvas() {
   return (
     <>
       <button onClick={() => void addText()}>Add text</button>
-      <UpdrawEditor ref={editorRef} />
+      <UpmadeEditor ref={editorRef} />
     </>
   );
 }

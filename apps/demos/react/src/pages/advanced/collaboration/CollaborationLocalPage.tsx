@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import {
   BroadcastSyncProvider,
-  UpdrawEditor,
-  type UpdrawSyncConfig,
-  UpdrawWorkspace,
-} from "@updraw/react-editor";
+  UpmadeEditor,
+  type UpmadeSyncConfig,
+  UpmadeWorkspace,
+} from "@upmade/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -15,12 +15,12 @@ import {
 import { Toolbar } from "../../../components/Toolbar";
 
 export function CollaborationLocalPage() {
-  const syncConfig = useMemo<UpdrawSyncConfig>(
+  const syncConfig = useMemo<UpmadeSyncConfig>(
     () => ({ providers: [BroadcastSyncProvider] }),
     [],
   );
   const workspaces = useMemo(
-    () => [new UpdrawWorkspace({ objects: createSeedObjects() })],
+    () => [new UpmadeWorkspace({ objects: createSeedObjects() })],
     [],
   );
 
@@ -30,7 +30,7 @@ export function CollaborationLocalPage() {
         <span className="label">Cross-tab Sync</span>
         <span className="status">BroadcastChannel enabled</span>
       </Toolbar>
-      <UpdrawEditor
+      <UpmadeEditor
         editorId="collaboration-local"
         syncConfig={syncConfig}
         theme="light"

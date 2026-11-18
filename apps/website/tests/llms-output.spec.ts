@@ -76,7 +76,7 @@ function codeBlocks(markdown: string) {
 describe('Generated LLM documentation', () => {
   test('publishes integration guidance and one section per framework, without a combined bundle', () => {
     const index = readOutput('llms.txt');
-    expect(index).toMatch(/^# Updraw\n\n> /);
+    expect(index).toMatch(/^# Upmade\n\n> /);
     for (const guidance of ['isReady', 'isEngineReady', 'syncConfig', 'editorId', 'TypeScript types', 'npx skills add kasual1/kritzel']) {
       expect(index).toContain(guidance);
     }
@@ -125,10 +125,10 @@ describe('Generated LLM documentation', () => {
       }
     }
     const quickStart = readOutput(`docs/${framework}/getting-started/quick-start.md`);
-    expect(quickStart).toContain(`@updraw/${framework}-editor`);
+    expect(quickStart).toContain(`@upmade/${framework}-editor`);
     expect(quickStart).toContain(`https://github.com/kasual1/kritzel/tree/main/apps/demos/${framework}`);
     for (const other of frameworks.filter((candidate) => candidate !== framework)) {
-      expect(quickStart).not.toContain(`@updraw/${other}-editor`);
+      expect(quickStart).not.toContain(`@upmade/${other}-editor`);
     }
   });
 

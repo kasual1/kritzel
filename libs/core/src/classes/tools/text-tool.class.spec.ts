@@ -1,15 +1,15 @@
-import { UpdrawTextTool } from './text-tool.class';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawText } from '../objects/text.class';
-import { UpdrawEventHelper } from '../../helpers/event.helper';
+import { UpmadeTextTool } from './text-tool.class';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeText } from '../objects/text.class';
+import { UpmadeEventHelper } from '../../helpers/event.helper';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 jest.mock('../core/core.class');
 jest.mock('../objects/text.class');
 jest.mock('../../helpers/event.helper');
 
-describe('UpdrawTextTool', () => {
-  let tool: UpdrawTextTool;
+describe('UpmadeTextTool', () => {
+  let tool: UpmadeTextTool;
   let mockCore: any;
   let mockObjectsMap: any;
   let mockState: any;
@@ -87,8 +87,8 @@ describe('UpdrawTextTool', () => {
       edit: jest.fn(),
     };
 
-    (UpdrawText.create as jest.Mock).mockReturnValue(mockCreatedText);
-    (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
+    (UpmadeText.create as jest.Mock).mockReturnValue(mockCreatedText);
+    (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockCore = {
       objectTitlebarManager: {
@@ -111,9 +111,9 @@ describe('UpdrawTextTool', () => {
       resetActiveText: jest.fn(),
       updateObject: jest.fn(),
       toolRegistry: { getTool: jest.fn().mockReturnValue(mockSelectionTool) },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    tool = new UpdrawTextTool(mockCore);
+    tool = new UpmadeTextTool(mockCore);
   });
 
   afterEach(() => {
@@ -172,7 +172,7 @@ describe('UpdrawTextTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
+      expect(UpmadeText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
       expect(mockCreatedText.fontColor).toEqual(tool.fontColor);
       expect(mockCreatedText.opacity).toBe(tool.opacity);
       expect(mockCreatedText.zIndex).toBe(5);
@@ -182,12 +182,12 @@ describe('UpdrawTextTool', () => {
     });
 
     it('should not create a text object on non-left click', () => {
-      (UpdrawEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
+      (UpmadeEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
       const event = createMouseEvent({ button: 2 });
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawText.create).not.toHaveBeenCalled();
+      expect(UpmadeText.create).not.toHaveBeenCalled();
     });
 
     it('should position text using viewport offset', () => {
@@ -223,7 +223,7 @@ describe('UpdrawTextTool', () => {
 
       tool.handlePointerDown(createMouseEvent());
 
-      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
+      expect(UpmadeText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
     });
 
     it('should pass viewportScale when lockDrawingScale is false', () => {
@@ -232,7 +232,7 @@ describe('UpdrawTextTool', () => {
 
       tool.handlePointerDown(createMouseEvent());
 
-      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 2);
+      expect(UpmadeText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 2);
     });
 
     it('should use custom fontSize and fontFamily', () => {
@@ -241,7 +241,7 @@ describe('UpdrawTextTool', () => {
 
       tool.handlePointerDown(createMouseEvent());
 
-      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 24, 'Courier', 1);
+      expect(UpmadeText.create).toHaveBeenCalledWith(mockCore, 24, 'Courier', 1);
     });
 
     it('should use custom fontColor and opacity', () => {
@@ -256,7 +256,7 @@ describe('UpdrawTextTool', () => {
     });
 
     it('should edit existing text when clicking on it with no active text', () => {
-      const existingText = Object.create(UpdrawText.prototype);
+      const existingText = Object.create(UpmadeText.prototype);
       existingText.edit = jest.fn();
       existingText.id = 'existing-text';
 
@@ -270,15 +270,15 @@ describe('UpdrawTextTool', () => {
       tool.handlePointerDown(event);
 
       expect(existingText.edit).toHaveBeenCalledWith(event);
-      expect(UpdrawText.create).not.toHaveBeenCalled();
+      expect(UpmadeText.create).not.toHaveBeenCalled();
     });
 
     it('should save active text and edit new one when clicking on different text', () => {
-      const activeText = Object.create(UpdrawText.prototype);
+      const activeText = Object.create(UpmadeText.prototype);
       activeText.save = jest.fn();
       mockCore.store.activeText = activeText;
 
-      const clickedText = Object.create(UpdrawText.prototype);
+      const clickedText = Object.create(UpmadeText.prototype);
       clickedText.edit = jest.fn();
       clickedText.id = 'clicked-text';
 
@@ -292,11 +292,11 @@ describe('UpdrawTextTool', () => {
 
       expect(activeText.save).toHaveBeenCalled();
       expect(clickedText.edit).toHaveBeenCalledWith(event);
-      expect(UpdrawText.create).not.toHaveBeenCalled();
+      expect(UpmadeText.create).not.toHaveBeenCalled();
     });
 
     it('should reset active text and switch to selection when clicking on non-text', () => {
-      const activeText = Object.create(UpdrawText.prototype);
+      const activeText = Object.create(UpmadeText.prototype);
       activeText.save = jest.fn();
       mockCore.store.activeText = activeText;
 
@@ -304,7 +304,7 @@ describe('UpdrawTextTool', () => {
 
       expect(mockCore.resetActiveText).toHaveBeenCalled();
       expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockSelectionTool);
-      expect(UpdrawText.create).not.toHaveBeenCalled();
+      expect(UpmadeText.create).not.toHaveBeenCalled();
     });
   });
 
@@ -319,7 +319,7 @@ describe('UpdrawTextTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
+      expect(UpmadeText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
       expect(mockObjectsMap.insert).toHaveBeenCalledWith(mockCreatedText);
       expect(mockCore.rerender).toHaveBeenCalled();
       expect(mockCreatedText.edit).toHaveBeenCalledWith(event);
@@ -331,7 +331,7 @@ describe('UpdrawTextTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawText.create).toHaveBeenCalled();
+      expect(UpmadeText.create).toHaveBeenCalled();
       expect(mockCreatedText.edit).toHaveBeenCalledWith(event);
     });
 
@@ -342,7 +342,7 @@ describe('UpdrawTextTool', () => {
 
       tool.handlePointerDown(event);
 
-      expect(UpdrawText.create).not.toHaveBeenCalled();
+      expect(UpmadeText.create).not.toHaveBeenCalled();
     });
 
     it('should round coordinates for touch input', () => {
@@ -379,7 +379,7 @@ describe('UpdrawTextTool', () => {
 
       tool.handlePointerDown(createTouchEvent());
 
-      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
+      expect(UpmadeText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 1);
     });
 
     it('should pass viewportScale when lockDrawingScale is false (touch)', () => {
@@ -389,11 +389,11 @@ describe('UpdrawTextTool', () => {
 
       tool.handlePointerDown(createTouchEvent());
 
-      expect(UpdrawText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 2);
+      expect(UpmadeText.create).toHaveBeenCalledWith(mockCore, 16, 'Arial', 2);
     });
 
     it('should edit existing text on touch (no active text)', () => {
-      const existingText = Object.create(UpdrawText.prototype);
+      const existingText = Object.create(UpmadeText.prototype);
       existingText.edit = jest.fn();
       existingText.id = 'existing-text';
 
@@ -408,15 +408,15 @@ describe('UpdrawTextTool', () => {
       tool.handlePointerDown(event);
 
       expect(existingText.edit).toHaveBeenCalledWith(event);
-      expect(UpdrawText.create).not.toHaveBeenCalled();
+      expect(UpmadeText.create).not.toHaveBeenCalled();
     });
 
     it('should save active text and edit new one on touch', () => {
-      const activeText = Object.create(UpdrawText.prototype);
+      const activeText = Object.create(UpmadeText.prototype);
       activeText.save = jest.fn();
       mockCore.store.activeText = activeText;
 
-      const clickedText = Object.create(UpdrawText.prototype);
+      const clickedText = Object.create(UpmadeText.prototype);
       clickedText.edit = jest.fn();
       clickedText.id = 'clicked-text';
 
@@ -434,7 +434,7 @@ describe('UpdrawTextTool', () => {
     });
 
     it('should reset active text and switch to selection on touch when clicking non-text', () => {
-      const activeText = Object.create(UpdrawText.prototype);
+      const activeText = Object.create(UpmadeText.prototype);
       activeText.save = jest.fn();
       mockCore.store.activeText = activeText;
       mockState.pointers.set(1, { clientX: 100, clientY: 200 });
@@ -533,7 +533,7 @@ describe('UpdrawTextTool', () => {
     let activeText: any;
 
     beforeEach(() => {
-      activeText = Object.create(UpdrawText.prototype);
+      activeText = Object.create(UpmadeText.prototype);
       activeText.id = 'active-text';
       mockCore.store.activeText = activeText;
     });
@@ -600,7 +600,7 @@ describe('UpdrawTextTool', () => {
 
   describe('object titlebar', () => {
     const startEditing = () => {
-      const activeText = Object.create(UpdrawText.prototype);
+      const activeText = Object.create(UpmadeText.prototype);
       activeText.save = jest.fn();
       mockCore.store.activeText = activeText;
       // setState is mocked, so install the selection tool the way the real store would

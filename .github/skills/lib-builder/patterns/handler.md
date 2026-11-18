@@ -6,14 +6,14 @@
 
 ## Base Class
 
-All handlers extend `UpdrawBaseHandler`.
+All handlers extend `UpmadeBaseHandler`.
 
 ```typescript
-import { UpdrawBaseHandler } from './base.handler';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeBaseHandler } from './base.handler';
+import { UpmadeCore } from '../core/core.class';
 
-export class MyHandler extends UpdrawBaseHandler {
-  constructor(core: UpdrawCore) {
+export class MyHandler extends UpmadeBaseHandler {
+  constructor(core: UpmadeCore) {
     super(core);
   }
 }
@@ -36,7 +36,7 @@ Handlers manage specific categories of user interaction that are independent of 
 ## Conventions
 
 - File name: `<domain>.handler.ts` (e.g., `snap.handler.ts`)
-- Receives `UpdrawCore` via constructor
+- Receives `UpmadeCore` via constructor
 - Access state via `this._core.store`
 - Handlers are instantiated by the engine and called from the rendering component
 - Keep handlers stateless where possible; use `this._core.store` for shared state
@@ -55,7 +55,7 @@ Recommended options:
 Example approach:
 
 ```typescript
-export class MyHandler extends UpdrawBaseHandler {
+export class MyHandler extends UpmadeBaseHandler {
   items: MenuItem[] = [];
 
   setItems(items: MenuItem[] | undefined): void {
@@ -87,4 +87,4 @@ Each shortcut has:
 
 ## Integration
 
-Handlers are typically instantiated and held by `UpdrawCore` or the engine component, then invoked from event listeners in the rendering layer.
+Handlers are typically instantiated and held by `UpmadeCore` or the engine component, then invoked from event listeners in the rendering layer.

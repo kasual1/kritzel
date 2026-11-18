@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { UpdrawEditor, type HTMLUpdrawEditorElement } from "@updraw/react-editor";
+import { UpmadeEditor, type HTMLUpmadeEditorElement } from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
@@ -9,7 +9,7 @@ import { InfoPanel, InfoPanelToggle, useInfoPanel } from "../../../components/In
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ThemingListenPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
   const infoPanel = useInfoPanel({ hasToolbarToggle: true });
   const [activeTheme, setActiveTheme] = useState("light");
   const [themeHistory, setThemeHistory] = useState<string[]>([]);
@@ -33,7 +33,7 @@ export function ThemingListenPage() {
         <InfoPanelToggle panel={infoPanel} />
       </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        <UpdrawEditor
+        <UpmadeEditor
           ref={editorRef}
           editorId="theming-listen"
           theme={activeTheme}

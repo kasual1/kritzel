@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UpdrawEditor, UpdrawWorkspace } from "@updraw/react-editor";
+import { UpmadeEditor, UpmadeWorkspace } from "@upmade/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
@@ -11,7 +11,7 @@ export function ToolbarUtilityPanelPage() {
   const [isToolbarVisible, setIsToolbarVisible] = useState(true);
   const [isUtilityPanelVisible, setIsUtilityPanelVisible] = useState(true);
   const [workspaces] = useState(() => [
-    new UpdrawWorkspace({ objects: createSeedObjects() }),
+    new UpmadeWorkspace({ objects: createSeedObjects() }),
   ]);
 
   return (
@@ -34,7 +34,7 @@ export function ToolbarUtilityPanelPage() {
           <span>Utility panel</span>
         </label>
       </div>
-      <UpdrawEditor
+      <UpmadeEditor
         editorId="toolbar-utility-panel"
         theme="light"
         themes={themes}

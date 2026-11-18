@@ -1,10 +1,10 @@
 import * as Y from 'yjs';
-import { UpdrawWorkspace } from '../core/workspace.class';
-import type { UpdrawCore } from '../core/core.class';
+import { UpmadeWorkspace } from '../core/workspace.class';
+import type { UpmadeCore } from '../core/core.class';
 import { ISyncProvider } from '../../interfaces/sync-provider.interface';
-import { UpdrawSyncConfig } from '../../interfaces/sync-config.interface';
+import { UpmadeSyncConfig } from '../../interfaces/sync-config.interface';
 import { DEFAULT_SYNC_CONFIG } from '../../configs/default-sync.config';
-import { UpdrawDocumentType } from '../../interfaces/document-metadata.interface';
+import { UpmadeDocumentType } from '../../interfaces/document-metadata.interface';
 import { APP_STATE_INSTANCE_ID_STORAGE_KEY } from '../../constants/storage.constants';
 import { CURRENT_APP_STATE_SCHEMA_VERSION } from '../../constants/schema.constants';
 import { ObjectHelper } from '../../helpers/object.helper';
@@ -17,13 +17,13 @@ import { migrateLegacyStorageKeys } from '../../migrations/legacy-brand';
  * This class provides a synchronized map of workspaces that can be shared across
  * multiple clients using configurable sync providers (e.g., WebSocket, WebRTC).
  */
-export class UpdrawAppStateMap {
-  private map: Map<string, UpdrawWorkspace>;
+export class UpmadeAppStateMap {
+  private map: Map<string, UpmadeWorkspace>;
   private _ydoc: Y.Doc | null = null;
   private _workspacesMap: Y.Map<any> | null = null;
   private _metadataMap: Y.Map<any> | null = null;
   private _providers: ISyncProvider[] = [];
-  private _core: UpdrawCore | null = null;
+  private _core: UpmadeCore | null = null;
   private _isReady: boolean = false;
   private _onRemoteChangeCallback: (() => void) | null = null;
   private _workspacesObserver: ((event: Y.YMapEvent<any>) => void) | null = null;
@@ -55,10 +55,10 @@ export class UpdrawAppStateMap {
   }
 
   /**
-   * Creates a new UpdrawAppStateMap instance with an empty workspace map.
+   * Creates a new UpmadeAppStateMap instance with an empty workspace map.
    */
   constructor() {
-    this.map = new Map<string, UpdrawWorkspace>();
+    this.map = new Map<string, UpmadeWorkspace>();
   }
 
   /**
@@ -74,11 +74,11 @@ export class UpdrawAppStateMap {
    * Initializes the app state map with Yjs synchronization.
    * Creates a dedicated Y.Doc for app state, sets up workspace observation,
    * instantiates and connects all configured sync providers, and loads existing workspaces.
-   * @param core - The UpdrawCore instance for triggering re-renders and accessing the store.
+   * @param core - The UpmadeCore instance for triggering re-renders and accessing the store.
    * @param config - Optional sync configuration specifying providers. Defaults to DEFAULT_SYNC_CONFIG.
    * @returns A promise that resolves when all providers are connected and the state is loaded.
    */
-  async initialize(core: UpdrawCore, config?: UpdrawSyncConfig): Promise<void> {
+  async initialize(core: UpmadeCore, config?: UpmadeSyncConfig): Promise<void> {
     this._core = core;
 
     // Create a dedicated Y.Doc for app state (workspaces)
@@ -87,7 +87,7 @@ export class UpdrawAppStateMap {
     this._metadataMap = this._ydoc.getMap('metadata');
 
     const instanceId = config?.appStateId ?? this.getOrCreateAppStateInstanceId(core);
-    const docName = core.editorId ? `updraw-app-state-${core.editorId}-${instanceId}` : `updraw-app-state-${instanceId}`;
+    const docName = core.editorId ? `upmade-app-state-${core.editorId}-${instanceId}` : `upmade-app-state-${instanceId}`;
    
     const finalConfig = config ?? DEFAULT_SYNC_CONFIG;
 
@@ -111,7 +111,7 @@ export class UpdrawAppStateMap {
 
     if (showSyncProviderInfo) {
       const providerList = this._providers.map(p => `${p.constructor.name} (${p.type})`).join(', ');
-      console.info(`[Updraw] App-state sync providers initialized for ${docName}: ${providerList || 'none'}`);
+      console.info(`[Upmade] App-state sync providers initialized for ${docName}: ${providerList || 'none'}`);
     }
 
     // Observe changes to workspaces and sync with application state
@@ -130,22 +130,22 @@ export class UpdrawAppStateMap {
     const localResults = await Promise.allSettled(localProviders.map(p => p.connect()));
     if (showSyncProviderInfo) {
       const connectedLocalCount = localResults.filter(result => result.status === 'fulfilled').length;
-      console.info(`[Updraw] App-state local providers connected: ${connectedLocalCount}/${localProviders.length}`);
+      console.info(`[Upmade] App-state local providers connected: ${connectedLocalCount}/${localProviders.length}`);
     }
     localResults.forEach((result, i) => {
       if (showSyncProviderInfo && result.status === 'rejected') {
-        console.error(`[Updraw] Sync provider "${localProviders[i]?.constructor.name}" failed to connect:`, result.reason);
+        console.error(`[Upmade] Sync provider "${localProviders[i]?.constructor.name}" failed to connect:`, result.reason);
       }
     });
 
     // Connect network providers in the background (remote data arrives via Yjs observers)
     if (showSyncProviderInfo && networkProviders.length > 0) {
-      console.info(`[Updraw] App-state network providers connecting in background: ${networkProviders.length}`);
+      console.info(`[Upmade] App-state network providers connecting in background: ${networkProviders.length}`);
     }
     const networkConnectPromises = networkProviders.map(provider =>
       provider.connect().catch(err => {
         if (showSyncProviderInfo) {
-          console.error(`[Updraw] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
+          console.error(`[Upmade] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
         }
       }),
     );
@@ -174,14 +174,14 @@ export class UpdrawAppStateMap {
    * @returns A stable instance identifier.
    * @throws Error when localStorage is unavailable or inaccessible.
    */
-  private getOrCreateAppStateInstanceId(core: UpdrawCore): string {
+  private getOrCreateAppStateInstanceId(core: UpmadeCore): string {
     const storage = globalThis.localStorage;
 
     if (!storage) {
-      throw new Error('[UpdrawAppStateMap] localStorage is unavailable. Cannot persist app-state document identity.');
+      throw new Error('[UpmadeAppStateMap] localStorage is unavailable. Cannot persist app-state document identity.');
     }
 
-    // An instance id saved before the rename lives under the legacy key; losing it would orphan the user's workspace list.
+    // An instance id saved under a former name lives under a legacy key; losing it would orphan the user's workspace list.
     migrateLegacyStorageKeys(storage);
     const storageKey = core.getStorageKey(APP_STATE_INSTANCE_ID_STORAGE_KEY);
 
@@ -189,7 +189,7 @@ export class UpdrawAppStateMap {
     try {
       instanceId = storage.getItem(storageKey);
     } catch {
-      throw new Error('[UpdrawAppStateMap] Failed to read app-state instance id from localStorage.');
+      throw new Error('[UpmadeAppStateMap] Failed to read app-state instance id from localStorage.');
     }
 
     if (instanceId) {
@@ -201,7 +201,7 @@ export class UpdrawAppStateMap {
     try {
       storage.setItem(storageKey, generatedInstanceId);
     } catch {
-      throw new Error('[UpdrawAppStateMap] Failed to persist app-state instance id to localStorage.');
+      throw new Error('[UpmadeAppStateMap] Failed to persist app-state instance id to localStorage.');
     }
 
     return generatedInstanceId;
@@ -267,13 +267,13 @@ export class UpdrawAppStateMap {
   }
 
   /**
-   * Reconstructs an UpdrawWorkspace instance from its serialized form.
+   * Reconstructs an UpmadeWorkspace instance from its serialized form.
    * Restores all properties including id, name, viewport, and timestamps.
    * Handles both legacy { translateX, translateY } and new { centerWorldX, centerWorldY } viewport formats.
    * @param serialized - The serialized workspace data object.
-   * @returns A fully reconstructed UpdrawWorkspace instance.
+   * @returns A fully reconstructed UpmadeWorkspace instance.
    */
-  private reviveWorkspace(serialized: any): UpdrawWorkspace {
+  private reviveWorkspace(serialized: any): UpmadeWorkspace {
     let viewport = serialized.viewport;
 
     // Backward compatibility: convert legacy translateX/translateY to centerWorldX/centerWorldY
@@ -286,7 +286,7 @@ export class UpdrawAppStateMap {
       };
     }
 
-    const workspace = new UpdrawWorkspace({
+    const workspace = new UpmadeWorkspace({
       id: serialized.id,
       name: serialized.name,
       viewport,
@@ -304,7 +304,7 @@ export class UpdrawAppStateMap {
    * Initializes document metadata if not already set.
    * Uses 'metadata' transaction origin to avoid triggering remote sync callbacks for local state.
    */
-  private initializeMetadata(type: UpdrawDocumentType): void {
+  private initializeMetadata(type: UpmadeDocumentType): void {
     if (!this._metadataMap || !this._ydoc) {
       return;
     }
@@ -346,7 +346,7 @@ export class UpdrawAppStateMap {
   /**
    * Returns the document type stored in metadata.
    */
-  getDocumentType(): UpdrawDocumentType {
+  getDocumentType(): UpmadeDocumentType {
     return this._metadataMap?.get('type') ?? 'state';
   }
 
@@ -395,7 +395,7 @@ export class UpdrawAppStateMap {
    * @param workspace - The workspace to insert.
    * @returns True if the workspace was successfully inserted, false if it has no id.
    */
-  insert(workspace: UpdrawWorkspace): boolean {
+  insert(workspace: UpmadeWorkspace): boolean {
     if (!workspace.id) {
       return false;
     }
@@ -417,7 +417,7 @@ export class UpdrawAppStateMap {
    * @param workspace - The workspace with updated data.
    * @returns True if the workspace was successfully updated, false if it doesn't exist or has no id.
    */
-  update(workspace: UpdrawWorkspace): boolean {
+  update(workspace: UpmadeWorkspace): boolean {
     if (!workspace.id || !this.map.has(workspace.id)) {
       return false;
     }
@@ -440,7 +440,7 @@ export class UpdrawAppStateMap {
    * @param predicate - A function that returns true for the workspace to remove.
    * @returns True if a matching workspace was found and removed, false otherwise.
    */
-  remove(predicate: (workspace: UpdrawWorkspace) => boolean): boolean {
+  remove(predicate: (workspace: UpmadeWorkspace) => boolean): boolean {
     const workspaceToRemove = Array.from(this.map.values()).find(predicate);
 
     if (!workspaceToRemove) {
@@ -463,7 +463,7 @@ export class UpdrawAppStateMap {
    * @param id - The unique identifier of the workspace to retrieve.
    * @returns The workspace if found, undefined otherwise.
    */
-  get(id: string): UpdrawWorkspace | undefined {
+  get(id: string): UpmadeWorkspace | undefined {
     return this.map.get(id);
   }
 
@@ -471,7 +471,7 @@ export class UpdrawAppStateMap {
    * Returns all workspaces currently stored in the map.
    * @returns An array containing all workspaces.
    */
-  allWorkspaces(): UpdrawWorkspace[] {
+  allWorkspaces(): UpmadeWorkspace[] {
     return Array.from(this.map.values());
   }
 
@@ -480,7 +480,7 @@ export class UpdrawAppStateMap {
    * @param predicate - A function that returns true for workspaces to include.
    * @returns An array of workspaces that match the predicate.
    */
-  filter(predicate: (workspace: UpdrawWorkspace) => boolean): UpdrawWorkspace[] {
+  filter(predicate: (workspace: UpmadeWorkspace) => boolean): UpmadeWorkspace[] {
     return Array.from(this.map.values()).filter(predicate);
   }
 
@@ -489,7 +489,7 @@ export class UpdrawAppStateMap {
    * @param predicate - A function that returns true for the workspace to find.
    * @returns The first matching workspace, or undefined if no match is found.
    */
-  find(predicate: (workspace: UpdrawWorkspace) => boolean): UpdrawWorkspace | undefined {
+  find(predicate: (workspace: UpmadeWorkspace) => boolean): UpmadeWorkspace | undefined {
     return Array.from(this.map.values()).find(predicate);
   }
 

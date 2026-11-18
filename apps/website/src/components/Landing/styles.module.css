@@ -57,27 +57,13 @@
   overflow: hidden;
 }
 
+/* Positions the logo + name (UpmadeBrand, which styles it). */
 .brand {
   position: absolute;
   top: 20px;
   left: 32px;
   z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 10px;
   min-height: 48px;
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.page .brand,
-.page .brand:hover {
-  color: var(--landing-ink);
-}
-
-.brand svg {
-  width: 36px;
 }
 
 .topNav {
@@ -173,7 +159,8 @@
   margin: 0;
   font-size: clamp(40px, 5.4vw, 66px);
   line-height: 1.02;
-  font-weight: 800;
+  /* semibold, like the "made" of the header wordmark */
+  font-weight: 600;
   letter-spacing: -0.045em;
   color: var(--landing-ink);
 }
@@ -262,11 +249,11 @@
   pointer-events: auto;
   touch-action: none;
   user-select: none;
-  cursor: var(--updraw-site-hand-cursor) !important;
+  cursor: var(--upmade-site-hand-cursor) !important;
 }
 
 .canvasLayer .draggableItem[data-dragging] {
-  cursor: var(--updraw-site-grab-cursor) !important;
+  cursor: var(--upmade-site-grab-cursor) !important;
 }
 
 .draggableItem:focus {
@@ -559,7 +546,7 @@
 .historyButton[data-active] {
   color: var(--landing-ink);
   pointer-events: auto;
-  cursor: var(--updraw-site-pointer-cursor);
+  cursor: var(--upmade-site-pointer-cursor);
 }
 
 .historyDivider {
@@ -588,7 +575,7 @@
   border-radius: 10px;
   color: var(--landing-ink);
   pointer-events: auto;
-  cursor: var(--updraw-site-pointer-cursor);
+  cursor: var(--upmade-site-pointer-cursor);
   padding: 0;
   border: 0;
   background: transparent;
@@ -750,7 +737,8 @@
   margin: 0;
   font-size: clamp(32px, 4vw, 48px);
   line-height: 1.1;
-  font-weight: 800;
+  /* semibold, like the "made" of the header wordmark */
+  font-weight: 600;
   letter-spacing: -0.035em;
   color: var(--landing-ink);
 }
@@ -1113,7 +1101,7 @@
   transform: translateX(-4cqw) scale(0.96);
 }
 
-/* Updraw's object titlebar (updraw-object-titlebar-layer.css) scaled with the demo, blue while active. */
+/* Upmade's object titlebar (upmade-object-titlebar-layer.css) scaled with the demo, blue while active. */
 .framesTitlebar {
   position: absolute;
   right: 0;
@@ -1188,7 +1176,7 @@
     color 0.25s ease;
 }
 
-/* Pressed by the agent's click, like Updraw's titlebar buttons. */
+/* Pressed by the agent's click, like Upmade's titlebar buttons. */
 .framesAdd[data-pressed] {
   background: rgba(0, 122, 255, 0.16);
 }
@@ -1485,7 +1473,7 @@
   border-radius: 3cqw;
 }
 
-/* Updraw's agentic cursor (updraw-agentic-cursors.css), just the arrow. It keeps Updraw's size in wide demos and shrinks a little in narrow ones, so it does not cover the frames.
+/* Upmade's agentic cursor (upmade-agentic-cursors.css), just the arrow. It keeps Upmade's size in wide demos and shrinks a little in narrow ones, so it does not cover the frames.
    Its tip is at the translated point (set from FramesDemo). */
 .framesCursor {
   --frames-arrow: clamp(16px, 3.8cqw, 20px);
@@ -2165,7 +2153,9 @@
 .wordmark {
   position: relative;
   z-index: 0;
-  margin-bottom: -36px;
+  /* Sink the word into the footer (the page clips it): 10% of its width, i.e. the whole "p" descender and the bottom
+     ~30% of the x-height. The SVG is min(880px, 100vw - 64px) wide. */
+  margin-bottom: max(-88px, calc((64px - 100vw) * 0.1));
   padding: 72px 32px 0;
   background: #ffffff;
 }
@@ -2463,11 +2453,6 @@
   .brand {
     top: 10px;
     left: 16px;
-    font-size: 22px;
-  }
-
-  .brand svg {
-    width: 28px;
   }
 
   .topNav {

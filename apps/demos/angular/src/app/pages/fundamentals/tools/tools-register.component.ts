@@ -1,22 +1,22 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawSelectionTool,
-  UpdrawTextTool,
-  UpdrawToolbarItem,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeSelectionTool,
+  UpmadeTextTool,
+  UpmadeToolbarItem,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-tools-register',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       editorId="tools-register"
       [theme]="'light'"
       [themes]="themes"
@@ -26,7 +26,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [
     `
@@ -36,7 +36,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         height: 100%;
         font-family: Roboto, sans-serif;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
       }
       .status-bar {
@@ -54,20 +54,20 @@ import { createSeedObjects } from '../../../const/seed-objects';
 export class ToolsRegisterComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
-  toolbarItems: UpdrawToolbarItem[] = [
+  toolbarItems: UpmadeToolbarItem[] = [
     {
       name: 'select',
       type: 'tool',
-      tool: UpdrawSelectionTool,
+      tool: UpmadeSelectionTool,
       icon: 'cursor',
       isDefault: true,
     },
     {
       name: 'brush',
       type: 'tool',
-      tool: UpdrawBrushTool,
+      tool: UpmadeBrushTool,
       icon: 'pen',
       config: {
         color: { light: '#1f2937', dark: '#f3f4f6' },
@@ -81,7 +81,7 @@ export class ToolsRegisterComponent {
     {
       name: 'highlighter',
       type: 'tool',
-      tool: UpdrawBrushTool,
+      tool: UpmadeBrushTool,
       icon: 'highlighter',
       config: {
         color: { light: '#ffeb3b', dark: '#fff176' },
@@ -96,7 +96,7 @@ export class ToolsRegisterComponent {
     {
       name: 'text',
       type: 'tool',
-      tool: UpdrawTextTool,
+      tool: UpmadeTextTool,
       icon: 'type',
       config: {
         color: { light: '#1f2937', dark: '#f3f4f6' },

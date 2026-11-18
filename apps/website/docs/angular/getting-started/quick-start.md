@@ -1,11 +1,11 @@
 ---
 sidebar_label: Quick Start
-title: "Quick Start | Updraw for Angular"
-description: "Install and integrate the Updraw infinite canvas into your Angular application in minutes."
+title: "Quick Start | Upmade for Angular"
+description: "Install and integrate the Upmade infinite canvas into your Angular application in minutes."
 keywords:
   - angular whiteboard
   - angular infinite canvas
-  - updraw
+  - upmade
 toc_max_heading_level: 2
 ---
 
@@ -14,19 +14,19 @@ import SkillInstallation from '@site/src/components/SkillInstallation';
 
 # Quick Start
 
-The following guide gets you a full Updraw editor setup in under five minutes.
+The following guide gets you a full Upmade editor setup in under five minutes.
 
 ## Installation
 
-Run the following command to install the Updraw editor in your project.
+Run the following command to install the Upmade editor in your project.
 
 ```bash
-npm install @updraw/angular-editor
+npm install @upmade/angular-editor
 ```
 
 <SkillInstallation>
 
-Install the related Updraw skill for coding assistance:
+Install the related Upmade skill for coding assistance:
 
 ```bash
 npx skills add kasual1/kritzel
@@ -36,31 +36,31 @@ npx skills add kasual1/kritzel
 
 ## Setup
 
-Register Updraw in your application config:
+Register Upmade in your application config:
 
 ```ts title="app.config.ts"
 import { ApplicationConfig } from '@angular/core';
-import { provideUpdraw } from '@updraw/angular-editor';
+import { provideUpmade } from '@upmade/angular-editor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     // ... other providers
-    provideUpdraw(),
+    provideUpmade(),
   ],
 };
 ```
 
-Then use the `<updraw-editor>` component in your template:
+Then use the `<upmade-editor>` component in your template:
 
 ```ts title="editor.component.ts"
 import { Component } from '@angular/core';
-import { UpdrawEditor } from '@updraw/angular-editor';
+import { UpmadeEditor } from '@upmade/angular-editor';
 
 @Component({
   selector: 'app-editor',
-  imports: [UpdrawEditor],
-  template: `<updraw-editor></updraw-editor>`,
-  styles: [`updraw-editor { display: block; width: 100%; height: 100vh; }`],
+  imports: [UpmadeEditor],
+  template: `<upmade-editor></upmade-editor>`,
+  styles: [`upmade-editor { display: block; width: 100%; height: 100vh; }`],
 })
 export class EditorComponent {}
 ```
@@ -83,16 +83,16 @@ For provider behavior details and persistence guidance, take a look at [Persiste
 
 ```ts title="editor.component.ts"
 import { Component } from '@angular/core';
-import { IndexedDBSyncProvider, UpdrawEditor, UpdrawSyncConfig } from '@updraw/angular-editor';
+import { IndexedDBSyncProvider, UpmadeEditor, UpmadeSyncConfig } from '@upmade/angular-editor';
 
 @Component({
   selector: 'app-editor',
-  imports: [UpdrawEditor],
-  template: `<updraw-editor [syncConfig]="syncConfig"></updraw-editor>`,
-  styles: [`updraw-editor { display: block; width: 100%; height: 100vh; }`],
+  imports: [UpmadeEditor],
+  template: `<upmade-editor [syncConfig]="syncConfig"></upmade-editor>`,
+  styles: [`upmade-editor { display: block; width: 100%; height: 100vh; }`],
 })
 export class EditorComponent {
-  readonly syncConfig: UpdrawSyncConfig = {
+  readonly syncConfig: UpmadeSyncConfig = {
     providers: [IndexedDBSyncProvider],
   };
 }
@@ -100,7 +100,7 @@ export class EditorComponent {
 
 ### Full Viewport Styling
 
-To ensure the Updraw editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g., `styles.css`):
+To ensure the Upmade editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g., `styles.css`):
 
 ```css
 html,

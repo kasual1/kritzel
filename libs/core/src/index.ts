@@ -1,8 +1,8 @@
 /**
- * @fileoverview entry point of @updraw/core
+ * @fileoverview entry point of @upmade/core
  *
- * Everything exported here is re-exported by @updraw/engine, so apps keep importing from
- * @updraw/engine, @updraw/editor or their framework wrappers.
+ * Everything exported here is re-exported by @upmade/engine, so apps keep importing from
+ * @upmade/engine, @upmade/editor or their framework wrappers.
  */
 
 export * from './classes/objects/base-object.class';
@@ -148,8 +148,8 @@ export * from './constants/engine.constants';
 export * from './constants/version';
 
 
-// Engine internals: used by the @updraw/engine components, which import them from
-// @updraw/core. Not a stable API; they can change in any release.
+// Engine internals: used by the @upmade/engine components, which import them from
+// @upmade/core. Not a stable API; they can change in any release.
 export * from './classes/core/core.class';
 export * from './classes/core/reviver.class';
 export * from './classes/core/viewport.class';

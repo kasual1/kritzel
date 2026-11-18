@@ -30,7 +30,10 @@ function routeSource(route: string): string | undefined {
   const trimmed = route.replace(/^\/|\/$/g, '');
   const blogPost = trimmed.match(/^blog\/(\d{4})\/(\d{2})\/(\d{2})\/([^/]+)$/);
   let candidates: string[];
-  if (trimmed.startsWith('docs/')) {
+  if (/^docs\/.+\.md$/.test(trimmed)) {
+    // the Markdown export docusaurus-plugin-llms writes next to each doc page
+    candidates = [trimmed, `${trimmed}x`];
+  } else if (trimmed.startsWith('docs/')) {
     candidates = [`${trimmed}.md`, `${trimmed}.mdx`];
   } else if (blogPost) {
     const [, year, month, day, slug] = blogPost;
@@ -54,21 +57,26 @@ describe('routeSource', () => {
     expect(routeSource('/')).toBe('src/pages/index.tsx');
   });
 
+  test('resolves the Markdown export of a doc to the doc', () => {
+    expect(routeSource('/docs/react/getting-started/quick-start.md')).toBe('docs/react/getting-started/quick-start.md');
+    expect(routeSource('/docs/react/getting-started/no-such-page.md')).toBeUndefined();
+  });
+
   test('resolves blog post routes to their markdown file', () => {
-    expect(routeSource('/blog/2026/10/22/updraw-is-now-open-source/')).toBe(
-      'blog/2026-10-22-updraw-is-now-open-source.md',
+    expect(routeSource('/blog/2026/10/22/upmade-is-now-open-source/')).toBe(
+      'blog/2026-10-22-upmade-is-now-open-source.md',
     );
-    expect(routeSource('/blog/2026/08/02/introducing-updraw')).toBe('blog/2026-08-02-introducing-updraw.md');
-    expect(routeSource('/blog/2026/10/23/updraw-is-now-open-source/')).toBeUndefined();
+    expect(routeSource('/blog/2026/08/02/introducing-upmade')).toBe('blog/2026-08-02-introducing-upmade.md');
+    expect(routeSource('/blog/2026/10/23/upmade-is-now-open-source/')).toBeUndefined();
     expect(routeSource('/blog/2026/10/22/no-such-post/')).toBeUndefined();
   });
 
   test('resolves images and videos to static files', () => {
-    expect(routeSource('/img/blog/updraw-is-now-open-source.png')).toBe(
-      'static/img/blog/updraw-is-now-open-source.png',
+    expect(routeSource('/img/blog/upmade-is-now-open-source.png')).toBe(
+      'static/img/blog/upmade-is-now-open-source.png',
     );
-    expect(routeSource('/videos/2026_10_22_Updraw_Open_Source.mp4')).toBe(
-      'static/videos/2026_10_22_Updraw_Open_Source.mp4',
+    expect(routeSource('/videos/2026_10_22_Upmade_Open_Source.mp4')).toBe(
+      'static/videos/2026_10_22_Upmade_Open_Source.mp4',
     );
     expect(routeSource('/img/blog/no-such-image.png')).toBeUndefined();
     expect(routeSource('/videos/no-such-video.mp4')).toBeUndefined();
@@ -102,5 +110,67 @@ describe('static/_redirects', () => {
       .filter((redirect) => routeSource(redirect.from))
       .map((redirect) => redirect.from);
     expect(shadowed).toEqual([]);
+  });
+
+  test('no target is redirected again', () => {
+    const withoutSlash = (route: string) => route.replace(/\/$/, '');
+    const sources = new Set(redirects.map((redirect) => withoutSlash(redirect.from)));
+    const chained = redirects
+      .filter((redirect) => sources.has(withoutSlash(redirect.to)))
+      .map((redirect) => `${redirect.from} -> ${redirect.to}`);
+    expect(chained).toEqual([]);
+  });
+
+  // Kritzel was renamed to Updraw and Updraw to Upmade; links to both earlier names are out there.
+  test('renamed blog posts and media are redirected from their Kritzel and Updraw names', () => {
+    // Docs are left out: the migration guide was first published under the Updraw name.
+    const renamed = redirects.filter((redirect) => /upmade/i.test(redirect.to) && !redirect.to.startsWith('/docs/'));
+    expect(renamed.length).toBeGreaterThan(0);
+    const missing: string[] = [];
+    for (const to of new Set(renamed.map((redirect) => redirect.to))) {
+      for (const brand of ['Kritzel', 'Updraw']) {
+        const legacy = to.replace(/upmade/g, brand.toLowerCase()).replace(/Upmade/g, brand);
+        for (const from of legacy.endsWith('/') ? [legacy, legacy.slice(0, -1)] : [legacy]) {
+          if (!redirects.some((redirect) => redirect.from === from && redirect.to === to)) {
+            missing.push(`${from} -> ${to}`);
+          }
+        }
+      }
+    }
+    expect(missing).toEqual([]);
+  });
+});
+
+describe('renamed documentation pages', () => {
+  const redirects = readRedirects();
+
+  // Pages are matched with and without a trailing slash, so links in either form get the 301.
+  test('every page source is listed with and without a trailing slash', () => {
+    const sources = new Set(redirects.map((redirect) => redirect.from));
+    const missing = redirects
+      .filter((redirect) => !/\.\w+$/.test(redirect.from))
+      .map((redirect) => (redirect.from.endsWith('/') ? redirect.from.slice(0, -1) : `${redirect.from}/`))
+      .filter((variant) => !sources.has(variant));
+    expect(missing).toEqual([]);
+  });
+
+  test('the migration guide keeps its Updraw-era URL', () => {
+    for (const framework of ['angular', 'react', 'vue']) {
+      const from = `/docs/${framework}/getting-started/migrating-to-updraw`;
+      const to = `/docs/${framework}/getting-started/migrating-to-upmade`;
+      for (const source of [from, `${from}/`]) {
+        expect(redirects).toContainEqual({ from: source, to: `${to}/`, status: '301' });
+      }
+      // Its Markdown export, which llms.txt listed
+      expect(redirects).toContainEqual({ from: `${from}.md`, to: `${to}.md`, status: '301' });
+    }
+  });
+
+  test('the quick start keeps its flat URL', () => {
+    expect(redirects).toContainEqual({
+      from: '/docs/react/quick-start',
+      to: '/docs/react/getting-started/quick-start/',
+      status: '301',
+    });
   });
 });

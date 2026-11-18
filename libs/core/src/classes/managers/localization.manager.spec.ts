@@ -1,5 +1,5 @@
-import { UpdrawLocalizationManager } from './localization.manager';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeLocalizationManager } from './localization.manager';
+import { UpmadeCore } from '../core/core.class';
 import { EN_LOCALE } from '../../locales/en-locale';
 import { DE_LOCALE } from '../../locales/de-locale';
 import { FR_LOCALE } from '../../locales/fr-locale';
@@ -11,8 +11,8 @@ import { IT_LOCALE } from '../../locales/it-locale';
 
 jest.mock('../core/core.class');
 
-describe('UpdrawLocalizationManager', () => {
-  let manager: UpdrawLocalizationManager;
+describe('UpmadeLocalizationManager', () => {
+  let manager: UpmadeLocalizationManager;
   let mockCore: any;
 
   beforeEach(() => {
@@ -22,9 +22,9 @@ describe('UpdrawLocalizationManager', () => {
     mockCore = {
       editorId: undefined,
       rerender: jest.fn(),
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    manager = new UpdrawLocalizationManager(mockCore);
+    manager = new UpmadeLocalizationManager(mockCore);
   });
 
   afterEach(() => {
@@ -38,18 +38,18 @@ describe('UpdrawLocalizationManager', () => {
     });
 
     it('should restore the stored locale from the settings object', () => {
-      localStorage.setItem('updraw-settings', JSON.stringify({ locale: 'de' }));
+      localStorage.setItem('upmade-settings', JSON.stringify({ locale: 'de' }));
 
-      const freshManager = new UpdrawLocalizationManager(mockCore);
+      const freshManager = new UpmadeLocalizationManager(mockCore);
 
       expect(freshManager.currentLocale).toBe('de');
     });
 
     it('should use a namespaced storage key when editorId is set', () => {
       mockCore.editorId = 'homepage';
-      localStorage.setItem('updraw-settings-homepage', JSON.stringify({ locale: 'fr' }));
+      localStorage.setItem('upmade-settings-homepage', JSON.stringify({ locale: 'fr' }));
 
-      const freshManager = new UpdrawLocalizationManager(mockCore);
+      const freshManager = new UpmadeLocalizationManager(mockCore);
 
       expect(freshManager.currentLocale).toBe('fr');
     });

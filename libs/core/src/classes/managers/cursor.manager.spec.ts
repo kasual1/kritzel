@@ -1,12 +1,12 @@
-import { UpdrawCursorManager } from './cursor.manager';
-import { UpdrawCore } from '../core/core.class';
-import { UpdrawCursorHelper } from '../../helpers/cursor.helper';
+import { UpmadeCursorManager } from './cursor.manager';
+import { UpmadeCore } from '../core/core.class';
+import { UpmadeCursorHelper } from '../../helpers/cursor.helper';
 
 jest.mock('../core/core.class');
 jest.mock('../../helpers/cursor.helper');
 
-describe('UpdrawCursorManager', () => {
-  let manager: UpdrawCursorManager;
+describe('UpmadeCursorManager', () => {
+  let manager: UpmadeCursorManager;
   let mockCore: any;
   let mockState: any;
 
@@ -56,12 +56,12 @@ describe('UpdrawCursorManager', () => {
         get isPointerDown() { return mockState.pointers.size > 0; },
         selectionGroup: null,
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
 
-    (UpdrawCursorHelper.getCursor as jest.Mock).mockReturnValue('url(data:image/svg+xml...) 4 4, auto');
-    (UpdrawCursorHelper.getPointerCursor as jest.Mock).mockReturnValue('url(data:image/svg+xml...) 12 12, auto');
+    (UpmadeCursorHelper.getCursor as jest.Mock).mockReturnValue('url(data:image/svg+xml...) 4 4, auto');
+    (UpmadeCursorHelper.getPointerCursor as jest.Mock).mockReturnValue('url(data:image/svg+xml...) 12 12, auto');
 
-    manager = new UpdrawCursorManager(mockCore);
+    manager = new UpmadeCursorManager(mockCore);
   });
 
   afterEach(() => {
@@ -87,11 +87,11 @@ describe('UpdrawCursorManager', () => {
       manager.setTargetElement(element);
 
       expect(element.style.setProperty).toHaveBeenCalledWith(
-        '--updraw-global-default-cursor',
+        '--upmade-global-default-cursor',
         expect.any(String)
       );
       expect(element.style.setProperty).toHaveBeenCalledWith(
-        '--updraw-global-pointer-cursor',
+        '--upmade-global-pointer-cursor',
         expect.any(String)
       );
     });
@@ -104,8 +104,8 @@ describe('UpdrawCursorManager', () => {
       manager.setTargetElement(newElement);
 
       expect(oldElement.style.cursor).toBe('');
-      expect(oldElement.style.removeProperty).toHaveBeenCalledWith('--updraw-global-default-cursor');
-      expect(oldElement.style.removeProperty).toHaveBeenCalledWith('--updraw-global-pointer-cursor');
+      expect(oldElement.style.removeProperty).toHaveBeenCalledWith('--upmade-global-default-cursor');
+      expect(oldElement.style.removeProperty).toHaveBeenCalledWith('--upmade-global-pointer-cursor');
       expect(manager.getTargetElement()).toBe(newElement);
     });
 
@@ -116,8 +116,8 @@ describe('UpdrawCursorManager', () => {
       manager.setTargetElement(null);
 
       expect(element.style.cursor).toBe('');
-      expect(element.style.removeProperty).toHaveBeenCalledWith('--updraw-global-default-cursor');
-      expect(element.style.removeProperty).toHaveBeenCalledWith('--updraw-global-pointer-cursor');
+      expect(element.style.removeProperty).toHaveBeenCalledWith('--upmade-global-default-cursor');
+      expect(element.style.removeProperty).toHaveBeenCalledWith('--upmade-global-pointer-cursor');
       expect(manager.getTargetElement()).toBeNull();
     });
 
@@ -200,7 +200,7 @@ describe('UpdrawCursorManager', () => {
     });
 
     it('should show the grab cursor over a titlebar drag surface', () => {
-      const title = { ...createMockElementWithClasses(), closest: (selector: string) => (selector === '[data-updraw-titlebar-surface]' ? {} : null) };
+      const title = { ...createMockElementWithClasses(), closest: (selector: string) => (selector === '[data-upmade-titlebar-surface]' ? {} : null) };
       manager.setShadowRoot(createMockShadowRoot([title]));
 
       manager.updateHoverState(createMockPointerEvent());
@@ -358,7 +358,7 @@ describe('UpdrawCursorManager', () => {
 
       manager.applyCursor();
 
-      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalledWith({
+      expect(UpmadeCursorHelper.getCursor).toHaveBeenCalledWith({
         iconName: 'default',
         rotation: undefined,
       });
@@ -373,7 +373,7 @@ describe('UpdrawCursorManager', () => {
 
       manager.applyCursor();
 
-      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalledWith({
+      expect(UpmadeCursorHelper.getCursor).toHaveBeenCalledWith({
         iconName: 'handGrab',
         rotation: undefined,
       });
@@ -386,7 +386,7 @@ describe('UpdrawCursorManager', () => {
 
       manager.applyCursor();
 
-      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalledWith({
+      expect(UpmadeCursorHelper.getCursor).toHaveBeenCalledWith({
         iconName: 'hand',
         rotation: undefined,
       });
@@ -399,7 +399,7 @@ describe('UpdrawCursorManager', () => {
 
       manager.applyCursor();
 
-      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalledWith({
+      expect(UpmadeCursorHelper.getCursor).toHaveBeenCalledWith({
         iconName: 'moveVertical',
         rotation: 45,
       });
@@ -413,7 +413,7 @@ describe('UpdrawCursorManager', () => {
 
       manager.applyCursor();
 
-      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalledWith({
+      expect(UpmadeCursorHelper.getCursor).toHaveBeenCalledWith({
         iconName: 'hand',
         rotation: undefined,
       });
@@ -425,7 +425,7 @@ describe('UpdrawCursorManager', () => {
       // Should not throw
       manager.applyCursor();
 
-      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalled();
+      expect(UpmadeCursorHelper.getCursor).toHaveBeenCalled();
     });
 
     it('should handle undefined cursor state', () => {
@@ -435,7 +435,7 @@ describe('UpdrawCursorManager', () => {
 
       manager.applyCursor();
 
-      expect(UpdrawCursorHelper.getCursor).toHaveBeenCalledWith({
+      expect(UpmadeCursorHelper.getCursor).toHaveBeenCalledWith({
         iconName: undefined,
         rotation: undefined,
       });
@@ -454,8 +454,8 @@ describe('UpdrawCursorManager', () => {
       manager.cleanup();
 
       expect(element.style.cursor).toBe('');
-      expect(element.style.removeProperty).toHaveBeenCalledWith('--updraw-global-default-cursor');
-      expect(element.style.removeProperty).toHaveBeenCalledWith('--updraw-global-pointer-cursor');
+      expect(element.style.removeProperty).toHaveBeenCalledWith('--upmade-global-default-cursor');
+      expect(element.style.removeProperty).toHaveBeenCalledWith('--upmade-global-pointer-cursor');
     });
 
     it('should null out target element and shadow root', () => {

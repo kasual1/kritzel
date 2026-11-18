@@ -1,15 +1,15 @@
 import {
-  UpdrawChatSession,
+  UpmadeChatSession,
   MODEL_IFRAME_CONTENT_SECURITY_POLICY,
-  type UpdrawBaseObject,
-  type UpdrawChatBoxChip,
-  type UpdrawChatTransport,
-  type UpdrawIframeContent,
-  type UpdrawIframeObject,
-  type UpdrawObjectConfig,
-  type UpdrawObjectTitlebarConfig,
-  type UpdrawTheme,
-} from '@updraw/vue-editor'
+  type UpmadeBaseObject,
+  type UpmadeChatBoxChip,
+  type UpmadeChatTransport,
+  type UpmadeIframeContent,
+  type UpmadeIframeObject,
+  type UpmadeObjectConfig,
+  type UpmadeObjectTitlebarConfig,
+  type UpmadeTheme,
+} from '@upmade/vue-editor'
 
 /** How the demo answers prompts: with a model and the user's own API key, or with canned UIs. */
 export type RequestMode = 'live' | 'mock'
@@ -36,12 +36,12 @@ read_iframe first when you don't know its current code, and prefer edits for sma
  * A chat session that builds UIs. `canvasTools: { iframes: true }` gives the model create_iframe, read_iframe and
  * update_iframe next to the other canvas tools.
  */
-export function createGenerativeUiSession(transport: UpdrawChatTransport): UpdrawChatSession {
-  return new UpdrawChatSession({ transport, system: SYSTEM_PROMPT, canvasTools: { iframes: true } })
+export function createGenerativeUiSession(transport: UpmadeChatTransport): UpmadeChatSession {
+  return new UpmadeChatSession({ transport, system: SYSTEM_PROMPT, canvasTools: { iframes: true } })
 }
 
 /** UIs get rounded corners and a soft shadow, like frames in a design tool. */
-export function withUiFrames(theme: UpdrawTheme): UpdrawTheme {
+export function withUiFrames(theme: UpmadeTheme): UpmadeTheme {
   return {
     ...theme,
     iframe: {
@@ -53,12 +53,12 @@ export function withUiFrames(theme: UpdrawTheme): UpdrawTheme {
 }
 
 /** UIs get a titlebar and keep their orientation. */
-export const objectConfig: UpdrawObjectConfig = {
+export const objectConfig: UpmadeObjectConfig = {
   hasTitlebar: object => isUi(object),
   isRotatable: false,
 }
 
-export const objectTitlebar: UpdrawObjectTitlebarConfig = {
+export const objectTitlebar: UpmadeObjectTitlebarConfig = {
   left: [
     { id: 'title', type: 'title', isEditable: true },
     {
@@ -72,16 +72,16 @@ export const objectTitlebar: UpdrawObjectTitlebarConfig = {
   right: [{ id: 'play', type: 'button', icon: 'play', tooltip: 'Open fullscreen' }],
 }
 
-export function isUi(object: UpdrawBaseObject): object is UpdrawIframeObject {
-  return object.__class__ === 'UpdrawIframeObject'
+export function isUi(object: UpmadeBaseObject): object is UpmadeIframeObject {
+  return object.__class__ === 'UpmadeIframeObject'
 }
 
-export function getUiTitle(ui: UpdrawIframeObject): string {
+export function getUiTitle(ui: UpmadeIframeObject): string {
   return ui.name ?? ui.title
 }
 
 /** A chip for each selected UI. The session tells the model which UIs a prompt sent with them is about. */
-export function getUiChips(objects: UpdrawBaseObject[]): UpdrawChatBoxChip[] {
+export function getUiChips(objects: UpmadeBaseObject[]): UpmadeChatBoxChip[] {
   return objects.filter(isUi).map(ui => ({ id: ui.id, objectId: ui.id, label: getUiTitle(ui), icon: 'cursor' }))
 }
 
@@ -94,7 +94,7 @@ export function getErrorMessage(error: unknown): string {
  * A standalone HTML document of a UI, to show it fullscreen. It keeps the content security policy that the canvas
  * gives model-written code, so the UI can't reach the network there either.
  */
-export function createUiDocument({ html, css, script }: UpdrawIframeContent, title: string): string {
+export function createUiDocument({ html, css, script }: UpmadeIframeContent, title: string): string {
   const safeTitle = title.replace(/&/g, '&amp;').replace(/</g, '&lt;')
   return `<!doctype html>
 <html>

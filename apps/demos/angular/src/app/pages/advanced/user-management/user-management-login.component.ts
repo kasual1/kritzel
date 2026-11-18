@@ -5,22 +5,22 @@ import {
   signal,
 } from '@angular/core';
 import {
-  IUpdrawUser,
-  UpdrawEditor,
-  UpdrawLoginConfig,
-  UpdrawWorkspace,
+  IUpmadeUser,
+  UpmadeEditor,
+  UpmadeLoginConfig,
+  UpmadeWorkspace,
   LoginEvent,
-} from '@updraw/angular-editor';
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-user-management-login',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       editorId="user-management-login"
       [loginConfig]="loginConfig"
       [user]="user()"
@@ -34,7 +34,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       (isReady)="onReady()"
       (login)="onLogin($event)"
       (logout)="onLogout()"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: [
     `
@@ -43,7 +43,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         flex-direction: column;
         height: 100%;
       }
-      updraw-editor {
+      upmade-editor {
         flex: 1;
         min-height: 0;
       }
@@ -51,15 +51,15 @@ import { createSeedObjects } from '../../../const/seed-objects';
   ],
 })
 export class UserManagementLoginComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
-  user = signal<IUpdrawUser | undefined>(undefined);
+  user = signal<IUpmadeUser | undefined>(undefined);
 
-  loginConfig: UpdrawLoginConfig = {
+  loginConfig: UpmadeLoginConfig = {
     title: 'Sign in',
     providers: [
       { name: 'google', icon: 'google', label: 'Continue with Google' },

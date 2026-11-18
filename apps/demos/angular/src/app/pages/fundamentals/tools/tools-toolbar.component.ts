@@ -1,24 +1,24 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
   DEFAULT_BRUSH_CONFIG,
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawSelectionTool,
-  UpdrawSyncConfig,
-  UpdrawTextTool,
-  UpdrawToolbarItem,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeSelectionTool,
+  UpmadeSyncConfig,
+  UpmadeTextTool,
+  UpmadeToolbarItem,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-tools-toolbar',
-  imports: [UpdrawEditor],
+  imports: [UpmadeEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <updraw-editor
+    <upmade-editor
       editorId="tools-toolbar"
       [theme]="'light'"
       [themes]="themes"
@@ -28,7 +28,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-    ></updraw-editor>
+    ></upmade-editor>
   `,
   styles: `
     :host {
@@ -40,26 +40,26 @@ import { createSeedObjects } from '../../../const/seed-objects';
 export class ToolsToolbarComponent {
   themes = [angularThemeLight, angularThemeDark];
 
-  workspaces = signal([new UpdrawWorkspace({ objects: createSeedObjects() })]);
+  workspaces = signal([new UpmadeWorkspace({ objects: createSeedObjects() })]);
 
-  toolbarItems: UpdrawToolbarItem[] = [
+  toolbarItems: UpmadeToolbarItem[] = [
     {
       name: 'selection',
       type: 'tool',
-      tool: UpdrawSelectionTool,
+      tool: UpmadeSelectionTool,
       icon: 'cursor',
     },
     {
       name: 'brush',
       type: 'tool',
-      tool: UpdrawBrushTool,
+      tool: UpmadeBrushTool,
       icon: 'pen',
       isDefault: true,
     },
     {
       name: 'text',
       type: 'tool',
-      tool: UpdrawTextTool,
+      tool: UpmadeTextTool,
       icon: 'type',
     },
     {

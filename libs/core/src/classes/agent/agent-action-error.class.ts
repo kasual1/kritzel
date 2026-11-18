@@ -1,27 +1,27 @@
 import type {
-  UpdrawAgenticAction,
-  UpdrawAgenticActionFailureReason,
-  UpdrawAgenticActionResult,
+  UpmadeAgenticAction,
+  UpmadeAgenticActionFailureReason,
+  UpmadeAgenticActionResult,
 } from '../../interfaces/agentic-action.interface';
 
 /**
  * Thrown inside `agent.task()` when an action of the agent does not complete,
  * e.g. because the user has the target selected (`reason: 'user-selected'`).
  */
-export class UpdrawAgentActionError extends Error {
-  readonly name = 'UpdrawAgentActionError';
+export class UpmadeAgentActionError extends Error {
+  readonly name = 'UpmadeAgentActionError';
 
   constructor(
     /** The action that did not complete. */
-    readonly action: UpdrawAgenticAction,
+    readonly action: UpmadeAgenticAction,
     /** Its result (`completed: false`). */
-    readonly result: UpdrawAgenticActionResult,
+    readonly result: UpmadeAgenticActionResult,
   ) {
     super(`Agent action "${action.type}" did not complete: ${result.reason ?? 'unknown reason'}.`);
   }
 
   /** Why the action did not complete. */
-  get reason(): UpdrawAgenticActionFailureReason | undefined {
+  get reason(): UpmadeAgenticActionFailureReason | undefined {
     return this.result.reason;
   }
 

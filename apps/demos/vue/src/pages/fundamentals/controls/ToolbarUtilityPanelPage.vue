@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
+import { UpmadeEditor, UpmadeWorkspace } from '@upmade/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -9,7 +9,7 @@ import { editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
 const isToolbarVisible = ref(true)
 const isUtilityPanelVisible = ref(true)
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = [new UpdrawWorkspace({ objects: createSeedObjects() })]
+const workspaces = [new UpmadeWorkspace({ objects: createSeedObjects() })]
 
 function setToolbarVisible(event: Event) {
   isToolbarVisible.value = (event.target as HTMLInputElement).checked
@@ -32,7 +32,7 @@ function setUtilityPanelVisible(event: Event) {
         <span>Utility panel</span>
       </label>
     </div>
-    <UpdrawEditor
+    <UpmadeEditor
       editorId="toolbar-utility-panel"
       theme="light"
       :themes="themes"

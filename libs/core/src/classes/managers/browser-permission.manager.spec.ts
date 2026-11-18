@@ -1,10 +1,10 @@
-import { UpdrawBrowserPermissionManager } from './browser-permission.manager';
+import { UpmadeBrowserPermissionManager } from './browser-permission.manager';
 
-describe('UpdrawBrowserPermissionManager', () => {
-  let manager: UpdrawBrowserPermissionManager;
+describe('UpmadeBrowserPermissionManager', () => {
+  let manager: UpmadeBrowserPermissionManager;
 
   beforeEach(() => {
-    manager = new UpdrawBrowserPermissionManager({} as any);
+    manager = new UpmadeBrowserPermissionManager({} as any);
   });
 
   afterEach(() => {

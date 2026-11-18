@@ -1,30 +1,30 @@
-import { UpdrawGroup } from './group.class';
-import { UpdrawBaseObject } from './base-object.class';
-import { UpdrawCore } from '../core/core.class';
+import { UpmadeGroup } from './group.class';
+import { UpmadeBaseObject } from './base-object.class';
+import { UpmadeCore } from '../core/core.class';
 
-describe('UpdrawGroup', () => {
-  let groupObject: UpdrawGroup;
-  let mockCore: jest.Mocked<UpdrawCore>;
+describe('UpmadeGroup', () => {
+  let groupObject: UpmadeGroup;
+  let mockCore: jest.Mocked<UpmadeCore>;
   let mockObjectsUpdate: jest.Mock;
   let mockObjectsTransaction: jest.Mock;
   let mockAnchorManagerUpdate: jest.Mock;
-  let mockObjectsStore: UpdrawBaseObject<HTMLElement>[];
+  let mockObjectsStore: UpmadeBaseObject<HTMLElement>[];
 
-  const createMockCore = (): jest.Mocked<UpdrawCore> => {
+  const createMockCore = (): jest.Mocked<UpmadeCore> => {
     mockObjectsUpdate = jest.fn();
     mockObjectsTransaction = jest.fn((callback: () => void) => callback());
     mockAnchorManagerUpdate = jest.fn();
     mockObjectsStore = [];
 
     const createMockObjectsArray = () => {
-      const arr: UpdrawBaseObject<HTMLElement>[] & {
+      const arr: UpmadeBaseObject<HTMLElement>[] & {
         update: jest.Mock;
         transaction: jest.Mock;
-        filter: (predicate: (obj: UpdrawBaseObject<HTMLElement>) => boolean) => UpdrawBaseObject<HTMLElement>[];
+        filter: (predicate: (obj: UpmadeBaseObject<HTMLElement>) => boolean) => UpmadeBaseObject<HTMLElement>[];
       } = Object.assign([], {
         update: mockObjectsUpdate,
         transaction: mockObjectsTransaction,
-        filter: (predicate: (obj: UpdrawBaseObject<HTMLElement>) => boolean) => {
+        filter: (predicate: (obj: UpmadeBaseObject<HTMLElement>) => boolean) => {
           return mockObjectsStore.filter(predicate);
         },
       });
@@ -53,11 +53,11 @@ describe('UpdrawGroup', () => {
       anchorManager: {
         updateAnchorsForObject: mockAnchorManagerUpdate,
       },
-    } as unknown as jest.Mocked<UpdrawCore>;
+    } as unknown as jest.Mocked<UpmadeCore>;
   };
 
-  function createMockChildObject(overrides: Partial<UpdrawBaseObject<HTMLElement>> = {}): UpdrawBaseObject<HTMLElement> {
-    const obj = new UpdrawBaseObject<HTMLElement>();
+  function createMockChildObject(overrides: Partial<UpmadeBaseObject<HTMLElement>> = {}): UpmadeBaseObject<HTMLElement> {
+    const obj = new UpmadeBaseObject<HTMLElement>();
     obj._core = mockCore;
     obj.id = `child-${Math.random().toString(36).substr(2, 9)}`;
     obj.translateX = 0;
@@ -78,7 +78,7 @@ describe('UpdrawGroup', () => {
 
   beforeEach(() => {
     mockCore = createMockCore();
-    groupObject = UpdrawGroup.create(mockCore);
+    groupObject = UpmadeGroup.create(mockCore);
   });
 
   afterEach(() => {
@@ -87,15 +87,15 @@ describe('UpdrawGroup', () => {
 
   describe('constructor', () => {
     it('should create a group with default values', () => {
-      const group = new UpdrawGroup();
+      const group = new UpmadeGroup();
 
-      expect(group.__class__).toBe('UpdrawGroup');
+      expect(group.__class__).toBe('UpmadeGroup');
       expect(group.childIds).toEqual([]);
     });
 
     it('should generate a unique id on instantiation', () => {
-      const group1 = new UpdrawGroup();
-      const group2 = new UpdrawGroup();
+      const group1 = new UpmadeGroup();
+      const group2 = new UpmadeGroup();
       expect(group1.id).toBeDefined();
       expect(group2.id).toBeDefined();
       expect(group1.id).not.toBe(group2.id);
@@ -104,40 +104,40 @@ describe('UpdrawGroup', () => {
 
   describe('static create', () => {
     it('should create a group with core reference', () => {
-      const group = UpdrawGroup.create(mockCore);
+      const group = UpmadeGroup.create(mockCore);
       expect(group._core).toBe(mockCore);
     });
 
     it('should set workspaceId from active workspace', () => {
-      const group = UpdrawGroup.create(mockCore);
+      const group = UpmadeGroup.create(mockCore);
       expect(group.workspaceId).toBe('workspace-1');
     });
 
     it('should generate a unique id', () => {
-      const group = UpdrawGroup.create(mockCore);
+      const group = UpmadeGroup.create(mockCore);
       expect(group.id).toBeDefined();
       expect(typeof group.id).toBe('string');
       expect(group.id.length).toBeGreaterThan(0);
     });
 
     it('should set scale from core store state', () => {
-      const group = UpdrawGroup.create(mockCore);
+      const group = UpmadeGroup.create(mockCore);
       expect(group.scale).toBe(1);
     });
 
     it('should set zIndex from currentZIndex', () => {
-      const group = UpdrawGroup.create(mockCore);
+      const group = UpmadeGroup.create(mockCore);
       expect(group.zIndex).toBe(5);
     });
 
     it('should create multiple unique groups', () => {
-      const group1 = UpdrawGroup.create(mockCore);
-      const group2 = UpdrawGroup.create(mockCore);
+      const group1 = UpmadeGroup.create(mockCore);
+      const group2 = UpmadeGroup.create(mockCore);
       expect(group1.id).not.toBe(group2.id);
     });
 
     it('should convert create rotation from degrees to radians', () => {
-      const group = UpdrawGroup.create(mockCore, { rotation: -90 });
+      const group = UpmadeGroup.create(mockCore, { rotation: -90 });
 
       expect(group.rotation).toBeCloseTo(-Math.PI / 2);
     });
@@ -148,7 +148,7 @@ describe('UpdrawGroup', () => {
       const child1 = createMockChildObject({ id: 'child-1' });
       const child2 = createMockChildObject({ id: 'child-2' });
 
-      const group = UpdrawGroup.createFromObjects(mockCore, [child1, child2]);
+      const group = UpmadeGroup.createFromObjects(mockCore, [child1, child2]);
 
       expect(group.childIds).toContain('child-1');
       expect(group.childIds).toContain('child-2');
@@ -164,7 +164,7 @@ describe('UpdrawGroup', () => {
         height: 50,
       });
 
-      const group = UpdrawGroup.createFromObjects(mockCore, [child1]);
+      const group = UpmadeGroup.createFromObjects(mockCore, [child1]);
 
       expect(group.translateX).toBeDefined();
       expect(group.translateY).toBeDefined();
@@ -177,10 +177,10 @@ describe('UpdrawGroup', () => {
     it('should find parent group containing the object', () => {
       createMockChildObject({ id: 'child-1' });
       groupObject.childIds.push('child-1');
-      groupObject.__class__ = 'UpdrawGroup';
+      groupObject.__class__ = 'UpmadeGroup';
       mockObjectsStore.push(groupObject);
 
-      const parent = UpdrawGroup.findParentGroup(mockCore, 'child-1');
+      const parent = UpmadeGroup.findParentGroup(mockCore, 'child-1');
 
       expect(parent).toBe(groupObject);
     });
@@ -188,13 +188,13 @@ describe('UpdrawGroup', () => {
     it('should return null when object has no parent group', () => {
       createMockChildObject({ id: 'orphan-child' });
 
-      const parent = UpdrawGroup.findParentGroup(mockCore, 'orphan-child');
+      const parent = UpmadeGroup.findParentGroup(mockCore, 'orphan-child');
 
       expect(parent).toBeNull();
     });
 
     it('should return null for non-existent object', () => {
-      const parent = UpdrawGroup.findParentGroup(mockCore, 'non-existent');
+      const parent = UpmadeGroup.findParentGroup(mockCore, 'non-existent');
 
       expect(parent).toBeNull();
     });
@@ -610,7 +610,7 @@ describe('UpdrawGroup', () => {
     it('should create a new group', () => {
       const copied = groupObject.copy();
 
-      expect(copied).toBeInstanceOf(UpdrawGroup);
+      expect(copied).toBeInstanceOf(UpmadeGroup);
       expect(copied.id).not.toBe(groupObject.id);
     });
 
@@ -770,7 +770,7 @@ describe('UpdrawGroup', () => {
     });
 
     it('should recursively update nested groups', () => {
-      const nestedGroup = UpdrawGroup.create(mockCore);
+      const nestedGroup = UpmadeGroup.create(mockCore);
       nestedGroup.workspaceId = 'old-workspace';
       mockObjectsStore.push(nestedGroup);
 
@@ -786,9 +786,9 @@ describe('UpdrawGroup', () => {
     });
   });
 
-  describe('inheritance from UpdrawBaseObject', () => {
-    it('should inherit default property values from UpdrawBaseObject', () => {
-      const group = new UpdrawGroup();
+  describe('inheritance from UpmadeBaseObject', () => {
+    it('should inherit default property values from UpmadeBaseObject', () => {
+      const group = new UpmadeGroup();
       expect(group.opacity).toBe(1);
       expect(group.padding).toBe(0);
       expect(group.rotation).toBe(0);
@@ -839,17 +839,17 @@ describe('UpdrawGroup', () => {
   // ───────────────────────────────────────────────────────────────────────────
   describe('nested groups', () => {
     /**
-     * Builds an UpdrawGroup wrapping the provided children, registers it in
+     * Builds an UpmadeGroup wrapping the provided children, registers it in
      * the mock store, and finalizes it so snapshots match the children.
      */
-    const buildGroup = (children: UpdrawBaseObject<HTMLElement>[]): UpdrawGroup => {
-      const group = UpdrawGroup.create(mockCore);
-      group.__class__ = 'UpdrawGroup';
+    const buildGroup = (children: UpmadeBaseObject<HTMLElement>[]): UpmadeGroup => {
+      const group = UpmadeGroup.create(mockCore);
+      group.__class__ = 'UpmadeGroup';
       group.padding = 0;
       group.scale = 1;
       group.rotation = 0;
       children.forEach(c => group.childIds.push(c.id));
-      mockObjectsStore.push(group as unknown as UpdrawBaseObject<HTMLElement>);
+      mockObjectsStore.push(group as unknown as UpmadeBaseObject<HTMLElement>);
       return group;
     };
 
@@ -859,7 +859,7 @@ describe('UpdrawGroup', () => {
         const c2 = createMockChildObject({ id: 'c-2' });
         const group = buildGroup([c1, c2]);
 
-        const ids = UpdrawGroup.collectDescendantIds(group);
+        const ids = UpmadeGroup.collectDescendantIds(group);
 
         expect(ids.has('c-1')).toBe(true);
         expect(ids.has('c-2')).toBe(true);
@@ -870,9 +870,9 @@ describe('UpdrawGroup', () => {
         const grandchild = createMockChildObject({ id: 'gc-1' });
         const inner = buildGroup([grandchild]);
         const outerSibling = createMockChildObject({ id: 's-1' });
-        const outer = buildGroup([inner as unknown as UpdrawBaseObject<HTMLElement>, outerSibling]);
+        const outer = buildGroup([inner as unknown as UpmadeBaseObject<HTMLElement>, outerSibling]);
 
-        const ids = UpdrawGroup.collectDescendantIds(outer);
+        const ids = UpmadeGroup.collectDescendantIds(outer);
 
         expect(ids.has(inner.id)).toBe(true);
         expect(ids.has('gc-1')).toBe(true);
@@ -883,7 +883,7 @@ describe('UpdrawGroup', () => {
       it('should return empty set for a group with no children', () => {
         const group = buildGroup([]);
 
-        const ids = UpdrawGroup.collectDescendantIds(group);
+        const ids = UpmadeGroup.collectDescendantIds(group);
 
         expect(ids.size).toBe(0);
       });
@@ -893,7 +893,7 @@ describe('UpdrawGroup', () => {
         const group = buildGroup([c1]);
         const out = new Set<string>(['preexisting']);
 
-        const result = UpdrawGroup.collectDescendantIds(group, out);
+        const result = UpmadeGroup.collectDescendantIds(group, out);
 
         expect(result).toBe(out);
         expect(out.has('preexisting')).toBe(true);
@@ -917,7 +917,7 @@ describe('UpdrawGroup', () => {
         // Force stale snapshot on the inner group so we can detect re-capture
         (inner as any).snapshotRotation = 0;
 
-        const outer = buildGroup([inner as unknown as UpdrawBaseObject<HTMLElement>]);
+        const outer = buildGroup([inner as unknown as UpmadeBaseObject<HTMLElement>]);
 
         outer.finalize();
 
@@ -934,14 +934,14 @@ describe('UpdrawGroup', () => {
         grandchild.copy = jest.fn(() => copiedGrandchild);
 
         const inner = buildGroup([grandchild]);
-        // UpdrawGroup.copy() relies on the actual class behavior — keep it real
-        const outer = buildGroup([inner as unknown as UpdrawBaseObject<HTMLElement>]);
+        // UpmadeGroup.copy() relies on the actual class behavior — keep it real
+        const outer = buildGroup([inner as unknown as UpmadeBaseObject<HTMLElement>]);
 
         const copiedOuter = outer.copy();
-        const copiedInner = (copiedOuter as any)._pendingChildren[0] as UpdrawGroup;
+        const copiedInner = (copiedOuter as any)._pendingChildren[0] as UpmadeGroup;
 
         expect(copiedOuter._pendingChildren).toHaveLength(1);
-        expect(copiedInner).toBeInstanceOf(UpdrawGroup);
+        expect(copiedInner).toBeInstanceOf(UpmadeGroup);
         // Critical: the inner group's grandchildren must also be pending,
         // otherwise paste would strand them and they'd never be inserted.
         expect((copiedInner as any)._pendingChildren).toContain(copiedGrandchild);
@@ -972,7 +972,7 @@ describe('UpdrawGroup', () => {
         const inner = buildGroup([child]);
         inner.refreshBoundingBox();
 
-        const outer = buildGroup([inner as unknown as UpdrawBaseObject<HTMLElement>]);
+        const outer = buildGroup([inner as unknown as UpmadeBaseObject<HTMLElement>]);
         outer.finalize();
 
         return { outer, inner, child };
@@ -1052,7 +1052,7 @@ describe('UpdrawGroup', () => {
         const inner = buildGroup([grandchild]);
         inner.refreshBoundingBox();
 
-        const outer = buildGroup([inner as unknown as UpdrawBaseObject<HTMLElement>]);
+        const outer = buildGroup([inner as unknown as UpmadeBaseObject<HTMLElement>]);
         outer.finalize();
 
         // Spy on the inner group's rotate to verify it's called with a value

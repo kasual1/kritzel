@@ -249,15 +249,15 @@ article a[aria-label^="Read more about "] {
   }
 }
 :root {
-  --updraw-site-default-cursor: url("/img/cursor-default.svg") 4 4, auto;
-  --updraw-site-pointer-cursor: url("/img/cursor-pointer.svg") 12 12, pointer;
-  --updraw-site-hand-cursor: url("/img/cursor-hand.svg") 12 12, grab;
-  --updraw-site-grab-cursor: url("/img/cursor-grab.svg") 12 12, grabbing;
+  --upmade-site-default-cursor: url("/img/cursor-default.svg") 4 4, auto;
+  --upmade-site-pointer-cursor: url("/img/cursor-pointer.svg") 12 12, pointer;
+  --upmade-site-hand-cursor: url("/img/cursor-hand.svg") 12 12, grab;
+  --upmade-site-grab-cursor: url("/img/cursor-grab.svg") 12 12, grabbing;
 }
 
 html,
 body {
-  cursor: var(--updraw-site-default-cursor);
+  cursor: var(--upmade-site-default-cursor);
 }
 
 a[href],
@@ -273,7 +273,7 @@ select,
 label[for],
 label:has(input[type="checkbox"], input[type="radio"]),
 [class*="wordmarkLetter"] {
-  cursor: var(--updraw-site-pointer-cursor) !important;
+  cursor: var(--upmade-site-pointer-cursor) !important;
 }
 
 button:disabled,

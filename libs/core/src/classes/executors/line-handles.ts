@@ -1,12 +1,12 @@
-import type { UpdrawAgenticLineEnd } from '../../interfaces/agentic-action.interface';
-import type { UpdrawPoint } from '../../interfaces/point.interface';
-import type { UpdrawCore } from '../core/core.class';
-import type { UpdrawAgenticActionRun } from '../managers/agentic-action-run.class';
-import type { UpdrawAgenticRefusal } from '../../types/agentic-action.types';
-import { UpdrawLine } from '../objects/line.class';
+import type { UpmadeAgenticLineEnd } from '../../interfaces/agentic-action.interface';
+import type { UpmadePoint } from '../../interfaces/point.interface';
+import type { UpmadeCore } from '../core/core.class';
+import type { UpmadeAgenticActionRun } from '../managers/agentic-action-run.class';
+import type { UpmadeAgenticRefusal } from '../../types/agentic-action.types';
+import { UpmadeLine } from '../objects/line.class';
 import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { assertObjectId } from '../../helpers/agentic-validation.helper';
-import { UpdrawMathHelper } from '../../helpers/math.helper';
+import { UpmadeMathHelper } from '../../helpers/math.helper';
 
 /**
  * What `drawLine` and `editLine` share: line geometry in world coordinates, and dragging a line's handles the
@@ -14,16 +14,16 @@ import { UpdrawMathHelper } from '../../helpers/math.helper';
  */
 
 /** A line in world coordinates: its ends and, for a curve, its quadratic control point. */
-export interface UpdrawLineWorldGeometry {
-  start: UpdrawPoint;
-  end: UpdrawPoint;
-  control?: UpdrawPoint;
+export interface UpmadeLineWorldGeometry {
+  start: UpmadePoint;
+  end: UpmadePoint;
+  control?: UpmadePoint;
 }
 
-export type UpdrawLineHandle = 'start' | 'end';
+export type UpmadeLineHandle = 'start' | 'end';
 
 /** Throws a `TypeError` unless `end` is `{ x, y }` or `{ objectId }`. */
-export function assertLineEnd(end: unknown, field: string): asserts end is UpdrawAgenticLineEnd {
+export function assertLineEnd(end: unknown, field: string): asserts end is UpmadeAgenticLineEnd {
   if (!end || typeof end !== 'object' || Array.isArray(end)) {
     throw new TypeError(`"${field}" must be { x, y } or { objectId }.`);
   }
@@ -35,28 +35,28 @@ export function assertLineEnd(end: unknown, field: string): asserts end is Updra
     assertObjectId(candidate.objectId, `${field}.objectId`);
     return;
   }
-  if (!UpdrawMathHelper.isFiniteNumber(candidate.x) || !UpdrawMathHelper.isFiniteNumber(candidate.y)) {
+  if (!UpmadeMathHelper.isFiniteNumber(candidate.x) || !UpmadeMathHelper.isFiniteNumber(candidate.y)) {
     throw new TypeError(`"${field}" must be { x, y } or { objectId }.`);
   }
 }
 
 /** Throws a `TypeError` unless `point` is undefined or `{ x, y }`. */
-export function assertOptionalPoint(point: unknown, field: string): asserts point is UpdrawPoint | undefined {
+export function assertOptionalPoint(point: unknown, field: string): asserts point is UpmadePoint | undefined {
   if (point === undefined) {
     return;
   }
   const candidate = point as { x?: unknown; y?: unknown } | null;
-  if (!candidate || typeof candidate !== 'object' || !UpdrawMathHelper.isFiniteNumber(candidate.x) || !UpdrawMathHelper.isFiniteNumber(candidate.y)) {
+  if (!candidate || typeof candidate !== 'object' || !UpmadeMathHelper.isFiniteNumber(candidate.x) || !UpmadeMathHelper.isFiniteNumber(candidate.y)) {
     throw new TypeError(`"${field}" must be { x, y }.`);
   }
 }
 
-export function isObjectEnd(end: UpdrawAgenticLineEnd): end is { objectId: string } {
+export function isObjectEnd(end: UpmadeAgenticLineEnd): end is { objectId: string } {
   return 'objectId' in end && end.objectId !== undefined;
 }
 
 /** Refuses an object end that a line can't attach to: a missing object, a selection, a line, or `lineId` itself. */
-export function refuseUnanchorable(run: UpdrawAgenticActionRun, objectId: string, lineId?: string): UpdrawAgenticRefusal | null {
+export function refuseUnanchorable(run: UpmadeAgenticActionRun, objectId: string, lineId?: string): UpmadeAgenticRefusal | null {
   const object = run.map!.findById(objectId);
   if (!object || objectId === lineId || isSelectionObject(object) || !run.core.anchorManager.isAnchorable(object)) {
     return { reason: 'invalid-target', objectIds: [objectId] };
@@ -65,7 +65,7 @@ export function refuseUnanchorable(run: UpdrawAgenticActionRun, objectId: string
 }
 
 /** The world point of an end: an object's center (stopping the run if it is gone), or the point itself. */
-export function resolveLineEnd(run: UpdrawAgenticActionRun, end: UpdrawAgenticLineEnd): UpdrawPoint {
+export function resolveLineEnd(run: UpmadeAgenticActionRun, end: UpmadeAgenticLineEnd): UpmadePoint {
   if (!isObjectEnd(end)) {
     return { x: end.x, y: end.y };
   }
@@ -77,7 +77,7 @@ export function resolveLineEnd(run: UpdrawAgenticActionRun, end: UpdrawAgenticLi
 }
 
 /** The point halfway along a line: on the curve for a curved line (where its middle handle sits). */
-export function lineMidpoint(geometry: UpdrawLineWorldGeometry): UpdrawPoint {
+export function lineMidpoint(geometry: UpmadeLineWorldGeometry): UpmadePoint {
   const { start, end, control } = geometry;
   if (!control) {
     return { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 };
@@ -86,16 +86,16 @@ export function lineMidpoint(geometry: UpdrawLineWorldGeometry): UpdrawPoint {
 }
 
 /** The control point of the quadratic curve from `start` to `end` that passes through `through` halfway. */
-export function controlThrough(start: UpdrawPoint, end: UpdrawPoint, through: UpdrawPoint): UpdrawPoint {
+export function controlThrough(start: UpmadePoint, end: UpmadePoint, through: UpmadePoint): UpmadePoint {
   return { x: 2 * through.x - (start.x + end.x) / 2, y: 2 * through.y - (start.y + end.y) / 2 };
 }
 
-export function lerpPoint(from: UpdrawPoint, to: UpdrawPoint, t: number): UpdrawPoint {
+export function lerpPoint(from: UpmadePoint, to: UpmadePoint, t: number): UpmadePoint {
   return { x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t };
 }
 
 /** Reads a line's geometry in world coordinates. */
-export function readLineGeometry(core: UpdrawCore, line: UpdrawLine): UpdrawLineWorldGeometry {
+export function readLineGeometry(core: UpmadeCore, line: UpmadeLine): UpmadeLineWorldGeometry {
   const toWorld = (x: number, y: number) => core.anchorManager.lineLocalToWorld(line, x, y);
   return {
     start: toWorld(line.startX, line.startY),
@@ -108,9 +108,9 @@ export function readLineGeometry(core: UpdrawCore, line: UpdrawLine): UpdrawLine
  * Gives a line new world geometry in place, keeping its ID, style, anchors and scale. The line is rebuilt
  * unrotated: the same world points describe it fully.
  */
-export function applyLineGeometry(line: UpdrawLine, geometry: UpdrawLineWorldGeometry): void {
+export function applyLineGeometry(line: UpmadeLine, geometry: UpmadeLineWorldGeometry): void {
   const scale = line.scale || 1;
-  const shaped = new UpdrawLine({
+  const shaped = new UpmadeLine({
     startX: geometry.start.x * scale,
     startY: geometry.start.y * scale,
     endX: geometry.end.x * scale,
@@ -158,9 +158,9 @@ export const LINE_GEOMETRY_PROPERTIES = [
   'endAnchor',
 ];
 
-function currentLine(run: UpdrawAgenticActionRun, lineId: string): UpdrawLine {
+function currentLine(run: UpmadeAgenticActionRun, lineId: string): UpmadeLine {
   const line = run.map!.findById(lineId);
-  if (!(line instanceof UpdrawLine)) {
+  if (!(line instanceof UpmadeLine)) {
     run.stop('object-removed', [lineId]);
   }
   return line;
@@ -170,7 +170,7 @@ function currentLine(run: UpdrawAgenticActionRun, lineId: string): UpdrawLine {
  * Drags one end of a line to `destination` like the end handle: the end comes loose first, follows the cursor,
  * and attaches to the destination object on release.
  */
-export async function dragLineEnd(run: UpdrawAgenticActionRun, lineId: string, handle: UpdrawLineHandle, destination: UpdrawAgenticLineEnd): Promise<void> {
+export async function dragLineEnd(run: UpmadeAgenticActionRun, lineId: string, handle: UpmadeLineHandle, destination: UpmadeAgenticLineEnd): Promise<void> {
   const core = run.core;
   const map = run.map!;
   const cursors = run.cursorManager;
@@ -213,7 +213,7 @@ export async function dragLineEnd(run: UpdrawAgenticActionRun, lineId: string, h
  * Drags the middle handle of a line so the line curves through `through`, or back onto the straight line
  * (`through` undefined), like the middle handle does.
  */
-export async function bendLine(run: UpdrawAgenticActionRun, lineId: string, through: UpdrawPoint | undefined): Promise<void> {
+export async function bendLine(run: UpmadeAgenticActionRun, lineId: string, through: UpmadePoint | undefined): Promise<void> {
   const core = run.core;
   const map = run.map!;
   const cursors = run.cursorManager;

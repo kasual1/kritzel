@@ -1,10 +1,10 @@
 import { useRef } from "react";
 import {
-  UpdrawEditor,
+  UpmadeEditor,
   lightTheme,
-  HTMLUpdrawEditorElement,
-  type UpdrawTheme,
-} from "@updraw/react-editor";
+  HTMLUpmadeEditorElement,
+  type UpmadeTheme,
+} from "@upmade/react-editor";
 import { seedEditor } from "../../shared/demo-shared";
 
 const brandPurple = "#7c3aed";
@@ -13,7 +13,7 @@ const brandPurpleActive = "#5b21b6";
 const brandPurpleLight = "rgba(124, 58, 237, 0.1)";
 const brandPurpleMedium = "rgba(124, 58, 237, 0.2)";
 
-const brandedPurpleFlatTheme: UpdrawTheme = {
+const brandedPurpleFlatTheme: UpmadeTheme = {
   ...lightTheme,
   name: "branded-purple-flat",
   global: {
@@ -259,7 +259,7 @@ const brandedPurpleFlatTheme: UpdrawTheme = {
 const themes = [brandedPurpleFlatTheme];
 
 export function ThemingCustomPage() {
-  const editorRef = useRef<HTMLUpdrawEditorElement | null>(null);
+  const editorRef = useRef<HTMLUpmadeEditorElement | null>(null);
 
   return (
     <div
@@ -269,7 +269,7 @@ export function ThemingCustomPage() {
         background: "linear-gradient(180deg, #fbf8ff 0%, #f3ebff 100%)",
       }}
     >
-      <UpdrawEditor
+      <UpmadeEditor
         ref={editorRef}
         editorId="theming-custom"
         theme="branded-purple-flat"

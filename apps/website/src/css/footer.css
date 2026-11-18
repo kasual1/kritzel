@@ -4,7 +4,7 @@
   overflow: hidden;
 }
 
-/* The UPDRAW wordmark above the footer is desktop only (see Landing/styles.module.css). */
+/* The UPMADE wordmark above the footer is desktop only (see Landing/styles.module.css). */
 @media (max-width: 768px) {
   .blog-footer-wordmark {
     display: none;
@@ -73,11 +73,11 @@
   margin-top: 0;
 }
 
-.updraw-footer-brand {
+.upmade-footer-brand {
   max-width: 280px;
 }
 
-.updraw-footer-brand__logo-badge {
+.upmade-footer-brand__logo-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -88,18 +88,15 @@
   margin-bottom: 0.9rem;
 }
 
-/*
- * The triangle's base corners reach into the badge's rounded corners, so the mark is drawn at 26px (not 28px)
- * and lifted by 1px for optical centering; the margins keep the badge itself the same size.
- */
-.updraw-footer-brand__logo {
-  width: 26px;
-  height: 26px;
-  margin: 0 1px 2px;
+/* The mark is taller than wide, so it fits the square box by its height (the SVG keeps its aspect ratio). */
+.upmade-footer-brand__logo {
+  width: 28px;
+  height: 28px;
   display: block;
+  color: #0a0a0a;
 }
 
-.updraw-footer-brand__description {
+.upmade-footer-brand__description {
   margin: 0;
   color: #0a0a0a;
   opacity: 1;
@@ -108,7 +105,7 @@
 }
 
 @media (max-width: 996px) {
-  .updraw-footer-brand {
+  .upmade-footer-brand {
     max-width: 100%;
     margin-bottom: 0.75rem;
   }

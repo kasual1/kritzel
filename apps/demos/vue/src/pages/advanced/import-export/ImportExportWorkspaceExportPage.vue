@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { getEditorRef, UpdrawEditor, UpdrawWorkspace } from '@updraw/vue-editor'
+import { getEditorRef, UpmadeEditor, UpmadeWorkspace } from '@upmade/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
@@ -11,7 +11,7 @@ const editor = getEditorRef('editor')
 const jsonPreview = ref('Click "Preview as JSON" to see the exported workspace.')
 const themes = [vueThemeLight, vueThemeDark]
 const workspaces = [
-  new UpdrawWorkspace({
+  new UpmadeWorkspace({
     id: 'workspace-export',
     name: 'Workspace Export',
     objects: createSeedObjects(),
@@ -38,7 +38,7 @@ async function downloadJson(): Promise<void> {
     </Toolbar>
     <div class="content">
       <div class="editor-wrap">
-        <UpdrawEditor
+        <UpmadeEditor
           ref="editor"
           editorId="import-export-workspace-export"
           theme="light"

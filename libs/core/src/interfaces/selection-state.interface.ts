@@ -1,4 +1,4 @@
-export interface UpdrawSelectionState {
+export interface UpmadeSelectionState {
   	isSelecting: boolean;
 	isResizing: boolean;
 	isRotating: boolean;

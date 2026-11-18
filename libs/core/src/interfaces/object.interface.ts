@@ -1,9 +1,9 @@
-import { UpdrawBaseObject } from '../classes/objects/base-object.class';
-import { UpdrawBoundingBox } from './bounding-box.interface';
-import { UpdrawPolygon } from './polygon.interface';
+import { UpmadeBaseObject } from '../classes/objects/base-object.class';
+import { UpmadeBoundingBox } from './bounding-box.interface';
+import { UpmadePolygon } from './polygon.interface';
 import { ThemeAwareColor } from '../constants/color-palette.constants';
 
-export interface UpdrawObject<T = Element> {
+export interface UpmadeObject<T = Element> {
   _elementRef: T;
 
   id: string;
@@ -35,7 +35,7 @@ export interface UpdrawObject<T = Element> {
 
   set elementRef(element: T);
   get elementRef(): T;
-  get boundingBox(): UpdrawBoundingBox;
+  get boundingBox(): UpmadeBoundingBox;
   get totalWidth(): number;
   get totalHeight(): number;
   get rotationDegrees(): number;
@@ -44,16 +44,16 @@ export interface UpdrawObject<T = Element> {
 
   mount(element: T): void;
   generateId(): string;
-  isInViewport(viewport: UpdrawBoundingBox, scale: number): boolean;
+  isInViewport(viewport: UpmadeBoundingBox, scale: number): boolean;
   centerInViewport(): void;
   update(): void;
   move(startX: number, startY: number, endX: number, endY: number): void;
   resize(x: number, y: number, width: number, height: number): void;
   rotate(value: number): void;
-  copy(): UpdrawBaseObject<Element>;
-  isClass<T extends UpdrawBaseObject>(this: T, type: string): this is T;
+  copy(): UpmadeBaseObject<Element>;
+  isClass<T extends UpmadeBaseObject>(this: T, type: string): this is T;
   edit(event?: PointerEvent): void;
   hitTest(x: number, y: number): boolean;
-  hitTestPolygon(polygon: UpdrawPolygon): boolean;
+  hitTestPolygon(polygon: UpmadePolygon): boolean;
   updatePosition(x: number, y: number): void;
 }

@@ -1,4 +1,4 @@
-import { UpdrawIframeObject, type HTMLUpdrawEditorElement, type UpdrawPoint } from '@updraw/react-editor';
+import { UpmadeIframeObject, type HTMLUpmadeEditorElement, type UpmadePoint } from '@upmade/react-editor';
 import {
   BUTTON_PRESS_OFFSET,
   BUTTON_REST_OFFSET,
@@ -55,10 +55,10 @@ const AFTER_STOP = 700;
 /** How long Studio stays on the star after the click before it leaves. */
 const AFTER_STAR = 250;
 
-const distance = (a: UpdrawPoint, b: UpdrawPoint) => Math.hypot(b.x - a.x, b.y - a.y);
+const distance = (a: UpmadePoint, b: UpmadePoint) => Math.hypot(b.x - a.x, b.y - a.y);
 
 /** Where Studio's cursor tip presses the track's star, see `starTarget`. */
-const STAR_POINT: UpdrawPoint = {
+const STAR_POINT: UpmadePoint = {
   x: TRACK_BOX.x + TRACK_BOX.width + STAR_OFFSET.x + BUTTON_PRESS_OFFSET.x,
   y: TRACK_BOX.y + TRACK_BOX.height / 2 + STAR_OFFSET.y + BUTTON_PRESS_OFFSET.y,
 };
@@ -67,8 +67,8 @@ const STAR_POINT: UpdrawPoint = {
  * The recorder widget, part of the workspace's initial objects: it is on the canvas from the start, without the appear
  * animation of objects added later.
  */
-export function createRecorderWidget(): UpdrawIframeObject {
-  return new UpdrawIframeObject({
+export function createRecorderWidget(): UpmadeIframeObject {
+  return new UpmadeIframeObject({
     title: STUDIO_AGENT.name,
     content: RECORDER,
     translateX: WIDGET_BOX.x,
@@ -85,7 +85,7 @@ export function createRecorderWidget(): UpdrawIframeObject {
  * the sent prompt until Studio has starred the track.
  */
 export async function playRecordTrackScene(
-  editor: HTMLUpdrawEditorElement,
+  editor: HTMLUpmadeEditorElement,
   widgetId: string,
   setWorking: (isWorking: boolean) => void,
   signal: AbortSignal,
@@ -99,7 +99,7 @@ export async function playRecordTrackScene(
   setWorking(true);
 
   const widget = await editor.getObjectById(widgetId);
-  if (!(widget instanceof UpdrawIframeObject)) {
+  if (!(widget instanceof UpmadeIframeObject)) {
     setWorking(false);
     return;
   }
@@ -129,9 +129,9 @@ export async function playRecordTrackScene(
   await wait(RECORDING_TIME, signal);
   await press(false);
 
-  // Stopping saves the track: it appears below the widget (Updraw's appear animation), added by the page, not Studio.
+  // Stopping saves the track: it appears below the widget (Upmade's appear animation), added by the page, not Studio.
   const [track] = await editor.addObjects([
-    new UpdrawIframeObject({
+    new UpmadeIframeObject({
       title: TRACK.name,
       content: takeContent(TRACK),
       state: { isNew: true },

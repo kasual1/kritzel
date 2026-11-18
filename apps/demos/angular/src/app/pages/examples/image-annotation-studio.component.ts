@@ -8,14 +8,14 @@ import {
 } from '@angular/core';
 import {
   EditorIsReadyEvent,
-  UpdrawBrushTool,
-  UpdrawEditor,
-  UpdrawImage,
-  UpdrawTextTool,
-  UpdrawTheme,
-  UpdrawViewportState,
-  UpdrawWorkspace,
-} from '@updraw/angular-editor';
+  UpmadeBrushTool,
+  UpmadeEditor,
+  UpmadeImage,
+  UpmadeTextTool,
+  UpmadeTheme,
+  UpmadeViewportState,
+  UpmadeWorkspace,
+} from '@upmade/angular-editor';
 import {
   LucideMinus,
   LucidePlus,
@@ -35,12 +35,12 @@ type ColorTool = {
 
 @Component({
   selector: 'app-image-annotation-studio',
-  imports: [UpdrawEditor, LucideMinus, LucidePlus, LucideRedo2, LucideUndo2],
+  imports: [UpmadeEditor, LucideMinus, LucidePlus, LucideRedo2, LucideUndo2],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="annotation-page">
       @if (workspaces().length > 0) {
-        <updraw-editor
+        <upmade-editor
           #editorHost
           editorId="image-annotation-studio"
           [themes]="themes"
@@ -56,7 +56,7 @@ type ColorTool = {
           [isZoomPanelVisible]="false"
           [workspaces]="workspaces()"
           (isReady)="onReady($event)"
-        ></updraw-editor>
+        ></upmade-editor>
       }
 
       <div class="action-bar">
@@ -163,7 +163,7 @@ type ColorTool = {
       overflow: hidden;
     }
 
-    updraw-editor {
+    upmade-editor {
       display: block;
       width: 100%;
       height: 100%;
@@ -376,11 +376,11 @@ type ColorTool = {
   `,
 })
 export class ImageAnnotationStudioComponent {
-  @ViewChild(UpdrawEditor) editor!: UpdrawEditor;
+  @ViewChild(UpmadeEditor) editor!: UpmadeEditor;
   @ViewChild('editorHost', { read: ElementRef })
   editorHost!: ElementRef<HTMLElement>;
 
-  readonly annotationThemeDark: UpdrawTheme = {
+  readonly annotationThemeDark: UpmadeTheme = {
     ...angularThemeDark,
     name: 'dark',
     engine: {
@@ -405,7 +405,7 @@ export class ImageAnnotationStudioComponent {
 
   readonly activeMode = signal<AnnotationMode>('sketch');
   readonly activeSketchTool = signal<string>('ink-red');
-  readonly workspaces = signal<UpdrawWorkspace[]>([]);
+  readonly workspaces = signal<UpmadeWorkspace[]>([]);
 
   constructor() {
     void this.initializeWorkspace();
@@ -461,7 +461,7 @@ export class ImageAnnotationStudioComponent {
 
   private async registerColorTools() {
     for (const tool of this.colorTools) {
-      await this.editor.registerTool(tool.name, UpdrawBrushTool, {
+      await this.editor.registerTool(tool.name, UpmadeBrushTool, {
         color: {
           light: tool.color,
           dark: tool.color,
@@ -492,13 +492,13 @@ export class ImageAnnotationStudioComponent {
     // aligned with the currently selected sketch swatch.
     const textToolConfig = {
       fontColor: textColor,
-    } as unknown as Parameters<UpdrawEditor['registerTool']>[2];
+    } as unknown as Parameters<UpmadeEditor['registerTool']>[2];
 
-    await this.editor.registerTool('text', UpdrawTextTool, textToolConfig);
+    await this.editor.registerTool('text', UpmadeTextTool, textToolConfig);
   }
 
   private async initializeWorkspace(): Promise<void> {
-    const image = await UpdrawImage.fromUrl(
+    const image = await UpmadeImage.fromUrl(
       'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1800&q=80',
       {
         maxWidth: 660,
@@ -509,6 +509,6 @@ export class ImageAnnotationStudioComponent {
     image.translateX = -image.width / 2;
     image.translateY = (-image.height / 2) - 50;
 
-    this.workspaces.set([new UpdrawWorkspace({ objects: [image] })]);
+    this.workspaces.set([new UpmadeWorkspace({ objects: [image] })]);
   }
 }

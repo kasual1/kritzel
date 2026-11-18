@@ -1,8 +1,8 @@
-import { UpdrawLineToolConfig } from '../interfaces/toolbar-item.interface';
+import { UpmadeLineToolConfig } from '../interfaces/toolbar-item.interface';
 import { DEFAULT_COLOR_PALETTE } from '../constants/color-palette.constants';
 import { DEFAULT_STROKE_SIZES } from '../constants/stroke-size.constants';
 
-export const DEFAULT_LINE_TOOL_CONFIG: UpdrawLineToolConfig = {
+export const DEFAULT_LINE_TOOL_CONFIG: UpmadeLineToolConfig = {
   color: DEFAULT_COLOR_PALETTE[0],
   size: 4,
   opacity: 1,

@@ -1,6 +1,6 @@
-import { UpdrawBaseTool } from '../classes/tools/base-tool.class';
+import { UpmadeBaseTool } from '../classes/tools/base-tool.class';
 
-export type { UpdrawToolType } from './tool-type.interface';
+export type { UpmadeToolType } from './tool-type.interface';
 
 export type ToolConfigType = 'brush' | 'line' | 'shape' | 'text' | 'selection';
 
@@ -21,7 +21,7 @@ export interface ToolConfigDefinition {
   controls: ToolConfigControl[];
 }
 
-export type ConfigurableTool = UpdrawBaseTool;
+export type ConfigurableTool = UpmadeBaseTool;
 
 export interface ToolDisplayValues {
   color: string;
