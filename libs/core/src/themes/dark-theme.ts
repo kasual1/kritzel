@@ -379,9 +379,10 @@ export const darkTheme: UpmadeTheme = {
 
 
   watermark: {
-    background: 'rgba(40, 40, 40, 0.6)',
-    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.35)',
-    color: 'rgba(220, 220, 220, 0.8)',
+    background: 'rgba(40, 40, 40, 0.9)',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.35)',
+    color: '#d4d4d8',
+    logoColor: '#ffffff',
   },
 
   chatBox: {

@@ -63,14 +63,8 @@
 /videos/2026_10_22_Updraw_Open_Source.mp4             /videos/2026_10_22_Upmade_Open_Source.mp4 301
 /videos/2026_10_22_Updraw_Open_Source.thumbnail.jpg   /videos/2026_10_22_Upmade_Open_Source.thumbnail.jpg 301
 
-# Markdown exports of the migration guide published as migrating-to-updraw (docusaurus-plugin-llms,
-# listed in llms.txt). Its HTML route is redirected in the section below.
-/docs/angular/getting-started/migrating-to-updraw.md  /docs/angular/getting-started/migrating-to-upmade.md 301
-/docs/react/getting-started/migrating-to-updraw.md    /docs/react/getting-started/migrating-to-upmade.md 301
-/docs/vue/getting-started/migrating-to-updraw.md      /docs/vue/getting-started/migrating-to-upmade.md 301
-
-# Renamed documentation pages: flat pages moved into categories, renamed pages, and the migration guide
-# published as migrating-to-updraw before the Upmade rebrand. Only pages that exist for a framework are listed.
+# Renamed documentation pages: flat pages moved into categories and renamed pages. Only pages that exist for a
+# framework are listed.
 /docs/angular/quick-start                                   /docs/angular/getting-started/quick-start/ 301
 /docs/angular/quick-start/                                  /docs/angular/getting-started/quick-start/ 301
 /docs/angular/basic-usage                                   /docs/angular/getting-started/basic-usage/ 301
@@ -121,8 +115,6 @@
 /docs/angular/api-reference-engine/                         /docs/angular/api-reference/engine/ 301
 /docs/angular/objects                                       /docs/angular/api-reference/objects/ 301
 /docs/angular/objects/                                      /docs/angular/api-reference/objects/ 301
-/docs/angular/getting-started/migrating-to-updraw           /docs/angular/getting-started/migrating-to-upmade/ 301
-/docs/angular/getting-started/migrating-to-updraw/          /docs/angular/getting-started/migrating-to-upmade/ 301
 /docs/react/quick-start                                     /docs/react/getting-started/quick-start/ 301
 /docs/react/quick-start/                                    /docs/react/getting-started/quick-start/ 301
 /docs/react/basic-usage                                     /docs/react/getting-started/basic-usage/ 301
@@ -177,8 +169,6 @@
 /docs/react/theming/                                        /docs/react/api-reference/theme-tokens/ 301
 /docs/react/types                                           /docs/react/api-reference/types/ 301
 /docs/react/types/                                          /docs/react/api-reference/types/ 301
-/docs/react/getting-started/migrating-to-updraw             /docs/react/getting-started/migrating-to-upmade/ 301
-/docs/react/getting-started/migrating-to-updraw/            /docs/react/getting-started/migrating-to-upmade/ 301
 /docs/vue/quick-start                                       /docs/vue/getting-started/quick-start/ 301
 /docs/vue/quick-start/                                      /docs/vue/getting-started/quick-start/ 301
 /docs/vue/basic-usage                                       /docs/vue/getting-started/basic-usage/ 301
@@ -231,8 +221,6 @@
 /docs/vue/objects/                                          /docs/vue/api-reference/objects/ 301
 /docs/vue/types                                             /docs/vue/api-reference/types/ 301
 /docs/vue/types/                                            /docs/vue/api-reference/types/ 301
-/docs/vue/getting-started/migrating-to-updraw               /docs/vue/getting-started/migrating-to-upmade/ 301
-/docs/vue/getting-started/migrating-to-updraw/              /docs/vue/getting-started/migrating-to-upmade/ 301
 
 # Removed or restructured documentation pages
 /docs/angular/advanced-concepts/concept-collaboration                /docs/angular/advanced/collaboration/ 301

@@ -321,7 +321,7 @@ export class UpmadeEngine implements UpmadeEngineHost {
     this.refreshObjectElementThemes();
   }
 
-  /** Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project. */
+  /** Whether the Upmade watermark (the Upmade mark and "upmade.io") is shown. Keeping it visible helps support the project. */
   @Prop() isWatermarkVisible: boolean = true;
 
   /** An array of available themes for the editor. */

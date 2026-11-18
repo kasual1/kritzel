@@ -19,7 +19,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | fallbackLocale | "de" \| "en" \| "fr" \| string & {} |  | The locale used to resolve terms missing from the active locale. |
 | globalContextMenuItems | ContextMenuItem[] |  | Context menu items shown when right-clicking the canvas background. |
 | isPanningEnabled | boolean |  | When false, non-modified wheel events do not pan the viewport. |
-| isWatermarkVisible | boolean |  | Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project. |
+| isWatermarkVisible | boolean |  | Whether the Upmade watermark (the Upmade mark and "upmade.io") is shown. Keeping it visible helps support the project. |
 | isZoomingEnabled | boolean |  | When false, Ctrl+wheel events do not zoom the viewport. |
 | locale | "de" \| "en" \| "fr" \| string & {} |  | The current locale (language) code to apply to the editor, e.g. 'en', 'de', 'fr'. |
 | locales | UpmadeLocale[] |  | An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty. |
@@ -192,7 +192,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | isPanningEnabled | boolean |  |  |
 | isToolbarVisible | boolean |  |  |
 | isUtilityPanelVisible | boolean |  |  |
-| isWatermarkVisible | boolean |  | Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project. |
+| isWatermarkVisible | boolean |  | Whether the Upmade watermark (the Upmade mark and "upmade.io") is shown. Keeping it visible helps support the project. |
 | isWorkspaceManagerVisible | boolean |  |  |
 | isZoomPanelVisible | boolean |  |  |
 | isZoomingEnabled | boolean |  |  |

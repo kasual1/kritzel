@@ -110,7 +110,8 @@ describe('ThemeHelper', () => {
 
     it('should return the expected number of variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      expect(variables.size).toBe(342);
+      expect(variables.size).toBe(343);
+      expect(variables.get('--upmade-watermark-logo-color')).toBe(lightTheme.watermark!.logoColor);
       expect(variables.get('--upmade-object-box-shadow')).toBe(lightTheme.object!.boxShadow);
       expect(variables.get('--upmade-image-drop-shadow')).toBe(lightTheme.image!.dropShadow);
       expect(variables.get('--upmade-object-appear-animation-duration')).toBe(lightTheme.objectAppear!.animationDuration);
@@ -172,7 +173,7 @@ describe('ThemeHelper', () => {
     it('should apply all theme variables to the element', () => {
       ThemeHelper.applyThemeToElement(mockElement, lightTheme);
 
-      expect(setPropertyMock).toHaveBeenCalledTimes(342);
+      expect(setPropertyMock).toHaveBeenCalledTimes(343);
     });
 
     it('should apply specific theme values correctly', () => {

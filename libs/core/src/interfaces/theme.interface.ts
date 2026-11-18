@@ -733,7 +733,13 @@ export interface UpmadeTheme {
     borderRadius?: string;
     boxShadow?: string;
     color?: string;
+    fontFamily?: string;
     fontSize?: string;
+    fontWeight?: string;
+    /** Colour of the Upmade mark in the badge */
+    logoColor?: string;
+    /** Height of the Upmade mark in the badge */
+    logoSize?: string;
     offsetBottom?: string;
     offsetRight?: string;
     opacity?: string;

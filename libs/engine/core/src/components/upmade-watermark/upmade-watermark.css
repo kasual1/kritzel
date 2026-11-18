@@ -8,24 +8,47 @@
 
 .watermark-link {
   pointer-events: auto;
-  display: inline-flex;
+  /* flex, not inline-flex: keeps the badge out of the line box, whose height comes from the host page's font */
+  display: flex;
   align-items: center;
+  gap: 4px;
   padding: 4px 8px;
   border-radius: var(--upmade-watermark-border-radius, 6px);
-  font-family: var(--upmade-global-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  /* The system UI font, like the badge in Upmade's videos, rather than the app's font: the badge is Upmade's brand. */
+  font-family: var(--upmade-watermark-font-family, system-ui, -apple-system, 'Segoe UI', sans-serif);
   font-size: var(--upmade-watermark-font-size, 11px);
-  line-height: 1;
+  font-weight: var(--upmade-watermark-font-weight, 500);
+  line-height: 1.2;
   text-decoration: none;
-  color: var(--upmade-watermark-color, rgba(60, 60, 60, 0.75));
-  background-color: var(--upmade-watermark-background, rgba(255, 255, 255, 0.6));
-  box-shadow: var(--upmade-watermark-box-shadow, 0 1px 2px rgba(0, 0, 0, 0.12));
-  opacity: var(--upmade-watermark-opacity, 0.85);
+  white-space: nowrap;
+  color: var(--upmade-watermark-color, #52525b);
+  background-color: var(--upmade-watermark-background, rgba(255, 255, 255, 0.9));
+  box-shadow: var(--upmade-watermark-box-shadow, 0 1px 3px rgba(0, 0, 0, 0.12));
+  opacity: var(--upmade-watermark-opacity, 1);
   transition: opacity 150ms ease;
   user-select: none;
 }
 
 .watermark-link:hover {
   opacity: 1;
+}
+
+.watermark-logo {
+  display: block;
+  flex: none;
+  height: var(--upmade-watermark-logo-size, 12px);
+  width: auto;
+  /* Themes without a logoColor get a mark in the badge's text colour, so it stays visible on any background */
+  fill: var(--upmade-watermark-logo-color, currentColor);
+  stroke: var(--upmade-watermark-logo-color, currentColor);
+}
+
+/* High contrast modes recolour the text and background but not SVG fills: let the mark follow the text */
+@media (forced-colors: active) {
+  .watermark-logo {
+    fill: currentColor;
+    stroke: currentColor;
+  }
 }
 
 /* Hide on mobile viewports (portrait phones and landscape phones), where space is too narrow */

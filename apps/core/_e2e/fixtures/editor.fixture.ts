@@ -1,4 +1,4 @@
-import { test as base, type BrowserContext, type Page, type Locator } from '@playwright/test';
+import { test as base, type BrowserContext, type CDPSession, type Page, type Locator } from '@playwright/test';
 
 export type UpmadeAlignment =
   | 'start-horizontal'
@@ -199,6 +199,7 @@ export class EditorPage {
   readonly toolbar: Locator;
   readonly utilityPanel: Locator;
   readonly zoomPanel: Locator;
+  private cdpSession?: CDPSession;
 
   constructor(page: Page) {
     this.page = page;
@@ -542,6 +543,14 @@ export class EditorPage {
     });
   }
 
+  /** Whether the engine's undo history has a step to undo (read from the engine, not the undo button). */
+  async canUndo(): Promise<boolean> {
+    return this.page.evaluate(() => {
+      const engine = document.querySelector('upmade-engine') as any;
+      return engine?.core?.store?.objects?.canUndo?.() ?? false;
+    });
+  }
+
   /** Undo the last action. */
   async undo() {
     return this.callMethod('undo');
@@ -794,6 +803,76 @@ export class EditorPage {
     }
 
     await this.page.mouse.up();
+  }
+
+  // --- Touch (multi-pointer) ---
+
+  /**
+   * Dispatch a raw touch event through the Chrome DevTools Protocol, in page coordinates. `points` must list
+   * every finger on the screen after the event (for `touchEnd`: the fingers that remain). The engine receives
+   * them as `pointerType: 'touch'` pointer events. Needs a context with `hasTouch: true` (Chromium only).
+   */
+  async dispatchTouch(type: 'touchStart' | 'touchMove' | 'touchEnd' | 'touchCancel', points: Array<WorldPoint & { id: number }>) {
+    this.cdpSession ??= await this.page.context().newCDPSession(this.page);
+    await this.cdpSession.send('Input.dispatchTouchEvent', { type, touchPoints: points });
+  }
+
+  /** Draw a one-finger touch stroke through engine-relative SCREEN coordinates. */
+  async drawStrokeTouch(screenPoints: WorldPoint[]) {
+    if (screenPoints.length < 2) throw new Error('drawStrokeTouch requires at least 2 points');
+
+    const box = await this.getEngineBoundingBox();
+    const finger = (p: WorldPoint) => [{ id: 1, x: box.x + p.x, y: box.y + p.y }];
+    await this.dispatchTouch('touchStart', finger(screenPoints[0]));
+    for (const point of screenPoints.slice(1)) {
+      await this.dispatchTouch('touchMove', finger(point));
+    }
+    await this.dispatchTouch('touchEnd', []);
+  }
+
+  /**
+   * Perform a two-finger gesture in engine-relative SCREEN coordinates. Like real fingers, they don't land at the
+   * same time: the first touches down, the second follows `secondFingerDelayMs` later, then both move in `steps`
+   * steps from their `from` to their `to` positions and lift together.
+   */
+  async twoFingerGesture(
+    from: [WorldPoint, WorldPoint],
+    to: [WorldPoint, WorldPoint],
+    { steps = 10, secondFingerDelayMs = 30 }: { steps?: number; secondFingerDelayMs?: number } = {},
+  ) {
+    const box = await this.getEngineBoundingBox();
+    const fingers = (a: WorldPoint, b: WorldPoint) => [
+      { id: 1, x: box.x + a.x, y: box.y + a.y },
+      { id: 2, x: box.x + b.x, y: box.y + b.y },
+    ];
+    const lerp = (a: WorldPoint, b: WorldPoint, t: number) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
+
+    await this.dispatchTouch('touchStart', fingers(from[0], from[1]).slice(0, 1));
+    await this.page.waitForTimeout(secondFingerDelayMs);
+    await this.dispatchTouch('touchStart', fingers(from[0], from[1]));
+    for (let step = 1; step <= steps; step++) {
+      const t = step / steps;
+      await this.dispatchTouch('touchMove', fingers(lerp(from[0], to[0], t), lerp(from[1], to[1], t)));
+    }
+    await this.dispatchTouch('touchEnd', []);
+  }
+
+  /** Pinch around an engine-relative screen point, changing the fingers' distance from `fromDistance` to `toDistance` px. */
+  async pinch(center: WorldPoint, fromDistance: number, toDistance: number) {
+    const fingers = (distance: number): [WorldPoint, WorldPoint] => [
+      { x: center.x - distance / 2, y: center.y },
+      { x: center.x + distance / 2, y: center.y },
+    ];
+    await this.twoFingerGesture(fingers(fromDistance), fingers(toDistance));
+  }
+
+  /** Pan with two fingers 100 px apart, starting around an engine-relative screen point and moving by `delta` px. */
+  async twoFingerPan(center: WorldPoint, delta: WorldPoint) {
+    const fingers = (dx: number, dy: number): [WorldPoint, WorldPoint] => [
+      { x: center.x - 50 + dx, y: center.y + dy },
+      { x: center.x + 50 + dx, y: center.y + dy },
+    ];
+    await this.twoFingerGesture(fingers(0, 0), fingers(delta.x, delta.y));
   }
 
   /** Click at a world position on the engine. */

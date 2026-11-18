@@ -2,6 +2,7 @@ import { UpmadeBaseObject } from '../objects/base-object.class';
 import { UpmadeMouseButton } from '../../enums/event-button.enum';
 import { UpmadeCore } from './core.class';
 import { UpmadeSelectionBox } from '../objects/selection-box.class';
+import { UpmadePath } from '../objects/path.class';
 import { UpmadeViewportState } from '../../interfaces/viewport-state.interface';
 import debounce from 'lodash/debounce';
 import type { DebouncedFunc } from 'lodash';
@@ -316,9 +317,13 @@ export class UpmadeViewport {
       if (activePointers.length === 2) {
         this._core.store.objects?.clearCursorPosition();
 
-        const currentPath = this._core.store.currentPath;
-        if (currentPath) {
-          this._core.store.objects.remove(obj => obj.id === currentPath.id);
+        // The first finger started a brush stroke, but it was the start of a pinch. Discard the
+        // stroke rather than remove it, so undo cannot bring it back as a stray dot. Only this
+        // user's own stroke: collaborators' unfinished strokes are unfinished paths too.
+        const drawingObjectId = this._core.store.objects?.localActiveDrawingObjectId;
+        const drawingObject = drawingObjectId ? this._core.store.objects.findById(drawingObjectId) : undefined;
+        if (drawingObject instanceof UpmadePath) {
+          this._core.store.objects.discard(drawingObject.id);
         }
 
         // Clear selection box when scaling starts to prevent it from remaining on screen

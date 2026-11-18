@@ -631,7 +631,7 @@ Loads persisted settings: `loadSettings(): Promise<Partial<UpmadeSettingsConfig>
 | debugInfo | UpmadeDebugInfo | Controls visible debug overlays. |
 | editorId | string | Identifier for namespacing storage keys across engine instances. |
 | globalContextMenuItems | ContextMenuItem[] | Items shown on the canvas background context menu. |
-| isWatermarkVisible | boolean | Show or hide the "Powered by Upmade" watermark (default `true`). Keeping it visible helps support the project. |
+| isWatermarkVisible | boolean | Show or hide the upmade.io watermark (default `true`). Keeping it visible helps support the project. |
 | lockDrawingScale | boolean | Keeps drawn objects at a fixed visual size across zoom levels. |
 | objectContextMenuItems | ContextMenuItem[] | Items shown for selected objects. |
 

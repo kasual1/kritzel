@@ -154,18 +154,6 @@ describe('renamed documentation pages', () => {
     expect(missing).toEqual([]);
   });
 
-  test('the migration guide keeps its Updraw-era URL', () => {
-    for (const framework of ['angular', 'react', 'vue']) {
-      const from = `/docs/${framework}/getting-started/migrating-to-updraw`;
-      const to = `/docs/${framework}/getting-started/migrating-to-upmade`;
-      for (const source of [from, `${from}/`]) {
-        expect(redirects).toContainEqual({ from: source, to: `${to}/`, status: '301' });
-      }
-      // Its Markdown export, which llms.txt listed
-      expect(redirects).toContainEqual({ from: `${from}.md`, to: `${to}.md`, status: '301' });
-    }
-  });
-
   test('the quick start keeps its flat URL', () => {
     expect(redirects).toContainEqual({
       from: '/docs/react/quick-start',

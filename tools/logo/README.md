@@ -26,8 +26,8 @@ After running it:
 1. Run `npm run thumbnails` in `apps/website` so the blog thumbnails redraw their "upmade / blog" label with the new
    logo. A thumbnail whose file name doesn't match its post's slug is treated as custom and skipped; re-render it with
    `npm run thumbnails -- --seed <its thumbnailSeed> --out <its image>`.
-2. Look at the result: the website (`npm run docs:start`: landing page, blog, docs navbar, footer) and the favicons in
-   a browser tab. Then commit everything.
+2. Look at the result: the website (`npm run docs:start`: landing page, blog, docs navbar, footer), the favicons in
+   a browser tab and the watermark in the bottom-right corner of the editor (`npm run dev`). Then commit everything.
 
 It needs Chromium for Playwright (`npx playwright install chromium`), which renders the rasters and measures the path.
 
@@ -40,6 +40,7 @@ It needs Chromium for Playwright (`npx playwright install chromium`), which rend
 | Dark tile (app)             | `apps/website/static/img/favicon_dark.svg`, and in `apps/app/client/public/`: `favicon-96x96.png`, `apple-touch-icon.png`, `web-app-manifest-192x192.png`, `web-app-manifest-512x512.png` |
 | App tab icon (dark, bigger) | `apps/app/client/public/favicon.svg`, `apps/app/client/public/favicon.ico`                                                |
 | Inline mark on the website  | `UPMADE_LOGO_PATH`, `UPMADE_LOGO_VIEWBOX` and `UPMADE_LOGO_STROKE_WIDTH` in `apps/website/src/components/Landing/paths.ts`, drawn by the landing and agentic heroes and the blog navigation. Their CSS sets only a height, so the width follows the logo's aspect ratio. |
+| Watermark mark (engine)     | The same three constants in `libs/engine/core/src/components/upmade-watermark/upmade-logo.ts`, drawn by the "upmade.io" watermark of the engine and editor. Rebuild the libraries to ship it. |
 | README badge                | `logo.svg` (repo root): white rounded tile with a light grey border, shown at 160 px in the main README                  |
 
 The framework favicons in `apps/core/*` and `apps/demos/*` (Angular, Vue) aren't ours and aren't touched.

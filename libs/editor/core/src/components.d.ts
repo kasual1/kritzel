@@ -450,7 +450,7 @@ export namespace Components {
          */
         "isUtilityPanelVisible": boolean;
         /**
-          * Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project.
+          * Whether the Upmade watermark (the Upmade mark and "upmade.io") is shown. Keeping it visible helps support the project.
           * @default true
          */
         "isWatermarkVisible": boolean;
@@ -2464,7 +2464,7 @@ declare namespace LocalJSX {
          */
         "isUtilityPanelVisible"?: boolean;
         /**
-          * Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project.
+          * Whether the Upmade watermark (the Upmade mark and "upmade.io") is shown. Keeping it visible helps support the project.
           * @default true
          */
         "isWatermarkVisible"?: boolean;
