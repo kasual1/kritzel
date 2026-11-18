@@ -1,6 +1,6 @@
 {
   "name": "@upmade/angular-editor",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "homepage": "https://upmade.io/",
   "description": "Upmade helps you build infinite canvas experiences with Angular.",
   "keywords": [
@@ -16,8 +16,8 @@
     "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0"
   },
   "dependencies": {
-    "@upmade/editor": "^0.6.2",
-    "@upmade/engine": "^0.6.2",
+    "@upmade/editor": "^0.6.3",
+    "@upmade/engine": "^0.6.3",
     "tslib": "^2.3.0"
   },
   "sideEffects": false,

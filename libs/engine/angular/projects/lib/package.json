@@ -1,6 +1,6 @@
 {
   "name": "@upmade/angular-engine",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "homepage": "https://upmade.io/",
   "description": "Upmade engine wrapper for Angular.",
   "keywords": [
@@ -14,7 +14,7 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
     "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
-    "@upmade/engine": "^0.6.2"
+    "@upmade/engine": "^0.6.3"
   },
   "dependencies": {
     "tslib": "^2.3.0"

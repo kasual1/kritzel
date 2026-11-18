@@ -1,6 +1,6 @@
 {
   "name": "@upmade/vue-engine",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "homepage": "https://upmade.io/",
   "description": "Upmade engine wrapper for Vue.",
   "keywords": [
@@ -38,6 +38,6 @@
     "@stencil/vue-output-target": "0.11.8"
   },
   "peerDependencies": {
-    "@upmade/engine": "^0.6.2"
+    "@upmade/engine": "^0.6.3"
   }
 }

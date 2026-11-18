@@ -1,6 +1,6 @@
 {
   "name": "@upmade/engine",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "homepage": "https://upmade.io/",
   "description": "Upmade helps you build infinite whiteboard experiences.",
   "keywords": [
@@ -62,7 +62,7 @@
     "release": "npm publish"
   },
   "dependencies": {
-    "@upmade/core": "^0.6.2",
+    "@upmade/core": "^0.6.3",
     "@types/lodash": "^4.17.20",
     "html-to-image": "^1.11.11",
     "lodash": "^4.17.21",

@@ -1,6 +1,6 @@
 {
   "name": "@upmade/react-engine",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "homepage": "https://upmade.io/",
   "description": "Upmade engine wrapper for React.",
   "keywords": [
@@ -28,7 +28,7 @@
     "@stencil/react-output-target": "^1.2.0"
   },
   "peerDependencies": {
-    "@upmade/engine": "^0.6.2"
+    "@upmade/engine": "^0.6.3"
   },
   "repository": {
     "type": "git",

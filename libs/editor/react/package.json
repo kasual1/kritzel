@@ -1,6 +1,6 @@
 {
   "name": "@upmade/react-editor",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "homepage": "https://upmade.io/",
   "description": "Upmade helps you build infinite canvas experiences with React.",
   "keywords": [
@@ -25,8 +25,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@upmade/editor": "^0.6.2",
-    "@upmade/engine": "^0.6.2",
+    "@upmade/editor": "^0.6.3",
+    "@upmade/engine": "^0.6.3",
     "@stencil/react-output-target": "^1.2.0"
   },
   "repository": {
