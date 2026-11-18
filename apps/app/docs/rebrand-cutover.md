@@ -251,7 +251,7 @@ gh workflow run deploy-demos.yml
 
 ## 5. Old hosts
 
-Redirect every old host to upmade.io with path-preserving rules (Rules → Redirect Rules), status 301, "Preserve query string" on. The website's own redirects then send the pages renamed in the rebrand (blog posts, media, the `migrating-to-updraw` docs) to their new paths.
+Redirect every old host to upmade.io with path-preserving rules (Rules → Redirect Rules), status 301, "Preserve query string" on. The website's own redirects then send the pages renamed in the rebrand (blog posts, media) to their new paths.
 
 In the kritzel.io zone, the first cutover's rules point at updraw.io if it got to its phase 2: change their targets to upmade.io instead of adding rules, so there is only one hop; otherwise add them. In the updraw.io zone (if set up), replace the first cutover's phase 1 302 rule if there is one. The rules:
 

@@ -6,7 +6,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Getting Started',
       collapsed: false,
-      items: ['getting-started/quick-start', 'getting-started/basic-usage', 'getting-started/migrating-to-upmade'],
+      items: ['getting-started/quick-start', 'getting-started/basic-usage'],
     },
     {
       type: 'category',

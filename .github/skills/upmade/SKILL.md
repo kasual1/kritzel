@@ -13,7 +13,7 @@ metadata:
 2. Read only that framework's [setup reference](./references/angular/setup.md) (or [React](./references/react/setup.md) / [Vue](./references/vue/setup.md)). Follow its package, registration, ref, event, and prop conventions. Do not mix framework wrappers.
 3. Use `upmade-editor` for the full canvas and UI. Use `upmade-engine` for a custom UI around a bare canvas; the engine registers no tools by default. The framework setup reference has a working example of each.
 4. Check the installed `@upmade/*-editor` version before using an API. Prefer the installed package types when they differ from [the generated API reference](./references/api.md), which is stamped with the source version.
-5. Upmade was called Updraw, and Kritzel before that. An app on `@updraw/*` or `@kritzel/*` packages names the same API with that prefix (`UpdrawEditor`, `<kritzel-editor>`). Don't add `@upmade/*` packages next to them. To migrate, follow the framework's "Migrating to Upmade" guide (`https://upmade.io/docs/<framework>/getting-started/migrating-to-upmade/`); data saved under the old names keeps working.
+5. Upmade was called Updraw, and Kritzel before that. An app on `@updraw/*` or `@kritzel/*` packages names the same API with that prefix (`UpdrawEditor`, `<kritzel-editor>`). Don't add `@upmade/*` packages next to them. To migrate, rename the prefix in package names, components, CSS variables and constants; data saved under the old names keeps working.
 
 ## Use the demos as canonical examples
 
