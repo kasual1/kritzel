@@ -300,7 +300,7 @@ Applies to the menu that the editor opens from a titlebar `menu` element, see [O
 
 ## Watermark
 
-`background`, `boxShadow`, `color`.
+`background`, `boxShadow`, `color`, `logoColor`.
 
 ## Zoom Panel
 

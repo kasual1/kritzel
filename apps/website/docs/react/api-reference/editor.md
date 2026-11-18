@@ -62,7 +62,7 @@ endSceneBootstrap(): Promise<void>
 | isMoreMenuVisible | boolean | Controls More menu visibility. |
 | isToolbarVisible | boolean | Controls toolbar visibility. |
 | isUtilityPanelVisible | boolean | Controls utility panel visibility. |
-| isWatermarkVisible | boolean | Show or hide the "Powered by Upmade" watermark (default `true`). Keeping it visible helps support the project. |
+| isWatermarkVisible | boolean | Show or hide the upmade.io watermark (default `true`). Keeping it visible helps support the project. |
 | isWorkspaceManagerVisible | boolean | Controls workspace manager visibility. |
 | isZoomPanelVisible | boolean | Controls zoom panel visibility. |
 | moreMenuItems | IUpmadeMenuItem[] | Custom More menu entries. |

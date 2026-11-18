@@ -42,7 +42,11 @@ const INK = '#000000';
 const PAPER = '#ffffff';
 const BORDER = '#ededed';
 
-const PATHS_TS = 'apps/website/src/components/Landing/paths.ts';
+// Source files holding the mark as UPMADE_LOGO_* constants: the website's React components and the engine's watermark.
+const LOGO_CONSTANT_FILES = [
+  'apps/website/src/components/Landing/paths.ts',
+  'libs/engine/core/src/components/upmade-watermark/upmade-logo.ts',
+];
 
 // ---------- arguments ----------
 
@@ -251,9 +255,9 @@ function encodeIco(frames) {
   return Buffer.concat([header, ...frames.map((f) => f.png)]);
 }
 
-// Puts the bare mark's path, viewBox and outline width into the constants the website's React components draw
-// the mark from.
-function updatePathsTs(file, { d, w, h }) {
+// Puts the bare mark's path, viewBox and outline width into the UPMADE_LOGO_* constants of a source file, keeping
+// the file's quote style.
+function updateLogoConstants(file, { d, w, h }) {
   const source = fs.readFileSync(file, 'utf8');
   const names = ['UPMADE_LOGO_PATH', 'UPMADE_LOGO_VIEWBOX', 'UPMADE_LOGO_STROKE_WIDTH'];
   const missing = names.filter((n) => !new RegExp(`export const ${n} =`).test(source));
@@ -261,8 +265,8 @@ function updatePathsTs(file, { d, w, h }) {
   fs.writeFileSync(
     file,
     source
-      .replace(/(export const UPMADE_LOGO_PATH =\s*)"[^"]*";/, `$1"${d}";`)
-      .replace(/(export const UPMADE_LOGO_VIEWBOX = )"[^"]*";/, `$1"0 0 ${w} ${h}";`)
+      .replace(/(export const UPMADE_LOGO_PATH =\s*)(["'])[^"']*\2;/, (_, head, q) => `${head}${q}${d}${q};`)
+      .replace(/(export const UPMADE_LOGO_VIEWBOX = )(["'])[^"']*\2;/, (_, head, q) => `${head}${q}0 0 ${w} ${h}${q};`)
       .replace(/(export const UPMADE_LOGO_STROKE_WIDTH = )[\d.]+;/, `$1${fmt(weight)};`),
   );
 }
@@ -321,11 +325,13 @@ try {
     write(rel, encodeIco(frames));
   }
 
-  const pathsTs = path.join(outRoot, PATHS_TS);
-  if (fs.existsSync(pathsTs)) {
-    updatePathsTs(pathsTs, bareMark(mark));
-    console.log(`  ${PATHS_TS}`);
-  } else console.log(`  (skipped ${PATHS_TS}: not in ${outRoot})`);
+  for (const rel of LOGO_CONSTANT_FILES) {
+    const file = path.join(outRoot, rel);
+    if (fs.existsSync(file)) {
+      updateLogoConstants(file, bareMark(mark));
+      console.log(`  ${rel}`);
+    } else console.log(`  (skipped ${rel}: not in ${outRoot})`);
+  }
 
   console.log(
     '\nNext: run `npm run thumbnails` in apps/website so the blog thumbnails pick up the new logo (see README.md).',

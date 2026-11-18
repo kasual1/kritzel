@@ -902,7 +902,7 @@ const FAQ_ITEMS = [
   {
     question: "Is Upmade free to use?",
     answer:
-      "Yes. Upmade is open source under the MIT License, so you can use it for free in personal and commercial projects. The editor shows a small \"Powered by Upmade\" badge by default; keeping it helps the project grow, but you can hide it with the isWatermarkVisible prop.",
+      "Yes. Upmade is open source under the MIT License, so you can use it for free in personal and commercial projects. The editor shows a small upmade.io badge by default; keeping it helps the project grow, but you can hide it with the isWatermarkVisible prop.",
   },
 ];
 
@@ -930,7 +930,7 @@ const AGENTIC_FAQ_ITEMS = [
   {
     question: "Is Upmade free to use?",
     answer:
-      "Yes. Upmade is open source under the MIT License, including its agentic features, so you can build agentic canvases for free in personal and commercial projects. The \"Powered by Upmade\" badge can be hidden with the isWatermarkVisible prop.",
+      "Yes. Upmade is open source under the MIT License, including its agentic features, so you can build agentic canvases for free in personal and commercial projects. The upmade.io badge can be hidden with the isWatermarkVisible prop.",
   },
 ];
 

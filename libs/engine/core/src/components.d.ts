@@ -352,7 +352,7 @@ export namespace Components {
          */
         "isPanningEnabled": boolean;
         /**
-          * Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project.
+          * Whether the Upmade watermark (the Upmade mark and "upmade.io") is shown. Keeping it visible helps support the project.
           * @default true
          */
         "isWatermarkVisible": boolean;
@@ -695,10 +695,10 @@ export namespace Components {
         "titlebars": UpmadeResolvedTitlebar[];
     }
     /**
-     * "Powered by Upmade" watermark shown in the bottom-right corner of the engine.
+     * Watermark shown in the bottom-right corner of the engine: the Upmade mark and "upmade.io".
      * Rendered inside the engine's Shadow DOM unless the engine's
      * `isWatermarkVisible` prop is set to false. The badge links to the Upmade
-     * website.
+     * website, and its tooltip reads "Powered by Upmade" in the active locale.
      */
     interface UpmadeWatermark {
         /**
@@ -706,7 +706,7 @@ export namespace Components {
          */
         "core": UpmadeCore;
         /**
-          * Resolved "Powered by Upmade" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
+          * Resolved "Powered by Upmade" label, shown as the badge's tooltip. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
          */
         "label"?: string;
     }
@@ -803,10 +803,10 @@ declare global {
         new (): HTMLUpmadeObjectTitlebarLayerElement;
     };
     /**
-     * "Powered by Upmade" watermark shown in the bottom-right corner of the engine.
+     * Watermark shown in the bottom-right corner of the engine: the Upmade mark and "upmade.io".
      * Rendered inside the engine's Shadow DOM unless the engine's
      * `isWatermarkVisible` prop is set to false. The badge links to the Upmade
-     * website.
+     * website, and its tooltip reads "Powered by Upmade" in the active locale.
      */
     interface HTMLUpmadeWatermarkElement extends Components.UpmadeWatermark, HTMLStencilElement {
     }
@@ -900,7 +900,7 @@ declare namespace LocalJSX {
          */
         "isPanningEnabled"?: boolean;
         /**
-          * Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project.
+          * Whether the Upmade watermark (the Upmade mark and "upmade.io") is shown. Keeping it visible helps support the project.
           * @default true
          */
         "isWatermarkVisible"?: boolean;
@@ -1124,10 +1124,10 @@ declare namespace LocalJSX {
         "titlebars"?: UpmadeResolvedTitlebar[];
     }
     /**
-     * "Powered by Upmade" watermark shown in the bottom-right corner of the engine.
+     * Watermark shown in the bottom-right corner of the engine: the Upmade mark and "upmade.io".
      * Rendered inside the engine's Shadow DOM unless the engine's
      * `isWatermarkVisible` prop is set to false. The badge links to the Upmade
-     * website.
+     * website, and its tooltip reads "Powered by Upmade" in the active locale.
      */
     interface UpmadeWatermark {
         /**
@@ -1135,7 +1135,7 @@ declare namespace LocalJSX {
          */
         "core": UpmadeCore;
         /**
-          * Resolved "Powered by Upmade" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
+          * Resolved "Powered by Upmade" label, shown as the badge's tooltip. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
          */
         "label"?: string;
     }
@@ -1215,10 +1215,10 @@ declare module "@stencil/core" {
              */
             "upmade-object-titlebar-layer": LocalJSX.IntrinsicElements["upmade-object-titlebar-layer"] & JSXBase.HTMLAttributes<HTMLUpmadeObjectTitlebarLayerElement>;
             /**
-             * "Powered by Upmade" watermark shown in the bottom-right corner of the engine.
+             * Watermark shown in the bottom-right corner of the engine: the Upmade mark and "upmade.io".
              * Rendered inside the engine's Shadow DOM unless the engine's
              * `isWatermarkVisible` prop is set to false. The badge links to the Upmade
-             * website.
+             * website, and its tooltip reads "Powered by Upmade" in the active locale.
              */
             "upmade-watermark": LocalJSX.IntrinsicElements["upmade-watermark"] & JSXBase.HTMLAttributes<HTMLUpmadeWatermarkElement>;
         }

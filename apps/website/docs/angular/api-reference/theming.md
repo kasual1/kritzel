@@ -593,9 +593,10 @@ Applies to the menu that the editor opens from a titlebar `menu` element, see [O
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
-| background | rgba(255, 255, 255, 0.6) | rgba(40, 40, 40, 0.6) |
-| boxShadow | 0 1px 2px rgba(0, 0, 0, 0.12) | 0 1px 2px rgba(0, 0, 0, 0.35) |
-| color | rgba(60, 60, 60, 0.75) | rgba(220, 220, 220, 0.8) |
+| background | rgba(255, 255, 255, 0.9) | rgba(40, 40, 40, 0.9) |
+| boxShadow | 0 1px 3px rgba(0, 0, 0, 0.12) | 0 1px 3px rgba(0, 0, 0, 0.35) |
+| color | #52525b | #d4d4d8 |
+| logoColor | #000000 | #ffffff |
 
 ## Zoom Panel
 

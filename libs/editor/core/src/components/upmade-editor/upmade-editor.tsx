@@ -492,7 +492,7 @@ export class UpmadeEditor {
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
   @Prop() isZoomPanelVisible: boolean = true;
-  /** Whether the "Powered by Upmade" watermark is shown. Keeping it visible helps support the project. */
+  /** Whether the Upmade watermark (the Upmade mark and "upmade.io") is shown. Keeping it visible helps support the project. */
   @Prop() isWatermarkVisible: boolean = true;
   @Prop() syncConfig?: UpmadeSyncConfig = DEFAULT_SYNC_CONFIG;
   @Prop() assetStorageConfig?: UpmadeAssetStorageConfig =

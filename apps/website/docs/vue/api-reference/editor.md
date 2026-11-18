@@ -32,7 +32,7 @@ All methods are async and return Promises. The editor exposes all the same metho
 | customSvgIcons | Record&lt;string, string&gt; | {} | Custom SVG icon definitions by name |
 | isToolbarVisible | boolean | true | Show/hide the toolbar |
 | isUtilityPanelVisible | boolean | true | Show/hide the utility panel (undo/redo, zoom) |
-| isWatermarkVisible | boolean | true | Show/hide the "Powered by Upmade" watermark |
+| isWatermarkVisible | boolean | true | Show/hide the upmade.io watermark |
 | syncConfig | UpmadeSyncConfig | undefined | Sync provider configuration |
 | workspaces | UpmadeWorkspace[] | undefined | Optional authoritative workspace catalog for this editor instance. Provider-only workspaces are hidden but not deleted. |
 
@@ -88,7 +88,7 @@ endSceneBootstrap(): Promise<void>
 | isMoreMenuVisible | boolean | Controls visibility of the More menu. |
 | isToolbarVisible | boolean | Controls toolbar visibility. |
 | isUtilityPanelVisible | boolean | Controls utility panel visibility. |
-| isWatermarkVisible | boolean | Show or hide the "Powered by Upmade" watermark (default `true`). Keeping it visible helps support the project. |
+| isWatermarkVisible | boolean | Show or hide the upmade.io watermark (default `true`). Keeping it visible helps support the project. |
 | isWorkspaceManagerVisible | boolean | Controls workspace manager visibility. |
 | isZoomPanelVisible | boolean | Controls zoom panel visibility. |
 | moreMenuItems | IUpmadeMenuItem[] | Custom entries for the More dropdown menu. |
