@@ -52,5 +52,14 @@
     "height": 720,
     "duration": 3.47,
     "sha256": "b29c93605660f6d47e64a408494811e8c77dd2bd65014322c40e4b0f68788c89"
+  },
+  "/videos/2026_11_17_Rebrand.mp4": {
+    "poster": "/videos/2026_11_17_Rebrand.jpg",
+    "thumbnail": "/videos/2026_11_17_Rebrand.thumbnail.jpg",
+    "thumbnailTime": 2.76,
+    "width": 1280,
+    "height": 720,
+    "duration": 4.43,
+    "sha256": "5be1f308c6c5fda5cfe26006f664042cad834e6a1c2cdeee09daa19d02bcc8b0"
   }
 }

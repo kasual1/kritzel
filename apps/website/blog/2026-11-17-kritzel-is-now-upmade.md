@@ -1,6 +1,13 @@
-Kritzel is now Upmade
+---
+title: "Kritzel is now Upmade"
+description: "Kritzel is rebranding to Upmade as the project shifts towards becoming an open source development kit for building AI canvases."
+date: 2026-11-17
+thumbnail: /videos/2026_11_17_Rebrand.mp4
+---
 
 This blog post is mainly targeting the very early adopters of the Kritzel library. Feel free to skip reading, if you do not exactly recall what Kritzel actually is.
+
+{/* truncate */}
 
 The ongoing shift in software development caused me to rethink the overall direction and goal of this project. Open-sourcing Kritzel was the first step towards this new direction and now I am ready to share the second part. Kritzel is moving more into the direction of becoming an open source development kit for building ai canvases. While this means that you can still use it to build plain infinite canvases, the long term goal is to extend the existing functionality with agentic capabilities so that it is easy for everyone to hook up an AI agent or an LLM and make it interact with the canvas. Since the focus now shifts from simply drawing on the canvas to enabling agents to draw and generate user interfaces on the canvas, the name Kritzel does not perfectly make sense anymore and it is time for rebranding it. The Kritzel library is now officially called Upmade.
 
