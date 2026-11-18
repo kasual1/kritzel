@@ -23,6 +23,29 @@
   text-transform: lowercase;
 }
 
+/* "Read more" (to the blog post), set apart from the names; white like the text, underlined so it reads as a link. */
+.link {
+  margin-left: 1.5em;
+  color: inherit;
+  /* a border, not text-decoration, so the underline runs under the arrow icon too */
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1px;
+  white-space: nowrap;
+}
+
+/* The arrow of the landing page's buttons (Landing/Icon ArrowIcon), centred on the text. */
+.link svg {
+  margin-left: 3px;
+  vertical-align: -0.2em;
+}
+
+.link:hover,
+.link:focus-visible {
+  color: inherit;
+  opacity: 0.8;
+}
+
 .up {
   font-weight: 400;
   font-style: italic;

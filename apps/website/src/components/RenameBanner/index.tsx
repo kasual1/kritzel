@@ -1,7 +1,12 @@
 import type { ReactNode } from "react";
+import Link from "@docusaurus/Link";
+import { ArrowIcon } from "@site/src/components/Landing/Icon";
 import { UPMADE_LOGO_PATH, UPMADE_LOGO_STROKE_WIDTH, UPMADE_LOGO_VIEWBOX } from "@site/src/components/Landing/paths";
 import { KRITZEL_LOGO_PATH, KRITZEL_LOGO_VIEWBOX } from "./kritzelLogo";
 import styles from "./styles.module.css";
+
+/** The post announcing the rename (blog/2026-11-17-kritzel-is-now-upmade.md). */
+const BLOG_POST_PATH = "/blog/2026/11/17/kritzel-is-now-upmade/";
 
 /**
  * Black notification bar announcing the rename, each name with its logo. Rendered on every page as Docusaurus'
@@ -27,6 +32,9 @@ export default function RenameBanner(): ReactNode {
       <strong className={styles.upmade}>
         <span className={styles.up}>Up</span>made
       </strong>
+      <Link className={styles.link} to={BLOG_POST_PATH} aria-label="Read more about the rename in the blog post">
+        Read more<ArrowIcon />
+      </Link>
     </div>
   );
 }
