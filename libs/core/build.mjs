@@ -5,8 +5,11 @@ import { createRequire } from 'node:module';
 const watch = process.argv.includes('--watch');
 
 // `/*!` comments survive minification in consumers' bundlers, so the notice reaches production builds.
+// First published in 2025; the range end follows the build date.
+const YEAR = new Date().getFullYear();
+const COPYRIGHT_YEARS = YEAR > 2025 ? `2025-${YEAR}` : '2025';
 const BANNER = `/*!
- * @upmade/core | MIT License | (c) 2025 Lukas Mühlenbeck
+ * @upmade/core | MIT License | (c) ${COPYRIGHT_YEARS} Lukas Mühlenbeck
  * Like Upmade? Give it a star: https://github.com/kasual1/upmade
  */`;
 
