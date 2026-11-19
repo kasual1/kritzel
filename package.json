@@ -41,6 +41,8 @@
     "bump-patch": "node ./scripts/bump-patch.js",
     "bump-minor": "node ./scripts/bump-minor.js",
     "bump-major": "node ./scripts/bump-major.js",
+    "copyright:update": "node ./scripts/update-copyright-year.mjs",
+    "copyright:check": "node ./scripts/update-copyright-year.mjs --check",
     "test": "npm run test -w libs/core && npm run test -w libs/engine/core",
     "test:starters": "node tools/starter-smoke/validate-starters.mjs",
     "build": "npm run build -w libs/core && npm run build -w libs/engine/core && npm run build -w libs/engine/angular && npm run build -w libs/engine/react && npm run build -w libs/engine/vue && npm run build -w libs/editor/core && npm run build -w libs/editor/angular && npm run build -w libs/editor/react && npm run build -w libs/editor/vue",
