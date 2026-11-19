@@ -11,6 +11,10 @@
     "angular"
   ],
   "license": "MIT",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/kasual1"
+  },
   "peerDependencies": {
     "@angular/common": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
     "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0"

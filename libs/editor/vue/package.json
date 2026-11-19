@@ -11,6 +11,10 @@
     "vue"
   ],
   "license": "MIT",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/kasual1"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "directories": {

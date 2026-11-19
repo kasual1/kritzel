@@ -10,6 +10,10 @@
     "drawing"
   ],
   "license": "MIT",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/kasual1"
+  },
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/esm/index.mjs",
   "types": "./dist/types/index.d.ts",
