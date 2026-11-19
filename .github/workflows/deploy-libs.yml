@@ -44,6 +44,11 @@ jobs:
       - name: Check bumped release versions
         run: node scripts/check-shared-versions.js
 
+      # Moves the end year of every LICENSE file to the current year (no-op if already current), so
+      # the published packages' license matches the build banner. Picked up by "Commit version bump".
+      - name: Update copyright year
+        run: npm run copyright:update
+
       - name: Build all packages
         run: npm run build
 
