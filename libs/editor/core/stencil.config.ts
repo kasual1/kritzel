@@ -50,6 +50,17 @@ const INTERNAL_COMPONENTS = [
   'upmade-engine',
 ];
 
+// Stencil has no `banner` option, so a Rollup plugin prepends it to every JS chunk. `/*!` comments
+// survive minification in consumers' bundlers, so the notice reaches production builds.
+const BANNER = `/*!
+ * @upmade/editor | MIT License | (c) 2025 Lukas Mühlenbeck
+ * Like Upmade? Give it a star: https://github.com/kasual1/upmade
+ */`;
+const bannerPlugin = {
+  name: 'upmade-banner',
+  renderChunk: (code: string) => ({ code: `${BANNER}\n${code}`, map: null }),
+};
+
 const isDev = process.argv.includes('--dev') || process.argv.includes('--serve');
 
 export const config: Config = {
@@ -80,6 +91,7 @@ export const config: Config = {
           },
         },
       }),
+  rollupPlugins: { after: [bannerPlugin] },
   outputTargets: isDev
     ? [{ type: 'www', dir: '.stencil/www', serviceWorker: null }]
     : [

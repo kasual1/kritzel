@@ -4,6 +4,12 @@ import { createRequire } from 'node:module';
 
 const watch = process.argv.includes('--watch');
 
+// `/*!` comments survive minification in consumers' bundlers, so the notice reaches production builds.
+const BANNER = `/*!
+ * @upmade/core | MIT License | (c) 2025 Lukas Mühlenbeck
+ * Like Upmade? Give it a star: https://github.com/kasual1/upmade
+ */`;
+
 // One bundle per format, so every consumer of @upmade/core shares one module instance.
 // yjs and its companions stay external, exactly as in the Stencil builds, otherwise Yjs
 // warns "Yjs was already imported" and its constructor checks break.
@@ -19,6 +25,7 @@ const shared = {
   tsconfig: 'tsconfig.build.json',
   external: ['yjs', 'y-websocket', 'y-indexeddb', 'y-protocols', 'y-protocols/*', 'lib0', 'lib0/*'],
   logLevel: 'info',
+  banner: { js: BANNER },
 };
 
 const formats = [
